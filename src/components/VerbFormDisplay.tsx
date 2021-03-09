@@ -61,7 +61,7 @@ function VerbFormDisplay({ displayForm, textOptions, info, showingFormInfo, engl
             setLength("long");
         } 
         // setPersInf("mascSing");
-        setShowingExplanation(false);
+        // setShowingExplanation(false);
     }, [block, length, chosenPersInf]);
     // TODO: This could be handled better to avoid the react-hooks/exhaustive-deps warning ?
     useEffect(() => {
