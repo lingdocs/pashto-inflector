@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      LINGDOCS_DICTIONARY_URL: ${{ secrets.LINGDOCS_DICTIONARY_URL }}
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 15.x]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - run: yarn build-website
+      - run: yarn build-library
+      - run: yarn test-ci

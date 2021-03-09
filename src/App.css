@@ -1,0 +1,263 @@
+/**
+ * Copyright (c) 2021 lingdocs.com
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+ 
+:root {
+    --secondary: #00c1fc;
+    --primary: #ffda54;
+    
+    /* change with theme */
+    --theme-shade: #fefefe;
+    --close: #f5f5f5;
+    --closer: #eee;
+    --farther: #555;
+    --farthest: #333;
+    --high-contrast: #444;
+    
+    --input-bg: #fafafa;
+}
+
+[data-theme="dark"] {
+    --theme-shade: #121418;
+    --close: #1d1f25;
+    --closer: #2c3039;
+    --farther: #bbb;
+    --farthest: #999;
+    --high-contrast: #cfcfcf;
+    
+    --input-bg: #ccc;
+}
+
+[data-p-text-size="larger"] {
+    --p-text-size: 1.3rem
+}
+
+[data-p-text-size="largest"] {
+    --p-text-size: 1.6rem
+}
+
+body {
+    background-color: var(--theme-shade);
+    color: var(--high-contrast);
+}
+
+.p-text {
+    font-size: var(--p-text-size);
+}
+
+pre {
+    color: var(--high-contrast);
+}
+
+.card {
+    background: var(--closer);
+}
+
+.list-group {
+    background: var(--closer);
+}
+
+.list-group-item {
+    background: var(--closer);
+}
+
+hr {
+    border-top: 1px solid var(--farther);
+}
+
+/* maybe call .box-alt? */
+.bg-light {
+    background-color: var(--closer) !important;
+    color: var(--high-contrast);
+}
+.bg-white {
+    background-color: var(--theme-shade) !important;
+}
+
+/* TODO: better handling of modals across light and dark modes */
+.modal-body, .modal-title {
+    color:#1d1f25;
+}
+
+.table {
+    color: var(--high-contrast);
+}
+
+.width-limiter {
+    max-width: 700px;
+}
+
+.thin-column {
+    max-width: 1rem;
+}
+
+.word {
+    margin-bottom: 1.25rem;
+}
+
+.word:hover {
+    cursor: pointer;
+}
+
+.word-non-clickable:hover {
+    cursor: inherit;
+}
+
+.word-extra-info {
+    color: var(--farther);
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+}
+
+.definition {
+    margin-top: 0.5rem;
+    margin-left: 1rem;
+}
+
+code {
+    color: #333;
+}
+
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0,
+    .2), 0 2px 0 0 rgba(255, 255, 255,
+    .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
+
+.recording-banner {
+    position: fixed;
+    width: 100%;
+    height: 16.5%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(244, 66, 66, 0.9);
+    z-index: 2;
+}
+
+/* Remove blue glow thing */
+textarea:focus,
+input[type="text"]:focus,
+input[type="search"]:focus,
+button:focus {
+    border-color: var(--farther);
+    box-shadow: none;
+    outline: 0 none;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.bottom-left {
+    position: fixed;
+    bottom: 2em;
+    left: 2em;
+}
+
+.bottom-right {
+    position: fixed;
+    bottom: 2em;
+    right: 2em;
+}
+
+.input-group {
+    border-color: red !important;
+}
+
+input {
+    background-color: var(--input-bg) !important;
+}
+
+.clear-search-button {
+    background-color: var(--input-bg) !important;
+}
+
+.clear-search-button:hover {
+    color: inherit;
+    cursor: pointer;
+    background-color: var(--input-bg) !important;
+}
+
+.clear-search-button:active {
+    background-color: var(--input-bg) !important;
+    color: var(--input-bg) !important;
+}
+
+.form-control-clear:hover {
+    cursor: pointer;
+}
+
+.theme-toggle-button {
+    position: fixed;
+    top: 90px;
+    right: 30px;
+    font-size: 20px;
+}
+
+.back-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.plain-link {
+    color: inherit;
+}
+
+.plain-link:hover {
+    text-decoration: none;
+    color: var(--farther);
+}
+.clickable:hover {
+    color: var(--farther);
+}
+
+.clear-search-button {
+    background-color: white;
+    margin-left: -2px;
+    color: #444;
+    border-radius: 0;
+    border-color: var(--farther);
+}
+.clear-search-button:hover {
+    color: #555;
+}
+
+.btn.bg-white:active,
+.btn.bg-white:hover {
+    color: #555 !important; 
+}
+
+.btn-group.full-width {
+    display: flex;
+}
+  
+.full-width .btn {
+    flex: 1;
+}
+
+.clickable:hover {
+    cursor: pointer;
+}
