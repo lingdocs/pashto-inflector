@@ -60,7 +60,11 @@ function VerbFormDisplay({ displayForm, textOptions, info, showingFormInfo, engl
         if (length === "mini" && !("mini" in chosenPersInf)) {
             setLength("long");
         } 
-        setPersInf("mascSing");
+        // setPersInf("mascSing");
+        setShowingExplanation(false);
+    }, [block, length, chosenPersInf]);
+    // TODO: This could be handled better to avoid the react-hooks/exhaustive-deps warning ?
+    useEffect(() => {
         setShowingExplanation(false);
     }, [block]);
     const hasVariations = (!("masc" in form)) && (!("p" in form)) && (!isSentenceForm(form)) && !isAllOne(form as T.VerbBlock | T.ImperativeBlock);

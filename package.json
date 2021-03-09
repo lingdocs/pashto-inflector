@@ -19,6 +19,9 @@
     "type": "git",
     "url": "https://github.com/lingdocs/pashto-inflector.git"
   },
+  "publishConfig": {
+    "registry":"https://reg.lingdocs.com"
+  },
   "dependencies": {
     "classnames": "^2.2.6"
   },

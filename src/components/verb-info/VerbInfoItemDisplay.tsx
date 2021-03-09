@@ -27,7 +27,7 @@ function VerbInfoItemDisplay({ item, textOptions, tails }: {
             : x
     );
     useEffect(() => {
-        setLength((length === "mini" && !("mini" in item)) ? "short" : length);
+        setLength(l => (l === "mini" && !("mini" in item)) ? "short" : l);
     }, [item]);
     // const lengthsAvailable = "long" in item
     //     ? [...["long", "short"], ..."mini" in item ? ["mini"] : []] 

@@ -19,7 +19,7 @@ yarn start
 
 ### Website
 
-To build the Pashto [Pashto Verb Explorer](https://verbs.lingdocs.com) website:
+To build the [Pashto Verb Explorer](https://verbs.lingdocs.com) website:
 
 ```
 yarn build-website
