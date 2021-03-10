@@ -17,6 +17,8 @@ yarn start
 
 ## Building
 
+⚠ Don't use `yarn build`. Use one of the commands below: ⚠
+
 ### Website
 
 To build the [Pashto Verb Explorer](https://verbs.lingdocs.com) website:

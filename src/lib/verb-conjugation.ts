@@ -338,9 +338,6 @@ function makeParticipleContent(info: T.NonComboVerbInfo): T.ParticipleContent {
     const present = ("complement" in info && spaceInForm(info.root.imperfective))
         ? concatInflections(info.complement, stativeAux[transitivity].participle.present as T.UnisexInflections)
         : inflectYey(noPersInfs(info.participle.present));
-    if ("objComplement" in info) {
-        console.log(info.objComplement, past);
-    }
     return {
         present, // PAST PARTICIPLE inflected
         past, // PRESENT PARTICIPLE inflected
