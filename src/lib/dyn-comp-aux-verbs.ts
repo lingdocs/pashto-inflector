@@ -90,7 +90,7 @@ export const dynamicAuxVerbs: Array<
         entry: {
             ts: 1527817013,
             p: "ویل",
-            f: "wayl",
+            f: "wayul, wayl", 
             e: "to say, to tell",
             c: "v. trans. indir.",
             i: 12229,
