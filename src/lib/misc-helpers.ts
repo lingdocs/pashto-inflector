@@ -193,6 +193,19 @@ export function isSentenceForm(f: any): boolean {
     return Array.isArray(f) && "p" in f[0];
 }
 
+export function isNounAdjOrVerb(entry: T.DictionaryEntry): "nounAdj" | "verb" | false {
+    if (!entry.c) {
+        return false;
+    }
+    if (entry.c.includes("adj.") || entry.c.includes("n. m.") || entry.c.includes("n. f.")) {
+        return "nounAdj";
+    }
+    if (entry.c.slice(0, 3) === "v. ") {
+        return "verb";
+    }
+    return false;
+}
+
 // not being used
 // export function isImperativeBlock(f: any): boolean {
 //     function isPersonLine(g: any): boolean {

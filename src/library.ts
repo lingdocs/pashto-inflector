@@ -50,6 +50,12 @@ import {
     readDictionaryInfo,
     writeDictionaryInfo,
 } from "./lib/protobuf";
+import {
+    pashtoConsonants,
+} from "./lib/pashto-consonants";
+import {
+    isNounAdjOrVerb,
+} from "./lib/misc-helpers";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
 import * as Types from "./types";
@@ -67,6 +73,7 @@ export {
     convertAfToPkSpelling,
     convertPkToAfSpelling,
     validateEntry,
+    isNounAdjOrVerb,
     // protobuf helpers
     readDictionary,
     writeDictionary,
@@ -86,6 +93,7 @@ export {
     ButtonSelect,
     // OTHER
     grammarUnits,
+    pashtoConsonants,
     defaultTextOptions,
     dictionaryEntryTextFields,
     dictionaryEntryNumberFields,
