@@ -44,6 +44,12 @@ import {
 import {
     validateEntry
 } from "./lib/validate-entry";
+import {
+    readDictionary,
+    writeDictionary,
+    readDictionaryInfo,
+    writeDictionaryInfo,
+} from "./lib/protobuf";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
 import * as Types from "./types";
@@ -61,6 +67,11 @@ export {
     convertAfToPkSpelling,
     convertPkToAfSpelling,
     validateEntry,
+    // protobuf helpers
+    readDictionary,
+    writeDictionary,
+    readDictionaryInfo,
+    writeDictionaryInfo,
     // COMPONENTS
     ConjugationViewer,
     Examples,

@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+message DictionaryInfo {
+	string title = 1;
+	string license = 2;
+    int32 release = 3;
+    int32 numberOfEntries = 4;
+    string url = 5;
+    string infoUrl = 6;
+}
+
+message Entry {
+	int32 ts = 1;
+	int32 i = 2;
+    string p = 3;
+    string f = 4;         
+    string e = 5;     
+    string c = 6;     
+    string l = 7;     
+    string infap = 8; 
+    string infaf = 9;
+    string infbp = 11;
+    string infbf = 12;
+    string noInf = 13;
+    string app = 14; 
+    string apf = 15; 
+    string ppp = 16; 
+    string ppf = 17; 
+    string psp = 18; 
+    string psf = 19; 
+    string ssp = 20;
+    string ssf = 21;
+    string prp = 22;
+    string prf = 23;
+    string pprtp = 24;
+    string pprtf = 25;
+    string tppp = 26;  
+    string tppf = 27;
+    bool shortIntrans = 28;
+    bool noOo = 29; 
+    bool sepOo = 30;
+    int32 separationAtP = 31;
+    int32 separationAtF = 32;
+    bool diacExcept = 33;
+}
+
+message Dictionary {
+    DictionaryInfo info = 1;
+    repeated Entry entries = 2;
+}
