@@ -27,6 +27,7 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: |
           yarn install
+          yarn build-website
           yarn build-library
           yarn test
           npm publish

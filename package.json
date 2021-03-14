@@ -1,6 +1,6 @@
 {
   "name": "@lingdocs/pashto-inflector",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "author": "lingdocs.com",
   "description": "A Pashto inflection and verb conjugation engine, inculding React components for displaying Pashto text, inflections, and conjugations",
   "homepage": "https://verbs.lingdocs.com",
@@ -61,7 +61,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build-website": "node get-verbs.js && npm run build",
-    "build-library": "rimraf dist && rimraf dist-cjs && tsc --project library-tsconfig.json && cp src/components/verb-info/*.svg dist/components/verb-info && rollup -c",
+    "build-library": "node get-verbs.js && rimraf dist && rimraf dist-cjs && tsc --project library-tsconfig.json && cp src/components/verb-info/*.svg dist/components/verb-info && rollup -c",
     "test-ci": "npm run test -- --watchAll=false"
   },
   "eslintConfig": {
