@@ -23,7 +23,8 @@ jobs:
       - name: Check if version has been updated
         id: check
         uses: EndBug/version-check@v1
-        token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish when version changed
         if: steps.check.outputs.changed == 'true'
         run: |
