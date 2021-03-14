@@ -12,7 +12,6 @@ jobs:
     env:
       LINGDOCS_DICTIONARY_URL: ${{ secrets.LINGDOCS_DICTIONARY_URL }}
       LINGDOCS_NPM_TOKEN: ${{ secrets.LINGDOCS_NPM_TOKEN }}
-    strategy:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
