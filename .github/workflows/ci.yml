@@ -14,7 +14,6 @@ jobs:
     env:
       LINGDOCS_DICTIONARY_URL: ${{ secrets.LINGDOCS_DICTIONARY_URL }}
       LINGDOCS_NPM_TOKEN: ${{ secrets.LINGDOCS_NPM_TOKEN }}
-    strategy:
       matrix:
         node-version: [12.x, 14.x, 15.x]
     steps:
