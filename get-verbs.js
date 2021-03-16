@@ -9,9 +9,10 @@
 const fs = require("fs");
 const fetch = require("node-fetch");
 const path = require("path");
-const { readDictionary } = require("@lingdocs/pashto-inflector");
 const collectionPath = path.join(".", "verbs");
-const verbTsFiles = fs.readdirSync(collectionPath)
+const verbTsFiles = fs.readdirSync(collectionPath);
+const protoModels = require("./dictionary-models.js");
+const Pbf = require("pbf");
 
 const allTsS = [...new Set(verbTsFiles.reduce((arr, fileName) => {
     const TsS = require("./verbs/"+fileName);
@@ -19,7 +20,8 @@ const allTsS = [...new Set(verbTsFiles.reduce((arr, fileName) => {
 }, []))];
 
 fetch(process.env.LINGDOCS_DICTIONARY_URL).then(res => res.arrayBuffer()).then(buffer => {
-  const dictionary = readDictionary(buffer);
+  const pbf = new Pbf(buffer);
+  const dictionary = protoModels.Dictionary.read(pbf);
   const entries = dictionary.entries;
   const allVerbs = getFromTsS(entries);
   const content = `
