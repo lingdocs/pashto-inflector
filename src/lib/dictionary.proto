@@ -22,7 +22,7 @@ message Entry {
     string infaf = 10;
     string infbp = 11;
     string infbf = 12;
-    string noInf = 13;
+    bool noInf = 13;
     string app = 14; 
     string apf = 15; 
     string ppp = 16; 
