@@ -11,7 +11,7 @@ const fetch = require("node-fetch");
 const path = require("path");
 const collectionPath = path.join(".", "verbs");
 const verbTsFiles = fs.readdirSync(collectionPath);
-const protoModels = require("./dictionary-models.js");
+const protoModels = require("./src/lib/dictionary-models.js");
 const Pbf = require("pbf");
 
 const allTsS = [...new Set(verbTsFiles.reduce((arr, fileName) => {
