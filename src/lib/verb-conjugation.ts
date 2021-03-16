@@ -45,7 +45,7 @@ import {
 } from "./misc-helpers";
 import * as T from "../types";
 
-const dummyEntry: T.DictionaryEntry = { i: 0, p: "", f: "", e: "", c: "", ts: 0 };
+const dummyEntry: T.DictionaryEntry = { i: 0, p: "", f: "", g: "", e: "", c: "", ts: 0 };
 
 const getAayTail = (type: T.AayTail): T.PsString => (
     type === "ey"

@@ -29,49 +29,82 @@ export type Dictionary = {
 
 export type DictionaryEntry = {
     // BASE REQUIRED INFO
-    ts: number;     // timestamp
-    i: number;      // Pashto Alphabetical Index
-    p: string;      // Pashto word
-    f: string;      // Phonetics word
-    e: string;      // English word
+    /** timestamp - used for word id */
+    ts: number; 
+    /** Pashto alphabetical index */
+    i: number;
+    /** entry in Pashto */
+    p: string;
+    /** entry in Phonetics */
+    f: string;
+    /** entry in simplified phonetics */
+    g: string;
+    /** entry in English */ 
+    e: string;
+
     // PART OF SPEECH AND LINK INFO
-    c?: string;     // Part of Speech Info
-    l?: number;     // timestamp link to related word
+    /** part of speech info */
+    c?: string;
+    /** link - timestamp of related word */
+    l?: number;
+
     // INFLECTION INFO
-    infap?: string; // Special (irregular) inflection info
+    /** first masculine irregular inflection in Pashto */
+    infap?: string;
+    /** first masculine irregular inflection in Phonetics */
     infaf?: string;
+    /** base for second masculine / feminine irregular inflection in Pashto */
     infbp?: string;
+    /** base for second masculine / feminine irregular inflection in Phonetics */
     infbf?: string;
-    noInf?: boolean; // No Inflections?
+    /** entry does not inflect? */
+    noInf?: boolean;
+
     // PLURAL INFO
-    app?: string;   // Arabic plural in Pashto
-    apf?: string;   // Arabic plural in Phonetics
-    ppp?: string;   // Pashto plural in Pashto
-    ppf?: string;   // Pashto plural in Phonetics
+    /** Arabic plural in Pashto */
+    app?: string;
+    /** Arabic plural in Phonetics */
+    apf?: string;
+    /** Pashto irregular plural in Pashto */
+    ppp?: string;
+    /** Pashto irregular plural in phonetics */
+    ppf?: string;
+
     // VERB INFO
-    psp?: string;   // Present stem in Pashto
-    psf?: string;   // Present stem in Phonetics
-    /** The subjuctive / perfective stem in Pashto */
+    /** imperfective (present) stem in Pashto */
+    psp?: string;
+    /** imperfective (present) stem in Phonetics */
+    psf?: string;
+    /** perfective (subjunctive) stem in Pashto */
     ssp?: string;
-    /** The subjunctive / perfective stem in Phonetics */
+    /** perfective (subjunctive) stem in Phonetics */
     ssf?: string;
-    prp?: string;   // Perfective root in Pashto
-    prf?: string;   // Perfective root in Phonetics
-    /** The past participle in Pashto */
+    /** perfective root in Pashto */
+    prp?: string;
+    /** perfective root in Phonetics */
+    prf?: string;
+    /** past participle in Pashto */
     pprtp?: string;
-    /** The past participle in Phonetics */
+    /** past participle in Phonetics */
     pprtf?: string;
     /** The idiosyncratic third person singular masc. short past in Pashto  */
     tppp?: string;
     /** The idiosyncratic third person singular masc. short past in Phonetics  */
     tppf?: string;
-    shortIntrans?: boolean; // Short version is available like ګرځېږي and ګرځي
-    noOo?: boolean;  // No و - oo verb prefix? 
-    sepOo?: boolean; // Separate oo prefix?
-    separationAtP?: number;  // Pashto separation point for separable verbs
-    separationAtF?: number; // Phonetics separation point for separable verbs
+    /** intransitive short version is available like ګرځېږي and ګرځي */
+    shortIntrans?: boolean;
+    /** does not take a و - oo perfective verb prefix? */
+    noOo?: boolean;
+    /** takes a seperate و - oo perfective verb prefix? */ 
+    sepOo?: boolean;
+    /** Pashto separation point for seperable verbs */
+    separationAtP?: number;
+    /** Phonetics separation point for seperable verbs */
+    separationAtF?: number;
+
     // PHONETICS - PASHTO - DIACRITICS INFO
-    diacExcept?: boolean; // Is an exception to the diacritics thing
+    /** Is an exception to the rules of diacritics for Pashto/Phonetics */
+    diacExcept?: boolean;
 }
 
 export type DictionaryEntryTextField = "p" | "f" | "e" | "c" | "infap" | "infaf" | "infbp" | "infbf" | "app" | "apf" | "ppp" | "ppf" | "psp" | "psf" | "ssp" | "ssf" | "prp" | "prf" | "pprtp" | "pprtf" | "tppp" | "tppf";

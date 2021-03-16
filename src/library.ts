@@ -56,6 +56,9 @@ import {
 import {
     isNounAdjOrVerb,
 } from "./lib/misc-helpers";
+import {
+    simplifyPhonetics,
+} from "./lib/simplify-phonetics";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
 import * as Types from "./types";
@@ -74,6 +77,7 @@ export {
     convertPkToAfSpelling,
     validateEntry,
     isNounAdjOrVerb,
+    simplifyPhonetics,
     // protobuf helpers
     readDictionary,
     writeDictionary,
