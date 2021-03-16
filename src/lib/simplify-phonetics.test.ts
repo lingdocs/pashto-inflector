@@ -18,6 +18,7 @@ const toTest: [string, string][] = [
     ["săr", "sar"],
     ["kawúl", "kawul"],
     ["sắr", "sar"],
+    ["kaar-U-baar", "kaarUbaar"],
 ];
 
 test("simplifyPhonetics should work", () => {
