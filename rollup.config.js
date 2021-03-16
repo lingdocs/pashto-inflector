@@ -26,7 +26,7 @@ export default {
     // peerDepsExternal(),
     commonjs(),
     nodeResolve({
-      resolveOnly: ['classnames'],
+      resolveOnly: Object.keys(pkg.dependencies),
     }),
     // use base64 image inlining for the cjs version so that the .svg s can get cosumed by node 12 etc. 
     image(),
