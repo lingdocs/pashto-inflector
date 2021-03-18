@@ -399,29 +399,30 @@ function makeOnlyMiniForm(
         return [reorderedNegativeAfterSplitHead(splitHead)];
     }
     // only mini without split
+    const [beginning, end] = splitOffLeapfrogWord(ps);
     if (!displayForm.reorderWithNegative || !negative) {
         if (objComplement) {
             return [
                 concatPsString(
                     objComplement,
-                    " ",
+                    psStringContains(ps, concatPsString(baParticle, " ")) ? concatPsString(" ", baParticle, " ") : " ",
                     concatPsString(mini, " "),
                     negative ? concatPsString(" ", nuParticle, " ") : "",
-                    removeObjComp(objComplement, ps),
+                    removeObjComp(objComplement, psRemove(ps, concatPsString(baParticle, " "))),
                 )
             ];
         }
         return [
             concatPsString(
-                psRemove(ps, concatPsString(baParticle, " ")),
+                psRemove(beginning, concatPsString(baParticle, " ")),
                 " ",
-                psStringContains(ps, concatPsString(baParticle, " ")) ? concatPsString(baParticle, " ") : "",
+                psStringContains(beginning, concatPsString(baParticle, " ")) ? concatPsString(baParticle, " ") : "",
                 mini,
-                negative ? concatPsString(" ", nuParticle) : "",
-            )
+                negative ? concatPsString(" ", nuParticle) : " ",
+                end,
+            ),
         ];
     }
-    const [beginning, end] = splitOffLeapfrogWord(ps);
     if (objComplement) {
         return [
             ensureBaAt(

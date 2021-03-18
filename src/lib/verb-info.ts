@@ -80,7 +80,6 @@ export function getVerbInfo(
     const transitivity = getTransitivity(entry);
     if (type !== "simple") {
         if (!complement) {
-            console.log(entry);
             throw new Error("complement required for compound verb");
         }
         if (type === "dynamic compound") {
