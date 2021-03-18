@@ -32,6 +32,7 @@ import {
     removeFVariants,
 } from "./lib/p-text-helpers";
 import { standardizePashto } from "./lib/standardize-pashto";
+import { phoneticsToDiacritics } from "./lib/phonetics-to-diacritics";
 import {
     convertAfToPkSpelling,
     convertPkToAfSpelling,
@@ -78,6 +79,7 @@ export {
     validateEntry,
     isNounAdjOrVerb,
     simplifyPhonetics,
+    phoneticsToDiacritics,
     // protobuf helpers
     readDictionary,
     writeDictionary,
