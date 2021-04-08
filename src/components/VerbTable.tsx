@@ -120,7 +120,7 @@ function VerbTable({ block, textOptions, english }: {
     return <table className="table mt-2" style={{ tableLayout: "fixed" }}>
         <thead>
             <tr>
-                <th scope="col" style={{ width: "3rem" }}></th>
+                <th scope="col" style={{ width: "3rem" }}>Pers.</th>
                 <th scope="col">Singular</th>
                 <th scope="col">Plural</th>
             </tr>

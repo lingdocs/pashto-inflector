@@ -418,11 +418,3 @@ export type DisplayFormSubgroup = {
 }
 
 export type AayTail = "ey" | "aay";
-
-export type EntryEdit = {
-    entry: DictionaryEntry,
-    comment: string,
-    final?: boolean,
-}
-
-export type EditsSubmission = EntryEdit[];
