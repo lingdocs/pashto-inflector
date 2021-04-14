@@ -39,15 +39,17 @@ function agreementInfo(info: T.NonComboVerbInfo, displayForm: T.DisplayForm): Re
     return <><strong>Note:</strong> {beginning}<strong>{agreesWith}</strong>{extraExplanation}</>
 }
 
-function VerbFormDisplay({ displayForm, textOptions, info, showingFormInfo, english }: {
+function VerbFormDisplay({ displayForm, textOptions, info, showingFormInfo, english, shortDefault }: {
     displayForm: T.DisplayForm | T.VerbForm,
     english?: T.EnglishBlock | string,
     textOptions: T.TextOptions,
     showingFormInfo: boolean,
     info?: T.NonComboVerbInfo,
+    shortDefault?: boolean,
 }) {
+    const defaultLength = shortDefault ? "short" : "long";
     const [persInf, setPersInf] = useState<T.PersonInflectionsField>("mascSing");
-    const [length, setLength] = useState<T.Length>("long");
+    const [length, setLength] = useState<T.Length>(defaultLength);
     const [showingExplanation, setShowingExplanation] = useState<boolean>(false);
     const block = "label" in displayForm ? displayForm.form : displayForm;
     const chosenPersInf = "mascSing" in block
@@ -58,7 +60,7 @@ function VerbFormDisplay({ displayForm, textOptions, info, showingFormInfo, engl
         : chosenPersInf;
     useEffect(() => {
         if (length === "mini" && !("mini" in chosenPersInf)) {
-            setLength("long");
+            setLength(defaultLength);
         } 
         // setPersInf("mascSing");
         // setShowingExplanation(false);
