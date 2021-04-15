@@ -10,17 +10,19 @@ import Pashto from "./Pashto";
 import Phonetics from "./Phonetics";
 import * as T from "../types";
 
-export default function({ 
+type PsStringWSub = T.PsString & { sub?: any };
+
+function Examples({ 
     children,
     ex,
     opts,
 }: {
-    ex?: T.PsString | T.PsString[],
-    children: T.PsString | T.PsString[],
+    ex?: PsStringWSub | PsStringWSub[],
+    children: PsStringWSub | PsStringWSub[],
     opts: T.TextOptions,
 }) {
     const examples = children || ex;
-    const Example = ({ children: text }: { children: T.PsString }) => (
+    const Example = ({ children: text }: { children: PsStringWSub }) => (
         <div className="mt-1 mb-3">
             <div>
                 <Pashto opts={opts}>{text}</Pashto>
@@ -31,6 +33,9 @@ export default function({
             {text.e && <div className="text-muted">
                 {text.e}
             </div>}
+            {text.sub && <div className="small text-muted">
+                {text.sub}
+            </div>} 
         </div>
     );
     return Array.isArray(examples) ?
@@ -40,3 +45,5 @@ export default function({
         :
         <Example>{examples}</Example>;
 }
+
+export default Examples;
