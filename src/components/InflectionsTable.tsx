@@ -8,8 +8,8 @@
 
 import { useState } from "react";
 import Pashto from "./Pashto";
-import Phonetics from "./Phonetics";
 import { Modal } from "react-bootstrap";
+import TableCell from "./TableCell";
 import * as T from "../types";
 
 const explanation = (inf: T.Inflections, textOptions: T.TextOptions) => {
@@ -49,50 +49,20 @@ const InflectionTable = ({ inf, textOptions }: {
                     <i className={`fa fa-question-circle`}></i>
                 </div>
             </div>
-            <table className="table">
+            <table className="table" style={{ tableLayout: "fixed" }}>
                 <thead>
                     <tr>
-                        <th></th>
-                        {"masc" in inf && <th>Masculine</th>}
-                        {"fem" in inf && <th>Feminine</th>}
+                        <th scope="col" style={{ width: "3.5rem" }}></th>
+                        {"masc" in inf && <th scope="col" style={{ maxWidth: "10rem" }}>Masculine</th>}
+                        {"fem" in inf && <th scope="col" style={{ maxWidth: "10rem" }}>Feminine</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {["Plain", "1st", "2nd"].map((title, i) => (
                         <tr key={title}>
-                            <th scope="row" className="thin-column">{title}</th>
-                            {"masc" in inf && <td>
-                                {inf.masc[i].map((w, j) => (
-                                    <div key={`${i}-${j}-inflection-result`}>
-                                        <div>
-                                            <Pashto opts={textOptions}>
-                                                {w}
-                                            </Pashto>
-                                        </div>
-                                        <div>
-                                            <Phonetics opts={textOptions}>
-                                                {w}
-                                            </Phonetics>
-                                        </div>
-                                    </div>
-                                ))}
-                            </td>}
-                            {"fem" in inf && <td>
-                                {inf.fem[i].map((w, j) => (
-                                    <div key={`${i}-${j}-inflection-result`}>
-                                        <div>
-                                            <Pashto opts={textOptions}>
-                                                {w}
-                                            </Pashto>
-                                        </div>
-                                        <div>
-                                            <Phonetics opts={textOptions}>
-                                                {w}
-                                            </Phonetics>
-                                        </div>
-                                    </div>
-                                ))}
-                            </td>}
+                            <th scope="row">{title}</th>
+                            {"masc" in inf && <TableCell item={inf.masc[i]} textOptions={textOptions} />}
+                            {"fem" in inf && <TableCell item={inf.fem[i]} textOptions={textOptions} />}
                         </tr>
                     ))}
                 </tbody>

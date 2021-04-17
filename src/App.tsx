@@ -191,7 +191,7 @@ function App() {
     console.log(textOptions);
     return <>
         <main className="flex-shrink-0 mb-4">
-            <div className="container">
+            <div className="container" style={{ maxWidth: "800px" }}>
             <div style={{ position: "absolute", top: "1.5rem", right: "1.5rem", display: "flex", flexDirection: "row" }}>
                 <div
                     className="clickable mr-3"
