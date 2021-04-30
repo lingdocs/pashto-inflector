@@ -417,9 +417,10 @@ function makeOnlyMiniForm(
                 psRemove(beginning, concatPsString(baParticle, " ")),
                 " ",
                 psStringContains(beginning, concatPsString(baParticle, " ")) ? concatPsString(baParticle, " ") : "",
-                mini,
-                negative ? concatPsString(" ", nuParticle) : " ",
+                negative ? concatPsString(" ", nuParticle, " ") : " ",
+                (beginning.p || negative) ? concatPsString(mini, " ") : "",
                 end,
+                (beginning.p || negative) ? "" : concatPsString(" ", mini),
             ),
         ];
     }
