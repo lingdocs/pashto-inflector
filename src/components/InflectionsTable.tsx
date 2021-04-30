@@ -53,8 +53,8 @@ const InflectionTable = ({ inf, textOptions }: {
                 <thead>
                     <tr>
                         <th scope="col" style={{ width: "3.5rem" }}></th>
-                        {"masc" in inf && <th scope="col" style={{ maxWidth: "10rem" }}>Masculine</th>}
-                        {"fem" in inf && <th scope="col" style={{ maxWidth: "10rem" }}>Feminine</th>}
+                        {"masc" in inf && <th scope="col" style={{ maxWidth: "10rem", textAlign: "left" }}>Masculine</th>}
+                        {"fem" in inf && <th scope="col" style={{ maxWidth: "10rem", textAlign: "left" }}>Feminine</th>}
                     </tr>
                 </thead>
                 <tbody>
