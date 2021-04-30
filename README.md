@@ -1,7 +1,8 @@
 # pashto-inflector
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ca3a7720-876f-4375-a77e-2e7bfdcee48a/deploy-status)](https://app.netlify.com/sites/pashto-verbs/deploys)
-![build](https://github.com/lingdocs/pashto-inflector/actions/workflows/main.yml/badge.svg)
+![build](https://github.com/lingdocs/pashto-inflector/actions/workflows/ci.yml/badge.svg)
+![build](https://github.com/lingdocs/pashto-inflector/actions/workflows/publish.yml/badge.svg)
 
 A pashto inflection and verb conjugation engine, as well as functions and components for modifying and displaying Pashto text.
 
