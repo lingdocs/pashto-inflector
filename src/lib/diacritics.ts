@@ -248,7 +248,14 @@ const phonemeTable: Record<Phoneme, PhonemeInfo> = {
     },
 }
 
-
+/**
+ * splits a phonetics string into an array of Phonemes
+ * 
+ * will error if there is an illeagal phonetics character
+ * 
+ * @param fIn a phonetics string
+ * @returns an array of phonemes
+ */
 export function splitFIntoPhonemes(fIn: string): Phoneme[] {
     const singleLetterPhonemes: Phoneme[] = ["a", "i", "u", "o", "e", "U", "b", "p", "t", "T", "s", "j", "d", "D", "r", "R", "z", "G", "x", "f", "q", "k", "g", "l", "m", "n", "N", "h", "w", "y"];
     
@@ -306,16 +313,25 @@ export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsSt
     // TODO: 
     const phonemes: Phoneme[] = splitFIntoPhonemes(!ignoreCommas ? firstPhonetics(f) : f);
 
-    const { pOut } = phonemes.reduce((acc, phoneme, i) => {
-        const isBeginningOfWord = acc.pOut === "" || last(acc.pOut) === " ";
+    const { pIn, pOut } = phonemes.reduce((acc, phoneme, i) => {
+        const prevPLetter = last(acc.pOut);
+        const isBeginningOfWord = acc.pOut === "" || prevPLetter === " ";
         const phonemeInfo = phonemeTable[phoneme];
+        const previousPhoneme = i > 0 && phonemes[i-1];
         const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
         const currentPLetter = acc.pIn[0];
-        const needsSukun = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
+        const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
+        const needsTashdeed = doubleConsonant && (previousPhoneme === phoneme);
+        const needsSukun = doubleConsonant && (previousPhoneme !== phoneme);
+
+        if (needsTashdeed) {
+            return {
+                pOut: acc.pOut + tashdeed,
+                pIn: acc.pIn,
+            };
+        }
 
         if (phonemeInfo.matches?.includes(currentPLetter)) {
-            // TODO: Check if tashdeed or sukun is used
-            // const needsSukun = is consonant + previous phoneme was consonant + not beginning of word
             return {
                 pOut: acc.pOut
                     + (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : "")
@@ -331,8 +347,14 @@ export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsSt
             }
         }
 
+        // TODO: CHECK IF PASHTO IS SHORTER THAN PHONETICS
+
         throw new Error("phonetics error");
     }, { pOut: "", pIn: p });
+
+    if (pIn !== "") {
+        throw new Error("phonetics error - phonetics shorter than pashto script");
+    }
 
     return {
         p: pOut,

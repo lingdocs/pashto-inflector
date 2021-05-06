@@ -12,6 +12,17 @@ import {
 } from "./diacritics";
 import * as T from "../types";
 
+const zwar = "َ";
+const zwarakey = "ٙ";
+const zer = "ِ";
+const pesh = "ُ";
+const sukun = "ْ";
+const hamzaAbove = "ٔ";
+const tashdeed = "ّ";
+const wasla = "ٱ";
+const daggerAlif = "ٰ";
+const fathahan = "ً";
+
 const phonemeSplits: Array<{
     in: string,
     out: string[],
@@ -139,6 +150,105 @@ const diacriticsTest: Array<{
         },
         out: "تَشْناب",
     },
+    // working with وs
+    {
+        in: {
+            p: "کول",
+            f: "kwal",
+        },
+        out: "کْوَل",
+    },
+    {
+        in: {
+            p: "تول",
+            f: "tool",
+        },
+        out: "تُول",
+    },
+    {
+        in: {
+            p: "مقبول",
+            f: "maqbool",
+        },
+        out: "مَقْبُول",
+    },
+    {
+        in: {
+            p: "کول",
+            f: "kawul",
+        },
+        out: "کَو" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "کول",
+            f: "kiwul",
+        },
+        out: "کِو" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "کول",
+            f: "kUwul",
+        },
+        out: "کُو" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "کول",
+            f: "kuwul",
+        },
+        out: "ک" + zwarakey + "و" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "کول",
+            f: "kawal",
+        },
+        out: "کَوَل",
+    },
+    {
+        in: {
+            p: "کول",
+            f: "kUwal",
+        },
+        out: "کُوَل",
+    },
+    {
+        in: {
+            p: "پشتګرد",
+            f: "pishtgird",
+        },
+        out: "پِشْتْګِرْد",
+    },
+    {
+        in: {
+            p: "سپین",
+            f: "speen",
+        },
+        out: "سْپِین",
+    },
+    {
+        in: {
+            p: "سپین",
+            f: "speyn",
+        },
+        out: "سْپین",
+    },
+    {
+        in: {
+            p: "پېش",
+            f: "pesh",
+        },
+        out: "پېش",
+    },
+    {
+        in: {
+            p: "بتن",
+            f: "battan",
+        },
+        out: "ب" + zwar + "ت" + tashdeed + zwar + "ن",
+    },
 ];
 
 const brokenDiacritics = [
@@ -161,6 +271,12 @@ test("bad phonetic characters should throw an error", () => {
             splitFIntoPhonemes(s.in);
         }).toThrow(`illegal phonetic character: ${s.problem}`);
     });
+});
+
+test("ending with left over Pashto script will throw an error", () => {
+    expect(() => {
+        addDiacritics({ p: "کور ته", f: "kor" });
+    }).toThrow(`phonetics error - phonetics shorter than pashto script`);
 });
 
 test("adding diacritics should work", () => {
