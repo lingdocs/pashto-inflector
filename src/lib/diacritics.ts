@@ -38,7 +38,7 @@ type PhonemeInfo = {
     diacritic?: string,
     endingOnly?: true,
     takesSukunOnEnding?: true,
-    addAlefOnBeginning?: true,
+    longVowel?: true,
     canStartWithAynBefore?: true,
 }
 
@@ -188,39 +188,42 @@ const phonemeTable: Record<Phoneme, PhonemeInfo> = {
         matches: ["ا"],
         beginningMatches: ["آ", "ا"],
         endingMatches: ["ا", "یٰ"],
+        longVowel: true,
     },
     "ee": {
         matches: ["ی"],
-        addAlefOnBeginning: true,
+        longVowel: true,
         endingMatches: ["ي"],
         diacritic: zer,
         canStartWithAynBefore: true
     },
     "e": {
         matches: ["ې"],
-        addAlefOnBeginning: true,
+        longVowel: true,
     },
     "o": {
         matches: ["و"],
-        addAlefOnBeginning: true,
+        longVowel: true,
     },
     "oo": {
         matches: ["و"],
-        addAlefOnBeginning: true,
+        longVowel: true,
         // alsoCanBePrefix: true,
         diacritic: pesh,
     },
     "ey": {
         matches: ["ی"],
-        addAlefOnBeginning: true,
+        longVowel: true,
         endingMatches: ["ی"],
     },
     "uy": {
         matches: ["ۍ"],
+        longVowel: true,
         endingOnly: true,
     },
     "eyy": {
         matches: ["ئ"],
+        longVowel: true,
         endingOnly: true,
     },
     // Short Vowels
@@ -336,7 +339,7 @@ function processPhoneme(
 
     const prevPLetter = last(state.pOut);
     const currentPLetter = state.pIn[0];
-    // const nextPLetter = state.pIn[1];
+    const nextPLetter = state.pIn[1];
     const isBeginningOfWord = state.pOut === "" || prevPLetter === " ";
     const phonemeInfo = phonemeTable[phoneme];
     const previousPhoneme = i > 0 && phonemes[i-1];
@@ -346,34 +349,29 @@ function processPhoneme(
     const needsSukun = doubleConsonant && (previousPhoneme !== phoneme);
 
     if (needsTashdeed) {
-        return {
-            pOut: state.pOut + tashdeed,
-            pIn: state.pIn,
-        };
+        return addP(state, tashdeed);
     }
 
-    // TODO: Beginning of word with long vowels and alef etc.
-    if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
+    if (isBeginningOfWord && (phonemeInfo.longVowel && !phonemeInfo.endingOnly)) {
+        if (phoneme !== "aa" && currentPLetter !== "ا" && !phonemeInfo.matches?.includes(nextPLetter)) {
+            throw Error("phonetics error - needs alef prefix");
+        }
         const ns = advanceP(state);
-        return {
-            ...ns,
-            pOut: ns.pOut + (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : ""),
-        };
+        const ns2 = phonemeInfo.diacritic ? addP(ns, phonemeInfo.diacritic) : ns;
+        return advanceP(ns2);
+    } else if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
+        const ns = advanceP(state);
+        return addP(ns, (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : ""));
     } else if (phonemeInfo.matches?.includes(currentPLetter)) {
-        return advanceP({
-            ...state,
-            pOut: state.pOut
-                + (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : ""),
-        });
+        const ns = addP(state, (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : ""));
+        return advanceP(ns);
     }
 
     if (phonemeInfo.diacritic) {
-        return {
-            ...state,
-            pOut: state.pOut + phonemeInfo.diacritic,
-        };
+        return addP(state, phonemeInfo.diacritic);
     }
 
+    // console.log(state);
     throw new Error("phonetics error");
 }
 
@@ -391,4 +389,11 @@ function advanceP(state: DiacriticsAccumulator, n: number = 1): DiacriticsAccumu
         pOut: state.pOut + state.pIn.slice(0, n),
         pIn: state.pIn.slice(n),
     }
+}
+
+function addP(state: DiacriticsAccumulator, toAdd: string): DiacriticsAccumulator {
+    return {
+        ...state,
+        pOut: state.pOut + toAdd,
+    };
 }

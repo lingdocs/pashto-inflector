@@ -250,6 +250,14 @@ const diacriticsTest: Array<{
         },
         out: "اِسْلام",
     },
+    // starting long vowels with ا
+    {
+        in: {
+            p: "ایسار",
+            f: "eesaar",
+        },
+        out: "اِیسار",
+    },
     // double consonant
     {
         in: {
@@ -287,6 +295,10 @@ const brokenDiacritics = [
     {
         p: "تشناب",
         f: "peshnaab",
+    },
+    {
+        p: "وسېدل",
+        f: "osedul",
     },
 ];
 
