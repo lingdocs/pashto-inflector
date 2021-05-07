@@ -69,20 +69,6 @@ const phonemeSplits: Array<{
     },
 ];
 
-const badPhonetics: Array<{
-    in: string,
-    problem: string,
-}> = [
-    {
-        in: "acar",
-        problem: "c",
-    },
-    {
-        in: "a7am",
-        problem: "7",
-    },
-];
-
 const diacriticsTest: Array<{
     in: T.PsString,
     out: string,
@@ -100,6 +86,13 @@ const diacriticsTest: Array<{
             f: "koor",
         },
         out: "کُور",
+    },
+    {
+        in: {
+            p: "کور کور",
+            f: "kor koor",
+        },
+        out: "کور کُور",
     },
     {
         in: {
@@ -244,17 +237,34 @@ const diacriticsTest: Array<{
     },
     {
         in: {
+            p: "لیک",
+            f: "leek",
+        },
+        out: "لِیک",
+    },
+    // starting alefs
+    {
+        in: {
+            p: "اسلام",
+            f: "islaam",
+        },
+        out: "اِسْلام",
+    },
+    // double consonant
+    {
+        in: {
             p: "بتن",
             f: "battan",
         },
         out: "ب" + zwar + "ت" + tashdeed + zwar + "ن",
     },
-];
-
-const brokenDiacritics = [
+    // avoid false double consonant
     {
-        p: "تشناب",
-        f: "peshnaab",
+        in: {
+            p: "ازل لیک",
+            f: "azalléek",
+        },
+        out: "اَزَل لِیک",
     },
 ];
 
@@ -264,6 +274,35 @@ phonemeSplits.forEach((s) => {
         expect(result).toEqual(s.out);
     });
 });
+
+test("adding diacritics should work", () => {
+    diacriticsTest.forEach((t) => {
+        expect(addDiacritics(t.in)).toEqual({ p: t.out, f: t.in.f });
+    });
+});
+
+// ERRORS
+
+const brokenDiacritics = [
+    {
+        p: "تشناب",
+        f: "peshnaab",
+    },
+];
+
+const badPhonetics: Array<{
+    in: string,
+    problem: string,
+}> = [
+    {
+        in: "acar",
+        problem: "c",
+    },
+    {
+        in: "a7am",
+        problem: "7",
+    },
+];
 
 test("bad phonetic characters should throw an error", () => {
     badPhonetics.forEach((s) => {
@@ -279,10 +318,10 @@ test("ending with left over Pashto script will throw an error", () => {
     }).toThrow(`phonetics error - phonetics shorter than pashto script`);
 });
 
-test("adding diacritics should work", () => {
-    diacriticsTest.forEach((t) => {
-        expect(addDiacritics(t.in)).toEqual({ p: t.out, f: t.in.f });
-    });
+test("ending with left over phonetics will throw an error", () => {
+    expect(() => {
+        addDiacritics({ p: "کار", f: "kaar kawul" });
+    }).toThrow();
 });
 
 test("adding diacritics errors when phonetecs and pashto do not line up", () => {

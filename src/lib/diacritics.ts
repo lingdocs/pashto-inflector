@@ -28,6 +28,8 @@ type LongVowel = "aa" | "ee" | "e" | "oo" | "o" | "ey" | "uy" | "eyy";
 type ShortVowel = "a" | "i" | "u" | "U";
 type Phoneme = Consonant | Ain | LongVowel | ShortVowel | JoiningVowel;
 
+type DiacriticsAccumulator = { pIn: string, pOut: string };
+
 type PhonemeInfo = {
     matches?: string[],
     beginningMatches?: string[],
@@ -225,6 +227,7 @@ const phonemeTable: Record<Phoneme, PhonemeInfo> = {
     "a": {
         diacritic: zwar,
         endingMatches: ["ه"],
+        beginningMatches: ["ا"],
         // canComeAfterHeyEnding: true,
         // canBeFirstPartOfFathahanEnding: true,
     },
@@ -304,62 +307,74 @@ export function splitFIntoPhonemes(fIn: string): Phoneme[] {
 }
 
 /**
- * Adds phonetis to a given PsString.
+ * Adds diacritics to a given PsString.
  * Errors if the phonetics and script don't line up.
  * 
  * @param ps a PsSTring without phonetics
  */
 export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsString {
-    // TODO: 
     const phonemes: Phoneme[] = splitFIntoPhonemes(!ignoreCommas ? firstPhonetics(f) : f);
-
-    const { pIn, pOut } = phonemes.reduce((acc, phoneme, i) => {
-        const prevPLetter = last(acc.pOut);
-        const isBeginningOfWord = acc.pOut === "" || prevPLetter === " ";
-        const phonemeInfo = phonemeTable[phoneme];
-        const previousPhoneme = i > 0 && phonemes[i-1];
-        const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
-        const currentPLetter = acc.pIn[0];
-        const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
-        const needsTashdeed = doubleConsonant && (previousPhoneme === phoneme);
-        const needsSukun = doubleConsonant && (previousPhoneme !== phoneme);
-
-        if (needsTashdeed) {
-            return {
-                pOut: acc.pOut + tashdeed,
-                pIn: acc.pIn,
-            };
-        }
-
-        if (phonemeInfo.matches?.includes(currentPLetter)) {
-            return {
-                pOut: acc.pOut
-                    + (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : "")
-                    + currentPLetter,
-                pIn: acc.pIn.slice(1),
-            };
-        }
-
-        if (phonemeInfo.diacritic) {
-            return {
-                pOut: acc.pOut + phonemeInfo.diacritic,
-                pIn: acc.pIn,
-            }
-        }
-
-        // TODO: CHECK IF PASHTO IS SHORTER THAN PHONETICS
-
-        throw new Error("phonetics error");
-    }, { pOut: "", pIn: p });
-
+    const { pIn, pOut } = phonemes.reduce(processPhoneme, { pOut: "", pIn: p });
     if (pIn !== "") {
         throw new Error("phonetics error - phonetics shorter than pashto script");
     }
-
     return {
         p: pOut,
         f,
     };
+}
+
+function processPhoneme(
+    acc: DiacriticsAccumulator,
+    phoneme: Phoneme,
+    i: number,
+    phonemes: Phoneme[],
+) {
+    // Prep state
+    const state = acc.pIn[0] === " " ? advanceP(acc) : acc;
+    // WARNING: Do not use acc after this point!
+
+    const prevPLetter = last(state.pOut);
+    const currentPLetter = state.pIn[0];
+    // const nextPLetter = state.pIn[1];
+    const isBeginningOfWord = state.pOut === "" || prevPLetter === " ";
+    const phonemeInfo = phonemeTable[phoneme];
+    const previousPhoneme = i > 0 && phonemes[i-1];
+    const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
+    const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
+    const needsTashdeed = doubleConsonant && (previousPhoneme === phoneme);
+    const needsSukun = doubleConsonant && (previousPhoneme !== phoneme);
+
+    if (needsTashdeed) {
+        return {
+            pOut: state.pOut + tashdeed,
+            pIn: state.pIn,
+        };
+    }
+
+    // TODO: Beginning of word with long vowels and alef etc.
+    if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
+        const ns = advanceP(state);
+        return {
+            ...ns,
+            pOut: ns.pOut + (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : ""),
+        };
+    } else if (phonemeInfo.matches?.includes(currentPLetter)) {
+        return advanceP({
+            ...state,
+            pOut: state.pOut
+                + (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : ""),
+        });
+    }
+
+    if (phonemeInfo.diacritic) {
+        return {
+            ...state,
+            pOut: state.pOut + phonemeInfo.diacritic,
+        };
+    }
+
+    throw new Error("phonetics error");
 }
 
 /**
@@ -369,4 +384,11 @@ export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsSt
  */
 function last(s: string) {
     return s[s.length - 1];
+}
+
+function advanceP(state: DiacriticsAccumulator, n: number = 1): DiacriticsAccumulator {
+    return {
+        pOut: state.pOut + state.pIn.slice(0, n),
+        pIn: state.pIn.slice(n),
+    }
 }
