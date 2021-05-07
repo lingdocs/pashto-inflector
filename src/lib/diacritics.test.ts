@@ -258,7 +258,7 @@ const diacriticsTest: Array<{
         },
         out: "اِیسار",
     },
-    // double consonant
+    // double consonant / tashdeed
     {
         in: {
             p: "بتن",
@@ -266,6 +266,50 @@ const diacriticsTest: Array<{
         },
         out: "ب" + zwar + "ت" + tashdeed + zwar + "ن",
     },
+    {
+        in: {
+            p: "بتطن",
+            f: "battan",
+        },
+        out: "ب" + zwar + "ت" + sukun + "ط" + zwar + "ن",
+    },
+    // vowel endings working
+    {
+        in: {
+            p: "بته",
+            f: "bata",
+        },
+        out: "بَتَه",
+    },
+    {
+        in: {
+            p: "بته",
+            f: "bati",
+        },
+        out: "بَتِه",
+    },
+    {
+        in: {
+            p: "پرمختیا",
+            f: "parmakhtyaa",
+        },
+        out: "پَرْمَخْتْیا",
+    },
+    // {
+    //     in: {
+    //         p: "پته",
+    //         f: "patta",
+    //     },
+    //     out: "پَتّه",
+    // },
+    // get ayn stuff working
+    // {
+    //     in: {
+    //         p: "اعتصاب شکن",
+    //         f: "itisaabshikan",
+    //     },
+    //     out: "اِعتِصاب شِکَن",
+    // },
     // avoid false double consonant
     {
         in: {

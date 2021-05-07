@@ -9,6 +9,7 @@
 import * as T from "../types";
 import { removeAccents } from "./accent-helpers";
 import { firstPhonetics } from "./p-text-helpers";
+import { pipe } from "rambda";
 
 const zwar = "َ";
 const zwarakey = "ٙ";
@@ -341,36 +342,54 @@ function processPhoneme(
     const currentPLetter = state.pIn[0];
     const nextPLetter = state.pIn[1];
     const isBeginningOfWord = state.pOut === "" || prevPLetter === " ";
+    // const isEndOfWord = !nextPLetter || nextPLetter === " ";
     const phonemeInfo = phonemeTable[phoneme];
     const previousPhoneme = i > 0 && phonemes[i-1];
     const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
+    // const nextPhoneme = (phonemes.length > (i + 1)) && phonemes[i+1];
+    // const nextPhonemeInfo = nextPhoneme ? phonemeTable[nextPhoneme] : undefined;
     const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
-    const needsTashdeed = doubleConsonant && (previousPhoneme === phoneme);
-    const needsSukun = doubleConsonant && (previousPhoneme !== phoneme);
+    const needsTashdeed = !isBeginningOfWord && doubleConsonant && (previousPhoneme === phoneme) && !phonemeInfo.matches?.includes(currentPLetter);
+    const needsSukun = doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter));
+    const sukunOrDiacritic = (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : "");
 
-    if (needsTashdeed) {
-        return addP(state, tashdeed);
-    }
+    // if it's not an exception (TODO)
+    // it must be one of the following 5 possibilities
 
+    // 1. beginning a word with a long vowel
     if (isBeginningOfWord && (phonemeInfo.longVowel && !phonemeInfo.endingOnly)) {
         if (phoneme !== "aa" && currentPLetter !== "ا" && !phonemeInfo.matches?.includes(nextPLetter)) {
             throw Error("phonetics error - needs alef prefix");
         }
-        const ns = advanceP(state);
-        const ns2 = phonemeInfo.diacritic ? addP(ns, phonemeInfo.diacritic) : ns;
-        return advanceP(ns2);
+        return pipe(
+            advanceP,
+            addP(phonemeInfo.diacritic),
+            advanceP,
+        )(state);
+    // 2. beginning a word with something else
     } else if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
-        const ns = advanceP(state);
-        return addP(ns, (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : ""));
+        return pipe(
+            advanceP,
+            addP(sukunOrDiacritic),
+        )(state);
+    // 3. double consonant to be marked with tashdeed
+    } else if (needsTashdeed) {
+        return addP(tashdeed)(state);
+    // 4. direct match of phoneme / P letter
     } else if (phonemeInfo.matches?.includes(currentPLetter)) {
-        const ns = addP(state, (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : ""));
-        return advanceP(ns);
+        return pipe(
+            addP(sukunOrDiacritic),
+            advanceP,
+        )(state);
+    // 5. just a diacritic for short vowel
+    } else if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
+        return pipe(
+            addP(phonemeInfo.diacritic),
+            advanceIfReachedEndingHamza,
+        )(state);
     }
 
-    if (phonemeInfo.diacritic) {
-        return addP(state, phonemeInfo.diacritic);
-    }
-
+    // anything that gets to this point is a failure/error
     // console.log(state);
     throw new Error("phonetics error");
 }
@@ -391,9 +410,16 @@ function advanceP(state: DiacriticsAccumulator, n: number = 1): DiacriticsAccumu
     }
 }
 
-function addP(state: DiacriticsAccumulator, toAdd: string): DiacriticsAccumulator {
+const addP = (toAdd: string | undefined) => (state: DiacriticsAccumulator): DiacriticsAccumulator => {
     return {
         ...state,
-        pOut: state.pOut + toAdd,
+        pOut: toAdd ? (state.pOut + toAdd) : state.pOut,
     };
+}
+
+function advanceIfReachedEndingHamza(state: DiacriticsAccumulator): DiacriticsAccumulator {
+    if (state.pIn[0] === "ه" && (!state.pIn[1] || state.pIn[1] === " ")) {
+        return advanceP(state);
+    }
+    return state;
 }
