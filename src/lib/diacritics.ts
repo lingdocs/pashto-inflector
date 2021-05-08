@@ -41,6 +41,7 @@ type PhonemeInfo = {
     takesSukunOnEnding?: true,
     longVowel?: true,
     canStartWithAynBefore?: true,
+    useEndingDiacritic?: true,
 }
 
 const phonemeTable: Record<Phoneme, PhonemeInfo> = {
@@ -211,6 +212,7 @@ const phonemeTable: Record<Phoneme, PhonemeInfo> = {
         longVowel: true,
         // alsoCanBePrefix: true,
         diacritic: pesh,
+        useEndingDiacritic: true,
     },
     "ey": {
         matches: ["ی"],
@@ -231,14 +233,13 @@ const phonemeTable: Record<Phoneme, PhonemeInfo> = {
     "a": {
         diacritic: zwar,
         endingMatches: ["ه"],
-        beginningMatches: ["ا"],
+        beginningMatches: ["ا", "ع"],
         // canComeAfterHeyEnding: true,
         // canBeFirstPartOfFathahanEnding: true,
     },
     "u": {
         diacritic: zwarakey,
         endingMatches: ["ه"],
-        // hamzaOnEnd: true,
     },
     "i": {
         diacritic: zer,
@@ -270,7 +271,7 @@ export function splitFIntoPhonemes(fIn: string): Phoneme[] {
     const trigraphs: Phoneme[] = ["eyy", "-i-", "-U-"];
     const digraphs: Phoneme[] = ["aa", "ee", "ey", "oo", "kh", "gh", "ts", "dz", "jz", "ch", "sh"];
     const endingDigraphs: Phoneme[] = ["uy"];
-    const willIgnore = ["?", " ", "`", ".", "…", ","];
+    const willIgnore = ["?", " ", "`", ".", "…", ",", "'"];
     
     const result: Phoneme[] = [];
     const f = removeAccents(fIn);
@@ -334,28 +335,27 @@ function processPhoneme(
     i: number,
     phonemes: Phoneme[],
 ) {
+    // console.log("PHONEME", phoneme);
+    // console.log("space coming up", acc.pIn[0] === " ");
+    // console.log("state", acc);
     // Prep state
     const state = acc.pIn[0] === " " ? advanceP(acc) : acc;
+    // console.log("AFTER SPACE PREP", phoneme);
+    // console.log("state", state);
     // WARNING: Do not use acc after this point!
 
-    const prevPLetter = last(state.pOut);
-    const currentPLetter = state.pIn[0];
-    const nextPLetter = state.pIn[1];
-    const isBeginningOfWord = state.pOut === "" || prevPLetter === " ";
-    // const isEndOfWord = !nextPLetter || nextPLetter === " ";
-    const phonemeInfo = phonemeTable[phoneme];
-    const previousPhoneme = i > 0 && phonemes[i-1];
-    const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
-    // const nextPhoneme = (phonemes.length > (i + 1)) && phonemes[i+1];
-    // const nextPhonemeInfo = nextPhoneme ? phonemeTable[nextPhoneme] : undefined;
-    const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
-    const needsTashdeed = !isBeginningOfWord && doubleConsonant && (previousPhoneme === phoneme) && !phonemeInfo.matches?.includes(currentPLetter);
-    const needsSukun = doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter));
-    const sukunOrDiacritic = (needsSukun ? sukun : phonemeInfo.diacritic ? phonemeInfo.diacritic : "");
+    const {
+        phonemeInfo,
+        isBeginningOfWord,
+        currentPLetter,
+        needsTashdeed,
+        sukunOrDiacritic,
+        nextPLetter,
+        isEndOfWord,
+    } = stateInfo({ state, i, phoneme, phonemes });
 
     // if it's not an exception (TODO)
     // it must be one of the following 5 possibilities
-
     // 1. beginning a word with a long vowel
     if (isBeginningOfWord && (phonemeInfo.longVowel && !phonemeInfo.endingOnly)) {
         if (phoneme !== "aa" && currentPLetter !== "ا" && !phonemeInfo.matches?.includes(nextPLetter)) {
@@ -371,28 +371,64 @@ function processPhoneme(
         return pipe(
             advanceP,
             addP(sukunOrDiacritic),
+            advanceForAin,
         )(state);
     // 3. double consonant to be marked with tashdeed
     } else if (needsTashdeed) {
-        return addP(tashdeed)(state);
-    // 4. direct match of phoneme / P letter
-    } else if (phonemeInfo.matches?.includes(currentPLetter)) {
+        return pipe(
+            addP(tashdeed)
+        )(state);
+    // 4. special ه ending
+    } else if (isEndOfWord && ((phoneme === "u" && currentPLetter === "ه") || (phoneme === "h" && ["ه", "ح"].includes(currentPLetter)))) {
+        return pipe(
+            advanceP,
+            addP(phoneme === "u" ? hamzaAbove : sukun),
+        )(state);
+    // 5. direct match of phoneme / P letter
+    } else if (phonemeInfo.matches?.includes(currentPLetter) || (isEndOfWord && phonemeInfo.endingMatches?.includes(currentPLetter)) || (phoneme === "m" && currentPLetter === "ن" && nextPLetter === "ب")) {
         return pipe(
             addP(sukunOrDiacritic),
             advanceP,
         )(state);
-    // 5. just a diacritic for short vowel
+    // 6. just a diacritic for short vowel
     } else if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
         return pipe(
+            advanceForHamzaMid,
             addP(phonemeInfo.diacritic),
-            advanceIfReachedEndingHamza,
+            advanceForAinOrHamza,
         )(state);
     }
-
     // anything that gets to this point is a failure/error
-    // console.log(state);
     throw new Error("phonetics error");
 }
+
+
+
+function stateInfo({ state, i, phonemes, phoneme }: {
+    state: DiacriticsAccumulator,
+    i: number,
+    phonemes: Phoneme[],
+    phoneme: Phoneme,
+}) {
+    const prevPLetter = last(state.pOut);
+    const currentPLetter = state.pIn[0];
+    const nextPLetter = state.pIn[1];
+    const isBeginningOfWord = state.pOut === "" || prevPLetter === " ";
+    const isEndOfWord = !nextPLetter || nextPLetter === " ";
+    const phonemeInfo = phonemeTable[phoneme];
+    const previousPhoneme = i > 0 && phonemes[i-1];
+    const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
+    // const nextPhoneme = (phonemes.length > (i + 1)) && phonemes[i+1];
+    // const nextPhonemeInfo = nextPhoneme ? phonemeTable[nextPhoneme] : undefined;
+    const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
+    const needsTashdeed = !isBeginningOfWord && doubleConsonant && (previousPhoneme === phoneme) && !phonemeInfo.matches?.includes(currentPLetter);
+    const needsSukun = doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter));
+    const diacritic = isEndOfWord ? ((!phonemeInfo.longVowel || phonemeInfo.useEndingDiacritic) ? phonemeInfo.diacritic : undefined) : phonemeInfo.diacritic;
+    const sukunOrDiacritic = (needsSukun ? sukun : diacritic);
+    return {
+        phonemeInfo, isBeginningOfWord, currentPLetter, needsTashdeed, sukunOrDiacritic, nextPLetter, isEndOfWord,
+    };
+};
 
 /**
  * returns the last character of a string
@@ -417,8 +453,31 @@ const addP = (toAdd: string | undefined) => (state: DiacriticsAccumulator): Diac
     };
 }
 
-function advanceIfReachedEndingHamza(state: DiacriticsAccumulator): DiacriticsAccumulator {
-    if (state.pIn[0] === "ه" && (!state.pIn[1] || state.pIn[1] === " ")) {
+function getCurrentNext(state: DiacriticsAccumulator): { current: string, next: string} {
+    return {
+        current: state.pIn[0],
+        next: state.pIn[1],
+    };
+}
+
+function advanceForAin(state: DiacriticsAccumulator): DiacriticsAccumulator {
+    const { current } = getCurrentNext(state);
+    return (current === "ع") ? advanceP(state) : state;
+}
+
+function advanceForHamzaMid(state: DiacriticsAccumulator): DiacriticsAccumulator {
+    const { current, next } = getCurrentNext(state);
+    if (current === "ئ" && next && next !== "ئ") {
+        return advanceP(state);
+    }
+    return state;
+}
+function advanceForAinOrHamza(state: DiacriticsAccumulator): DiacriticsAccumulator {
+    const { current, next } = getCurrentNext(state);
+    if (current === "ه" && (!next || next === " ")) {
+        return advanceP(state);
+    }
+    if (current === "ع") {
         return advanceP(state);
     }
     return state;

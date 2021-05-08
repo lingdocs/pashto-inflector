@@ -242,6 +242,196 @@ const diacriticsTest: Array<{
         },
         out: "لِیک",
     },
+    {
+        in: {
+            p: "رغېدل",
+            f: "raghedul",
+        },
+        out: "رَغېد" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "کارول",
+            f: "kaarawul",
+        },
+        out: "کارَو" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "پېښېدل",
+            f: "pexedul",
+        },
+        out: "پېښېد" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "مین",
+            f: "mayín",
+        },
+        out: "مَیِن",
+    },
+    {
+        in: {
+            p: "سړی",
+            f: "saRey",
+        },
+        out: "سَړی",
+    },
+    {
+        in: {
+            p: "سړي",
+            f: "saRee",
+        },
+        out: "سَړي",
+    },
+    {
+        in: {
+            p: "زه",
+            f: "zu",
+        },
+        out: "زهٔ",
+    },
+    {
+        in: {
+            p: "زه",
+            f: "za",
+        },
+        out: "زَه",
+    },
+    {
+        in: {
+            p: "پېشنهاد",
+            f: "peshniháad",
+        },
+        out: "پېشْنِهاد",
+    },
+    {
+        in: {
+            p: "ایستل",
+            f: "eestul",
+        },
+        out: "اِیسْت" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "ایستل",
+            f: "eystul",
+        },
+        out: "ایسْت" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "اېسېدل",
+            f: "esedul",
+        },
+        out: "اېسېد" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "اوسېدل",
+            f: "osedul",
+        },
+        out: "اوسېد" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "اواز",
+            f: "awaaz",
+        },
+        out: "اَواز",
+    },
+    {
+        in: {
+            p: "اسلام",
+            f: "islaam",
+        },
+        out: "اِسْلام",
+    },
+    {
+        in: {
+            p: "واردول",
+            f: "waaridawul",
+        },
+        out: "وارِدَو" + zwarakey + "ل",
+    },
+    {
+        in: {
+            p: "غاړه",
+            f: "ghaaRa",
+        },
+        out: "غاړَه",
+    },
+    {
+        in: {
+            p: "اوتر",
+            f: "awtár",
+        },
+        out: "اَوْتَر",
+    },
+    {
+        in: {
+            p: "اختیار",
+            f: "ikhtiyáar",
+        },
+        out: "اِخْتِیار",
+    },
+    {
+        in: {
+            p: "فریاد",
+            f: "faryáad",
+        },
+        out: "فَرْیاد",
+    },
+    {
+        in: {
+            p: "کارغه",
+            f: "kaarghu",
+        },
+        out: "کارْغهٔ",
+    },
+    {
+        in: {
+            p: "بې کار",
+            f: "be kaar",
+        },
+        out: "بې کار",
+    },
+    {
+        in: {
+            p: "بې کار",
+            f: "bekaar",
+        },
+        out: "بې کار",
+    },
+    // TODO: nb mb thing
+    {
+        in: {
+            p: "انبار",
+            f: "ambáar",
+        },
+        out: "اَنْبار",
+    },
+    {
+        in: {
+            p: "ارغون",
+            f: "arghóon",
+        },
+        out: "اَرْغُون",
+    },
+    {
+        in: {
+            p: "ارمټه",
+            f: "armaTa",
+        },
+        out: "اَرْمَټَه",
+    },
+    {
+        in: {
+            p: "اروا پوه",
+            f: "arwaa poh",
+        },
+        out: "اَرْوا پوهْ",
+    },
     // starting alefs
     {
         in: {
@@ -295,21 +485,28 @@ const diacriticsTest: Array<{
         },
         out: "پَرْمَخْتْیا",
     },
-    // {
-    //     in: {
-    //         p: "پته",
-    //         f: "patta",
-    //     },
-    //     out: "پَتّه",
-    // },
+    {
+        in: {
+            p: "پته",
+            f: "patta",
+        },
+        out: "پَتَّه",
+    },
+    {
+        in: {
+            p: "پته تور",
+            f: "patta toor",
+        },
+        out: "پَتَّه تُور",      
+    },
     // get ayn stuff working
-    // {
-    //     in: {
-    //         p: "اعتصاب شکن",
-    //         f: "itisaabshikan",
-    //     },
-    //     out: "اِعتِصاب شِکَن",
-    // },
+    {
+        in: {
+            p: "اعتصاب شکن",
+            f: "itisaab shakan",
+        },
+        out: "اِعتِصاب شَکَن",
+    },
     // avoid false double consonant
     {
         in: {
@@ -317,6 +514,36 @@ const diacriticsTest: Array<{
             f: "azalléek",
         },
         out: "اَزَل لِیک",
+    },
+    // starting with ع
+    {
+        in: {
+            p: "عزت",
+            f: "izzat",
+        },
+        out: "عِزَّت",
+    },
+    {
+        in: {
+            p: "عزت",
+            f: "i'zzat",
+        },
+        out: "عِزَّت",
+    },
+    // ئ in the middle
+    {
+        in: {
+            p: "برائت",
+            f: "baraa'at",
+        },
+        out: "بَرائَت",
+    },
+    {
+        in: {
+            p: "فائده",
+            f: "faaida",
+        },
+        out: "فائِدَه",
     },
 ];
 
@@ -327,8 +554,9 @@ phonemeSplits.forEach((s) => {
     });
 });
 
-test("adding diacritics should work", () => {
-    diacriticsTest.forEach((t) => {
+
+diacriticsTest.forEach((t) => {
+    test(`diacritics should work for ${t.in.p} - ${t.in.f}`, () => {
         expect(addDiacritics(t.in)).toEqual({ p: t.out, f: t.in.f });
     });
 });
