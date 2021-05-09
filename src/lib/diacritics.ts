@@ -329,6 +329,15 @@ export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsSt
     };
 }
 
+enum PhonemeStatus {
+    LeadingLongVowel,
+    LeadingConsonantOrShortVowel,
+    DoubleConsonantTashdeed,
+    EndingWithHeyHim,
+    DirectMatch,
+    ShortVowel,
+}
+
 function processPhoneme(
     acc: DiacriticsAccumulator,
     phoneme: Phoneme,
@@ -346,63 +355,45 @@ function processPhoneme(
 
     const {
         phonemeInfo,
-        isBeginningOfWord,
-        currentPLetter,
-        needsTashdeed,
         sukunOrDiacritic,
-        nextPLetter,
-        isEndOfWord,
+        phonemeState,
     } = stateInfo({ state, i, phoneme, phonemes });
 
-    // if it's not an exception (TODO)
-    // it must be one of the following 5 possibilities
-    // 1. beginning a word with a long vowel
-    if (isBeginningOfWord && (phonemeInfo.longVowel && !phonemeInfo.endingOnly)) {
-        if (phoneme !== "aa" && currentPLetter !== "ا" && !phonemeInfo.matches?.includes(nextPLetter)) {
-            throw Error("phonetics error - needs alef prefix");
-        }
-        return pipe(
-            advanceP,
-            addP(phonemeInfo.diacritic),
-            advanceP,
-        )(state);
-    // 2. beginning a word with something else
-    } else if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
-        return pipe(
-            advanceP,
-            addP(sukunOrDiacritic),
-            advanceForAin,
-        )(state);
-    // 3. double consonant to be marked with tashdeed
-    } else if (needsTashdeed) {
-        return pipe(
-            addP(tashdeed)
-        )(state);
-    // 4. special ه ending
-    } else if (isEndOfWord && ((phoneme === "u" && currentPLetter === "ه") || (phoneme === "h" && ["ه", "ح"].includes(currentPLetter)))) {
-        return pipe(
-            advanceP,
-            addP(phoneme === "u" ? hamzaAbove : sukun),
-        )(state);
-    // 5. direct match of phoneme / P letter
-    } else if (phonemeInfo.matches?.includes(currentPLetter) || (isEndOfWord && phonemeInfo.endingMatches?.includes(currentPLetter)) || (phoneme === "m" && currentPLetter === "ن" && nextPLetter === "ب")) {
-        return pipe(
-            addP(sukunOrDiacritic),
-            advanceP,
-        )(state);
-    // 6. just a diacritic for short vowel
-    } else if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
-        return pipe(
-            advanceForHamzaMid,
-            addP(phonemeInfo.diacritic),
-            advanceForAinOrHamza,
-        )(state);
-    }
-    // anything that gets to this point is a failure/error
-    throw new Error("phonetics error");
+    const p = phonemeState
+
+    return (p === PhonemeStatus.LeadingLongVowel) ?
+            pipe(
+                advanceP,
+                addP(phonemeInfo.diacritic),
+                advanceP,
+            )(state)
+        : (p === PhonemeStatus.LeadingConsonantOrShortVowel) ?
+            pipe(
+                advanceP,
+                addP(sukunOrDiacritic),
+                advanceForAin,
+            )(state)
+        : (p === PhonemeStatus.DoubleConsonantTashdeed) ?
+            pipe(
+                addP(tashdeed)
+            )(state)
+        : (p === PhonemeStatus.EndingWithHeyHim) ?
+            pipe(
+                advanceP,
+                addP(phoneme === "u" ? hamzaAbove : sukun),
+            )(state)
+        : (p === PhonemeStatus.DirectMatch) ?
+            pipe(
+                addP(sukunOrDiacritic),
+                advanceP,
+            )(state)
+        : // p === PhonemeState.ShortVowel
+            pipe(
+                advanceForHamzaMid,
+                addP(phonemeInfo.diacritic),
+                advanceForAinOrHamza,
+            )(state);
 }
-
-
 
 function stateInfo({ state, i, phonemes, phoneme }: {
     state: DiacriticsAccumulator,
@@ -425,8 +416,36 @@ function stateInfo({ state, i, phonemes, phoneme }: {
     const needsSukun = doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter));
     const diacritic = isEndOfWord ? ((!phonemeInfo.longVowel || phonemeInfo.useEndingDiacritic) ? phonemeInfo.diacritic : undefined) : phonemeInfo.diacritic;
     const sukunOrDiacritic = (needsSukun ? sukun : diacritic);
+
+    function getPhonemeState(): PhonemeStatus {
+        if (isBeginningOfWord && (phonemeInfo.longVowel && !phonemeInfo.endingOnly)) {
+            if (phoneme !== "aa" && currentPLetter !== "ا" && !phonemeInfo.matches?.includes(nextPLetter)) {
+                throw Error("phonetics error - needs alef prefix");
+            }
+            return PhonemeStatus.LeadingLongVowel;
+        }
+        if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
+            return PhonemeStatus.LeadingConsonantOrShortVowel;
+        }
+        if (needsTashdeed) {
+            return PhonemeStatus.DoubleConsonantTashdeed;
+        }
+        if (isEndOfWord && ((phoneme === "u" && currentPLetter === "ه") || (phoneme === "h" && ["ه", "ح"].includes(currentPLetter)))) {
+            return PhonemeStatus.EndingWithHeyHim;
+        }
+        if ((phonemeInfo.matches?.includes(currentPLetter) || (isEndOfWord && phonemeInfo.endingMatches?.includes(currentPLetter)) || (phoneme === "m" && currentPLetter === "ن" && nextPLetter === "ب"))) {
+            return PhonemeStatus.DirectMatch;
+        }
+        if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
+            return PhonemeStatus.ShortVowel;
+        }
+        throw new Error("phonetics error - no status found for phoneme: " + phoneme);
+    }
+
+    const phonemeState = getPhonemeState();
+
     return {
-        phonemeInfo, isBeginningOfWord, currentPLetter, needsTashdeed, sukunOrDiacritic, nextPLetter, isEndOfWord,
+        phonemeState, phonemeInfo, sukunOrDiacritic,
     };
 };
 
