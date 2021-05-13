@@ -257,6 +257,22 @@ const phonemeTable: Record<Phoneme, PhonemeInfo> = {
 }
 
 /**
+ * Adds diacritics to a given PsString.
+ * Errors if the phonetics and script don't line up.
+ */
+ export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsString {
+    const phonemes: Phoneme[] = splitFIntoPhonemes(!ignoreCommas ? firstPhonetics(f) : f);
+    const { pIn, pOut } = phonemes.reduce(processPhoneme, { pOut: "", pIn: p });
+    if (pIn !== "") {
+        throw new Error("phonetics error - phonetics shorter than pashto script");
+    }
+    return {
+        p: pOut,
+        f,
+    };
+}
+
+/**
  * splits a phonetics string into an array of Phonemes
  * 
  * will error if there is an illeagal phonetics character
@@ -311,24 +327,6 @@ export function splitFIntoPhonemes(fIn: string): Phoneme[] {
     return result;
 }
 
-/**
- * Adds diacritics to a given PsString.
- * Errors if the phonetics and script don't line up.
- * 
- * @param ps a PsSTring without phonetics
- */
-export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsString {
-    const phonemes: Phoneme[] = splitFIntoPhonemes(!ignoreCommas ? firstPhonetics(f) : f);
-    const { pIn, pOut } = phonemes.reduce(processPhoneme, { pOut: "", pIn: p });
-    if (pIn !== "") {
-        throw new Error("phonetics error - phonetics shorter than pashto script");
-    }
-    return {
-        p: pOut,
-        f,
-    };
-}
-
 enum PhonemeStatus {
     LeadingLongVowel,
     LeadingConsonantOrShortVowel,
@@ -336,6 +334,9 @@ enum PhonemeStatus {
     EndingWithHeyHim,
     DirectMatch,
     ShortVowel,
+    PersianSilentWWithAa,
+    ArabicWasla,
+    Izafe,
 }
 
 function processPhoneme(
@@ -356,38 +357,57 @@ function processPhoneme(
     const {
         phonemeInfo,
         sukunOrDiacritic,
-        phonemeState,
+        phs,
     } = stateInfo({ state, i, phoneme, phonemes });
 
-    const p = phonemeState
-
-    return (p === PhonemeStatus.LeadingLongVowel) ?
+    return (phs === PhonemeStatus.LeadingLongVowel) ?
             pipe(
                 advanceP,
                 addP(phonemeInfo.diacritic),
                 advanceP,
             )(state)
-        : (p === PhonemeStatus.LeadingConsonantOrShortVowel) ?
+        : (phs === PhonemeStatus.LeadingConsonantOrShortVowel) ?
             pipe(
                 advanceP,
                 addP(sukunOrDiacritic),
                 advanceForAin,
             )(state)
-        : (p === PhonemeStatus.DoubleConsonantTashdeed) ?
+        : (phs === PhonemeStatus.DoubleConsonantTashdeed) ?
             pipe(
                 addP(tashdeed)
             )(state)
-        : (p === PhonemeStatus.EndingWithHeyHim) ?
+        : (phs === PhonemeStatus.EndingWithHeyHim) ?
             pipe(
                 advanceP,
                 addP(phoneme === "u" ? hamzaAbove : sukun),
             )(state)
-        : (p === PhonemeStatus.DirectMatch) ?
+        : (phs === PhonemeStatus.DirectMatch) ?
             pipe(
                 addP(sukunOrDiacritic),
                 advanceP,
             )(state)
-        : // p === PhonemeState.ShortVowel
+        : (phs === PhonemeStatus.PersianSilentWWithAa) ?
+            pipe(
+                addP("("),
+                advanceP,
+                addP(")"),
+                advanceP,
+            )(state)
+        : (phs === PhonemeStatus.ArabicWasla) ?
+            pipe(
+                addP(zer),
+                overwriteP(wasla),
+            )(state)
+        : (phs === PhonemeStatus.Izafe) ?
+            (console.log(pipe(
+                reverseP,
+                addP(zer),
+            )(state), phoneme), pipe(
+                reverseP,
+                addP(zer),
+            )(state))
+        :
+        // phs === PhonemeState.ShortVowel
             pipe(
                 advanceForHamzaMid,
                 addP(phonemeInfo.diacritic),
@@ -427,6 +447,15 @@ function stateInfo({ state, i, phonemes, phoneme }: {
         if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
             return PhonemeStatus.LeadingConsonantOrShortVowel;
         }
+        if (!isBeginningOfWord && phoneme === "aa" && currentPLetter === "و" && nextPLetter === "ا") {
+            return PhonemeStatus.PersianSilentWWithAa;
+        }
+        if (!isBeginningOfWord && phoneme === "i" && currentPLetter === "ا" && nextPLetter === "ل") {
+            return PhonemeStatus.ArabicWasla;
+        }
+        if (phoneme === "-i-" && isBeginningOfWord) {
+            return PhonemeStatus.Izafe;
+        } 
         if (needsTashdeed) {
             return PhonemeStatus.DoubleConsonantTashdeed;
         }
@@ -442,10 +471,10 @@ function stateInfo({ state, i, phonemes, phoneme }: {
         throw new Error("phonetics error - no status found for phoneme: " + phoneme);
     }
 
-    const phonemeState = getPhonemeState();
+    const phs = getPhonemeState();
 
     return {
-        phonemeState, phonemeInfo, sukunOrDiacritic,
+        phs, phonemeInfo, sukunOrDiacritic,
     };
 };
 
@@ -460,9 +489,16 @@ function last(s: string) {
 
 function advanceP(state: DiacriticsAccumulator, n: number = 1): DiacriticsAccumulator {
     return {
-        pOut: state.pOut + state.pIn.slice(0, n),
         pIn: state.pIn.slice(n),
-    }
+        pOut: state.pOut + state.pIn.slice(0, n),
+    };
+}
+
+function reverseP(state: DiacriticsAccumulator): DiacriticsAccumulator {
+    return {
+        pIn: state.pIn + state.pOut.slice(-1),
+        pOut: state.pOut.slice(0, -1),
+    };
 }
 
 const addP = (toAdd: string | undefined) => (state: DiacriticsAccumulator): DiacriticsAccumulator => {
@@ -470,7 +506,14 @@ const addP = (toAdd: string | undefined) => (state: DiacriticsAccumulator): Diac
         ...state,
         pOut: toAdd ? (state.pOut + toAdd) : state.pOut,
     };
-}
+};
+
+const overwriteP = (toWrite: string) => (state: DiacriticsAccumulator): DiacriticsAccumulator => {
+    return {
+        pIn: state.pIn.slice(1),
+        pOut: state.pOut + toWrite,
+    };
+};
 
 function getCurrentNext(state: DiacriticsAccumulator): { current: string, next: string} {
     return {

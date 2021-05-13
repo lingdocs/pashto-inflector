@@ -545,6 +545,30 @@ const diacriticsTest: Array<{
         },
         out: "فائِدَه",
     },
+    // واخ being khaa in the middle of a word
+    {
+        in: {
+            p: "استخوان",
+            f: "UstUkháan",
+        },
+        out: "اُسْتُخ(و)ان",
+    },
+    // Arabic wasla
+    {
+        in: {
+            p: "بالکل",
+            f: "bilkUl",
+        },
+        out: "بِٱلْکُل",
+    },
+    // izafe
+    {
+        in: {
+            p: "ایصال ثواب",
+            f: "eesaal-i-sawaab",
+        },
+        out: "اِیصالِ ثَواب",
+    },
 ];
 
 phonemeSplits.forEach((s) => {
