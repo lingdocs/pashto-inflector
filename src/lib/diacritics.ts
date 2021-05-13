@@ -399,13 +399,10 @@ function processPhoneme(
                 overwriteP(wasla),
             )(state)
         : (phs === PhonemeStatus.Izafe) ?
-            (console.log(pipe(
+            pipe(
                 reverseP,
                 addP(zer),
-            )(state), phoneme), pipe(
-                reverseP,
-                addP(zer),
-            )(state))
+            )(state)
         :
         // phs === PhonemeState.ShortVowel
             pipe(
@@ -496,7 +493,7 @@ function advanceP(state: DiacriticsAccumulator, n: number = 1): DiacriticsAccumu
 
 function reverseP(state: DiacriticsAccumulator): DiacriticsAccumulator {
     return {
-        pIn: state.pIn + state.pOut.slice(-1),
+        pIn: state.pOut.slice(-1) + state.pIn,
         pOut: state.pOut.slice(0, -1),
     };
 }
