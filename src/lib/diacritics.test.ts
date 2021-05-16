@@ -587,13 +587,13 @@ const diacriticsSections: {
                 },
                 out: "د" + zwarakey + " لاس",
             },
-            // {
-            //     in: {
-            //         p: "د ... په شان",
-            //         f: "du ... pu shaan",
-            //     },
-            //     out: "د" + zwarakey + "... پهٔ شان",
-            // },
+            {
+                in: {
+                    p: "د ... په شان",
+                    f: "du ... pu shaan",
+                },
+                out: "د" + zwarakey + " ... پهٔ شان",
+            },
         ],
     },
 ];
@@ -601,16 +601,14 @@ const diacriticsSections: {
 diacriticsSections.forEach((section) => {
     describe(section.describe, () => {
         section.tests.forEach((t) => {
-            if (section.describe === "special behaviour with د") {
-                if (t.out) {
-                    test(`diacritics should work for ${t.in.p} - ${t.in.f}`, () => {
-                        expect(addDiacritics(t.in)).toEqual({ p: t.out, f: t.in.f });
-                    });
-                } else {
-                    expect(() => {
-                        expect(addDiacritics(t.in)).toThrowError();
-                    });
-                }
+            if (t.out) {
+                test(`diacritics should work for ${t.in.p} - ${t.in.f}`, () => {
+                    expect(addDiacritics(t.in)).toEqual({ p: t.out, f: t.in.f });
+                });
+            } else {
+                expect(() => {
+                    expect(addDiacritics(t.in)).toThrowError();
+                });
             }
         });
     });

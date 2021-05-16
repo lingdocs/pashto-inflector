@@ -21,7 +21,7 @@ import {
     wasla,
     daggerAlif,
     fathahan,
-    prev2Chars,
+    lastNonWhitespace,
     addP,
     last,
     advanceP,
@@ -75,7 +75,10 @@ function processPhoneme(
     // console.log("space coming up", acc.pIn[0] === " ");
     // console.log("state", acc);
     // Prep state
-    const state = acc.pIn[0] === " "
+    // TODO: CLEANER function jump to next char
+    const state = acc.pIn.slice(0, 5) === " ... "
+        ? advanceP(acc, 5)
+        : acc.pIn[0] === " "
         ? advanceP(acc)
         : acc;
     // console.log("AFTER SPACE PREP", phoneme);
@@ -132,10 +135,10 @@ function processPhoneme(
                 addP(zer),
             )(state)
         : (phs === PhonemeStatus.EndOfDuParticle) ?
-            (console.log("here"), pipe(
+            pipe(
                 reverseP,
                 addP(zwarakey),
-            )(state))
+            )(state)
         :
         // phs === PhonemeState.ShortVowel
             pipe(
@@ -177,9 +180,12 @@ function stateInfo({ state, i, phonemes, phoneme }: {
         if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
             return PhonemeStatus.LeadingConsonantOrShortVowel;
         }
-        console.log(phoneme, phonemes, prev2Chars(state.pOut))
-        if (isBeginningOfWord && phoneme === "u" && prevPLetter === " " && prev2Chars(state.pOut) === ("د" + zwarakey)) {
-            // console.log("du here", phoneme, phonemes);
+        // console.log("------");
+        // console.log("phoneme", phoneme);
+        // console.log("state", state);
+        // console.log("prevPLetter is space", prevPLetter === " ");
+        // console.log("------");
+        if (isBeginningOfWord && phoneme === "u" && prevPLetter === " " && lastNonWhitespace(state.pOut) === "د") {
             return PhonemeStatus.EndOfDuParticle
         }
         if (!isBeginningOfWord && phoneme === "aa" && currentPLetter === "و" && nextPLetter === "ا") {

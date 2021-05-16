@@ -353,19 +353,16 @@ export const overwriteP = (toWrite: string) => (state: DiacriticsAccumulator): D
 };
 
 /**
- * returns the last two character in a string that was not a space or a dote
+ * returns the last letter before any whitespace (" " / ".")
  * 
  * @param s 
  * @returns 
  */
-export function prev2Chars(s: string): string {
-    // console.log("looking at pOut", s);
+export function lastNonWhitespace(s: string): string {
     const reversed = [...s].reverse();
-    // console.log(reversed.join("-"));
     const lastIndex = reversed.findIndex((c) => ![" ", "."].includes(c));
-    const last2 = reversed[lastIndex + 1] + reversed[lastIndex];
-    // console.log("last2", last2);
-    return last2;
+    const penultimateChar = reversed[lastIndex];
+    return penultimateChar;
 }
 
 export function getCurrentNext(state: DiacriticsAccumulator): { current: string, next: string} {

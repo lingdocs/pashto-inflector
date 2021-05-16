@@ -2,7 +2,7 @@ import {
     splitFIntoPhonemes,
     last,
     addP,
-    prev2Chars,
+    lastNonWhitespace,
     advanceP,
     reverseP,
     overwriteP,
@@ -97,8 +97,32 @@ test("addP should work", () => {
     });
 });
 
-test("prev2Chars should work", () => {
-    expect(prev2Chars("تورن")).toBe("رن");
-    expect(prev2Chars("وست .. ")).toBe("ست");
-    expect(prev2Chars("دَ ... ")).toBe("دَ");
+test("lastNonWhiteSpace should work", () => {
+    expect(lastNonWhitespace("تورن")).toBe("ن");
+    expect(lastNonWhitespace("وست .. ")).toBe("ت");
+    expect(lastNonWhitespace("د ... ")).toBe("د");
 });
+
+test("reverseP should work", () => {
+    expect(reverseP({
+        pIn: "کور",
+        pOut: "تور ",
+    })).toEqual({
+        pIn: " کور",
+        pOut: "تور",
+    });
+    expect(reverseP({
+        pIn: "کور",
+        pOut: "تور ... ",
+    })).toEqual({
+        pIn: " ... کور",
+        pOut: "تور",
+    });
+    expect(reverseP({
+        pIn: "کور",
+        pOut: "تور . ",
+    })).toEqual({
+        pIn: " . کور",
+        pOut: "تور",
+    });
+})
