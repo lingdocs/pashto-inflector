@@ -58,11 +58,15 @@ enum PhonemeStatus {
     DoubleConsonantTashdeed,
     EndingWithHeyHim,
     DirectMatch,
+    DirectMatchAfterSukun,
+    EndingWithHeyHimFromSukun,
     ShortVowel,
     PersianSilentWWithAa,
     ArabicWasla,
     Izafe,
     EndOfDuParticle,
+    HaEndingWithHeem,
+    AlefDaggarEnding,
 }
 
 function processPhoneme(
@@ -87,8 +91,9 @@ function processPhoneme(
 
     const {
         phonemeInfo,
-        sukunOrDiacritic,
+        diacritic,
         phs,
+        prevPLetter,
     } = stateInfo({ state, i, phoneme, phonemes });
 
     return (phs === PhonemeStatus.LeadingLongVowel) ?
@@ -100,7 +105,7 @@ function processPhoneme(
         : (phs === PhonemeStatus.LeadingConsonantOrShortVowel) ?
             pipe(
                 advanceP,
-                addP(sukunOrDiacritic),
+                addP(diacritic),
                 advanceForAin,
             )(state)
         : (phs === PhonemeStatus.DoubleConsonantTashdeed) ?
@@ -114,7 +119,12 @@ function processPhoneme(
             )(state)
         : (phs === PhonemeStatus.DirectMatch) ?
             pipe(
-                addP(sukunOrDiacritic),
+                addP(diacritic),
+                advanceP,
+            )(state)
+        : (phs === PhonemeStatus.DirectMatchAfterSukun) ?
+            pipe(
+                addP(sukun),
                 advanceP,
             )(state)
         : (phs === PhonemeStatus.PersianSilentWWithAa) ?
@@ -138,6 +148,21 @@ function processPhoneme(
             pipe(
                 reverseP,
                 addP(zwarakey),
+            )(state)
+        : (phs === PhonemeStatus.HaEndingWithHeem) ?
+            pipe(
+                prevPLetter === " " ? reverseP : (s: any) => s,
+                addP(zwar),
+            )(state)
+        : (phs === PhonemeStatus.EndingWithHeyHimFromSukun) ?
+            pipe(
+                addP(sukun),
+                advanceP,
+            )(state)
+        : (phs === PhonemeStatus.AlefDaggarEnding) ?
+            pipe(
+                advanceP,
+                advanceP,
             )(state)
         :
         // phs === PhonemeState.ShortVowel
@@ -168,7 +193,6 @@ function stateInfo({ state, i, phonemes, phoneme }: {
     const needsTashdeed = !isBeginningOfWord && doubleConsonant && (previousPhoneme === phoneme) && !phonemeInfo.matches?.includes(currentPLetter);
     const needsSukun = doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter));
     const diacritic = isEndOfWord ? ((!phonemeInfo.longVowel || phonemeInfo.useEndingDiacritic) ? phonemeInfo.diacritic : undefined) : phonemeInfo.diacritic;
-    const sukunOrDiacritic = (needsSukun ? sukun : diacritic);
 
     function getPhonemeState(): PhonemeStatus {
         if (isBeginningOfWord && (phonemeInfo.longVowel && !phonemeInfo.endingOnly)) {
@@ -200,11 +224,17 @@ function stateInfo({ state, i, phonemes, phoneme }: {
         if (needsTashdeed) {
             return PhonemeStatus.DoubleConsonantTashdeed;
         }
+        if (phoneme === "aa" && currentPLetter === "ی" && nextPLetter === daggerAlif) {
+            return PhonemeStatus.AlefDaggarEnding;
+        }
+        if (((isEndOfWord && prevPLetter === "ح") || (prevPLetter === " " && state.pOut[state.pOut.length - 2])) && phoneme === "a") {
+            return PhonemeStatus.HaEndingWithHeem;
+        }
         if (isEndOfWord && ((phoneme === "u" && currentPLetter === "ه") || (phoneme === "h" && ["ه", "ح"].includes(currentPLetter)))) {
-            return PhonemeStatus.EndingWithHeyHim;
+            return needsSukun ? PhonemeStatus.EndingWithHeyHimFromSukun : PhonemeStatus.EndingWithHeyHim;
         }
         if ((phonemeInfo.matches?.includes(currentPLetter) || (isEndOfWord && phonemeInfo.endingMatches?.includes(currentPLetter)) || (phoneme === "m" && currentPLetter === "ن" && nextPLetter === "ب"))) {
-            return PhonemeStatus.DirectMatch;
+            return needsSukun ? PhonemeStatus.DirectMatchAfterSukun : PhonemeStatus.DirectMatch;
         }
         if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
             return PhonemeStatus.ShortVowel;
@@ -216,6 +246,6 @@ function stateInfo({ state, i, phonemes, phoneme }: {
     const phs = getPhonemeState();
 
     return {
-        phs, phonemeInfo, sukunOrDiacritic,
+        phs, phonemeInfo, diacritic, prevPLetter,
     };
 };

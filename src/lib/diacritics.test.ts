@@ -103,6 +103,13 @@ const diacriticsSections: {
                 },
                 out: "تَشْناب",
             },
+            {
+                in: {
+                    p: "پسته",
+                    f: "pasta",
+                },
+                out: "پَسْتَه",
+            },
             // working with وs
             {
                 in: {
@@ -498,6 +505,14 @@ const diacriticsSections: {
                 },
                 out: "عِزَّت",
             },
+            // middle ع
+            {
+                in: {
+                    p: "معنا",
+                    f: "ma'anaa",
+                },
+                out: "مَعَنا",
+            },
             // ending with ayn
             {
                 in: {
@@ -596,6 +611,58 @@ const diacriticsSections: {
             },
         ],
     },
+    {
+        describe: "ha ending with ح",
+        tests: [
+            {
+                in: {
+                    p: "ذبح",
+                    f: "zabha",
+                },
+                out: "ذَبْحَ",
+            },
+            {
+                in: {
+                    p: "ذبح کول",
+                    f: "zabha kawul",
+                },
+                out: "ذَبْحَ کَو" + zwarakey + "ل",
+            },
+        ],
+    },
+    {
+        describe: "require dagger alif on words ending with یٰ",
+        tests: [
+            {
+                in: {
+                    p: "یحیی",
+                    f: "yahyaa",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "یحییٰ",
+                    f: "yahyaa",
+                },
+                out: "یَحْییٰ",
+            },
+            {
+                in: {
+                    p: "یحییٰ چېرته",
+                    f: "yahyaa cherta",
+                },
+                out: "یَحْییٰ چېرْتَه",
+            },
+            {
+                in: {
+                    p: "معنیٰ",
+                    f: "ma'anaa",
+                },
+                out: "مَعَنیٰ",
+            },
+        ],
+    }
 ];
 
 diacriticsSections.forEach((section) => {
@@ -627,23 +694,23 @@ const brokenDiacritics = [
     },
 ];
 
-// test("ending with left over Pashto script will throw an error", () => {
-//     expect(() => {
-//         addDiacritics({ p: "کور ته", f: "kor" });
-//     }).toThrow(`phonetics error - phonetics shorter than pashto script`);
-// });
+test("ending with left over Pashto script will throw an error", () => {
+    expect(() => {
+        addDiacritics({ p: "کور ته", f: "kor" });
+    }).toThrow(`phonetics error - phonetics shorter than pashto script`);
+});
 
-// test("ending with left over phonetics will throw an error", () => {
-//     expect(() => {
-//         addDiacritics({ p: "کار", f: "kaar kawul" });
-//     }).toThrow();
-// });
+test("ending with left over phonetics will throw an error", () => {
+    expect(() => {
+        addDiacritics({ p: "کار", f: "kaar kawul" });
+    }).toThrow();
+});
 
-// test("adding diacritics errors when phonetecs and pashto do not line up", () => {
-//     brokenDiacritics.forEach((t) => {
-//         expect(() => {
-//             addDiacritics(t);
-//         }).toThrow();
-//     });
-// });
+test("adding diacritics errors when phonetecs and pashto do not line up", () => {
+    brokenDiacritics.forEach((t) => {
+        expect(() => {
+            addDiacritics(t);
+        }).toThrow();
+    });
+});
 
