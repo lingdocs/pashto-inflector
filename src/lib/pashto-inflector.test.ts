@@ -189,6 +189,30 @@ const adjectives: Array<{
         },
         out: false,
     },
+    // double adjective
+    {
+        in: {
+            ts: 123,
+            p: "ګډ وډ",
+            f: "guD wuD",
+            g: "guDwuD",
+            e: "mixed up",
+            c: "adj. doub.",
+            i: 1,
+        },
+        out: {
+            masc: [
+                [{ p: "ګډ وډ", f: "guD wuD" }],
+                [{ p: "ګډ وډ", f: "guD wuD" }],
+                [{ p: "ګډو وډو", f: "guDo wuDo" }],
+            ],
+            fem: [
+                [{ p: "ګډه وډه", f: "guDa wuDa" }],
+                [{ p: "ګډې وډې", f: "guDe wuDe" }],
+                [{ p: "ګډو وډو", f: "guDo wuDo" }],
+            ],
+        }
+    }
 ];
 
 const nouns: Array<{

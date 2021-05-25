@@ -20,6 +20,7 @@ import {
     concatInflections,
     psStringEquals,
     removeRetroflexR,
+    splitDoubleWord,
 } from "./p-text-helpers";
 import * as T from "../types";
 import {
@@ -662,7 +663,40 @@ test(`mapVerbBlock should work`, () => {
         [[{p: "به کېده", f: "ba kedu"}, {p: "به کېدو", f: "ba kedo"}], [{p: "به کېدل", f: "ba kedul"}]],
         [[{p: "به کېده", f: "ba keda"}], [{p: "به کېدې", f: "ba kede"}]],
     ])
-})
+});
+
+test(`splitDoubleWord should work`, () => {
+    const orig: T.DictionaryEntry = {
+        ts: 123,
+        p: "ګډ وډ",
+        f: "guD wuD",
+        g: "guDwuD",
+        e: "mixed up",
+        c: "adj. doub.",
+        i: 1,
+    };
+    const out: [T.DictionaryEntry, T.DictionaryEntry] = [
+        {
+            ts: 123,
+            p: "ګډ",
+            f: "guD",
+            g: "guDwuD",
+            e: "mixed up",
+            c: "adj.",
+            i: 1,
+        },
+        {
+            ts: 123,
+            p: "وډ",
+            f: "wuD",
+            g: "guDwuD",
+            e: "mixed up",
+            c: "adj.",
+            i: 1,
+        },
+    ] 
+    expect(splitDoubleWord(orig)).toEqual(out);
+});
 
 // test(`allThirdPersMascPlur should work`, () => {
 //     expect(

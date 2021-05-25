@@ -61,6 +61,8 @@ enum PhonemeStatus {
     DirectMatchAfterSukun,
     EndingWithHeyHimFromSukun,
     ShortVowel,
+    ShortVowelBeforeAin,
+    ShortVowelAfterAin,
     PersianSilentWWithAa,
     ArabicWasla,
     Izafe,
@@ -74,7 +76,7 @@ function processPhoneme(
     phoneme: Phoneme,
     i: number,
     phonemes: Phoneme[],
-) {
+): DiacriticsAccumulator {
     // console.log("PHONEME", phoneme);
     // console.log("space coming up", acc.pIn[0] === " ");
     // console.log("state", acc);
@@ -95,6 +97,10 @@ function processPhoneme(
         phs,
         prevPLetter,
     } = stateInfo({ state, i, phoneme, phonemes });
+
+    // console.log("phoneme", phoneme);
+    // console.log("state", state);
+    // console.log(phs);       
 
     return (phs === PhonemeStatus.LeadingLongVowel) ?
             pipe(
@@ -151,7 +157,8 @@ function processPhoneme(
             )(state)
         : (phs === PhonemeStatus.HaEndingWithHeem) ?
             pipe(
-                prevPLetter === " " ? reverseP : (s: any) => s,
+                reverseP,
+                // prevPLetter === " " ? reverseP ,
                 addP(zwar),
             )(state)
         : (phs === PhonemeStatus.EndingWithHeyHimFromSukun) ?
@@ -164,6 +171,19 @@ function processPhoneme(
                 advanceP,
                 advanceP,
             )(state)
+        : (phs === PhonemeStatus.ShortVowelBeforeAin) ?
+            pipe(
+                // this is pretty messed up because for some reason the reverseP goes back one more step when it's an ain before it
+                reverseP,
+                advanceP,
+                addP(diacritic),
+                // overwriteP(diacritic || ""),
+            )(state)
+        : (phs === PhonemeStatus.ShortVowelAfterAin) ?
+            pipe(
+                advanceP,
+                addP(diacritic),
+            )(state)
         :
         // phs === PhonemeState.ShortVowel
             pipe(
@@ -172,6 +192,8 @@ function processPhoneme(
                 advanceForAinOrHamza,
             )(state);
 }
+
+
 
 function stateInfo({ state, i, phonemes, phoneme }: {
     state: DiacriticsAccumulator,
@@ -237,7 +259,14 @@ function stateInfo({ state, i, phonemes, phoneme }: {
             return needsSukun ? PhonemeStatus.DirectMatchAfterSukun : PhonemeStatus.DirectMatch;
         }
         if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
-            return PhonemeStatus.ShortVowel;
+            // weird ayn behaviour because it automatically advances and ignores it at the beginning of the process
+            // console.log("looking prev", prevPLetter);
+            // console.log("looking next", currentPLetter);   
+            return prevPLetter === "ع" 
+                ? PhonemeStatus.ShortVowelBeforeAin
+                : currentPLetter === "ع"
+                ? PhonemeStatus.ShortVowelAfterAin
+                : PhonemeStatus.ShortVowel;
         }
         // console.log("bad phoneme is ", phoneme);
         throw new Error("phonetics error - no status found for phoneme: " + phoneme);

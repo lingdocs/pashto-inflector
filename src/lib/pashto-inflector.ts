@@ -7,6 +7,11 @@
  */
 
 import { pashtoConsonants } from "./pashto-consonants";
+import {
+  concatInflections,
+  splitDoubleWord,
+  ensureUnisexInflections,
+} from "./p-text-helpers";
 import * as T from "../types";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
@@ -18,6 +23,14 @@ export function inflectWord(word: T.DictionaryEntry): T.Inflections | false {
   // TODO: What about n. f. / adj. that end in ي ??
   if (word.noInf) {
     return false;
+  }
+  if (word.c?.includes("doub.")) {
+    const words = splitDoubleWord(word);
+    const inflected = words.map((word) => ensureUnisexInflections(inflectWord(word), word));
+    return concatInflections(
+      inflected[0],
+      inflected[1],
+    ) as T.UnisexInflections;
   }
   if (word.c && (word.c.includes("adj.") || word.c.includes("unisex"))) {
     return handleUnisexWord(word);

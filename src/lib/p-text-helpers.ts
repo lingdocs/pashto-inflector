@@ -80,6 +80,29 @@ export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.Ps
     };
 }
 
+/**
+ * breaks a dictionary entry with a double wording (ie. ګډ وډ) into two seperate words
+ * 
+ * @param w 
+ * @returns 
+ */
+export function splitDoubleWord(w: T.DictionaryEntry): [T.DictionaryEntry, T.DictionaryEntry] {
+    const pSplit = w.p.split(" ");
+    const fSplit = w.f.split(" ");
+    const c = w.c?.replace(" doub.", "");
+    return [{
+        ...w,
+        p: pSplit[0],
+        f: fSplit[0],
+        c,
+    }, {
+        ...w,
+        p: pSplit[1],
+        f: fSplit[1],
+        c,
+    }];
+}
+
 export function psFunction(ps: T.PsString, func: (s: string) => string): T.PsString {
     return makePsString(
         func(ps.p),
@@ -710,4 +733,35 @@ export function ensureShortWurShwaShift(ps: T.PsString): T.PsString {
         };
     }
     return ps;
+}
+
+export function ensureUnisexInflections(infs: T.Inflections | false, w: T.DictionaryEntry): T.UnisexInflections {
+    const ps = { p: w.p, f: firstPhonetics(w.f) };
+    if (infs === false) {
+        return {
+            masc: [
+                [ps],
+                [ps],
+                [ps],
+            ],
+            fem: [
+                [ps],
+                [ps],
+                [ps],
+            ],
+        };
+    }
+    if (!("fem" in infs)) {
+        return {
+            ...infs,
+            fem: [[ps], [ps], [ps]],
+        };
+    }
+    if (!("masc" in infs)) {
+        return {
+            ...infs,
+            masc: [[ps], [ps], [ps]],
+        };
+    }
+    return infs;
 }

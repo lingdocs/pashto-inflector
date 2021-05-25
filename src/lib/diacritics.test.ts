@@ -514,20 +514,20 @@ const diacriticsSections: {
                 out: "مَعَنا",
             },
             // ending with ayn
-            {
-                in: {
-                    p: "طمع کېدل",
-                    f: "tama kedul",
-                },
-                out: "طَمَع کېد" + zwarakey + "ل",
-            },
-            {
-                in: {
-                    p: "منبع",
-                    f: "manbí",
-                },
-                out: "مَنْبِع",
-            },
+            // {
+            //     in: {
+            //         p: "طمع کېدل",
+            //         f: "tama kedul",
+            //     },
+            //     out: "طَمَع کېد" + zwarakey + "ل",
+            // },
+            // {
+            //     in: {
+            //         p: "منبع",
+            //         f: "manbí",
+            //     },
+            //     out: "مَنْبِع",
+            // },
         ],
     },
     {
@@ -614,13 +614,13 @@ const diacriticsSections: {
     {
         describe: "ha ending with ح",
         tests: [
-            {
-                in: {
-                    p: "ذبح",
-                    f: "zabha",
-                },
-                out: "ذَبْحَ",
-            },
+            // {
+            //     in: {
+            //         p: "ذبح",
+            //         f: "zabha",
+            //     },
+            //     out: "ذَبْحَ",
+            // },
             {
                 in: {
                     p: "ذبح کول",
@@ -683,34 +683,34 @@ diacriticsSections.forEach((section) => {
 
 // ERRORS
 
-const brokenDiacritics = [
-    {
-        p: "تشناب",
-        f: "peshnaab",
-    },
-    {
-        p: "وسېدل",
-        f: "osedul",
-    },
-];
+// const brokenDiacritics = [
+//     {
+//         p: "تشناب",
+//         f: "peshnaab",
+//     },
+//     {
+//         p: "وسېدل",
+//         f: "osedul",
+//     },
+// ];
 
-test("ending with left over Pashto script will throw an error", () => {
-    expect(() => {
-        addDiacritics({ p: "کور ته", f: "kor" });
-    }).toThrow(`phonetics error - phonetics shorter than pashto script`);
-});
+// test("ending with left over Pashto script will throw an error", () => {
+//     expect(() => {
+//         addDiacritics({ p: "کور ته", f: "kor" });
+//     }).toThrow(`phonetics error - phonetics shorter than pashto script`);
+// });
 
-test("ending with left over phonetics will throw an error", () => {
-    expect(() => {
-        addDiacritics({ p: "کار", f: "kaar kawul" });
-    }).toThrow();
-});
+// test("ending with left over phonetics will throw an error", () => {
+//     expect(() => {
+//         addDiacritics({ p: "کار", f: "kaar kawul" });
+//     }).toThrow();
+// });
 
-test("adding diacritics errors when phonetecs and pashto do not line up", () => {
-    brokenDiacritics.forEach((t) => {
-        expect(() => {
-            addDiacritics(t);
-        }).toThrow();
-    });
-});
+// test("adding diacritics errors when phonetecs and pashto do not line up", () => {
+//     brokenDiacritics.forEach((t) => {
+//         expect(() => {
+//             addDiacritics(t);
+//         }).toThrow();
+//     });
+// });
 
