@@ -28,6 +28,7 @@ type PhonemeInfo = {
     longVowel?: true,
     canStartWithAynBefore?: true,
     useEndingDiacritic?: true,
+    ainBlendDiacritic?: string,
 }
 
 export const zwar = "َ";
@@ -188,13 +189,15 @@ export const phonemeTable: Record<Phoneme, PhonemeInfo> = {
         beginningMatches: ["آ", "ا"],
         endingMatches: ["ا", "یٰ"],
         longVowel: true,
+        ainBlendDiacritic: zwar,
     },
     "ee": {
         matches: ["ی"],
         longVowel: true,
         endingMatches: ["ي"],
         diacritic: zer,
-        canStartWithAynBefore: true
+        canStartWithAynBefore: true,
+        ainBlendDiacritic: zer,
     },
     "e": {
         matches: ["ې"],
@@ -210,6 +213,7 @@ export const phonemeTable: Record<Phoneme, PhonemeInfo> = {
         // alsoCanBePrefix: true,
         diacritic: pesh,
         useEndingDiacritic: true,
+        ainBlendDiacritic: pesh,
     },
     "ey": {
         matches: ["ی"],
@@ -262,13 +266,13 @@ export const phonemeTable: Record<Phoneme, PhonemeInfo> = {
  * @returns an array of phonemes
  */
  export function splitFIntoPhonemes(fIn: string): Phoneme[] {
-    const singleLetterPhonemes: Phoneme[] = ["a", "i", "u", "o", "e", "U", "b", "p", "t", "T", "s", "j", "d", "D", "r", "R", "z", "G", "x", "f", "q", "k", "g", "l", "m", "n", "N", "h", "w", "y"];
+    const singleLetterPhonemes: Phoneme[] = ["a", "i", "u", "o", "e", "U", "b", "p", "t", "T", "s", "j", "d", "D", "r", "R", "z", "G", "x", "f", "q", "k", "g", "l", "m", "n", "N", "h", "w", "y", "'"];
     
     const quadrigraphs: Phoneme[] = ["-Ul-"];
     const trigraphs: Phoneme[] = ["eyy", "-i-", "-U-"];
     const digraphs: Phoneme[] = ["aa", "ee", "ey", "oo", "kh", "gh", "ts", "dz", "jz", "ch", "sh"];
     const endingDigraphs: Phoneme[] = ["uy"];
-    const willIgnore = ["?", " ", "`", ".", "…", ",", "'"];
+    const willIgnore = ["?", " ", "`", ".", "…", ","];
     
     const result: Phoneme[] = [];
     const f = removeAccents(fIn);
@@ -372,10 +376,10 @@ export function getCurrentNext(state: DiacriticsAccumulator): { current: string,
     };
 }
 
-export function advanceForAin(state: DiacriticsAccumulator): DiacriticsAccumulator {
-    const { current } = getCurrentNext(state);
-    return (current === "ع") ? advanceP(state) : state;
-}
+// export function advanceForAin(state: DiacriticsAccumulator): DiacriticsAccumulator {
+//     const { current } = getCurrentNext(state);
+//     return (current === "ع") ? advanceP(state) : state;
+// }
 
 export function advanceForHamzaMid(state: DiacriticsAccumulator): DiacriticsAccumulator {
     const { current, next } = getCurrentNext(state);
@@ -385,14 +389,14 @@ export function advanceForHamzaMid(state: DiacriticsAccumulator): DiacriticsAccu
     return state;
 }
 
-export function advanceForAinOrHamza(state: DiacriticsAccumulator): DiacriticsAccumulator {
+export function advanceForHamza(state: DiacriticsAccumulator): DiacriticsAccumulator {
     const { current, next } = getCurrentNext(state);
     if (current === "ه" && (!next || next === " ")) {
         return advanceP(state);
     }
-    if (current === "ع") {
-        return advanceP(state);
-    }
+    // if (current === "ع") {
+    //     return advanceP(state);
+    // }
     return state;
 }
 

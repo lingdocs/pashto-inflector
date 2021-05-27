@@ -485,34 +485,115 @@ const diacriticsSections: {
         tests: [
             {
                 in: {
-                    p: "اعتصاب شکن",
-                    f: "itisaab shakan",
+                    p: "بعد",
+                    f: "ba'd",
                 },
-                out: "اِعتِصاب شَکَن",
-            },
-            // starting with ع
-            {
-                in: {
-                    p: "عزت",
-                    f: "izzat",
-                },
-                out: "عِزَّت",
+                out: "بَعْد",
             },
             {
                 in: {
-                    p: "عزت",
-                    f: "i'zzat",
+                    p: "بعد",
+                    f: "b'ad",
                 },
-                out: "عِزَّت",
+                out: "بْعَد",
             },
-            // middle ع
+            {
+                in: {
+                    p: "بعد",
+                    f: "ba'ad",
+                },
+                out: "بَعَد",
+            },
+            {
+                in: {
+                    p: "بعد",
+                    f: "baad",
+                },
+                out: "بَعَد",
+            },
+            {
+                in: {
+                    p: "بعد",
+                    f: "bad",
+                },
+                // TODO: Should this really be an error?
+                out: null,
+            },
+            {
+                in: {
+                    p: "معلوم",
+                    f: "maaloom",
+                },
+                out: "مَعَلُوم",
+            },
+            {
+                in: {
+                    p: "منبع",
+                    f: "manbi'",
+                },
+                out: "مَنْبِع",
+            },
+            {
+                in: {
+                    p: "منبع",
+                    f: "manb'i",
+                },
+                out: "مَنْبْعِ"
+            },
+            {
+                in: {
+                    p: "منبع",
+                    f: "manbee",
+                },
+                out: "مَنْبِعِ",
+            },
             {
                 in: {
                     p: "معنا",
-                    f: "ma'anaa",
+                    f: "ma'náa",
+                },
+                out: "مَعْنا",
+            },
+            {
+                in: {
+                    p: "معنا",
+                    f: "maanáa",
                 },
                 out: "مَعَنا",
             },
+            // TODO: Should be allowed to use a short vowel as well 
+            // طمع - tama // استعمال - istimaal
+            // TODO: Starting like عام اعتصاب etc.
+            // {
+            //     in: {
+            //         p: "اعتصاب شکن",
+            //         f: "itisaab shakan",
+            //     },
+            //     out: "اِعتِصاب شَکَن",
+            // },
+            // // starting with ع
+            // {
+            //     in: {
+            //         p: "عزت",
+            //         f: "izzat",
+            //     },
+            //     out: "عِزَّت",
+            // },
+            // {
+            //     in: {
+            //         p: "عزت",
+            //         f: "i'zzat",
+            //     },
+            //     out: "عِزَّت",
+            // },
+            // // middle ع
+            // {
+            //     in: {
+            //         p: "معنا",
+            //         f: "ma'anaa",
+            //     },
+            //     out: "مَعَنا",
+            // },
             // ending with ayn
             // {
             //     in: {
@@ -683,34 +764,34 @@ diacriticsSections.forEach((section) => {
 
 // ERRORS
 
-// const brokenDiacritics = [
-//     {
-//         p: "تشناب",
-//         f: "peshnaab",
-//     },
-//     {
-//         p: "وسېدل",
-//         f: "osedul",
-//     },
-// ];
+const brokenDiacritics = [
+    {
+        p: "تشناب",
+        f: "peshnaab",
+    },
+    {
+        p: "وسېدل",
+        f: "osedul",
+    },
+];
 
-// test("ending with left over Pashto script will throw an error", () => {
-//     expect(() => {
-//         addDiacritics({ p: "کور ته", f: "kor" });
-//     }).toThrow(`phonetics error - phonetics shorter than pashto script`);
-// });
+test("ending with left over Pashto script will throw an error", () => {
+    expect(() => {
+        addDiacritics({ p: "کور ته", f: "kor" });
+    }).toThrow(`phonetics error - phonetics shorter than pashto script`);
+});
 
-// test("ending with left over phonetics will throw an error", () => {
-//     expect(() => {
-//         addDiacritics({ p: "کار", f: "kaar kawul" });
-//     }).toThrow();
-// });
+test("ending with left over phonetics will throw an error", () => {
+    expect(() => {
+        addDiacritics({ p: "کار", f: "kaar kawul" });
+    }).toThrow();
+});
 
-// test("adding diacritics errors when phonetecs and pashto do not line up", () => {
-//     brokenDiacritics.forEach((t) => {
-//         expect(() => {
-//             addDiacritics(t);
-//         }).toThrow();
-//     });
-// });
+test("adding diacritics errors when phonetecs and pashto do not line up", () => {
+    brokenDiacritics.forEach((t) => {
+        expect(() => {
+            addDiacritics(t);
+        }).toThrow();
+    });
+});
 

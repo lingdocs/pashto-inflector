@@ -6,8 +6,7 @@ import {
     advanceP,
     reverseP,
     overwriteP,
-    advanceForAin,
-    advanceForAinOrHamza,
+    advanceForHamza,
     advanceForHamzaMid,
 } from "./diacritics-helpers";
 
@@ -22,6 +21,10 @@ const phonemeSplits: Array<{
     {
         in: "raaghey",
         out: ["r", "aa", "gh", "ey"],
+    },
+    {
+        in: "ist'imaal",
+        out: ["i", "s", "t", "'", "i", "m", "aa", "l"],
     },
     {
         in: "hatsa",

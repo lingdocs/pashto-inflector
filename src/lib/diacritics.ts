@@ -27,8 +27,7 @@ import {
     advanceP,
     reverseP,
     overwriteP,
-    advanceForAin,
-    advanceForAinOrHamza,
+    advanceForHamza,
     advanceForHamzaMid,
     DiacriticsAccumulator,
 } from "./diacritics-helpers";
@@ -61,14 +60,13 @@ enum PhonemeStatus {
     DirectMatchAfterSukun,
     EndingWithHeyHimFromSukun,
     ShortVowel,
-    ShortVowelBeforeAin,
-    ShortVowelAfterAin,
     PersianSilentWWithAa,
     ArabicWasla,
     Izafe,
     EndOfDuParticle,
     HaEndingWithHeem,
     AlefDaggarEnding,
+    LongAinVowelMissingComma,
 }
 
 function processPhoneme(
@@ -112,7 +110,6 @@ function processPhoneme(
             pipe(
                 advanceP,
                 addP(diacritic),
-                advanceForAin,
             )(state)
         : (phs === PhonemeStatus.DoubleConsonantTashdeed) ?
             pipe(
@@ -171,25 +168,19 @@ function processPhoneme(
                 advanceP,
                 advanceP,
             )(state)
-        : (phs === PhonemeStatus.ShortVowelBeforeAin) ?
+        : (phs === PhonemeStatus.LongAinVowelMissingComma) ?
             pipe(
-                // this is pretty messed up because for some reason the reverseP goes back one more step when it's an ain before it
-                reverseP,
-                advanceP,
                 addP(diacritic),
-                // overwriteP(diacritic || ""),
-            )(state)
-        : (phs === PhonemeStatus.ShortVowelAfterAin) ?
-            pipe(
                 advanceP,
-                addP(diacritic),
+                addP(diacritic)
             )(state)
         :
         // phs === PhonemeState.ShortVowel
             pipe(
                 advanceForHamzaMid,
                 addP(phonemeInfo.diacritic),
-                advanceForAinOrHamza,
+                // TODO THIS?
+                advanceForHamza,
             )(state);
 }
 
@@ -214,7 +205,11 @@ function stateInfo({ state, i, phonemes, phoneme }: {
     const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
     const needsTashdeed = !isBeginningOfWord && doubleConsonant && (previousPhoneme === phoneme) && !phonemeInfo.matches?.includes(currentPLetter);
     const needsSukun = doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter));
-    const diacritic = isEndOfWord ? ((!phonemeInfo.longVowel || phonemeInfo.useEndingDiacritic) ? phonemeInfo.diacritic : undefined) : phonemeInfo.diacritic;
+    const useAinBlendDiacritics = (!isBeginningOfWord && (phonemeInfo.ainBlendDiacritic && currentPLetter === "ع"));
+    const diacritic = useAinBlendDiacritics
+        ? phonemeInfo.ainBlendDiacritic
+        : isEndOfWord 
+        ? ((!phonemeInfo.longVowel || phonemeInfo.useEndingDiacritic) ? phonemeInfo.diacritic : undefined) : phonemeInfo.diacritic;
 
     function getPhonemeState(): PhonemeStatus {
         if (isBeginningOfWord && (phonemeInfo.longVowel && !phonemeInfo.endingOnly)) {
@@ -243,6 +238,9 @@ function stateInfo({ state, i, phonemes, phoneme }: {
         if (phoneme === "-i-" && isBeginningOfWord) {
             return PhonemeStatus.Izafe;
         } 
+        if (useAinBlendDiacritics) {
+            return PhonemeStatus.LongAinVowelMissingComma;
+        }
         if (needsTashdeed) {
             return PhonemeStatus.DoubleConsonantTashdeed;
         }
@@ -258,15 +256,8 @@ function stateInfo({ state, i, phonemes, phoneme }: {
         if ((phonemeInfo.matches?.includes(currentPLetter) || (isEndOfWord && phonemeInfo.endingMatches?.includes(currentPLetter)) || (phoneme === "m" && currentPLetter === "ن" && nextPLetter === "ب"))) {
             return needsSukun ? PhonemeStatus.DirectMatchAfterSukun : PhonemeStatus.DirectMatch;
         }
-        if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
-            // weird ayn behaviour because it automatically advances and ignores it at the beginning of the process
-            // console.log("looking prev", prevPLetter);
-            // console.log("looking next", currentPLetter);   
-            return prevPLetter === "ع" 
-                ? PhonemeStatus.ShortVowelBeforeAin
-                : currentPLetter === "ع"
-                ? PhonemeStatus.ShortVowelAfterAin
-                : PhonemeStatus.ShortVowel;
+        if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {  
+            return PhonemeStatus.ShortVowel;
         }
         // console.log("bad phoneme is ", phoneme);
         throw new Error("phonetics error - no status found for phoneme: " + phoneme);
