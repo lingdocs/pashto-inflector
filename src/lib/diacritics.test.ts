@@ -516,8 +516,7 @@ const diacriticsSections: {
                     p: "بعد",
                     f: "bad",
                 },
-                // TODO: Should this really be an error?
-                out: null,
+                out: "بَعد",
             },
             {
                 in: {
@@ -549,6 +548,13 @@ const diacriticsSections: {
             },
             {
                 in: {
+                    p: "منبع",
+                    f: "manbi",
+                },
+                out: "مَنْبِع"
+            },
+            {
+                in: {
                     p: "معنا",
                     f: "ma'náa",
                 },
@@ -561,7 +567,6 @@ const diacriticsSections: {
                 },
                 out: "مَعَنا",
             },
-            // TODO: Should be allowed to use a short vowel as well 
             // طمع - tama // استعمال - istimaal
             // TODO: Starting like عام اعتصاب etc.
             // {

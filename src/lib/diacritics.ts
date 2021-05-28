@@ -67,6 +67,7 @@ enum PhonemeStatus {
     HaEndingWithHeem,
     AlefDaggarEnding,
     LongAinVowelMissingComma,
+    ShortAinVowelMissingComma,
 }
 
 function processPhoneme(
@@ -174,6 +175,11 @@ function processPhoneme(
                 advanceP,
                 addP(diacritic)
             )(state)
+        : (phs === PhonemeStatus.ShortAinVowelMissingComma) ?
+            pipe(
+                addP(diacritic),
+                advanceP,
+            )(state)
         :
         // phs === PhonemeState.ShortVowel
             pipe(
@@ -198,6 +204,7 @@ function stateInfo({ state, i, phonemes, phoneme }: {
     const isBeginningOfWord = state.pOut === "" || prevPLetter === " ";
     const isEndOfWord = !nextPLetter || nextPLetter === " ";
     const phonemeInfo = phonemeTable[phoneme];
+    const nextPhoneme = phonemes[i+1];
     const previousPhoneme = i > 0 && phonemes[i-1];
     const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
     // const nextPhoneme = (phonemes.length > (i + 1)) && phonemes[i+1];
@@ -238,6 +245,9 @@ function stateInfo({ state, i, phonemes, phoneme }: {
         if (phoneme === "-i-" && isBeginningOfWord) {
             return PhonemeStatus.Izafe;
         } 
+        if (currentPLetter === "ع" && phoneme !== "'" && nextPhoneme !== "'" && phonemeInfo.diacritic && !phonemeInfo.longVowel) {
+            return PhonemeStatus.ShortAinVowelMissingComma;
+        }
         if (useAinBlendDiacritics) {
             return PhonemeStatus.LongAinVowelMissingComma;
         }
