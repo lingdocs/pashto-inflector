@@ -68,6 +68,8 @@ enum PhonemeStatus {
     AlefDaggarEnding,
     LongAinVowelMissingComma,
     ShortAinVowelMissingComma,
+    AlefWithHamza,
+    AlefWithHamzaWithGlottalStop,
 }
 
 function processPhoneme(
@@ -94,12 +96,11 @@ function processPhoneme(
         phonemeInfo,
         diacritic,
         phs,
-        prevPLetter,
     } = stateInfo({ state, i, phoneme, phonemes });
 
     // console.log("phoneme", phoneme);
     // console.log("state", state);
-    // console.log(phs);       
+    // console.log(phs); 
 
     return (phs === PhonemeStatus.LeadingLongVowel) ?
             pipe(
@@ -180,6 +181,12 @@ function processPhoneme(
                 addP(diacritic),
                 advanceP,
             )(state)
+        : (phs === PhonemeStatus.AlefWithHamza) ?
+            pipe(
+                advanceP,
+            )(state)
+        : (phs === PhonemeStatus.AlefWithHamzaWithGlottalStop) ?
+            state
         :
         // phs === PhonemeState.ShortVowel
             pipe(
@@ -244,7 +251,13 @@ function stateInfo({ state, i, phonemes, phoneme }: {
         }
         if (phoneme === "-i-" && isBeginningOfWord) {
             return PhonemeStatus.Izafe;
-        } 
+        }
+        if (phoneme === "a" && currentPLetter === "أ") {
+            return PhonemeStatus.AlefWithHamza;
+        }
+        if (phoneme === "'" && nextPhoneme === "a" && currentPLetter === "أ") {
+            return PhonemeStatus.AlefWithHamzaWithGlottalStop;
+        }
         if (currentPLetter === "ع" && phoneme !== "'" && nextPhoneme !== "'" && phonemeInfo.diacritic && !phonemeInfo.longVowel) {
             return PhonemeStatus.ShortAinVowelMissingComma;
         }
@@ -276,6 +289,6 @@ function stateInfo({ state, i, phonemes, phoneme }: {
     const phs = getPhonemeState();
 
     return {
-        phs, phonemeInfo, diacritic, prevPLetter,
+        phs, phonemeInfo, diacritic,
     };
 };

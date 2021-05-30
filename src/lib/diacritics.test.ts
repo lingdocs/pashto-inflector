@@ -481,6 +481,25 @@ const diacriticsSections: {
         ],
     },
     {
+        describe: "alef with hamza above",
+        tests: [
+            {
+                in: {
+                    p: "جرأت",
+                    f: "jUrát",
+                },
+                out: "جُرأت",
+            },
+            {
+                in: {
+                    p: "جرأت",
+                    f: "jUr'át",
+                },
+                out: "جُرأت",
+            },
+        ],
+    },
+    {
         describe: "ayn stuff",
         tests: [
             {
@@ -567,14 +586,26 @@ const diacriticsSections: {
                 },
                 out: "مَعَنا",
             },
-            // طمع - tama // استعمال - istimaal
-            // TODO: Starting like عام اعتصاب etc.
+            {
+                in: {
+                    p: "طمع استعمال",
+                    f: "tama istimaal",
+                },
+                out: "طَمَع اِسْتِعمال",
+            },
             // {
             //     in: {
             //         p: "اعتصاب شکن",
             //         f: "itisaab shakan",
             //     },
             //     out: "اِعتِصاب شَکَن",
+            // },
+            // {
+            //     in: {
+            //         p: "عادل",
+            //         f: "aadíl",
+            //     },
+            //     out: "عادل",
             // },
             // // starting with ع
             // {
@@ -598,21 +629,6 @@ const diacriticsSections: {
             //         f: "ma'anaa",
             //     },
             //     out: "مَعَنا",
-            // },
-            // ending with ayn
-            // {
-            //     in: {
-            //         p: "طمع کېدل",
-            //         f: "tama kedul",
-            //     },
-            //     out: "طَمَع کېد" + zwarakey + "ل",
-            // },
-            // {
-            //     in: {
-            //         p: "منبع",
-            //         f: "manbí",
-            //     },
-            //     out: "مَنْبِع",
             // },
         ],
     },
