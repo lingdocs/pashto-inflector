@@ -110,6 +110,21 @@ const diacriticsSections: {
                 },
                 out: "پَسْتَه",
             },
+            // working with ئ as vowel at end
+            {
+                in: {
+                    p: "شئ",
+                    f: "sheyy",
+                },
+                out: "شئ",
+            },
+            {
+                in: {
+                    p: "کار کوئ چې لاړ شئ",
+                    f: "kaar kawéyy che laaR sheyy",
+                },
+                out: "کار کَوئ چې لاړ شئ",
+            },
             // working with وs
             {
                 in: {
@@ -208,6 +223,41 @@ const diacriticsSections: {
                     f: "leek",
                 },
                 out: "لِیک",
+            },
+            {
+                in: {
+                    p: "ماضی",
+                    f: "maazee",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "وسېدل",
+                    f: "osedul",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "يست",
+                    f: "eest",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "ست",
+                    f: "ist",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "haca",
+                    f: "هځه",
+                },
+                out: null,
             },
             {
                 in: {
@@ -458,6 +508,13 @@ const diacriticsSections: {
                 },
                 out: "پَتَّه تُور",      
             },
+            {
+                in: {
+                    p: "لکۍ وال",
+                    f: "lakuy waal",
+                },
+                out: "لَکۍ وال",
+            },
             // avoid false double consonant
             {
                 in: {
@@ -465,6 +522,107 @@ const diacriticsSections: {
                     f: "azalléek",
                 },
                 out: "اَزَل لِیک",
+            },
+            {
+                in: {
+                    p: "سه",
+                    f: "si",
+                },
+                out: "سِه",
+            },
+            {
+                in: {
+                    p: "سه شنبه",
+                    f: "sishamba",
+                },
+                out: "سِه شَنْبَه",
+            },
+            {
+                in: {
+                    p: "توجه",
+                    f: "tawajÚ",
+                },
+                out: "تَوَجُه",
+            },
+            {
+                in: {
+                    p: "توجه کول",
+                    f: "tawajU kawul",
+                },
+                out: "تَوَجُه کَو" + zwarakey + "ل",
+            },
+            {
+                in: {
+                    p: "با استعداد",
+                    f: "baa isti'dáad",
+                },
+                out: "با اِسْتِعْداد",
+            },
+            {
+                in: {
+                    p: "آدم",
+                    f: "aadam",
+                },
+                out: "آدَم",
+            },
+            {
+                in: {
+                    p: "آسان",
+                    f: "aasáan",
+                },
+                out: "آسان",
+            },
+            {
+                in: {
+                    p: "آسان",
+                    f: "asáan",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "یدام",
+                    f: "aadam",
+                },
+                out: null,
+            },
+        ],
+    },
+    {
+        describe: "ې followed by ی - y needs to be written as e`y to be distinguished from ey - ی",
+        tests: [
+            {
+                in: {
+                    p: "پتېیل",
+                    f: "pateyúl",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "پتېیل",
+                    f: "pate`yúl",
+                },
+                out: "پَتېی" + zwarakey + "ل",
+            },
+            {
+                in: {
+                    p: "درېیم",
+                    f: "dre`yum",
+                },
+                out: "دْرېی" + zwarakey + "م",
+            },
+        ],
+    },
+    {
+        describe: "handle circumpositions",
+        tests: [
+            {
+                in: {
+                    p: "تر ... پورې",
+                    f: "tur ... pore",
+                },
+                out: "ت" + zwarakey + "ر ... پورې",
             },
         ],
     },
@@ -477,6 +635,25 @@ const diacriticsSections: {
                     f: "ambáar",
                 },
                 out: "اَنْبار",
+            },
+        ],
+    },
+    {
+        describe: "excetption for و - wo",
+        tests: [
+            {
+                in: {
+                    p: "و",
+                    f: "wo",
+                },
+                out: "و",
+            },
+            {
+                in: {
+                    p: "سړی و",
+                    f: "saRey wo",
+                },
+                out: "سَړی و",
             },
         ],
     },
@@ -593,43 +770,105 @@ const diacriticsSections: {
                 },
                 out: "طَمَع اِسْتِعمال",
             },
-            // {
-            //     in: {
-            //         p: "اعتصاب شکن",
-            //         f: "itisaab shakan",
-            //     },
-            //     out: "اِعتِصاب شَکَن",
-            // },
-            // {
-            //     in: {
-            //         p: "عادل",
-            //         f: "aadíl",
-            //     },
-            //     out: "عادل",
-            // },
-            // // starting with ع
-            // {
-            //     in: {
-            //         p: "عزت",
-            //         f: "izzat",
-            //     },
-            //     out: "عِزَّت",
-            // },
-            // {
-            //     in: {
-            //         p: "عزت",
-            //         f: "i'zzat",
-            //     },
-            //     out: "عِزَّت",
-            // },
-            // // middle ع
-            // {
-            //     in: {
-            //         p: "معنا",
-            //         f: "ma'anaa",
-            //     },
-            //     out: "مَعَنا",
-            // },
+            {
+                in: {
+                    p: "مربع",
+                    f: "mUraba'",
+                },
+                out: "مُرَبَع",
+            },
+            {
+                in: {
+                    p: "مربع جذر",
+                    f: "mUraba' jazúr",
+                },
+                out: "مُرَبَع جَذ" + zwarakey + "ر",
+            },
+            {
+                in: {
+                    p: "عام",
+                    f: "'aam",
+                },
+                out: "عام",
+            },
+            {
+                in: {
+                    p: "قتل عام",
+                    f: "qatl-i-aam",
+                },
+                out: "قَتْلِ عام",
+            },
+            {
+                in: {
+                    p: "توقع",
+                    f: "tawaqqÚ",
+                },
+                out: "تَوَقّعُ",
+            },
+        ],
+    },
+    {
+        describe: "ayn at the beginning",
+        tests: [
+            // as a short vowel at the beginning
+            {
+                in: {
+                    p: "عزت",
+                    f: "izzat",
+                },
+                out: "عِزَّت",
+            },
+            {
+                in: {
+                    p: "عزت",
+                    f: "i'zzat",
+                },
+                out: "عِْزَّت",
+            },
+            {
+                in: {
+                    p: "عذر",
+                    f: "Uzar",
+                },
+                out: "عُذَر",
+            },
+            {
+                in: {
+                    p: "عذر",
+                    f: "U'zar",
+                },
+                out: "عُْذَر",
+            },
+            // as a short i with an alef
+            {
+                in: {
+                    p: "اعتصاب شکن",
+                    f: "itisaab shakan",
+                },
+                out: "اِعتِصاب شَکَن",
+            },
+            {
+                in: {
+                    p: "اعتصاب شکن",
+                    f: "i'tisaab shakan",
+                },
+                out: "اِعْتِصاب شَکَن",
+            },
+            // as a long aa at beginning
+            {
+                in: {
+                    p: "عادل",
+                    f: "aadíl",
+                },
+                out: "عادِل",
+            },
+            {
+                in: {
+                    p: "عید",
+                    f: "eed",
+                },
+                out: "عِید",
+            },
         ],
     },
     {
@@ -688,6 +927,25 @@ const diacriticsSections: {
         ],
     },
     {
+        describe: "joiner و",
+        tests: [
+            {
+                in: {
+                    p: "کار و بار",
+                    f: "kaar-U-baar",
+                },
+                out: "کار و بار",
+            },
+            {
+                in: {
+                    p: "کاروبار",
+                    f: "kaar-U-baar",
+                },
+                out: "کاروبار",
+            },
+        ],
+    },
+    {
         describe: "special behaviour with د",
         tests: [
             {
@@ -716,13 +974,13 @@ const diacriticsSections: {
     {
         describe: "ha ending with ح",
         tests: [
-            // {
-            //     in: {
-            //         p: "ذبح",
-            //         f: "zabha",
-            //     },
-            //     out: "ذَبْحَ",
-            // },
+            {
+                in: {
+                    p: "ذبح",
+                    f: "zabha",
+                },
+                out: "ذَبْحَ",
+            },
             {
                 in: {
                     p: "ذبح کول",
@@ -764,10 +1022,42 @@ const diacriticsSections: {
                 out: "مَعَنیٰ",
             },
         ],
-    }
+    },
+    {
+        describe: "require fathatan on words ending in اً ",
+        tests: [
+            {
+                in: {
+                    p: "دقیقا",
+                    f: "daqeeqan",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "دقیقاً",
+                    f: "daqeeqan",
+                },
+                out: "دَقِیقاً",
+            },
+        ],
+    },
+    {
+        describe: "Ua ؤ",
+        tests: [
+            {
+                in: {
+                    p: "مودب",
+                    f: "mUaddab",
+                },
+                out: "مؤدَّب",
+            },
+        ],
+    },
 ];
 
 diacriticsSections.forEach((section) => {
+    // if (!section.describe.includes("require fathatan")) return;
     describe(section.describe, () => {
         section.tests.forEach((t) => {
             if (t.out) {
@@ -785,34 +1075,34 @@ diacriticsSections.forEach((section) => {
 
 // ERRORS
 
-const brokenDiacritics = [
-    {
-        p: "تشناب",
-        f: "peshnaab",
-    },
-    {
-        p: "وسېدل",
-        f: "osedul",
-    },
-];
+// const brokenDiacritics = [
+//     {
+//         p: "تشناب",
+//         f: "peshnaab",
+//     },
+//     {
+//         p: "وسېدل",
+//         f: "osedul",
+//     },
+// ];
 
-test("ending with left over Pashto script will throw an error", () => {
-    expect(() => {
-        addDiacritics({ p: "کور ته", f: "kor" });
-    }).toThrow(`phonetics error - phonetics shorter than pashto script`);
-});
+// test("ending with left over Pashto script will throw an error", () => {
+//     expect(() => {
+//         addDiacritics({ p: "کور ته", f: "kor" });
+//     }).toThrow(`phonetics error - phonetics shorter than pashto script`);
+// });
 
-test("ending with left over phonetics will throw an error", () => {
-    expect(() => {
-        addDiacritics({ p: "کار", f: "kaar kawul" });
-    }).toThrow();
-});
+// test("ending with left over phonetics will throw an error", () => {
+//     expect(() => {
+//         addDiacritics({ p: "کار", f: "kaar kawul" });
+//     }).toThrow();
+// });
 
-test("adding diacritics errors when phonetecs and pashto do not line up", () => {
-    brokenDiacritics.forEach((t) => {
-        expect(() => {
-            addDiacritics(t);
-        }).toThrow();
-    });
-});
+// test("adding diacritics errors when phonetecs and pashto do not line up", () => {
+//     brokenDiacritics.forEach((t) => {
+//         expect(() => {
+//             addDiacritics(t);
+//         }).toThrow();
+//     });
+// });
 

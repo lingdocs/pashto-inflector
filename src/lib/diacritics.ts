@@ -21,15 +21,15 @@ import {
     wasla,
     daggerAlif,
     fathahan,
-    lastNonWhitespace,
     addP,
-    last,
     advanceP,
     reverseP,
     overwriteP,
     advanceForHamza,
     advanceForHamzaMid,
     DiacriticsAccumulator,
+    stateInfo,
+    PhonemeStatus,
 } from "./diacritics-helpers";
 
 import { firstPhonetics } from "./p-text-helpers";
@@ -49,27 +49,6 @@ import { pipe } from "rambda";
         p: pOut,
         f,
     };
-}
-
-enum PhonemeStatus {
-    LeadingLongVowel,
-    LeadingConsonantOrShortVowel,
-    DoubleConsonantTashdeed,
-    EndingWithHeyHim,
-    DirectMatch,
-    DirectMatchAfterSukun,
-    EndingWithHeyHimFromSukun,
-    ShortVowel,
-    PersianSilentWWithAa,
-    ArabicWasla,
-    Izafe,
-    EndOfDuParticle,
-    HaEndingWithHeem,
-    AlefDaggarEnding,
-    LongAinVowelMissingComma,
-    ShortAinVowelMissingComma,
-    AlefWithHamza,
-    AlefWithHamzaWithGlottalStop,
 }
 
 function processPhoneme(
@@ -96,6 +75,7 @@ function processPhoneme(
         phonemeInfo,
         diacritic,
         phs,
+        prevPLetter,
     } = stateInfo({ state, i, phoneme, phonemes });
 
     // console.log("phoneme", phoneme);
@@ -154,10 +134,9 @@ function processPhoneme(
                 reverseP,
                 addP(zwarakey),
             )(state)
-        : (phs === PhonemeStatus.HaEndingWithHeem) ?
+        : (phs === PhonemeStatus.ShortAEndingAfterHeem) ?
             pipe(
-                reverseP,
-                // prevPLetter === " " ? reverseP ,
+                prevPLetter === " " ? reverseP : addP(""),
                 addP(zwar),
             )(state)
         : (phs === PhonemeStatus.EndingWithHeyHimFromSukun) ?
@@ -181,114 +160,44 @@ function processPhoneme(
                 addP(diacritic),
                 advanceP,
             )(state)
+        : (phs === PhonemeStatus.ShortAinVowelMissingCommaAfterAlefStart) ?
+            pipe(
+                advanceP,
+                advanceP,
+            )(state)
+        : (phs === PhonemeStatus.AinWithLongAAtBeginning) ?
+            pipe(
+               advanceP,
+               advanceP, 
+            )(state)
         : (phs === PhonemeStatus.AlefWithHamza) ?
             pipe(
                 advanceP,
             )(state)
-        : (phs === PhonemeStatus.AlefWithHamzaWithGlottalStop) ?
-            state
-        :
-        // phs === PhonemeState.ShortVowel
+        : (phs === PhonemeStatus.ShortVowel) ?
             pipe(
                 advanceForHamzaMid,
                 addP(phonemeInfo.diacritic),
                 // TODO THIS?
                 advanceForHamza,
-            )(state);
+            )(state)
+        : (phs === PhonemeStatus.ShortAForAlefBeforeFathatan) ?
+            pipe(
+                advanceP,
+            )(state)
+        : (phs === PhonemeStatus.NOnFathatan) ?
+            pipe(
+                advanceP,
+            )(state)
+        : state;
+        
+        // (phs === PhonemeStatus.AlefWithHamzaWithGlottalStop) ?
+        //    state
+        // : (phs === PhonemeStatus.AinBeginningAfterShortVowel) ?
+        //    state
+        //: (phs === PhonemeStatus.WoEndingO) ?
+        //    state
+        // :
+        // 
+
 }
-
-
-
-function stateInfo({ state, i, phonemes, phoneme }: {
-    state: DiacriticsAccumulator,
-    i: number,
-    phonemes: Phoneme[],
-    phoneme: Phoneme,
-}) {
-    const prevPLetter = last(state.pOut);
-    const currentPLetter = state.pIn[0];
-    const nextPLetter = state.pIn[1];
-    const isBeginningOfWord = state.pOut === "" || prevPLetter === " ";
-    const isEndOfWord = !nextPLetter || nextPLetter === " ";
-    const phonemeInfo = phonemeTable[phoneme];
-    const nextPhoneme = phonemes[i+1];
-    const previousPhoneme = i > 0 && phonemes[i-1];
-    const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
-    // const nextPhoneme = (phonemes.length > (i + 1)) && phonemes[i+1];
-    // const nextPhonemeInfo = nextPhoneme ? phonemeTable[nextPhoneme] : undefined;
-    const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
-    const needsTashdeed = !isBeginningOfWord && doubleConsonant && (previousPhoneme === phoneme) && !phonemeInfo.matches?.includes(currentPLetter);
-    const needsSukun = doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter));
-    const useAinBlendDiacritics = (!isBeginningOfWord && (phonemeInfo.ainBlendDiacritic && currentPLetter === "ع"));
-    const diacritic = useAinBlendDiacritics
-        ? phonemeInfo.ainBlendDiacritic
-        : isEndOfWord 
-        ? ((!phonemeInfo.longVowel || phonemeInfo.useEndingDiacritic) ? phonemeInfo.diacritic : undefined) : phonemeInfo.diacritic;
-
-    function getPhonemeState(): PhonemeStatus {
-        if (isBeginningOfWord && (phonemeInfo.longVowel && !phonemeInfo.endingOnly)) {
-            if (phoneme !== "aa" && currentPLetter !== "ا" && !phonemeInfo.matches?.includes(nextPLetter)) {
-                throw Error("phonetics error - needs alef prefix");
-            }
-            return PhonemeStatus.LeadingLongVowel;
-        }
-        if (isBeginningOfWord && (phonemeInfo.beginningMatches?.includes(currentPLetter) || phonemeInfo.matches?.includes(currentPLetter))) {
-            return PhonemeStatus.LeadingConsonantOrShortVowel;
-        }
-        // console.log("------");
-        // console.log("phoneme", phoneme);
-        // console.log("state", state);
-        // console.log("prevPLetter is space", prevPLetter === " ");
-        // console.log("------");
-        if (isBeginningOfWord && phoneme === "u" && prevPLetter === " " && lastNonWhitespace(state.pOut) === "د") {
-            return PhonemeStatus.EndOfDuParticle
-        }
-        if (!isBeginningOfWord && phoneme === "aa" && currentPLetter === "و" && nextPLetter === "ا") {
-            return PhonemeStatus.PersianSilentWWithAa;
-        }
-        if (!isBeginningOfWord && phoneme === "i" && currentPLetter === "ا" && nextPLetter === "ل") {
-            return PhonemeStatus.ArabicWasla;
-        }
-        if (phoneme === "-i-" && isBeginningOfWord) {
-            return PhonemeStatus.Izafe;
-        }
-        if (phoneme === "a" && currentPLetter === "أ") {
-            return PhonemeStatus.AlefWithHamza;
-        }
-        if (phoneme === "'" && nextPhoneme === "a" && currentPLetter === "أ") {
-            return PhonemeStatus.AlefWithHamzaWithGlottalStop;
-        }
-        if (currentPLetter === "ع" && phoneme !== "'" && nextPhoneme !== "'" && phonemeInfo.diacritic && !phonemeInfo.longVowel) {
-            return PhonemeStatus.ShortAinVowelMissingComma;
-        }
-        if (useAinBlendDiacritics) {
-            return PhonemeStatus.LongAinVowelMissingComma;
-        }
-        if (needsTashdeed) {
-            return PhonemeStatus.DoubleConsonantTashdeed;
-        }
-        if (phoneme === "aa" && currentPLetter === "ی" && nextPLetter === daggerAlif) {
-            return PhonemeStatus.AlefDaggarEnding;
-        }
-        if (((isEndOfWord && prevPLetter === "ح") || (prevPLetter === " " && state.pOut[state.pOut.length - 2])) && phoneme === "a") {
-            return PhonemeStatus.HaEndingWithHeem;
-        }
-        if (isEndOfWord && ((phoneme === "u" && currentPLetter === "ه") || (phoneme === "h" && ["ه", "ح"].includes(currentPLetter)))) {
-            return needsSukun ? PhonemeStatus.EndingWithHeyHimFromSukun : PhonemeStatus.EndingWithHeyHim;
-        }
-        if ((phonemeInfo.matches?.includes(currentPLetter) || (isEndOfWord && phonemeInfo.endingMatches?.includes(currentPLetter)) || (phoneme === "m" && currentPLetter === "ن" && nextPLetter === "ب"))) {
-            return needsSukun ? PhonemeStatus.DirectMatchAfterSukun : PhonemeStatus.DirectMatch;
-        }
-        if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {  
-            return PhonemeStatus.ShortVowel;
-        }
-        // console.log("bad phoneme is ", phoneme);
-        throw new Error("phonetics error - no status found for phoneme: " + phoneme);
-    }
-
-    const phs = getPhonemeState();
-
-    return {
-        phs, phonemeInfo, diacritic,
-    };
-};
