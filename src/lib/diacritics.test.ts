@@ -586,6 +586,13 @@ const diacriticsSections: {
                 },
                 out: null,
             },
+            {
+                in: {
+                    p: "سختسری",
+                    f: "sakht sărey",
+                },
+                out: "سَخْتْسَری",
+            },
         ],
     },
     {
@@ -804,6 +811,20 @@ const diacriticsSections: {
                     f: "tawaqqÚ",
                 },
                 out: "تَوَقُّع",
+            },
+            {
+                in: {
+                    p: "راجع کېدل",
+                    f: "raaji kedul",
+                },
+                out: "راجِع کېد" + zwarakey + "ل",
+            },
+            {
+                in: {
+                    p: "ربیع",
+                    f: "rabee'",
+                },
+                out: "رَبِیع",
             },
         ],
     },
@@ -1054,6 +1075,44 @@ const diacriticsSections: {
             },
         ],
     },
+    {
+        describe: "With Arabic definate article -Ul- ال",
+        tests: [
+            {
+                in: {
+                    p: "حق الاجاره",
+                    f: "haq-Ul-ijaara",
+                },
+                out: "حَق اُلاِجارَه",
+            },
+            {
+                in: {
+                    p: "دار العلوم",
+                    f: "daar-Ul-Ulóom",
+                },
+                out: "دار اُلعُلُوم",
+            },
+        ],
+    },
+    // {
+    //     describe: "double consonants on end of words",
+    //     tests: [
+    //         {
+    //             in: {
+    //                 p: "حق",
+    //                 f: "haqq",
+    //             },
+    //             out: "حَقّ",
+    //         },
+    //         {
+    //             in: {
+    //                 p: "حق پر",
+    //                 f: "haqq par",
+    //             },
+    //             out: "حَقّ پَر",
+    //         },
+    //     ],
+    // },
 ];
 
 diacriticsSections.forEach((section) => {

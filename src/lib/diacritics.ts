@@ -195,6 +195,12 @@ function processPhoneme(
                 addP(hamzaAbove),
                 addP(diacritic),
             )(state)
+        : (phs === PhonemeStatus.ArabicDefiniteArticleUl) ?
+            pipe(
+                advanceP,
+                addP(pesh),
+                advanceP,
+            )(state)
         : state;
 
 

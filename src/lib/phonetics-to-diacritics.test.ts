@@ -970,7 +970,6 @@ const toTest: Array<{
         },
         out: "حَقّ پَر",
     },
-    // TODO: Allow ' in there
     {
         in: {
             p: "راجع کېدل",

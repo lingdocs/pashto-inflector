@@ -274,7 +274,7 @@ export const phonemeTable: Record<Phoneme, PhonemeInfo> = {
     const willIgnore = ["?", " ", "`", ".", "…", ","];
     
     const result: Phoneme[] = [];
-    const f = removeAccents(fIn);
+    const f = removeAccents(fIn).replace(/ă/g, "a");
     let index = 0;
     while (index < f.length) {
         const isLastTwoLetters = (index === f.length - 2 || f[index + 2] === " ");
@@ -336,6 +336,7 @@ export enum PhonemeStatus {
     ShortAForAlefBeforeFathatan,
     NOnFathatan,
     HamzaOnWow,
+    ArabicDefiniteArticleUl,
 }
 
 export function stateInfo({ state, i, phonemes, phoneme }: {
@@ -348,11 +349,11 @@ export function stateInfo({ state, i, phonemes, phoneme }: {
     const prevPLetter = last(state.pOut);
     const currentPLetter = state.pIn[0];
     const nextPLetter = state.pIn[1];
-    const isBeginningOfWord = state.pOut === "" || prevPLetter === " ";
-    const isEndOfWord = isOutOfWord(nextPLetter);
-    const phonemeInfo = phonemeTable[phoneme];
     const nextPhoneme = phonemes[i+1];
     const previousPhoneme = i > 0 && phonemes[i-1];
+    const isBeginningOfWord = (state.pOut === "" || prevPLetter === " ") || (previousPhoneme === "-Ul-" && prevPLetter === "ل");
+    const isEndOfWord = isOutOfWord(nextPLetter);
+    const phonemeInfo = phonemeTable[phoneme];
     const previousPhonemeInfo = (!isBeginningOfWord && i > 0) && phonemeTable[phonemes[i-1]];
     // const nextPhoneme = (phonemes.length > (i + 1)) && phonemes[i+1];
     // const nextPhonemeInfo = nextPhoneme ? phonemeTable[nextPhoneme] : undefined;
@@ -390,6 +391,9 @@ export function stateInfo({ state, i, phonemes, phoneme }: {
         // console.log("------");
         if (isBeginningOfWord && phoneme === "u" && prevPLetter === " " && lastNonWhitespace(state.pOut) === "د") {
             return PhonemeStatus.EndOfDuParticle
+        }
+        if (isBeginningOfWord && phoneme === "-Ul-" && currentPLetter === "ا" && nextPLetter === "ل") {
+            return PhonemeStatus.ArabicDefiniteArticleUl;
         }
         if (phoneme === "a" && previousPhoneme === "U" && currentPLetter === "و") {
             return PhonemeStatus.HamzaOnWow;
