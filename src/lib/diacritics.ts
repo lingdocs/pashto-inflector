@@ -189,7 +189,16 @@ function processPhoneme(
             pipe(
                 advanceP,
             )(state)
+        : (phs === PhonemeStatus.HamzaOnWow) ?
+            pipe(
+                advanceP,
+                addP(hamzaAbove),
+                addP(diacritic),
+            )(state)
         : state;
+
+
+        
         
         // (phs === PhonemeStatus.AlefWithHamzaWithGlottalStop) ?
         //    state

@@ -335,6 +335,7 @@ export enum PhonemeStatus {
     WoEndingO,
     ShortAForAlefBeforeFathatan,
     NOnFathatan,
+    HamzaOnWow,
 }
 
 export function stateInfo({ state, i, phonemes, phoneme }: {
@@ -389,6 +390,9 @@ export function stateInfo({ state, i, phonemes, phoneme }: {
         // console.log("------");
         if (isBeginningOfWord && phoneme === "u" && prevPLetter === " " && lastNonWhitespace(state.pOut) === "د") {
             return PhonemeStatus.EndOfDuParticle
+        }
+        if (phoneme === "a" && previousPhoneme === "U" && currentPLetter === "و") {
+            return PhonemeStatus.HamzaOnWow;
         }
         if (phoneme === "a" && currentPLetter === "ا" && nextPLetter === fathahan) {
             return PhonemeStatus.ShortAForAlefBeforeFathatan;
