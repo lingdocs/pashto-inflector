@@ -10,7 +10,6 @@ import * as T from "../types";
 import {
     splitFIntoPhonemes,
     Phoneme,
-    phonemeTable,
     zwar,
     zwarakey,
     zer,
@@ -19,8 +18,6 @@ import {
     hamzaAbove,
     tashdeed,
     wasla,
-    daggerAlif,
-    fathahan,
     addP,
     advanceP,
     reverseP,
@@ -41,7 +38,7 @@ import { pipe } from "rambda";
  */
  export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsString {
     const phonemes: Phoneme[] = splitFIntoPhonemes(!ignoreCommas ? firstPhonetics(f) : f);
-    const { pIn, pOut } = phonemes.reduce(processPhoneme, { pOut: "", pIn: p });
+    const { pIn, pOut } = phonemes.reduce(processPhoneme, { pOut: "", pIn: p.trim() });
     if (pIn !== "") {
         throw new Error("phonetics error - phonetics shorter than pashto script");
     }
@@ -57,19 +54,11 @@ function processPhoneme(
     i: number,
     phonemes: Phoneme[],
 ): DiacriticsAccumulator {
-    // console.log("PHONEME", phoneme);
-    // console.log("space coming up", acc.pIn[0] === " ");
-    // console.log("state", acc);
-    // Prep state
-    // TODO: CLEANER function jump to next char
     const state = acc.pIn.slice(0, 5) === " ... "
         ? advanceP(acc, 5)
         : acc.pIn[0] === " "
         ? advanceP(acc)
         : acc;
-    // console.log("AFTER SPACE PREP", phoneme);
-    // console.log("state", state);
-    // WARNING: Do not use acc after this point!
 
     const {
         phonemeInfo,
@@ -77,10 +66,6 @@ function processPhoneme(
         phs,
         prevPLetter,
     } = stateInfo({ state, i, phoneme, phonemes });
-
-    // console.log("phoneme", phoneme);
-    // console.log("state", state);
-    // console.log(phs); 
 
     return (phs === PhonemeStatus.LeadingLongVowel) ?
             pipe(
@@ -95,6 +80,7 @@ function processPhoneme(
             )(state)
         : (phs === PhonemeStatus.DoubleConsonantTashdeed) ?
             pipe(
+                prevPLetter === " " ? reverseP : addP(""),
                 addP(tashdeed)
             )(state)
         : (phs === PhonemeStatus.EndingWithHeyHim) ?
@@ -201,18 +187,19 @@ function processPhoneme(
                 addP(pesh),
                 advanceP,
             )(state)
+        : (phs === PhonemeStatus.OoPrefix) ?
+            pipe(
+                advanceP,
+                addP(pesh),
+            )(state)
+        : (phs === PhonemeStatus.GlottalStopBeforeOo) ?
+            pipe(
+                advanceP,
+                addP(hamzaAbove),
+            )(state)
+        : (phs === PhonemeStatus.OoAfterGlottalStopOo) ?
+            pipe(
+                advanceP,
+            )(state)
         : state;
-
-
-        
-        
-        // (phs === PhonemeStatus.AlefWithHamzaWithGlottalStop) ?
-        //    state
-        // : (phs === PhonemeStatus.AinBeginningAfterShortVowel) ?
-        //    state
-        //: (phs === PhonemeStatus.WoEndingO) ?
-        //    state
-        // :
-        // 
-
 }

@@ -12,14 +12,8 @@ import {
 import {
     zwar,
     zwarakey,
-    zer,
-    pesh,
     sukun,
-    hamzaAbove,
     tashdeed,
-    wasla,
-    daggerAlif,
-    fathahan,
 } from "./diacritics-helpers";
 import * as T from "../types";
 
@@ -256,6 +250,20 @@ const diacriticsSections: {
                 in: {
                     p: "haca",
                     f: "هځه",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "تشناب",
+                    f: "peshnaab",
+                },
+                out: null,
+            },
+            {
+                in: {
+                    p: "وسېدل",
+                    f: "osedul",
                 },
                 out: null,
             },
@@ -592,6 +600,27 @@ const diacriticsSections: {
                     f: "sakht sărey",
                 },
                 out: "سَخْتْسَری",
+            },
+            {
+                in: {
+                    p: " سپین کړه",
+                    f: " speen kRu",
+                },
+                out: "سْپِین کْړهٔ",
+            },
+            {
+                in: {
+                    p: "اوب",
+                    f: "ob",
+                },
+                out: "اوب",
+            },
+            {
+                in: {
+                    p: "قطعه بازي",
+                    f: "qit'a baazee",
+                },
+                out: "قِطْعَه بازي",
             },
         ],
     },
@@ -1094,29 +1123,112 @@ const diacriticsSections: {
             },
         ],
     },
-    // {
-    //     describe: "double consonants on end of words",
-    //     tests: [
-    //         {
-    //             in: {
-    //                 p: "حق",
-    //                 f: "haqq",
-    //             },
-    //             out: "حَقّ",
-    //         },
-    //         {
-    //             in: {
-    //                 p: "حق پر",
-    //                 f: "haqq par",
-    //             },
-    //             out: "حَقّ پَر",
-    //         },
-    //     ],
-    // },
+    {
+        describe: "double consonants on end of words",
+        tests: [
+            {
+                in: {
+                    p: "حق",
+                    f: "haqq",
+                },
+                out: "حَقّ",
+            },
+            {
+                in: {
+                    p: "حق پر",
+                    f: "haqq par",
+                },
+                out: "حَقّ پَر",
+            },
+        ],
+    },
+    {
+        describe: "أ in the middle of the word",
+        tests: [
+            {
+                in: {
+                    p: "متأسف",
+                    f: "mUtaassif",
+                },
+                out: "مُتأسِّف",
+            },
+            {
+                in: {
+                    p: "متأسف",
+                    f: "mUta'assif",
+                },
+                out: "مُتأسِّف",
+            },
+        ],
+    },
+    {
+        describe: "ؤو in middle of the word",
+        tests: [
+            {
+                in: {
+                    p: "مسوول",
+                    f: "mas'ool",
+                },
+                out: "مَسؤول", // TODO: Is this best??
+            },
+        ],
+    },
+    {
+        describe: "allow for beginnings prefixed with ور در را",
+        tests: [
+            {
+                in: {
+                    p: "وراوږد",
+                    f: "wăr-ooGad",
+                },
+                out: "وَراُوږَد",
+            },
+            {
+                in: {
+                    p: "دراوږد",
+                    f: "dăr-ooGad",
+                },
+                out: "دَراُوږَد",
+            },
+            {
+                in: {
+                    p: "رااوږد",
+                    f: "raa-ooGad",
+                },
+                out: "رااُوږَد",
+            },
+        ],
+    },
+    {
+        describe: "allow oo at start with و prefix",
+        tests: [
+            {
+                in: {
+                    p: "وباسي",
+                    f: "oobaasee",
+                },
+                out: "وُباسي",
+            },
+            {
+                in: {
+                    p: "وځم",
+                    f: "oodzum",
+                },
+                out: "وُځ" + zwarakey + "م",
+            },
+            {
+                in: {
+                    p: "وځم",
+                    f: "wUdzum",
+                },
+                out: "وُځ" + zwarakey + "م",
+            },
+        ],
+    },
 ];
 
 diacriticsSections.forEach((section) => {
-    // if (!section.describe.includes("require fathatan")) return;
+    // if (!section.describe.includes("allow for beginnings")) return;
     describe(section.describe, () => {
         section.tests.forEach((t) => {
             if (t.out) {
@@ -1132,36 +1244,16 @@ diacriticsSections.forEach((section) => {
     });
 });
 
-// ERRORS
+test("ending with left over Pashto script will throw an error", () => {
+    expect(() => {
+        addDiacritics({ p: "کور ته", f: "kor" });
+    }).toThrow(`phonetics error - phonetics shorter than pashto script`);
+});
 
-// const brokenDiacritics = [
-//     {
-//         p: "تشناب",
-//         f: "peshnaab",
-//     },
-//     {
-//         p: "وسېدل",
-//         f: "osedul",
-//     },
-// ];
+test("ending with left over phonetics will throw an error", () => {
+    expect(() => {
+        addDiacritics({ p: "کار", f: "kaar kawul" });
+    }).toThrow();
+});
 
-// test("ending with left over Pashto script will throw an error", () => {
-//     expect(() => {
-//         addDiacritics({ p: "کور ته", f: "kor" });
-//     }).toThrow(`phonetics error - phonetics shorter than pashto script`);
-// });
-
-// test("ending with left over phonetics will throw an error", () => {
-//     expect(() => {
-//         addDiacritics({ p: "کار", f: "kaar kawul" });
-//     }).toThrow();
-// });
-
-// test("adding diacritics errors when phonetecs and pashto do not line up", () => {
-//     brokenDiacritics.forEach((t) => {
-//         expect(() => {
-//             addDiacritics(t);
-//         }).toThrow();
-//     });
-// });
 

@@ -63,6 +63,9 @@ import {
 import {
     translatePhonetics,
 } from "./lib/translate-phonetics";
+import {
+    addDiacritics,
+} from "./lib/diacritics";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
 import * as Types from "./types";
@@ -83,6 +86,7 @@ export {
     isNounAdjOrVerb,
     simplifyPhonetics,
     phoneticsToDiacritics,
+    addDiacritics,
     translatePhonetics,
     // protobuf helpers
     readDictionary,
