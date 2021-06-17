@@ -201,5 +201,10 @@ function processPhoneme(
             pipe(
                 advanceP,
             )(state)
+        : (phs === PhonemeStatus.SilentAinAfterAlef) ?
+            pipe(
+                advanceP,
+                advanceP,
+            )(state)
         : state;
 }

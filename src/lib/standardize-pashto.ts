@@ -9,6 +9,8 @@
 export function standardizePashto(input: string): string {
   // Replace Arabic ى with Farsi ی
   return input.replace(/\u0649/g, "\u06cc")
+    // Replace Urdu ہ and ه with ه
+    .replace(/ہ|ه/g, "ه")
     // Replace Arabic ك with ک
     .replace(/\u0643/g, "\u06a9")
     // Replace Farsi گ with ګ

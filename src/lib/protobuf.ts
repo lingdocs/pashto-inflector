@@ -3,7 +3,7 @@ import * as T from "../types";
 import * as protoModels from "./dictionary-models.js";
 import Pbf from "pbf";
 
-export function writeDictionary(dictionary: T.Dictionary): Uint8Array {
+export function writeDictionary(dictionary: T.Dictionary): ArrayBuffer {
     const pbfDict = new Pbf();
     protoModels.Dictionary.write(dictionary, pbfDict);
     const buffer = pbfDict.finish();
@@ -16,7 +16,7 @@ export function readDictionary(buffer: Uint8Array): T.Dictionary {
     return dictionary;
 }
 
-export function writeDictionaryInfo(dictionary: T.DictionaryInfo): Uint8Array {
+export function writeDictionaryInfo(dictionary: T.DictionaryInfo): ArrayBuffer {
     const pbfDict = new Pbf();
     protoModels.DictionaryInfo.write(dictionary, pbfDict);
     const buffer = pbfDict.finish();

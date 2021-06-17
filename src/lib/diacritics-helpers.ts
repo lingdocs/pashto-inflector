@@ -324,6 +324,7 @@ export enum PhonemeStatus {
     EndOfDuParticle,
     ShortAEndingAfterHeem,
     AlefDaggarEnding,
+    SilentAinAfterAlef,
     AinWithLongAAtBeginning,
     LongAinVowelMissingComma,
     ShortAinVowelMissingComma,
@@ -340,6 +341,7 @@ export enum PhonemeStatus {
     AlefHamzaBeg,
     GlottalStopBeforeOo,
     OoAfterGlottalStopOo,
+    EndingSmallH,
 }
 
 export function stateInfo({ state, i, phonemes, phoneme }: {
@@ -362,7 +364,7 @@ export function stateInfo({ state, i, phonemes, phoneme }: {
     // const nextPhoneme = (phonemes.length > (i + 1)) && phonemes[i+1];
     // const nextPhonemeInfo = nextPhoneme ? phonemeTable[nextPhoneme] : undefined;
     const doubleConsonant = previousPhonemeInfo && (phonemeInfo.consonant && previousPhonemeInfo.consonant);
-    const needsSukun = doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter));
+    const needsSukun = (doubleConsonant && ((previousPhoneme !== phoneme) || phonemeInfo.matches?.includes(currentPLetter))) // || (isEndOfWord && phonemeInfo.takesSukunOnEnding);
     const useAinBlendDiacritics = (!isBeginningOfWord && (phonemeInfo.ainBlendDiacritic && currentPLetter === "ع"));
     const diacritic = useAinBlendDiacritics
     ? phonemeInfo.ainBlendDiacritic
@@ -389,6 +391,9 @@ export function stateInfo({ state, i, phonemes, phoneme }: {
         }
         if (isBeginningOfWord && phoneme === "aa" && currentPLetter === "ع" && nextPLetter === "ا") {
             return PhonemeStatus.AinWithLongAAtBeginning;
+        }
+        if (currentPLetter === "ا" && nextPLetter === "ع" && phoneme === "aa" && nextPhoneme !== "'") {
+            return PhonemeStatus.SilentAinAfterAlef;
         }
         // console.log("------");
         // console.log("phoneme", phoneme);
