@@ -12,6 +12,7 @@ export type PsString = {
 } & {
     e?: string;
 };
+export type PsJSX = { p: JSX.Element, f: JSX.Element };
 
 export type DictionaryInfo = {
 	title: string;

@@ -11,6 +11,7 @@ import ConjugationViewer from "./components/ConjugationViewer";
 import verbs from "./verbs";
 import Pashto from "./components/Pashto";
 import Phonetics from "./components/Phonetics";
+import InlinePs from "./components/InlinePs";
 import { conjugateVerb } from "./lib/verb-conjugation";
 import { getVerbInfo } from "./lib/verb-info";
 import ButtonSelect from "./components/ButtonSelect";
@@ -25,7 +26,6 @@ import {
 } from "react-bootstrap";
 import * as T from "./types";
 import defualtTextOptions from "./lib/default-text-options";
-import InlinePs from "./components/InlinePs";
 
 type VerbType = "simple" | "stative compound" | "dynamic compound";
 const verbTypes: VerbType[] = [
@@ -181,14 +181,12 @@ function App() {
     const conjugation = v
         ? conjugateVerb(v.verb.entry, aayTailType, v.verb.complement)
         : undefined;
-    if (v) {
-        console.log("Verb chosen:");
-        console.log(v.verb);
-        console.log("Conjugation of verb:")
-        console.log(conjugation);
-    }
-    console.log(verbTypeShowing);
-    console.log(textOptions);
+    // if (v) {
+    //     console.log("Verb chosen:");
+    //     console.log(v.verb);
+    //     console.log("Conjugation of verb:")
+    //     console.log(conjugation);
+    // }
     return <>
         <main className="flex-shrink-0 mb-4">
             <div className="container" style={{ maxWidth: "800px" }}>

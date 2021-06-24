@@ -15,8 +15,8 @@ function InlinePs ({
     ps,
     opts,
 }: {
-    ps?: T.PsString,
-    children: T.PsString,
+    ps?: T.PsString | (T.PsJSX & { e?: string }),
+    children: T.PsString | (T.PsJSX & { e?: string }),
     opts: T.TextOptions,
 }) {
     const text = children || ps;
