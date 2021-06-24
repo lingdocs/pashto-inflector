@@ -27,19 +27,21 @@ const Pashto = ({ opts, children: text }: {
             ? p
             : convertAfToPkSpelling(p);
     }
-    if (typeof text.p !== "string" && typeof text.f !== "string") {
-        return psJSXMap(
-            text as T.PsJSX,
-            "p",
-            (ps: T.PsString) => convertText(ps, opts),
-        );
-    }
     const style = opts.pTextSize === "normal"
         ? undefined
         : { fontSize: opts.pTextSize === "larger" ? "large" : "larger" };
     return (
         <span className="p-text" dir="rtl" style={style}>
-            {convertText(text as T.PsString, opts)}
+            {(typeof text.p !== "string" && typeof text.f !== "string")
+                ?
+                    psJSXMap(
+                        text as T.PsJSX,
+                        "p",
+                        (ps: T.PsString) => convertText(ps, opts),
+                    )
+                :
+                    convertText(text as T.PsString, opts)
+            }
         </span>
     );
 };

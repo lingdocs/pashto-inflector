@@ -28,12 +28,10 @@ const Phonetics = ({ opts, children: text }: {
                 system: opts.phonetics,
             })
     );
-    if (typeof text !== "string" && typeof text.f !== "string") {
-        return psJSXMap(text as T.PsJSX, "f", ({f}) => handleText(f));
-    }
-    const f = typeof text === "string" ? text : text.f as string;
     return <span className="f-text">
-        {handleText(f)}
+        {(typeof text !== "string" && typeof text.f !== "string")
+            ? psJSXMap(text as T.PsJSX, "f", ({f}) => handleText(f))
+            : handleText(typeof text === "string" ? text : text.f as string)}
     </span>
 };
 
