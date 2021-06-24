@@ -68,7 +68,7 @@ export function JSXMap(e: JSX.Element, f: (s: string) => string): JSX.Element {
             ...e.props,
             children: typeof e.props.children === "string"
                 ? f(e.props.children) 
-                : e.props.children.map((x: string | JSX.Element, i: number) => {
+                : e.props.children.map((x: string | JSX.Element) => {
                     if (typeof x === "string") {
                         return f(x);
                     }
