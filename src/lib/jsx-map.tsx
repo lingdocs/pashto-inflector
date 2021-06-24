@@ -32,18 +32,17 @@ export function psJSXMap(ps: T.PsJSX, target: "p" | "f", dealWithString: (ps: T.
                         p: (target === "p" ? base : sec).props.children,
                         f: (target === "p" ? sec : base).props.children,
                     }) 
-                    : base.props.children.map((x: string | JSX.Element, i: number) => {
-                        if (typeof x === "string") {
-                            return dealWithString({
+                    : base.props.children.map((x: string | JSX.Element, i: number) => (
+                        (typeof x === "string") 
+                            ? dealWithString({
                                 p: (target === "p" ? x : sec.props.children[i]),
                                 f: (target === "p" ? sec.props.children[i] : x),
-                            });
-                        }
-                        return psJSXMap({
-                            p: (target === "p" ? x : sec.props.children[i]),
-                            f: (target === "p" ? sec.props.children[i] : x),
-                        }, target, dealWithString);
-                    }),
+                            })
+                            : psJSXMap({
+                                p: (target === "p" ? x : sec.props.children[i]),
+                                f: (target === "p" ? sec.props.children[i] : x),
+                            }, target, dealWithString)
+                    )),
             },
         };
     } catch (e) {
@@ -68,12 +67,9 @@ export function JSXMap(e: JSX.Element, f: (s: string) => string): JSX.Element {
             ...e.props,
             children: typeof e.props.children === "string"
                 ? f(e.props.children) 
-                : e.props.children.map((x: string | JSX.Element) => {
-                    if (typeof x === "string") {
-                        return f(x);
-                    }
-                    return JSXMap(x, f);
-                }),
+                : e.props.children.map((x: string | JSX.Element) => (
+                    (typeof x === "string") ? f(x) : JSXMap(x, f)
+                )),
         },
     };
 }
