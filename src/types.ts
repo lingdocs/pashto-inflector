@@ -28,6 +28,7 @@ export type Dictionary = {
 	entries: DictionaryEntry[];
 }
 
+// TODO: BETTER TYPING OF THIS WITH RECORD TO MAKE SURE THAT THE FIELDS LINE UP
 export type DictionaryEntry = {
     // BASE REQUIRED INFO
     /** timestamp - used for word id */

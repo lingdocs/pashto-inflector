@@ -43,6 +43,7 @@ message Entry {
     int32 separationAtP = 31;
     int32 separationAtF = 32;
     bool diacExcept = 33;
+    string ec = 34;
 }
 
 message Dictionary {
