@@ -18,7 +18,7 @@ const sampleDictionaryInfo: T.DictionaryInfo = {
 const sampleDictionary: T.Dictionary = {
     info: sampleDictionaryInfo,
     entries: [
-        {"i":616,"ts":1527813108,"p":"اظهار","f":"izháar","g":"izhaar","e":"expression, statement, declaration","c":"n. m."},
+        {"i":616,"ts":1527813108,"p":"اظهار","f":"izháar","g":"izhaar","e":"expression, statement, declaration","c":"n. m.","ec":"cool"},
     ],
 }
 
