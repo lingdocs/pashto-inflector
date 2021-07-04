@@ -1,7 +1,7 @@
 import * as T from "../types";
 
 export const dictionaryEntryTextFields: T.DictionaryEntryTextField[] = [
-    "p", "f", "e", "c", "infap", "infaf", "infbp", "infbf", "app", "apf", "ppp", "ppf", "psp", "psf", "ssp", "ssf", "prp", "prf", "pprtp", "pprtf", "tppp", "tppf",
+    "p", "f", "e", "c", "infap", "infaf", "infbp", "infbf", "app", "apf", "ppp", "ppf", "psp", "psf", "ssp", "ssf", "prp", "prf", "pprtp", "pprtf", "tppp", "tppf", "ec",
 ];
 export const dictionaryEntryBooleanFields: T.DictionaryEntryBooleanField[] = [
     "noInf", "shortIntrans", "noOo", "sepOo", "diacExcept",
