@@ -110,9 +110,11 @@ export type DictionaryEntry = {
 
     /** the English conjugations of a verb comma seperated set of 5 ie. "see,sees,seeing,saw,seen" or single word ie. "walk" if regular */
     ec?: string;
+    /** the English partical of a English phrasal verb  */
+    ep?: string;
 }
 
-export type DictionaryEntryTextField = "p" | "f" | "e" | "c" | "infap" | "infaf" | "infbp" | "infbf" | "app" | "apf" | "ppp" | "ppf" | "psp" | "psf" | "ssp" | "ssf" | "prp" | "prf" | "pprtp" | "pprtf" | "tppp" | "tppf" | "ec";
+export type DictionaryEntryTextField = "p" | "f" | "e" | "c" | "infap" | "infaf" | "infbp" | "infbf" | "app" | "apf" | "ppp" | "ppf" | "psp" | "psf" | "ssp" | "ssf" | "prp" | "prf" | "pprtp" | "pprtf" | "tppp" | "tppf" | "ec" | "ep";
 export type DictionaryEntryBooleanField = "noInf" | "shortIntrans" | "noOo" | "sepOo" | "diacExcept";
 export type DictionaryEntryNumberField = "ts" | "i" | "l" | "separationAtP" | "separationAtF";
 export type DictionaryEntryField = DictionaryEntryTextField | DictionaryEntryBooleanField | DictionaryEntryNumberField;

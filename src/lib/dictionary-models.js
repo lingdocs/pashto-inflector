@@ -66,6 +66,7 @@ Entry._readField = function (tag, obj, pbf) {
     else if (tag === 32) obj.separationAtF = pbf.readVarint(true);
     else if (tag === 33) obj.diacExcept = pbf.readBoolean();
     else if (tag === 34) obj.ec = pbf.readString();
+    else if (tag === 35) obj.ep = pbf.readString();
 };
 Entry.write = function (obj, pbf) {
     if (obj.ts) pbf.writeVarintField(1, obj.ts);
@@ -102,6 +103,7 @@ Entry.write = function (obj, pbf) {
     if (obj.separationAtF) pbf.writeVarintField(32, obj.separationAtF);
     if (obj.diacExcept) pbf.writeBooleanField(33, obj.diacExcept);
     if (obj.ec) pbf.writeStringField(34, obj.ec);
+    if (obj.ep) pbf.writeStringField(35, obj.ep);
 };
 
 // Dictionary ========================================

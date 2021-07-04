@@ -44,6 +44,7 @@ message Entry {
     int32 separationAtF = 32;
     bool diacExcept = 33;
     string ec = 34;
+    string ep = 35;
 }
 
 message Dictionary {
