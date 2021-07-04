@@ -126,8 +126,8 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
             mini: miniPronoun,
         };
     const english = (displayForm.englishBuilder && englishConjugation)
-        ? displayForm.englishBuilder(subject, englishConjugation, negative).map(sen => (
-            intransitive ? sen : `${sen} ${engObj(object)}`
+        ? displayForm.englishBuilder(subject, englishConjugation, negative).map(baseS => (
+            (intransitive || info.transitivity === "grammatically transitive") ? baseS : `${baseS} ${engObj(object)}`
         )).join(" / ")
         : undefined;
 
