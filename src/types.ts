@@ -106,6 +106,9 @@ export type DictionaryEntry = {
     // PHONETICS - PASHTO - DIACRITICS INFO
     /** Is an exception to the rules of diacritics for Pashto/Phonetics */
     diacExcept?: boolean;
+
+    /** the English conjugations of a verb comma seperated set of 5 ie. "see,sees,seeing,saw,seen" or single word ie. "walk" if regular */
+    ec?: string;
 }
 
 export type DictionaryEntryTextField = "p" | "f" | "e" | "c" | "infap" | "infaf" | "infbp" | "infbf" | "app" | "apf" | "ppp" | "ppf" | "psp" | "psf" | "ssp" | "ssf" | "prp" | "prf" | "pprtp" | "pprtf" | "tppp" | "tppf";
@@ -383,6 +386,9 @@ export type ArrayOneOrMore<T> = {
     0: T
 } & Array<T>
 
+/* i.e. ["eat", "eats", "eating", "ate", "eaten"] */
+export type EnglishVerbConjugation = [string, string, string, string, string];
+
 export type DisplayFormItem = DisplayForm | DisplayFormSubgroup | DisplayFormForSentence;
 
 export type DisplayForm = { 
@@ -390,6 +396,7 @@ export type DisplayForm = {
     aspect?: Aspect,
     form: VerbForm | ImperativeForm | ParticipleForm | SentenceForm,
     advanced?: boolean,
+    englishBuilder?: (subject: Person, ec: EnglishVerbConjugation, neg: boolean) => string[],
     formula: React.ReactNode,
     explanation: React.ReactNode,
     sentence?: boolean,
@@ -402,6 +409,7 @@ export type DisplayFormForSentence = {
     aspect?: Aspect,
     form: VerbForm,
     advanced?: boolean,
+    englishBuilder?: (subject: Person, ec: EnglishVerbConjugation, neg: boolean) => string[],
     formula: React.ReactNode,
     secondPronounNeeded?: boolean,
     explanation: React.ReactNode,

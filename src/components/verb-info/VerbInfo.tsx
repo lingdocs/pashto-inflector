@@ -29,15 +29,21 @@ const indentR = {
     paddingLeft: "1rem",
 };
 
+const highlight = {
+    background: "yellow",
+};
+
 const title: CSSProperties = {
     fontWeight: "bolder",
     marginBottom: "0.5rem",
     marginTop: "0.5rem",
 };
 
-export function RootsAndStems({ textOptions, info }: {
+export function RootsAndStems({ textOptions, info, hidePastParticiple, highlighted }: {
     textOptions: T.TextOptions,
     info: T.NonComboVerbInfo,
+    hidePastParticiple?: boolean,
+    highlighted?: ("imperfective root" | "perfective root" | "imperfective stem" | "perfective stem" | "past participle")[],
 }) {
     const hasPerfectiveSplit = !!(info.root.perfectiveSplit || info.stem.perfectiveSplit);
     const showPersInf = hasPersInfs(info);
@@ -64,7 +70,7 @@ export function RootsAndStems({ textOptions, info }: {
                 margin: "0 auto",
                 backgroundImage: `url(${fadedTree})`,
                 backgroundRepeat: "no-repeat",
-                backgroundPosition: "50% 35%",
+                backgroundPosition: hidePastParticiple ? "50% 45%" : "50% 35%",
                 backgroundSize: "50%",    
             }}>
                 {/* <div style={{
@@ -103,7 +109,7 @@ export function RootsAndStems({ textOptions, info }: {
                         </div>
                     </div>
                     <div className={rowClass}>
-                        <div className={colClass}>
+                        <div className={colClass} style={highlighted?.includes("imperfective stem") ? highlight : {}}>
                             <div style={title}>
                                 <div>Imperfective Stem</div>
                             </div>
@@ -115,7 +121,7 @@ export function RootsAndStems({ textOptions, info }: {
                                 />
                             </div>
                         </div>
-                        <div className={colClass}>
+                        <div className={colClass} style={highlighted?.includes("perfective stem") ? highlight : {}}>
                             <div style={title}>
                                 <div>Perfective Stem</div>
                             </div>
@@ -129,7 +135,7 @@ export function RootsAndStems({ textOptions, info }: {
                         </div>
                     </div>
                     <div className={rowClass}>
-                        <div className={colClass}>
+                        <div className={colClass} style={highlighted?.includes("imperfective root") ? highlight : {}}>
                             <div style={title}>
                                 <div>Imperfective Root</div>
                             </div>
@@ -140,7 +146,7 @@ export function RootsAndStems({ textOptions, info }: {
                                 />
                             </div>
                         </div>
-                        <div className={colClass}>
+                        <div className={colClass} style={highlighted?.includes("perfective root") ? highlight : {}}>
                             <div>
                                 <div style={title}>
                                     <div>Perfective Root</div>
@@ -154,13 +160,13 @@ export function RootsAndStems({ textOptions, info }: {
                             </div>
                         </div>
                     </div>
-                    <div className="text-center">
+                    {!hidePastParticiple && <div className="text-center" style={highlighted?.includes("imperfective stem") ? highlight : {}}>
                         <div style={title}>Past Participle</div>
                             <VerbInfoItemDisplay
                                 item={pickPersInf(info.participle.past, persInf)}
                                 textOptions={textOptions}
                             />
-                    </div>
+                    </div>}
                 </div>
             </div>
         </div>

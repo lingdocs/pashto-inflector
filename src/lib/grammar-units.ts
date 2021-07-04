@@ -149,6 +149,31 @@ export const subjPastEquative: T.PsString = {
     f: "w" + aayTail.f,
 };
 
+export const englishEquative: {
+    past: T.EnglishBlock,
+    present: T.EnglishBlock,
+    // present: T.VerbBlock,
+    // subjunctive: T.VerbBlock,
+    // hypothetical: T.VerbBlock,
+} = {
+    past: [
+        ["was", "were"],
+        ["was", "were"],
+        ["were", "were"],
+        ["were", "were"],
+        ["was", "were"],
+        ["was", "were"],
+    ],
+    present: [
+        ["am", "are"],
+        ["am", "are"],
+        ["are", "are"],
+        ["are", "are"],
+        ["is", "are"],
+        ["is", "are"],
+    ],
+}
+
 export const equativeEndings: {
     past: T.LengthOptions<T.VerbBlock>,
     present: T.VerbBlock,

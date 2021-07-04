@@ -40,7 +40,7 @@ const transitivities: T.Transitivity[] = [
     "grammatically transitive",
 ];
 
-const allVerbs = verbs.map((v: any) => ({
+const allVerbs = verbs.map((v: { entry: T.DictionaryEntry, complement?: T.DictionaryEntry }) => ({
     verb: v,
     info: getVerbInfo(v.entry, v.complement),
 }));
@@ -311,6 +311,7 @@ function App() {
                 {conjugation && <ConjugationViewer
                     conjugation={conjugation}
                     textOptions={textOptions}
+                    ec={v ? v.verb.entry.ec : undefined}
                 />}
             </div>
         </main>

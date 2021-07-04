@@ -206,6 +206,30 @@ export function isNounAdjOrVerb(entry: T.DictionaryEntry): "nounAdj" | "verb" | 
     return false;
 }
 
+/**
+ * takes the ec field from a dictionary entry and produces an array of an EnglishVerbConjugation
+ * for use with the conjugations display for showing English translation sentences of various verb
+ * forms and conjugations
+ * 
+ * @param ec 
+ * @returns 
+ */
+export function parseEc(ec: string | undefined): T.EnglishVerbConjugation | undefined {
+    function makeRegularConjugations(s: string): T.EnglishVerbConjugation {
+        const b = (s.slice(-1) === "e")
+            ? s.slice(0, -1)
+            : s;
+        return [`${s}`, `${s}s`, `${b}ing`, `${b}ed`, `${b}ed`];
+    }
+    if (!ec) {
+        return undefined;
+    }
+    const items = ec.split(",").map(x => x.trim());
+    return (items.length !== 5)
+        ? makeRegularConjugations(items[0])
+        : [items[0], items[1], items[2], items[3], items[4]];
+}
+
 // not being used
 // export function isImperativeBlock(f: any): boolean {
 //     function isPersonLine(g: any): boolean {

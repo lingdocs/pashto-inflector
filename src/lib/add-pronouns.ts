@@ -63,7 +63,7 @@ type Pronouns = undefined | {
 
 const nuParticle = { p: "نه", f: "nú" };
 
-export default function addPronouns({ s, subject, object, info, displayForm, intransitive, ergative, matrixKey, negative }: {
+export default function addPronouns({ s, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative }: {
     s: T.SentenceForm,
     subject: T.Person,
     object: T.Person,
@@ -73,13 +73,14 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
     ergative: boolean,
     matrixKey: T.PersonInflectionsField,
     negative: boolean,
+    englishConjugation?: T.EnglishVerbConjugation,
 }): T.SentenceForm {
     if ("long" in s) {
         return {
-            long: addPronouns({ s: s.long, subject, object, info, displayForm, intransitive, ergative, matrixKey, negative }) as T.ArrayOneOrMore<T.PsString>,
-            short: addPronouns({ s: s.short, subject, object, info, displayForm, intransitive, ergative, matrixKey, negative }) as T.ArrayOneOrMore<T.PsString>,
+            long: addPronouns({ s: s.long, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative }) as T.ArrayOneOrMore<T.PsString>,
+            short: addPronouns({ s: s.short, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative }) as T.ArrayOneOrMore<T.PsString>,
             ...s.mini ? {
-                mini: addPronouns({ s: s.mini, subject, object, info, displayForm, intransitive, ergative, matrixKey, negative }) as T.ArrayOneOrMore<T.PsString>,
+                mini: addPronouns({ s: s.mini, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative }) as T.ArrayOneOrMore<T.PsString>,
             } : {},
         }
     }
@@ -124,6 +125,11 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
             object: nearPronounPossible(object) ? [objectPronoun, nearObjectPronoun] : objectPronoun,
             mini: miniPronoun,
         };
+    const english = (displayForm.englishBuilder && englishConjugation)
+        ? displayForm.englishBuilder(subject, englishConjugation, negative).map(sen => (
+            intransitive ? sen : `${sen} ${engObj(object)}`
+        )).join(" / ")
+        : undefined;
 
     function attachPronounsToVariation(ps: T.PsString, prns: Pronouns): T.ArrayOneOrMore<T.PsString> {
         if (!prns) {
@@ -170,7 +176,7 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
             ...canWorkWithOnlyMini
                 ? makeOnlyMiniForm(ps, splitHead, displayForm, info, negative, prns.mini)
                 : [],
-        ] as T.ArrayOneOrMore<T.PsString>;
+        ].map((ps) => english ? { ...ps, e: english } : ps) as T.ArrayOneOrMore<T.PsString>;
     }
 
     // @ts-ignore
@@ -484,4 +490,22 @@ function getObjComplement(info: T.NonComboVerbInfo): T.PsString | undefined {
     return info.type === "dynamic compound" ? 
         (info.objComplement.plural ? info.objComplement.plural : info.objComplement.entry) :
         undefined;
+}
+
+function engObj(s: T.Person): string {
+    return (s === T.Person.FirstSingMale || s === T.Person.FirstSingFemale)
+        ? "me"
+        : (s === T.Person.FirstPlurMale || s === T.Person.FirstPlurFemale)
+        ? "us"
+        : (s === T.Person.SecondSingMale || s === T.Person.SecondSingFemale)
+        ? "you"
+        : (s === T.Person.SecondPlurMale || s === T.Person.SecondPlurFemale)
+        ? "you (pl.)"
+        : (s === T.Person.ThirdSingMale)
+        ? "him/it"
+        : (s === T.Person.ThirdSingFemale)
+        ? "her/it"
+        : (s === T.Person.ThirdPlurMale)
+        ? "them"
+        : "them (f.)";
 }

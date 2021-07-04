@@ -17,6 +17,7 @@ import {
     personIsAllowed,
     randomPerson,
     incrementPerson,
+    parseEc,
 } from "../lib/misc-helpers";
 import * as T from "../types";
 
@@ -170,9 +171,10 @@ const initialState: State = {
     formsOpened: [],
 };
 
-function ConjugationViewer({ conjugation, textOptions }: {
+function ConjugationViewer({ conjugation, textOptions, ec }: {
     conjugation: T.VerbOutput,
     textOptions: T.TextOptions,
+    ec?: string | undefined,
 }) {
     const [state, dispatch] = useReducer(reducer, initialState);
     useEffect(() => {
@@ -194,6 +196,7 @@ function ConjugationViewer({ conjugation, textOptions }: {
     const verbConj = (verbConj1.singularForm && state.compoundComplementVersionSelected === "sing")
         ? verbConj1.singularForm
         : verbConj1;
+    const englishConjugation = parseEc(ec);
 
     useEffect(() => {
         localStorage.setItem(stateLocalStorageName, JSON.stringify(state));
@@ -209,6 +212,7 @@ function ConjugationViewer({ conjugation, textOptions }: {
         subject: state.subject,
         object: state.object,
         negative: state.negative,
+        englishConjugation,
     });
     return <div className="mb-4">
         {"transitive" in conjugation && <div className="text-center my-2">
