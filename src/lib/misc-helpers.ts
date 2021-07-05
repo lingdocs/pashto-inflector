@@ -215,8 +215,11 @@ export function isNounAdjOrVerb(entry: T.DictionaryEntry): "nounAdj" | "verb" | 
  * @returns 
  */
 export function parseEc(ec: string): T.EnglishVerbConjugationEc {
+    function isVowel(s: string): boolean {
+        return ["a", "e", "i", "o", "u"].includes(s);
+    }
     function makeRegularConjugations(s: string): T.EnglishVerbConjugationEc {
-        if (s.slice(-1) === "y") {
+        if ((s.slice(-1) === "y") && !isVowel(s.slice(-2)[0])) {
             const b = s.slice(0, -1);
             return [`${s}`, `${b}ies`, `${s}ing`, `${b}ied`, `${b}ied`];
         }

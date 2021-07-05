@@ -14,6 +14,7 @@ test("parseEc should work", () => {
     expect(parseEc("walk")).toEqual(["walk", "walks", "walking", "walked", "walked"]);
     expect(parseEc("scare")).toEqual(["scare", "scares", "scaring", "scared", "scared"]);
     expect(parseEc("study")).toEqual(["study","studies","studying","studied","studied"]);
+    expect(parseEc("play")).toEqual(["play","plays","playing","played","played"]);
     expect(parseEc("sew,sews,sewing,sewed,sown")).toEqual(["sew", "sews", "sewing", "sewed", "sown"]);
     expect(parseEc(" sew, sews,sewing ,sewed, sown")).toEqual(["sew", "sews", "sewing", "sewed", "sown"]);
 });
