@@ -326,7 +326,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
             aspect: "imperfective",
             form: conj.imperfective.imperative,
             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                `${v[0]}`,
+                `${n ? "Don't " : ""}${v[0]}`,
             ]),
             formula: "Imperfective Stem + Imperative Ending",
             explanation: "Commanding someone/people to do something repeatedly, or in general",
@@ -592,7 +592,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             sentence: true,
                             passive: true,
                             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                                `that ${engSubj(s, true)} will have been ${v[4]}`,
+                                `that ${engSubj(s, true)} will${n ? " not" : ""} have been ${v[4]}`,
                             ]),
                             formula: "Infinitive + کېدل (to be) past participle inflected + Subjunctive/Habitual Equative",
                         },
@@ -604,7 +604,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             sentence: true,
                             passive: true,
                             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                                `${engSubj(s)} will have been ${v[4]}`,
+                                `${engSubj(s)} will${n ? " not" : ""} have been ${v[4]}`,
                             ]),
                             formula: "به - ba + Infinitive + کېدل (to be) past participle inflected + Future Equative",
                             explanation: "Talking about something that will have happened in the future, or guessing that the event will have occured presently (Passive voice) ('I will have been ____ed')",
@@ -617,7 +617,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             sentence: true,
                             passive: true,
                             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                                `${engSubj(s)} will have been ${v[4]}`,
+                                `${engSubj(s)} will${n ? " not" : ""} have been ${v[4]}`,
                             ]),
                             explanation: "Affirming that an event will have taken place (Passive voice) ('I will have been ____ed')",
                             formula: "به - ba + Infinitive + کېدل (to be) past participle inflected + Past Equative"

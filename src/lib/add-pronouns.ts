@@ -84,6 +84,14 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
             } : {},
         }
     }
+    function makeEnglish(englishBuilder: T.EnglishBuilder, englishConjugation: T.EnglishVerbConjugation): string[] {
+        const noObject = (intransitive || info.transitivity === "grammatically transitive");
+        const addRest = (s: string) => (
+            `${s}${noObject ? "" : ` ${engObj(object)}`}${englishConjugation.ep ? ` ${englishConjugation.ep}` : ""}`
+        );
+        return englishBuilder(subject, englishConjugation.ec, negative)
+            .map(addRest);
+    }
     const firstOrSecondObjectPresent = [0,1,2,3,6,7,8,9].includes(object) && !displayForm.past;
     const nearPronounPossible = (p: T.Person) => [4, 5, 10, 11].includes(p);
     const noPronouns =
@@ -126,11 +134,7 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
             mini: miniPronoun,
         };
     const english = (displayForm.englishBuilder && englishConjugation)
-        ? displayForm.englishBuilder(subject, englishConjugation.ec, negative).map(baseS => (
-            (intransitive || info.transitivity === "grammatically transitive")
-            ? baseS
-            : `${baseS} ${engObj(object)}${englishConjugation.ep ? ` ${englishConjugation.ep}` : ""}`
-        ))
+        ? makeEnglish(displayForm.englishBuilder, englishConjugation)
         : undefined;
 
     function attachPronounsToVariation(ps: T.PsString, prns: Pronouns): T.ArrayOneOrMore<T.PsString> {

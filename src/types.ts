@@ -397,13 +397,14 @@ export type EnglishVerbConjugation = {
 };
 
 export type DisplayFormItem = DisplayForm | DisplayFormSubgroup | DisplayFormForSentence;
+export type EnglishBuilder = (subject: Person, ec: EnglishVerbConjugationEc, neg: boolean) => string[];
 
 export type DisplayForm = { 
     label: string,
     aspect?: Aspect,
     form: VerbForm | ImperativeForm | ParticipleForm | SentenceForm,
     advanced?: boolean,
-    englishBuilder?: (subject: Person, ec: EnglishVerbConjugationEc, neg: boolean) => string[],
+    englishBuilder?: EnglishBuilder,
     formula: React.ReactNode,
     explanation: React.ReactNode,
     sentence?: boolean,
@@ -411,20 +412,26 @@ export type DisplayForm = {
     past?: boolean,
     reorderWithNegative?: boolean,
 }
-export type DisplayFormForSentence = { 
-    label: string,
-    aspect?: Aspect,
+
+export type DisplayFormForSentence = Omit<DisplayForm, "form"> & {
     form: VerbForm,
-    advanced?: boolean,
-    englishBuilder?: (subject: Person, ec: EnglishVerbConjugationEc, neg: boolean) => string[],
-    formula: React.ReactNode,
     secondPronounNeeded?: boolean,
-    explanation: React.ReactNode,
-    sentence?: boolean,
-    passive?: boolean,
-    past?: boolean,
-    reorderWithNegative?: boolean,
-}
+} 
+
+// { 
+//     label: string,
+//     aspect?: Aspect,
+//     form: VerbForm,
+//     advanced?: boolean,
+//     englishBuilder?: EnglishBuilder,
+//     formula: React.ReactNode,
+//     secondPronounNeeded?: boolean,
+//     explanation: React.ReactNode,
+//     sentence?: boolean,
+//     passive?: boolean,
+//     past?: boolean,
+//     reorderWithNegative?: boolean,
+// }
 
 export type DisplayFormSubgroup = {
     label: string,
