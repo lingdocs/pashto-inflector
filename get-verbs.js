@@ -48,7 +48,7 @@ function getFromTsS(entries) {
     const missingEc = [];
     const toReturn = allTsS.map(ts => {
         const entry = entries.find(x => ts === x.ts);
-        if (!entry.ec) {
+        if (!entry.ec && !entry.e.includes("to be ")) {
             missingEc.push(entry.ts);
         }
         if (!entry) {
