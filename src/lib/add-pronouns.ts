@@ -85,7 +85,7 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
         }
     }
     function makeEnglish(englishBuilder: T.EnglishBuilder, englishConjugation: T.EnglishVerbConjugation): string[] {
-        const noObject = (intransitive || info.transitivity === "grammatically transitive");
+        const noObject = (intransitive || info.transitivity === "grammatically transitive" || info.type === "dynamic compound");
         const addRest = (s: string) => (
             `${s}${noObject ? "" : ` ${engObj(object)}`}${englishConjugation.ep ? ` ${englishConjugation.ep}` : ""}`
         );

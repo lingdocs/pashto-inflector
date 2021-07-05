@@ -45,8 +45,12 @@ export default verbs;`;
 });
 
 function getFromTsS(entries) {
-    return allTsS.map(ts => {
+    const missingEc = [];
+    const toReturn = allTsS.map(ts => {
         const entry = entries.find(x => ts === x.ts);
+        if (!entry.ec) {
+            missingEc.push(entry.ts);
+        }
         if (!entry) {
             console.log("couldn't find ts", ts);
             return undefined;
@@ -60,4 +64,9 @@ function getFromTsS(entries) {
         }
         return { entry };
     }).filter(x => x);
+    if (missingEc.length !== 0) {
+        console.log("missingEc", missingEc);
+    }
+    return toReturn;
+
 }
