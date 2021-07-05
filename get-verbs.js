@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-
 const fs = require("fs");
 const fetch = require("node-fetch");
 const path = require("path");
