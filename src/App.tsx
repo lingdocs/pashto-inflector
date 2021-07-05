@@ -312,6 +312,7 @@ function App() {
                     conjugation={conjugation}
                     textOptions={textOptions}
                     ec={v ? v.verb.entry.ec : undefined}
+                    ep={v ? v.verb.entry.ep : undefined}
                 />}
             </div>
         </main>

@@ -171,10 +171,11 @@ const initialState: State = {
     formsOpened: [],
 };
 
-function ConjugationViewer({ conjugation, textOptions, ec }: {
+function ConjugationViewer({ conjugation, textOptions, ec, ep }: {
     conjugation: T.VerbOutput,
     textOptions: T.TextOptions,
     ec?: string | undefined,
+    ep?: string | undefined,
 }) {
     const [state, dispatch] = useReducer(reducer, initialState);
     useEffect(() => {
@@ -196,7 +197,10 @@ function ConjugationViewer({ conjugation, textOptions, ec }: {
     const verbConj = (verbConj1.singularForm && state.compoundComplementVersionSelected === "sing")
         ? verbConj1.singularForm
         : verbConj1;
-    const englishConjugation = parseEc(ec);
+    const englishConjugation: T.EnglishVerbConjugation | undefined = ec ? {
+        ec: parseEc(ec),
+        ep: ep,
+    } : undefined;
 
     useEffect(() => {
         localStorage.setItem(stateLocalStorageName, JSON.stringify(state));

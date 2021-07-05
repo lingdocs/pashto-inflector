@@ -35,7 +35,9 @@ function TableCell({ item, textOptions, center, noBorder }: {
                     <div>
                         <Phonetics opts={textOptions}>{w}</Phonetics>
                     </div>
-                    {w.e && <div className="text-muted">{w.e}</div>}
+                    {w.e && (Array.isArray(w.e)
+                        ? w.e.map(e => <div key={e} className="text-muted small">{e}</div>)
+                        : <div className="text-muted">{w.e}</div>)}
                 </div>
                 {item.length > 1 &&
                     <button className="btn btn-sm btn-light mx-2 my-2" onClick={advanceVersion}>

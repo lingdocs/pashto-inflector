@@ -19,7 +19,7 @@ function SingleItemDisplay({ item, textOptions, english }: {
     return <div className="text-center mt-3 mb-2">
         <div><Pashto opts={textOptions}>{item}</Pashto></div>
         <div><Phonetics opts={textOptions}>{item}</Phonetics></div>
-        {eng && <div>{eng}</div>}
+        {eng && <div className="text-muted">{eng}</div>}
     </div>;
 }
 

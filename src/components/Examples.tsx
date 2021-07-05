@@ -12,6 +12,18 @@ import * as T from "../types";
 
 type PsStringWSub = T.PsString & { sub?: any };
 
+function EnglishContent({ children }: { children: (string | JSX.Element)[] | (string | JSX.Element) }) {
+    if (Array.isArray(children)) {
+        console.log(children);
+        return <>
+            {children.map((x) => <EnglishContent>{x}</EnglishContent>)}
+        </>
+    }
+    return <div className="text-muted">
+        {children}
+    </div>;
+}
+
 function Examples({ 
     children,
     ex,
@@ -30,9 +42,9 @@ function Examples({
             <div>
                 <Phonetics opts={opts}>{text}</Phonetics>
             </div>
-            {text.e && <div className="text-muted">
+            {text.e && <EnglishContent>
                 {text.e}
-            </div>}
+            </EnglishContent>}
             {text.sub && <div className="small text-muted">
                 {text.sub}
             </div>} 

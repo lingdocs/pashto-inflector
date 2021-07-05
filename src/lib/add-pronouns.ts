@@ -126,9 +126,11 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
             mini: miniPronoun,
         };
     const english = (displayForm.englishBuilder && englishConjugation)
-        ? displayForm.englishBuilder(subject, englishConjugation, negative).map(baseS => (
-            (intransitive || info.transitivity === "grammatically transitive") ? baseS : `${baseS} ${engObj(object)}`
-        )).join(" / ")
+        ? displayForm.englishBuilder(subject, englishConjugation.ec, negative).map(baseS => (
+            (intransitive || info.transitivity === "grammatically transitive")
+            ? baseS
+            : `${baseS} ${engObj(object)}${englishConjugation.ep ? ` ${englishConjugation.ep}` : ""}`
+        ))
         : undefined;
 
     function attachPronounsToVariation(ps: T.PsString, prns: Pronouns): T.ArrayOneOrMore<T.PsString> {

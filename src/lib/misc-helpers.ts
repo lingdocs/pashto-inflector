@@ -214,15 +214,12 @@ export function isNounAdjOrVerb(entry: T.DictionaryEntry): "nounAdj" | "verb" | 
  * @param ec 
  * @returns 
  */
-export function parseEc(ec: string | undefined): T.EnglishVerbConjugation | undefined {
-    function makeRegularConjugations(s: string): T.EnglishVerbConjugation {
+export function parseEc(ec: string): T.EnglishVerbConjugationEc {
+    function makeRegularConjugations(s: string): T.EnglishVerbConjugationEc {
         const b = (s.slice(-1) === "e")
             ? s.slice(0, -1)
             : s;
         return [`${s}`, `${s}s`, `${b}ing`, `${b}ed`, `${b}ed`];
-    }
-    if (!ec) {
-        return undefined;
     }
     const items = ec.split(",").map(x => x.trim());
     return (items.length !== 5)

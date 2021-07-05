@@ -141,7 +141,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         form: conj.imperfective.nonImperative,
         formula: "Imperfective Stem + Present Ending",
         sentence: true,
-        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `${engSubj(s)} ${n ? `${engPresC(s, ["don't", "doesn't"])} ` : ""}${n ? v[0] : engPresC(s, v)}`,
             `${engSubj(s)} ${engEquative("present", s)}${n ? " not" : ""} ${v[2]}`,
         ]),
@@ -153,7 +153,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         form: conj.perfective.nonImperative,
         formula: "Perfective Stem + Present Ending",
         sentence: true,
-        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `that ${engSubj(s, true)}${n ? " won't" : "'ll"} ${v[0]}`,
             `should ${engSubj(s, true)}${n ? " not" : ""} ${v[0]}`,
         ]),
@@ -166,7 +166,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         advanced: true,
         formula: "به - ba + Present",
         sentence: true,
-        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `${engSubj(s)} will${n ? " not" : ""} ${v[0]}`,
         ]),
         explanation: "Saying something will happen, repeatedly or as an ongoing action",
@@ -178,7 +178,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         advanced: true,
         formula: "به - ba + Subjunctive",
         sentence: true,
-        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `${engSubj(s)} will${n ? " not" : ""} ${v[0]}`,
         ]),
         explanation: "Saying something will happen as a one-time event - May also used when there is some doubt",
@@ -189,7 +189,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         form: conj.imperfective.past,
         formula: "Imperfective Root + Past Ending",
         sentence: true,
-        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             //  - subj "was" (N && "not") v.2 obj
             `${engSubj(s)} ${engEquative("past", s)}${n ? " not" : ""} ${v[2]}`,
             //  - subj "would" (N && "not") v.0 obj
@@ -204,7 +204,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         form: conj.perfective.past,
         formula: "Perfective Root + Past Ending",
         sentence: true,
-        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `${engSubj(s)}${n ? " did not" : ""} ${v[3]}`,
         ]),
         explanation: "Saying something happened ('I ____ed')",
@@ -220,7 +220,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 aspect: "imperfective",
                 form: conj.imperfective.modal.nonImperative,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} can${n ? "'t" : ""} ${v[0]}`,
                 ]),
                 formula: "Imperfective Root + Non-Inflectinig Ey-Tail + Subjunctive کېدل - to become",
@@ -233,7 +233,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 form: conj.perfective.modal.nonImperative,
                 advanced: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `that ${engSubj(s, true)} can${n ? "'t" : ""} ${v[0]}`,
                 ]),
                 formula: "Perfective Root + Non-Inflectinig Ey-Tail + Subjunctive کېدل - to become",
@@ -246,7 +246,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 form: conj.imperfective.modal.future,
                 advanced: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} will${n ? " not" : ""} be able to ${v[0]}`,
                 ]),
                 formula: "به - ba + Present Modal",
@@ -259,7 +259,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 form: conj.perfective.modal.future,
                 advanced: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} will${n ? " not" : ""} be able to ${v[0]}`,
                 ]),
                 formula: "به - ba + Subjunctive Modal",
@@ -273,7 +273,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 advanced: true,
                 past: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} ${engEquative("past", s)} ${n ? " not" : ""} able to ${v[0]}`,
                     `${engSubj(s)} could${n ? " not" : ""} ${v[0]}`,
                 ]),
@@ -288,7 +288,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 formula: "Perfective Root + Non-Inflectinig Ey-Tail + Simple Past کېدل - to become",
                 explanation: "saying that something was possible at a certain point in time ('I was able to ____, at one particular point in time')",
                 past: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} ${engEquative("past", s)} ${n ? " not" : ""} able to ${v[0]}`,
                     `${engSubj(s)} could${n ? " not" : ""} ${v[0]}`,
                 ]),
@@ -325,7 +325,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
             label: "Imperfective Imperative",
             aspect: "imperfective",
             form: conj.imperfective.imperative,
-            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                 `${v[0]}`,
             ]),
             formula: "Imperfective Stem + Imperative Ending",
@@ -336,7 +336,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
             label: "Perfective Imperative",
             aspect: "perfective",
             form: conj.perfective.imperative,
-            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                 `${v[0]}`,
             ]),
             formula: "Perfective Stem + Imperative Ending",
@@ -352,7 +352,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 form: conj.perfect.halfPerfect,
                 past: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} ${engHave(s)}${n ? " not" : ""} ${v[4]}`,
                 ]),
                 formula: "Past participle inflected",
@@ -364,7 +364,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 form: conj.perfect.past,
                 past: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} had${n ? " not" : ""} ${v[4]}`,
                 ]),
                 formula: "Past participle inflected + Past Equative",
@@ -376,7 +376,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 form: conj.perfect.present,
                 past: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} ${engHave(s)}${n ? " not" : ""} ${v[4]}`,
                 ]),
                 formula: "Past participle inflected + Present Equative",
@@ -388,7 +388,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 form: conj.perfect.subjunctive,
                 past: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `that ${engSubj(s, true)} will have${n ? " not" : ""} ${v[4]}`,
                 ]),
                 formula: "Past participle inflected + Subjunctive/Habitual Equative",
@@ -401,7 +401,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 advanced: true,
                 past: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} will${n ? " not" : ""} have ${v[4]}`,
                 ]),
                 formula: "به - ba + Past participle Inflected + Future Equative",
@@ -414,7 +414,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 advanced: true,
                 past: true,
                 sentence: true,
-                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `${engSubj(s)} will${n ? " not" : ""} have ${v[4]}`,
                 ]),
                 explanation: "Affirming that an event will have taken place ('I will have ____ed')",
@@ -475,7 +475,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                     form: conj.passive.imperfective.nonImperative,
                     sentence: true,
                     passive: true,
-                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                         `${engSubj(s)} ${engEquative("present", s)}${n ? " not" : ""} being ${v[4]}`,
                     ]),
                     formula: "Long Imperfective Root + Present کېدل - to become",
@@ -487,7 +487,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                     form: conj.passive.perfective.nonImperative,
                     sentence: true,
                     passive: true,
-                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                         `that ${engSubj(s, true)} will${n ? " not" : ""} be ${v[4]}`,
                     ]),
                     formula: "Long Perfective Root + Subjunctive کېدل - to become",
@@ -499,7 +499,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                     form: conj.passive.imperfective.future,
                     sentence: true,
                     passive: true,
-                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                         `${engSubj(s)} will${n ? " not" : ""} be ${v[4]}`,
                     ]),
                     formula: "به - ba + Passive Present",
@@ -511,7 +511,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                     form: conj.passive.perfective.future,
                     sentence: true,
                     passive: true,
-                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                         `${engSubj(s)} will${n ? " not" : ""} be ${v[4]}`,
                     ]),
                     formula: "به - ba + Passive Subjunctive",
@@ -524,7 +524,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                     past: true,
                     sentence: true,
                     passive: true,
-                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                         `${engSubj(s)} ${engEquative("past", s)}${n ? " not" : ""} being ${v[4]}`,
                     ]),
                     formula: "Long Imperfective Root + Continuous Past کېدل - to become",
@@ -537,7 +537,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                     past: true,
                     sentence: true,
                     passive: true,
-                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                    englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                         `${engSubj(s)} ${engEquative("past", s)}${n ? " not" : ""} ${v[4]}`,
                     ]),
                     formula: "Long Perfective Root + Simple Past کېدل - to become",
@@ -555,7 +555,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             past: true,
                             sentence: true,
                             passive: true,
-                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} ${engHave(s)}${n ? " not" : ""} been ${v[4]}`,
                             ]),
                             formula: "Infinitive + کېدل (to be) past participle inflected",
@@ -567,7 +567,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             past: true,
                             sentence: true,
                             passive: true,
-                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} had${n ? " not" : ""} been ${v[4]}`,
                             ]),
                             formula: "Infinitive + کېدل (to be) past participle inflected + Past Equative",
@@ -579,7 +579,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             past: true,
                             sentence: true,
                             passive: true,
-                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} ${engHave(s)}${n ? " not" : ""} been ${v[4]}`,
                             ]),
                             formula: "Infinitive + کېدل (to be) past participle inflected + Present Equative",
@@ -591,7 +591,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             past: true,
                             sentence: true,
                             passive: true,
-                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `that ${engSubj(s, true)} will have been ${v[4]}`,
                             ]),
                             formula: "Infinitive + کېدل (to be) past participle inflected + Subjunctive/Habitual Equative",
@@ -603,7 +603,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             past: true,
                             sentence: true,
                             passive: true,
-                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} will have been ${v[4]}`,
                             ]),
                             formula: "به - ba + Infinitive + کېدل (to be) past participle inflected + Future Equative",
@@ -616,7 +616,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             past: true,
                             sentence: true,
                             passive: true,
-                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugation, n: boolean) => ([
+                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} will have been ${v[4]}`,
                             ]),
                             explanation: "Affirming that an event will have taken place (Passive voice) ('I will have been ____ed')",
@@ -675,7 +675,7 @@ function isThirdPerson(p: T.Person): boolean {
     );
 }
 
-function engPresC(s: T.Person, ec: T.EnglishVerbConjugation | [string, string]): string {
+function engPresC(s: T.Person, ec: T.EnglishVerbConjugationEc | [string, string]): string {
     return isThirdPerson(s) ? ec[1] : ec[0];
 }
 

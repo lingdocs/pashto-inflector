@@ -389,8 +389,12 @@ export type ArrayOneOrMore<T> = {
     0: T
 } & Array<T>
 
-/* i.e. ["eat", "eats", "eating", "ate", "eaten"] */
-export type EnglishVerbConjugation = [string, string, string, string, string];
+/* i.e. ec: ["take", "takes", "taking", "took", "taken"], ep: out  */
+export type EnglishVerbConjugationEc = [string, string, string, string, string]; 
+export type EnglishVerbConjugation = {
+    ec: EnglishVerbConjugationEc,
+    ep: string | undefined,
+};
 
 export type DisplayFormItem = DisplayForm | DisplayFormSubgroup | DisplayFormForSentence;
 
@@ -399,7 +403,7 @@ export type DisplayForm = {
     aspect?: Aspect,
     form: VerbForm | ImperativeForm | ParticipleForm | SentenceForm,
     advanced?: boolean,
-    englishBuilder?: (subject: Person, ec: EnglishVerbConjugation, neg: boolean) => string[],
+    englishBuilder?: (subject: Person, ec: EnglishVerbConjugationEc, neg: boolean) => string[],
     formula: React.ReactNode,
     explanation: React.ReactNode,
     sentence?: boolean,
@@ -412,7 +416,7 @@ export type DisplayFormForSentence = {
     aspect?: Aspect,
     form: VerbForm,
     advanced?: boolean,
-    englishBuilder?: (subject: Person, ec: EnglishVerbConjugation, neg: boolean) => string[],
+    englishBuilder?: (subject: Person, ec: EnglishVerbConjugationEc, neg: boolean) => string[],
     formula: React.ReactNode,
     secondPronounNeeded?: boolean,
     explanation: React.ReactNode,
