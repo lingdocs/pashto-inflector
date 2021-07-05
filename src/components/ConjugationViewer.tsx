@@ -12,6 +12,7 @@ import VerbFormDisplay from "./VerbFormDisplay";
 import ButtonSelect from "./ButtonSelect";
 import Hider from "./Hider";
 import { getForms } from "../lib/conjugation-forms";
+import { conjugateVerb } from "../lib/verb-conjugation";
 import PersonSelection from "./PersonSelection";
 import {
     personIsAllowed,
@@ -171,11 +172,11 @@ const initialState: State = {
     formsOpened: [],
 };
 
-function ConjugationViewer({ conjugation, textOptions, ec, ep }: {
-    conjugation: T.VerbOutput,
+function ConjugationViewer({ entry, complement, textOptions, aayTailType }: {
+    entry: T.DictionaryEntry,
+    complement?: T.DictionaryEntry,
     textOptions: T.TextOptions,
-    ec?: string | undefined,
-    ep?: string | undefined,
+    aayTailType?: T.AayTail,
 }) {
     const [state, dispatch] = useReducer(reducer, initialState);
     useEffect(() => {
@@ -189,6 +190,22 @@ function ConjugationViewer({ conjugation, textOptions, ec, ep }: {
             }
         }
     }, []);
+    useEffect(() => {
+        localStorage.setItem(stateLocalStorageName, JSON.stringify(state));
+    });
+
+    const conjugation = (() => {
+        try {
+            return conjugateVerb(entry, aayTailType ? aayTailType : "aay", complement);
+        } catch(e) {
+            return undefined;
+        }
+    })();
+    if (conjugation === undefined) {
+        // don't show the conjugation viewer if the verb can't be conjugated
+        return null;
+    }
+
     const verbConj1 = ("dynamic" in conjugation)
         ? conjugation[state.compoundTypeSelected]
         : ("transitive" in conjugation)
@@ -197,14 +214,10 @@ function ConjugationViewer({ conjugation, textOptions, ec, ep }: {
     const verbConj = (verbConj1.singularForm && state.compoundComplementVersionSelected === "sing")
         ? verbConj1.singularForm
         : verbConj1;
-    const englishConjugation: T.EnglishVerbConjugation | undefined = ec ? {
-        ec: parseEc(ec),
-        ep: ep,
+    const englishConjugation: T.EnglishVerbConjugation | undefined = entry.ec ? {
+        ec: parseEc(entry.ec),
+        ep: entry.ep,
     } : undefined;
-
-    useEffect(() => {
-        localStorage.setItem(stateLocalStorageName, JSON.stringify(state));
-    });
 
     const filterDifficulty = (f: T.DisplayForm): boolean => (
         state.difficulty === "advanced" || !f.advanced

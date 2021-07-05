@@ -12,7 +12,6 @@ import verbs from "./verbs";
 import Pashto from "./components/Pashto";
 import Phonetics from "./components/Phonetics";
 import InlinePs from "./components/InlinePs";
-import { conjugateVerb } from "./lib/verb-conjugation";
 import { getVerbInfo } from "./lib/verb-info";
 import ButtonSelect from "./components/ButtonSelect";
 import {
@@ -177,16 +176,6 @@ function App() {
     const makeVerbLabel = (entry: T.DictionaryEntry): string => (
         `${entry.p} - ${clamp(entry.e, 20)}`
     );
-
-    const conjugation = v
-        ? conjugateVerb(v.verb.entry, aayTailType, v.verb.complement)
-        : undefined;
-    // if (v) {
-    //     console.log("Verb chosen:");
-    //     console.log(v.verb);
-    //     console.log("Conjugation of verb:")
-    //     console.log(conjugation);
-    // }
     return <>
         <main className="flex-shrink-0 mb-4">
             <div className="container" style={{ maxWidth: "800px" }}>
@@ -216,7 +205,7 @@ function App() {
                     <div className="card-body">
                         <div className="row">
                             <div className="col-sm-6">
-                                {(v && conjugation) ?
+                                {v ?
                                     <div>
                                         <div className="mb-1">Select a verb:</div>
                                         <div className="input-group">
@@ -308,11 +297,10 @@ function App() {
                         </div>
                     </div>
                 </div>
-                {conjugation && <ConjugationViewer
-                    conjugation={conjugation}
+                {v?.verb.entry && <ConjugationViewer
+                    entry={v?.verb.entry}
+                    complement={v?.verb.complement}
                     textOptions={textOptions}
-                    ec={v ? v.verb.entry.ec : undefined}
-                    ep={v ? v.verb.entry.ep : undefined}
                 />}
             </div>
         </main>
