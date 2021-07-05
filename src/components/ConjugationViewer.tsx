@@ -195,6 +195,7 @@ function ConjugationViewer({ entry, complement, textOptions, aayTailType }: {
     });
 
     const conjugation = (() => {
+        if (!(entry.c && entry.c.slice(0, 2) === "v.")) return undefined;
         try {
             return conjugateVerb(entry, aayTailType ? aayTailType : "aay", complement);
         } catch(e) {
