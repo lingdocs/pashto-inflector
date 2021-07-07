@@ -18,7 +18,7 @@ test("parseEc should work", () => {
     expect(parseEc("marry")).toEqual(["marry","marries","marrying","married","married"]);
     expect(parseEc("get")).toEqual(["get","gets","getting","got","gotten"]);
     expect(parseEc("become")).toEqual(["become","becomes","becoming","became","become"]);
-    expect(parseEc("be")).toEqual(["am","is","is being","was","have been"]);
+    expect(parseEc("be")).toEqual(["am","is","being","was","have been"]);
     expect(parseEc("make")).toEqual(["make","makes","making","made","made"]);
     expect(parseEc("have")).toEqual(["have","has","having","had","had"]);
     expect(parseEc("die")).toEqual(["die", "dies", "dying", "died", "died"]);
