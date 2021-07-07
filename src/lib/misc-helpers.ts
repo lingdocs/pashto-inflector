@@ -219,9 +219,24 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
         return ["a", "e", "i", "o", "u"].includes(s);
     }
     function makeRegularConjugations(s: string): T.EnglishVerbConjugationEc {
+        if (s === "get") {
+            return ["get","gets","getting","got","gotten"];
+        }
+        if (s === "become") {
+            return ["become","becomes","becoming","became","become"];
+        }
+        if (s === "make") {
+            return ["make","makes","making","made","made"];
+        }
+        if (s === "have") {
+            return ["have","has","having","had","had"];
+        }
         if ((s.slice(-1) === "y") && !isVowel(s.slice(-2)[0])) {
             const b = s.slice(0, -1);
             return [`${s}`, `${b}ies`, `${s}ing`, `${b}ied`, `${b}ied`];
+        }
+        if (s.slice(-2) === "ss") {
+            return [`${s}`, `${s}es`, `${s}ing`, `${s}ed`, `${s}ed`];
         }
         if (s.slice(-2) === "ie" && !isVowel(s.slice(-3)[0])) {
             const b = s.slice(0, -2);
