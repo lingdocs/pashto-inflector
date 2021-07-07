@@ -54,6 +54,9 @@ const getAayTail = (type: T.AayTail): T.PsString => (
 );
 
 export function conjugateVerb(entry: T.DictionaryEntry, aayTailType: T.AayTail, complement?: T.DictionaryEntry, verbInfo?: T.NonComboVerbInfo): T.VerbOutput {
+    if (!(entry.c && entry.c.slice(0, 2) === "v.")) {
+        throw new Error("not a verb");
+    };
     const irregularConj = checkForIrregularConjugation(entry);
     if (irregularConj) {
         return irregularConj;

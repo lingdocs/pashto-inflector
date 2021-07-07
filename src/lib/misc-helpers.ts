@@ -223,15 +223,21 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
             const b = s.slice(0, -1);
             return [`${s}`, `${b}ies`, `${s}ing`, `${b}ied`, `${b}ied`];
         }
+        if (s.slice(-2) === "ie" && !isVowel(s.slice(-3)[0])) {
+            const b = s.slice(0, -2);
+            return [`${s}`, `${s}s`, `${b}ying`, `${s}d`, `${s}d`]; 
+        }
         const b = (s.slice(-1) === "e")
             ? s.slice(0, -1)
             : s;
         return [`${s}`, `${s}s`, `${b}ing`, `${b}ed`, `${b}ed`];
     }
     const items = ec.split(",").map(x => x.trim());
-    return (items.length !== 5)
-        ? makeRegularConjugations(items[0])
-        : [items[0], items[1], items[2], items[3], items[4]];
+    return (items.length === 4)
+        ? [items[0], items[1], items[2], items[3], items[3]]
+        : (items.length === 5)
+        ? [items[0], items[1], items[2], items[3], items[4]]
+        : makeRegularConjugations(items[0]);
 }
 
 // not being used
