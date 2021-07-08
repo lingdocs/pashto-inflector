@@ -232,7 +232,7 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
             return ["have","has","having","had","had"];
         }
         if (s === "be") {
-            return ["am","is","being","was","have been"];
+            return ["am","is","being","was","been"];
         }
         if ((s.slice(-1) === "y") && !isVowel(s.slice(-2)[0])) {
             const b = s.slice(0, -1);
