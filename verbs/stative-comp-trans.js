@@ -10,7 +10,7 @@ module.exports = [
 	1527812403, // بچ کول - to save, protect, guard, spare, rescue, economize
 	1577299232429, // بدلول - to change, to adapt, exchange, replace
 	1527815728, // بلدول - to familiarize with, to acquaint, orient, to train
-	1588781694450, // بندول - to close, block, stop
+	1527821309, // بندول - to close, block, stop
 	1527821309, // بندول - to close, barricade, cut off, restrain, hold back
 	1527815843, // بېلول - to separate
 	1588073727998, // پاکول - to clean, cleanse, purify

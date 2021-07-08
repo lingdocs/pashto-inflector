@@ -89,7 +89,6 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
         const addRest = (s: string) => (
             `${s}${noObject ? "" : ` ${engObj(object)}`}${englishConjugation.ep ? ` ${englishConjugation.ep}` : ""}`
         );
-        console.log(englishConjugation);
         return englishBuilder(subject, englishConjugation.ec, negative)
             .map(addRest);
     }

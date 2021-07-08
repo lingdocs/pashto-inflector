@@ -134,6 +134,14 @@ const makeSentence = ({ subject, object, info, displayForm, englishConjugation, 
     };
 }
 
+function isToBe(v: T.EnglishVerbConjugationEc): boolean {
+    return (v[2] === "being");
+}
+
+const futureEngBuilder: T.EnglishBuilder = (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
+    `${engSubj(s)} will${n ? " not" : ""} ${isToBe(v) ? "be" : v[0]}`,
+]);
+
 const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
     {
         label: "Present",
@@ -142,7 +150,9 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         formula: "Imperfective Stem + Present Ending",
         sentence: true,
         englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `${engSubj(s)} ${n ? `${engPresC(s, ["don't", "doesn't"])} ` : ""}${n ? v[0] : engPresC(s, v)}`,
+            `${engSubj(s)} ${isToBe(v)
+                ? `${engEquative("present", s)}${n ? " not" : ""}`
+                : `${n ? engPresC(s, ["don't", "doesn't"]) : ""} ${n ? v[0] : engPresC(s, v)}`}`,
             `${engSubj(s)} ${engEquative("present", s)}${n ? " not" : ""} ${v[2]}`,
         ]),
         explanation: "Something that is happening, happens generally, or is definitely about to happen. ('I am ____ing', 'I _____')",
@@ -154,8 +164,8 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         formula: "Perfective Stem + Present Ending",
         sentence: true,
         englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `that ${engSubj(s, true)}${n ? " won't" : "'ll"} ${v[0]}`,
-            `should ${engSubj(s, true)}${n ? " not" : ""} ${v[0]}`,
+            `that ${engSubj(s, true)}${n ? " won't" : " will"} ${isToBe(v) ? "be" : v[0]}`,
+            `should ${engSubj(s, true)}${n ? " not" : ""} ${isToBe(v) ? "be" : v[0]}`,
         ]),
         explanation: "Used for hypothetical statements about the desire, necessity, purpose, or possibility of something happening. Or for saying something should or shouldn't happen. ('Should I ____?', 'so that'll I'll _____')"
     },
@@ -166,9 +176,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         advanced: true,
         formula: "به - ba + Present",
         sentence: true,
-        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `${engSubj(s)} will${n ? " not" : ""} ${v[0]}`,
-        ]),
+        englishBuilder: futureEngBuilder,
         explanation: "Saying something will happen, repeatedly or as an ongoing action",
     },
     {
@@ -178,9 +186,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         advanced: true,
         formula: "به - ba + Subjunctive",
         sentence: true,
-        englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `${engSubj(s)} will${n ? " not" : ""} ${v[0]}`,
-        ]),
+        englishBuilder: futureEngBuilder,
         explanation: "Saying something will happen as a one-time event - May also used when there is some doubt",
     },
     {
@@ -193,7 +199,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
             //  - subj "was" (N && "not") v.2 obj
             `${engSubj(s)} ${engEquative("past", s)}${n ? " not" : ""} ${v[2]}`,
             //  - subj "would" (N && "not") v.0 obj
-            `${engSubj(s)} would${n ? " not" : ""} ${v[0]}`,
+            `${engSubj(s)} would${n ? " not" : ""} ${isToBe(v) ? "be" : v[0]}`,
         ]),
         explanation: "Saying something was happening, or would happen ('I was ____ing', 'I would ____')",
         past: true,
@@ -205,7 +211,9 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         formula: "Perfective Root + Past Ending",
         sentence: true,
         englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `${engSubj(s)}${n ? " did not" : ""} ${v[3]}`,
+            `${engSubj(s)}${isToBe(v)
+                ? ` ${engEquative("past", s)}${n ? " not" : ""}`
+                : `${n ? " did not" : ""} ${v[3]}`}`,
         ]),
         explanation: "Saying something happened ('I ____ed')",
         past: true,
@@ -221,7 +229,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 form: conj.imperfective.modal.nonImperative,
                 sentence: true,
                 englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                    `${engSubj(s)} can${n ? "'t" : ""} ${v[0]}`,
+                    `${engSubj(s)} can${n ? "'t" : ""} ${isToBe(v) ? "be" : v[0]}`,
                 ]),
                 formula: "Imperfective Root + Non-Inflectinig Ey-Tail + Subjunctive کېدل - to become",
                 explanation: "saying that something is possible currently or in general ('I can ____')",
@@ -234,7 +242,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 advanced: true,
                 sentence: true,
                 englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                    `that ${engSubj(s, true)} can${n ? "'t" : ""} ${v[0]}`,
+                    `that ${engSubj(s, true)} can${n ? "'t" : ""} ${isToBe(v) ? "be" : v[0]}`,
                 ]),
                 formula: "Perfective Root + Non-Inflectinig Ey-Tail + Subjunctive کېدل - to become",
                 explanation: "talking about the possibility of something in a subjunctive way ('so that I can ____')",
@@ -247,7 +255,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 advanced: true,
                 sentence: true,
                 englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                    `${engSubj(s)} will${n ? " not" : ""} be able to ${v[0]}`,
+                    `${engSubj(s)} will${n ? " not" : ""} be able to ${isToBe(v) ? "be" : v[0]}`,
                 ]),
                 formula: "به - ba + Present Modal",
                 explanation: "saying that something will be possible in general or in an ongoing sense in the future ('I'll be able to ____')",
@@ -260,7 +268,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 advanced: true,
                 sentence: true,
                 englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                    `${engSubj(s)} will${n ? " not" : ""} be able to ${v[0]}`,
+                    `${engSubj(s)} will${n ? " not" : ""} be able to ${isToBe(v) ? "be" : v[0]}`,
                 ]),
                 formula: "به - ba + Subjunctive Modal",
                 explanation: "saying that something will be possible at a certain point in the future ('I'll be able to ____')",
@@ -274,7 +282,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 past: true,
                 sentence: true,
                 englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                    `${engSubj(s)} ${engEquative("past", s)} ${n ? " not" : ""} able to ${v[0]}`,
+                    `${engSubj(s)} ${engEquative("past", s)} ${n ? " not" : ""} able to ${isToBe(v) ? "be" : v[0]}`,
                     `${engSubj(s)} could${n ? " not" : ""} ${v[0]}`,
                 ]),
                 formula: "Imperfective Root + Non-Inflectinig Ey-Tail + Simple Past کېدل - to become",
@@ -289,8 +297,8 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 explanation: "saying that something was possible at a certain point in time ('I was able to ____, at one particular point in time')",
                 past: true,
                 englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                    `${engSubj(s)} ${engEquative("past", s)} ${n ? " not" : ""} able to ${v[0]}`,
-                    `${engSubj(s)} could${n ? " not" : ""} ${v[0]}`,
+                    `${engSubj(s)} ${engEquative("past", s)} ${n ? " not" : ""} able to ${isToBe(v) ? "be" : v[0]}`,
+                    `${engSubj(s)} could${n ? " not" : ""} ${isToBe(v) ? "be" : v[0]}`,
                 ]),
                 sentence: true,
                 advanced: true,
@@ -325,9 +333,6 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
             label: "Imperfective Imperative",
             aspect: "imperfective",
             form: conj.imperfective.imperative,
-            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                `${n ? "Don't " : ""}${v[0]}`,
-            ]),
             formula: "Imperfective Stem + Imperative Ending",
             explanation: "Commanding someone/people to do something repeatedly, or in general",
         } as T.DisplayForm] : [],
@@ -336,9 +341,6 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
             label: "Perfective Imperative",
             aspect: "perfective",
             form: conj.perfective.imperative,
-            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-                `${v[0]}`,
-            ]),
             formula: "Perfective Stem + Imperative Ending",
             explanation: "Commanding someone/people to do something one time",
         } as T.DisplayForm] : [],
