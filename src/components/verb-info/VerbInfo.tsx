@@ -30,7 +30,7 @@ const indentR = {
 };
 
 const highlight = {
-    background: "yellow",
+    background: "rgba(255, 227, 10, 0.6)",
 };
 
 const title: CSSProperties = {
@@ -43,7 +43,7 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
     textOptions: T.TextOptions,
     info: T.NonComboVerbInfo,
     hidePastParticiple?: boolean,
-    highlighted?: ("imperfective root" | "perfective root" | "imperfective stem" | "perfective stem" | "past participle")[],
+    highlighted?: T.RootsOrStemsToHighlight,
 }) {
     const hasPerfectiveSplit = !!(info.root.perfectiveSplit || info.stem.perfectiveSplit);
     const showPersInf = hasPersInfs(info);
@@ -173,11 +173,13 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
     );
 }
 
-function VerbInfo({ info, textOptions, showingStemsAndRoots, toggleShowingSar }: { 
+function VerbInfo({ info, textOptions, showingStemsAndRoots, toggleShowingSar, highlightInRootsAndStems, hidePastParticiple }: { 
     info: T.NonComboVerbInfo,
     textOptions: T.TextOptions,
     showingStemsAndRoots: boolean,
+    highlightInRootsAndStems?: T.RootsOrStemsToHighlight,
     toggleShowingSar: () => void,
+    hidePastParticiple?: boolean,
 }) {
     const inf = noPersInfs(info.root.imperfective).long;
     return (
@@ -195,6 +197,8 @@ function VerbInfo({ info, textOptions, showingStemsAndRoots, toggleShowingSar }:
                 <RootsAndStems
                     textOptions={textOptions}
                     info={info}
+                    highlighted={highlightInRootsAndStems}
+                    hidePastParticiple={hidePastParticiple}
                 />
             </Hider>
         </div>

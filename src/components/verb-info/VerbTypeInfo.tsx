@@ -254,17 +254,17 @@ function VerbTypeInfo({ info, textOptions }: {
             <div className="text-center my-2">
                 This is a 
                     <button
-                        className="btn btn-light mx-2 my-1"
+                        className="btn btn-sm btn-light mx-2 my-1"
                         onClick={() => setShowingTypeModal(true)}
                     >
-                        <strong>{info.type}</strong> <i className={`fa fa-question-circle`}></i>
+                        <strong>{info.type}</strong>
                     </button>
                     verb and it's
                     <button
-                        className="btn btn-light mx-2 my-1"
+                        className="btn btn-sm btn-light mx-2 my-1"
                         onClick={() => setShowingTransModal(true)}
                     >
-                        <strong>{info.transitivity}</strong> <i className={`fa fa-question-circle`}></i>
+                        <strong>{info.transitivity}</strong>
                     </button>
             </div>
             <CompoundBreakdown info={info} textOptions={textOptions} />

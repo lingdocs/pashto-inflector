@@ -27,11 +27,17 @@ function Hider(props: {
     handleChange: () => void,
     children: React.ReactNode,
     hLevel?: number,
+    ignore?: boolean,
 }) {
     const hLev = Math.min((props.hLevel ? props.hLevel : defaultLevel), 6);
     const extraMargin = (props.hLevel && (props.hLevel > indentAfterLevel))
         ? `ml-${(props.hLevel - indentAfterLevel) + 1}`
         : "";
+    if (props.ignore) {
+        return <>
+            {props.children}
+        </>;
+    }
     return <div className="mb-3">
         {createElement(
             `h${hLev}`,

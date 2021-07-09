@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useReducer } from "react";
-import VerbInfo from "./verb-info/VerbInfo";
+import VerbInfo, { RootsAndStems } from "./verb-info/VerbInfo";
 import VerbFormDisplay from "./VerbFormDisplay";
 import ButtonSelect from "./ButtonSelect";
 import Hider from "./Hider";
@@ -172,11 +172,15 @@ const initialState: State = {
     formsOpened: [],
 };
 
-function ConjugationViewer({ entry, complement, textOptions, aayTailType }: {
+function ConjugationViewer({ entry, complement, textOptions, aayTailType, showOnly, highlightInRootsAndStems, hidePastParticiple, sentenceLevel }: {
     entry: T.DictionaryEntry,
     complement?: T.DictionaryEntry,
     textOptions: T.TextOptions,
     aayTailType?: T.AayTail,
+    showOnly?: string | string[],
+    highlightInRootsAndStems?: T.RootsOrStemsToHighlight,
+    hidePastParticiple?: boolean,
+    sentenceLevel?: "easy" | "medium" | "hard",
 }) {
     const [state, dispatch] = useReducer(reducer, initialState);
     useEffect(() => {
@@ -223,13 +227,22 @@ function ConjugationViewer({ entry, complement, textOptions, aayTailType }: {
     const filterDifficulty = (f: T.DisplayForm): boolean => (
         state.difficulty === "advanced" || !f.advanced
     );
+    const limitTo = !showOnly
+        ? undefined
+        : Array.isArray(showOnly)
+        ? showOnly
+        : [showOnly];
     const forms = getForms({
         conj: verbConj,
-        filterFunc: filterDifficulty,
+        filterFunc: [
+            filterDifficulty,
+            ...limitTo ? [(f: T.DisplayForm): boolean => limitTo.includes(f.label)] : [],
+        ],
         mode: state.mode,
         subject: state.subject,
         object: state.object,
         negative: state.negative,
+        sentenceLevel,
         englishConjugation,
     });
     return <div className="mb-4">
@@ -282,44 +295,57 @@ function ConjugationViewer({ entry, complement, textOptions, aayTailType }: {
                 />
             </div>
         </div>}
-        <VerbInfo
-            info={verbConj.info}
-            textOptions={textOptions}
-            showingStemsAndRoots={state.showingStemsAndRoots}
-            toggleShowingSar={() => dispatch({ type: "toggle showingStemsAndRoots" })}
-        />
+        {!limitTo ? 
+            <VerbInfo
+                info={verbConj.info}
+                textOptions={textOptions}
+                showingStemsAndRoots={state.showingStemsAndRoots}
+                highlightInRootsAndStems={highlightInRootsAndStems}
+                toggleShowingSar={() => dispatch({ type: "toggle showingStemsAndRoots" })}
+                hidePastParticiple={hidePastParticiple}
+            />
+        :
+            <RootsAndStems
+                textOptions={textOptions}
+                info={verbConj.info}
+                highlighted={highlightInRootsAndStems}
+                hidePastParticiple={hidePastParticiple}
+            />
+        }
         <div className="d-flex flex-row align-items-center justify-content-around flex-wrap mt-4 mb-2">
             <div className="mb-3">
                 <ButtonSelect
                     options={[
-                        { label: `Charts`, value: "chart" },
+                        { label: `Chart${forms.length !== 1 ? "s" : ""}`, value: "chart" },
                         { label: `Sentences`, value: "sentence" },
                     ]}
                     value={state.mode}
                     handleChange={(p) => dispatch({ type: "setMode", payload: p as "chart" | "sentence" })}
                 />
             </div>
-            <div className="mb-3">
-                <ButtonSelect
-                    options={[
-                        { label: "👶 Beginner", value: "beginner" },
-                        { label: "🤓 Advanced", value: "advanced" },
-                    ]}
-                    value={state.difficulty}
-                    handleChange={(p) => dispatch({ type: "set difficulty", payload: p as Difficulty })}
-                />
-            </div>
-            <div className="form-group form-check">
-                <input
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={state.showingFormInfo}
-                    onChange={(e) => {
-                        dispatch({ type: "setShowingFormInfo", payload: e.target.checked })
-                    }}
-                />
-                <label className="form-check-label">Show Form Info</label>
-            </div>
+            {!limitTo && <>
+                <div className="mb-3">
+                    <ButtonSelect
+                        options={[
+                            { label: "👶 Beginner", value: "beginner" },
+                            { label: "🤓 Advanced", value: "advanced" },
+                        ]}
+                        value={state.difficulty}
+                        handleChange={(p) => dispatch({ type: "set difficulty", payload: p as Difficulty })}
+                    />
+                </div>
+                <div className="form-group form-check">
+                    <input
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={state.showingFormInfo}
+                        onChange={(e) => {
+                            dispatch({ type: "setShowingFormInfo", payload: e.target.checked })
+                        }}
+                    />
+                    <label className="form-check-label">Show Form Info</label>
+                </div>
+            </>}
         </div>
         {state.mode === "sentence" &&
             <div className="position-sticky pb-1" style={{ top: 0, background: "var(--theme-shade)", zIndex: 1000 }}>
@@ -352,7 +378,7 @@ function ConjugationViewer({ entry, complement, textOptions, aayTailType }: {
             state={state}
             handleChange={(payload: string) => dispatch({ type: "set forms opened", payload })}
             verbConj={verbConj}
-            textOptions={textOptions}    
+            textOptions={textOptions}   
         />
     </div>;
 }
@@ -381,6 +407,7 @@ function FormsDisplay({ forms, state, handleChange, textOptions, verbConj }: {
                         aspect={"aspect" in f ? f.aspect : undefined}
                         showing={state.formsOpened.includes(f.label)}
                         handleChange={() => handleChange(f.label)}
+                        ignore={forms.length === 1}
                     >
                         {"content" in f ?
                                 drawLevel(f.content, level + 1)

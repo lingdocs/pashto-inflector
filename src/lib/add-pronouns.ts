@@ -63,7 +63,7 @@ type Pronouns = undefined | {
 
 const nuParticle = { p: "نه", f: "nú" };
 
-export default function addPronouns({ s, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative }: {
+export default function addPronouns({ s, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative, sentenceLevel = "hard" }: {
     s: T.SentenceForm,
     subject: T.Person,
     object: T.Person,
@@ -74,13 +74,14 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
     matrixKey: T.PersonInflectionsField,
     negative: boolean,
     englishConjugation?: T.EnglishVerbConjugation,
+    sentenceLevel?: "easy" | "medium" | "hard",
 }): T.SentenceForm {
     if ("long" in s) {
         return {
-            long: addPronouns({ s: s.long, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative }) as T.ArrayOneOrMore<T.PsString>,
-            short: addPronouns({ s: s.short, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative }) as T.ArrayOneOrMore<T.PsString>,
+            long: addPronouns({ s: s.long, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative, sentenceLevel }) as T.ArrayOneOrMore<T.PsString>,
+            short: addPronouns({ s: s.short, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative, sentenceLevel }) as T.ArrayOneOrMore<T.PsString>,
             ...s.mini ? {
-                mini: addPronouns({ s: s.mini, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative }) as T.ArrayOneOrMore<T.PsString>,
+                mini: addPronouns({ s: s.mini, subject, object, info, displayForm, intransitive, ergative, matrixKey, englishConjugation, negative, sentenceLevel }) as T.ArrayOneOrMore<T.PsString>,
             } : {},
         }
     }
@@ -126,11 +127,11 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
         ? undefined
         : noObjectPronoun
         ? {
-            subject: nearPronounPossible(subject) ? [subjectPronoun, nearSubjectPronoun] : subjectPronoun,
+            subject: ((sentenceLevel === "hard") && nearPronounPossible(subject)) ? [subjectPronoun, nearSubjectPronoun] : subjectPronoun,
             mini: miniPronoun,
         } : {
-            subject: nearPronounPossible(subject) ? [subjectPronoun, nearSubjectPronoun] : subjectPronoun,
-            object: nearPronounPossible(object) ? [objectPronoun, nearObjectPronoun] : objectPronoun,
+            subject: ((sentenceLevel === "hard") && nearPronounPossible(subject)) ? [subjectPronoun, nearSubjectPronoun] : subjectPronoun,
+            object: ((sentenceLevel === "hard") && nearPronounPossible(object)) ? [objectPronoun, nearObjectPronoun] : objectPronoun,
             mini: miniPronoun,
         };
     const english = (displayForm.englishBuilder && englishConjugation)
@@ -163,7 +164,7 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
                 // basic form two full pronouns
                 ...makeBasicPronounForm(ps, splitHead, displayForm, info, negative, prns.subject, prns.object),
                 // basic form one full, one mini pronoun
-                ...makeBasicPronounForm(
+                ...sentenceLevel !== "easy" ? makeBasicPronounForm(
                     ps,
                     splitHead,
                     displayForm,
@@ -171,7 +172,7 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
                     negative,
                     ergative ? prns.object : prns.subject,
                     prns.mini,
-                ),
+                ) : [],
             ] as T.ArrayOneOrMore<T.PsString>;
         
         const ergativeGrammTrans = (info.transitivity === "grammatically transitive" && ergative);
@@ -179,7 +180,7 @@ export default function addPronouns({ s, subject, object, info, displayForm, int
             || transDynCompPast || ergativeGrammTrans;
         return [
             ...basicForms,
-            ...canWorkWithOnlyMini
+            ...(sentenceLevel !== "easy" && canWorkWithOnlyMini)
                 ? makeOnlyMiniForm(ps, splitHead, displayForm, info, negative, prns.mini)
                 : [],
         ].map((ps) => english ? { ...ps, e: english } : ps) as T.ArrayOneOrMore<T.PsString>;

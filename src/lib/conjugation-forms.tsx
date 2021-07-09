@@ -40,6 +40,7 @@ type MapFunc = (opts: {
     info: T.NonComboVerbInfo,
     negative: boolean,
     englishConjugation?: T.EnglishVerbConjugation,
+    sentenceLevel?: "easy" | "medium" | "hard",
 }) => T.DisplayFormItem;
 
 /**
@@ -87,20 +88,22 @@ const formMap = (
     object: T.Person,
     negative: boolean,
     englishConjugation?: T.EnglishVerbConjugation,
+    sentenceLevel?: "easy" | "medium" | "hard",
 ): T.DisplayFormItem[] => {
     return input.map((f) => (
         "content" in f
-            ? { ...f, content: formMap(f.content, func, info, subject, object, negative, englishConjugation) }
-            : func({ displayForm: f as T.DisplayFormForSentence, info, subject, object, negative, englishConjugation })
+            ? { ...f, content: formMap(f.content, func, info, subject, object, negative, englishConjugation, sentenceLevel) }
+            : func({ displayForm: f as T.DisplayFormForSentence, info, subject, object, negative, englishConjugation, sentenceLevel })
     ));
 };
 
-const makeSentence = ({ subject, object, info, displayForm, englishConjugation, negative }: {
+const makeSentence = ({ subject, object, info, displayForm, englishConjugation, negative, sentenceLevel }: {
     subject: T.Person,
     object: T.Person,
     info: T.NonComboVerbInfo,
     displayForm: T.DisplayFormForSentence,
     negative: boolean,
+    sentenceLevel?: "easy" | "medium" | "hard",
     englishConjugation?: T.EnglishVerbConjugation,
 }): T.DisplayForm => {
     const intransitive = info.transitivity === "intransitive" || !!displayForm.passive;
@@ -127,6 +130,7 @@ const makeSentence = ({ subject, object, info, displayForm, englishConjugation, 
         matrixKey,
         negative,
         englishConjugation,
+        sentenceLevel,
     });
     return {
         ...displayForm,
@@ -641,13 +645,14 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         : [],
 ];
 
-export const getForms = ({ conj, filterFunc, mode, subject, object, englishConjugation, negative } : {
+export const getForms = ({ conj, filterFunc, mode, subject, object, sentenceLevel, englishConjugation, negative } : {
     conj: T.VerbConjugation,
     englishConjugation?: T.EnglishVerbConjugation
     filterFunc?: FilterFunc | FilterFunc[],
     mode: "chart" | "sentence",
     subject: T.Person,
     object: T.Person,
+    sentenceLevel?: "easy" | "medium" | "hard",
     negative: boolean,
 }): T.DisplayFormItem[] => {
     const forms = formsOfConjugation(conj);
@@ -665,6 +670,7 @@ export const getForms = ({ conj, filterFunc, mode, subject, object, englishConju
             object,
             negative,
             englishConjugation,
+            sentenceLevel,
         );
 }
 

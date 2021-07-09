@@ -64,7 +64,8 @@ function PersonSelection(props: {
         <div className="row align-items-baseline">
             <div className="col">
                 <label className="form-label">
-                    <strong>{props.info.transitivity === "intransitive" ? "Subject" : "Subject/Agent"}</strong>
+                    {/* TODO: Should I put the Subject/Agent label back in for non-transitive verbs?? */}
+                    <strong>Subject</strong>
                 </label>
                 <PersonSelect
                     setting="subject"

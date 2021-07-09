@@ -389,6 +389,8 @@ export type ArrayOneOrMore<T> = {
     0: T
 } & Array<T>
 
+export type RootsOrStemsToHighlight = ("imperfective root" | "perfective root" | "imperfective stem" | "perfective stem" | "past participle")[];
+
 /* i.e. ec: ["take", "takes", "taking", "took", "taken"], ep: out  */
 export type EnglishVerbConjugationEc = [string, string, string, string, string]; 
 export type EnglishVerbConjugation = {
