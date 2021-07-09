@@ -244,7 +244,7 @@ function ConjugationViewer({ entry, complement, textOptions, aayTailType, showOn
         negative: state.negative,
         sentenceLevel,
         englishConjugation,
-    });
+    })
     return <div className="mb-4">
         {"transitive" in conjugation && <div className="text-center my-2">
             <VerbChoiceWarning />
@@ -424,7 +424,7 @@ function FormsDisplay({ forms, state, handleChange, textOptions, verbConj }: {
             })}
         </div>
     }
-    return <div style={{ marginBottom: "5rem" }}>
+    return <div className="mb-2">
         {drawLevel(forms, 0)}
     </div>;
 }
