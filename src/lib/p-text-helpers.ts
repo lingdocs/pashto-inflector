@@ -242,11 +242,27 @@ function getMatchingInflection(
     return infs[persNum % 2 === 0 ? "masc" : "fem"][singPlur][0];
 }
 
-export function isVerbBlock(x: any) {
+export function isVerbBlock(x: unknown) {
     return (
         Array.isArray(x) &&
         (x.length === 6) &&
         "p" in x[0][0][0]
+    );
+}
+
+export function isImperativeBlock(x: unknown) {
+    return (
+        Array.isArray(x) &&
+        (x.length === 2) &&
+        "p" in x[0][0][0]
+    );
+}
+
+export function isInflectionSet(x: any): boolean {
+    return (
+        Array.isArray(x)
+        && (x.length === 3)
+        && "p" in x[0][0]
     );
 }
 

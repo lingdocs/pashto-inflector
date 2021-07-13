@@ -86,6 +86,10 @@ export function getPersonNumber(gender: "masc" | "fem", number: "singular" | "pl
     return base + (number === "singular" ? 0 : 6);
 }
 
+export function personFromVerbBlockPos(pos: [number, number]): T.Person {
+    return pos[0] + (pos[1] === 1 ? 6 : 0);
+}
+
 export function getPersonInflectionsKey(person: T.Person): T.PersonInflectionsField {
     return `${personGender(person)}${personIsPlural(person) ? "Plur" : "Sing"}` as T.PersonInflectionsField;
 }
@@ -264,4 +268,18 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
 //         return Array.isArray(g) && Array.isArray(g[0]) && "p" in g[0][0];
 //     }
 //     return Array.isArray(f) && f.length === 2 && isPersonLine(f[0]);
+// }
+
+const b = {
+    a: "foo",
+    b: "bar",
+    c: {
+        d: "foo",
+        e: "bar",
+    },
+};
+
+// export function findPathsToItem(block: any, s: string): string[][] {
+//     const keys = Object.keys(block);
+//     return keys.reduce()
 // }

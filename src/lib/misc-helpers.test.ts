@@ -8,7 +8,24 @@
 
  import {
     parseEc,
+    personFromVerbBlockPos,
 } from "./misc-helpers";
+import * as T from "../types";
+
+test("personFromVerbBlockPos should work", () => {
+    expect(personFromVerbBlockPos([0, 0])).toEqual(T.Person.FirstSingMale);
+    expect(personFromVerbBlockPos([1, 0])).toEqual(T.Person.FirstSingFemale);
+    expect(personFromVerbBlockPos([2, 0])).toEqual(T.Person.SecondSingMale);
+    expect(personFromVerbBlockPos([3, 0])).toEqual(T.Person.SecondSingFemale);
+    expect(personFromVerbBlockPos([4, 0])).toEqual(T.Person.ThirdSingMale);
+    expect(personFromVerbBlockPos([5, 0])).toEqual(T.Person.ThirdSingFemale);
+    expect(personFromVerbBlockPos([0, 1])).toEqual(T.Person.FirstPlurMale);
+    expect(personFromVerbBlockPos([1, 1])).toEqual(T.Person.FirstPlurFemale);
+    expect(personFromVerbBlockPos([2, 1])).toEqual(T.Person.SecondPlurMale);
+    expect(personFromVerbBlockPos([3, 1])).toEqual(T.Person.SecondPlurFemale);
+    expect(personFromVerbBlockPos([4, 1])).toEqual(T.Person.ThirdPlurMale);
+    expect(personFromVerbBlockPos([5, 1])).toEqual(T.Person.ThirdPlurFemale);
+})
 
 test("parseEc should work", () => {
     expect(parseEc("walk")).toEqual(["walk", "walks", "walking", "walked", "walked"]);

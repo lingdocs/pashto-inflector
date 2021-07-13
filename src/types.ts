@@ -329,16 +329,16 @@ export type PerfectContent = {
     pastSubjunctiveHypothetical: VerbForm; // PPART + waay
 }
 
+// Plain, 1st, and 2nd Inflection
+export type InflectionSet = ArrayFixed<ArrayOneOrMore<PsString>, 3>;
+
 export type UnisexInflections = {
-    masc: ArrayFixed<ArrayOneOrMore<PsString>, 3>,
-    fem: ArrayFixed<ArrayOneOrMore<PsString>, 3>,
+    masc: InflectionSet,
+    fem: InflectionSet,
 }
 
-export type Inflections = UnisexInflections | {
-    masc: ArrayFixed<ArrayOneOrMore<PsString>, 3>,
-} | {
-    fem: ArrayFixed<ArrayOneOrMore<PsString>, 3>, 
-}
+export type Inflections = UnisexInflections
+    | Omit<UnisexInflections, "fem"> | Omit<UnisexInflections, "masc">;
 
 export type PersonLine = [
     /** singular form of person */

@@ -142,7 +142,7 @@ export const replacerInfo: IReplacerInfoItem[] = [
   {
     char: "eyy",
     alalc: "ạy",
-    ipa: "əj",
+    ipa: "ɛ̝j",
   },
   {
     char: "e",
