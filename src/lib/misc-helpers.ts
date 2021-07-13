@@ -261,25 +261,3 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
         ? [items[0], items[1], items[2], items[3], items[4]]
         : makeRegularConjugations(items[0]);
 }
-
-// not being used
-// export function isImperativeBlock(f: any): boolean {
-//     function isPersonLine(g: any): boolean {
-//         return Array.isArray(g) && Array.isArray(g[0]) && "p" in g[0][0];
-//     }
-//     return Array.isArray(f) && f.length === 2 && isPersonLine(f[0]);
-// }
-
-const b = {
-    a: "foo",
-    b: "bar",
-    c: {
-        d: "foo",
-        e: "bar",
-    },
-};
-
-// export function findPathsToItem(block: any, s: string): string[][] {
-//     const keys = Object.keys(block);
-//     return keys.reduce()
-// }
