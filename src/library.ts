@@ -57,6 +57,9 @@ import {
 } from "./lib/pashto-consonants";
 import {
     isNounAdjOrVerb,
+    getEnglishPersonInfo,
+    getPersonFromVerbForm,
+    getPersonNumber,
 } from "./lib/misc-helpers";
 import {
     simplifyPhonetics,
@@ -90,6 +93,9 @@ export {
     addDiacritics,
     translatePhonetics,
     searchConjugation,
+    getEnglishPersonInfo,
+    getPersonFromVerbForm,
+    getPersonNumber,
     // protobuf helpers
     readDictionary,
     writeDictionary,
