@@ -199,7 +199,6 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
     const conjugation = (() => {
         if (!(entry.c && entry.c.slice(0, 2) === "v.")) return undefined;
         try {
-            console.log("my entry is", entry);
             return conjugateVerb(entry, complement);
         } catch(e) {
             console.log("conjugation error", e);

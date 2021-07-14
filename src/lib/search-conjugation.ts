@@ -9,16 +9,16 @@ import { personFromVerbBlockPos } from "./misc-helpers";
 const inflectionNames: InflectionName[] = ["plain", "1st", "2nd"];
 
 type ObPile = { [key: string]: ObRec; }
-type ObRec = any[] | ObPile;
+type ObRec = any[] | { p: string } | ObPile;
 
 type ConjSearchResults = {
     form: string[],
-    position: InflectionName[] | T.Person[],
+    position: InflectionName[] | T.Person[] | null,
 }[];
 
 type BlockResult = {
     blockResult: true,
-    position: InflectionName[] | T.Person[],
+    position: InflectionName[] | T.Person[] | null,
 }
 
 type InflectionName = "plain" | "1st" | "2nd";
@@ -30,6 +30,11 @@ export function searchConjugation(pile: ObPile, s: string): ConjSearchResults {
         if (Array.isArray(record)) {
             return searchBlock(record, s);
         }
+        // TODO: This is only because of the grammatically transitive past participle!! Should change that to make it faster
+        if ("p" in record) {
+            // @ts-ignore
+            return searchSinglePs(record, s);
+        }
         // look further down the tree recursively
         return searchConjugation(record, s);
     }
@@ -39,7 +44,6 @@ export function searchConjugation(pile: ObPile, s: string): ConjSearchResults {
         if (name === "info") {
             return res;
         }
-        // search for value from key
         const result = searchObRecord(value);
         // Result: Hit the bottom and nothing found
         if (result === null) {
@@ -67,6 +71,16 @@ export function searchConjugation(pile: ObPile, s: string): ConjSearchResults {
         ]
         return rb;
     }, []);
+}
+
+function searchSinglePs(ps: T.PsString, s: string): null | BlockResult {
+    if (ps.p === s) {
+        return {
+            blockResult: true,
+            position: null,
+        };
+    };
+    return null;
 }
 
 function searchBlock(block: any[], s: string): null | BlockResult {

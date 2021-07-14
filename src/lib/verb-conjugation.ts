@@ -343,8 +343,8 @@ function makeParticipleContent(info: T.NonComboVerbInfo): T.ParticipleContent {
         ? concatInflections(info.complement, stativeAux[transitivity].participle.present as T.UnisexInflections)
         : inflectYey(noPersInfs(info.participle.present));
     return {
-        present, // PAST PARTICIPLE inflected
-        past, // PRESENT PARTICIPLE inflected
+        present, // PRESENT PARTICIPLE inflected
+        past, // PAST PARTICIPLE inflected
     };
 }
 
