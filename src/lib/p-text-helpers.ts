@@ -16,6 +16,10 @@ import {
 } from "./misc-helpers";
 import * as T from "../types";
 
+// export function concatPsStringWithVars(...items: Array<T.PsString | " " | "">): T.PsString[] {
+
+// }
+
 /**
  * Concats sections of Pashto text with Pashto and Phonetics
  * in PsString type, also accepts spaces as " "
@@ -267,7 +271,7 @@ export function isInflectionSet(x: any): boolean {
 }
 
 
-type toAddToForm = Array<" " | T.SingleOrLengthOpts<T.PsString> | T.SingleOrLengthOpts<T.UnisexInflections> | T.SingleOrLengthOpts<T.PsString>[] | T.OptionalPersonInflections<T.PsString> | T.VerbBlock>;
+type toAddToForm = Array<" " | T.SingleOrLengthOpts<T.PsString> | T.SingleOrLengthOpts<T.UnisexInflections> | T.SingleOrLengthOpts<T.PsString>[] | T.SingleOrLengthOpts<T.PsString[]> | T.OptionalPersonInflections<T.PsString> | T.VerbBlock>;
 type toAddToFormLengthChosen = Array<" " | T.PsString | T.UnisexInflections | T.PsString[] | T.OptionalPersonInflections<T.PsString> | T.VerbBlock>;
 export function addToForm(
     toAdd: toAddToForm,
@@ -324,7 +328,7 @@ export function addToForm(
             const multiplyEachVariationBy = toAdd.reduce((acc, cur) => (
                 // make sure we don't make 6 variations when concating a verb block to a verb block!
                 (Array.isArray(cur) && !isVerbBlock(cur)) ? Math.max(acc, cur.length) : acc
-            ), 1)
+            ), 1);
             const b = "long" in base
                 ? base[length] || base.short // in case mini does not exist
                 : base;

@@ -142,12 +142,12 @@ export const pastEndings: T.VerbBlock = [
 
 // TODO: MAKE THIS VARIABLE FOR DIALECTS!
 
-export const aayTail: T.PsString = { p: "ی", f: "ey" };
+export const aayTail: T.PsString[] = [{p: "ای", f: "aay" }, { p: "ی", f: "ey" }];
 
-export const subjPastEquative: T.PsString = {
-    p: "و" + aayTail.p,
-    f: "w" + aayTail.f,
-};
+export const subjPastEquative: T.ArrayOneOrMore<T.PsString> = aayTail.map((a) => ({
+    p: "و" + a.p,
+    f: "w" + a.f,
+})) as T.ArrayOneOrMore<T.PsString>;
 
 export const englishEquative: {
     past: T.EnglishBlock,
@@ -438,12 +438,12 @@ export const equativeEndings: {
         ],
     ],
     hypothetical: [
-        [[subjPastEquative], [subjPastEquative]],
-        [[subjPastEquative], [subjPastEquative]],
-        [[subjPastEquative], [subjPastEquative]],
-        [[subjPastEquative], [subjPastEquative]],
-        [[subjPastEquative], [subjPastEquative]],
-        [[subjPastEquative], [subjPastEquative]],
+        [subjPastEquative, subjPastEquative],
+        [subjPastEquative, subjPastEquative],
+        [subjPastEquative, subjPastEquative],
+        [subjPastEquative, subjPastEquative],
+        [subjPastEquative, subjPastEquative],
+        [subjPastEquative, subjPastEquative],
     ],
 };
 
@@ -509,16 +509,17 @@ export const passiveStativeBridge = [
         short: ksPerf.long,
         long: ksPerf.long,
     },
-    {
-        short: {
-            p: ksPerf.short.p + aayTail.p,
-            f: ksPerf.short.f + aayTail.f,
-        },
-        long: {
-            p: ksPerf.long.p + aayTail.p,
-            f: ksPerf.long.f + aayTail.f,
-        },
-    },
+    // PK VARIATION - NOT BEING USED - ADD TO FORMS NOT ADDING THE SECOND FORM FOR SOME REASON
+    // {
+    //     short: {
+    //         p: ksPerf.short.p + aayTail[1].p,
+    //         f: ksPerf.short.f + aayTail[1].f,
+    //     },
+    //     long: {
+    //         p: ksPerf.long.p + aayTail[1].p,
+    //         f: ksPerf.long.f + aayTail[1].f,
+    //     },
+    // },
 ];
 
 const basePlainPronouns = [

@@ -172,11 +172,10 @@ const initialState: State = {
     formsOpened: [],
 };
 
-function ConjugationViewer({ entry, complement, textOptions, aayTailType, showOnly, highlightInRootsAndStems, hidePastParticiple, sentenceLevel }: {
+function ConjugationViewer({ entry, complement, textOptions, showOnly, highlightInRootsAndStems, hidePastParticiple, sentenceLevel }: {
     entry: T.DictionaryEntry,
     complement?: T.DictionaryEntry,
     textOptions: T.TextOptions,
-    aayTailType?: T.AayTail,
     showOnly?: string | string[],
     highlightInRootsAndStems?: T.RootsOrStemsToHighlight,
     hidePastParticiple?: boolean,
@@ -197,12 +196,13 @@ function ConjugationViewer({ entry, complement, textOptions, aayTailType, showOn
     useEffect(() => {
         localStorage.setItem(stateLocalStorageName, JSON.stringify(state));
     });
-
     const conjugation = (() => {
         if (!(entry.c && entry.c.slice(0, 2) === "v.")) return undefined;
         try {
-            return conjugateVerb(entry, aayTailType ? aayTailType : "aay", complement);
+            console.log("my entry is", entry);
+            return conjugateVerb(entry, complement);
         } catch(e) {
+            console.log("conjugation error", e);
             return undefined;
         }
     })();

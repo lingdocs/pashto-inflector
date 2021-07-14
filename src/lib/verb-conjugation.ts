@@ -15,7 +15,6 @@ import {
     equativeEndings,
     emptyVerbBlock,
     passiveStativeBridge,
-    aayTail,
 } from "./grammar-units";
 import {
     addToForm,
@@ -47,13 +46,9 @@ import * as T from "../types";
 
 const dummyEntry: T.DictionaryEntry = { i: 0, p: "", f: "", g: "", e: "", c: "", ts: 0 };
 
-const getAayTail = (type: T.AayTail): T.PsString => (
-    type === "ey"
-        ? { p: "ی", f: "ey" }
-        : { p: "ای", f: "aay" }
-);
+const aayTail = [{p: "ای", f: "aay" }, { p: "ی", f: "ey" }];
 
-export function conjugateVerb(entry: T.DictionaryEntry, aayTailType: T.AayTail, complement?: T.DictionaryEntry, verbInfo?: T.NonComboVerbInfo): T.VerbOutput {
+export function conjugateVerb(entry: T.DictionaryEntry, complement?: T.DictionaryEntry, verbInfo?: T.NonComboVerbInfo): T.VerbOutput {
     if (!(entry.c && entry.c.slice(0, 2) === "v.")) {
         throw new Error("not a verb");
     };
@@ -65,21 +60,21 @@ export function conjugateVerb(entry: T.DictionaryEntry, aayTailType: T.AayTail, 
     if (info.type === "transitive or grammatically transitive simple") {
         return {
             info,
-            transitive: conjugateVerb(dummyEntry, aayTailType, dummyEntry, info.transitive) as T.VerbConjugation,
-            grammaticallyTransitive: conjugateVerb(dummyEntry, aayTailType, dummyEntry, info.grammaticallyTransitive) as T.VerbConjugation,
+            transitive: conjugateVerb({ ...entry, c: entry.c ? entry.c.replace("/gramm. trans.", "") : "" }, dummyEntry, info.transitive) as T.VerbConjugation,
+            grammaticallyTransitive: conjugateVerb({ ...entry, c: entry.c ? entry.c?.replace("trans./", "") : "" }, dummyEntry, info.grammaticallyTransitive) as T.VerbConjugation,
         };
     }
 
     if (info.type === "dynamic or stative compound" || info.type === "dynamic or generative stative compound") {
         return {
             info,
-            stative: conjugateVerb(dummyEntry, aayTailType, dummyEntry, info.stative) as T.VerbConjugation,
-            dynamic: conjugateVerb(dummyEntry, aayTailType, dummyEntry, info.dynamic) as T.VerbConjugation,
+            stative: conjugateVerb({ ...entry, c: entry.c ? entry.c.replace("dyn./", "") : "" }, dummyEntry, info.stative) as T.VerbConjugation,
+            dynamic: conjugateVerb({ ...entry, c: entry.c ? entry.c.replace("/stat.", "") : "" }, dummyEntry, info.dynamic) as T.VerbConjugation,
         };
     }
 
     if (info.type === "dynamic compound") {
-        return conjugateDynamicCompound(info, aayTailType);
+        return conjugateDynamicCompound(info);
     }
 
     const nonComboInfo = info as T.NonComboVerbInfo;
@@ -87,13 +82,13 @@ export function conjugateVerb(entry: T.DictionaryEntry, aayTailType: T.AayTail, 
     // TODO: Handle verbs like چيغه کول
     const conjugation: T.VerbConjugation = {
         info: nonComboInfo,
-        imperfective: makeAspectContent(nonComboInfo, "imperfective", aayTailType),
-        perfective: makeAspectContent(nonComboInfo, "perfective", aayTailType),
+        imperfective: makeAspectContent(nonComboInfo, "imperfective"),
+        perfective: makeAspectContent(nonComboInfo, "perfective"),
         hypothetical: makeHypotheticalContent(nonComboInfo),
         participle: makeParticipleContent(nonComboInfo),
         perfect: makePerfectContent(nonComboInfo),
         ..."singularForm" in info ? {
-            singularForm: conjugateVerb(entry, aayTailType, complement, info.singularForm) as T.VerbConjugation,
+            singularForm: conjugateVerb(entry, complement, info.singularForm) as T.VerbConjugation,
         } : {},
         // if transitive include passive voice
         ...info.transitivity !== "intransitive" ? {
@@ -109,14 +104,14 @@ export function conjugateVerb(entry: T.DictionaryEntry, aayTailType: T.AayTail, 
         : conjugation;
 }
 
-function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo, aayTailType: "ey" | "aay"): T.VerbConjugation {
+function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjugation {
     const willUseImperative = !(
         info.type === "dynamic compound"
         && info.transitivity === "intransitive"
         && info.auxVerb.p === "کېدل"
     );
     const auxConj = enforceObject(
-        conjugateVerb(info.auxVerb, aayTailType, info.auxVerbComplement) as T.VerbConjugation,
+        conjugateVerb(info.auxVerb, info.auxVerbComplement) as T.VerbConjugation,
         info.objComplement.person,
     );
     const complement = info.objComplement.plural
@@ -200,17 +195,17 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo, aayTailType: 
             },
         } : {},
         ...info.singularForm ? {
-            singularForm: conjugateDynamicCompound(info.singularForm, aayTailType)
+            singularForm: conjugateDynamicCompound(info.singularForm)
         } : {},
         ...info.intransitiveForm ? {
-            intransitiveForm: conjugateDynamicCompound(info.intransitiveForm, aayTailType)
+            intransitiveForm: conjugateDynamicCompound(info.intransitiveForm)
         } : {},
     };
 }
 
-function makeAspectContent(info: T.NonComboVerbInfo, aspect: T.Aspect, aayTailType: T.AayTail): T.AspectContent {
+function makeAspectContent(info: T.NonComboVerbInfo, aspect: T.Aspect): T.AspectContent {
     if ((info.type === "stative compound") && spaceInForm(info.root[aspect])) {
-        return makeStativeCompoundSeperatedAspectContent(info, aspect, aayTailType);
+        return makeStativeCompoundSeperatedAspectContent(info, aspect);
     }
     const stem = noPersInfs(info.stem[aspect]);
     const root = noPersInfs(info.root[aspect]);
@@ -225,17 +220,16 @@ function makeAspectContent(info: T.NonComboVerbInfo, aspect: T.Aspect, aayTailTy
         future, // به - ba + nonImperative
         imperative, // stem + imperative endings
         past, // root + past endings
-        modal: makeJoinedModalContent(info, aspect, aayTailType),
+        modal: makeJoinedModalContent(info, aspect),
     };
 }
 
-function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect, aayTailType: T.AayTail): T.ModalContent {
+function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect): T.ModalContent {
     const aspect: T.Aspect = noPerfectiveModal(info) ? "imperfective" : aspectIn;
-    const aayTail = getAayTail(aayTailType);
     const aux = stativeAux.intransitive.perfective;    
     const rAndT = info.yulEnding
-        ? concatPsString(noPersInfs(info.root[aspect]).long, aayTail)
-        : concatPsString(noPersInfs(info.root[aspect]), aayTail);
+        ? concatPsString(noPersInfs(info.root[aspect]).long, aayTail[1])
+        : concatPsString(noPersInfs(info.root[aspect]), aayTail[1]);
     const rootAndTail = aspect === "imperfective"
         ? accentImperfectiveModalRootAndTail(info, rAndT)
         : rAndT;
@@ -256,7 +250,7 @@ function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect, aa
     };
 }
 
-function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbInfo, aspect: T.Aspect, aayTailType: T.AayTail): T.AspectContent {
+function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbInfo, aspect: T.Aspect): T.AspectContent {
     const transitivity = getTransitivity(info);
     const presentComplement = (transitivity === "transitive" && complementInflects(info.complement))
         ? unisexInfToObjectMatrix(info.complement)  // transitive verb requires an object matrix for the complex
@@ -296,7 +290,7 @@ function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbIn
         } : {},
         modal: info.transitivity === "transitive"
             ? makeTransitiveStativeModalContent()
-            : makeJoinedModalContent(info, "imperfective", aayTailType),
+            : makeJoinedModalContent(info, "imperfective"),
     };
 }
 
@@ -314,20 +308,27 @@ function makeHypotheticalContent(info: T.NonComboVerbInfo): T.VerbForm {
     if (("complement" in info) && spaceInForm(info.root.imperfective)) {
         return makeStativeCompoundSepHypotheticalContent(info as T.StativeCompoundVerbInfo);
     }
-    const makeHypothetical = (root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>, length: "short" | "long"): T.PsString => {
+    const makeHypothetical = (root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>, length: "short" | "long"): T.PsString[] => {
         if ("mascSing" in root) {
             // BIG TODO: SHOULD THERE BE PERS INFS HERE?? IGNORING THEM NOW IF THEY EXIST
-            return makeHypothetical(root.mascSing, length) as T.PsString;
+            return makeHypothetical(root.mascSing, length) as T.PsString[];
         }
-        return accentOnNFromEnd(
-            concatPsString(root[length], aayTail),
-            (length === "long" ? 1 : 0) + (info.yulEnding ? 1 : 0),
-        )
+        return [
+            accentOnNFromEnd(
+                concatPsString(root[length], aayTail[0]),
+                (length === "long" ? 1 : 0) + (info.yulEnding ? 1 : 0),
+            ),
+            accentOnNFromEnd(
+                concatPsString(root[length], aayTail[1]),
+                (length === "long" ? 1 : 0) + (info.yulEnding ? 1 : 0),
+            ),
+        ];
     };
     const hyp = {
         short: makeHypothetical(info.root.imperfective, "short"),
         long: makeHypothetical(info.root.imperfective, "long"),
     };
+    // TODO: ADD TO FORM IS NOT ADDING THE SECOND VARIATION PASSED IN!
     return addToForm([hyp], emptyVerbBlock);
 }
 
