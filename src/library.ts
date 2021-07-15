@@ -31,6 +31,9 @@ import {
     concatPsString,
     makePsString,
     removeFVariants,
+    isVerbBlock,
+    isImperativeBlock,
+    isInflectionSet,
 } from "./lib/p-text-helpers";
 import { standardizePashto } from "./lib/standardize-pashto";
 import { phoneticsToDiacritics } from "./lib/phonetics-to-diacritics";
@@ -60,6 +63,7 @@ import {
     getEnglishPersonInfo,
     getPersonFromVerbForm,
     getPersonNumber,
+    personFromVerbBlockPos,
 } from "./lib/misc-helpers";
 import {
     simplifyPhonetics,
@@ -96,6 +100,10 @@ export {
     getEnglishPersonInfo,
     getPersonFromVerbForm,
     getPersonNumber,
+    isVerbBlock,
+    isImperativeBlock,
+    isInflectionSet,
+    personFromVerbBlockPos,
     // protobuf helpers
     readDictionary,
     writeDictionary,
