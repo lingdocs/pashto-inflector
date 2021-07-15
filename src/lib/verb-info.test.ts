@@ -1218,6 +1218,10 @@ const toTest = [
                     f: "kawóonkey",
                 },
             },
+            idiosyncraticThirdMascSing: {
+                perfective: { p: "وکړ", f: "óokuR" },
+                imperfective: { p: "کاوه", f: "kaawú" },
+            }, 
         },
     },
     {
@@ -1253,6 +1257,10 @@ const toTest = [
                     p: "کوونکی",
                     f: "kawóonkey",
                 },
+            },
+            idiosyncraticThirdMascSing: {
+                perfective: { p: "کړ", f: "kuR" },
+                imperfective: { p: "کاوه", f: "kaawú" },
             },
         },
     },

@@ -432,6 +432,20 @@ function getIdiosyncraticThirdMascSing(entry: T.DictionaryEntry): T.ShortThirdPe
             perfective: ooRes.ps as T.PsString,
         };
     }
+    if (entry.p === "کول") {
+        if (entry.e.includes("to make")) { 
+            return {
+                perfective: { p: "کړ", f: "kuR" },
+                imperfective: { p: "کاوه", f: "kaawú" },
+            };
+        }
+        if (entry.e.includes("to do")) {
+            return {
+                perfective: { p: "وکړ", f: "óokuR" },
+                imperfective: { p: "کاوه", f: "kaawú" },
+            };
+        }
+    }
     return false;
 }
 
