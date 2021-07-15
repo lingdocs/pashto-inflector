@@ -536,6 +536,10 @@ export const kawulStat: T.VerbConjugation = {
             present: { p: "کوونکی", f: "kawóonkey" },
             past: { p: "کړی", f: "kúRey" },
         },
+        idiosyncraticThirdMascSing: {
+            perfective: { p: "کړ", f: "kuR" },
+            imperfective: { p: "کاوه", f: "kaawú" },
+        }, 
     },
     imperfective: {
         nonImperative: [
@@ -1127,6 +1131,10 @@ export const kawulDyn: T.VerbConjugation = {
             present: { p: "کوونکی", f: "kawóonkey" },
             past: { p: "کړی", f: "kúRey" },
         },
+        idiosyncraticThirdMascSing: {
+            perfective: { p: "وکړ", f: "óokuR" },
+            imperfective: { p: "کاوه", f: "kaawú" },
+        }, 
     },
     imperfective: {
         nonImperative: [
