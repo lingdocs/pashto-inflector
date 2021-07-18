@@ -301,6 +301,7 @@ function App() {
                     entry={v?.verb.entry}
                     complement={v?.verb.complement}
                     textOptions={textOptions}
+                    showOnly={["Perfective Future"]}
                 />}
             </div>
         </main>

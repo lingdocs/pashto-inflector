@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useReducer } from "react";
-import VerbInfo, { RootsAndStems } from "./verb-info/VerbInfo";
+import VerbInfo from "./verb-info/VerbInfo";
 import VerbFormDisplay from "./VerbFormDisplay";
 import ButtonSelect from "./ButtonSelect";
 import Hider from "./Hider";
@@ -224,7 +224,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
     } : undefined;
 
     const filterDifficulty = (f: T.DisplayForm): boolean => (
-        state.difficulty === "advanced" || !f.advanced
+        state.difficulty === "advanced" || !!showOnly || !f.advanced
     );
     const limitTo = !showOnly
         ? undefined
@@ -235,7 +235,8 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
         conj: verbConj,
         filterFunc: [
             filterDifficulty,
-            ...limitTo ? [(f: T.DisplayForm): boolean => limitTo.includes(f.label)] : [],
+            ...limitTo ? [(f: T.DisplayForm): boolean => limitTo.includes(f.label)
+            ] : [],
         ],
         mode: state.mode,
         subject: state.subject,
@@ -293,24 +294,16 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
                     handleChange={(p) => dispatch({ type: "set compound complement version", payload: p as "sing" | "plur" })}
                 />
             </div>
-        </div>}
-        {!limitTo ? 
-            <VerbInfo
-                info={verbConj.info}
-                textOptions={textOptions}
-                showingStemsAndRoots={state.showingStemsAndRoots}
-                highlightInRootsAndStems={highlightInRootsAndStems}
-                toggleShowingSar={() => dispatch({ type: "toggle showingStemsAndRoots" })}
-                hidePastParticiple={hidePastParticiple}
-            />
-        :
-            <RootsAndStems
-                textOptions={textOptions}
-                info={verbConj.info}
-                highlighted={highlightInRootsAndStems}
-                hidePastParticiple={hidePastParticiple}
-            />
-        }
+        </div>} 
+        <VerbInfo
+            info={verbConj.info}
+            textOptions={textOptions}
+            showingStemsAndRoots={state.showingStemsAndRoots}
+            highlightInRootsAndStems={highlightInRootsAndStems}
+            toggleShowingSar={() => dispatch({ type: "toggle showingStemsAndRoots" })}
+            hidePastParticiple={hidePastParticiple}
+            hideTypeInfo={!!limitTo}
+        />
         <div className="d-flex flex-row align-items-center justify-content-around flex-wrap mt-4 mb-2">
             <div className="mb-3">
                 <ButtonSelect

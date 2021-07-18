@@ -173,21 +173,22 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
     );
 }
 
-function VerbInfo({ info, textOptions, showingStemsAndRoots, toggleShowingSar, highlightInRootsAndStems, hidePastParticiple }: { 
+function VerbInfo({ info, textOptions, showingStemsAndRoots, toggleShowingSar, highlightInRootsAndStems, hidePastParticiple, hideTypeInfo }: { 
     info: T.NonComboVerbInfo,
     textOptions: T.TextOptions,
     showingStemsAndRoots: boolean,
     highlightInRootsAndStems?: T.RootsOrStemsToHighlight,
     toggleShowingSar: () => void,
     hidePastParticiple?: boolean,
+    hideTypeInfo?: boolean,
 }) {
     const inf = noPersInfs(info.root.imperfective).long;
     return (
         <div className="my-3">
-            <VerbTypeInfo
+            {!hideTypeInfo && <VerbTypeInfo
                 info={info}
                 textOptions={textOptions}
-            />
+            />}
             <Hider
                 showing={showingStemsAndRoots}
                 label={`🌳 Roots and Stems for ${inf.p}`}        
