@@ -674,15 +674,6 @@ export const getForms = ({ conj, filterFunc, mode, subject, object, sentenceLeve
         );
 }
 
-function isThirdPerson(p: T.Person): boolean {
-    return (
-        p === T.Person.ThirdSingMale ||
-        p === T.Person.ThirdSingFemale ||
-        p === T.Person.ThirdPlurMale ||
-        p === T.Person.ThirdPlurFemale
-    );
-}
-
 function isThirdPersonSing(p: T.Person): boolean {
     return (
         p === T.Person.ThirdSingMale ||
@@ -700,7 +691,7 @@ function engEquative(tense: "past" | "present", s: T.Person): string {
 }
 
 function engHave(s: T.Person): string {
-    return isThirdPerson(s) ? "has" : "have";
+    return isThirdPersonSing(s) ? "has" : "have";
 }
 
 function engSubj(s: T.Person, lowerCase?: boolean): string {
