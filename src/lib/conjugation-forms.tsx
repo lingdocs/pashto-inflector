@@ -683,8 +683,15 @@ function isThirdPerson(p: T.Person): boolean {
     );
 }
 
+function isThirdPersonSing(p: T.Person): boolean {
+    return (
+        p === T.Person.ThirdSingMale ||
+        p === T.Person.ThirdSingFemale
+    );
+}
+
 function engPresC(s: T.Person, ec: T.EnglishVerbConjugationEc | [string, string]): string {
-    return isThirdPerson(s) ? ec[1] : ec[0];
+    return isThirdPersonSing(s) ? ec[1] : ec[0];
 }
 
 function engEquative(tense: "past" | "present", s: T.Person): string {

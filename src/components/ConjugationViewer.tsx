@@ -244,7 +244,8 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
         negative: state.negative,
         sentenceLevel,
         englishConjugation,
-    })
+    });
+    const sentencesAvailable = forms.some((form) => "sentence" in form);
     return <div className="mb-4">
         {"transitive" in conjugation && <div className="text-center my-2">
             <VerbChoiceWarning />
@@ -305,7 +306,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
             hideTypeInfo={!!limitTo}
         />
         <div className="d-flex flex-row align-items-center justify-content-around flex-wrap mt-4 mb-2">
-            <div className="mb-3">
+            {sentencesAvailable && <div className="mb-3">
                 <ButtonSelect
                     options={[
                         { label: `Chart${forms.length !== 1 ? "s" : ""}`, value: "chart" },
@@ -314,7 +315,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
                     value={state.mode}
                     handleChange={(p) => dispatch({ type: "setMode", payload: p as "chart" | "sentence" })}
                 />
-            </div>
+            </div>}
             {!limitTo && <>
                 <div className="mb-3">
                     <ButtonSelect
@@ -339,7 +340,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
                 </div>
             </>}
         </div>
-        {state.mode === "sentence" &&
+        {(state.mode === "sentence" && sentencesAvailable) &&
             <div className="position-sticky pb-1" style={{ top: 0, background: "var(--theme-shade)", zIndex: 1000 }}>
                 <PersonSelection
                     subject={state.subject}
@@ -367,7 +368,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
         }
         <FormsDisplay
             forms={forms}
-            state={state}
+            state={{ ...state, mode: sentencesAvailable ? "chart" : state.mode }}
             handleChange={(payload: string) => dispatch({ type: "set forms opened", payload })}
             verbConj={verbConj}
             textOptions={textOptions}   

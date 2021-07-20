@@ -11,7 +11,6 @@ import ConjugationViewer from "./components/ConjugationViewer";
 import verbs from "./verbs";
 import Pashto from "./components/Pashto";
 import Phonetics from "./components/Phonetics";
-import InlinePs from "./components/InlinePs";
 import { getVerbInfo } from "./lib/verb-info";
 import ButtonSelect from "./components/ButtonSelect";
 import {
@@ -51,7 +50,6 @@ function App() {
     const [transitivityShowing, setTransitivityShowing] = useState<T.Transitivity>("intransitive");
     const [showingTextOptions, setShowingTextOptions] = useState<boolean>(false);
     const [textOptions, setTextOptions] = useState<T.TextOptions>(defualtTextOptions);
-    const [aayTailType, setAayTailType] = useState<T.AayTail>("aay");
     const [theme, setTheme] = useState<"light" | "dark">("light");
     // const onlyGrammTrans = (arr: Transitivity[]) => (
     //     arr.length === 1 && arr[0] === "grammatically transitive"
@@ -69,7 +67,6 @@ function App() {
         const transitivitiyShowing = localStorage.getItem("transitivityShowing") as undefined | T.Transitivity;
         const theme = localStorage.getItem("theme");
         const textOptionst = localStorage.getItem("textOptions");
-        const aayTailType = localStorage.getItem("aayType");
         if (regularIrregular) {
             setRegularIrregular(regularIrregular);
         }
@@ -91,9 +88,6 @@ function App() {
         if (textOptionst) {
             setTextOptions(JSON.parse(textOptionst) as T.TextOptions);
         }
-        if (aayTailType) {
-            setAayTailType(aayTailType as T.AayTail);
-        }
     }, []);
 
     useEffect(() => {
@@ -103,7 +97,6 @@ function App() {
         localStorage.setItem("transitivityShowing", transitivityShowing);
         localStorage.setItem("textOptions", JSON.stringify(textOptions));
         localStorage.setItem("theme", theme);
-        localStorage.setItem("aayType", aayTailType);
     });
 
     useEffect(() => {
@@ -301,7 +294,6 @@ function App() {
                     entry={v?.verb.entry}
                     complement={v?.verb.complement}
                     textOptions={textOptions}
-                    showOnly={["Perfective Future"]}
                 />}
             </div>
         </main>
@@ -322,20 +314,8 @@ function App() {
                             ...textOptions,
                             spelling: p as "Afghan" | "Pakistani",
                         });
-                        if (p === "Pakistani") setAayTailType("ey");
                     }}
                 />
-                {textOptions.spelling !== "Pakistani" && <>
-                    <h6 className="mt-3">Non-Inflecting Tail Spelling</h6>
-                    <ButtonSelect
-                        options={[
-                            { label: <InlinePs opts={textOptions}>{{ p: "ی", f: "ey" }}</InlinePs>, value: "ey" },
-                            { label: <InlinePs opts={textOptions}>{{ p: "ای", f: "aay" }}</InlinePs>, value: "aay" },
-                        ]}
-                        value={aayTailType}
-                        handleChange={(p) => setAayTailType(p as "ey" | "aay")}
-                    />
-                </>}
                 <h6 className="mt-3">Diacritics</h6>
                 <ButtonSelect
                     options={[
