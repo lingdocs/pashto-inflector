@@ -246,7 +246,7 @@ function getMatchingInflection(
     return infs[persNum % 2 === 0 ? "masc" : "fem"][singPlur][0];
 }
 
-export function isVerbBlock(x: unknown) {
+export function isVerbBlock(x: unknown): x is T.VerbBlock {
     return (
         Array.isArray(x) &&
         (x.length === 6) &&
@@ -254,7 +254,7 @@ export function isVerbBlock(x: unknown) {
     );
 }
 
-export function isImperativeBlock(x: unknown) {
+export function isImperativeBlock(x: unknown): x is T.ImperativeBlock {
     return (
         Array.isArray(x) &&
         (x.length === 2) &&
@@ -262,7 +262,7 @@ export function isImperativeBlock(x: unknown) {
     );
 }
 
-export function isInflectionSet(x: any): boolean {
+export function isInflectionSet(x: any): x is T.InflectionSet {
     return (
         Array.isArray(x)
         && (x.length === 3)
@@ -346,8 +346,7 @@ export function addToForm(
                 const add = addingLengthChosen.map((e) => {
                     if (e === " ") return e;
                     if (isVerbBlock(e)) {
-                        const block = e as T.VerbBlock;
-                        return block[persNum][singPlur][0];
+                        return e[persNum][singPlur][0];
                     }
                     const f = e as T.UnisexInflections | T.PsString[] | T.OptionalPersonInflections<T.PsString>;
                     if (Array.isArray(f)) {

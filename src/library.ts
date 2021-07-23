@@ -25,7 +25,6 @@ import VerbFormDisplay from "./components/VerbFormDisplay";
 import VerbTable from "./components/VerbTable";
 import Examples from "./components/Examples";
 import VerbInfo, { RootsAndStems } from "./components/verb-info/VerbInfo";
-import { searchConjugation } from "./lib/search-conjugation";
 import {
     addToForm,
     concatPsString,
@@ -96,7 +95,6 @@ export {
     phoneticsToDiacritics,
     addDiacritics,
     translatePhonetics,
-    searchConjugation,
     getEnglishPersonInfo,
     getPersonFromVerbForm,
     getPersonNumber,

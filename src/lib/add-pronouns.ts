@@ -52,7 +52,7 @@ function formHasVariations(form: T.VerbForm | T.ImperativeForm | T.ParticipleFor
     if (!isVerbBlock(form)) {
         return false;
     }
-    return !isAllOne(form as T.VerbBlock);
+    return !isAllOne(form);
 }
 
 type Pronouns = undefined | {
