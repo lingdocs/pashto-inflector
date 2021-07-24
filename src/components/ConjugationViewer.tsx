@@ -33,7 +33,6 @@ const VerbChoiceWarning = () => (
 
 const stateLocalStorageName = "explorerState6";
 
-type Difficulty = "beginner" | "advanced";
 // remember to increment the stateLocalStorageName whenever changing
 // the State type
 type State = {
@@ -45,7 +44,6 @@ type State = {
     transitivitySelected: "transitive" | "grammatically transitive";
     compoundComplementVersionSelected: "sing" | "plur";
     showingStemsAndRoots: boolean;
-    difficulty: Difficulty;
     formsOpened: string[];
     showingFormInfo: boolean;
 }
@@ -56,9 +54,6 @@ type Action = {
 } | {
     type: "set forms opened",
     payload: string,
-} | {
-    type: "set difficulty",
-    payload: Difficulty,
 } | {
     type: "set compound complement version",
     payload: "sing" | "plur",
@@ -119,8 +114,6 @@ function reducer(state: State, action: Action): State {
                 ...state,
                 formsOpened: applyFormOpen(action.payload, state.formsOpened),
             };
-        case "set difficulty":
-            return { ...state, difficulty: action.payload };
         case "set compound complement version":
             return { ...state, compoundComplementVersionSelected: action.payload };
         case "toggle showingStemsAndRoots":
@@ -166,7 +159,6 @@ const initialState: State = {
     transitivitySelected: "transitive",
     mode: "chart",
     compoundComplementVersionSelected: "plur",
-    difficulty: "beginner",
     showingStemsAndRoots: false,
     showingFormInfo: false,
     formsOpened: [],
@@ -223,9 +215,6 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
         ep: entry.ep,
     } : undefined;
 
-    const filterDifficulty = (f: T.DisplayForm): boolean => (
-        state.difficulty === "advanced" || !!showOnly || !f.advanced
-    );
     const limitTo = !showOnly
         ? undefined
         : Array.isArray(showOnly)
@@ -234,7 +223,6 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
     const forms = getForms({
         conj: verbConj,
         filterFunc: [
-            filterDifficulty,
             ...limitTo ? [(f: T.DisplayForm): boolean => limitTo.includes(f.label)
             ] : [],
         ],
@@ -317,16 +305,6 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
                 />
             </div>}
             {!limitTo && <>
-                <div className="mb-3">
-                    <ButtonSelect
-                        options={[
-                            { label: "👶 Beginner", value: "beginner" },
-                            { label: "🤓 Advanced", value: "advanced" },
-                        ]}
-                        value={state.difficulty}
-                        handleChange={(p) => dispatch({ type: "set difficulty", payload: p as Difficulty })}
-                    />
-                </div>
                 <div className="form-group form-check">
                     <input
                         type="checkbox"

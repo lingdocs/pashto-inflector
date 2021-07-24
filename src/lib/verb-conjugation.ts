@@ -118,7 +118,7 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
         ? info.objComplement.plural
         : psStringFromEntry(info.objComplement.entry);
     const makeAspectContent = (aspect: T.Aspect): T.AspectContent => {
-        const makeModalContent = (): T.ModalContent => {
+        const makeDynamicModalContent = (): T.ModalContent => {
             const nonImperative = addToForm([complement, " "], auxConj[aspect].modal.nonImperative);
             const future = addToForm([baParticle, " "], nonImperative);
             const past = addToForm([complement, " "], auxConj[aspect].modal.past);
@@ -137,7 +137,7 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
             ? addToForm([complement, " "], ac.imperative)
             : null;
         const past = addToForm([complement, " "], auxConj[aspect].past);
-        const modal = makeModalContent();
+        const modal = makeDynamicModalContent();
         return {
             nonImperative,
             future,
@@ -228,10 +228,10 @@ function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect): T
     const aspect: T.Aspect = noPerfectiveModal(info) ? "imperfective" : aspectIn;
     const aux = stativeAux.intransitive.perfective;    
     const rAndT = info.yulEnding
-        ? concatPsString(noPersInfs(info.root[aspect]).long, aayTail[1])
-        : concatPsString(noPersInfs(info.root[aspect]), aayTail[1]);
+        ? [concatPsString(noPersInfs(info.root[aspect]).long, aayTail[1]), concatPsString(noPersInfs(info.root[aspect]).long, aayTail[0])]
+        : [concatPsString(noPersInfs(info.root[aspect]), aayTail[1]), concatPsString(noPersInfs(info.root[aspect]), aayTail[0])]
     const rootAndTail = aspect === "imperfective"
-        ? accentImperfectiveModalRootAndTail(info, rAndT)
+        ? rAndT.map((x: T.PsString | T.LengthOptions<T.PsString>) => accentImperfectiveModalRootAndTail(info, x))
         : rAndT;
 
     const nonImperative = addToForm([rootAndTail, " "], aux.nonImperative);
@@ -241,7 +241,31 @@ function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect): T
         // @ts-ignore
         aux.past.short,
     );
-    const hypotheticalPast = addToForm([rootAndTail, " ", { p: "شو", f: "shw" }, aayTail], emptyVerbBlock);
+    function mhp(rt: T.PsString[]): T.VerbBlock {
+        const form = [
+            concatPsString(rt[0], " ", { p: "سو", f: "shw" }, aayTail[0]),
+            concatPsString(rt[0], " ", { p: "سو", f: "shw" }, aayTail[1]),    
+            concatPsString(rt[1], " ", { p: "سو", f: "shw" }, aayTail[0]),    
+        ] as T.ArrayOneOrMore<T.PsString>; 
+        return [
+            [form, form],
+            [form, form],
+            [form, form],
+            [form, form],
+            [form, form],
+            [form, form],
+        ];
+    }
+    const hypotheticalPast = "short" in rootAndTail[0]
+        ? {
+            short: mhp(rootAndTail.map((rt) => "short" in rt ? rt.short : rt)),
+            long: mhp(rootAndTail.map((rt) => "short" in rt ? rt.long : rt)),
+        } : mhp(rootAndTail.map((rt) => "short" in rt ? rt.long : rt));
+
+    // const hypotheticalPast = [
+    //     [concatPsString(rootAndTail[0], " ", { p: "سو", f: "shw" }, aayTail[0])]
+    // ]
+    // const hypotheticalPast = addToForm([rootAndTail, " ", { p: "شو", f: "shw" }, aayTail[0]], emptyVerbBlock);
     return { 
         nonImperative, // ROOT + aayTail + kedulStat subjunctive
         future, // به - ba + modal nonImperative
@@ -324,12 +348,26 @@ function makeHypotheticalContent(info: T.NonComboVerbInfo): T.VerbForm {
             ),
         ];
     };
-    const hyp = {
-        short: makeHypothetical(info.root.imperfective, "short"),
-        long: makeHypothetical(info.root.imperfective, "long"),
+    const short = makeHypothetical(info.root.imperfective, "short") as T.ArrayOneOrMore<T.PsString>;
+    const long = makeHypothetical(info.root.imperfective, "long") as T.ArrayOneOrMore<T.PsString>;
+    return {
+        short: [
+            [short, short],
+            [short, short],
+            [short, short],
+            [short, short],
+            [short, short],
+            [short, short],
+        ],
+        long: [
+            [long, long],
+            [long, long],
+            [long, long],
+            [long, long],
+            [long, long],
+            [long, long],
+        ],
     };
-    // TODO: ADD TO FORM IS NOT ADDING THE SECOND VARIATION PASSED IN!
-    return addToForm([hyp], emptyVerbBlock);
 }
 
 function makeParticipleContent(info: T.NonComboVerbInfo): T.ParticipleContent {
