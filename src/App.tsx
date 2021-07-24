@@ -24,7 +24,7 @@ import {
 } from "react-bootstrap";
 import * as T from "./types";
 import defualtTextOptions from "./lib/default-text-options";
-
+const textOptionsLocalStorageName = "textOptions2";
 type VerbType = "simple" | "stative compound" | "dynamic compound";
 const verbTypes: VerbType[] = [
     "simple",
@@ -66,7 +66,7 @@ function App() {
         const regularIrregular = localStorage.getItem("regularIrregular") as "regular" | "irregular";
         const transitivitiyShowing = localStorage.getItem("transitivityShowing") as undefined | T.Transitivity;
         const theme = localStorage.getItem("theme");
-        const textOptionst = localStorage.getItem("textOptions");
+        const textOptionst = localStorage.getItem(textOptionsLocalStorageName);
         if (regularIrregular) {
             setRegularIrregular(regularIrregular);
         }
@@ -95,7 +95,7 @@ function App() {
         localStorage.setItem("regularIrregular", regularIrregular);
         localStorage.setItem("verbTypeShowing", verbTypeShowing);
         localStorage.setItem("transitivityShowing", transitivityShowing);
-        localStorage.setItem("textOptions", JSON.stringify(textOptions));
+        localStorage.setItem(textOptionsLocalStorageName, JSON.stringify(textOptions));
         localStorage.setItem("theme", theme);
     });
 
@@ -305,14 +305,15 @@ function App() {
                 <h6>Pashto Spelling</h6>
                 <ButtonSelect
                     options={[
-                        { label: "🇦🇫 Afghan", value: "Afghan" },
-                        { label: "🇵🇰 Pakistani", value: "Pakistani" },
+                        { label: "Afghan", value: "Afghan" },
+                        { label: "Pakistani ي", value: "Pakistani ي" },
+                        { label: "Pakistani ی", value: "Pakistani ی" },
                     ]}
                     value={textOptions.spelling}
                     handleChange={(p) => {
                         setTextOptions({
                             ...textOptions,
-                            spelling: p as "Afghan" | "Pakistani",
+                            spelling: p as T.Spelling,
                         });
                     }}
                 />

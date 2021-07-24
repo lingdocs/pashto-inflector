@@ -128,11 +128,13 @@ export type DictionaryEntryError = {
     erroneousFields: DictionaryEntryField[],
 }
 
+export type Spelling = "Afghan" | "Pakistani ی" | "Pakistani ي";
+
 export type TextOptions = {
     pTextSize: "normal" | "larger" | "largest";
     phonetics: "lingdocs" | "ipa" | "alalc" | "none";
     dialect: "standard" | "peshawer" | "southern";
-    spelling: "Afghan" | "Pakistani";
+    spelling: Spelling;
     diacritics: boolean;
 }
 

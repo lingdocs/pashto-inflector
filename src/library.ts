@@ -37,8 +37,8 @@ import {
 import { standardizePashto } from "./lib/standardize-pashto";
 import { phoneticsToDiacritics } from "./lib/phonetics-to-diacritics";
 import {
-    convertAfToPkSpelling,
-    convertPkToAfSpelling,
+    convertSpelling,
+    revertSpelling,
 } from "./lib/convert-spelling";
 import {
     dictionaryEntryBooleanFields,
@@ -87,8 +87,8 @@ export {
     makePsString,
     removeFVariants,
     standardizePashto,
-    convertAfToPkSpelling,
-    convertPkToAfSpelling,
+    convertSpelling,
+    revertSpelling,
     validateEntry,
     isNounAdjOrVerb,
     simplifyPhonetics,

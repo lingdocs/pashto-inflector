@@ -7,7 +7,7 @@
  */
 
 import {
-    convertAfToPkSpelling,
+    convertSpelling,
 } from "../lib/convert-spelling";
 import {
     phoneticsToDiacritics
@@ -23,9 +23,7 @@ const Pashto = ({ opts, children: text }: {
         const p = opts.diacritics
             ? (phoneticsToDiacritics(ps.p, ps.f) || ps.p)
             : ps.p;
-        return opts.spelling === "Afghan"
-            ? p
-            : convertAfToPkSpelling(p);
+        return convertSpelling(p, opts.spelling);
     }
     const style = opts.pTextSize === "normal"
         ? undefined

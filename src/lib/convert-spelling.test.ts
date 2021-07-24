@@ -7,11 +7,11 @@
  */
 
 import {
-  convertAfToPkSpelling,
-  convertPkToAfSpelling,
+  convertSpelling,
+  revertSpelling,
 } from "./convert-spelling";
 
-const pairs = [
+const pairsWPakistaniUndotted = [
   ["سړی", "سړے"],
   ["موسیٰ", "موسیٰ"],
   ["فرمايي", "فرمائی"],
@@ -27,14 +27,44 @@ const pairs = [
   ["ضمائر", "ضمائر"],
 ];
 
-pairs.forEach((pair) => {
-  test(`${pair[0]} should be converted to ${pair[1]} in Pakistani spelling`, () => {
-    const converted = convertAfToPkSpelling(pair[0]);
+const pairsWPakistaniDotted = [
+  ["سړی", "سړے"],
+  ["موسیٰ", "موسیٰ"],
+  ["فرمايي", "فرمائي"],
+  ["چای", "چائ"],
+  ["زوی", "زوئ"],
+  ["ښويېدل", "ښوئېدل"],
+  ["ويي", "وئي"],
+  ["دوستي", "دوستي"],
+  ["هييت", "هييت"],
+  ["ښيي", "ښيي"],
+  ["ستاينه", "ستائينه"],
+  ["فرمايل", "فرمائيل"],
+  ["ضمائر", "ضمائر"],
+];
+
+pairsWPakistaniDotted.forEach((pair) => {
+  test(`${pair[0]} should be converted to ${pair[1]} in Pakistani ي spelling`, () => {
+    const converted = convertSpelling(pair[0], "Pakistani ي");
     expect(converted).toBe(pair[1]);
   });
+  test(`${pair[1]} should be reverted to ${pair[0]} in Pakistani ي spelling`, () => {
+    const reverted = revertSpelling(pair[1], "Pakistani ي");
+    expect(reverted).toBe(pair[0]);
+  });
+});
 
-  test(`${pair[1]} should be converted to ${pair[0]} in Afghan spelling`, () => {
-    const converted = convertPkToAfSpelling(pair[1]);
+pairsWPakistaniUndotted.forEach((pair) => {
+  test(`${pair[0]} should be converted to ${pair[1]} in Pakistani ی spelling`, () => {
+    const converted = convertSpelling(pair[0], "Pakistani ی");
+    expect(converted).toBe(pair[1]);
+  });
+  test(`${pair[0]} should stay the same`, () => {
+    const converted = convertSpelling(pair[0], "Afghan");
     expect(converted).toBe(pair[0]);
+  });
+  test(`${pair[1]} should be reverted to ${pair[0]} in Pakistani ی spelling`, () => {
+    const reverted = revertSpelling(pair[1], "Pakistani ی");
+    expect(reverted).toBe(pair[0]);
   });
 });
