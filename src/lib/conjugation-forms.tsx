@@ -662,7 +662,6 @@ export const getForms = ({ conj, filterFunc, mode, subject, object, sentenceLeve
     return mode === "chart"
         ? formsToUse
         : formMap(
-            // TODO: somewhere in one of these the english conjugations are being stripped out for the past tense items
             formFilter(formsToUse, (f) => f.sentence),
             makeSentence,
             conj.info,
