@@ -164,6 +164,30 @@ const adjectives: Array<{
             ],
         },
     },
+    // adjective ending in u
+    {
+        in: {
+            ts: 1527812791,
+            p: "ویده",
+            f: "weedú",
+            g: "weedu",
+            e: "asleep",
+            c: "adj.",
+            i: 1,
+        },
+        out: {
+            masc: [
+                [{p: "ویده", f: "weedú"}],
+                [{p: "ویده", f: "weedú"}],
+                [{p: "ویدو", f: "weedó"}],
+            ],
+            fem: [
+                [{p: "ویده", f: "weedá"}],
+                [{p: "ویدې", f: "weedé"}],
+                [{p: "ویدو", f: "weedó"}],
+            ],
+        },
+    },
     // adjective non-inflecting
     {
         in: {

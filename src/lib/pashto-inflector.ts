@@ -11,7 +11,11 @@ import {
   concatInflections,
   splitDoubleWord,
   ensureUnisexInflections,
+  makePsString,
 } from "./p-text-helpers";
+import {
+  removeAccents,
+} from "./accent-helpers";
 import * as T from "../types";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
@@ -60,6 +64,9 @@ function handleUnisexWord(word: T.DictionaryEntry): T.Inflections | false {
   }
   if (pEnd === "ی" && f.slice(-2) === "ey") {
     return inflectRegularYeyUnisex(word.p, f);
+  }
+  if (pEnd === "ه" && word.g.slice(-1) === "u") {
+    return inflectRegularShwaEndingUnisex(word.p, f);
   }
   if (pEnd === "ی" && f.slice(-2) === "éy") {
     return inflectEmphasizedYeyUnisex(word.p, f);
@@ -162,6 +169,24 @@ export function inflectRegularYeyUnisex(p: string, f: string): T.UnisexInflectio
       [{p: `${baseP}ې`, f: `${baseF}e`}],
       [{p: `${baseP}ې`, f: `${baseF}e`}],
       [{p: `${baseP}و`, f: `${baseF}o`}],
+    ],
+  };
+}
+
+export function inflectRegularShwaEndingUnisex(pr: string, fr: string): T.UnisexInflections {
+  const { p, f } = removeAccents(makePsString(pr, fr));
+  const baseP = p.slice(0, -1);
+  const baseF = f.slice(0, -1);
+  return {
+    masc: [
+      [{p: `${baseP}ه`, f: `${baseF}ú`}],
+      [{p: `${baseP}ه`, f: `${baseF}ú`}],
+      [{p: `${baseP}و`, f: `${baseF}ó`}],
+    ],
+    fem: [
+      [{p: `${baseP}ه`, f: `${baseF}á`}],
+      [{p: `${baseP}ې`, f: `${baseF}é`}],
+      [{p: `${baseP}و`, f: `${baseF}ó`}],
     ],
   };
 }
