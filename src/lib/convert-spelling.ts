@@ -20,7 +20,7 @@ export function convertSpelling(input: string, spelling: T.Spelling): string {
     return input;
   }
   return input.replace(/ای(?![\u0621-\u065f\u0670-\u06d3\u06d5])/g, "ائ")
-    .replace(/وی(?![\u0621-\u065f\u0670-\u06d3\u06d5])/g, "وی")
+    .replace(/وی(?![\u0621-\u065f\u0670-\u06d3\u06d5])/g, "وئ")
     .replace(/ی(?![\u0621-\u065f\u0670-\u06d3\u06d5])/g, "ے")
     .replace(/ي(?![\u0621-\u065f\u0670-\u06d3\u06d5])/g, (spelling === "Pakistani ی")
       ? "ی"
