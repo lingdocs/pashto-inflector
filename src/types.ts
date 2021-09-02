@@ -334,10 +334,9 @@ export type PerfectContent = {
 // Plain, 1st, and 2nd Inflection
 export type InflectionSet = ArrayFixed<ArrayOneOrMore<PsString>, 3>;
 
-export type UnisexInflections = {
-    masc: InflectionSet,
-    fem: InflectionSet,
-}
+export type Gender = "masc" | "fem";
+
+export type UnisexInflections = Record<Gender, InflectionSet>;
 
 export type Inflections = UnisexInflections
     | Omit<UnisexInflections, "fem"> | Omit<UnisexInflections, "masc">;
