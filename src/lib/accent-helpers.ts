@@ -80,17 +80,18 @@ export function accentOnNFromEnd(ps: T.PsString, n: number): T.PsString {
     );
 }
 
+const accentReplacer = [
+    { vowel: "a", accented: "á" },
+    { vowel: "e", accented: "é" },
+    { vowel: "i", accented: "í" },
+    { vowel: "o", accented: "ó" },
+    { vowel: "u", accented: "ú" },
+    { vowel: "U", accented: "Ú" },
+];
+
 function accentSyllable(s: string): string {
-    const replacer = [
-        { vowel: "a", accented: "á" },
-        { vowel: "e", accented: "é" },
-        { vowel: "i", accented: "í" },
-        { vowel: "o", accented: "ó" },
-        { vowel: "u", accented: "ú" },
-        { vowel: "U", accented: "Ú" },
-    ];
     return s.replace(/a|e|i|o|u|U/, (match) => {
-        const r = replacer.find((x) => x.vowel === match);
+        const r = accentReplacer.find((x) => x.vowel === match);
         /* istanbul ignore next */
         return r?.accented || "";
     });
@@ -105,11 +106,18 @@ export function removeAccents(s: T.PsString | string): T.PsString | string {
             removeAccents(s.f),
         );
     }
-    return s.replace(/á/g, "a")
-        .replace(/é/g, "e")
-        .replace(/í/g, "i")
-        .replace(/ó/g, "o")
-        .replace(/ú/g, "u")
-        .replace(/Á/g, "A")
-        .replace(/Ú/g, "U");
+    return s.replace(/á|é|í|ó|ú|Ú/, (match) => {
+        const r = accentReplacer.find((x) => x.accented === match);
+        /* istanbul ignore next */
+        return r?.vowel || "";
+    });
+}
+
+/**
+ * Determines if a string has any accents on it
+ * 
+ * @param s a string of Pashto phonetics
+ */
+export function hasAccents(s: string): boolean {
+    return accentReplacer.some((x) => s.includes(x.accented));
 }

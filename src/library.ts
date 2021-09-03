@@ -75,6 +75,7 @@ import {
 } from "./lib/diacritics";
 import {
     removeAccents,
+    hasAccents,
 } from "./lib/accent-helpers";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
@@ -106,6 +107,7 @@ export {
     isInflectionSet,
     personFromVerbBlockPos,
     removeAccents,
+    hasAccents,
     // protobuf helpers
     readDictionary,
     writeDictionary,

@@ -13,6 +13,7 @@ import {
     accentFSylsOnNFromEnd,
     accentOnNFromEnd,
     splitUpSyllables,
+    hasAccents,
 } from "./accent-helpers";
 
 const toAccentFront = [
@@ -74,3 +75,14 @@ test(`accentOnNFromEnd should work`, () => {
         f: "leedúley",
     });
 });
+
+test(`has accents should work`, () => {
+    const accents = ["koRanúy", "wutáaq", "gÚta", "taté", "bít", "sóra", "kúcha"];
+    const noAccents = ["koRanuy", "wutaaq", "gUta", "tate", "bit", "sora", "kucha"];
+    accents.forEach((x) => {
+        expect(hasAccents(x)).toBe(true);
+    });
+    noAccents.forEach((x) => {
+        expect(hasAccents(x)).toBe(false);
+    });
+})
