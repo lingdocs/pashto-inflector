@@ -29,7 +29,7 @@ function Examples({
     ex,
     opts,
 }: {
-    ex?: PsStringWSub | PsStringWSub[],
+    ex?: PsStringWSub | PsStringWSub[] | T.PsJSX | T.PsJSX[],
     children: PsStringWSub | PsStringWSub[],
     opts: T.TextOptions,
 }) {
