@@ -15,6 +15,9 @@ import {
     getPersonInflectionsKey,
 } from "./misc-helpers";
 import * as T from "../types";
+import { removeAccents } from "./accent-helpers";
+import { pashtoConsonants, phoneticsConsonants } from "./pashto-consonants";
+import { simplifyPhonetics } from "./simplify-phonetics";
 
 // export function concatPsStringWithVars(...items: Array<T.PsString | " " | "">): T.PsString[] {
 
@@ -90,7 +93,7 @@ export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.Ps
  * @param w 
  * @returns 
  */
-export function splitDoubleWord(w: T.DictionaryEntry): [T.DictionaryEntry, T.DictionaryEntry] {
+export function splitDoubleWord(w: T.DictionaryEntryNoFVars): [T.DictionaryEntryNoFVars, T.DictionaryEntryNoFVars] {
     const pSplit = w.p.split(" ");
     const fSplit = w.f.split(" ");
     const c = w.c?.replace(" doub.", "");
@@ -176,25 +179,25 @@ export function ensureBaAt(ps: T.FullForm<T.PsString>, pos: number): T.FullForm<
     return baInserted;
 }
 
-/**
- * Returns the first phonetics value in a comma-seperated list
- * 
- * @param f - a phonetics string 
- */
-export function firstPhonetics(f: string): string {
-    return f.split(",")[0];
-}
-
-/**
- * returs a PsString or DictionaryEntry ensuring only one phonetics variation
- * 
- * @param ps 
- */
-export function removeFVariants(ps: T.PsString): T.PsString {
+export function removeFVarients(x: T.DictionaryEntry): T.DictionaryEntryNoFVars;
+export function removeFVarients(x: T.PsString): T.PsStringNoFVars;
+export function removeFVarients(x: string): T.FStringNoFVars;
+export function removeFVarients(x: string | T.PsString | T.DictionaryEntry): T.FStringNoFVars | T.PsStringNoFVars | T.DictionaryEntryNoFVars {
+    if (typeof x === "string") {
+        return x.split(",")[0] as T.FStringNoFVars;
+    }
+    if ("ts" in x) {
+        return {
+            ...x,
+            f: removeFVarients(x.f),
+            __brand: "name for a dictionary entry with all the phonetics variations removed",
+        } as T.DictionaryEntryNoFVars;
+    }
     return {
-        ...ps,
-        f: firstPhonetics(ps.f),
-    };
+        ...x,
+        f: removeFVarients(x.f),
+        __brand: "name for a ps string with all the phonetics variations removed",
+    } as T.PsStringNoFVars;
 }
 
 /**
@@ -514,13 +517,6 @@ export function yulEndingInfinitive(s: T.PsString): boolean {
     return ((pEnding === "یل") && (["yul", "yúl"].includes(fEnding)));
 }
 
-export function psStringFromEntry(entry: T.DictionaryEntry): T.PsString {
-    return makePsString(
-        entry.p,
-        firstPhonetics(entry.f),
-    );
-}
-
 export function allOnePersonInflection(block: T.ImperativeForm, person: T.Person): T.SingleOrLengthOpts<T.ImperativeBlock>;
 export function allOnePersonInflection(block: T.VerbForm, person: T.Person): T.SingleOrLengthOpts<T.VerbBlock>;
 export function allOnePersonInflection(block: T.SingleOrLengthOpts<T.UnisexInflections>, person: T.Person): T.SingleOrLengthOpts<T.UnisexInflections>;
@@ -617,8 +613,9 @@ export function complementInflects(inf: T.UnisexInflections): boolean {
     // );
 }
 
-export function psStringEquals(ps1: T.PsString, ps2: T.PsString): boolean {
-    return (ps1.p === ps2.p) && (ps1.f === ps2.f);
+export function psStringEquals(ps1: T.PsString, ps2: T.PsString, ignoreAccents?: boolean): boolean {
+    const [p1, p2] = ignoreAccents ? [removeAccents(ps1), removeAccents(ps2)] : [ps1, ps2];
+    return (p1.p === p2.p) && (p1.f === p2.f);
 }
 
 export function removeRetroflexR(ps: T.PsString): T.PsString {
@@ -754,33 +751,76 @@ export function ensureShortWurShwaShift(ps: T.PsString): T.PsString {
     return ps;
 }
 
-export function ensureUnisexInflections(infs: T.Inflections | false, w: T.DictionaryEntry): T.UnisexInflections {
-    const ps = { p: w.p, f: firstPhonetics(w.f) };
-    if (infs === false) {
+export function ensureUnisexInflections(infs: T.InflectorOutput, w: T.DictionaryEntryNoFVars): {
+    inflections: T.UnisexInflections,
+    plural?: T.PluralInflections,
+} {
+    const ps = { p: w.p, f: w.f };
+    if (infs === false || infs.inflections === undefined) {
         return {
-            masc: [
-                [ps],
-                [ps],
-                [ps],
-            ],
-            fem: [
-                [ps],
-                [ps],
-                [ps],
-            ],
+            inflections: {
+                masc: [
+                    [ps],
+                    [ps],
+                    [ps],
+                ],
+                fem: [
+                    [ps],
+                    [ps],
+                    [ps],
+                ],
+            },
         };
     }
-    if (!("fem" in infs)) {
+    if (!("fem" in infs.inflections)) {
         return {
-            ...infs,
-            fem: [[ps], [ps], [ps]],
+            inflections: {
+                ...infs.inflections,
+                fem: [[ps], [ps], [ps]],
+            }
         };
     }
-    if (!("masc" in infs)) {
+    if (!("masc" in infs.inflections)) {
         return {
-            ...infs,
-            masc: [[ps], [ps], [ps]],
+            inflections: {
+                ...infs.inflections,
+                masc: [[ps], [ps], [ps]],
+            },
         };
     }
-    return infs;
+    // for some dumb reason have to do this for type safety
+    return {
+        inflections: infs.inflections,
+    };
+}
+
+export function endsInAaOrOo(w: T.PsString): boolean {
+    const fEnd = simplifyPhonetics(w.f).slice(-2);
+    const pEnd = w.p.slice(-1);
+    return (
+        pEnd === "و" && fEnd.endsWith("o")
+        ||
+        pEnd === "ا" && fEnd === "aa"
+    );
+}
+
+
+export function endsInConsonant(w: T.PsString): boolean {
+    // TODO: Add reporting back that the plural ending will need a space?
+
+    function endsInLongDipthong(w: T.PsString): boolean {
+        function isLongDipthong(end: T.PsString): boolean {
+            return (psStringEquals(end, { p: "ای", f: "aay" }, true) || psStringEquals(end, { p: "وی", f: "ooy" }, true));
+        }
+        const end = makePsString(
+            w.p.slice(-2),
+            w.f.slice(-3),
+        );
+        return isLongDipthong(end);
+    }
+
+    if (endsInLongDipthong(w)) return true;
+    // const pCons = pashtoConsonants.includes(w.p.slice(-1));
+    const fCons = phoneticsConsonants.includes(simplifyPhonetics(w.f).slice(-1));
+    return fCons;
 }

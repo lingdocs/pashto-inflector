@@ -16,7 +16,7 @@ import * as T from "../types";
 
 const adjectives: Array<{
     in: T.DictionaryEntry,
-    out: T.Inflections | false,
+    out: T.InflectorOutput,
 }> = [
     // irregular adj.
     {
@@ -34,16 +34,18 @@ const adjectives: Array<{
             infbf: "zaR",
         },
         out: {
-            masc: [
-                [{p: "زوړ", f: "zoR"}],
-                [{p: "زاړه", f: "zaaRu"}],
-                [{p: "زړو", f: "zaRo"}],
-            ],
-            fem: [
-                [{p: "زړه", f: "zaRa"}],
-                [{p: "زړې", f: "zaRe"}],
-                [{p: "زړو", f: "zaRo"}],
-            ],
+            inflections:{
+                masc: [
+                    [{p: "زوړ", f: "zoR"}],
+                    [{p: "زاړه", f: "zaaRu"}],
+                    [{p: "زړو", f: "zaRo"}],
+                ],
+                fem: [
+                    [{p: "زړه", f: "zaRa"}],
+                    [{p: "زړې", f: "zaRe"}],
+                    [{p: "زړو", f: "zaRo"}],
+                ],
+            },
         },
     },
     // regular adjective ending in ی
@@ -58,16 +60,18 @@ const adjectives: Array<{
             i: 6564,
         },
         out: {
-            masc: [
-                [{p: "ستړی", f: "stúRey"}],
-                [{p: "ستړي", f: "stúRee"}],
-                [{p: "ستړیو", f: "stúRiyo"}, {p: "ستړو", f: "stúRo"}],
-            ],
-            fem: [
-                [{p: "ستړې", f: "stúRe"}],
-                [{p: "ستړې", f: "stúRe"}],
-                [{p: "ستړو", f: "stúRo"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "ستړی", f: "stúRey"}],
+                    [{p: "ستړي", f: "stúRee"}],
+                    [{p: "ستړیو", f: "stúRiyo"}, {p: "ستړو", f: "stúRo"}],
+                ],
+                fem: [
+                    [{p: "ستړې", f: "stúRe"}],
+                    [{p: "ستړې", f: "stúRe"}],
+                    [{p: "ستړو", f: "stúRo"}],
+                ],
+            }
         },
     },
     // regular adjective ending in ی with stress on the end
@@ -82,16 +86,18 @@ const adjectives: Array<{
             i: 12026,
         },
         out: {
-            masc: [
-                [{p: "وروستی", f: "wroostéy"}],
-                [{p: "وروستي", f: "wroostée"}],
-                [{p: "وروستیو", f: "wroostiyo"}, {p: "وروستو", f: "wroostó"}],
-            ],
-            fem: [
-                [{p: "وروستۍ", f: "wroostúy"}],
-                [{p: "وروستۍ", f: "wroostúy"}],
-                [{p: "وروستیو", f: "wroostúyo"}, {p: "وروستو", f: "wroostó"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "وروستی", f: "wroostéy"}],
+                    [{p: "وروستي", f: "wroostée"}],
+                    [{p: "وروستیو", f: "wroostiyo"}, {p: "وروستو", f: "wroostó"}],
+                ],
+                fem: [
+                    [{p: "وروستۍ", f: "wroostúy"}],
+                    [{p: "وروستۍ", f: "wroostúy"}],
+                    [{p: "وروستیو", f: "wroostúyo"}, {p: "وروستو", f: "wroostó"}],
+                ],
+            }
         },
     },
     // regular adjective ending in a consonant
@@ -106,16 +112,18 @@ const adjectives: Array<{
             i: 6502,
         },
         out: {
-            masc: [
-                [{p: "سپک", f: "spuk"}],
-                [{p: "سپک", f: "spuk"}],
-                [{p: "سپکو", f: "spuko"}],
-            ],
-            fem: [
-                [{p: "سپکه", f: "spuka"}],
-                [{p: "سپکې", f: "spuke"}],
-                [{p: "سپکو", f: "spuko"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "سپک", f: "spuk"}],
+                    [{p: "سپک", f: "spuk"}],
+                    [{p: "سپکو", f: "spuko"}],
+                ],
+                fem: [
+                    [{p: "سپکه", f: "spuka"}],
+                    [{p: "سپکې", f: "spuke"}],
+                    [{p: "سپکو", f: "spuko"}],
+                ],
+            },
         },
     },
     {
@@ -129,16 +137,18 @@ const adjectives: Array<{
             i: 9945,
         },
         out: {
-            masc: [
-                [{p: "لوی", f: "looy"}],
-                [{p: "لوی", f: "looy"}],
-                [{p: "لویو", f: "looyo"}],
-            ],
-            fem: [
-                [{p: "لویه", f: "looya"}],
-                [{p: "لویې", f: "looye"}],
-                [{p: "لویو", f: "looyo"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "لوی", f: "looy"}],
+                    [{p: "لوی", f: "looy"}],
+                    [{p: "لویو", f: "looyo"}],
+                ],
+                fem: [
+                    [{p: "لویه", f: "looya"}],
+                    [{p: "لویې", f: "looye"}],
+                    [{p: "لویو", f: "looyo"}],
+                ],
+            },
         },
     },
     {
@@ -152,16 +162,18 @@ const adjectives: Array<{
             i: 2430,
         },
         out: {
-            masc: [
-                [{p: "پوه", f: "poh"}],
-                [{p: "پوه", f: "poh"}],
-                [{p: "پوهو", f: "poho"}],
-            ],
-            fem: [
-                [{p: "پوهه", f: "poha"}],
-                [{p: "پوهې", f: "pohe"}],
-                [{p: "پوهو", f: "poho"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "پوه", f: "poh"}],
+                    [{p: "پوه", f: "poh"}],
+                    [{p: "پوهو", f: "poho"}],
+                ],
+                fem: [
+                    [{p: "پوهه", f: "poha"}],
+                    [{p: "پوهې", f: "pohe"}],
+                    [{p: "پوهو", f: "poho"}],
+                ],
+            },
         },
     },
     // adjective ending in u
@@ -176,16 +188,18 @@ const adjectives: Array<{
             i: 1,
         },
         out: {
-            masc: [
-                [{p: "ویده", f: "weedú"}],
-                [{p: "ویده", f: "weedú"}],
-                [{p: "ویدو", f: "weedó"}],
-            ],
-            fem: [
-                [{p: "ویده", f: "weedá"}],
-                [{p: "ویدې", f: "weedé"}],
-                [{p: "ویدو", f: "weedó"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "ویده", f: "weedú"}],
+                    [{p: "ویده", f: "weedú"}],
+                    [{p: "ویدو", f: "weedó"}],
+                ],
+                fem: [
+                    [{p: "ویده", f: "weedá"}],
+                    [{p: "ویدې", f: "weedé"}],
+                    [{p: "ویدو", f: "weedó"}],
+                ],
+            },
         },
     },
     // adjective non-inflecting
@@ -225,23 +239,25 @@ const adjectives: Array<{
             i: 1,
         },
         out: {
-            masc: [
-                [{ p: "ګډ وډ", f: "guD wuD" }],
-                [{ p: "ګډ وډ", f: "guD wuD" }],
-                [{ p: "ګډو وډو", f: "guDo wuDo" }],
-            ],
-            fem: [
-                [{ p: "ګډه وډه", f: "guDa wuDa" }],
-                [{ p: "ګډې وډې", f: "guDe wuDe" }],
-                [{ p: "ګډو وډو", f: "guDo wuDo" }],
-            ],
-        }
-    }
+            inflections: {
+                masc: [
+                    [{ p: "ګډ وډ", f: "guD wuD" }],
+                    [{ p: "ګډ وډ", f: "guD wuD" }],
+                    [{ p: "ګډو وډو", f: "guDo wuDo" }],
+                ],
+                fem: [
+                    [{ p: "ګډه وډه", f: "guDa wuDa" }],
+                    [{ p: "ګډې وډې", f: "guDe wuDe" }],
+                    [{ p: "ګډو وډو", f: "guDo wuDo" }],
+                ],
+            },
+        },
+    },
 ];
 
 const nouns: Array<{
     in: T.DictionaryEntry,
-    out: T.Inflections | false,
+    out: T.InflectorOutput,
 }> = [
     // ## UNISEX
     // Unisex noun irregular
@@ -260,16 +276,18 @@ const nouns: Array<{
             infbf: "melman",
         },
         out: {
-            masc: [
-                [{p: "مېلمه", f: "melmá"}],
-                [{p: "مېلمانه", f: "melmaanu"}],
-                [{p: "مېلمنو", f: "melmano"}],
-            ],
-            fem: [
-                [{p: "مېلمنه", f: "melmana"}],
-                [{p: "مېلمنې", f: "melmane"}],
-                [{p: "مېلمنو", f: "melmano"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "مېلمه", f: "melmá"}],
+                    [{p: "مېلمانه", f: "melmaanu"}],
+                    [{p: "مېلمنو", f: "melmano"}],
+                ],
+                fem: [
+                    [{p: "مېلمنه", f: "melmana"}],
+                    [{p: "مېلمنې", f: "melmane"}],
+                    [{p: "مېلمنو", f: "melmano"}],
+                ],
+            },
         },
     },
     // Unisex noun ending with ی
@@ -284,16 +302,18 @@ const nouns: Array<{
             i: 10943,
         },
         out: {
-            masc: [
-                [{p: "ملګری", f: "malgúrey"}],
-                [{p: "ملګري", f: "malgúree"}],
-                [{p: "ملګریو", f: "malgúriyo"}, {p: "ملګرو", f: "malgúro"}],
-            ],
-            fem: [
-                [{p: "ملګرې", f: "malgúre"}],
-                [{p: "ملګرې", f: "malgúre"}],
-                [{p: "ملګرو", f: "malgúro"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "ملګری", f: "malgúrey"}],
+                    [{p: "ملګري", f: "malgúree"}],
+                    [{p: "ملګریو", f: "malgúriyo"}, {p: "ملګرو", f: "malgúro"}],
+                ],
+                fem: [
+                    [{p: "ملګرې", f: "malgúre"}],
+                    [{p: "ملګرې", f: "malgúre"}],
+                    [{p: "ملګرو", f: "malgúro"}],
+                ],
+            },
         },
     },
     // Unisex noun ending on ی with emphasis on the end
@@ -308,16 +328,24 @@ const nouns: Array<{
             i: 2900,
         },
         out: {
-            masc: [
-                [{p: "ترورزی", f: "trorzéy"}],
-                [{p: "ترورزي", f: "trorzée"}],
-                [{p: "ترورزیو", f: "trorziyo"}, {p: "ترورزو", f: "trorzó"}],
-            ],
-            fem: [
-                [{p: "ترورزۍ", f: "trorzúy"}],
-                [{p: "ترورزۍ", f: "trorzúy"}],
-                [{p: "ترورزیو", f: "trorzúyo"}, {p: "ترورزو", f: "trorzó"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "ترورزی", f: "trorzéy"}],
+                    [{p: "ترورزي", f: "trorzée"}],
+                    [{p: "ترورزیو", f: "trorziyo"}, {p: "ترورزو", f: "trorzó"}],
+                ],
+                fem: [
+                    [{p: "ترورزۍ", f: "trorzúy"}],
+                    [{p: "ترورزۍ", f: "trorzúy"}],
+                    [{p: "ترورزیو", f: "trorzúyo"}, {p: "ترورزو", f: "trorzó"}],
+                ],
+            },
+            // plural: {
+            //     masc: [
+            //         [{ p: "ترورزامن", f: "trorzaamun" }],
+            //         [{ p: "ترورزامنو", f: "trorzaamuno" }],
+            //     ],
+            // },
         },
     },
     // Unisex noun ending with a consanant
@@ -328,20 +356,32 @@ const nouns: Array<{
             f: "churg",
             g: "",
             e: "rooster, cock; chicken, poultry",
-            c: "n. m. unisex",
+            c: "n. m. unisex anim.",
             i: 4101,
         },
         out: {
-            masc: [
-                [{p: "چرګ", f: "churg"}],
-                [{p: "چرګ", f: "churg"}],
-                [{p: "چرګو", f: "churgo"}],
-            ],
-            fem: [
-                [{p: "چرګه", f: "churga"}],
-                [{p: "چرګې", f: "churge"}],
-                [{p: "چرګو", f: "churgo"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "چرګ", f: "churg"}],
+                    [{p: "چرګ", f: "churg"}],
+                    [{p: "چرګو", f: "churgo"}],
+                ],
+                fem: [
+                    [{p: "چرګه", f: "churga"}],
+                    [{p: "چرګې", f: "churge"}],
+                    [{p: "چرګو", f: "churgo"}],
+                ],
+            },
+            plural: {
+                masc: [
+                    [{p: "چرګان", f: "churgáan"}],
+                    [{p: "چرګانو", f: "churgáano"}],
+                ],
+                fem: [
+                    [{p: "چرګانې", f: "churgáane"}],
+                    [{p: "چرګانو", f: "churgáano"}],
+                ],
+            },
         },
     },
     // ## MASCULINE
@@ -357,11 +397,13 @@ const nouns: Array<{
             i: 6750,
         },
         out: {
-            masc: [
-                [{p: "سړی", f: "saRey"}],
-                [{p: "سړي", f: "saRee"}],
-                [{p: "سړیو", f: "saRiyo"}, {p: "سړو", f: "saRo"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "سړی", f: "saRey"}],
+                    [{p: "سړي", f: "saRee"}],
+                    [{p: "سړیو", f: "saRiyo"}, {p: "سړو", f: "saRo"}],
+                ],
+            }
         },
     },
     // Masculine regular ending in ی with emphasis on end
@@ -376,11 +418,13 @@ const nouns: Array<{
             i: 2931,
         },
         out: {
-            masc: [
-                [{p: "ترېلی", f: "treléy"}],
-                [{p: "ترېلي", f: "trelée"}],
-                [{p: "ترېلیو", f: "treliyo"}, {p: "ترېلو", f: "trelo"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "ترېلی", f: "treléy"}],
+                    [{p: "ترېلي", f: "trelée"}],
+                    [{p: "ترېلیو", f: "treliyo"}, {p: "ترېلو", f: "trelo"}],
+                ],
+            },
         },
     },
     // Masculine ending in tob
@@ -395,11 +439,13 @@ const nouns: Array<{
             c: "n. m.",
         },
         out: {
-            masc: [
-                [{p: "مشرتوب", f: "mushurtob"}],
-                [{p: "مشرتابه", f: "mushurtaabu"}],
-                [{p: "مشرتبو", f: "mushurtabo"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "مشرتوب", f: "mushurtob"}],
+                    [{p: "مشرتابه", f: "mushurtaabu"}],
+                    [{p: "مشرتبو", f: "mushurtabo"}],
+                ],
+            },
         },
     },
     // Masculine irregular
@@ -418,11 +464,19 @@ const nouns: Array<{
             infbf: "lamandz",
         },
         out: {
-            masc: [
-                [{p: "لمونځ", f: "lamoondz"}],
-                [{p: "لمانځه", f: "lamaandzu"}],
-                [{p: "لمنځو", f: "lamandzo"}],
-            ],
+            inflections: {
+                masc: [
+                    [{p: "لمونځ", f: "lamoondz"}],
+                    [{p: "لمانځه", f: "lamaandzu"}],
+                    [{p: "لمنځو", f: "lamandzo"}],
+                ],
+            },
+            // plural: {
+            //     masc: [
+            //         [{ p: "لمونځونه", f: "lamoondzóona" }],
+            //         [{ p: "لمونځونو", f: "lamoondzóono" }],
+            //     ],
+            // },
         },
     },
     // Masculine non-inflecting
@@ -436,7 +490,14 @@ const nouns: Array<{
             c: "n. m.",
             i: 8640,
         },
-        out: false,
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "کتابونه", f: "kitaabóona" }],
+                    [{ p: "کتابونو", f: "kitaabóono" }],
+                ],
+            },
+        },
     },
     // ## FEMININE
     // Feminine regular ending in ه
@@ -451,11 +512,13 @@ const nouns: Array<{
             i: 7444,
         },
         out: {
-            fem: [
-                [{p: "ښځه", f: "xudza"}],
-                [{p: "ښځې", f: "xudze"}],
-                [{p: "ښځو", f: "xudzo"}],
-            ],
+            inflections: {
+                fem: [
+                    [{p: "ښځه", f: "xudza"}],
+                    [{p: "ښځې", f: "xudze"}],
+                    [{p: "ښځو", f: "xudzo"}],
+                ],
+            },
         },
     },
     {
@@ -469,11 +532,13 @@ const nouns: Array<{
             i: 365,
         },
         out: {
-            fem: [
-                [{p: "اره", f: "ará"}],
-                [{p: "ارې", f: "are"}],
-                [{p: "ارو", f: "aro"}],
-            ],
+            inflections: {
+                fem: [
+                    [{p: "اره", f: "ará"}],
+                    [{p: "ارې", f: "are"}],
+                    [{p: "ارو", f: "aro"}],
+                ],
+            },
         },
     },
     // Feminine regular ending in ع - a'
@@ -490,11 +555,13 @@ const nouns: Array<{
             apf: "maraají’",
         },
         out: {
-            fem: [
-                [{p: "مرجع", f: "marja'"}],
-                [{p: "مرجعې", f: "marje"}],
-                [{p: "مرجعو", f: "marjo"}],
-            ],
+            inflections: {
+                fem: [
+                    [{p: "مرجع", f: "marja'"}],
+                    [{p: "مرجعې", f: "marje"}],
+                    [{p: "مرجعو", f: "marjo"}],
+                ],
+            },
         },
     },
     {
@@ -510,11 +577,13 @@ const nouns: Array<{
             apf: "manaabí",
         },
         out: {
-            fem: [
-                [{p: "منبع", f: "manbá"}],
-                [{p: "منبعې", f: "manbe"}],
-                [{p: "منبعو", f: "manbo"}],
-            ],
+            inflections: {
+                fem: [
+                    [{p: "منبع", f: "manbá"}],
+                    [{p: "منبعې", f: "manbe"}],
+                    [{p: "منبعو", f: "manbo"}],
+                ],
+            },
         },
     },
     // Feminine regular ending in ح - a
@@ -529,11 +598,13 @@ const nouns: Array<{
             i: 5813,
         },
         out: {
-            fem: [
-                [{p: "ذبح", f: "zabha"}],
-                [{p: "ذبحې", f: "zabhe"}],
-                [{p: "ذبحو", f: "zabho"}],
-            ],
+            inflections: {
+                fem: [
+                    [{p: "ذبح", f: "zabha"}],
+                    [{p: "ذبحې", f: "zabhe"}],
+                    [{p: "ذبحو", f: "zabho"}],
+                ],
+            },
         },
     },
     // Feminine inanimate regular with missing ه
@@ -548,14 +619,17 @@ const nouns: Array<{
             i: 9593,
         },
         out: {
-            fem: [
-                [{p: "لار", f: "laar"}],
-                [{p: "لارې", f: "laare"}],
-                [{p: "لارو", f: "laaro"}],
-            ],
+            inflections: {
+                fem: [
+                    [{p: "لار", f: "laar"}],
+                    [{p: "لارې", f: "laare"}],
+                    [{p: "لارو", f: "laaro"}],
+                ],
+            },
         },
     },
     // Feminine animate ending in a consonant
+    // TODO: ALLOW FOR MULTIPLE PLURAL POSSIBILITIES میندې, میېنې etc.
     {
         in: {
             ts: 1527812928,
@@ -564,9 +638,18 @@ const nouns: Array<{
             g: "",
             e: "mother, mom",
             c: "n. f. anim.",
+            ppp: "میندې",
+            ppf: "meynde",
             i: 11113,
         },
-        out: false,
+        out: {
+            plural: {
+                fem: [
+                    [{ p: "میندې", f: "meynde" }],
+                    [{ p: "میندو", f: "meyndo" }],
+                ],
+            },
+        },
     },
     // Feminine regular inanimate ending in ي
     {
@@ -580,11 +663,13 @@ const nouns: Array<{
             i: 5503,
         },
         out: {
-            fem: [
-                [{p: "دوستي", f: "dostee"}],
-                [{p: "دوستۍ", f: "dostuy"}],
-                [{p: "دوستیو", f: "dostuyo"}],
-            ],
+            inflections: {
+                fem: [
+                    [{p: "دوستي", f: "dostee"}],
+                    [{p: "دوستۍ", f: "dostuy"}],
+                    [{p: "دوستیو", f: "dostuyo"}],
+                ],
+            },
         },
     },
     // Feminine regular ending in ۍ
@@ -599,11 +684,13 @@ const nouns: Array<{
             i: 8718,
         },
         out: {
-            fem: [
-                [{p: "کرسۍ", f: "kUrsuy"}],
-                [{p: "کرسۍ", f: "kUrsuy"}],
-                [{p: "کرسیو", f: "kUrsuyo"}, { p: "کرسو", f: "kUrso"}],
-            ],
+            inflections: {
+                fem: [
+                    [{p: "کرسۍ", f: "kUrsuy"}],
+                    [{p: "کرسۍ", f: "kUrsuy"}],
+                    [{p: "کرسیو", f: "kUrsuyo"}, { p: "کرسو", f: "kUrso"}],
+                ],
+            },
         },
     },
     // Feminine regular ending in ا
@@ -611,18 +698,19 @@ const nouns: Array<{
         in: {
             ts: 1527812456,
             p: "اړتیا",
-            f: "aRtiyaa, aRtyaa",
+            f: "aRtiyáa, aRtyáa",
             g: "",
             e: "need, necessity",
             c: "n. f.",
             i: 376,
         },
         out: {
-            fem: [
-                [{p: "اړتیا", f: "aRtiyaa"}],
-                [{p: "اړتیاوې", f: "aRtiyaawe"}],
-                [{p: "اړتیاوو", f: "aRtiyaawo"}],
-            ],
+            plural: {
+                fem: [
+                    [{p: "اړتیاوې", f: "aRtiyáawe"}, { p: "اړتیاګانې", f:"aRtiyaagáane"}],
+                    [{p: "اړتیاوو", f: "aRtiyáawo"}, { p: "اړتیاګانو", f:"aRtiyaagáano"}],
+                ],
+            },
         },
     },
     // Feminine regular ending in اع
@@ -636,13 +724,15 @@ const nouns: Array<{
             c: "n. f.",
             i: 12205,
         },
-        out: {
-            fem: [
-                [{p: "وداع", f: "widáa'"}],
-                [{p: "وداعوې", f: "widáawe"}],
-                [{p: "وداعوو", f: "widáawo"}],
-            ],
-        },
+        out: false,
+        // out: {
+        //     plural: {
+        //         fem: [
+        //             [{p: "وداع وې", f: "widáawe"}, {p: "وداع ګانې", f: "widaagáane"}],
+        //             [{p: "وداع وو", f: "widáawo"}, {p: "وداع ګانو", f: "widaagáano"}],
+        //         ],
+        //     },
+        // },
     },
     // Word with no inflections
     {
@@ -658,6 +748,7 @@ const nouns: Array<{
         },
         out: false,
     },
+    // TODO: WORDS THAT ARE ALREADY PLURAL!
 ];
 
 const others: T.DictionaryEntry[] = [

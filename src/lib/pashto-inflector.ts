@@ -12,6 +12,10 @@ import {
   splitDoubleWord,
   ensureUnisexInflections,
   makePsString,
+  removeFVarients,
+  concatPsString,
+  endsInConsonant,
+  endsInAaOrOo,
 } from "./p-text-helpers";
 import {
   removeAccents,
@@ -20,95 +24,102 @@ import * as T from "../types";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
 const endingInHeyOrAynRegex = /[^ا][هع]$/;
-const endingInAlefRegex = /اع?$/;
+// const endingInAlefRegex = /اع?$/;
 
-export function inflectWord(word: T.DictionaryEntry): T.Inflections | false {
+export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
   // If it's a noun/adj, inflect accordingly
   // TODO: What about n. f. / adj. that end in ي ??
-  if (word.noInf) {
+  const w = removeFVarients(word);
+  if (w.noInf) {
     return false;
   }
-  if (word.c?.includes("doub.")) {
-    const words = splitDoubleWord(word);
-    const inflected = words.map((word) => ensureUnisexInflections(inflectWord(word), word));
-    return concatInflections(
-      inflected[0],
-      inflected[1],
-    ) as T.UnisexInflections;
+  if (w.c?.includes("doub.")) {
+    const words = splitDoubleWord(w);
+    const inflected = words.map((x) => ensureUnisexInflections(inflectWord(x), x));
+    return {
+      inflections: concatInflections(
+        inflected[0].inflections,
+        inflected[1].inflections,
+      ) as T.UnisexInflections,
+    };
   }
-  if (word.c && (word.c.includes("adj.") || word.c.includes("unisex"))) {
-    return handleUnisexWord(word);
+  if (w.c && (w.c.includes("adj.") || w.c.includes("unisex"))) {
+    return handleUnisexWord(w);
   }
-  if (word.c && (word.c.includes("n. m."))) {
-    return handleMascNoun(word);
+  if (w.c && (w.c.includes("n. m."))) {
+    return handleMascNoun(w);
   }
-  if (word.c && (word.c.includes("n. f."))) {
-    return handleFemNoun(word);
+  if (w.c && (w.c.includes("n. f."))) {
+    return handleFemNoun(w);
   }
   // It's not a noun/adj
   return false;
 }
 
 // LEVEL 2 FUNCTIONS
-function handleUnisexWord(word: T.DictionaryEntry): T.Inflections | false {
-  // Get first of comma seperated phonetics entries
-  const f = word.f.split(",")[0].trim();
+function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // Get last letter of Pashto and last two letters of phonetics
   // TODO: !!! Handle weird endings / symbols ' etc.
   const pEnd = word.p.slice(-1);
+  const plural = makePlural(word);
   if (word.infap && word.infaf && word.infbp && word.infbf) {
-    return inflectIrregularUnisex(word.p, f, [
-      {p: word.infap, f: word.infaf},
-      {p: word.infbp, f: word.infbf},
-    ]);
+    return {
+      inflections: inflectIrregularUnisex(word.p, word.f, [
+        {p: word.infap, f: word.infaf},
+        {p: word.infbp, f: word.infbf},
+      ]),
+      plural,
+    };
   }
-  if (pEnd === "ی" && f.slice(-2) === "ey") {
-    return inflectRegularYeyUnisex(word.p, f);
+  if (pEnd === "ی" && word.f.slice(-2) === "ey") {
+    return { inflections: inflectRegularYeyUnisex(word.p, word.f), plural };
   }
   if (pEnd === "ه" && word.g.slice(-1) === "u") {
-    return inflectRegularShwaEndingUnisex(word.p, f);
+    return { inflections: inflectRegularShwaEndingUnisex(word.p, word.f), plural };
   }
-  if (pEnd === "ی" && f.slice(-2) === "éy") {
-    return inflectEmphasizedYeyUnisex(word.p, f);
+  if (pEnd === "ی" && word.f.slice(-2) === "éy") {
+    return { inflections: inflectEmphasizedYeyUnisex(word.p, word.f), plural };
   }
   if (
     pashtoConsonants.includes(pEnd) ||
     word.p.slice(-2) === "وی" ||
     word.p.slice(-2) === "ای" ||
-    (word.p.slice(-1) === "ه" && f.slice(-1) === "h")
+    (word.p.slice(-1) === "ه" && word.f.slice(-1) === "h")
   ) {
-    return inflectConsonantEndingUnisex(word.p, f);
+    return { inflections: inflectConsonantEndingUnisex(word.p, word.f), plural };
   }
   return false;
 }
 
-function handleMascNoun(word: T.DictionaryEntry): T.Inflections | false {
-  // Get first of comma seperated phonetics entries
-  const f = word.f.split(",")[0].trim();
+function handleMascNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // Get last letter of Pashto and last two letters of phonetics
   // TODO: !!! Handle weird endings / symbols ' etc.
-  const pEnd = word.p.slice(-1);
-  const fEnd = f.slice(-2);
-  if (word.infap && word.infaf && word.infbp && word.infbf) {
-    return inflectIrregularMasc(word.p, f, [
-      {p: word.infap, f: word.infaf},
-      {p: word.infbp, f: word.infbf},
-    ]);
+  const plural = makePlural(w);
+  const pEnd = w.p.slice(-1);
+  const fEnd = w.f.slice(-2);
+  if (w.infap && w.infaf && w.infbp && w.infbf) {
+    return {
+      inflections: inflectIrregularMasc(w.p, w.f, [
+        {p: w.infap, f: w.infaf},
+        {p: w.infbp, f: w.infbf},
+      ]),
+      plural,
+    };
   }
-  const isTobEnding = (word.p.slice(-3) === "توب" && ["tób", "tob"].includes(f.slice(-3)) && word.p.length > 3);
+  const isTobEnding = (w.p.slice(-3) === "توب" && ["tób", "tob"].includes(w.f.slice(-3)) && w.p.length > 3);
   if (isTobEnding) {
-    return inflectTobMasc(word.p, f);
+    return { inflections: inflectTobMasc(w.p, w.f), plural };
   }
   if (pEnd === "ی" && fEnd === "ey") {
-    return inflectRegularYeyMasc(word.p, f);
+    return { inflections: inflectRegularYeyMasc(w.p, w.f), plural };
   }
   if (pEnd === "ی" && fEnd === "éy") {
-    return inflectRegularEmphasizedYeyMasc(word.p, f);
+    return { inflections: inflectRegularEmphasizedYeyMasc(w.p, w.f), plural };
   }
-  return false;
+  return plural ? { plural } : false
 }
 
-function handleFemNoun(word: T.DictionaryEntry): T.Inflections | false {
+function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // Get first of comma seperated phonetics entries
   const f = word.f.split(",")[0].trim();
   /* istanbul ignore next */ // will always have word.c at this point
@@ -116,25 +127,27 @@ function handleFemNoun(word: T.DictionaryEntry): T.Inflections | false {
   const animate = c.includes("anim.");
   const pEnd = word.p.slice(-1);
 
+  const plural = makePlural(word);
+
   if (endingInHeyOrAynRegex.test(word.p) && endingInSingleARegex.test(f)) {
-    return inflectRegularAFem(word.p, f);
+    return { inflections: inflectRegularAFem(word.p, f), plural };
   }
   if (word.p.slice(-1) === "ح" && endingInSingleARegex.test(f)) {
-    return inflectRegularAWithHimPEnding(word.p, f);
+    return { inflections: inflectRegularAWithHimPEnding(word.p, f), plural };
   }
   if (pashtoConsonants.includes(pEnd) && !animate) {
-    return inflectRegularInanMissingAFem(word.p, f);
+    return { inflections: inflectRegularInanMissingAFem(word.p, f), plural };
   }
   if (pEnd === "ي" && (!animate)) {
-    return inflectRegularInanEeFem(word.p, f);
+    return { inflections: inflectRegularInanEeFem(word.p, f), plural };
   }
   if (pEnd === "ۍ") {
-    return inflectRegularUyFem(word.p, f);
+    return { inflections: inflectRegularUyFem(word.p, f), plural };
   }
-  if (endingInAlefRegex.test(word.p)) {
-    return inflectRegularAaFem(word.p, f);
-  }
-  return false;
+  // if (endingInAlefRegex.test(word.p)) {
+  //   return { inflections: inflectRegularAaFem(word.p, f) };
+  // }
+  return plural ? { plural } : false;
 }
 
 // LEVEL 3 FUNCTIONS
@@ -341,13 +354,77 @@ function inflectRegularUyFem(p: string, f: string): T.Inflections {
   };
 }
 
-function inflectRegularAaFem(p: string, f: string): T.Inflections {
-  const baseF = ["'", "’"].includes(f.slice(-1)) ? f.slice(0, -1) : f;
-  return {
-    fem: [
-      [{p, f}],
-      [{p: `${p}وې`, f: `${baseF}we`}],
-      [{p: `${p}وو`, f: `${baseF}wo`}],
-    ],
-  };
+function makePashtoPlural(word: T.DictionaryEntryNoFVars): T.PluralInflections | undefined {
+  if (!(word.ppp && word.ppf)) return undefined;
+  const base = makePsString(word.ppp, word.ppf);
+  // TODO: Add male Pashto plural
+  if (word.c?.includes("n. f.")) {
+    return {
+      fem: [
+        [base],
+        // todo: function to add و ending automatically
+        [concatPsString(
+          makePsString(base.p.slice(0, -1), base.f.slice(0, -1)),
+          { p: "و", f: "o" },
+        )],
+      ],
+    }
+  }
+  // TODO: handle masculine and unisex
+  return undefined;
+}
+
+function makePlural(w: T.DictionaryEntryNoFVars): T.PluralInflections | undefined {
+  // TODO: Include the Pashto plural thing here
+  const pashtoPlural = makePashtoPlural(w);
+  if (pashtoPlural) return pashtoPlural;
+  function addMascPluralSuffix(animate?: boolean): T.PluralInflectionSet {
+    const base = removeAccents(w);
+    return [
+      [concatPsString(base, animate ? { p: "ان", f: "áan" } : { p: "ونه", f: "óona" })],
+      [concatPsString(base, animate ? { p: "انو", f: "áano" } : { p: "ونو", f: "óono" })],
+    ];
+  } 
+  function addAnimUnisexPluralSuffix(): T.UnisexSet<T.PluralInflectionSet> {
+    const base = removeAccents(w);
+    return {
+      masc: addMascPluralSuffix(true),
+      fem: [
+        [concatPsString(base, { p: "انې", f: "áane" })],
+        [concatPsString(base, { p: "انو", f: "áano" })],
+      ],
+    };
+  }
+  function addFemLongVowelSuffix(): T.PluralInflectionSet {
+    const base = makePsString(w.p, w.f);
+    const baseWOutAccents = removeAccents(base);
+    return [
+      [concatPsString(base, { p: "وې", f: "we" }), concatPsString(baseWOutAccents, { p: "ګانې", f: "gáane" })],
+      [concatPsString(base, { p: "وو", f: "wo" }), concatPsString(baseWOutAccents, { p: "ګانو", f: "gáano" })],
+    ];
+  }
+
+  const anim = w.c?.includes("anim.");
+  const type = (w.c?.includes("unisex"))
+    ? "unisex noun"
+    : (w.c?.includes("n. m."))
+    ? "masc noun"
+    : (w.c?.includes("n. f."))
+    ? "fem noun"
+    : "other";
+  if (type === "unisex noun" && endsInConsonant(w) && (!w.infap) && anim) {
+    return addAnimUnisexPluralSuffix();
+  }
+  if (type === "masc noun" && endsInConsonant(w) && (!w.infap) && (w.p.slice(-3) !== "توب")) {
+    return {
+      masc: addMascPluralSuffix(anim),
+    };
+  }
+  // TODO: What about endings in long ee / animate at inanimate
+  if (type === "fem noun" && endsInAaOrOo(w) && (!w.infap)) {
+    return {
+      fem: addFemLongVowelSuffix(),
+    };
+  }
+  return undefined;
 }

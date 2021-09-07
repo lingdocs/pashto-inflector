@@ -114,6 +114,10 @@ export type DictionaryEntry = {
     ep?: string;
 }
 
+export type DictionaryEntryNoFVars = DictionaryEntry & { __brand: "name for a dictionary entry with all the phonetics variations removed" };
+export type PsStringNoFVars = PsString & { __brand: "name for a ps string with all the phonetics variations removed" };
+export type FStringNoFVars = string & { __brand: "name for a phonetics string with all the phonetics variations removed" };
+
 export type DictionaryEntryTextField = "p" | "f" | "e" | "c" | "infap" | "infaf" | "infbp" | "infbf" | "app" | "apf" | "ppp" | "ppf" | "psp" | "psf" | "ssp" | "ssf" | "prp" | "prf" | "pprtp" | "pprtf" | "tppp" | "tppf" | "ec" | "ep";
 export type DictionaryEntryBooleanField = "noInf" | "shortIntrans" | "noOo" | "sepOo" | "diacExcept";
 export type DictionaryEntryNumberField = "ts" | "i" | "l" | "separationAtP" | "separationAtF";
@@ -334,12 +338,25 @@ export type PerfectContent = {
 // Plain, 1st, and 2nd Inflection
 export type InflectionSet = ArrayFixed<ArrayOneOrMore<PsString>, 3>;
 
+// Plural and Second Inflection
+export type PluralInflectionSet = ArrayFixed<ArrayOneOrMore<PsString>, 2>
+
 export type Gender = "masc" | "fem";
 
-export type UnisexInflections = Record<Gender, InflectionSet>;
+export type UnisexSet<T> = Record<Gender, T>;
+export type GenderedSet<T> = UnisexSet<T> | Omit<UnisexSet<T>, "fem"> | Omit<UnisexSet<T>, "masc">;
+export type UnisexInflections = UnisexSet<InflectionSet>;
 
-export type Inflections = UnisexInflections
-    | Omit<UnisexInflections, "fem"> | Omit<UnisexInflections, "masc">;
+export type Inflections = GenderedSet<InflectionSet>;
+
+export type PluralInflections = GenderedSet<PluralInflectionSet>;
+
+export type InflectorOutput = {
+    plural: PluralInflections,
+    inflections?: Inflections,
+} | {
+    inflections: Inflections,
+} | false;
 
 export type PersonLine = [
     /** singular form of person */

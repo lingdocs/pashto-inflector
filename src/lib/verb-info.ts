@@ -121,7 +121,7 @@ export function getVerbInfo(
             return getGenerativeStativeCompoundVerbInfo(entry, complement as T.DictionaryEntry);
         }
     }
-    const comp = complement ? ensureUnisexInflections(complement) : undefined;
+    const comp = complement ? ensureUnisexInf(complement) : undefined;
     const root = getVerbRoots(entry, transitivity, comp);
     const stem = getVerbStems(entry, root, transitivity, comp);
     const infinitive = "mascSing" in root.imperfective ? root.imperfective.mascSing.long : root.imperfective.long;
@@ -877,7 +877,7 @@ function addOoPrefix(
     };
 }
 
-function ensureUnisexInflections(complement: T.DictionaryEntry): T.UnisexInflections {
+function ensureUnisexInf(complement: T.DictionaryEntry): T.UnisexInflections {
     const inflected = inflectWord(complement);
     const isUnisex = inflected && (("masc" in inflected) && ("fem" in inflected));
     if (isUnisex) {

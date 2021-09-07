@@ -21,6 +21,7 @@ import {
     psStringEquals,
     removeRetroflexR,
     splitDoubleWord,
+    endsInConsonant,
 } from "./p-text-helpers";
 import * as T from "../types";
 import {
@@ -1003,6 +1004,12 @@ test("psStringEquals", () => {
     expect(
         psStringEquals({ p: "بور", f: "bor" }, { p: "تور", f: "tor" })
     ).toBe(false);
+    expect(
+        psStringEquals({ p: "ملګری", f: "malgúrey" }, { p: "ملګری", f: "malgurey" })
+    ).toBe(false);
+    expect(
+        psStringEquals({ p: "ملګری", f: "malgúrey" }, { p: "ملګری", f: "malgurey" }, true)
+    ).toBe(true);
 });
 
 test("removeRetroflexR", () => {
@@ -1010,3 +1017,21 @@ test("removeRetroflexR", () => {
         removeRetroflexR({ p: "وکړ", f: "óokR" }),
     ).toEqual({ p: "وک", f: "óok" });
 });
+
+test("endsInAConsonant", () => {
+    const does: T.PsString[] = [
+        { p: "پښتون", f: "puxtoon" },
+        { p: "کور", f: "kor" },
+        { p: "ګناه", f: "gUnaah" },
+        { p: "زوی", f: "zooy" },
+        { p: "ځای", f: "dzaay" },
+    ];
+    const doesnt: T.PsString[] = [
+        { p: "بابا", f: "baabaa" },
+        { p: "قاضي", f: "qaazee" },
+        { p: "ګناه", f: "gunaa" },
+        { p: "اطلاع", f: "itlaa" },
+    ];
+    does.forEach((x) => expect(endsInConsonant(x)).toBe(true));
+    doesnt.forEach((x) => expect(endsInConsonant(x)).toBe(false));
+})
