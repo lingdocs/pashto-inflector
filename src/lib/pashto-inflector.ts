@@ -121,7 +121,6 @@ function handleMascNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
 
 function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // Get first of comma seperated phonetics entries
-  const f = word.f.split(",")[0].trim();
   /* istanbul ignore next */ // will always have word.c at this point
   const c = word.c || "";
   const animate = c.includes("anim.");
@@ -129,20 +128,20 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
 
   const plural = makePlural(word);
 
-  if (endingInHeyOrAynRegex.test(word.p) && endingInSingleARegex.test(f)) {
-    return { inflections: inflectRegularAFem(word.p, f), plural };
+  if (endingInHeyOrAynRegex.test(word.p) && endingInSingleARegex.test(word.f)) {
+    return { inflections: inflectRegularAFem(word.p, word.f), plural };
   }
-  if (word.p.slice(-1) === "ح" && endingInSingleARegex.test(f)) {
-    return { inflections: inflectRegularAWithHimPEnding(word.p, f), plural };
+  if (word.p.slice(-1) === "ح" && endingInSingleARegex.test(word.f)) {
+    return { inflections: inflectRegularAWithHimPEnding(word.p, word.f), plural };
   }
   if (pashtoConsonants.includes(pEnd) && !animate) {
-    return { inflections: inflectRegularInanMissingAFem(word.p, f), plural };
+    return { inflections: inflectRegularInanMissingAFem(word.p, word.f), plural };
   }
   if (pEnd === "ي" && (!animate)) {
-    return { inflections: inflectRegularInanEeFem(word.p, f), plural };
+    return { inflections: inflectRegularInanEeFem(word.p, word.f), plural };
   }
   if (pEnd === "ۍ") {
-    return { inflections: inflectRegularUyFem(word.p, f), plural };
+    return { inflections: inflectRegularUyFem(word.p, word.f), plural };
   }
   // if (endingInAlefRegex.test(word.p)) {
   //   return { inflections: inflectRegularAaFem(word.p, f) };

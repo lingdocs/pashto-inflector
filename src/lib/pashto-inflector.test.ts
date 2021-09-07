@@ -499,6 +499,17 @@ const nouns: Array<{
             },
         },
     },
+    {
+        in: {"i":11352,"ts":1527813995,"p":"لو","f":"law, lau","g":"law,lau","e":"harvesting, reaping, hay-making; mowed, reaped, harvested","c":"n. m."},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "لوونه", f: "lawóona" }],
+                    [{ p: "لوونو", f: "lawóono" }],
+                ],
+            },
+        },
+    },
     // ## FEMININE
     // Feminine regular ending in ه
     {
@@ -713,6 +724,18 @@ const nouns: Array<{
             },
         },
     },
+    // Feminine regular ending in و
+    {
+        in: {"i":2899,"ts":1527815163,"p":"پیشو","f":"peeshó","g":"peesho","e":"cat","c":"n. f. anim."},
+        out: {
+            plural: {
+                fem: [
+                    [{ p: "پیشووې", f: "peeshówe" }, { p: "پیشوګانې", f: "peeshogáane" }],
+                    [{ p: "پیشووو", f: "peeshówo" }, { p: "پیشوګانو", f: "peeshogáano" }],
+                ],
+            },
+        },
+    },
     // Feminine regular ending in اع
     {
         in: {
@@ -734,6 +757,7 @@ const nouns: Array<{
         //     },
         // },
     },
+    // TODO: Plaar plaroona paaraan - wrooNa
     // Word with no inflections
     {
         in: {
