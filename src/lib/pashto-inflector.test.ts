@@ -318,15 +318,7 @@ const nouns: Array<{
     },
     // Unisex noun ending on ی with emphasis on the end
     {
-        in: {
-            ts: 1527816431,
-            p: "ترورزی",
-            f: "trorzéy",
-            g: "",
-            e: "cousin (son of paternal aunt)",
-            c: "n. m. unisex",
-            i: 2900,
-        },
+        in: {"i":3319,"ts":1527816431,"p":"ترورزی","f":"trorzéy","g":"trorzey","e":"cousin (of paternal aunt)","c":"n. m. unisex","ppp":"ترورزامن","ppf":"trorzaamun"},
         out: {
             inflections: {
                 masc: [
@@ -340,12 +332,12 @@ const nouns: Array<{
                     [{p: "ترورزیو", f: "trorzúyo"}, {p: "ترورزو", f: "trorzó"}],
                 ],
             },
-            // plural: {
-            //     masc: [
-            //         [{ p: "ترورزامن", f: "trorzaamun" }],
-            //         [{ p: "ترورزامنو", f: "trorzaamuno" }],
-            //     ],
-            // },
+            plural: {
+                masc: [
+                    [{ p: "ترورزامن", f: "trorzaamun" }],
+                    [{ p: "ترورزامنو", f: "trorzaamuno" }],
+                ],
+            },
         },
     },
     // Unisex noun ending with a consanant
@@ -479,6 +471,101 @@ const nouns: Array<{
             // },
         },
     },
+    // Masculine short squish
+    {
+        in: {"i":9049,"ts":1527813593,"p":"غر","f":"ghar, ghur","g":"ghar,ghur","e":"mountain","c":"n. m.","infap":"غره","infaf":"ghru","infbp":"غرو","infbf":"ghro"},
+        out: {
+            inflections: {
+                masc: [
+                    [{ p: "غر", f: "ghar" }],
+                    [{ p: "غره", f: "ghru" }],
+                    [{ p: "غرو", f: "ghro" }],
+                ],
+            },
+            plural: {
+                masc: [
+                    [{ p: "غرونه", f: "ghróona" }],
+                    [{ p: "غرونو", f: "ghróono" }],
+                ],
+            },
+        },
+    },
+    // should also do the oona plural with the squish nouns, even if it's animate
+    {
+        in: {"i":5465,"ts":1527812802,"p":"خر","f":"khur","g":"khur","e":"donkey","c":"n. m. unisex irreg.","infap":"خره","infaf":"khru","infbp":"خر","infbf":"khr"},
+        out: {
+            inflections: {
+                masc: [
+                    [{ p: "خر", f: "khur" }],
+                    [{ p: "خره", f: "khru" }],
+                    [{ p: "خرو", f: "khro" }],
+                ],
+            },
+            plural: {
+                masc: [
+                    [{ p: "خرونه", f: "khróona" }],
+                    [{ p: "خرونو", f: "khróono" }],
+                ],
+            },
+        },
+    },
+    // masc plural
+    {
+        in: {"i":6063,"ts":1527815739,"p":"دروغ","f":"drogh, darwagh","g":"drogh,darwagh","e":"lie, falsehood","c":"n. m. pl."},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "دروغ", f: "drogh" }],
+                    [{ p: "دروغو", f: "drogho" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"i":9191,"ts":1527817330,"p":"غنم","f":"ghanúm","g":"ghanum","e":"wheat","c":"n. m. pl."},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "غنم", f: "ghanúm" }],
+                    [{ p: "غنمو", f: "ghanúmo" }],
+                ],
+            },
+        },
+    },
+    // fem plural
+    {
+        in: {"ts":1527815129,"i":1013,"p":"اوبه","f":"oobú","g":"oobu","e":"water","c":"n. f. pl."},
+        out: {
+            plural: {
+                fem: [
+                    [{ p: "اوبه", f: "oobú" }],
+                    [{ p: "اوبو", f: "oobó" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527815008,"i":8421,"p":"شودې","f":"shoodé","g":"shoode","e":"milk","c":"n. f. pl."},
+        out: {
+            plural: {
+                fem: [
+                    [{ p: "شودې", f: "shoodé" }],
+                    [{ p: "شودو", f: "shoodó" }],
+                ]
+            }
+        }
+    },
+    {
+        in: {"ts":1527815008,"i":8421,"p":"شودې","f":"shoode","g":"shoode","e":"milk","c":"n. f. pl."},
+        out: {
+            plural: {
+                fem: [
+                    [{ p: "شودې", f: "shoode" }],
+                    [{ p: "شودو", f: "shoodo" }],
+                ]
+            }
+        }
+    },
     // Masculine non-inflecting
     {
         in: {
@@ -495,6 +582,28 @@ const nouns: Array<{
                 masc: [
                     [{ p: "کتابونه", f: "kitaabóona" }],
                     [{ p: "کتابونو", f: "kitaabóono" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527815394,"i":13991,"p":"واده","f":"waadú","g":"waadu","e":"wedding, marriage","c":"n. m."},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "وادونه", f: "waadóona" }],
+                    [{ p: "وادونو", f: "waadóono" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527817768,"i":9791,"p":"کارګه","f":"kaargu","g":"kaargu","e":"raven, crow","c":"n. m. anim."},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "کارګان", f: "kaargáan" }],
+                    [{ p: "کارګانو", f: "kaargáano" }],
                 ],
             },
         },
