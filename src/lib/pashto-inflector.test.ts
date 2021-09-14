@@ -442,19 +442,7 @@ const nouns: Array<{
     },
     // Masculine irregular
     {
-        in: {
-            ts: 1527813809,
-            p: "لمونځ",
-            f: "lamoondz",
-            g: "",
-            e: "Muslim ritual prayers (namaz, salah, salat)",
-            c: "n. m. irreg.",
-            i: 9835,
-            infap: "لمانځه",
-            infaf: "lamaandzu",
-            infbp: "لمنځ",
-            infbf: "lamandz",
-        },
+        in: {"ts":1527813809,"i":11318,"p":"لمونځ","f":"lamoondz","g":"lamoondz","e":"Muslim ritual prayers (namaz, salah, salat)","c":"n. m. irreg.","infap":"لمانځه","infaf":"lamaandzu","infbp":"لمنځ","infbf":"lamandz","ppp":"لمونځونه","ppf":"lamoondzóona"},
         out: {
             inflections: {
                 masc: [
@@ -463,17 +451,17 @@ const nouns: Array<{
                     [{p: "لمنځو", f: "lamandzo"}],
                 ],
             },
-            // plural: {
-            //     masc: [
-            //         [{ p: "لمونځونه", f: "lamoondzóona" }],
-            //         [{ p: "لمونځونو", f: "lamoondzóono" }],
-            //     ],
-            // },
+            plural: {
+                masc: [
+                    [{ p: "لمونځونه", f: "lamoondzóona" }],
+                    [{ p: "لمونځونو", f: "lamoondzóono" }],
+                ],
+            },
         },
     },
     // Masculine short squish
     {
-        in: {"i":9049,"ts":1527813593,"p":"غر","f":"ghar, ghur","g":"ghar,ghur","e":"mountain","c":"n. m.","infap":"غره","infaf":"ghru","infbp":"غرو","infbf":"ghro"},
+        in: {"i":9049,"ts":1527813593,"p":"غر","f":"ghar, ghur","g":"ghar,ghur","e":"mountain","c":"n. m.","infap":"غره","infaf":"ghru","infbp":"غر","infbf":"ghr"},
         out: {
             inflections: {
                 masc: [
@@ -498,6 +486,11 @@ const nouns: Array<{
                 masc: [
                     [{ p: "خر", f: "khur" }],
                     [{ p: "خره", f: "khru" }],
+                    [{ p: "خرو", f: "khro" }],
+                ],
+                fem: [
+                    [{ p: "خره", f: "khra" }],
+                    [{ p: "خرې", f: "khre" }],
                     [{ p: "خرو", f: "khro" }],
                 ],
             },
@@ -587,12 +580,12 @@ const nouns: Array<{
         },
     },
     {
-        in: {"ts":1527815394,"i":13991,"p":"واده","f":"waadú","g":"waadu","e":"wedding, marriage","c":"n. m."},
+        in: {"ts":1527815394,"i":13991,"p":"واده","f":"waadú","g":"waadu","e":"wedding, marriage","c":"n. m.","ppp":"ودونه","ppf":"wadóona"},
         out: {
             plural: {
                 masc: [
-                    [{ p: "وادونه", f: "waadóona" }],
-                    [{ p: "وادونو", f: "waadóono" }],
+                    [{ p: "ودونه", f: "wadóona" }],
+                    [{ p: "ودونو", f: "wadóono" }],
                 ],
             },
         },
@@ -655,8 +648,8 @@ const nouns: Array<{
             inflections: {
                 fem: [
                     [{p: "اره", f: "ará"}],
-                    [{p: "ارې", f: "are"}],
-                    [{p: "ارو", f: "aro"}],
+                    [{p: "ارې", f: "aré"}],
+                    [{p: "ارو", f: "aró"}],
                 ],
             },
         },
@@ -672,7 +665,7 @@ const nouns: Array<{
             c: "n. f.",
             i: 10661,
             app: "مراجع",
-            apf: "maraají’",
+            apf: "maraají'",
         },
         out: {
             inflections: {
@@ -680,6 +673,12 @@ const nouns: Array<{
                     [{p: "مرجع", f: "marja'"}],
                     [{p: "مرجعې", f: "marje"}],
                     [{p: "مرجعو", f: "marjo"}],
+                ],
+            },
+            arabicPlural: {
+                fem: [
+                    [{ p: "مراجع", f: "maraají'" }],
+                    [{ p: "مراجو", f: "maraajó" }],
                 ],
             },
         },
@@ -700,8 +699,128 @@ const nouns: Array<{
             inflections: {
                 fem: [
                     [{p: "منبع", f: "manbá"}],
-                    [{p: "منبعې", f: "manbe"}],
-                    [{p: "منبعو", f: "manbo"}],
+                    [{p: "منبعې", f: "manbé"}],
+                    [{p: "منبعو", f: "manbó"}],
+                ],
+            },
+            arabicPlural: {
+                fem: [
+                    [{ p: "منابع", f: "manaabí" }],
+                    [{ p: "منابو", f: "manaabó" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527823093,"i":13207,"p":"نبي","f":"nabee","g":"nabee","e":"prophet","c":"n. m. anim.","app":"انبیا","apf":"ambiyáa"},
+        out: {
+            arabicPlural: {
+                masc: [
+                    [{ p: "انبیا", f: "ambiyáa" }],
+                    [{ p: "انبیاوو", f: "ambiyáawo" }],
+                ],
+            },
+        }
+    },
+    {
+        in: {"ts":1527819536,"i":3063,"p":"تبع","f":"taba'","g":"taba","e":"follower, adherent, supporter, subject, national","c":"n. m. unisex anim.","app":"اتباع","apf":"atbaa"},
+        out: {
+            arabicPlural: {
+                masc: [
+                    [{ p: "اتباع", f: "atbaa" }],
+                    [{ p: "اتباعوو", f: "atbaawo" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527816113,"i":3072,"p":"تبلیغ","f":"tableegh","g":"tableegh","e":"propaganda; preaching, evangelism","c":"n. m.","app":"تبلیغات","apf":"tableegháat"},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "تبلیغونه", f: "tableeghóona" }],
+                    [{ p: "تبلیغونو", f: "tableeghóono" }],
+                ],
+            },
+            arabicPlural: {
+                masc: [
+                    [{ p: "تبلیغات", f: "tableegháat" }],
+                    [{ p: "تبلیغاتو", f: "tableegháato" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527815921,"i":3844,"p":"توقع","f":"tawaqqU","g":"tawakkU","e":"expectation, hope, anticipation","c":"n. f.","app":"توقعات","apf":"tawaqqUaat"},
+        out: {
+            arabicPlural: {
+                masc: [
+                    [{ p: "توقعات", f: "tawaqqUaat" }],
+                    [{ p: "توقعاتو", f: "tawaqqUaato" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527815820,"i":5177,"p":"حادثه","f":"haadisá","g":"haadisa","e":"accident, event","c":"n. f.","app":"حوادث, حادثات","apf":"hawaadis, haadisaat"},
+        out: {
+            inflections: {
+                fem: [
+                    [{ p: "حادثه", f: "haadisá" }],
+                    [{ p: "حادثې", f: "haadisé" }],
+                    [{ p: "حادثو", f: "haadisó" }],
+                ],
+            },
+            arabicPlural: {
+                masc: [
+                    [{ p: "حوادث", f: "hawaadis"}, { p: "حادثات", f: "haadisaat" }],
+                    [{ p: "حوادثو", f: "hawaadiso"}, { p: "حادثاتو", f: "haadisaato" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527815329,"i":3097,"p":"تجربه","f":"tajrabá, tajribá","g":"tajraba,tajriba","e":"experience","c":"n. f.","app":"تجارب","apf":"tajaarib"},
+        out: {
+            inflections: {
+                fem: [
+                    [{ p: "تجربه", f: "tajrabá" }],
+                    [{ p: "تجربې", f: "tajrabé" }],
+                    [{ p: "تجربو", f: "tajrabó" }],
+                ],
+            },
+            arabicPlural: {
+                masc: [
+                    [{ p: "تجارب", f: "tajaarib"}],
+                    [{ p: "تجاربو", f: "tajaaribo"}],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527814069,"i":5194,"p":"حال","f":"haal","g":"haal","e":"state, condition, circumstance","c":"n. m.","app":"احوال","apf":"ahwáal"},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "حالونه", f: "haalóona" }],
+                    [{ p: "حالونو", f: "haalóono" }],
+                ],
+            },
+            arabicPlural: {
+                masc: [
+                    [{ p: "احوال", f: "ahwáal" }],
+                    [{ p: "احوالو", f: "ahwáalo" }],
+                ],
+            },
+        },
+    },
+    {
+        in: {"ts":1527819536,"i":3063,"p":"تبع","f":"taba'","g":"taba","e":"follower, adherent, supporter, subject, national","c":"n. m. unisex anim.","app":"اتباع","apf":"atbáa'"},
+        out: {
+            arabicPlural: {
+                masc: [
+                    [{ p: "اتباع", f: "atbáa'" }],
+                    [{ p: "اتباعوو", f: "atbáawo" }],
                 ],
             },
         },
@@ -856,15 +975,14 @@ const nouns: Array<{
             c: "n. f.",
             i: 12205,
         },
-        out: false,
-        // out: {
-        //     plural: {
-        //         fem: [
-        //             [{p: "وداع وې", f: "widáawe"}, {p: "وداع ګانې", f: "widaagáane"}],
-        //             [{p: "وداع وو", f: "widáawo"}, {p: "وداع ګانو", f: "widaagáano"}],
-        //         ],
-        //     },
-        // },
+        out: {
+            plural: {
+                fem: [
+                    [{p: "وداع وې", f: "widáawe"}, {p: "وداع ګانې", f: "widaagáane"}],
+                    [{p: "وداع وو", f: "widáawo"}, {p: "وداع ګانو", f: "widaagáano"}],
+                ],
+            },
+        },
     },
     // TODO: Plaar plaroona paaraan - wrooNa
     // Word with no inflections
@@ -881,7 +999,6 @@ const nouns: Array<{
         },
         out: false,
     },
-    // TODO: WORDS THAT ARE ALREADY PLURAL!
 ];
 
 const others: T.DictionaryEntry[] = [
@@ -912,6 +1029,7 @@ adjectives.forEach((word) => {
 });
 
 nouns.forEach((word) => {
+    // if (word.in.p !== "نبي") return;
     test(`${word.in.p} should inflect properly`, () => {
         expect(inflectWord(word.in)).toEqual(word.out);
     });
@@ -936,4 +1054,4 @@ test(`inflectRegularYeyUnisex should work`, () => {
             [{p: "لیدونکو", f: "leedóonko"}],
         ],
     });
-})
+});

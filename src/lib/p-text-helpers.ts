@@ -15,8 +15,8 @@ import {
     getPersonInflectionsKey,
 } from "./misc-helpers";
 import * as T from "../types";
-import { removeAccents } from "./accent-helpers";
-import { pashtoConsonants, phoneticsConsonants } from "./pashto-consonants";
+import { hasAccents, removeAccents } from "./accent-helpers";
+import { phoneticsConsonants } from "./pashto-consonants";
 import { simplifyPhonetics } from "./simplify-phonetics";
 
 // export function concatPsStringWithVars(...items: Array<T.PsString | " " | "">): T.PsString[] {
@@ -190,14 +190,12 @@ export function removeFVarients(x: string | T.PsString | T.DictionaryEntry): T.F
         return {
             ...x,
             f: removeFVarients(x.f),
-            __brand: "name for a dictionary entry with all the phonetics variations removed",
-        } as T.DictionaryEntryNoFVars;
+        } as unknown as T.DictionaryEntryNoFVars;
     }
     return {
         ...x,
         f: removeFVarients(x.f),
-        __brand: "name for a ps string with all the phonetics variations removed",
-    } as T.PsStringNoFVars;
+    } as unknown as T.PsStringNoFVars;
 }
 
 /**
@@ -796,14 +794,13 @@ export function ensureUnisexInflections(infs: T.InflectorOutput, w: T.Dictionary
 
 export function endsInAaOrOo(w: T.PsString): boolean {
     const fEnd = simplifyPhonetics(w.f).slice(-2);
-    const pEnd = w.p.slice(-1);
+    const pEnd = w.p.slice(-1) === "ع" ? w.p.slice(-2, -1) : w.p.slice(-1);
     return (
         pEnd === "و" && fEnd.endsWith("o")
         ||
         pEnd === "ا" && fEnd === "aa"
     );
 }
-
 
 export function endsInConsonant(w: T.PsString): boolean {
     // TODO: Add reporting back that the plural ending will need a space?
@@ -823,4 +820,106 @@ export function endsInConsonant(w: T.PsString): boolean {
     // const pCons = pashtoConsonants.includes(w.p.slice(-1));
     const fCons = phoneticsConsonants.includes(simplifyPhonetics(w.f).slice(-1));
     return fCons;
+}
+
+/**
+ * adds a و - o ending (used in plurals 2nd inflection) to a given PsString
+ * It will wipe out a ه - a / u or ې - e and will preserve the accent
+ * 
+ * @param w 
+ * @returns 
+ */
+export function addOEnding(ps: T.PsString): T.ArrayOneOrMore<T.PsString> {
+    const w = removeEndTick(ps);
+    const lastLetter = makePsString(
+        w.p.slice(-1),
+        w.f.slice(-1),
+    );
+    const hasEyEnding = (lastLetter.p === "ی") && ["ey", "éy"].includes(w.f.slice(-2));
+    if (hasEyEnding) {
+        const base = makePsString(w.p.slice(0, -1), w.f.slice(0, -2));
+        const endHadAccent = w.f.slice(-2) === "éy";
+        return [
+            concatPsString(base, { p: "یو", f: endHadAccent ? "íyo" : "iyo" }),
+            concatPsString(base, { p: "و", f: endHadAccent ? "ó" : "o" }),
+        ];
+    }
+    if (lastLetter.p === "ۍ") {
+        const base = makePsString(w.p.slice(0, -1), w.f.slice(0, -2));
+        const endHadAccent = w.f.slice(-2) === "úy";
+        return [
+            concatPsString(base, { p: "یو", f: endHadAccent ? "úyo" : "uyo" }),
+        ];
+    }
+    if (lastLetter.p === "ا" || (w.p.slice(-2) === "اع")) {
+        return [concatPsString(w, { p: "وو", f: "wo" })];
+    }
+    const base = (
+        (["ه", "ع"].includes(lastLetter.p) && lastLetter.f.match(/[a|u|i|U|á|ú|í|Ú]/)) ||
+        (lastLetter.p === "ې" && ["e", "é"].includes(lastLetter.f))
+    ) ? makePsString(
+        w.p.slice(0, -1),
+        w.f.slice(0, -1),
+    ) : w;
+    return [concatPsString(
+        base,
+        makePsString(
+            "و",
+            hasAccents(lastLetter.f) ? "ó" : "o",
+        ),
+    )];
+}
+
+/**
+ * Determines whether a string ends in a shwa or not
+ * 
+ * @param w 
+ */
+export function endsInShwa(w: T.PsString): boolean {
+    const p = w.p.slice(-1);
+    const f = w.f.slice(-1);
+    return p === "ه" && ["u", "ú"].includes(f);
+}
+
+/**
+ * applies f function to both the p and f in a PsString
+ * 
+ */
+export function mapPsString<T>(ps: T.PsString, f: (s: string) => T): { p: T, f: T } {
+    return {
+        p: f(ps.p),
+        f: f(ps.f),
+    };
+}
+
+/**
+ * splits up a given PsString by comma-seperated varients
+ * 
+ * @param w 
+ * @returns 
+ */
+export function splitPsByVarients(w: T.PsString): T.ArrayOneOrMore<T.PsString> {
+    function cut(s: string) {
+        return s.split(/[,|،]/).map((s) => s.trim());
+    }
+    const ps = mapPsString(w, cut);
+    return ps.p.map((p, i) => {
+        if (!ps.f[i]) throw new Error("uneven comma seperated ps varients: " + JSON.stringify(w))
+        return makePsString(
+            p,
+            ps.f[i],
+        );
+    }) as T.ArrayOneOrMore<T.PsString>;
+}
+
+
+export function removeEndTick(w: T.PsString): T.PsString;
+export function removeEndTick(w: string): string;
+export function removeEndTick(w: T.PsString | string): T.PsString | string {
+    if (typeof w !== "string") {
+        return makePsString(w.p, removeEndTick(w.f));
+    }
+    return (w.slice(-1) === "'") 
+        ? w.slice(0, -1)
+        : w;
 }

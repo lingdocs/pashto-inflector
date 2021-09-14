@@ -20,3 +20,8 @@ export function standardizePashto(input: string): string {
     // Replace آ two character version with combined آ character
     .replace(/آ/g, "آ");
 }
+
+export function standardizePhonetics(input: string): string {
+  // TODO: check that these are the only kinds of smart comments
+  return input.replace(/[‘|’]/g, "'");
+}

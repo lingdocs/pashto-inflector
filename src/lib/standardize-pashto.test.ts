@@ -6,7 +6,7 @@
  *
  */
 
-import { standardizePashto } from "./standardize-pashto";
+import { standardizePashto, standardizePhonetics } from "./standardize-pashto";
 
 const testPairs = [
   ["گوگل", "ګوګل"],
@@ -31,3 +31,14 @@ testPairs.forEach((pair) => {
     expect(result).toBe(pair[1]);
   });
 });
+
+test("standardizePashto", () => {
+  const pairs = [
+    ["ma’aaloom", "ma'aaloom"],
+    ["ma‘aaloom", "ma'aaloom"],
+    ["ma'aaloom", "ma'aaloom"],
+  ];
+  pairs.forEach((x) => {
+    expect(standardizePhonetics(x[0])).toBe(x[1])
+  });
+})

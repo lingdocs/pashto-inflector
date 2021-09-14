@@ -118,6 +118,7 @@ export function removeAccents(s: T.PsString | string): T.PsString | string {
  * 
  * @param s a string of Pashto phonetics
  */
-export function hasAccents(s: string): boolean {
+export function hasAccents(s: string | T.PsString): boolean {
+    if (typeof s !== "string") return hasAccents(s.f);
     return accentReplacer.some((x) => s.includes(x.accented));
 }

@@ -8,7 +8,6 @@
 
 import {
     concatPsString,
-    firstPhonetics,
     makePsString,
     removeEndingL,
     yulEndingInfinitive,
@@ -22,6 +21,11 @@ import {
     removeRetroflexR,
     splitDoubleWord,
     endsInConsonant,
+    addOEnding,
+    removeFVarients,
+    endsInShwa,
+    removeAynEnding,
+    splitPsByVarients,
 } from "./p-text-helpers";
 import * as T from "../types";
 import {
@@ -617,9 +621,11 @@ test(`complementInflects`, () => {
     })).toBe(false);
 });
 
-test(`firstPhonetics should work`, () => {
-    expect(firstPhonetics("ist'imaal, istimaal")).toBe("ist'imaal");
-    expect(firstPhonetics("kor")).toBe("kor");
+test(`removeFVarients`, () => {
+    expect(removeFVarients("ist'imaal, istimaal")).toBe("ist'imaal");
+    expect(removeFVarients({ p: "معالوم", f: "ma'aalóom, maalóom" }))
+        .toEqual({ p: "معالوم", f: "ma'aalóom" });
+    expect(removeFVarients("kor")).toBe("kor");
 });
 
 test(`makePsString should work`, () => {
@@ -1034,4 +1040,86 @@ test("endsInAConsonant", () => {
     ];
     does.forEach((x) => expect(endsInConsonant(x)).toBe(true));
     doesnt.forEach((x) => expect(endsInConsonant(x)).toBe(false));
+})
+
+test("addOEnding", () => {
+    const tests: { in: T.PsString, out: T.PsString[] }[] = [
+        {
+            in: { p: "کتابونه", f: "kitaabóona" },
+            out: [{ p: "کتابونو", f: "kitaabóono" }],
+        },
+        {
+            in: { p: "کارغان", f: "kaargháan" },
+            out: [{ p: "کارغانو", f: "kaargháano" }],
+        },
+        {
+            in: { p: "کارغانې", f: "kaargháane" },
+            out: [{ p: "کارغانو", f: "kaargháano" }],
+        },
+        {
+            in: { p: "ښځې", f: "xúdze" },
+            out: [{ p: "ښځو", f: "xúdzo" }],
+        },
+        // TODO: Make this last thing accented??
+        {
+            in: { p: "کور", f: "kor" },
+            out: [{ p: "کورو", f: "koro" }],
+        },
+        {
+            in: { p: "سړی", f: "saRéy" },
+            out: [{ p: "سړیو", f: "saRíyo" }, { p: "سړو", f: "saRó"}], 
+        },
+        {
+            in: { p: "افغانۍ", f: "afghaanúy" },
+            out: [{ p: "افغانیو", f: "afghaanúyo" }],
+        },
+        {
+            in: { p: "اوبه", f: "oobú" },
+            out: [{ p: "اوبو", f: "oobó" }],
+        },
+        {
+            in: { p: "شودې", f: "shoodé" },
+            out: [{ p: "شودو", f: "shoodó" }],
+        },
+        {
+            in: { p: "منابع", f: "manaabí" },
+            out: [{ p: "منابو", f: "manaabó" }],
+        },
+        {
+            in: { p: "انبیا", f: "ambiyáa" },
+            out: [{ p: "انبیاوو", f: "ambiyáawo" }],
+        },
+        {
+            in: { p: "مراجع", f: "maraají'" },
+            out: [{ p: "مراجو", f: "maraajó" }],
+        },
+        {
+            in: { p: "اتباع", f: "atbaa" },
+            out: [{ p: "اتباعوو", f: "atbaawo" }],
+        },
+        {
+            in: { p: "اتباع", "f": "atbáa'" },
+            out: [{ p: "اتباعوو", f: "atbáawo" }],
+        },
+    ];
+    tests.forEach((t) => {
+        expect(addOEnding(t.in)).toEqual(t.out);
+    });
+});
+
+test("endsInShwa", () => {
+    expect(endsInShwa({ p: "ښایسته", f: "xaaystú" })).toBe(true);
+    expect(endsInShwa({ p: "ښایسته", f: "xaaystu" })).toBe(true);
+    expect(endsInShwa({ p: "ښایسته", f: "xaaysta" })).toBe(false);
+    expect(endsInShwa({ p: "کور", f: "kor" })).toBe(false);
+});
+
+test("splitPsByVarients", () => {
+    expect(splitPsByVarients({ p: "حوادث, حادثات", f: "hawáadis, haadisáat" }))
+        .toEqual([{ p: "حوادث", f: "hawáadis" }, { p: "حادثات", f: "haadisáat" }]);
+    // should work with Pashto comma too
+    expect(splitPsByVarients({ p: "حوادث، حادثات", f: "hawáadis, haadisáat" }))
+        .toEqual([{ p: "حوادث", f: "hawáadis" }, { p: "حادثات", f: "haadisáat" }]);
+    expect(splitPsByVarients({ p: "کور", f: "kor" }))
+        .toEqual([{ p: "کور", f: "kor" }]);
 })

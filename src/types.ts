@@ -352,7 +352,12 @@ export type Inflections = GenderedSet<InflectionSet>;
 export type PluralInflections = GenderedSet<PluralInflectionSet>;
 
 export type InflectorOutput = {
+    arabicPlural: PluralInflections,
+    plural?: PluralInflections,
+    inflections?: Inflections,
+} | {
     plural: PluralInflections,
+    arabicPlural?: PluralInflections,
     inflections?: Inflections,
 } | {
     inflections: Inflections,
