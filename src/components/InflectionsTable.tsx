@@ -18,7 +18,7 @@ const explanation = (inf: T.Inflections | T.PluralInflections, textOptions: T.Te
     const w = "masc" in inf
         ? inf.masc[0][0]
         : inf.fem[0][0];
-    return !isPluralInfs ? <>
+    return isPluralInfs ? null : <>
         <p>In Pashto, <strong>nouns, pronouns, and adjectives</strong> get inflected when they are either:</p>
         <ul>
             <li>Plural</li>
@@ -33,9 +33,6 @@ const explanation = (inf: T.Inflections | T.PluralInflections, textOptions: T.Te
         <p><small>Not all nouns, pronouns, and adjectives can inflect. But if you're seeing this table here, it means that <Pashto opts={textOptions}>{w}</Pashto> does inflect.</small></p>
         <p><small>Irregular nouns like پښتون or مېلمه often only take the 1st inflection when they're plural, and not for the other two reasons, depending on dialect. When there are two reasons to inflect, these will always take the double inflection.</small></p>
         <p><small>For prepositional/postpositional sandwiches of location like په ... کې and په ... باندې the first inflection of nouns (not of adjectives/pronouns) often doesn't happen. The second one always will though.</small></p>
-    </> : <>
-        <p>Many Arabic loan-words can be used with their original Arabic plural form.</p>
-        <p>When they need to be inflected a second time because they are: a. sandwiched with a preposition/postposition (oblique) or b. the subject of a transitive past tense verb, you add an و to the as you do with other Pashto verbs.</p>
     </>;
 }
 
@@ -50,13 +47,13 @@ const InflectionTable = ({ inf, textOptions }: {
     const isPluralInfs = isPluralInflections(inf);
     return (
         <div className="mt-4">
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", justifyContent: !isPluralInfs ? "space-between" : "left" }}>
                 <h5>
                     {!isPluralInfs ? "Inflections" : "Arabic Plural and 2nd Inflection"}:
                 </h5>
-                <div className="clickable mr-2" onClick={handleShowExplanation} data-testid="help-button">
+                {!isPluralInfs && <div className="clickable mr-2" onClick={handleShowExplanation} data-testid="help-button">
                     <i className={`fa fa-question-circle`}></i>
-                </div>
+                </div>}
             </div>
             <table className="table" style={{ tableLayout: "fixed" }}>
                 <thead>
@@ -76,7 +73,7 @@ const InflectionTable = ({ inf, textOptions }: {
                     ))}
                 </tbody>
             </table>
-            <Modal show={showingExplanation} onHide={handleCloseExplanation}>
+            {!isPluralInfs && <Modal show={showingExplanation} onHide={handleCloseExplanation}>
                 <Modal.Header closeButton>
                 <Modal.Title>About {isPluralInfs ? "Inflections" : "Arabic Plural"}</Modal.Title>
                 </Modal.Header>
@@ -86,7 +83,7 @@ const InflectionTable = ({ inf, textOptions }: {
                         Close
                     </button>
                 </Modal.Footer>
-            </Modal>
+            </Modal>}
         </div>
     );
 };
