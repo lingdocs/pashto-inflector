@@ -8,7 +8,6 @@
 
 import {
     concatPsString,
-    firstPhonetics,
     makePsString,
     psStringEquals,
     removeEndingL,
@@ -22,6 +21,8 @@ import {
     removeStartingTick,
     ensureShortWurShwaShift,
     choosePersInf,
+    removeFVarients,
+    isUnisexSet,
 } from "./p-text-helpers";
 import {
     accentOnFront,
@@ -60,9 +61,11 @@ const eyEndingUnaccented: T.PsString = { p: "ی", f: "ey" };
  * @param complement - the dictioanry entry for the complement of the verb if compound
  */
 export function getVerbInfo(
-    entry: T.DictionaryEntry, 
-    complement?: T.DictionaryEntry,
+    ent: T.DictionaryEntry, 
+    complmnt?: T.DictionaryEntry,
 ): T.VerbInfo {
+    const entry = removeFVarients(ent);
+    const complement = complmnt ? removeFVarients(complmnt) : undefined;
     const type = getType(entry);
     if (type === "transitive or grammatically transitive simple") {
         return {
@@ -118,7 +121,7 @@ export function getVerbInfo(
             }
         }
         if (type === "generative stative compound") {
-            return getGenerativeStativeCompoundVerbInfo(entry, complement as T.DictionaryEntry);
+            return getGenerativeStativeCompoundVerbInfo(entry, complement as T.DictionaryEntryNoFVars);
         }
     }
     const comp = complement ? ensureUnisexInf(complement) : undefined;
@@ -170,17 +173,14 @@ type Bases = {
 }
 
 function getGenerativeStativeCompoundVerbInfo(
-    entry: T.DictionaryEntry, comp: T.DictionaryEntry, forceSingular?: true,
+    entry: T.DictionaryEntryNoFVars, comp: T.DictionaryEntryNoFVars, forceSingular?: true,
 ): T.GenerativeStativeCompoundVerbInfo {
     const transitivity = getTransitivity(entry);
     const transitivityNoGrammTrans = transitivity === "grammatically transitive" ? "transitive" : transitivity;
     const yulEnding = null;
     const objComplement = getObjComplementInfo(entry, comp, forceSingular);
     const auxVerb = stativeAux[transitivityNoGrammTrans];
-    const compUsed = objComplement.plural ? objComplement.plural : makePsString(
-        objComplement.entry.p,
-        firstPhonetics(objComplement.entry.f),
-    );
+    const compUsed = objComplement.plural ? objComplement.plural : removeFVarients(objComplement.entry);
     const bases: Bases = {
         stem: {
             imperfective: auxVerb.info.stem.imperfective,
@@ -235,16 +235,13 @@ function getGenerativeStativeCompoundVerbInfo(
     };
 }
 
-function getDynamicCompoundInfo(entry: T.DictionaryEntry, comp: T.DictionaryEntry, forceSingular?: true): T.DynamicCompoundVerbInfo {
+function getDynamicCompoundInfo(entry: T.DictionaryEntryNoFVars, comp: T.DictionaryEntryNoFVars, forceSingular?: true): T.DynamicCompoundVerbInfo {
     const transitivity = getTransitivity(entry);
     const yulEnding = null;
     const objComplement = getObjComplementInfo(entry, comp, forceSingular);
     const auxVerb = getDynamicAuxVerb(entry);
     const auxVerbInfo = getVerbInfo(auxVerb.entry, auxVerb.complement) as T.NonComboVerbInfo;
-    const compUsed = objComplement.plural ? objComplement.plural : makePsString(
-        objComplement.entry.p,
-        firstPhonetics(objComplement.entry.f),
-    );
+    const compUsed = objComplement.plural ? objComplement.plural : objComplement.entry;
     const bases: Bases = (auxVerbInfo.type === "stative compound")
         ? getObjectMatchingBases(auxVerbInfo, objComplement.person)
         : {
@@ -295,7 +292,7 @@ function getDynamicCompoundInfo(entry: T.DictionaryEntry, comp: T.DictionaryEntr
         present: concatPsString(compUsed, " ", auxVerbInfo.participle.present),
         past: concatPsString(compUsed, " ", bases.participle.past),
     };
-    const makeIntransitiveFormOfEntry = (e: T.DictionaryEntry): T.DictionaryEntry => ({
+    const makeIntransitiveFormOfEntry = (e: T.DictionaryEntryNoFVars): T.DictionaryEntryNoFVars => ({
         ...e,
         p: e.p.replace(
             "کول",
@@ -357,21 +354,20 @@ function getObjectMatchingBases(auxInfo: T.NonComboVerbInfo, person: T.Person): 
 }
 
 function getObjComplementInfo(
-    entry: T.DictionaryEntry,
-    complement: T.DictionaryEntry,
+    entry: T.DictionaryEntryNoFVars,
+    complement: T.DictionaryEntryNoFVars,
     forceSingular?: true
 ): T.ObjComplement {
     const complementInEntry = makePsString(
         entry.p.split(" ")[0],
         entry.f.split(" ")[0],
     );
-    const complementEntry: T.DictionaryEntry = { ...complement, f: firstPhonetics(complement.f) };
     const usesSeperatePluralForm = !forceSingular && !psStringEquals(
         makePsString(complementInEntry.p, removeAccents(complementInEntry.f)),
-        makePsString(complementEntry.p, removeAccents(complementEntry.f)),
+        makePsString(complement.p, removeAccents(complement.f)),
     );
     return {
-        entry: complementEntry,
+        entry: complement,
         ...usesSeperatePluralForm ? {
             plural: complementInEntry,
         } : {},
@@ -379,7 +375,7 @@ function getObjComplementInfo(
     };
 }
 
-function getTransitivity(entry: T.DictionaryEntry): T.Transitivity {
+function getTransitivity(entry: T.DictionaryEntryNoFVars): T.Transitivity {
     if (!entry.c) {
         throw new Error("No part of speech info");
     }
@@ -423,7 +419,7 @@ function getType(entry: T.DictionaryEntry):
     return "simple";
 }
 
-function getIdiosyncraticThirdMascSing(entry: T.DictionaryEntry): T.ShortThirdPersFormSet | false {
+function getIdiosyncraticThirdMascSing(entry: T.DictionaryEntryNoFVars): T.ShortThirdPersFormSet | false {
     if (entry.tppp && entry.tppf) {
         const tpp = makePsString(entry.tppp, entry.tppf);
         const ooRes = addOoPrefix(tpp, entry)
@@ -454,7 +450,7 @@ function getIdiosyncraticThirdMascSing(entry: T.DictionaryEntry): T.ShortThirdPe
  * 
  * @param entry - the dictionary entry for the verb
  */
-function getVerbRoots(entry: T.DictionaryEntry, transitivity: T.Transitivity, complement?: T.UnisexInflections): T.VerbRootSet {
+function getVerbRoots(entry: T.DictionaryEntryNoFVars, transitivity: T.Transitivity, complement?: T.UnisexInflections): T.VerbRootSet {
     // each of the roots compes with a short and long version
     // with or without the ending ل - ul
     const isKawulAux = entry.p === "کول";
@@ -469,19 +465,19 @@ function getVerbRoots(entry: T.DictionaryEntry, transitivity: T.Transitivity, co
             } : {},
         };
     };
-    const infinitive = makePsString(entry.p, firstPhonetics(entry.f));
+    const infinitive = makePsString(entry.p, entry.f);
 
     // the imperfective root is the infinitive
     // TODO: CHECK THIS!! FOR PERSON INFLECTIONS??
     const imperfective = ((): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> => {
         // if stative compound
-        if (complement && spaceInForm(infinitive)) {
+        if (complement && spaceInForm(entry)) {
             const comp = complementInflects(complement) ? unisexInfToObjectMatrix(complement) : complement.masc[0][0];
             const t = getAuxTransitivity(transitivity);
             const aux = stativeAux[t].info.root.imperfective
             return concatPsString(comp, " ", aux) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>;
         }
-        return shortAndLong(infinitive);
+        return shortAndLong(entry);
     })();
 
     const { perfective, pSplit, fSplit } = ((): {
@@ -533,7 +529,7 @@ function getVerbRoots(entry: T.DictionaryEntry, transitivity: T.Transitivity, co
  * 
  * @param entry - the dictionary entry for the verb
  */
-function getVerbStems(entry: T.DictionaryEntry, root: T.VerbRootSet, transitivity: T.Transitivity, complement?: T.UnisexInflections): T.VerbStemSet {
+function getVerbStems(entry: T.DictionaryEntryNoFVars, root: T.VerbRootSet, transitivity: T.Transitivity, complement?: T.UnisexInflections): T.VerbStemSet {
     function isRegEdulTransitive(): boolean {
         /* istanbul ignore next */
         if ("mascSing" in root.imperfective) {
@@ -689,7 +685,7 @@ function splitPerfective(perfective: T.FullForm<T.PsString>, pSplit: number, fSp
     return [beforeAccented, after] as T.SplitInfo;
 }
 
-function getParticiple(entry: T.DictionaryEntry, stem: T.VerbStemSet, infinitive: T.PsString, transitivity: T.Transitivity, complement?: T.UnisexInflections): T.ParticipleSet {   
+function getParticiple(entry: T.DictionaryEntryNoFVars, stem: T.VerbStemSet, infinitive: T.PsString, transitivity: T.Transitivity, complement?: T.UnisexInflections): T.ParticipleSet {   
     const shortParticipleRoot = ((): T.PsString | null => {
         const shortenableEndings = ["ښتل", "ستل", "وتل"];
         // special thing for اېښودل - پرېښودل
@@ -786,7 +782,7 @@ function getParticiple(entry: T.DictionaryEntry, stem: T.VerbStemSet, infinitive
  */
 function addOoPrefix(
     s: T.SingleOrLengthOpts<T.PsString>,
-    entry: T.DictionaryEntry,
+    entry: T.DictionaryEntryNoFVars,
 ): { ps: T.SingleOrLengthOpts<T.PsString>, pSplit: number, fSplit: number } {
     let pSplit = 0;
     let fSplit = 0;
@@ -877,13 +873,12 @@ function addOoPrefix(
     };
 }
 
-function ensureUnisexInf(complement: T.DictionaryEntry): T.UnisexInflections {
-    const inflected = inflectWord(complement);
-    const isUnisex = inflected && (("masc" in inflected) && ("fem" in inflected));
-    if (isUnisex) {
-        return inflected as T.UnisexInflections;
+function ensureUnisexInf(complement: T.DictionaryEntryNoFVars): T.UnisexInflections {
+    const inf = inflectWord(complement);
+    if (inf !== false && !!inf.inflections && isUnisexSet(inf.inflections)) {
+        return inf.inflections as T.UnisexInflections;
     }
-    const word = makePsString(complement.p, firstPhonetics(complement.f));
+    const word = makePsString(complement.p, complement.f);
     return {
         masc: [
             [word],
@@ -898,9 +893,9 @@ function ensureUnisexInf(complement: T.DictionaryEntry): T.UnisexInflections {
     };
 }
 
-function getDynamicAuxVerb(entry: T.DictionaryEntry): {
-    entry: T.DictionaryEntry,
-    complement?: T.DictionaryEntry,
+function getDynamicAuxVerb(entry: T.DictionaryEntryNoFVars): {
+    entry: T.DictionaryEntryNoFVars,
+    complement?: T.DictionaryEntryNoFVars,
 } {
     const auxWord = entry.p.trim().split(" ").slice(-1)[0];
     const auxWordResult = dynamicAuxVerbs.find((a) => a.entry.p === auxWord);
@@ -909,15 +904,15 @@ function getDynamicAuxVerb(entry: T.DictionaryEntry): {
         throw new Error("unknown auxilary verb for dynamic compound");
     }
     return {
-        entry: auxWordResult.entry,
+        entry: removeFVarients(auxWordResult.entry),
         ...("complement" in auxWordResult) ? {
-            complement: auxWordResult.complement,
+            complement: auxWordResult.complement ? removeFVarients(auxWordResult.complement) : undefined,
         } : {},
     };
 }
 
 function getComplementPerson(
-    complement: T.DictionaryEntry,
+    complement: T.DictionaryEntryNoFVars,
     usesSeperatePluralForm?: boolean,
 ): T.Person {
     const number = (

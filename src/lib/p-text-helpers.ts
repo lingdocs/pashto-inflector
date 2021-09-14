@@ -796,9 +796,9 @@ export function endsInAaOrOo(w: T.PsString): boolean {
     const fEnd = simplifyPhonetics(w.f).slice(-2);
     const pEnd = w.p.slice(-1) === "ع" ? w.p.slice(-2, -1) : w.p.slice(-1);
     return (
-        pEnd === "و" && fEnd.endsWith("o")
+        (pEnd === "و" && fEnd.endsWith("o"))
         ||
-        pEnd === "ا" && fEnd === "aa"
+        (pEnd === "ا" && fEnd === "aa")
     );
 }
 
@@ -912,7 +912,6 @@ export function splitPsByVarients(w: T.PsString): T.ArrayOneOrMore<T.PsString> {
     }) as T.ArrayOneOrMore<T.PsString>;
 }
 
-
 export function removeEndTick(w: T.PsString): T.PsString;
 export function removeEndTick(w: string): string;
 export function removeEndTick(w: T.PsString | string): T.PsString | string {
@@ -922,4 +921,15 @@ export function removeEndTick(w: T.PsString | string): T.PsString | string {
     return (w.slice(-1) === "'") 
         ? w.slice(0, -1)
         : w;
+}
+
+export function isUnisexSet<X>(inf: T.GenderedSet<X>): inf is T.UnisexSet<X> {
+    return "masc" in inf && "fem" in inf;
+}
+
+export function isPluralInflections(inf: T.PluralInflections | T.Inflections): inf is T.PluralInflections {
+    if ("masc" in inf) {
+        return inf.masc.length === 2;
+    }
+    return inf.fem.length === 2;
 }

@@ -11,11 +11,14 @@ import Pashto from "./Pashto";
 import { Modal } from "react-bootstrap";
 import TableCell from "./TableCell";
 import * as T from "../types";
+import { isPluralInflections } from "../lib/p-text-helpers";
 
-const explanation = (inf: T.Inflections, textOptions: T.TextOptions) => {
-    // @ts-ignore
-    const w = inf["masc" in inf ? "masc" : "fem"][0][0];
-    return <>
+const explanation = (inf: T.Inflections | T.PluralInflections, textOptions: T.TextOptions) => {
+    const isPluralInfs = isPluralInflections(inf);
+    const w = "masc" in inf
+        ? inf.masc[0][0]
+        : inf.fem[0][0];
+    return !isPluralInfs ? <>
         <p>In Pashto, <strong>nouns, pronouns, and adjectives</strong> get inflected when they are either:</p>
         <ul>
             <li>Plural</li>
@@ -30,21 +33,27 @@ const explanation = (inf: T.Inflections, textOptions: T.TextOptions) => {
         <p><small>Not all nouns, pronouns, and adjectives can inflect. But if you're seeing this table here, it means that <Pashto opts={textOptions}>{w}</Pashto> does inflect.</small></p>
         <p><small>Irregular nouns like پښتون or مېلمه often only take the 1st inflection when they're plural, and not for the other two reasons, depending on dialect. When there are two reasons to inflect, these will always take the double inflection.</small></p>
         <p><small>For prepositional/postpositional sandwiches of location like په ... کې and په ... باندې the first inflection of nouns (not of adjectives/pronouns) often doesn't happen. The second one always will though.</small></p>
-    </>
+    </> : <>
+        <p>Many Arabic loan-words can be used with their original Arabic plural form.</p>
+        <p>When they need to be inflected a second time because they are: a. sandwiched with a preposition/postposition (oblique) or b. the subject of a transitive past tense verb, you add an و to the as you do with other Pashto verbs.</p>
+    </>;
 }
 
 const InflectionTable = ({ inf, textOptions }: {
-    inf: T.Inflections,
+    inf: T.Inflections | T.PluralInflections,
     textOptions: T.TextOptions,
 }) => {
     const [showingExplanation, setShowingExplanation] = useState(false);
     /* istanbul ignore next */ // Insanely can't see the modal to close it
     const handleCloseExplanation = () => setShowingExplanation(false);
     const handleShowExplanation = () => setShowingExplanation(true);
+    const isPluralInfs = isPluralInflections(inf);
     return (
         <div className="mt-4">
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <h5>Inflections:</h5>
+                <h5>
+                    {!isPluralInfs ? "Inflections" : "Arabic Plural and 2nd Inflection"}:
+                </h5>
                 <div className="clickable mr-2" onClick={handleShowExplanation} data-testid="help-button">
                     <i className={`fa fa-question-circle`}></i>
                 </div>
@@ -58,7 +67,7 @@ const InflectionTable = ({ inf, textOptions }: {
                     </tr>
                 </thead>
                 <tbody>
-                    {["Plain", "1st", "2nd"].map((title, i) => (
+                    {!isPluralInfs ? ["Plain", "1st", "2nd"] : ["Plural", "2nd"].map((title, i) => (
                         <tr key={title}>
                             <th scope="row">{title}</th>
                             {"masc" in inf && <TableCell item={inf.masc[i]} textOptions={textOptions} />}
@@ -69,7 +78,7 @@ const InflectionTable = ({ inf, textOptions }: {
             </table>
             <Modal show={showingExplanation} onHide={handleCloseExplanation}>
                 <Modal.Header closeButton>
-                <Modal.Title>About Inflections</Modal.Title>
+                <Modal.Title>About {isPluralInfs ? "Inflections" : "Arabic Plural"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>{explanation(inf, textOptions)}</Modal.Body>
                 <Modal.Footer>

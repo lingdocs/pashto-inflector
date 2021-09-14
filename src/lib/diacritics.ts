@@ -29,7 +29,7 @@ import {
     PhonemeStatus,
 } from "./diacritics-helpers";
 
-import { firstPhonetics } from "./p-text-helpers";
+import { removeFVarients } from "./p-text-helpers";
 import { pipe } from "rambda";
 
 /**
@@ -37,7 +37,7 @@ import { pipe } from "rambda";
  * Errors if the phonetics and script don't line up.
  */
  export function addDiacritics({ p, f }: T.PsString, ignoreCommas?: true): T.PsString {
-    const phonemes: Phoneme[] = splitFIntoPhonemes(!ignoreCommas ? firstPhonetics(f) : f);
+    const phonemes: Phoneme[] = splitFIntoPhonemes(!ignoreCommas ? removeFVarients(f) : f);
     const { pIn, pOut } = phonemes.reduce(processPhoneme, { pOut: "", pIn: p.trim() });
     if (pIn !== "") {
         throw new Error("phonetics error - phonetics shorter than pashto script");

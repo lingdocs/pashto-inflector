@@ -25,9 +25,9 @@ import {
     concatInflections,
     unisexInfToObjectMatrix,
     inflectYey,
-    psStringFromEntry,
     allOnePersonInflection,
     psStringEquals,
+    makePsString,
 } from "./p-text-helpers";
 import {
     accentOnNFromEnd,
@@ -116,7 +116,7 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
     );
     const complement = info.objComplement.plural
         ? info.objComplement.plural
-        : psStringFromEntry(info.objComplement.entry);
+        : makePsString(info.objComplement.entry.p, info.objComplement.entry.f);
     const makeAspectContent = (aspect: T.Aspect): T.AspectContent => {
         const makeDynamicModalContent = (): T.ModalContent => {
             const nonImperative = addToForm([complement, " "], auxConj[aspect].modal.nonImperative);

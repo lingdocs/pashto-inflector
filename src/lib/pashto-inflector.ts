@@ -427,7 +427,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
   const pashtoPlural = makePashtoPlural(w);
   if (pashtoPlural) return { plural: pashtoPlural, arabicPlural }; 
   function addMascPluralSuffix(animate?: boolean, shortSquish?: boolean): T.PluralInflectionSet {
-    if (shortSquish && (w.infap == undefined || w.infaf === undefined)) {
+    if (shortSquish && (w.infap === undefined || w.infaf === undefined)) {
       throw new Error(`no irregular inflection info for ${w.p} - ${w.ts}`);
     }
     const b = removeAccents(shortSquish
@@ -475,7 +475,11 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
       return { arabicPlural, plural: { masc: addMascPluralSuffix(anim, shortSquish) }};
     }
   }
-  if (type === "masc noun" && (shortSquish || (endsInConsonant(w) || endsInShwa(w) && (!w.infap))) && (w.p.slice(-3) !== "توب")) {
+  if (
+    type === "masc noun" &&
+    (shortSquish || ((endsInConsonant(w) || endsInShwa(w)) && (!w.infap))) &&
+    (w.p.slice(-3) !== "توب")
+  ) {
     return {
       arabicPlural,
       plural: {
