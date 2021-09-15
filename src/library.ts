@@ -32,6 +32,8 @@ import {
     removeFVarients,
     isVerbBlock,
     isImperativeBlock,
+    isPluralInflectionSet,
+    isUnisexSet,
     isInflectionSet,
 } from "./lib/p-text-helpers";
 import { standardizePashto } from "./lib/standardize-pashto";
@@ -105,6 +107,8 @@ export {
     isVerbBlock,
     isImperativeBlock,
     isInflectionSet,
+    isPluralInflectionSet,
+    isUnisexSet,
     personFromVerbBlockPos,
     removeAccents,
     hasAccents,
