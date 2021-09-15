@@ -48,9 +48,7 @@ const InflectionTable = ({ inf, textOptions }: {
     return (
         <div className="mt-4">
             <div style={{ display: "flex", justifyContent: !isPluralInfs ? "space-between" : "left" }}>
-                <h5>
-                    {!isPluralInfs ? "Inflections" : "Arabic Plural and 2nd Inflection"}:
-                </h5>
+                {!isPluralInfs && <h5>Inflections</h5>}
                 {!isPluralInfs && <div className="clickable mr-2" onClick={handleShowExplanation} data-testid="help-button">
                     <i className={`fa fa-question-circle`}></i>
                 </div>}
