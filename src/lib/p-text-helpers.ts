@@ -255,10 +255,19 @@ export function isVerbBlock(x: unknown): x is T.VerbBlock {
     );
 }
 
+export function isPluralInflectionSet(x: any): x is T.PluralInflectionSet {
+    return (
+        Array.isArray(x)
+        && (x.length === 2)
+        && "p" in x[0][0]
+    ); 
+}
+
 export function isImperativeBlock(x: unknown): x is T.ImperativeBlock {
     return (
         Array.isArray(x) &&
         (x.length === 2) &&
+        !("p" in x[0][0]) &&
         "p" in x[0][0][0]
     );
 }
