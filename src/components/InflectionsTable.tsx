@@ -62,7 +62,7 @@ const InflectionTable = ({ inf, textOptions }: {
                     </tr>
                 </thead>
                 <tbody>
-                    {!isPluralInfs ? ["Plain", "1st", "2nd"] : ["Plural", "2nd"].map((title, i) => (
+                    {(!isPluralInfs ? ["Plain", "1st", "2nd"] : ["Plural", "2nd"]).map((title, i) => (
                         <tr key={title}>
                             <th scope="row">{title}</th>
                             {"masc" in inf && <TableCell item={inf.masc[i]} textOptions={textOptions} />}
