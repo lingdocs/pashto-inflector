@@ -6,8 +6,9 @@
  *
  */
 
-import { validateEntry } from "./validate-entry";
+import { standardizeEntry, validateEntry } from "./validate-entry";
 import * as T from "../types";
+import { standardizePhonetics } from "./standardize-pashto";
 
 const toTest: {
     input: any,
@@ -158,4 +159,9 @@ test("validateEntry should work", () => {
     toTest.forEach((t) => {
         expect(validateEntry(t.input as T.DictionaryEntry)).toEqual(t.output);
     });
+});
+
+test("standardizeEntry", () => {
+    expect(standardizeEntry({"i":195,"ts":1527822036,"p":"اجتماعي","f":"ijtimaa‘ee, ijtimaayee","g":"ijtimaaee,ijtimaayee","e":"public, social, societal","c":"adj."}))
+        .toEqual({"i":195,"ts":1527822036,"p":"اجتماعي","f":"ijtimaa'ee, ijtimaayee","g":"ijtimaaee,ijtimaayee","e":"public, social, societal","c":"adj."});
 });

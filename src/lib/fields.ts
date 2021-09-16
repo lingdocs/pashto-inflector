@@ -26,9 +26,10 @@ export const dictionaryEntryTextFields: T.DictionaryEntryTextField[] = [
     "ec",
     "ep",
 ];
+
 export const dictionaryEntryBooleanFields: T.DictionaryEntryBooleanField[] = [
     "noInf", "shortIntrans", "noOo", "sepOo", "diacExcept",
-]
+];
 export const dictionaryEntryNumberFields: T.DictionaryEntryNumberField[] = [
     "ts", "i", "l", "separationAtP", "separationAtF",
 ];

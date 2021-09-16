@@ -10,6 +10,7 @@ import * as T from "../types";
 import {
     phoneticsToDiacritics,
 } from "./phonetics-to-diacritics";
+import { standardizePashto, standardizePhonetics } from "./standardize-pashto";
 
 const textFieldPairs: [T.DictionaryEntryTextField, T.DictionaryEntryTextField][] = [
     ["p", "f"],
@@ -27,6 +28,20 @@ const textFieldPairs: [T.DictionaryEntryTextField, T.DictionaryEntryTextField][]
 const requiredFields: T.DictionaryEntryField[] = [
     "ts", "i", "p", "f", "e",
 ];
+
+export function standardizeEntry(entry: T.DictionaryEntry): T.DictionaryEntry {
+    return textFieldPairs.reduce((e, pair) => {
+        return {
+            ...e,
+            ...entry[pair[0]] ? {
+                [pair[0]]: standardizePashto(entry[pair[0]] as string),
+            } : {},
+            ...entry[pair[1]] ? {
+                [pair[1]]: standardizePhonetics(entry[pair[1]] as string),
+            } : {},
+        };
+    }, { ...entry });
+}
 
 export function validateEntry(entry: T.DictionaryEntry): T.DictionaryEntryError | {
     ok: true,

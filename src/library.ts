@@ -36,7 +36,10 @@ import {
     isUnisexSet,
     isInflectionSet,
 } from "./lib/p-text-helpers";
-import { standardizePashto } from "./lib/standardize-pashto";
+import {
+    standardizePashto,
+    standardizePhonetics,
+} from "./lib/standardize-pashto";
 import { phoneticsToDiacritics } from "./lib/phonetics-to-diacritics";
 import {
     convertSpelling,
@@ -48,7 +51,8 @@ import {
     dictionaryEntryTextFields,
 } from "./lib/fields";
 import {
-    validateEntry
+    validateEntry,
+    standardizeEntry,
 } from "./lib/validate-entry";
 import {
     readDictionary,
@@ -93,9 +97,11 @@ export {
     makePsString,
     removeFVarients,
     standardizePashto,
+    standardizePhonetics,
     convertSpelling,
     revertSpelling,
     validateEntry,
+    standardizeEntry,
     isNounAdjOrVerb,
     simplifyPhonetics,
     phoneticsToDiacritics,
@@ -136,6 +142,8 @@ export {
     dictionaryEntryTextFields,
     dictionaryEntryNumberFields,
     dictionaryEntryBooleanFields,
+    dictionaryEntryPhoneticsTextFields,
+    dictionaryEntryPashtoTextFields,
     // TYPES
     Types,
 }
