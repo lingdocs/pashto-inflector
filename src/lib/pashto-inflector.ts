@@ -373,9 +373,14 @@ function inflectRegularUyFem(p: string, f: string): T.Inflections {
 
 function makePashtoPlural(word: T.DictionaryEntryNoFVars): T.PluralInflections | undefined {
   if (!(word.ppp && word.ppf)) return undefined;
-  const base = makePsString(word.ppp, word.ppf);
+  const base = splitPsByVarients(
+    makePsString(word.ppp, word.ppf)
+  );
   function getBaseAndO(): T.PluralInflectionSet {
-    return [[base], addOEnding(base)];
+    return [
+      base,
+      base.flatMap(addOEnding) as T.ArrayOneOrMore<T.PsString>,
+    ];
   }
   if (word.c?.includes("n. m.")) {
     return { masc: getBaseAndO() };

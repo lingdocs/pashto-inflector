@@ -984,6 +984,25 @@ const nouns: Array<{
             },
         },
     },
+    // with variations on Pashto plural
+    {
+        in: {"ts":1527815268,"i":8475,"p":"شی","f":"shey","g":"shey","ppp":"شیان، شیونه", "ppf": "sheyáan, sheyóona","e":"thing","c":"n. m."},
+        out: {
+            inflections: {
+                masc: [
+                    [{ p: "شی", f: "shey" }],
+                    [{ p: "شي", f: "shee" }],
+                    [{ p: "شیو", f: "shiyo" }, { p: "شو", f: "sho" }],
+                ],
+            },
+            plural: {
+                masc: [
+                    [{ p: "شیان", f: "sheyáan" }, { p: "شیونه", f: "sheyóona" }],
+                    [{ p: "شیانو", f: "sheyáano" }, { p: "شیونو", f: "sheyóono" }],
+                ],
+            },
+        },
+    },
     // TODO: Plaar plaroona paaraan - wrooNa
     // Word with no inflections
     {
