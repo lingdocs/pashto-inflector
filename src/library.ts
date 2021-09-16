@@ -142,8 +142,6 @@ export {
     dictionaryEntryTextFields,
     dictionaryEntryNumberFields,
     dictionaryEntryBooleanFields,
-    dictionaryEntryPhoneticsTextFields,
-    dictionaryEntryPashtoTextFields,
     // TYPES
     Types,
 }
