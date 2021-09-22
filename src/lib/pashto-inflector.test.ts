@@ -202,6 +202,24 @@ const adjectives: Array<{
             },
         },
     },
+    // without accents
+    {
+        in: {"ts":1527812796,"i":8574,"p":"ښه","f":"xu","g":"xu","e":"good","c":"adj."},
+        out: {
+            inflections: {
+                masc: [
+                    [{ p: "ښه", f: "xu" }],
+                    [{ p: "ښه", f: "xu" }],
+                    [{ p: "ښو", f: "xo" }],
+                ],
+                fem: [
+                    [{ p: "ښه", f: "xa" }],
+                    [{ p: "ښې", f: "xe" }],
+                    [{ p: "ښو", f: "xo" }],
+                ],
+            },
+        },
+    },
     // adjective non-inflecting
     {
         in: {

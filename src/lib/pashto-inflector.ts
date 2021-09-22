@@ -203,18 +203,19 @@ export function inflectRegularYeyUnisex(p: string, f: string): T.UnisexInflectio
 
 export function inflectRegularShwaEndingUnisex(pr: string, fr: string): T.UnisexInflections {
   const { p, f } = removeAccents(makePsString(pr, fr));
+  const accented = fr.slice(-1) === "ú";
   const baseP = p.slice(0, -1);
   const baseF = f.slice(0, -1);
   return {
     masc: [
-      [{p: `${baseP}ه`, f: `${baseF}ú`}],
-      [{p: `${baseP}ه`, f: `${baseF}ú`}],
-      [{p: `${baseP}و`, f: `${baseF}ó`}],
+      [{p: `${baseP}ه`, f: `${baseF}${accented ? "ú" : "u"}`}],
+      [{p: `${baseP}ه`, f: `${baseF}${accented ? "ú" : "u"}`}],
+      [{p: `${baseP}و`, f: `${baseF}${accented ? "ó" : "o"}`}],
     ],
     fem: [
-      [{p: `${baseP}ه`, f: `${baseF}á`}],
-      [{p: `${baseP}ې`, f: `${baseF}é`}],
-      [{p: `${baseP}و`, f: `${baseF}ó`}],
+      [{p: `${baseP}ه`, f: `${baseF}${accented ? "á" : "a"}`}],
+      [{p: `${baseP}ې`, f: `${baseF}${accented ? "é" : "e"}`}],
+      [{p: `${baseP}و`, f: `${baseF}${accented ? "ó" : "o"}`}],
     ],
   };
 }
