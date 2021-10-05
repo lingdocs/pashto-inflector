@@ -37,6 +37,9 @@ import {
     isInflectionSet,
 } from "./lib/p-text-helpers";
 import {
+    getEnglishWord,
+} from "./lib/get-english-word";
+import {
     standardizePashto,
     standardizePhonetics,
 } from "./lib/standardize-pashto";
@@ -118,6 +121,7 @@ export {
     personFromVerbBlockPos,
     removeAccents,
     hasAccents,
+    getEnglishWord,
     // protobuf helpers
     readDictionary,
     writeDictionary,
