@@ -26,7 +26,7 @@ import {
     getPersonInflectionsKey,
     pickPersInf,
     getPersonFromVerbForm,
-    getBlockRowCol,
+    getVerbBlockPosFromPerson,
 } from "./misc-helpers";
 import addPronouns from "./add-pronouns";
 import * as T from "../types";
@@ -645,7 +645,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         : [],
 ];
 
-export const getForms = ({ conj, filterFunc, mode, subject, object, sentenceLevel, englishConjugation, negative } : {
+export const getForms = ({ conj, filterFunc, mode, subject, object, sentenceLevel, englishConjugation, negative }: {
     conj: T.VerbConjugation,
     englishConjugation?: T.EnglishVerbConjugation
     filterFunc?: FilterFunc | FilterFunc[],
@@ -685,7 +685,7 @@ function engPresC(s: T.Person, ec: T.EnglishVerbConjugationEc | [string, string]
 }
 
 function engEquative(tense: "past" | "present", s: T.Person): string {
-    const [row, col] = getBlockRowCol(s);
+    const [row, col] = getVerbBlockPosFromPerson(s);
     return englishEquative[tense][row][col];
 }
 

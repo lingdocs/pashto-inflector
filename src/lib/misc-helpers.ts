@@ -114,11 +114,11 @@ export function getPersonFromVerbForm(form: T.SingleOrLengthOpts<T.VerbBlock>, p
             } : {},
         };
     }
-    const [row, col] = getBlockRowCol(person);
+    const [row, col] = getVerbBlockPosFromPerson(person);
     return form[row][col];
 }
 
-export function getBlockRowCol(person: T.Person): [0 | 1 | 2 | 3 | 4 | 5, 0 | 1] {
+export function getVerbBlockPosFromPerson(person: T.Person): [0 | 1 | 2 | 3 | 4 | 5, 0 | 1] {
     const plural = personIsPlural(person)
     const row = (plural ? (person - 6) : person) as 0 | 1 | 2 | 3 | 4 | 5;
     const col = plural ? 1 : 0;

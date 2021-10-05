@@ -11,7 +11,7 @@ import {
 } from "./pashto-inflector";
 import { baParticle } from "./grammar-units";
 import {
-    getBlockRowCol,
+    getVerbBlockPosFromPerson,
     getPersonInflectionsKey,
 } from "./misc-helpers";
 import * as T from "../types";
@@ -562,7 +562,7 @@ export function allOnePersonVerbForm(block: T.VerbForm, person: T.Person): T.Ver
             } : {},
         };
     }
-    const [row, col] = getBlockRowCol(person)
+    const [row, col] = getVerbBlockPosFromPerson(person)
     const p = block[row][col];
     return [
         [p, p],

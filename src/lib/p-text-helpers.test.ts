@@ -24,7 +24,6 @@ import {
     addOEnding,
     removeFVarients,
     endsInShwa,
-    removeAynEnding,
     splitPsByVarients,
 } from "./p-text-helpers";
 import * as T from "../types";

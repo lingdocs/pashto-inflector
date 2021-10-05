@@ -72,6 +72,7 @@ import {
     getPersonFromVerbForm,
     getPersonNumber,
     personFromVerbBlockPos,
+    getVerbBlockPosFromPerson,
 } from "./lib/misc-helpers";
 import {
     simplifyPhonetics,
@@ -122,6 +123,7 @@ export {
     removeAccents,
     hasAccents,
     getEnglishWord,
+    getVerbBlockPosFromPerson,
     // protobuf helpers
     readDictionary,
     writeDictionary,
