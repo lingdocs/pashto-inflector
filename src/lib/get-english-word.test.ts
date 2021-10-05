@@ -49,7 +49,12 @@ test("getEnglishWord", () => {
             in: {"ts":1527815008,"i":8433,"p":"شودې","f":"shoodé","g":"shoode","e":"milk","c":"n. f. pl."},
             out: { plural: "milk" },
         },
-    ]
+        // adjective
+        {
+            in: {"ts":1527815306,"i":7530,"p":"ستړی","f":"stúRey","g":"stuRey","e":"tired","c":"adj."},
+            out: "tired",
+        },
+    ];
     tests.forEach((t) => {
         expect(getEnglishWord(t.in)).toEqual(t.out);
     });

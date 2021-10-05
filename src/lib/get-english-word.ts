@@ -4,15 +4,20 @@ import * as T from "../types";
  * returns the singular and plural english word for a Pashto entry if possible
  * NOTE: only works with nouns and adjectives
  * 
- * @param entry 
- * @returns 
+ * @param entry dictionary entry
+ * @returns undefined if not possible, string for adjective, { singular?: string, plural: string } for noun 
  */
 export function getEnglishWord(entry: T.DictionaryEntry): {
     singular?: string,
     plural: string,
-} | undefined {
-    if (!entry.c || !entry.c.includes("n.") || entry.c.includes("adj.")) {
-        return undefined;
+} | string | undefined {
+    if (!entry.c) return undefined;
+    const isNoun = entry.c.includes("n.");
+    const isAdj = entry.c.includes("adj.");
+    if (!isNoun && !isAdj) return undefined;
+    const base = entry.e.split(",")[0].split(";")[0].split("(")[0].trim();
+    if (isAdj && !isNoun) {
+        return base;
     }
     if (entry.ec && entry.ep) {
         return {
@@ -20,7 +25,6 @@ export function getEnglishWord(entry: T.DictionaryEntry): {
             plural: entry.ep,
         };
     }
-    const base = entry.e.split(",")[0].split(";")[0].split("(")[0].trim();
     if (entry.c.includes("pl.")) {
         return {
             plural: base,
