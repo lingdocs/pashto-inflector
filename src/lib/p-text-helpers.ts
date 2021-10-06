@@ -650,6 +650,7 @@ export function addEnglish(english: T.EnglishBlock | string, ps: T.VerbBlock): T
 export function addEnglish(english: T.EnglishBlock | string, ps: T.ImperativeBlock): T.ImperativeBlock;
 export function addEnglish(english: T.EnglishBlock | string, ps: T.ArrayOneOrMore<T.PsString>): T.ArrayOneOrMore<T.PsString>;
 export function addEnglish(english: T.EnglishBlock | string, ps: T.SentenceForm): T.SentenceForm;
+export function addEnglish(english: T.EnglishBlock | string, ps: T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString>): T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString>;
 export function addEnglish(
     english: T.EnglishBlock | string,
     ps: T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString> | T.SentenceForm,
