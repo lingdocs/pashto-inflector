@@ -35,6 +35,7 @@ import {
     isPluralInflectionSet,
     isUnisexSet,
     isInflectionSet,
+    addEnglish,
 } from "./lib/p-text-helpers";
 import {
     getEnglishWord,
@@ -128,6 +129,7 @@ export {
     getVerbBlockPosFromPerson,
     personIsPlural,
     personGender,
+    addEnglish,
     // protobuf helpers
     readDictionary,
     writeDictionary,

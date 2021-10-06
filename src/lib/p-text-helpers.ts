@@ -646,10 +646,23 @@ export function clamp(s: string, chars: number): string {
     return `${s.slice(0, 20)}${s.length > 20 ? "..." : ""}`;
 }
 
+export function addEnglish(english: T.EnglishBlock | string, ps: T.VerbBlock): T.VerbBlock;
+export function addEnglish(english: T.EnglishBlock | string, ps: T.ImperativeBlock): T.ImperativeBlock;
+export function addEnglish(english: T.EnglishBlock | string, ps: T.ArrayOneOrMore<T.PsString>): T.ArrayOneOrMore<T.PsString>;
+export function addEnglish(english: T.EnglishBlock | string, ps: T.SentenceForm): T.SentenceForm;
 export function addEnglish(
     english: T.EnglishBlock | string,
-    ps: T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString>,
-) {
+    ps: T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString> | T.SentenceForm,
+): T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString> | T.SentenceForm {
+    if ("long" in ps) {
+        return {
+            long: addEnglish(english, ps.long),
+            short: addEnglish(english, ps.short),
+            ...ps.mini ? {
+                mini: addEnglish(english, ps.mini),
+            } : {},
+        };
+    }
     if (Array.isArray(ps[0]) && ps.length === 6) {
         return mapVerbBlock((psString, i, j) => ({
             ...psString,
@@ -667,7 +680,7 @@ export function addEnglish(
     const line = ps as T.ArrayOneOrMore<T.PsString>;
     return line.map((psString) => (
         { ...psString, e: typeof english === "string" ? english : english[0][0] }
-    ));
+    )) as T.ArrayOneOrMore<T.PsString>;
 }
 
 export function beginsWithDirectionalPronoun(ps: T.PsString): boolean {
