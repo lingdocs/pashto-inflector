@@ -76,6 +76,7 @@ import {
     getVerbBlockPosFromPerson,
     personIsPlural,
     personGender,
+    parseEc,
 } from "./lib/misc-helpers";
 import {
     simplifyPhonetics,
@@ -130,6 +131,7 @@ export {
     personIsPlural,
     personGender,
     addEnglish,
+    parseEc,
     // protobuf helpers
     readDictionary,
     writeDictionary,

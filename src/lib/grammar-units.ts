@@ -185,17 +185,17 @@ export const equativeEndings: {
             [
                 [{
                     p: "وم",
-                    f: "wum"
+                    f: "wum",
                 }],
                 [{
                     p: "وو",
-                    f: "woo"
+                    f: "woo",
                 }]
             ],
             [
                 [{
                     p: "وم",
-                    f: "wum"
+                    f: "wum",
                 }],
                 [{
                     p: "وو",
