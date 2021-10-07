@@ -108,9 +108,9 @@ export type DictionaryEntry = {
     /** Is an exception to the rules of diacritics for Pashto/Phonetics */
     diacExcept?: boolean;
 
-    /** the English conjugations of a verb comma seperated set of 5 ie. "see,sees,seeing,saw,seen" or single word ie. "walk" if regular */
+    /** the English conjugations of a verb comma seperated set of 5 ie. "see,sees,seeing,saw,seen" or single word ie. "walk" if regular - or the english singular version of a noun */
     ec?: string;
-    /** the English partical of a English phrasal verb  */
+    /** the English partical of a English phrasal verb - or the english irregular plural of a noun */
     ep?: string;
 }
 

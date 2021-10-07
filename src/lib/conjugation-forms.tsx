@@ -216,10 +216,12 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
         formula: "Imperfective Root + Past Ending",
         sentence: true,
         englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-            //  - subj "was" (N && "not") v.2 obj
+            //  - subj pastEquative (N && "not") v.2 obj
             `${engSubj(s)} ${engEquative("past", s)}${n ? " not" : ""} ${v[2]}`,
             //  - subj "would" (N && "not") v.0 obj
             `${engSubj(s)} would${n ? " not" : ""} ${isToBe(v) ? "be" : v[0]}`,
+            //  - subj pastEquative (N && "not") going to" v.0 obj
+            `${engSubj(s)} ${engEquative("past", s)}${n ? " not" : ""} going to ${isToBe(v) ? "be" : v[0]}`,
         ]),
         explanation: "Saying something was happening, or would happen ('I was ____ing', 'I would ____')",
         past: true,
