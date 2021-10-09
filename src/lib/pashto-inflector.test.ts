@@ -202,6 +202,24 @@ const adjectives: Array<{
             },
         },
     },
+    // numbers should inflect just like adjectives
+    {
+        in: {"ts":1588688995113,"i":8176,"p":"شپږ","f":"shpuG","g":"shpug","e":"six","c":"num."},
+        out: {
+            inflections: {
+                masc: [
+                    [{ p: "شپږ", f: "shpuG" }],
+                    [{ p: "شپږ", f: "shpuG" }],
+                    [{ p: "شپږو", f: "shpuGo" }],
+                ],
+                fem: [
+                    [{ p: "شپږه", f: "shpuGa" }],
+                    [{ p: "شپږې", f: "shpuGe" }],
+                    [{ p: "شپږو", f: "shpuGo" }],
+                ],
+            },
+        },
+    },
     // without accents
     {
         in: {"ts":1527812796,"i":8574,"p":"ښه","f":"xu","g":"xu","e":"good","c":"adj."},

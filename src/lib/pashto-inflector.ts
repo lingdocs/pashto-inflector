@@ -51,7 +51,7 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
   if (w.c && w.c.includes("pl.")) {
     return handlePluralNoun(w);
   }
-  if (w.c && (w.c.includes("adj.") || w.c.includes("unisex"))) {
+  if (w.c && (w.c.includes("adj.") || w.c.includes("unisex") || w.c.includes("num"))) {
     return handleUnisexWord(w);
   }
   if (w.c && (w.c.includes("n. m."))) {
