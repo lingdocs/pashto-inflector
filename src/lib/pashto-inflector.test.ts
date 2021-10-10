@@ -412,6 +412,35 @@ const nouns: Array<{
             },
         },
     },
+    // with irregular Pashto plural
+    // TODO: This should work with words like پلویان but not with words like ترورزامن
+    // {
+    //     in: {"ts":1527820130,"i":2561,"p":"پلوی","f":"palawéy","g":"palawey","e":"adherent, supporter; the outside or further ox in a team of oxes grinding or threshing","c":"n. m. anim. unisex","ppp":"پلویان","ppf":"palawiyáan"},
+    //     out: {
+    //         inflections: {
+    //             masc: [
+    //                 [{ p: "پلوی", f: "palawéy" }],
+    //                 [{ p: "پلوي", f: "palawée" }],
+    //                 [{ p: "پلویو", f: "palawiyo" }, { p: "پلوو", f: "palawó" }],
+    //             ],
+    //             fem: [
+    //                 [{ p: "پلوۍ", f: "palawúy" }],
+    //                 [{ p: "پلوۍ", f: "palawúy" }],
+    //                 [{ p: "پلویو", f: "palawúyo" }, { p: "پلوو", f: "palawó" }],
+    //             ],
+    //         },
+    //         plural: {
+    //             masc: [
+    //                 [{ p: "پلویان", f: "palawiyáan" }],
+    //                 [{ p: "پلویانو", f: "palawiyáano" }],
+    //             ],
+    //             fem: [
+    //                 [{ p: "پلویانې", f: "palawiyáane" }],
+    //                 [{ p: "پلویانو", f: "palawiyáano" }],
+    //             ],
+    //         },
+    //     },
+    // },
     // ## MASCULINE
     // Masculine regular ending in ی
     {

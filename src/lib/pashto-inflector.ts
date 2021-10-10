@@ -428,10 +428,8 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     if (w.c.includes("n. m.")) return { plural: { masc: plural }};
     if (w.c.includes("n. f.")) return { plural: { fem: plural }};
   }
-  // TODO: MAKE ARABIC PLURAL HERE IF THERE IS ARABIC PLURAL
   const arabicPlural = makeArabicPlural(w);
   const pashtoPlural = makePashtoPlural(w);
-  if (pashtoPlural) return { plural: pashtoPlural, arabicPlural }; 
   function addMascPluralSuffix(animate?: boolean, shortSquish?: boolean): T.PluralInflectionSet {
     if (shortSquish && (w.infap === undefined || w.infaf === undefined)) {
       throw new Error(`no irregular inflection info for ${w.p} - ${w.ts}`);
@@ -463,6 +461,24 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
       concatPsString(baseWOutAccents, space, { p: "ګانې", f: "gáane" })
     ]);
   }
+  // TODO: This should be possible for words like پلویان but not for words like ترورزامن 🤔
+  // function addFemToPashtoPlural(i: T.PluralInflections): T.UnisexSet<T.PluralInflectionSet> {
+  //   if ("fem" in i && "masc" in i) return i;
+  //   if (!("masc" in i)) throw new Error("bad pashto plural doesn't even have masculine");
+  //   if (endsInConsonant(i.masc[0][0])) {
+  //     return {
+  //       ...i,
+  //       fem: [
+  //         i.masc[0].map((x) => concatPsString(x, { p: "ې", f: "e" })) as T.ArrayOneOrMore<T.PsString>,
+  //         i.masc[0].map((x) => concatPsString(x, { p: "و", f: "o" })) as T.ArrayOneOrMore<T.PsString>,
+  //       ],
+  //     };
+  //   }
+  //   return {
+  //     ...i,
+  //     fem: i.masc,
+  //   };
+  // }
 
   const shortSquish = !!w.infap && !w.infap.includes("ا");
   const anim = w.c?.includes("anim.");
@@ -473,8 +489,14 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     : (w.c?.includes("n. f."))
     ? "fem noun"
     : "other";
+  if (pashtoPlural) return {
+    // TODO: add the pashto plural to words like پلویان but not to words like ترورزامن ?
+    plural: pashtoPlural,
+    arabicPlural,
+  }; 
   if (type === "unisex noun") {
-    if (endsInConsonant(w) && (!w.infap) && anim) {
+    // doesn't need to be labelled anim - because it's only with animate nouns that you get the unisex - I THINK
+    if (endsInConsonant(w) && (!w.infap)) {
       return { arabicPlural, plural: addAnimUnisexPluralSuffix() };
     }
     if (shortSquish) {
