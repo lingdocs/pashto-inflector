@@ -545,7 +545,7 @@ const nouns: Array<{
     },
     // should NOT do the oona plural with the squish nouns, when they're animate
     {
-        in: {"i":5465,"ts":1527812802,"p":"خر","f":"khur","g":"khur","e":"donkey","c":"n. m. unisex irreg.","infap":"خره","infaf":"khru","infbp":"خر","infbf":"khr"},
+        in: {"i":5465,"ts":1527812802,"p":"خر","f":"khur","g":"khur","e":"donkey","c":"n. m. anim. unisex irreg.","infap":"خره","infaf":"khru","infbp":"خر","infbf":"khr"},
         out: {
             inflections: {
                 masc: [

@@ -499,9 +499,11 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     if (endsInConsonant(w) && (!w.infap)) {
       return { arabicPlural, plural: addAnimUnisexPluralSuffix() };
     }
-    if (shortSquish && anim) {
+    if (shortSquish && !anim) {
       return { arabicPlural, plural: { masc: addMascPluralSuffix(anim, shortSquish) }};
     }
+    // usually shortSquish nouns would never have arabicPlurals -- so we don't have to worry about catching
+    // arabic plurals for the animat ones, right?
   }
   if (
     type === "masc noun" &&
