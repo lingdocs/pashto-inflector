@@ -543,7 +543,7 @@ const nouns: Array<{
             },
         },
     },
-    // should also do the oona plural with the squish nouns, even if it's animate
+    // should NOT do the oona plural with the squish nouns, when they're animate
     {
         in: {"i":5465,"ts":1527812802,"p":"خر","f":"khur","g":"khur","e":"donkey","c":"n. m. unisex irreg.","infap":"خره","infaf":"khru","infbp":"خر","infbf":"khr"},
         out: {
@@ -557,12 +557,6 @@ const nouns: Array<{
                     [{ p: "خره", f: "khra" }],
                     [{ p: "خرې", f: "khre" }],
                     [{ p: "خرو", f: "khro" }],
-                ],
-            },
-            plural: {
-                masc: [
-                    [{ p: "خرونه", f: "khróona" }],
-                    [{ p: "خرونو", f: "khróono" }],
                 ],
             },
         },

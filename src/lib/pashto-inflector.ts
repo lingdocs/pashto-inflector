@@ -499,7 +499,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     if (endsInConsonant(w) && (!w.infap)) {
       return { arabicPlural, plural: addAnimUnisexPluralSuffix() };
     }
-    if (shortSquish) {
+    if (shortSquish && anim) {
       return { arabicPlural, plural: { masc: addMascPluralSuffix(anim, shortSquish) }};
     }
   }
