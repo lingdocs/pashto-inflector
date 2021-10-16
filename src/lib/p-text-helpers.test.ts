@@ -1138,4 +1138,20 @@ test("endsWith", () => {
         .toBe(true);
     expect(endsWith({ p: "چای", f: "chaay" }, [{ p: "وی", f: "ooy" }, { p: "ای", f: "aay" }]))
         .toBe(true);
+    expect(endsWith({ p: "ویده", f: "weedú" }, { p: "ه"} ))
+        .toBe(true);
+    expect(endsWith({ p: "ویده", f: "weedú" }, { p: "ت"} ))
+        .toBe(false);
+    expect(endsWith({ p: "ویده", f: "weedú" }, { f: "u" } ))
+        .toBe(true);
+    expect(endsWith({ p: "ویده", f: "weedú" }, { f: "u" }, true))
+        .toBe(false);
+    expect(endsWith({ p: "چت", f: "chat" }, { f: ["d", "t"] }))
+        .toBe(true);
+    expect(endsWith({ p: "چت", f: "chat" }, { f: ["d", "D"] }))
+        .toBe(false);
+    expect(endsWith({ p: "چت", f: "chat" }, { p: ["د", "ت"] }))
+        .toBe(true);
+    expect(endsWith({ p: "چت", f: "chat" }, { p: ["ډ", "د"] }))
+        .toBe(false);
 });

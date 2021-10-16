@@ -966,14 +966,26 @@ export function isPluralInflections(inf: T.PluralInflections | T.Inflections): i
  * @param matchAccent - true if you want it to be accent-sensitive
  * @returns 
  */
-export function endsWith(ps: T.PsString, ending: T.PsString | T.PsString[], matchAccent?: boolean): boolean {
+export function endsWith(
+    ps: T.PsString,
+    ending: T.PsString | T.PsString[] | { p: string | string[] } | { f: string | string[] },
+    matchAccent?: boolean,
+): boolean {
     if (Array.isArray(ending)) {
         return ending.some(e => endsWith(ps, e));
     }
+    if ("p" in ending && Array.isArray(ending.p)) {
+        return ending.p.some(e => endsWith(ps, { p: e }));
+    }
+    if ("f" in ending && Array.isArray(ending.f)) {
+        return ending.f.some(e => endsWith(ps, { f: e }));
+    }
     const f = removeFVarients(ps.f);
     return (
-        ps.p.slice(-ending.p.length) === ending.p
+        (("p" in ending) ? ps.p.slice(-ending.p.length) === ending.p : true)
         &&
-        (matchAccent ? f.slice(-ending.f.length) : removeAccents(f.slice(-ending.f.length))) === ending.f
+        (("f" in ending) ?
+            ((matchAccent ? f.slice(-ending.f.length) : removeAccents(f.slice(-ending.f.length))) === ending.f)
+            : true)
     );
 }
