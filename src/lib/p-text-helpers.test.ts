@@ -1125,33 +1125,40 @@ test("splitPsByVarients", () => {
 });
 
 test("endsWith", () => {
-    expect(endsWith({ p: "سړی", f: "saRey" }, { p: "ی", f: "ey" }))
+    expect(endsWith({ p: "ی", f: "ey" }, { p: "سړی", f: "saRey" }))
         .toBe(true);
     // f variations should be removed in case of using DictionaryEntry
-    expect(endsWith({ p: "سړی", f: "saRey, saRaayyy" }, { p: "ی", f: "ey" }))
+    expect(endsWith({ p: "ی", f: "ey" }, { p: "سړی", f: "saRey, saRaayyy" }))
         .toBe(true);
-    expect(endsWith({ p: "سړی", f: "saRey" }, { p: "ي", f: "ee" }))
+    expect(endsWith({ p: "ي", f: "ee" }, { p: "سړی", f: "saRey" }))
         .toBe(false);
-    expect(endsWith({ p: "ویده", f: "weedú" }, { p: "ه", f: "u" }, true))
+    expect(endsWith({ p: "ه", f: "u" }, { p: "ویده", f: "weedú" }, true))
         .toBe(false);
-    expect(endsWith({ p: "ویده", f: "weedú" }, { p: "ه", f: "u" }))
+    expect(endsWith({ p: "ه", f: "u" }, { p: "ویده", f: "weedú" }))
         .toBe(true);
-    expect(endsWith({ p: "چای", f: "chaay" }, [{ p: "وی", f: "ooy" }, { p: "ای", f: "aay" }]))
+    expect(endsWith([{ p: "وی", f: "ooy" }, { p: "ای", f: "aay" }], { p: "چای", f: "chaay" }))
         .toBe(true);
-    expect(endsWith({ p: "ویده", f: "weedú" }, { p: "ه"} ))
+    expect(endsWith({ p: "ه"}, { p: "ویده", f: "weedú" }))
         .toBe(true);
-    expect(endsWith({ p: "ویده", f: "weedú" }, { p: "ت"} ))
+    expect(endsWith({ p: "ت"}, { p: "ویده", f: "weedú" }))
         .toBe(false);
-    expect(endsWith({ p: "ویده", f: "weedú" }, { f: "u" } ))
+    expect(endsWith({ f: "u" }, { p: "ویده", f: "weedú" }))
         .toBe(true);
-    expect(endsWith({ p: "ویده", f: "weedú" }, { f: "u" }, true))
+    expect(endsWith({ f: "u" }, { p: "ویده", f: "weedú" }, true))
         .toBe(false);
-    expect(endsWith({ p: "چت", f: "chat" }, { f: ["d", "t"] }))
+    expect(endsWith({ f: ["d", "t"] }, { p: "چت", f: "chat" }))
         .toBe(true);
-    expect(endsWith({ p: "چت", f: "chat" }, { f: ["d", "D"] }))
+    expect(endsWith({ f: ["d", "D"] }, { p: "چت", f: "chat" }))
         .toBe(false);
-    expect(endsWith({ p: "چت", f: "chat" }, { p: ["د", "ت"] }))
+    expect(endsWith({ p: ["د", "ت"] }, { p: "چت", f: "chat" }))
         .toBe(true);
-    expect(endsWith({ p: "چت", f: "chat" }, { p: ["ډ", "د"] }))
+    expect(endsWith({ p: ["ډ", "د"] }, { p: "چت", f: "chat" }))
+        .toBe(false);
+    // ability to curry
+    expect(endsWith({ p: "ی", f: "ey" })({ p: "سړی", f: "saRéy" }))
+        .toBe(true);
+    expect(endsWith({ p: "ی", f: "ey" }, true)({ p: "سړی", f: "saRéy" }))
+        .toBe(false);
+    expect(endsWith({ f: ["d", "D"] })({ p: "چت", f: "chat" }))
         .toBe(false);
 });

@@ -961,24 +961,37 @@ export function isPluralInflections(inf: T.PluralInflections | T.Inflections): i
  * determines if ps ends with a given ending, or one of an array of given endings
  * (can be accent sensitive or not)
  * 
- * @param ps - the PsString in question
- * @param ending - an ending (or array of possible endings) to check for
- * @param matchAccent - true if you want it to be accent-sensitive
- * @returns 
+ * regular - `endsWith(ending, string, matchAccent?)` returns `boolean`
+ * curried - `endsWith(ending, matchAccent?)` returns `(ps) => boolean`
+ * 
  */
 export function endsWith(
-    ps: T.PsString,
     ending: T.PsString | T.PsString[] | { p: string | string[] } | { f: string | string[] },
+    ps?: boolean,
+): (ps: T.PsString) => boolean;
+export function endsWith(
+    ending: T.PsString | T.PsString[] | { p: string | string[] } | { f: string | string[] },
+    ps: T.PsString,
     matchAccent?: boolean,
-): boolean {
+): boolean;
+export function endsWith(
+    ending: T.PsString | T.PsString[] | { p: string | string[] } | { f: string | string[] },
+    ps: T.PsString | undefined | boolean,
+    matchAccent?: boolean | undefined,
+): boolean | ((ps: T.PsString) => boolean) {
+    // curried version
+    if (ps === undefined || typeof ps === "boolean") {
+        const matchAccent = !!ps;
+        return (ps: T.PsString) => endsWith(ending, ps, matchAccent);
+    }
     if (Array.isArray(ending)) {
-        return ending.some(e => endsWith(ps, e));
+        return ending.some(e => endsWith(e, ps));
     }
     if ("p" in ending && Array.isArray(ending.p)) {
-        return ending.p.some(e => endsWith(ps, { p: e }));
+        return ending.p.some(e => endsWith({ p: e }, ps));
     }
     if ("f" in ending && Array.isArray(ending.f)) {
-        return ending.f.some(e => endsWith(ps, { f: e }));
+        return ending.f.some(e => endsWith({ f: e }, ps));
     }
     const f = removeFVarients(ps.f);
     return (
