@@ -92,6 +92,7 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
     pashtoConsonants.includes(pEnd) ||
     word.p.slice(-2) === "وی" ||
     word.p.slice(-2) === "ای" ||
+    word.f.slice(-1) === "w" ||
     (word.p.slice(-1) === "ه" && word.f.slice(-1) === "h")
   ) {
     return { inflections: inflectConsonantEndingUnisex(word.p, word.f), ...plurals };
@@ -150,7 +151,8 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   if (word.p.slice(-1) === "ح" && endingInSingleARegex.test(word.f)) {
     return { inflections: inflectRegularAWithHimPEnding(word.p, word.f), ...plurals };
   }
-  if (pashtoConsonants.includes(pEnd) && !animate) {
+  // TODO: better reusable function to check if something ends with a consonant
+  if ((pashtoConsonants.includes(pEnd) || word.f.slice(-1) === "w") && !animate) {
     return { inflections: inflectRegularInanMissingAFem(word.p, word.f), ...plurals };
   }
   if (pEnd === "ي" && (!animate)) {

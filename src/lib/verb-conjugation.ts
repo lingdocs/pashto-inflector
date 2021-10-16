@@ -622,7 +622,7 @@ function ensureShort3rdPersMascSing(
         const form = info.idiosyncraticThirdMascSing[aspect];
         // if it ends in a consonant, the special form will also have another
         // variation ending with a ه - u
-        const endsInAConsonant = pashtoConsonants.includes(form.p.slice(-1));
+        const endsInAConsonant = (pashtoConsonants.includes(form.p.slice(-1)) || form.f.slice(-1) === "w");
         const replacement: T.ArrayOneOrMore<T.PsString> = endsInAConsonant
             ? [form, concatPsString(form, { p: "ه", f: "u" })]
             : [form];
