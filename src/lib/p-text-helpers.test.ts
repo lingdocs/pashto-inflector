@@ -1152,6 +1152,8 @@ test("endsWith", () => {
         .toBe(false);
     expect(endsWith({ p: ["د", "ت"] }, { p: "چت", f: "chat" }))
         .toBe(true);
+    expect(endsWith([{ p: "ای", f: "aay" }, { p: ["د", "ت"] }], { p: "چت", f: "chat" }))
+        .toBe(true);
     expect(endsWith({ p: ["ډ", "د"] }, { p: "چت", f: "chat" }))
         .toBe(false);
     // ability to curry

@@ -957,6 +957,8 @@ export function isPluralInflections(inf: T.PluralInflections | T.Inflections): i
     return inf.fem.length === 2;
 }
 
+
+// TODO: make this usable with things like endsWith([{ f: ["t", "b"] } | { ps: "ای", f: "aay" }])
 /**
  * determines if ps ends with a given ending, or one of an array of given endings
  * (can be accent sensitive or not)
@@ -966,16 +968,16 @@ export function isPluralInflections(inf: T.PluralInflections | T.Inflections): i
  * 
  */
 export function endsWith(
-    ending: T.PsString | T.PsString[] | { p: string | string[] } | { f: string | string[] },
+    ending: (T.PsString | { p: string | string[] } | { f: string | string[] }) | (T.PsString | { p: string | string[] } | { f: string | string[] })[],
     ps?: boolean,
 ): (ps: T.PsString) => boolean;
 export function endsWith(
-    ending: T.PsString | T.PsString[] | { p: string | string[] } | { f: string | string[] },
+    ending: (T.PsString | { p: string | string[] } | { f: string | string[] }) | (T.PsString | { p: string | string[] } | { f: string | string[] })[],
     ps: T.PsString,
     matchAccent?: boolean,
 ): boolean;
 export function endsWith(
-    ending: T.PsString | T.PsString[] | { p: string | string[] } | { f: string | string[] },
+    ending: (T.PsString | { p: string | string[] } | { f: string | string[] }) | (T.PsString | { p: string | string[] } | { f: string | string[] })[],
     ps: T.PsString | undefined | boolean,
     matchAccent?: boolean | undefined,
 ): boolean | ((ps: T.PsString) => boolean) {
