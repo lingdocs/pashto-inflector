@@ -25,6 +25,7 @@ import {
     removeFVarients,
     endsInShwa,
     splitPsByVarients,
+    endsWith,
 } from "./p-text-helpers";
 import * as T from "../types";
 import {
@@ -1121,4 +1122,20 @@ test("splitPsByVarients", () => {
         .toEqual([{ p: "حوادث", f: "hawáadis" }, { p: "حادثات", f: "haadisáat" }]);
     expect(splitPsByVarients({ p: "کور", f: "kor" }))
         .toEqual([{ p: "کور", f: "kor" }]);
-})
+});
+
+test("endsWith", () => {
+    expect(endsWith({ p: "سړی", f: "saRey" }, { p: "ی", f: "ey" }))
+        .toBe(true);
+    // f variations should be removed in case of using DictionaryEntry
+    expect(endsWith({ p: "سړی", f: "saRey, saRaayyy" }, { p: "ی", f: "ey" }))
+        .toBe(true);
+    expect(endsWith({ p: "سړی", f: "saRey" }, { p: "ي", f: "ee" }))
+        .toBe(false);
+    expect(endsWith({ p: "ویده", f: "weedú" }, { p: "ه", f: "u" }, true))
+        .toBe(false);
+    expect(endsWith({ p: "ویده", f: "weedú" }, { p: "ه", f: "u" }))
+        .toBe(true);
+    expect(endsWith({ p: "چای", f: "chaay" }, [{ p: "وی", f: "ooy" }, { p: "ای", f: "aay" }]))
+        .toBe(true);
+});

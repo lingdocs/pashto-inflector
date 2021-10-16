@@ -956,3 +956,24 @@ export function isPluralInflections(inf: T.PluralInflections | T.Inflections): i
     }
     return inf.fem.length === 2;
 }
+
+/**
+ * determines if ps ends with a given ending, or one of an array of given endings
+ * (can be accent sensitive or not)
+ * 
+ * @param ps - the PsString in question
+ * @param ending - an ending (or array of possible endings) to check for
+ * @param matchAccent - true if you want it to be accent-sensitive
+ * @returns 
+ */
+export function endsWith(ps: T.PsString, ending: T.PsString | T.PsString[], matchAccent?: boolean): boolean {
+    if (Array.isArray(ending)) {
+        return ending.some(e => endsWith(ps, e));
+    }
+    const f = removeFVarients(ps.f);
+    return (
+        ps.p.slice(-ending.p.length) === ending.p
+        &&
+        (matchAccent ? f.slice(-ending.f.length) : removeAccents(f.slice(-ending.f.length))) === ending.f
+    );
+}

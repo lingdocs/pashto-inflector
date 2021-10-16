@@ -36,6 +36,7 @@ import {
     isUnisexSet,
     isInflectionSet,
     addEnglish,
+    endsWith,
 } from "./lib/p-text-helpers";
 import {
     getEnglishWord,
@@ -132,6 +133,7 @@ export {
     personGender,
     addEnglish,
     parseEc,
+    endsWith,
     // protobuf helpers
     readDictionary,
     writeDictionary,
