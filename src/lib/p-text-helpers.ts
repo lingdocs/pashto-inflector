@@ -995,12 +995,16 @@ export function endsWith(
     if ("f" in ending && Array.isArray(ending.f)) {
         return ending.f.some(e => endsWith({ f: e }, ps));
     }
-    const f = removeFVarients(ps.f);
+    const f = removeFVarients(ps.f).replace(/'/g, "");
+    const fEnd = "f" in ending
+        // @ts-ignore
+        ? ending.f.replace(/'/g, "")
+        : undefined;
     return (
         (("p" in ending) ? ps.p.slice(-ending.p.length) === ending.p : true)
         &&
-        (("f" in ending) ?
-            ((matchAccent ? f.slice(-ending.f.length) : removeAccents(f.slice(-ending.f.length))) === ending.f)
+        ((fEnd) ?
+            ((matchAccent ? f.slice(-fEnd.length) : removeAccents(f.slice(-fEnd.length))) === fEnd)
             : true)
     );
 }
