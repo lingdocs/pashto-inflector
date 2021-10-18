@@ -55,12 +55,12 @@ export function accentPastParticiple(s: T.PsString): T.PsString {
 }
 
 export function splitUpSyllables(f: string): string[] {
-    return f.match(/ |([^a|e|i|o|u| ]*(aa|a|ey|ee|e|oo|o|i|u)[^a|e|i|o|u| ]*)/g) as string[];
+    return f.match(/ |([^a|e|i|o|u| ]*(aa|a|ey|ee|e|oo|o|i|u)[^a|e|i|o|u| ]*)/g) || [] as string[];
 }
 
 export function countSyllables(f: T.PsString | string): number {
     if (typeof f !== "string") return countSyllables(f.f);
-    return splitUpSyllables(removeFVarients(f)).length;
+    return splitUpSyllables(removeFVarients(removeAccents(f))).length;
 }
 
 /**
