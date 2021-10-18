@@ -6,7 +6,7 @@
  *
  */
 
-import { makePsString } from "./p-text-helpers";
+import { makePsString, removeFVarients } from "./p-text-helpers";
 import * as T from "../types";
 
 /**
@@ -54,8 +54,13 @@ export function accentPastParticiple(s: T.PsString): T.PsString {
     return makePsString(s.p, accentedF);
 }
 
-export function splitUpSyllables(s: string): string[] {
-    return s.match(/ |([^a|e|i|o|u| ]*(aa|a|ey|ee|e|oo|o|i|u)[^a|e|i|o|u| ]*)/g) as string[];
+export function splitUpSyllables(f: string): string[] {
+    return f.match(/ |([^a|e|i|o|u| ]*(aa|a|ey|ee|e|oo|o|i|u)[^a|e|i|o|u| ]*)/g) as string[];
+}
+
+export function countSyllables(f: T.PsString | string): number {
+    if (typeof f !== "string") return countSyllables(f.f);
+    return splitUpSyllables(removeFVarients(f)).length;
 }
 
 /**

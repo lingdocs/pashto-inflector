@@ -584,6 +584,17 @@ const nouns: Array<{
             },
         },
     },
+    {
+        in: {"ts":1527813508,"i":7058,"p":"زړه","f":"zRu","g":"zRu","e":"heart","c":"n. m.","noInf":true},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "زړونه", f: "zRóona" }],
+                    [{ p: "زړونو", f: "zRóono" }],
+                ],
+            },
+        },
+    },
     // fem plural
     {
         in: {"ts":1527815129,"i":1013,"p":"اوبه","f":"oobú","g":"oobu","e":"water","c":"n. f. pl."},

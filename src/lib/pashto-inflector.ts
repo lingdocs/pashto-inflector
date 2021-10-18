@@ -35,9 +35,6 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
   // If it's a noun/adj, inflect accordingly
   // TODO: What about n. f. / adj. that end in ي ??
   const w = removeFVarients(word);
-  if (w.noInf) {
-    return false;
-  }
   if (w.c?.includes("doub.")) {
     const words = splitDoubleWord(w);
     const inflected = words.map((x) => ensureUnisexInflections(inflectWord(x), x));
@@ -70,6 +67,9 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // TODO: !!! Handle weird endings / symbols ' etc.
   const pEnd = word.p.slice(-1);
   const plurals = makePlural(word);
+  if (word.noInf) {
+    return !plurals ? false : { ...plurals };
+  }
   if (word.infap && word.infaf && word.infbp && word.infbf) {
     return {
       inflections: inflectIrregularUnisex(word.p, word.f, [
@@ -104,6 +104,9 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
 function handlePluralNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
   if (!w.c || !w.c.includes("n.")) return false;
   const plurals = makePlural(w);
+  if (w.noInf) {
+    return !plurals ? false : { ...plurals };
+  }
   if (!plurals) return false;
   return { ...plurals };
 }
@@ -112,6 +115,9 @@ function handleMascNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // Get last letter of Pashto and last two letters of phonetics
   // TODO: !!! Handle weird endings / symbols ' etc.
   const plurals = makePlural(w);
+  if (w.noInf) {
+    return !plurals ? false : { ...plurals };
+  }
   const pEnd = w.p.slice(-1);
   const fEnd = w.f.slice(-2);
   if (w.infap && w.infaf && w.infbp && w.infbf) {
@@ -144,6 +150,9 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   const pEnd = word.p.slice(-1);
 
   const plurals = makePlural(word);
+  if (word.noInf) {
+    return !plurals ? false : { ...plurals };
+  }
 
   if (endingInHeyOrAynRegex.test(word.p) && endingInSingleARegex.test(word.f)) {
     return { inflections: inflectRegularAFem(word.p, word.f), ...plurals };

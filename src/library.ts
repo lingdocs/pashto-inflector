@@ -91,6 +91,8 @@ import {
 import {
     removeAccents,
     hasAccents,
+    splitUpSyllables,
+    countSyllables,
 } from "./lib/accent-helpers";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
@@ -134,6 +136,8 @@ export {
     addEnglish,
     parseEc,
     endsWith,
+    splitUpSyllables,
+    countSyllables,
     // protobuf helpers
     readDictionary,
     writeDictionary,
