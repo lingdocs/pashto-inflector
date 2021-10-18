@@ -20,6 +20,7 @@ import {
   endsInShwa,
   splitPsByVarients,
   removeEndTick,
+  endsWith,
 } from "./p-text-helpers";
 import {
   hasAccents,
@@ -463,6 +464,24 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
       fem: addSecondInf(concatPsString(base, { p: "انې", f: "áane" })),
     };
   }
+  function addAnimN3UnisexPluralSuffix(): T.UnisexSet<T.PluralInflectionSet> {
+    const b = removeAccents(w);
+    const base = {
+      p: b.p.slice(0, -1),
+      f: b.f.slice(0, -2),
+    };
+    return {
+      masc: [
+        [concatPsString(base, { p: "یان", f: "iyáan" })],
+        [concatPsString(base, { p: "یانو", f: "iyáano" })],
+        // TODO: or use addSecondInf method above?
+      ],
+      fem: [
+        [concatPsString(base, { p: "یانې", f: "iyáane" })],
+        [concatPsString(base, { p: "یانو", f: "iyáano" })],
+      ],
+    };
+  }
   function addFemLongVowelSuffix(): T.PluralInflectionSet {
     const base = removeEndTick(makePsString(w.p, w.f));
     const baseWOutAccents = removeAccents(base);
@@ -513,6 +532,10 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     if (shortSquish && !anim) {
       return { arabicPlural, plural: { masc: addMascPluralSuffix(anim, shortSquish) }};
     }
+    // TODO: Does the amount of syllables matter for this?
+    if (endsWith({ p: "ی", f: "éy" }, w, true) && w.c?.includes("anim.")) {
+      return { arabicPlural, plural: addAnimN3UnisexPluralSuffix() };
+    }
     // usually shortSquish nouns would never have arabicPlurals -- so we don't have to worry about catching
     // arabic plurals for the animat ones, right?
   }
@@ -525,6 +548,19 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
       arabicPlural,
       plural: {
         masc: addMascPluralSuffix(anim, shortSquish),
+      },
+    };
+  }
+  if (
+    type === "masc noun" &&
+    endsWith({ p: "ی", f: "éy" }, w, true) &&
+    anim
+  ) {
+    const { masc, ...rest } = addAnimN3UnisexPluralSuffix();
+    return {
+      arabicPlural,
+      plural: {
+        masc,
       },
     };
   }

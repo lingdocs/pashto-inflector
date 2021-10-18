@@ -412,42 +412,41 @@ const nouns: Array<{
             },
         },
     },
-    // with irregular Pashto plural
-    // TODO: This should work with words like پلویان but not with words like ترورزامن
-    // {
-    //     in: {"ts":1527820130,"i":2561,"p":"پلوی","f":"palawéy","g":"palawey","e":"adherent, supporter; the outside or further ox in a team of oxes grinding or threshing","c":"n. m. anim. unisex","ppp":"پلویان","ppf":"palawiyáan"},
-    //     out: {
-    //         inflections: {
-    //             masc: [
-    //                 [{ p: "پلوی", f: "palawéy" }],
-    //                 [{ p: "پلوي", f: "palawée" }],
-    //                 [{ p: "پلویو", f: "palawiyo" }, { p: "پلوو", f: "palawó" }],
-    //             ],
-    //             fem: [
-    //                 [{ p: "پلوۍ", f: "palawúy" }],
-    //                 [{ p: "پلوۍ", f: "palawúy" }],
-    //                 [{ p: "پلویو", f: "palawúyo" }, { p: "پلوو", f: "palawó" }],
-    //             ],
-    //         },
-    //         plural: {
-    //             masc: [
-    //                 [{ p: "پلویان", f: "palawiyáan" }],
-    //                 [{ p: "پلویانو", f: "palawiyáano" }],
-    //             ],
-    //             fem: [
-    //                 [{ p: "پلویانې", f: "palawiyáane" }],
-    //                 [{ p: "پلویانو", f: "palawiyáano" }],
-    //             ],
-    //         },
-    //     },
-    // },
+    // with #3 pattern anim unisex
+    {
+        in: {"ts":1527820130,"i":2561,"p":"پلوی","f":"palawéy","g":"palawey","e":"adherent, supporter; the outside or further ox in a team of oxes grinding or threshing","c":"n. m. anim. unisex"},
+        out: {
+            inflections: {
+                masc: [
+                    [{ p: "پلوی", f: "palawéy" }],
+                    [{ p: "پلوي", f: "palawée" }],
+                    [{ p: "پلویو", f: "palawiyo" }, { p: "پلوو", f: "palawó" }],
+                ],
+                fem: [
+                    [{ p: "پلوۍ", f: "palawúy" }],
+                    [{ p: "پلوۍ", f: "palawúy" }],
+                    [{ p: "پلویو", f: "palawúyo" }, { p: "پلوو", f: "palawó" }],
+                ],
+            },
+            plural: {
+                masc: [
+                    [{ p: "پلویان", f: "palawiyáan" }],
+                    [{ p: "پلویانو", f: "palawiyáano" }],
+                ],
+                fem: [
+                    [{ p: "پلویانې", f: "palawiyáane" }],
+                    [{ p: "پلویانو", f: "palawiyáano" }],
+                ],
+            },
+        },
+    },
     // ## MASCULINE
     // Masculine regular ending in ی
     {
         in: {
             ts: 1527815251,
             p: "سړی",
-            f: "saRey",
+            f: "saRéy",
             g: "",
             e: "man",
             c: "n. m.",
@@ -456,11 +455,31 @@ const nouns: Array<{
         out: {
             inflections: {
                 masc: [
-                    [{p: "سړی", f: "saRey"}],
-                    [{p: "سړي", f: "saRee"}],
+                    [{p: "سړی", f: "saRéy"}],
+                    [{p: "سړي", f: "saRée"}],
                     [{p: "سړیو", f: "saRiyo"}, {p: "سړو", f: "saRo"}],
                 ],
-            }
+            },
+        },
+    },
+    // Masculine #3 anim
+    // TODO: Also do Fem #3 anim!
+    {
+        in: {"ts":1527819801,"i":8082,"p":"سیلانی","f":"seylaanéy","g":"seylaaney","e":"tourist, sightseer, visitor","c":"n. m. anim."},
+        out: {
+            inflections: {
+                masc: [
+                    [{ p: "سیلانی", f: "seylaanéy" }],
+                    [{ p: "سیلاني", f: "seylaanée" }],
+                    [{ p: "سیلانیو", f: "seylaaniyo" }, { p: "سیلانو", f: "seylaano" }],
+                ],
+            },
+            plural: {
+                masc: [
+                    [{ p: "سیلانیان", f: "seylaaniyáan" }],
+                    [{ p: "سیلانیانو", f: "seylaaniyáano" }],
+                ],
+            },
         },
     },
     // Masculine regular ending in ی with emphasis on end

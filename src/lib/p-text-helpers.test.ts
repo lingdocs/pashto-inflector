@@ -1127,6 +1127,10 @@ test("splitPsByVarients", () => {
 test("endsWith", () => {
     expect(endsWith({ p: "ی", f: "ey" }, { p: "سړی", f: "saRey" }))
         .toBe(true);
+    expect(endsWith({ p: "ی", f: "éy" }, { p: "سړی", f: "saRey" }))
+        .toBe(true);
+    expect(endsWith({ p: "ی", f: "éy" }, { p: "سړی", f: "saRey" }, true))
+        .toBe(false);
     // f variations should be removed in case of using DictionaryEntry
     expect(endsWith({ p: "ی", f: "ey" }, { p: "سړی", f: "saRey, saRaayyy" }))
         .toBe(true);

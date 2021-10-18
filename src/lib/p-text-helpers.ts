@@ -1004,7 +1004,7 @@ export function endsWith(
         (("p" in ending) ? ps.p.slice(-ending.p.length) === ending.p : true)
         &&
         ((fEnd) ?
-            ((matchAccent ? f.slice(-fEnd.length) : removeAccents(f.slice(-fEnd.length))) === fEnd)
+            ((matchAccent ? f.slice(-fEnd.length) : removeAccents(f.slice(-fEnd.length))) === (matchAccent ? fEnd : removeAccents(fEnd)))
             : true)
     );
 }

@@ -408,6 +408,8 @@ export interface ArrayFixed<T, L extends number> extends Array<T> {
     length: L;
 }
 
+export type Wrapper<T> = T & { __brand: "wrapped" };
+
 export type ArrayOneOrMore<T> = {
     0: T
 } & Array<T>
