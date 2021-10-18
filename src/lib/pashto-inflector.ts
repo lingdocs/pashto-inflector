@@ -556,7 +556,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     endsWith({ p: "ی", f: "éy" }, w, true) &&
     anim
   ) {
-    const { masc, ...rest } = addAnimN3UnisexPluralSuffix();
+    const { masc } = addAnimN3UnisexPluralSuffix();
     return {
       arabicPlural,
       plural: {
