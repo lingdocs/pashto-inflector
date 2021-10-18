@@ -14,6 +14,7 @@ import {
     accentOnNFromEnd,
     splitUpSyllables,
     hasAccents,
+    countSyllables,
 } from "./accent-helpers";
 
 const toAccentFront = [
@@ -58,6 +59,16 @@ test(`accentPastParticiple should work`, () => {
 
 test(`splitUpSyllables should work`, () => {
     expect(splitUpSyllables("akheestul")).toEqual(["akh", "eest", "ul"]);
+});
+
+test("countSyllables", () => {
+    expect(countSyllables("saRéy")).toEqual(2);
+    expect(countSyllables("saRey")).toEqual(2);
+    expect(countSyllables("zRú")).toEqual(1);
+    expect(countSyllables("zRu")).toEqual(1);
+    expect(countSyllables("zRU")).toEqual(1);
+    expect(countSyllables("tbtkz")).toEqual(0);
+    expect(countSyllables({ p: "اونۍ", f: "onúy, ownúy" })).toEqual(2);
 });
 
 test(`accentOnFSylsOnNFromEnd should work`, () => {
