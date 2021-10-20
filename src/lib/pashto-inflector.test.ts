@@ -669,6 +669,17 @@ const nouns: Array<{
         },
     },
     {
+        in: {"ts":1527816746,"i":9017,"p":"غاښ","f":"ghaax","g":"ghaax","e":"tooth","c":"n. m.","ec":"tooth","ep":"teeth"},
+        out: {
+            plural: {
+                masc: [
+                    [{ p: "غاښونه", f: "ghaaxóona" }],
+                    [{ p: "غاښونو", f: "ghaaxóono" }],
+                ],
+            },
+        },
+    },
+    {
         in: {"ts":1527815394,"i":13991,"p":"واده","f":"waadú","g":"waadu","e":"wedding, marriage","c":"n. m.","ppp":"ودونه","ppf":"wadóona"},
         out: {
             plural: {

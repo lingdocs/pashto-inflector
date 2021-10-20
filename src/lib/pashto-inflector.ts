@@ -543,7 +543,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     type === "masc noun" &&
     (shortSquish || ((endsInConsonant(w) || endsInShwa(w)) && (!w.infap))) &&
     (w.p.slice(-3) !== "توب")
-  ) {
+    ) {
     return {
       arabicPlural,
       plural: {
