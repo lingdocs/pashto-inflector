@@ -401,7 +401,7 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
     const subjunctive = addToForm([...pastPart, " "], equativeEndings.subjunctive);
     const future = addToForm([baParticle, " ", ...pastPart, " "], equativeEndings.subjunctive);
     const affirmational = addToForm([baParticle, " ", ...pastPart, " "], equativeEndings.past.short);
-    const pastSubjunctiveHypothetical = addToForm([...pastPart, " "], equativeEndings.hypothetical);
+    const pastSubjunctiveHypothetical = addToForm([...pastPart, " "], equativeEndings.pastSubjunctive);
     return {
         halfPerfect, // Past Participle
         past, // Past Participle + Past Equative
@@ -497,7 +497,7 @@ function makePassivePerfectContent(info: T.StativeCompoundVerbInfo): T.PerfectCo
     );
     const pastSubjunctiveHypothetical = addToForm(
         [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
-        equativeEndings.hypothetical,
+        equativeEndings.pastSubjunctive,
     );
     return {
         halfPerfect,

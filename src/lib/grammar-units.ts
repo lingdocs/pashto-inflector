@@ -152,6 +152,9 @@ export const subjPastEquative: T.ArrayOneOrMore<T.PsString> = aayTail.map((a) =>
 export const englishEquative: {
     past: T.EnglishBlock,
     present: T.EnglishBlock,
+    future: string,
+    wouldBe: string,
+    pastSubjunctive: string,
     // present: T.VerbBlock,
     // subjunctive: T.VerbBlock,
     // hypothetical: T.VerbBlock,
@@ -172,13 +175,16 @@ export const englishEquative: {
         ["is", "are"],
         ["is", "are"],
     ],
+    future: "will be",
+    wouldBe: "would be",
+    pastSubjunctive: "were",
 }
 
 export const equativeEndings: {
     past: T.LengthOptions<T.VerbBlock>,
     present: T.VerbBlock,
     subjunctive: T.VerbBlock,
-    hypothetical: T.VerbBlock,
+    pastSubjunctive: T.VerbBlock,
 } = {
     past: {
         short: [
@@ -437,7 +443,7 @@ export const equativeEndings: {
             }]
         ],
     ],
-    hypothetical: [
+    pastSubjunctive: [
         [subjPastEquative, subjPastEquative],
         [subjPastEquative, subjPastEquative],
         [subjPastEquative, subjPastEquative],
