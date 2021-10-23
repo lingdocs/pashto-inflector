@@ -155,9 +155,6 @@ export const englishEquative: {
     future: string,
     wouldBe: string,
     pastSubjunctive: string,
-    // present: T.VerbBlock,
-    // subjunctive: T.VerbBlock,
-    // hypothetical: T.VerbBlock,
 } = {
     past: [
         ["was", "were"],
