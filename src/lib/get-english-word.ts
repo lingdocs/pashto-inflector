@@ -17,7 +17,7 @@ export function getEnglishWord(entry: T.DictionaryEntry): {
     const isAdv = entry.c.includes("adv.");
     if (!isNoun && !isAdj && !isAdv) return undefined;
     const base = entry.e.split(",")[0].split(";")[0].split("(")[0].trim();
-    if (isAdj && !isNoun) {
+    if ((isAdj || isAdv) && !isNoun) {
         return base;
     }
     if (entry.ec && entry.ep) {
