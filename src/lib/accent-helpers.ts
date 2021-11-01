@@ -15,11 +15,13 @@ import * as T from "../types";
  * 
  * @param s 
  */
+export function accentOnFront(s: T.PsString): T.PsString;
+export function accentOnFront(s: T.LengthOptions<T.PsString>): T.LengthOptions<T.PsString>;
 export function accentOnFront(s: T.SingleOrLengthOpts<T.PsString>): T.SingleOrLengthOpts<T.PsString> {
     if ("long" in s) {
         return {
-            short: accentOnFront(s.short) as T.PsString,
-            long: accentOnFront(s.long) as T.PsString,
+            short: accentOnFront(s.short),
+            long: accentOnFront(s.long),
         };
     }
     return {
@@ -69,7 +71,10 @@ export function countSyllables(f: T.PsString | string): number {
  * @param syls - an array of syllables in phonetic strings without accents (including spaces as extra items)
  * @param n - the number of syllables from the end to put the accent
  */
-export function accentFSylsOnNFromEnd(syls: string[], n: number): string {
+export function accentFSylsOnNFromEnd(syls: string[] | string, n: number): string {
+    if (typeof syls === "string") {
+        return accentFSylsOnNFromEnd(splitUpSyllables(syls), n);
+    }
     return [
         ...syls.slice(0, syls.length-(n+1)), // before accent
         accentSyllable(syls[syls.length-(n+1)]), // syllable to be accented

@@ -15,7 +15,7 @@ import {
     getPersonInflectionsKey,
 } from "./misc-helpers";
 import * as T from "../types";
-import { hasAccents, removeAccents } from "./accent-helpers";
+import { accentFSylsOnNFromEnd, accentOnFront, hasAccents, removeAccents, splitUpSyllables } from "./accent-helpers";
 import { phoneticsConsonants } from "./pashto-consonants";
 import { simplifyPhonetics } from "./simplify-phonetics";
 

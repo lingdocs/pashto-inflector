@@ -23,10 +23,13 @@ import {
   endsWith,
 } from "./p-text-helpers";
 import {
+  accentFSylsOnNFromEnd,
   hasAccents,
   removeAccents,
+  splitUpSyllables,
 } from "./accent-helpers";
 import * as T from "../types";
+import { splitFIntoPhonemes } from "./phonetics-to-diacritics";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
 const endingInHeyOrAynRegex = /[^ا][هع]$/;
@@ -179,16 +182,19 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
 
 // LEVEL 3 FUNCTIONS
 function inflectIrregularUnisex(p: string, f: string, inflections: Array<{p: string, f: string}>): T.Inflections {
+  const inf1 = removeAccents(inflections[1]);
+  const inf0syls = splitFIntoPhonemes(inflections[0].f);
+  const inf0f = accentFSylsOnNFromEnd(inf0syls, 0);
   return {
     masc: [
       [{p, f}],
-      [{p: inflections[0].p, f: inflections[0].f}],
-      [{p: `${inflections[1].p}و`, f: `${inflections[1].f}o`}],
+      [{p: inflections[0].p, f: inf0f, }],
+      [{p: `${inf1.p}و`, f: `${inf1.f}ó`}],
     ],
     fem: [
-      [{p: `${inflections[1].p}ه`, f: `${inflections[1].f}a`}],
-      [{p: `${inflections[1].p}ې`, f: `${inflections[1].f}e`}],
-      [{p: `${inflections[1].p}و`, f: `${inflections[1].f}o`}],
+      [{p: `${inf1.p}ه`, f: `${inf1.f}á`}],
+      [{p: `${inf1.p}ې`, f: `${inf1.f}é`}],
+      [{p: `${inf1.p}و`, f: `${inf1.f}ó`}],
     ],
   };
 }
@@ -256,16 +262,20 @@ function inflectEmphasizedYeyUnisex(p: string, f: string): T.UnisexInflections {
 }
 
 function inflectConsonantEndingUnisex(p: string, f: string): T.UnisexInflections {
+  const fSyls = splitUpSyllables(f);
+  const iBase = fSyls.length === 1
+    ? makePsString(p, accentFSylsOnNFromEnd(fSyls, 0))
+    : makePsString(p, f);
   return {
     masc: [
       [{p, f}],
       [{p, f}],
-      [{p: `${p}و`, f: `${f}o`}],
+      [{p: `${iBase.p}و`, f: `${iBase.f}o`}],
     ],
     fem: [
-      [{p: `${p}ه`, f: `${f}a`}],
-      [{p: `${p}ې`, f: `${f}e`}],
-      [{p: `${p}و`, f: `${f}o`}],
+      [{p: `${iBase.p}ه`, f: `${iBase.f}a`}],
+      [{p: `${iBase.p}ې`, f: `${iBase.f}e`}],
+      [{p: `${iBase.p}و`, f: `${iBase.f}o`}],
     ],
   };
 }
@@ -313,11 +323,14 @@ function inflectRegularEmphasizedYeyMasc(p: string, f: string): T.Inflections {
 }
 
 function inflectIrregularMasc(p: string, f: string, inflections: Array<{p: string, f: string}>): T.Inflections {
+  const inf0f = splitUpSyllables(inflections[0].f).length > 1
+    ? accentFSylsOnNFromEnd(inflections[0].f, 0)
+    : inflections[0].f
   return {
     masc: [
       [{p, f}],
-      [{p: inflections[0].p, f: inflections[0].f}],
-      [{p: `${inflections[1].p}و`, f: `${inflections[1].f}o`}],
+      [{p: inflections[0].p, f: inf0f}],
+      [{p: `${inflections[1].p}و`, f: `${removeAccents(inflections[1].f)}ó`}],
     ],
   };
 }
@@ -348,11 +361,14 @@ function inflectRegularAWithHimPEnding(p: string, f: string): T.Inflections {
 }
 
 function inflectRegularInanMissingAFem(p: string, f: string): T.Inflections {
-  return {
+  const fBase = splitUpSyllables(f).length === 1
+    ? accentFSylsOnNFromEnd(f, 0)
+    : f;
+    return {
     fem: [
       [{p, f}],
-      [{p: `${p}ې`, f: `${f}e`}],
-      [{p: `${p}و`, f: `${f}o`}],
+      [{p: `${p}ې`, f: `${fBase}e`}],
+      [{p: `${p}و`, f: `${fBase}o`}],
     ],
   };
 }
@@ -520,7 +536,6 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     ? "fem noun"
     : "other";
   if (pashtoPlural) return {
-    // TODO: add the pashto plural to words like پلویان but not to words like ترورزامن ?
     plural: pashtoPlural,
     arabicPlural,
   }; 

@@ -37,13 +37,13 @@ const adjectives: Array<{
             inflections:{
                 masc: [
                     [{p: "زوړ", f: "zoR"}],
-                    [{p: "زاړه", f: "zaaRu"}],
-                    [{p: "زړو", f: "zaRo"}],
+                    [{p: "زاړه", f: "zaaRú"}],
+                    [{p: "زړو", f: "zaRó"}],
                 ],
                 fem: [
-                    [{p: "زړه", f: "zaRa"}],
-                    [{p: "زړې", f: "zaRe"}],
-                    [{p: "زړو", f: "zaRo"}],
+                    [{p: "زړه", f: "zaRá"}],
+                    [{p: "زړې", f: "zaRé"}],
+                    [{p: "زړو", f: "zaRó"}],
                 ],
             },
         },
@@ -116,12 +116,12 @@ const adjectives: Array<{
                 masc: [
                     [{p: "سپک", f: "spuk"}],
                     [{p: "سپک", f: "spuk"}],
-                    [{p: "سپکو", f: "spuko"}],
+                    [{p: "سپکو", f: "spúko"}],
                 ],
                 fem: [
-                    [{p: "سپکه", f: "spuka"}],
-                    [{p: "سپکې", f: "spuke"}],
-                    [{p: "سپکو", f: "spuko"}],
+                    [{p: "سپکه", f: "spúka"}],
+                    [{p: "سپکې", f: "spúke"}],
+                    [{p: "سپکو", f: "spúko"}],
                 ],
             },
         },
@@ -141,12 +141,12 @@ const adjectives: Array<{
                 masc: [
                     [{p: "لوی", f: "looy"}],
                     [{p: "لوی", f: "looy"}],
-                    [{p: "لویو", f: "looyo"}],
+                    [{p: "لویو", f: "lóoyo"}],
                 ],
                 fem: [
-                    [{p: "لویه", f: "looya"}],
-                    [{p: "لویې", f: "looye"}],
-                    [{p: "لویو", f: "looyo"}],
+                    [{p: "لویه", f: "lóoya"}],
+                    [{p: "لویې", f: "lóoye"}],
+                    [{p: "لویو", f: "lóoyo"}],
                 ],
             },
         },
@@ -166,12 +166,12 @@ const adjectives: Array<{
                 masc: [
                     [{p: "پوه", f: "poh"}],
                     [{p: "پوه", f: "poh"}],
-                    [{p: "پوهو", f: "poho"}],
+                    [{p: "پوهو", f: "póho"}],
                 ],
                 fem: [
-                    [{p: "پوهه", f: "poha"}],
-                    [{p: "پوهې", f: "pohe"}],
-                    [{p: "پوهو", f: "poho"}],
+                    [{p: "پوهه", f: "póha"}],
+                    [{p: "پوهې", f: "póhe"}],
+                    [{p: "پوهو", f: "póho"}],
                 ],
             },
         },
@@ -210,12 +210,12 @@ const adjectives: Array<{
                 masc: [
                     [{ p: "شپږ", f: "shpuG" }],
                     [{ p: "شپږ", f: "shpuG" }],
-                    [{ p: "شپږو", f: "shpuGo" }],
+                    [{ p: "شپږو", f: "shpúGo" }],
                 ],
                 fem: [
-                    [{ p: "شپږه", f: "shpuGa" }],
-                    [{ p: "شپږې", f: "shpuGe" }],
-                    [{ p: "شپږو", f: "shpuGo" }],
+                    [{ p: "شپږه", f: "shpúGa" }],
+                    [{ p: "شپږې", f: "shpúGe" }],
+                    [{ p: "شپږو", f: "shpúGo" }],
                 ],
             },
         },
@@ -279,12 +279,12 @@ const adjectives: Array<{
                 masc: [
                     [{ p: "ګډ وډ", f: "guD wuD" }],
                     [{ p: "ګډ وډ", f: "guD wuD" }],
-                    [{ p: "ګډو وډو", f: "guDo wuDo" }],
+                    [{ p: "ګډو وډو", f: "gúDo wúDo" }],
                 ],
                 fem: [
-                    [{ p: "ګډه وډه", f: "guDa wuDa" }],
-                    [{ p: "ګډې وډې", f: "guDe wuDe" }],
-                    [{ p: "ګډو وډو", f: "guDo wuDo" }],
+                    [{ p: "ګډه وډه", f: "gúDa wúDa" }],
+                    [{ p: "ګډې وډې", f: "gúDe wúDe" }],
+                    [{ p: "ګډو وډو", f: "gúDo wúDo" }],
                 ],
             },
         },
@@ -315,13 +315,13 @@ const nouns: Array<{
             inflections: {
                 masc: [
                     [{p: "مېلمه", f: "melmá"}],
-                    [{p: "مېلمانه", f: "melmaanu"}],
-                    [{p: "مېلمنو", f: "melmano"}],
+                    [{p: "مېلمانه", f: "melmaanú"}],
+                    [{p: "مېلمنو", f: "melmanó"}],
                 ],
                 fem: [
-                    [{p: "مېلمنه", f: "melmana"}],
-                    [{p: "مېلمنې", f: "melmane"}],
-                    [{p: "مېلمنو", f: "melmano"}],
+                    [{p: "مېلمنه", f: "melmaná"}],
+                    [{p: "مېلمنې", f: "melmané"}],
+                    [{p: "مېلمنو", f: "melmanó"}],
                 ],
             },
         },
@@ -392,12 +392,12 @@ const nouns: Array<{
                 masc: [
                     [{p: "چرګ", f: "churg"}],
                     [{p: "چرګ", f: "churg"}],
-                    [{p: "چرګو", f: "churgo"}],
+                    [{p: "چرګو", f: "chúrgo"}],
                 ],
                 fem: [
-                    [{p: "چرګه", f: "churga"}],
-                    [{p: "چرګې", f: "churge"}],
-                    [{p: "چرګو", f: "churgo"}],
+                    [{p: "چرګه", f: "chúrga"}],
+                    [{p: "چرګې", f: "chúrge"}],
+                    [{p: "چرګو", f: "chúrgo"}],
                 ],
             },
             plural: {
@@ -531,8 +531,8 @@ const nouns: Array<{
             inflections: {
                 masc: [
                     [{p: "لمونځ", f: "lamoondz"}],
-                    [{p: "لمانځه", f: "lamaandzu"}],
-                    [{p: "لمنځو", f: "lamandzo"}],
+                    [{p: "لمانځه", f: "lamaandzú"}],
+                    [{p: "لمنځو", f: "lamandzó"}],
                 ],
             },
             plural: {
@@ -551,7 +551,7 @@ const nouns: Array<{
                 masc: [
                     [{ p: "غر", f: "ghar" }],
                     [{ p: "غره", f: "ghru" }],
-                    [{ p: "غرو", f: "ghro" }],
+                    [{ p: "غرو", f: "ghró" }],
                 ],
             },
             plural: {
@@ -567,15 +567,16 @@ const nouns: Array<{
         in: {"i":5465,"ts":1527812802,"p":"خر","f":"khur","g":"khur","e":"donkey","c":"n. m. anim. unisex irreg.","infap":"خره","infaf":"khru","infbp":"خر","infbf":"khr"},
         out: {
             inflections: {
+                // TODO: use smarter system using new isType5Entry predicates, to allow for not using the redundant one syllable accents with these
                 masc: [
                     [{ p: "خر", f: "khur" }],
-                    [{ p: "خره", f: "khru" }],
-                    [{ p: "خرو", f: "khro" }],
+                    [{ p: "خره", f: "khrú" }],
+                    [{ p: "خرو", f: "khró" }],
                 ],
                 fem: [
-                    [{ p: "خره", f: "khra" }],
-                    [{ p: "خرې", f: "khre" }],
-                    [{ p: "خرو", f: "khro" }],
+                    [{ p: "خره", f: "khrá" }],
+                    [{ p: "خرې", f: "khré" }],
+                    [{ p: "خرو", f: "khró" }],
                 ],
             },
         },
@@ -961,8 +962,8 @@ const nouns: Array<{
             inflections: {
                 fem: [
                     [{p: "لار", f: "laar"}],
-                    [{p: "لارې", f: "laare"}],
-                    [{p: "لارو", f: "laaro"}],
+                    [{p: "لارې", f: "láare"}],
+                    [{p: "لارو", f: "láaro"}],
                 ],
             },
         },
