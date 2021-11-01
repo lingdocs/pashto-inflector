@@ -480,6 +480,24 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
       fem: addSecondInf(concatPsString(base, { p: "انې", f: "áane" })),
     };
   }
+  function addEePluralSuffix(gender: T.Gender): T.PluralInflectionSet {
+    const b = removeAccents(w);
+    const base = {
+      p: b.p.slice(0, -1),
+      f: b.f.slice(0, -2),
+    };
+    const firstInf: T.ArrayOneOrMore<T.PsString> = [
+      concatPsString(base, { p: "یان", f: "iyáan" }, gender === "fem" ? { p: "ې", f: "e" } : ""),
+      ...gender === "fem" 
+        ? [concatPsString(base, { p: "یګانې", f: "eegáane" })]
+        : [],
+    ];
+    return [
+      firstInf,
+      firstInf.flatMap(addOEnding),
+      // firstInf.map(addOEnding),
+    ] as T.PluralInflectionSet;
+  }
   function addAnimN3UnisexPluralSuffix(): T.UnisexSet<T.PluralInflectionSet> {
     const b = removeAccents(w);
     const base = {
@@ -547,17 +565,16 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     if (shortSquish && !anim) {
       return { arabicPlural, plural: { masc: addMascPluralSuffix(anim, shortSquish) }};
     }
-    // TODO: Does the amount of syllables matter for this?
-    if (endsWith({ p: "ی", f: "éy" }, w, true) && w.c?.includes("anim.")) {
+    if (endsWith([{ p: "ی", f: "éy" }, { p: "ي" }], w, true)) {
       return { arabicPlural, plural: addAnimN3UnisexPluralSuffix() };
     }
     // usually shortSquish nouns would never have arabicPlurals -- so we don't have to worry about catching
     // arabic plurals for the animat ones, right?
   }
   if (
-    type === "masc noun" &&
-    (shortSquish || ((endsInConsonant(w) || endsInShwa(w)) && (!w.infap))) &&
-    (w.p.slice(-3) !== "توب")
+      type === "masc noun" &&
+      (shortSquish || ((endsInConsonant(w) || endsInShwa(w)) && (!w.infap))) &&
+      (w.p.slice(-3) !== "توب")
     ) {
     return {
       arabicPlural,
@@ -579,12 +596,27 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
       },
     };
   }
+  if (type === "masc noun" && endsWith({ p: "ي" }, w)) {
+    const masc = addEePluralSuffix("masc");
+    return {
+      arabicPlural,
+      plural: { masc },
+    };
+  }
   // TODO: What about endings in long ee / animate at inanimate
   if (type === "fem noun" && endsInAaOrOo(w) && (!w.infap)) {
     return {
       arabicPlural,
       plural: {
         fem: addFemLongVowelSuffix(),
+      },
+    };
+  }
+  if (type === "fem noun" && endsWith({ p: "ي" }, w)) {
+    return {
+      arabicPlural,
+      plural: {
+        fem: addEePluralSuffix("fem"),
       },
     };
   }

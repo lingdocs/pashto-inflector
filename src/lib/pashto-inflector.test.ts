@@ -815,6 +815,12 @@ const nouns: Array<{
     {
         in: {"ts":1527823093,"i":13207,"p":"نبي","f":"nabee","g":"nabee","e":"prophet","c":"n. m. anim.","app":"انبیا","apf":"ambiyáa"},
         out: {
+            plural: {
+                masc: [
+                    [{ p: "نبیان", f: "nabiyáan" }],
+                    [{ p: "نبیانو", f: "nabiyáano" }],
+                ],
+            },
             arabicPlural: {
                 masc: [
                     [{ p: "انبیا", f: "ambiyáa" }],
@@ -1003,6 +1009,12 @@ const nouns: Array<{
             i: 5503,
         },
         out: {
+            plural: {
+                fem: [
+                    [{ p: "دوستیانې", f: "dostiyáane" }, { p: "دوستیګانې", f: "dosteegáane" }],
+                    [{ p: "دوستیانو", f: "dostiyáano" }, { p: "دوستیګانو", f: "dosteegáano" }],
+                ],
+            },
             inflections: {
                 fem: [
                     [{p: "دوستي", f: "dostee"}],

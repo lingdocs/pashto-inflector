@@ -987,13 +987,13 @@ export function endsWith(
         return (ps: T.PsString) => endsWith(ending, ps, matchAccent);
     }
     if (Array.isArray(ending)) {
-        return ending.some(e => endsWith(e, ps));
+        return ending.some(e => endsWith(e, ps, matchAccent));
     }
     if ("p" in ending && Array.isArray(ending.p)) {
-        return ending.p.some(e => endsWith({ p: e }, ps));
+        return ending.p.some(e => endsWith({ p: e }, ps, matchAccent));
     }
     if ("f" in ending && Array.isArray(ending.f)) {
-        return ending.f.some(e => endsWith({ f: e }, ps));
+        return ending.f.some(e => endsWith({ f: e }, ps, matchAccent));
     }
     const f = removeFVarients(ps.f).replace(/'/g, "");
     const fEnd = "f" in ending
