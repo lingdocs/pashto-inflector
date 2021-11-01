@@ -17,6 +17,7 @@ import * as T from "../types";
  */
 export function accentOnFront(s: T.PsString): T.PsString;
 export function accentOnFront(s: T.LengthOptions<T.PsString>): T.LengthOptions<T.PsString>;
+export function accentOnFront(s: T.SingleOrLengthOpts<T.PsString>): T.SingleOrLengthOpts<T.PsString>;
 export function accentOnFront(s: T.SingleOrLengthOpts<T.PsString>): T.SingleOrLengthOpts<T.PsString> {
     if ("long" in s) {
         return {
