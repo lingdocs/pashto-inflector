@@ -34,7 +34,7 @@ function ButtonSelect<L extends string>(props: PickerProps<L>) {
                         style={{
                             ...props.xSmall ?
                                 { fontSize: "small" }: {},
-                            ...option.color ? 
+                            ...(option.color && (props.value === option.value)) ? 
                                 { backgroundColor: option.color } : {},
                         }}
                     >
