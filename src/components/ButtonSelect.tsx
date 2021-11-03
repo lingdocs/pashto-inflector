@@ -31,11 +31,12 @@ function ButtonSelect<L extends string>(props: PickerProps<L>) {
                             { "btn-sm": props.small || props.xSmall }
                         )}
                         onClick={() => props.handleChange(option.value)}
-                        style={props.xSmall ? {
-                            fontSize: "small",
+                        style={{
+                            ...props.xSmall ?
+                                { fontSize: "small" }: {},
                             ...option.color ? 
                                 { background: option.color } : {},
-                        } : {}}
+                        }}
                     >
                         {option.label}
                     </button>
