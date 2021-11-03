@@ -263,9 +263,7 @@ function App() {
                                                 { label: "irregular", value: "irregular" },
                                             ]}
                                             value={regularIrregular}
-                                            handleChange={(p) => {
-                                                setRegularIrregular(p as "regular" | "irregular");
-                                            }}
+                                            handleChange={setRegularIrregular}
                                         />
                                     </div>
                                 }
@@ -313,7 +311,7 @@ function App() {
                     handleChange={(p) => {
                         setTextOptions({
                             ...textOptions,
-                            spelling: p as T.Spelling,
+                            spelling: p,
                         });
                     }}
                 />
@@ -334,7 +332,7 @@ function App() {
                         { label: "X-Large", value: "largest" },
                     ]}
                     value={textOptions.pTextSize}
-                    handleChange={(p) => setTextOptions({ ...textOptions, pTextSize: p as "normal" | "larger" | "largest" })}
+                    handleChange={(p) => setTextOptions({ ...textOptions, pTextSize: p })}
                 />
                 <h6 className="mt-3">Phonetics</h6>
                 <ButtonSelect
@@ -345,7 +343,7 @@ function App() {
                         { label: "None", value: "none" },
                     ]}
                     value={textOptions.phonetics}
-                    handleChange={(p) => setTextOptions({ ...textOptions, phonetics: p as "lingdocs" | "ipa" | "none" | "alalc" })}
+                    handleChange={(p) => setTextOptions({ ...textOptions, phonetics: p })}
                 />
             </Modal.Body>
             <Modal.Footer>

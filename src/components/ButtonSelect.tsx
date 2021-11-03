@@ -8,15 +8,15 @@
 
 import classNames from "classnames";
 
-type PickerProps = {
-    options: { label: any, value: string, color?: string }[],
-    value: string,
-    handleChange: (payload: string) => void,
+type PickerProps<T extends string> = {
+    options: { label: any, value: T, color?: string }[],
+    value: T,
+    handleChange: (payload: T) => void,
     small?: boolean,
     xSmall?: boolean,
 }
 
-function ButtonSelect(props: PickerProps) {
+function ButtonSelect<L extends string>(props: PickerProps<L>) {
     return (
         <div className="d-inline-flex flex-row justify-content-center">
             <div className="btn-group">

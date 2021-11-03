@@ -248,7 +248,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
                         },
                     ]}
                     value={state.transitivitySelected}
-                    handleChange={(p) => dispatch({ type: "setTransitivitySelected", payload: p as "transitive" | "grammatically transitive" })}
+                    handleChange={(p) => dispatch({ type: "setTransitivitySelected", payload: p })}
                 />
             </div>
         </div>}
@@ -264,7 +264,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
                         },
                     ]}
                     value={state.compoundTypeSelected}
-                    handleChange={(p) => dispatch({ type: "choose compound type", payload: p as "dynamic" | "stative" })}
+                    handleChange={(p) => dispatch({ type: "choose compound type", payload: p })}
                 />
             </div>
         </div>}
@@ -280,7 +280,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
                         { label: `Plur. ${verbConj1.info.objComplement.plural.p}`, value: "plur" },
                     ]}
                     value={state.compoundComplementVersionSelected}
-                    handleChange={(p) => dispatch({ type: "set compound complement version", payload: p as "sing" | "plur" })}
+                    handleChange={(p) => dispatch({ type: "set compound complement version", payload: p })}
                 />
             </div>
         </div>} 
@@ -301,7 +301,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
                         { label: `Sentences`, value: "sentence" },
                     ]}
                     value={state.mode}
-                    handleChange={(p) => dispatch({ type: "setMode", payload: p as "chart" | "sentence" })}
+                    handleChange={(p) => dispatch({ type: "setMode", payload: p })}
                 />
             </div>}
             {!limitTo && <>
