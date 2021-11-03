@@ -14,7 +14,7 @@ import {
 } from "../lib/p-text-helpers";
 import { isSentenceForm } from "../lib/misc-helpers";
 import * as T from "../types";
-
+import genderColors from "../lib/gender-colors";
 
 const genderAbbrev = (gender: "masc" | "fem" | undefined): " m." | " f." | "" => (
     gender === "masc"
@@ -87,10 +87,7 @@ function VerbTable({ block, textOptions, english }: {
                     const rowLabel = `${pers[i]}${genderAbbrev(gender)}`;
                     const color = !gender
                         ? "inherit"
-                        : gender === "masc"
-                        ? "#78c8ed"
-                        : "#ff99aa";
-                    
+                        : genderColors[gender];
                     return (
                         <tr key={`${i}${gender}`}>
                             <th scope="row" style={{ color }}>{rowLabel}</th>

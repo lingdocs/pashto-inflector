@@ -96,6 +96,7 @@ import {
 } from "./lib/accent-helpers";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
+import genderColors from "./lib/gender-colors";
 import * as Types from "./types";
 
 export {
@@ -162,6 +163,7 @@ export {
     dictionaryEntryTextFields,
     dictionaryEntryNumberFields,
     dictionaryEntryBooleanFields,
+    genderColors,
     // TYPES
     Types,
 }

@@ -9,7 +9,7 @@
 import classNames from "classnames";
 
 type PickerProps = {
-    options: { label: any, value: string }[],
+    options: { label: any, value: string, color?: string }[],
     value: string,
     handleChange: (payload: string) => void,
     small?: boolean,
@@ -33,6 +33,8 @@ function ButtonSelect(props: PickerProps) {
                         onClick={() => props.handleChange(option.value)}
                         style={props.xSmall ? {
                             fontSize: "small",
+                            ...option.color ? 
+                                { background: option.color } : {},
                         } : {}}
                     >
                         {option.label}
