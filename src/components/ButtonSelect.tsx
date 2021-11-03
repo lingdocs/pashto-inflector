@@ -35,7 +35,7 @@ function ButtonSelect<L extends string>(props: PickerProps<L>) {
                             ...props.xSmall ?
                                 { fontSize: "small" }: {},
                             ...option.color ? 
-                                { background: option.color } : {},
+                                { backgroundColor: option.color } : {},
                         }}
                     >
                         {option.label}
