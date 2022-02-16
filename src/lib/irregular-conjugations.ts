@@ -1686,10 +1686,10 @@ export const tlul: T.VerbConjugation = {
         ],
         past: {
             short: [
-                [[{p: "تلم", f: "tlum"}], [{p: "تلو", f: "tluloo"}]],
-                [[{p: "تلم", f: "tlum"}], [{p: "تلو", f: "tluloo"}]],
-                [[{p: "تلې", f: "tle"}], [{p: "تلئ", f: "tluleyy"}]],
-                [[{p: "تلې", f: "tle"}], [{p: "تلئ", f: "tluleyy"}]],
+                [[{p: "تلم", f: "tlum"}], [{p: "تلو", f: "tloo"}]],
+                [[{p: "تلم", f: "tlum"}], [{p: "تلو", f: "tloo"}]],
+                [[{p: "تلې", f: "tle"}], [{p: "تلئ", f: "tleyy"}]],
+                [[{p: "تلې", f: "tle"}], [{p: "تلئ", f: "tleyy"}]],
                 [[{p: "تله", f: "tlu"}, {p: "تلو", f: "tlo"}, { p: "ته", f: "tu" }], [{p: "تلل", f: "tlul"}]],
                 [[{p: "تله", f: "tla"}], [{p: "تلې", f: "tle"}]],
             ],
@@ -1958,12 +1958,21 @@ export const warkawul: T.VerbConjugation = {
                 short: { p: "ورکړ", f: "wărkR" },
                 mini: { p: "ورک", f: "wărk" },
             },
+            perfectiveSplit: {
+                long: [{ p: "ور ", f: "wăr "}, { p: "کړل", f: "kRul" }],
+                short: [{ p: "ور ", f: "wăr "}, { p: "کړ", f: "kR" }],
+                mini: [{ p: "ور ", f: "wăr "}, { p: "ړ", f: "k" }],
+            },
         },
         stem: {
             imperfective: { p: "ورکو", f: "wărkaw" },
             perfective: {
                 long: { p: "ورکړ", f: "wărkR" },
                 short: { p: "ورک", f: "wărk" },
+            },
+            perfectiveSplit: {
+                long: [{ p: "ور ", f: "wăr "}, { p: "کړ", f: "kR" }],
+                short: [{ p: "ور ", f: "wăr "}, { p: "ړ", f: "k" }],
             },
         },
         participle: {

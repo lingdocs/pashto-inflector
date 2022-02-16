@@ -13,6 +13,7 @@ Also includes the [Pashto Verb Explorer](https://verbs.lingdocs.com) website.
 The Pashto Verb Explorer website can be used to view and play with the verb conjugations and various components. 
 
 ```
+yarn install
 yarn start
 ```
 
