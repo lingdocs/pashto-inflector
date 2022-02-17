@@ -79,7 +79,6 @@ export function conjugateVerb(entry: T.DictionaryEntry, complement?: T.Dictionar
 
     const nonComboInfo = info as T.NonComboVerbInfo;
 
-    // TODO: Handle verbs like چيغه کول
     const conjugation: T.VerbConjugation = {
         info: nonComboInfo,
         imperfective: makeAspectContent(nonComboInfo, "imperfective"),
@@ -161,10 +160,11 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
             // @ts-ignore
             : concatPsString(complement, " ", auxPPart)
     }
-    const makePerfect = (pset: T.PerfectContent) => ({
+    const makePerfect = (pset: T.PerfectContent): T.PerfectContent => ({
         halfPerfect: addToForm([complement, " "], pset.halfPerfect),
         past: addToForm([complement, " "], pset.past),
         present: addToForm([complement, " "], pset.present),
+        habitual: addToForm([complement, " "], pset.habitual),
         subjunctive: addToForm([complement, " "], pset.subjunctive),
         future: addToForm([complement, " "], pset.future),
         affirmational: addToForm([complement, " "], pset.affirmational),
@@ -398,6 +398,7 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
     const halfPerfect = addToForm([...pastPart], emptyVerbBlock);
     const past = addToForm([...pastPart, " "], equativeEndings.past.short);
     const present = addToForm([...pastPart, " "], equativeEndings.present);
+    const habitual = addToForm([...pastPart, " "], equativeEndings.habitual);
     const subjunctive = addToForm([...pastPart, " "], equativeEndings.subjunctive);
     const future = addToForm([baParticle, " ", ...pastPart, " "], equativeEndings.subjunctive);
     const affirmational = addToForm([baParticle, " ", ...pastPart, " "], equativeEndings.past.short);
@@ -406,6 +407,7 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
         halfPerfect, // Past Participle
         past, // Past Participle + Past Equative
         present, // Past Participle + Present Equative
+        habitual, // Past Participle + Habitual Equative
         subjunctive, // Past Participle + Subjunctive Equative
         future, // به - ba + Past Participle + Future/Subj Equative
         affirmational, // به - ba + Past Participle + Past Equative
@@ -483,6 +485,10 @@ function makePassivePerfectContent(info: T.StativeCompoundVerbInfo): T.PerfectCo
         [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
         equativeEndings.present,
     );
+    const habitual = addToForm(
+        [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
+        equativeEndings.habitual,
+    );
     const subjunctive = addToForm(
         [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
         equativeEndings.subjunctive,
@@ -503,6 +509,7 @@ function makePassivePerfectContent(info: T.StativeCompoundVerbInfo): T.PerfectCo
         halfPerfect,
         past,
         present,
+        habitual,
         subjunctive,
         future,
         affirmational,
@@ -532,6 +539,7 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
         halfPerfect: allOnePersonVerbForm(perf.halfPerfect, person),
         past: allOnePersonVerbForm(perf.past, person),
         present: allOnePersonVerbForm(perf.present, person),
+        habitual: allOnePersonInflection(perf.habitual, person),
         subjunctive: allOnePersonInflection(perf.subjunctive, person),
         future: allOnePersonVerbForm(perf.future, person),
         affirmational: allOnePersonVerbForm(perf.affirmational, person),

@@ -255,7 +255,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 ]),
                 formula: "Past participle inflected",
                 secondPronounNeeded: true,
-                explanation: "The base of all perfect forms. Used on it's own as a sort of weaker form of the present perfect.",
+                explanation: "The base of all perfect forms. Used on it's own as a sort of abreviated form of the present perfect.",
             },
             {
                 label: "Past Perfect",
@@ -282,15 +282,27 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                 reorderWithNegative: true,
             },
             {
-                label: "Subjunctive/Habitual Perfect",
+                label: "Habitual Perfect",
+                form: conj.perfect.habitual,
+                past: true,
+                sentence: true,
+                englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
+                    `${engSubj(s)} ${engHave(s)}${n ? " not" : ""} ${v[4]}`,
+                ]),
+                formula: "Past participle inflected + Habitual Equative",
+                explanation: "Talking about something that will have happened habitually",
+                reorderWithNegative: true,
+            },
+            {
+                label: "Subjunctive Perfect",
                 form: conj.perfect.subjunctive,
                 past: true,
                 sentence: true,
                 englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                     `that ${engSubj(s, true)} will have${n ? " not" : ""} ${v[4]}`,
                 ]),
-                formula: "Past participle inflected + Subjunctive/Habitual Equative",
-                explanation: "Talking about something that will have happened habitually, or expressing hope, desire, or judgement about an action having happened",
+                formula: "Past participle inflected + Subjunctive Equative",
+                explanation: "expressing hope, desire, or judgement about an action having happened",
                 reorderWithNegative: true,
             },
             {
@@ -566,8 +578,8 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} ${engHave(s)}${n ? " not" : ""} been ${v[4]}`,
                             ]),
-                            formula: "Infinitive + کېدل (to be) past participle inflected",
-                            explanation: "The base of all perfect forms. Used on it's own as a sort of weaker form of the present perfect. (Passive voice)",
+                            formula: "Infinitive + کېدل past participle inflected",
+                            explanation: "The base of all perfect forms. Used on it's own as a sort of abbreviated form of the present perfect. (Passive voice)",
                         },
                         {
                             label: "Passive Past Perfect",
@@ -578,7 +590,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} had${n ? " not" : ""} been ${v[4]}`,
                             ]),
-                            formula: "Infinitive + کېدل (to be) past participle inflected + Past Equative",
+                            formula: "Infinitive + کېدل past participle inflected + Past Equative",
                             explanation: "Talking about events that had happened in the past, or had affected a past situation (Passive voice) ('I had been ____ed')",
                         },
                         {
@@ -590,11 +602,22 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} ${engHave(s)}${n ? " not" : ""} been ${v[4]}`,
                             ]),
-                            formula: "Infinitive + کېدل (to be) past participle inflected + Present Equative",
+                            formula: "Infinitive + کېدل past participle inflected + Present Equative",
                             explanation: "Talking about that something happened in the past and it affects the present (Passive voice) ('I have been _____ed')",
                         },
                         {
-                            label: "Passive Subjunctive/Habitual Perfect",
+                            label: "Passive Habitual Perfect",
+                            form: conj.passive.perfect.subjunctive,
+                            past: true,
+                            sentence: true,
+                            passive: true,
+                            englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
+                                `${engSubj(s)} ${engHave(s)}${n ? " not" : ""} been ${v[4]}`,
+                            ]),
+                            formula: "Infinitive + کېدل past participle inflected + Habitual Equative",
+                        },
+                        {
+                            label: "Passive Subjunctive Perfect",
                             form: conj.passive.perfect.subjunctive,
                             past: true,
                             sentence: true,
@@ -602,7 +625,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `that ${engSubj(s, true)} will${n ? " not" : ""} have been ${v[4]}`,
                             ]),
-                            formula: "Infinitive + کېدل (to be) past participle inflected + Subjunctive/Habitual Equative",
+                            formula: "Infinitive + کېدل past participle inflected + Subjunctive Equative",
                         },
                         {
                             label: "Passive Future/Presumptive Perfect",
@@ -614,7 +637,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             englishBuilder: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
                                 `${engSubj(s)} will${n ? " not" : ""} have been ${v[4]}`,
                             ]),
-                            formula: "به - ba + Infinitive + کېدل (to be) past participle inflected + Future Equative",
+                            formula: "به - ba + Infinitive + کېدل past participle inflected + Future Equative",
                             explanation: "Talking about something that will have happened in the future, or guessing that the event will have occured presently (Passive voice) ('I will have been ____ed')",
                         },
                         {
@@ -628,7 +651,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                                 `${engSubj(s)} will${n ? " not" : ""} have been ${v[4]}`,
                             ]),
                             explanation: "Affirming that an event will have taken place (Passive voice) ('I will have been ____ed')",
-                            formula: "به - ba + Infinitive + کېدل (to be) past participle inflected + Past Equative"
+                            formula: "به - ba + Infinitive + کېدل past participle inflected + Past Equative"
                         },
                         {
                             label: "Passive Past Subjunctive / Hypothetical Perfect",
@@ -638,7 +661,7 @@ const formsOfConjugation = (conj: T.VerbConjugation): T.DisplayFormItem[] => [
                             sentence: true,
                             passive: true,
                             explanation: "Talking about an event that would have hypothetically taken place, or that should have taken place (Passive voice) ('I would have been ____ed')",
-                            formula: "به - ba + Infinitive + کېدل (to be) past participle inflected + Past Subjunctive / Hypothetical Equative"
+                            formula: "به - ba + Infinitive + کېدل past participle inflected + Past Subjunctive / Hypothetical Equative"
                         },
                     ],
                 },

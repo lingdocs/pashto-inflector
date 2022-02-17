@@ -258,11 +258,19 @@ export const kedulStat: T.VerbConjugation = {
             [[{p: "شوی دی", f: "shuwey dey"}], [{p: "شوي دي", f: "shuwee dee"}]],
             [[{p: "شوې ده", f: "shuwe da"}], [{p: "شوې دي", f: "shuwe dee"}]],
         ],
-        subjunctive: [
+        habitual: [
             [[{p: "شوی یم", f: "shuwey yum"}], [{p: "شوي یو", f: "shuwee yoo"}]],
             [[{p: "شوې یم", f: "shuwe yum"}], [{p: "شوې یو", f: "shuwe yoo"}]],
             [[{p: "شوی یې", f: "shuwey ye"}], [{p: "شوي یئ", f: "shuwee yeyy"}]],
             [[{p: "شوې یې", f: "shuwe ye"}], [{p: "شوې یئ", f: "shuwe yeyy"}]],
+            [[{p: "شوی وي", f: "shuwey wee"}], [{p: "شوي وي", f: "shuwee wee"}]],
+            [[{p: "شوې وي", f: "shuwe wee"}], [{p: "شوې وي", f: "shuwe wee"}]],
+        ],
+        subjunctive: [
+            [[{p: "شوی وم", f: "shuwey wum"}], [{p: "شوي وو", f: "shuwee woo"}]],
+            [[{p: "شوې وم", f: "shuwe wum"}], [{p: "شوې وو", f: "shuwe woo"}]],
+            [[{p: "شوی وې", f: "shuwey we"}], [{p: "شوي وئ", f: "shuwee weyy"}]],
+            [[{p: "شوې وې", f: "shuwe we"}], [{p: "شوې وئ", f: "shuwe weyy"}]],
             [[{p: "شوی وي", f: "shuwey wee"}], [{p: "شوي وي", f: "shuwee wee"}]],
             [[{p: "شوې وي", f: "shuwe wee"}], [{p: "شوې وي", f: "shuwe wee"}]],
         ],
@@ -473,11 +481,19 @@ export const kedulDyn: T.VerbConjugation = {
             [[{p: "شوی دی", f: "shuwey dey"}], [{p: "شوي دي", f: "shuwee dee"}]],
             [[{p: "شوې ده", f: "shuwe da"}], [{p: "شوې دي", f: "shuwe dee"}]],
         ],
-        subjunctive: [
+        habitual: [
             [[{p: "شوی یم", f: "shuwey yum"}], [{p: "شوي یو", f: "shuwee yoo"}]],
             [[{p: "شوې یم", f: "shuwe yum"}], [{p: "شوې یو", f: "shuwe yoo"}]],
             [[{p: "شوی یې", f: "shuwey ye"}], [{p: "شوي یئ", f: "shuwee yeyy"}]],
             [[{p: "شوې یې", f: "shuwe ye"}], [{p: "شوې یئ", f: "shuwe yeyy"}]],
+            [[{p: "شوی وي", f: "shuwey wee"}], [{p: "شوي وي", f: "shuwee wee"}]],
+            [[{p: "شوې وي", f: "shuwe wee"}], [{p: "شوې وي", f: "shuwe wee"}]],
+        ],
+        subjunctive: [
+            [[{p: "شوی وم", f: "shuwey wum"}], [{p: "شوي وو", f: "shuwee woo"}]],
+            [[{p: "شوې وم", f: "shuwe wum"}], [{p: "شوې وو", f: "shuwe woo"}]],
+            [[{p: "شوی وې", f: "shuwey we"}], [{p: "شوي وئ", f: "shuwee weyy"}]],
+            [[{p: "شوې وې", f: "shuwe we"}], [{p: "شوې وئ", f: "shuwe weyy"}]],
             [[{p: "شوی وي", f: "shuwey wee"}], [{p: "شوي وي", f: "shuwee wee"}]],
             [[{p: "شوې وي", f: "shuwe wee"}], [{p: "شوې وي", f: "shuwe wee"}]],
         ],
@@ -608,11 +624,19 @@ const kawulPerfect: T.PerfectContent = {
         [[{p: "کړی دی", f: "kúRey dey"}], [{p: "کړي دي", f: "kúRee dee"}]],
         [[{p: "کړې ده", f: "kúRe da"}], [{p: "کړې دي", f: "kúRe dee"}]],
     ],
-    subjunctive: [
+    habitual: [
         [[{p: "کړی یم", f: "kúRey yum"}], [{p: "کړي یو", f: "kúRee yoo"}]],
         [[{p: "کړې یم", f: "kúRe yum"}], [{p: "کړې یو", f: "kúRe yoo"}]],
         [[{p: "کړی یې", f: "kúRey ye"}], [{p: "کړي یئ", f: "kúRee yeyy"}]],
         [[{p: "کړې یې", f: "kúRe ye"}], [{p: "کړې یئ", f: "kúRe yeyy"}]],
+        [[{p: "کړی وي", f: "kúRey wee"}], [{p: "کړي وي", f: "kúRee wee"}]],
+        [[{p: "کړې وي", f: "kúRe wee"}], [{p: "کړې وي", f: "kúRe wee"}]],
+    ],
+    subjunctive: [
+        [[{p: "کړی وم", f: "kúRey wum"}], [{p: "کړي وو", f: "kúRee woo"}]],
+        [[{p: "کړې وم", f: "kúRe wum"}], [{p: "کړې وو", f: "kúRe woo"}]],
+        [[{p: "کړی وې", f: "kúRey we"}], [{p: "کړي وئ", f: "kúRee weyy"}]],
+        [[{p: "کړې وې", f: "kúRe we"}], [{p: "کړې وئ", f: "kúRe weyy"}]],
         [[{p: "کړی وي", f: "kúRey wee"}], [{p: "کړي وي", f: "kúRee wee"}]],
         [[{p: "کړې وي", f: "kúRe wee"}], [{p: "کړې وي", f: "kúRe wee"}]],
     ],
@@ -1858,7 +1882,7 @@ export const tlul: T.VerbConjugation = {
                 [[{p: "تللې ده", f: "tlúle da"}], [{p: "تللې دي", f: "tlúle dee"}]],
             ],
         },
-        subjunctive: {
+        habitual: {
             short: [
                 [[{p: "تلی یم", f: "túley yum"}], [{p: "تلي یو", f: "túlee yoo"}]],
                 [[{p: "تلې یم", f: "túle yum"}], [{p: "تلې یو", f: "túle yoo"}]],
@@ -1872,6 +1896,24 @@ export const tlul: T.VerbConjugation = {
                 [[{p: "تللې یم", f: "tlúle yum"}], [{p: "تللې یو", f: "tlúle yoo"}]],
                 [[{p: "تللی یې", f: "tlúley ye"}], [{p: "تللي یئ", f: "tlúlee yeyy"}]],
                 [[{p: "تللې یې", f: "tlúle ye"}], [{p: "تللې یئ", f: "tlúle yeyy"}]],
+                [[{p: "تللی وي", f: "tlúley wee"}], [{p: "تللي وي", f: "tlúlee wee"}]],
+                [[{p: "تللې وي", f: "tlúle wee"}], [{p: "تللې وي", f: "tlúle wee"}]],
+            ],
+        },
+        subjunctive: {
+            short: [
+                [[{p: "تلی وم", f: "túley wum"}], [{p: "تلي وو", f: "túlee woo"}]],
+                [[{p: "تلې وم", f: "túle wum"}], [{p: "تلې وو", f: "túle woo"}]],
+                [[{p: "تلی وې", f: "túley we"}], [{p: "تلي وئ", f: "túlee weyy"}]],
+                [[{p: "تلې وې", f: "túle we"}], [{p: "تلې وئ", f: "túle weyy"}]],
+                [[{p: "تلی وي", f: "túley wee"}], [{p: "تلي وي", f: "túlee wee"}]],
+                [[{p: "تلې وي", f: "túle wee"}], [{p: "تلې وي", f: "túle wee"}]],
+            ],
+            long: [
+                [[{p: "تللی وم", f: "tlúley wum"}], [{p: "تللي وو", f: "tlúlee woo"}]],
+                [[{p: "تللې وم", f: "tlúle wum"}], [{p: "تللې وو", f: "tlúle woo"}]],
+                [[{p: "تللی وې", f: "tlúley we"}], [{p: "تللي وئ", f: "tlúlee weyy"}]],
+                [[{p: "تللې وې", f: "tlúle we"}], [{p: "تللې وئ", f: "tlúle weyy"}]],
                 [[{p: "تللی وي", f: "tlúley wee"}], [{p: "تللي وي", f: "tlúlee wee"}]],
                 [[{p: "تللې وي", f: "tlúle wee"}], [{p: "تللې وي", f: "tlúle wee"}]],
             ],
@@ -2311,11 +2353,19 @@ export const warkawul: T.VerbConjugation = {
             [[{p: "ورکړی دی", f: "wărkúRey dey"}], [{p: "ورکړي دي", f: "wărkúRee dee"}]],
             [[{p: "ورکړې ده", f: "wărkúRe da"}], [{p: "ورکړې دي", f: "wărkúRe dee"}]],
         ],
-        subjunctive: [
+        habitual: [
             [[{p: "ورکړی یم", f: "wărkúRey yum"}], [{p: "ورکړي یو", f: "wărkúRee yoo"}]],
             [[{p: "ورکړې یم", f: "wărkúRe yum"}], [{p: "ورکړې یو", f: "wărkúRe yoo"}]],
             [[{p: "ورکړی یې", f: "wărkúRey ye"}], [{p: "ورکړي یئ", f: "wărkúRee yeyy"}]],
             [[{p: "ورکړې یې", f: "wărkúRe ye"}], [{p: "ورکړې یئ", f: "wărkúRe yeyy"}]],
+            [[{p: "ورکړی وي", f: "wărkúRey wee"}], [{p: "ورکړي وي", f: "wărkúRee wee"}]],
+            [[{p: "ورکړې وي", f: "wărkúRe wee"}], [{p: "ورکړې وي", f: "wărkúRe wee"}]],
+        ],
+        subjunctive: [
+            [[{p: "ورکړی وم", f: "wărkúRey wum"}], [{p: "ورکړي وو", f: "wărkúRee woo"}]],
+            [[{p: "ورکړې وم", f: "wărkúRe wum"}], [{p: "ورکړې وو", f: "wărkúRe woo"}]],
+            [[{p: "ورکړی وې", f: "wărkúRey we"}], [{p: "ورکړي وئ", f: "wărkúRee weyy"}]],
+            [[{p: "ورکړې وې", f: "wărkúRe we"}], [{p: "ورکړې وئ", f: "wărkúRe weyy"}]],
             [[{p: "ورکړی وي", f: "wărkúRey wee"}], [{p: "ورکړي وي", f: "wărkúRee wee"}]],
             [[{p: "ورکړې وي", f: "wărkúRe wee"}], [{p: "ورکړې وي", f: "wărkúRe wee"}]],
         ],

@@ -180,6 +180,7 @@ export const englishEquative: {
 export const equativeEndings: {
     past: T.LengthOptions<T.VerbBlock>,
     present: T.VerbBlock,
+    habitual: T.VerbBlock,
     subjunctive: T.VerbBlock,
     pastSubjunctive: T.VerbBlock,
 } = {
@@ -378,45 +379,107 @@ export const equativeEndings: {
             }]
         ],
     ],
+    habitual: [
+        [
+            [{
+                p: "یم",
+                f: "yum"
+            }],
+            [{
+                p: "یو",
+                f: "yoo"
+            }]
+        ],
+        [
+            [{
+                p: "یم",
+                f: "yum"
+            }],
+            [{
+                p: "یو",
+                f: "yoo"
+            }]
+        ],
+        [
+            [{
+                p: "یې",
+                f: "ye"
+            }],
+            [{
+                p: "یئ",
+                f: "yeyy"
+            }]
+        ],
+        [
+            [{
+                p: "یې",
+                f: "ye"
+            }],
+            [{
+                p: "یئ",
+                f: "yeyy"
+            }]
+        ],
+        [
+            [{
+                p: "وي",
+                f: "wee"
+            }],
+            [{
+                p: "وي",
+                f: "wee"
+            }]
+        ],
+        [
+            [{
+                p: "وي",
+                f: "wee"
+            }],
+            [{
+                p: "وي",
+                f: "wee"
+            }]
+        ],
+    ],
     subjunctive: [
         [
             [{
-                p: "یم",
-                f: "yum"
+                p: "وم",
+                f: "wum"
             }],
             [{
-                p: "یو",
-                f: "yoo"
+                p: "وو",
+                f: "woo"
             }]
         ],
         [
             [{
-                p: "یم",
-                f: "yum"
+                p: "وم",
+                f: "wum"
             }],
             [{
-                p: "یو",
-                f: "yoo"
+                p: "وو",
+                f: "woo"
             }]
         ],
         [
             [{
-                p: "یې",
-                f: "ye"
+                p: "وې",
+                f: "we"
             }],
             [{
-                p: "یئ",
-                f: "yeyy"
+                p: "وئ",
+                f: "weyy"
             }]
         ],
         [
             [{
-                p: "یې",
-                f: "ye"
+                p: "وې",
+                f: "we"
             }],
             [{
-                p: "یئ",
-                f: "yeyy"
+                p: "وئ",
+                f: "weyy"
             }]
         ],
         [

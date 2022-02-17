@@ -329,6 +329,7 @@ export type PerfectContent = {
     halfPerfect: VerbForm; // PPART
     past: VerbForm; // PPART + equative.past
     present: VerbForm; // PPART + equative.prest
+    habitual: VerbForm; // PPART + equative.habit
     subjunctive: VerbForm; // PPART + equative.subj
     future: VerbForm; // ba + PPART + equative.subj
     affirmational: VerbForm; // ba + PPART + equative.past
