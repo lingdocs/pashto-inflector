@@ -202,6 +202,31 @@ const adjectives: Array<{
             },
         },
     },
+    {
+        in: {
+            ts: 1527812792,
+            p: "ښایسته",
+            f: "xaaystu",
+            g: "xaaystu",
+            e: "beautiful",
+            c: "adj.",
+            i: 1,
+        },
+        out: {
+            inflections: {
+                masc: [
+                    [{p: "ښایسته", f: "xaaystu"}],
+                    [{p: "ښایسته", f: "xaaystu"}],
+                    [{p: "ښایستو", f: "xaaysto"}],
+                ],
+                fem: [
+                    [{p: "ښایسته", f: "xaaysta"}],
+                    [{p: "ښایستې", f: "xaayste"}],
+                    [{p: "ښایستو", f: "xaaysto"}],
+                ],
+            },
+        },
+    },
     // numbers should inflect just like adjectives
     {
         in: {"ts":1588688995113,"i":8176,"p":"شپږ","f":"shpuG","g":"shpug","e":"six","c":"num."},
@@ -1018,8 +1043,8 @@ const nouns: Array<{
             inflections: {
                 fem: [
                     [{p: "دوستي", f: "dostee"}],
-                    [{p: "دوستۍ", f: "dostuy"}],
-                    [{p: "دوستیو", f: "dostuyo"}],
+                    [{p: "دوستۍ", f: "dostúy"}],
+                    [{p: "دوستیو", f: "dostúyo"}],
                 ],
             },
         },
@@ -1038,9 +1063,9 @@ const nouns: Array<{
         out: {
             inflections: {
                 fem: [
-                    [{p: "کرسۍ", f: "kUrsuy"}],
-                    [{p: "کرسۍ", f: "kUrsuy"}],
-                    [{p: "کرسیو", f: "kUrsuyo"}, { p: "کرسو", f: "kUrso"}],
+                    [{p: "کرسۍ", f: "kUrsúy"}],
+                    [{p: "کرسۍ", f: "kUrsúy"}],
+                    [{p: "کرسیو", f: "kUrsúyo"}, { p: "کرسو", f: "kUrso"}],
                 ],
             },
         },

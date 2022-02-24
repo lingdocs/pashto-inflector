@@ -379,21 +379,21 @@ function inflectRegularInanEeFem(p: string, f: string): T.Inflections {
   return {
     fem: [
       [{p, f}],
-      [{p: `${baseP}ۍ`, f: `${baseF}uy`}],
-      [{p: `${baseP}یو`, f: `${baseF}uyo`}],
+      [{p: `${baseP}ۍ`, f: `${baseF}úy`}],
+      [{p: `${baseP}یو`, f: `${baseF}úyo`}],
     ],
   };
 }
 
 function inflectRegularUyFem(p: string, f: string): T.Inflections {
   const baseP = p.slice(0, -1);
-  const baseF = f.slice(0, -2);
+  const baseF = removeAccents(f.slice(0, -2));
   return {
     fem: [
-      [{p, f}],
-      [{p, f}],
+      [{p, f: `${baseF}úy`}],
+      [{p, f: `${baseF}úy`}],
       [
-        {p: `${baseP}یو`, f: `${baseF}uyo`},
+        {p: `${baseP}یو`, f: `${baseF}úyo`},
         {p: `${baseP}و`, f: `${baseF}o`},
       ],
     ],

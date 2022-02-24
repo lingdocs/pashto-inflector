@@ -158,15 +158,15 @@ export function randomNumber(minInclusive: number, maxExclusive: number): number
  * @param possiblePerson 
  * @param existingPerson 
  */
-export function personIsAllowed(possiblePerson: T.Person, existingPerson: T.Person): boolean {
+export function personIsAllowed(possiblePerson: T.Person, existingPerson?: T.Person): boolean {
     const isFirstPerson = (p: T.Person) => [0, 1, 6, 7].includes(p);
     const isSecondPerson = (p: T.Person) => [2, 3, 8, 9].includes(p);
     // can't have both subject and object be 1st person
-    if (isFirstPerson(possiblePerson) && isFirstPerson(existingPerson)) {
+    if (isFirstPerson(possiblePerson) && (existingPerson && isFirstPerson(existingPerson))) {
         return false;
     }
     // can't have both subject and object be 2nd person
-    if (isSecondPerson(possiblePerson) && isSecondPerson(existingPerson)) {
+    if (isSecondPerson(possiblePerson) && (existingPerson && isSecondPerson(existingPerson))) {
         return false;
     }
     // otherwise it's ok
@@ -178,7 +178,7 @@ export function personIsAllowed(possiblePerson: T.Person, existingPerson: T.Pers
  * 
  * @param other 
  */
-export function randomPerson(other: T.Person): T.Person {
+export function randomPerson(other?: T.Person): T.Person {
     let newPerson: T.Person;
     do {
         newPerson = randomNumber(0, 12);
