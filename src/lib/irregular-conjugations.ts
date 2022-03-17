@@ -1659,10 +1659,10 @@ export const tlul: T.VerbConjugation = {
                 femPlur: { p: "لاړې ش", f: "laaRe sh" },
             },
             perfectiveSplit: {
-                mascSing: [{ p: "لاړ ", f: "laaR " }, { p: "ش", f: "sh" }],
-                mascPlur: [{ p: "لاړ ", f: "laaR " }, { p: "ش", f: "sh" }],
-                femSing: [{ p: "لاړه ", f: "laaRa " }, { p: "ش", f: "sh" }],
-                femPlur: [{ p: "لاړې ", f: "laaRe " }, { p: "ش", f: "sh" }],
+                mascSing: [{ p: "لاړ ", f: "láaR " }, { p: "ش", f: "sh" }],
+                mascPlur: [{ p: "لاړ ", f: "láaR " }, { p: "ش", f: "sh" }],
+                femSing: [{ p: "لاړه ", f: "láaRa " }, { p: "ش", f: "sh" }],
+                femPlur: [{ p: "لاړې ", f: "láaRe " }, { p: "ش", f: "sh" }],
             },
         },
         root: {
@@ -1675,8 +1675,8 @@ export const tlul: T.VerbConjugation = {
                 short: { p: "لاړ", f: "laaR" },
             },
             perfectiveSplit: {
-                long: [{ p: "لا", f: "laa" }, { p: "ړل", f: "Rul" }],
-                short: [{ p: "لا", f: "laa" }, { p: "ړ", f: "R" }],
+                long: [{ p: "لا", f: "láa" }, { p: "ړل", f: "Rul" }],
+                short: [{ p: "لا", f: "láa" }, { p: "ړ", f: "R" }],
             },
         },
         participle: {
