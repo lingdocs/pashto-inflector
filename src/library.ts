@@ -37,6 +37,7 @@ import {
     isInflectionSet,
     addEnglish,
     endsWith,
+    hasBaParticle,
 } from "./lib/p-text-helpers";
 import {
     getEnglishWord,
@@ -139,6 +140,7 @@ export {
     endsWith,
     splitUpSyllables,
     countSyllables,
+    hasBaParticle,
     // protobuf helpers
     readDictionary,
     writeDictionary,
