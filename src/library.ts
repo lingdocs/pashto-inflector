@@ -38,6 +38,7 @@ import {
     addEnglish,
     endsWith,
     hasBaParticle,
+    psRemove,
 } from "./lib/p-text-helpers";
 import {
     getEnglishWord,
@@ -141,6 +142,7 @@ export {
     splitUpSyllables,
     countSyllables,
     hasBaParticle,
+    psRemove,
     // protobuf helpers
     readDictionary,
     writeDictionary,
