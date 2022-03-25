@@ -112,10 +112,10 @@ export function removeAccents(s: T.PsString): T.PsString;
 export function removeAccents(s: string): string; 
 export function removeAccents(s: T.PsString | string): T.PsString | string {
     if (typeof s !== "string") {
-        return makePsString(
-            s.p,
-            removeAccents(s.f),
-        );
+        return {
+            ...s,
+            f: removeAccents(s.f),
+        };
     }
     return s.replace(/á|é|í|ó|ú|Ú/, (match) => {
         const r = accentReplacer.find((x) => x.accented === match);
