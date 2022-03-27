@@ -627,10 +627,10 @@ const inflectedPronounsNear = [
 ] as T.VerbBlock;
   
 const miniPronouns: T.VerbBlock = [
-    [[{ p: "مې", f: "me" }], [{ p: "مو", f: "mo" }]],
-    [[{ p: "مې", f: "me" }], [{ p: "مو", f: "mo" }]],
-    [[{ p: "دې", f: "de" }], [{ p: "مو", f: "mo" }]],
-    [[{ p: "دې", f: "de" }], [{ p: "مو", f: "mo" }]],
+    [[{ p: "مې", f: "me" }], [{ p: "مو", f: "mU" }]],
+    [[{ p: "مې", f: "me" }], [{ p: "مو", f: "mU" }]],
+    [[{ p: "دې", f: "de" }], [{ p: "مو", f: "mU" }]],
+    [[{ p: "دې", f: "de" }], [{ p: "مو", f: "mU" }]],
     [[{ p: "یې", f: "ye" }], [{ p: "یې", f: "ye" }]],
     [[{ p: "یې", f: "ye" }], [{ p: "یې", f: "ye" }]],
 ];
