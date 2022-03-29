@@ -136,6 +136,7 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
             ? addToForm([complement, " "], ac.imperative)
             : null;
         const past = addToForm([complement, " "], auxConj[aspect].past);
+        const habitualPast = addToForm([baParticle, " "], past);
         const modal = makeDynamicModalContent();
         return {
             nonImperative,
@@ -144,6 +145,7 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
                 imperative,
             } : {},
             past,
+            habitualPast,
             modal,
         };
     }
@@ -215,11 +217,13 @@ function makeAspectContent(info: T.NonComboVerbInfo, aspect: T.Aspect): T.Aspect
     const roughPast = addToForm([root], pastEndings) as T.LengthOptions<T.VerbBlock>;
     // add accents and idiosyncratic third person sing masc forms
     const past = finishSimpleVerbPast(info, aspect, roughPast);
+    const habitualPast = addToForm([baParticle, " "], past);
     return {
         nonImperative, // stem + present endings
         future, // به - ba + nonImperative
         imperative, // stem + imperative endings
         past, // root + past endings
+        habitualPast, // ba + past
         modal: makeJoinedModalContent(info, aspect),
     };
 }
@@ -305,10 +309,12 @@ function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbIn
         ? addToForm([presentComplement, " "], aux.imperative)
         : null;
     const past = addToForm([info.complement, " "], aux.past);
+    const habitualPast = addToForm([baParticle, " "], past);
     return {
         nonImperative,
         future,
         past,
+        habitualPast,
         ...imperative ? {
             imperative,
         } : {},
@@ -525,6 +531,7 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
             imperative: allOnePersonInflection(as.imperative, person),
         } : {},
         past: allOnePersonVerbForm(as.past, person),
+        habitualPast: allOnePersonInflection(as.habitualPast, person),
         modal: {
             ...as.modal,
             past: allOnePersonVerbForm(as.modal.past, person),

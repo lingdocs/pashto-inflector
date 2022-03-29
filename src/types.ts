@@ -298,6 +298,7 @@ export type AspectContent = {
     imperative?: ImperativeForm; // STEM + imperative ending
     // -- optional because not used for intransitive verison of kawul dynamic compounds
     past: VerbForm; // ROOT + past ending
+    habitualPast: VerbForm; // ba + past
     modal: ModalContent;
 }
 
