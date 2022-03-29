@@ -121,11 +121,13 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
             const nonImperative = addToForm([complement, " "], auxConj[aspect].modal.nonImperative);
             const future = addToForm([baParticle, " "], nonImperative);
             const past = addToForm([complement, " "], auxConj[aspect].modal.past);
+            const habitualPast = addToForm([baParticle, " "], past);
             const hypotheticalPast = addToForm([complement, " "], auxConj[aspect].modal.hypotheticalPast);
             return {
                 nonImperative,
                 future,
                 past,
+                habitualPast,
                 hypotheticalPast,
             };
         };
@@ -245,6 +247,7 @@ function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect): T
         // @ts-ignore
         aux.past.short,
     );
+    const habitualPast = addToForm([baParticle, " "], past);
     function mhp(rt: T.PsString[]): T.VerbBlock {
         const form = [
             concatPsString(rt[0], " ", { p: "سو", f: "shw" }, aayTail[0]),
@@ -274,6 +277,7 @@ function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect): T
         nonImperative, // ROOT + aayTail + kedulStat subjunctive
         future, // به - ba + modal nonImperative
         past, // ROOT + aayTail + kedulStat simple past
+        habitualPast, // ba + past
         hypotheticalPast, // ROOT + aayTail + sh + aayTail
     };
 }
@@ -289,11 +293,13 @@ function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbIn
         const nonImperative = addToForm([presentComplement, " "], aux.nonImperative);
         const future = addToForm([baParticle, " "], nonImperative);
         const past = addToForm([info.complement, " "], aux.past);
+        const habitualPast = addToForm([baParticle, " "], past);
         const hypotheticalPast = addToForm([info.complement, " "], aux.hypotheticalPast);
         return {
             nonImperative,
             future,
             past,
+            habitualPast,
             hypotheticalPast,
         };
     }

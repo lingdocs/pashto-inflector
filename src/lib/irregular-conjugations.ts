@@ -63,6 +63,24 @@ const kedulStatModal: T.ModalContent = {
             [[{ p: "کېدی شوه", f: "kedéy shwa" }, { p: "کېدای شوه", f: "kedáay shwa" }], [{ p: "کېدی شولې", f: "kedéy shwule" }, { p: "کېدای شولې", f: "kedáay shwule" }, { p: "کېدی شوې", f: "kedéy shwe" }, { p: "کېدای شوې", f: "kedáay shwe" }]],
         ],
     },
+    habitualPast: {
+        long: [
+            [[{ p: "به کېدلی شوم", f: "ba kedúley shwum" }, { p: "به کېدلای شوم", f: "ba kedúlaay shwum" }], [{ p: "به کېدلی شو", f: "ba kedúley shoo" }, { p: "به کېدلای شو", f: "ba kedúlaay shoo" }]],
+            [[{ p: "به کېدلی شوم", f: "ba kedúley shwum" }, { p: "به کېدلای شوم", f: "ba kedúlaay shwum" }], [{ p: "به کېدلی شو", f: "ba kedúley shoo" }, { p: "به کېدلای شو", f: "ba kedúlaay shoo" }]],
+            [[{ p: "به کېدلی شوې", f: "ba kedúley shwe" }, { p: "به کېدلای شوې", f: "ba kedúlaay shwe" }], [{ p: "به کېدلی شوئ", f: "ba kedúley shweyy" }, { p: "به کېدلای شوئ", f: "ba kedúlaay shweyy" }]],
+            [[{ p: "به کېدلی شوې", f: "ba kedúley shwe" }, { p: "به کېدلای شوې", f: "ba kedúlaay shwe" }], [{ p: "به کېدلی شوئ", f: "ba kedúley shweyy" }, { p: "به کېدلای شوئ", f: "ba kedúlaay shweyy" }]],
+            [[{ p: "به کېدلی شو", f: "ba kedúley sho" }, { p: "به کېدلای شو", f: "ba kedúlaay sho" }], [{ p: "به کېدلی شول", f: "ba kedúley shwul" }, { p: "به کېدلای شول", f: "ba kedúlaay shwul" }, { p: "به کېدلی شو", f: "ba kedúley shoo" }, { p: "به کېدلای شو", f: "ba kedúlaay shoo" }]],
+            [[{ p: "به کېدلی شوه", f: "ba kedúley shwa" }, { p: "به کېدلای شوه", f: "ba kedúlaay shwa" }], [{ p: "به کېدلی شولې", f: "ba kedúley shwule" }, { p: "به کېدلای شولې", f: "ba kedúlaay shwule" }, { p: "به کېدلی شوې", f: "ba kedúley shwe" }, { p: "به کېدلای شوې", f: "ba kedúlaay shwe" }]],
+        ],
+        short: [
+            [[{ p: "به کېدی شوم", f: "ba kedéy shwum" }, { p: "به کېدای شوم", f: "ba kedáay shwum" }], [{ p: "به کېدی شو", f: "ba kedéy shoo" }, { p: "به کېدای شو", f: "ba kedáay shoo" }]],
+            [[{ p: "به کېدی شوم", f: "ba kedéy shwum" }, { p: "به کېدای شوم", f: "ba kedáay shwum" }], [{ p: "به کېدی شو", f: "ba kedéy shoo" }, { p: "به کېدای شو", f: "ba kedáay shoo" }]],
+            [[{ p: "به کېدی شوې", f: "ba kedéy shwe" }, { p: "به کېدای شوې", f: "ba kedáay shwe" }], [{ p: "به کېدی شوئ", f: "ba kedéy shweyy" }, { p: "به کېدای شوئ", f: "ba kedáay shweyy" }]],
+            [[{ p: "به کېدی شوې", f: "ba kedéy shwe" }, { p: "به کېدای شوې", f: "ba kedáay shwe" }], [{ p: "به کېدی شوئ", f: "ba kedéy shweyy" }, { p: "به کېدای شوئ", f: "ba kedáay shweyy" }]],
+            [[{ p: "به کېدی شو", f: "ba kedéy sho" }, { p: "به کېدای شو", f: "ba kedáay sho" }], [{ p: "به کېدی شول", f: "ba kedéy shwul" }, { p: "به کېدای شول", f: "ba kedáay shwul" }, { p: "به کېدی شو", f: "ba kedéy shoo" }, { p: "به کېدای شو", f: "ba kedáay shoo" }]],
+            [[{ p: "به کېدی شوه", f: "ba kedéy shwa" }, { p: "به کېدای شوه", f: "ba kedáay shwa" }], [{ p: "به کېدی شولې", f: "ba kedéy shwule" }, { p: "به کېدای شولې", f: "ba kedáay shwule" }, { p: "به کېدی شوې", f: "ba kedéy shwe" }, { p: "به کېدای شوې", f: "ba kedáay shwe" }]],
+        ],
+    },
     hypotheticalPast: {
         long: [
             [[{ p: "کېدلی شوای", f: "kedúley shwaay" }, { p: "کېدلی شوی", f: "kedúley shwey" }, { p: "کېدلای شوای", f: "kedúlaay shwaay" }], [{ p: "کېدلی شوای", f: "kedúley shwaay" }, { p: "کېدلی شوی", f: "kedúley shwey" }, { p: "کېدای شوی", f: "kedúlaay shwey" }]],   
@@ -651,6 +669,24 @@ const kawulImperfectiveModal: T.ModalContent = {
             [[{ p: "کوی شوه", f: "kawéy shwa" }, { p: "کوای شوه", f: "kawáay shwa" }], [{ p: "کوی شولې", f: "kawéy shwule" }, { p: "کوای شولې", f: "kawáay shwule" }, { p: "کوی شوې", f: "kawéy shwe" }, { p: "کوای شوې", f: "kawáay shwe" }]],
         ],
     },
+    habitualPast: {
+        long: [
+            [[{ p: "به کولی شوم", f: "ba kawúley shwum" }, { p: "به کولای شوم", f: "ba kawúlaay shwum" }], [{ p: "به کولی شو", f: "ba kawúley shoo" }, { p: "به کولای شو", f: "ba kawúlaay shoo" }]],
+            [[{ p: "به کولی شوم", f: "ba kawúley shwum" }, { p: "به کولای شوم", f: "ba kawúlaay shwum" }], [{ p: "به کولی شو", f: "ba kawúley shoo" }, { p: "به کولای شو", f: "ba kawúlaay shoo" }]],
+            [[{ p: "به کولی شوې", f: "ba kawúley shwe" }, { p: "به کولای شوې", f: "ba kawúlaay shwe" }], [{ p: "به کولی شوئ", f: "ba kawúley shweyy" }, { p: "به کولای شوئ", f: "ba kawúlaay shweyy" }]],
+            [[{ p: "به کولی شوې", f: "ba kawúley shwe" }, { p: "به کولای شوې", f: "ba kawúlaay shwe" }], [{ p: "به کولی شوئ", f: "ba kawúley shweyy" }, { p: "به کولای شوئ", f: "ba kawúlaay shweyy" }]],
+            [[{ p: "به کولی شو", f: "ba kawúley sho" }, { p: "به کولای شو", f: "ba kawúlaay sho" }], [{ p: "به کولی شول", f: "ba kawúley shwul" }, { p: "به کولای شول", f: "ba kawúlaay shwul" }, { p: "به کولی شو", f: "ba kawúley shoo" }, { p: "به کولای شو", f: "ba kawúlaay shoo" }]],
+            [[{ p: "به کولی شوه", f: "ba kawúley shwa" }, { p: "به کولای شوه", f: "ba kawúlaay shwa" }], [{ p: "به کولی شولې", f: "ba kawúley shwule" }, { p: "به کولای شولې", f: "ba kawúlaay shwule" }, { p: "به کولی شوې", f: "ba kawúley shwe" }, { p: "به کولای شوې", f: "ba kawúlaay shwe" }]],
+        ],
+        short: [
+            [[{ p: "به کوی شوم", f: "ba kawéy shwum" }, { p: "به کوای شوم", f: "ba kawáay shwum" }], [{ p: "به کوی شو", f: "ba kawéy shoo" }, { p: "به کوای شو", f: "ba kawáay shoo" }]],
+            [[{ p: "به کوی شوم", f: "ba kawéy shwum" }, { p: "به کوای شوم", f: "ba kawáay shwum" }], [{ p: "به کوی شو", f: "ba kawéy shoo" }, { p: "به کوای شو", f: "ba kawáay shoo" }]],
+            [[{ p: "به کوی شوې", f: "ba kawéy shwe" }, { p: "به کوای شوې", f: "ba kawáay shwe" }], [{ p: "به کوی شوئ", f: "ba kawéy shweyy" }, { p: "به کوای شوئ", f: "ba kawáay shweyy" }]],
+            [[{ p: "به کوی شوې", f: "ba kawéy shwe" }, { p: "به کوای شوې", f: "ba kawáay shwe" }], [{ p: "به کوی شوئ", f: "ba kawéy shweyy" }, { p: "به کوای شوئ", f: "ba kawáay shweyy" }]],
+            [[{ p: "به کوی شو", f: "ba kawéy sho" }, { p: "به کوای شو", f: "ba kawáay sho" }], [{ p: "به کوی شول", f: "ba kawéy shwul" }, { p: "به کوای شول", f: "ba kawáay shwul" }, { p: "به کوی شو", f: "ba kawéy shoo" }, { p: "به کوای شو", f: "ba kawáay shoo" }]],
+            [[{ p: "به کوی شوه", f: "ba kawéy shwa" }, { p: "به کوای شوه", f: "ba kawáay shwa" }], [{ p: "به کوی شولې", f: "ba kawéy shwule" }, { p: "به کوای شولې", f: "ba kawáay shwule" }, { p: "به کوی شوې", f: "ba kawéy shwe" }, { p: "به کوای شوې", f: "ba kawáay shwe" }]],
+        ],
+    },
     hypotheticalPast: {
         long: [
             [[{ p: "کولی شوای", f: "kawúley shwaay" }, { p: "کولی شوی", f: "kawúley shwey" }, { p: "کولای شوای", f: "kawúlaay shwaay" }], [{ p: "کولی شوای", f: "kawúley shwaay" }, { p: "کولی شوی", f: "kawúley shwey" }, { p: "کولای شوای", f: "kawúlaay shwaay" }]],
@@ -1000,6 +1036,24 @@ export const kawulStat: T.VerbConjugation = {
                     [[{ p: "کړی شوې", f: "kRéy shwe" }, { p: "کړای شوې", f: "kRáay shwe" }], [{ p: "کړی شوئ", f: "kRéy shweyy" }, { p: "کړای شوئ", f: "kRáay shweyy" }]],
                     [[{ p: "کړی شو", f: "kRéy sho" }, { p: "کړای شو", f: "kRáay sho" }], [{ p: "کړی شول", f: "kRéy shwul" }, { p: "کړای شول", f: "kRáay shwul" }, { p: "کړی شو", f: "kRéy shoo" }, { p: "کړای شو", f: "kRáay shoo" }]],
                     [[{ p: "کړی شوه", f: "kRéy shwa" }, { p: "کړای شوه", f: "kRáay shwa" }], [{ p: "کړی شولې", f: "kRéy shwule" }, { p: "کړای شولې", f: "kRáay shwule" }, { p: "کړی شوې", f: "kRéy shwe" }, { p: "کړای شوې", f: "kRáay shwe" }]],
+                ],
+            },
+            habitualPast: {
+                long: [
+                    [[{ p: "به کړلی شوم", f: "ba kRúley shwum" }, { p: "به کړلای شوم", f: "ba kRúlaay shwum" }], [{ p: "به کړلی شو", f: "ba kRúley shoo" }, { p: "به کړلای شو", f: "ba kRúlaay shoo" }]],
+                    [[{ p: "به کړلی شوم", f: "ba kRúley shwum" }, { p: "به کړلای شوم", f: "ba kRúlaay shwum" }], [{ p: "به کړلی شو", f: "ba kRúley shoo" }, { p: "به کړلای شو", f: "ba kRúlaay shoo" }]],
+                    [[{ p: "به کړلی شوې", f: "ba kRúley shwe" }, { p: "به کړلای شوې", f: "ba kRúlaay shwe" }], [{ p: "به کړلی شوئ", f: "ba kRúley shweyy" }, { p: "به کړلای شوئ", f: "ba kRúlaay shweyy" }]],
+                    [[{ p: "به کړلی شوې", f: "ba kRúley shwe" }, { p: "به کړلای شوې", f: "ba kRúlaay shwe" }], [{ p: "به کړلی شوئ", f: "ba kRúley shweyy" }, { p: "به کړلای شوئ", f: "ba kRúlaay shweyy" }]],
+                    [[{ p: "به کړلی شو", f: "ba kRúley sho" }, { p: "به کړلای شو", f: "ba kRúlaay sho" }], [{ p: "به کړلی شول", f: "ba kRúley shwul" }, { p: "به کړلای شول", f: "ba kRúlaay shwul" }, { p: "به کړلی شو", f: "ba kRúley shoo" }, { p: "به کړلای شو", f: "ba kRúlaay shoo" }]],
+                    [[{ p: "به کړلی شوه", f: "ba kRúley shwa" }, { p: "به کړلای شوه", f: "ba kRúlaay shwa" }], [{ p: "به کړلی شولې", f: "ba kRúley shwule" }, { p: "به کړلای شولې", f: "ba kRúlaay shwule" }, { p: "به کړلی شوې", f: "ba kRúley shwe" }, { p: "به کړلای شوې", f: "ba kRúlaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "به کړی شوم", f: "ba kRéy shwum" }, { p: "به کړای شوم", f: "ba kRáay shwum" }], [{ p: "به کړی شو", f: "ba kRéy shoo" }, { p: "به کړای شو", f: "ba kRáay shoo" }]],
+                    [[{ p: "به کړی شوم", f: "ba kRéy shwum" }, { p: "به کړای شوم", f: "ba kRáay shwum" }], [{ p: "به کړی شو", f: "ba kRéy shoo" }, { p: "به کړای شو", f: "ba kRáay shoo" }]],
+                    [[{ p: "به کړی شوې", f: "ba kRéy shwe" }, { p: "به کړای شوې", f: "ba kRáay shwe" }], [{ p: "به کړی شوئ", f: "ba kRéy shweyy" }, { p: "به کړای شوئ", f: "ba kRáay shweyy" }]],
+                    [[{ p: "به کړی شوې", f: "ba kRéy shwe" }, { p: "به کړای شوې", f: "ba kRáay shwe" }], [{ p: "به کړی شوئ", f: "ba kRéy shweyy" }, { p: "به کړای شوئ", f: "ba kRáay shweyy" }]],
+                    [[{ p: "به کړی شو", f: "ba kRéy sho" }, { p: "به کړای شو", f: "ba kRáay sho" }], [{ p: "به کړی شول", f: "ba kRéy shwul" }, { p: "به کړای شول", f: "ba kRáay shwul" }, { p: "به کړی شو", f: "ba kRéy shoo" }, { p: "به کړای شو", f: "ba kRáay shoo" }]],
+                    [[{ p: "به کړی شوه", f: "ba kRéy shwa" }, { p: "به کړای شوه", f: "ba kRáay shwa" }], [{ p: "به کړی شولې", f: "ba kRéy shwule" }, { p: "به کړای شولې", f: "ba kRáay shwule" }, { p: "به کړی شوې", f: "ba kRéy shwe" }, { p: "به کړای شوې", f: "ba kRáay shwe" }]],
                 ],
             },
             hypotheticalPast: {
@@ -1494,6 +1548,24 @@ export const kawulDyn: T.VerbConjugation = {
                     [[{ p: "وکړی شوه", f: "óokRey shwa" }, { p: "وکړای شوه", f: "óokRaay shwa" }], [{ p: "وکړی شولې", f: "óokRey shwule" }, { p: "وکړای شولې", f: "óokRaay shwule" }, { p: "وکړی شوې", f: "óokRey shwe" }, { p: "وکړای شوې", f: "óokRaay shwe" }]],
                 ],
             },
+            habitualPast: {
+                long: [
+                    [[{ p: "به وکړلی شوم", f: "ba óokRuley shwum" }, { p: "به وکړلای شوم", f: "ba óokRulaay shwum" }], [{ p: "به وکړلی شو", f: "ba óokRuley shoo" }, { p: "به وکړلای شو", f: "ba óokRulaay shoo" }]],
+                    [[{ p: "به وکړلی شوم", f: "ba óokRuley shwum" }, { p: "به وکړلای شوم", f: "ba óokRulaay shwum" }], [{ p: "به وکړلی شو", f: "ba óokRuley shoo" }, { p: "به وکړلای شو", f: "ba óokRulaay shoo" }]],
+                    [[{ p: "به وکړلی شوې", f: "ba óokRuley shwe" }, { p: "به وکړلای شوې", f: "ba óokRulaay shwe" }], [{ p: "به وکړلی شوئ", f: "ba óokRuley shweyy" }, { p: "به وکړلای شوئ", f: "ba óokRulaay shweyy" }]],
+                    [[{ p: "به وکړلی شوې", f: "ba óokRuley shwe" }, { p: "به وکړلای شوې", f: "ba óokRulaay shwe" }], [{ p: "به وکړلی شوئ", f: "ba óokRuley shweyy" }, { p: "به وکړلای شوئ", f: "ba óokRulaay shweyy" }]],
+                    [[{ p: "به وکړلی شو", f: "ba óokRuley sho" }, { p: "به وکړلای شو", f: "ba óokRulaay sho" }], [{ p: "به وکړلی شول", f: "ba óokRuley shwul" }, { p: "به وکړلای شول", f: "ba óokRulaay shwul" }, { p: "به وکړلی شو", f: "ba óokRuley shoo" }, { p: "به وکړلای شو", f: "ba óokRulaay shoo" }]],
+                    [[{ p: "به وکړلی شوه", f: "ba óokRuley shwa" }, { p: "به وکړلای شوه", f: "ba óokRulaay shwa" }], [{ p: "به وکړلی شولې", f: "ba óokRuley shwule" }, { p: "به وکړلای شولې", f: "ba óokRulaay shwule" }, { p: "به وکړلی شوې", f: "ba óokRuley shwe" }, { p: "به وکړلای شوې", f: "ba óokRulaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "به وکړی شوم", f: "ba óokRey shwum" }, { p: "به وکړای شوم", f: "ba óokRaay shwum" }], [{ p: "به وکړی شو", f: "ba óokRey shoo" }, { p: "به وکړای شو", f: "ba óokRaay shoo" }]],
+                    [[{ p: "به وکړی شوم", f: "ba óokRey shwum" }, { p: "به وکړای شوم", f: "ba óokRaay shwum" }], [{ p: "به وکړی شو", f: "ba óokRey shoo" }, { p: "به وکړای شو", f: "ba óokRaay shoo" }]],
+                    [[{ p: "به وکړی شوې", f: "ba óokRey shwe" }, { p: "به وکړای شوې", f: "ba óokRaay shwe" }], [{ p: "به وکړی شوئ", f: "ba óokRey shweyy" }, { p: "به وکړای شوئ", f: "ba óokRaay shweyy" }]],
+                    [[{ p: "به وکړی شوې", f: "ba óokRey shwe" }, { p: "به وکړای شوې", f: "ba óokRaay shwe" }], [{ p: "به وکړی شوئ", f: "ba óokRey shweyy" }, { p: "به وکړای شوئ", f: "ba óokRaay shweyy" }]],
+                    [[{ p: "به وکړی شو", f: "ba óokRey sho" }, { p: "به وکړای شو", f: "ba óokRaay sho" }], [{ p: "به وکړی شول", f: "ba óokRey shwul" }, { p: "به وکړای شول", f: "ba óokRaay shwul" }, { p: "به وکړی شو", f: "ba óokRey shoo" }, { p: "به وکړای شو", f: "ba óokRaay shoo" }]],
+                    [[{ p: "به وکړی شوه", f: "ba óokRey shwa" }, { p: "به وکړای شوه", f: "ba óokRaay shwa" }], [{ p: "به وکړی شولې", f: "ba óokRey shwule" }, { p: "به وکړای شولې", f: "ba óokRaay shwule" }, { p: "به وکړی شوې", f: "ba óokRey shwe" }, { p: "به وکړای شوې", f: "ba óokRaay shwe" }]],
+                ],
+            },
             hypotheticalPast: {
                 long: [
                     [[{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }], [{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }]],
@@ -1783,6 +1855,24 @@ const tlulModal: T.ModalContent = {
             [[{ p: "تلی شوې", f: "tléy shwe" }, { p: "تلای شوې", f: "tláay shwe" }], [{ p: "تلی شوئ", f: "tléy shweyy" }, { p: "تلای شوئ", f: "tláay shweyy" }]],
             [[{ p: "تلی شو", f: "tléy sho" }, { p: "تلای شو", f: "tláay sho" }], [{ p: "تلی شول", f: "tléy shwul" }, { p: "تلای شول", f: "tláay shwul" }, { p: "تلی شو", f: "tléy shoo" }, { p: "تلای شو", f: "tláay shoo" }]],
             [[{ p: "تلی شوه", f: "tléy shwa" }, { p: "تلای شوه", f: "tláay shwa" }], [{ p: "تلی شولې", f: "tléy shwule" }, { p: "تلای شولې", f: "tláay shwule" }, { p: "تلی شوې", f: "tléy shwe" }, { p: "تلای شوې", f: "tláay shwe" }]],
+        ],
+    },
+    habitualPast: {
+        long: [
+            [[{ p: "به تللی شوم", f: "ba tlúley shwum" }, { p: "به تللای شوم", f: "ba tlúlaay shwum" }], [{ p: "به تللی شو", f: "ba tlúley shoo" }, { p: "به تللای شو", f: "ba tlúlaay shoo" }]],
+            [[{ p: "به تللی شوم", f: "ba tlúley shwum" }, { p: "به تللای شوم", f: "ba tlúlaay shwum" }], [{ p: "به تللی شو", f: "ba tlúley shoo" }, { p: "به تللای شو", f: "ba tlúlaay shoo" }]],
+            [[{ p: "به تللی شوې", f: "ba tlúley shwe" }, { p: "به تللای شوې", f: "ba tlúlaay shwe" }], [{ p: "به تللی شوئ", f: "ba tlúley shweyy" }, { p: "به تللای شوئ", f: "ba tlúlaay shweyy" }]],
+            [[{ p: "به تللی شوې", f: "ba tlúley shwe" }, { p: "به تللای شوې", f: "ba tlúlaay shwe" }], [{ p: "به تللی شوئ", f: "ba tlúley shweyy" }, { p: "به تللای شوئ", f: "ba tlúlaay shweyy" }]],
+            [[{ p: "به تللی شو", f: "ba tlúley sho" }, { p: "به تللای شو", f: "ba tlúlaay sho" }], [{ p: "به تللی شول", f: "ba tlúley shwul" }, { p: "به تللای شول", f: "ba tlúlaay shwul" }, { p: "به تللی شو", f: "ba tlúley shoo" }, { p: "به تللای شو", f: "ba tlúlaay shoo" }]],
+            [[{ p: "به تللی شوه", f: "ba tlúley shwa" }, { p: "به تللای شوه", f: "ba tlúlaay shwa" }], [{ p: "به تللی شولې", f: "ba tlúley shwule" }, { p: "به تللای شولې", f: "ba tlúlaay shwule" }, { p: "به تللی شوې", f: "ba tlúley shwe" }, { p: "به تللای شوې", f: "ba tlúlaay shwe" }]],
+        ],
+        short: [
+            [[{ p: "به تلی شوم", f: "ba tléy shwum" }, { p: "به تلای شوم", f: "ba tláay shwum" }], [{ p: "به تلای شو", f: "ba tléy shoo" }, { p: "به تلاای شو", f: "ba tláay shoo" }]],
+            [[{ p: "به تلی شوم", f: "ba tléy shwum" }, { p: "به تلای شوم", f: "ba tláay shwum" }], [{ p: "به تلی شو", f: "ba tléy shoo" }, { p: "به تلای شو", f: "ba tláay shoo" }]],
+            [[{ p: "به تلی شوې", f: "ba tléy shwe" }, { p: "به تلای شوې", f: "ba tláay shwe" }], [{ p: "به تلی شوئ", f: "ba tléy shweyy" }, { p: "به تلای شوئ", f: "ba tláay shweyy" }]],
+            [[{ p: "به تلی شوې", f: "ba tléy shwe" }, { p: "به تلای شوې", f: "ba tláay shwe" }], [{ p: "به تلی شوئ", f: "ba tléy shweyy" }, { p: "به تلای شوئ", f: "ba tláay shweyy" }]],
+            [[{ p: "به تلی شو", f: "ba tléy sho" }, { p: "به تلای شو", f: "ba tláay sho" }], [{ p: "به تلی شول", f: "ba tléy shwul" }, { p: "به تلای شول", f: "ba tláay shwul" }, { p: "به تلی شو", f: "ba tléy shoo" }, { p: "به تلای شو", f: "ba tláay shoo" }]],
+            [[{ p: "به تلی شوه", f: "ba tléy shwa" }, { p: "به تلای شوه", f: "ba tláay shwa" }], [{ p: "به تلی شولې", f: "ba tléy shwule" }, { p: "به تلای شولې", f: "ba tláay shwule" }, { p: "به تلی شوې", f: "ba tléy shwe" }, { p: "به تلای شوې", f: "ba tláay shwe" }]],
         ],
     },
     hypotheticalPast: {
@@ -2330,6 +2420,24 @@ export const warkawul: T.VerbConjugation = {
                     [[{ p: "ورکوی شوه", f: "wărkawéy shwa" }, { p: "ورکوای شوه", f: "wărkawáay shwa" }], [{ p: "ورکوی شولې", f: "wărkawéy shwule" }, { p: "ورکوای شولې", f: "wărkawáay shwule" }, { p: "ورکوی شوې", f: "wărkawéy shwe" }, { p: "ورکوای شوې", f: "wărkawáay shwe" }]],
                 ],
             },
+            habitualPast: {
+                long: [
+                    [[{ p: "به ورکولی شوم", f: "ba wărkawúley shwum" }, { p: "به ورکولای شوم", f: "ba wărkawúlaay shwum" }], [{ p: "به ورکولی شو", f: "ba wărkawúley shoo" }, { p: "به ورکولای شو", f: "ba wărkawúlaay shoo" }]],
+                    [[{ p: "به ورکولی شوم", f: "ba wărkawúley shwum" }, { p: "به ورکولای شوم", f: "ba wărkawúlaay shwum" }], [{ p: "به ورکولی شو", f: "ba wărkawúley shoo" }, { p: "به ورکولای شو", f: "ba wărkawúlaay shoo" }]],
+                    [[{ p: "به ورکولی شوې", f: "ba wărkawúley shwe" }, { p: "به ورکولای شوې", f: "ba wărkawúlaay shwe" }], [{ p: "به ورکولی شوئ", f: "ba wărkawúley shweyy" }, { p: "به ورکولای شوئ", f: "ba wărkawúlaay shweyy" }]],
+                    [[{ p: "به ورکولی شوې", f: "ba wărkawúley shwe" }, { p: "به ورکولای شوې", f: "ba wărkawúlaay shwe" }], [{ p: "به ورکولی شوئ", f: "ba wărkawúley shweyy" }, { p: "به ورکولای شوئ", f: "ba wărkawúlaay shweyy" }]],
+                    [[{ p: "به ورکولی شو", f: "ba wărkawúley sho" }, { p: "به ورکولای شو", f: "ba wărkawúlaay sho" }], [{ p: "به ورکولی شول", f: "ba wărkawúley shwul" }, { p: "به ورکولای شول", f: "ba wărkawúlaay shwul" }, { p: "به ورکولی شو", f: "ba wărkawúley shoo" }, { p: "به ورکولای شو", f: "ba wărkawúlaay shoo" }]],
+                    [[{ p: "به ورکولی شوه", f: "ba wărkawúley shwa" }, { p: "به ورکولای شوه", f: "ba wărkawúlaay shwa" }], [{ p: "به ورکولی شولې", f: "ba wărkawúley shwule" }, { p: "به ورکولای شولې", f: "ba wărkawúlaay shwule" }, { p: "به ورکولی شوې", f: "ba wărkawúley shwe" }, { p: "به ورکولای شوې", f: "ba wărkawúlaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "به ورکوی شوم", f: "ba wărkawéy shwum" }, { p: "به ورکوای شوم", f: "ba wărkawáay shwum" }], [{ p: "به ورکوی شو", f: "ba wărkawéy shoo" }, { p: "به ورکوای شو", f: "ba wărkawáay shoo" }]],
+                    [[{ p: "به ورکوی شوم", f: "ba wărkawéy shwum" }, { p: "به ورکوای شوم", f: "ba wărkawáay shwum" }], [{ p: "به ورکوی شو", f: "ba wărkawéy shoo" }, { p: "به ورکوای شو", f: "ba wărkawáay shoo" }]],
+                    [[{ p: "به ورکوی شوې", f: "ba wărkawéy shwe" }, { p: "به ورکوای شوې", f: "ba wărkawáay shwe" }], [{ p: "به ورکوی شوئ", f: "ba wărkawéy shweyy" }, { p: "به ورکوای شوئ", f: "ba wărkawáay shweyy" }]],
+                    [[{ p: "به ورکوی شوې", f: "ba wărkawéy shwe" }, { p: "به ورکوای شوې", f: "ba wărkawáay shwe" }], [{ p: "به ورکوی شوئ", f: "ba wărkawéy shweyy" }, { p: "به ورکوای شوئ", f: "ba wărkawáay shweyy" }]],
+                    [[{ p: "به ورکوی شو", f: "ba wărkawéy sho" }, { p: "به ورکوای شو", f: "ba wărkawáay sho" }], [{ p: "به ورکوی شول", f: "ba wărkawéy shwul" }, { p: "به ورکوای شول", f: "ba wărkawáay shwul" }, { p: "به ورکوی شو", f: "ba wărkawéy shoo" }, { p: "به ورکوای شو", f: "ba wărkawáay shoo" }]],
+                    [[{ p: "به ورکوی شوه", f: "ba wărkawéy shwa" }, { p: "به ورکوای شوه", f: "ba wărkawáay shwa" }], [{ p: "به ورکوی شولې", f: "ba wărkawéy shwule" }, { p: "به ورکوای شولې", f: "ba wărkawáay shwule" }, { p: "به ورکوی شوې", f: "ba wărkawéy shwe" }, { p: "به ورکوای شوې", f: "ba wărkawáay shwe" }]],
+                ],
+            },
             hypotheticalPast: {
                 long: [
                     [[{ p: "ورکولی شوای", f: "wărkawúley shwaay" }, { p: "ورکولی شوی", f: "wărkawúley shwey" }, { p: "ورکولای شوای", f: "wărkawúlaay shwaay" }], [{ p: "ورکولی شوای", f: "wărkawúley shwaay" }, { p: "ورکولی شوی", f: "wărkawúley shwey" }, { p: "ورکولای شوای", f: "wărkawúlaay shwaay" }]],
@@ -2502,6 +2610,24 @@ export const warkawul: T.VerbConjugation = {
                     [[{ p: "ورکړی شوې", f: "wărkRey shwe" }, { p: "ورکړای شوې", f: "wărkRáay shwe" }], [{ p: "ورکړی شوئ", f: "wărkRey shweyy" }, { p: "ورکړای شوئ", f: "wărkRáay shweyy" }]],
                     [[{ p: "ورکړی شو", f: "wărkRey sho" }, { p: "ورکړای شو", f: "wărkRáay sho" }], [{ p: "ورکړی شول", f: "wărkRey shwul" }, { p: "ورکړای شول", f: "wărkRáay shwul" }, { p: "ورکړی شو", f: "wărkRey shoo" }, { p: "ورکړای شو", f: "wărkRáay shoo" }]],
                     [[{ p: "ورکړی شوه", f: "wărkRey shwa" }, { p: "ورکړای شوه", f: "wărkRáay shwa" }], [{ p: "ورکړی شولې", f: "wărkRey shwule" }, { p: "ورکړای شولې", f: "wărkRáay shwule" }, { p: "ورکړی شوې", f: "wărkRey shwe" }, { p: "ورکړای شوې", f: "wărkRáay shwe" }]],
+                ],
+            },
+            habitualPast: {
+                long: [
+                    [[{ p: "به ورکړلی شوم", f: "ba wărkRuley shwum" }, { p: "به ورکړلای شوم", f: "ba wărkRulaay shwum" }], [{ p: "به ورکړلی شو", f: "ba wărkRuley shoo" }, { p: "به ورکړلای شو", f: "ba wărkRulaay shoo" }]],
+                    [[{ p: "به ورکړلی شوم", f: "ba wărkRuley shwum" }, { p: "به ورکړلای شوم", f: "ba wărkRulaay shwum" }], [{ p: "به ورکړلی شو", f: "ba wărkRuley shoo" }, { p: "به ورکړلای شو", f: "ba wărkRulaay shoo" }]],
+                    [[{ p: "به ورکړلی شوې", f: "ba wărkRuley shwe" }, { p: "به ورکړلای شوې", f: "ba wărkRulaay shwe" }], [{ p: "به ورکړلی شوئ", f: "ba wărkRuley shweyy" }, { p: "به ورکړلای شوئ", f: "ba wărkRulaay shweyy" }]],
+                    [[{ p: "به ورکړلی شوې", f: "ba wărkRuley shwe" }, { p: "به ورکړلای شوې", f: "ba wărkRulaay shwe" }], [{ p: "به ورکړلی شوئ", f: "ba wărkRuley shweyy" }, { p: "به ورکړلای شوئ", f: "ba wărkRulaay shweyy" }]],
+                    [[{ p: "به ورکړلی شو", f: "ba wărkRuley sho" }, { p: "به ورکړلای شو", f: "ba wărkRulaay sho" }], [{ p: "به ورکړلی شول", f: "ba wărkRuley shwul" }, { p: "به ورکړلای شول", f: "ba wărkRulaay shwul" }, { p: "به ورکړلی شو", f: "ba wărkRuley shoo" }, { p: "به ورکړلای شو", f: "ba wărkRulaay shoo" }]],
+                    [[{ p: "به ورکړلی شوه", f: "ba wărkRuley shwa" }, { p: "به ورکړلای شوه", f: "ba wărkRulaay shwa" }], [{ p: "به ورکړلی شولې", f: "ba wărkRuley shwule" }, { p: "به ورکړلای شولې", f: "ba wărkRulaay shwule" }, { p: "به ورکړلی شوې", f: "ba wărkRuley shwe" }, { p: "به ورکړلای شوې", f: "ba wărkRulaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "به ورکړی شوم", f: "ba wărkRey shwum" }, { p: "به ورکړای شوم", f: "ba wărkRáay shwum" }], [{ p: "به ورکړی شو", f: "ba wărkRey shoo" }, { p: "به ورکړای شو", f: "ba wărkRáay shoo" }]],
+                    [[{ p: "به ورکړی شوم", f: "ba wărkRey shwum" }, { p: "به ورکړای شوم", f: "ba wărkRáay shwum" }], [{ p: "به ورکړی شو", f: "ba wărkRey shoo" }, { p: "به ورکړای شو", f: "ba wărkRáay shoo" }]],
+                    [[{ p: "به ورکړی شوې", f: "ba wărkRey shwe" }, { p: "به ورکړای شوې", f: "ba wărkRáay shwe" }], [{ p: "به ورکړی شوئ", f: "ba wărkRey shweyy" }, { p: "به ورکړای شوئ", f: "ba wărkRáay shweyy" }]],
+                    [[{ p: "به ورکړی شوې", f: "ba wărkRey shwe" }, { p: "به ورکړای شوې", f: "ba wărkRáay shwe" }], [{ p: "به ورکړی شوئ", f: "ba wărkRey shweyy" }, { p: "به ورکړای شوئ", f: "ba wărkRáay shweyy" }]],
+                    [[{ p: "به ورکړی شو", f: "ba wărkRey sho" }, { p: "به ورکړای شو", f: "ba wărkRáay sho" }], [{ p: "به ورکړی شول", f: "ba wărkRey shwul" }, { p: "به ورکړای شول", f: "ba wărkRáay shwul" }, { p: "به ورکړی شو", f: "ba wărkRey shoo" }, { p: "به ورکړای شو", f: "ba wărkRáay shoo" }]],
+                    [[{ p: "به ورکړی شوه", f: "ba wărkRey shwa" }, { p: "به ورکړای شوه", f: "ba wărkRáay shwa" }], [{ p: "به ورکړی شولې", f: "ba wărkRey shwule" }, { p: "به ورکړای شولې", f: "ba wărkRáay shwule" }, { p: "به ورکړی شوې", f: "ba wărkRey shwe" }, { p: "به ورکړای شوې", f: "ba wărkRáay shwe" }]],
                 ],
             },
             hypotheticalPast: {

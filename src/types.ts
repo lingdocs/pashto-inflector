@@ -306,6 +306,7 @@ export type ModalContent = {
     nonImperative: VerbForm; // ROOT + ey + kedulStat.perfective.nonImperative
     future: VerbForm; // به + this.nonImperative
     past: VerbForm; // ROOT + ey + kedulStat.perfective.past
+    habitualPast: VerbForm; // ba + past
     hypotheticalPast: VerbForm; // ROOT + ey + shw + ey
 }
 
