@@ -178,10 +178,12 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
         const nonImperative = addToForm([complement, " "], passive[aspect].nonImperative);
         const future = addToForm([baParticle, " "], nonImperative);
         const past = addToForm([complement, " "], passive[aspect].past);
+        const habitualPast = addToForm([baParticle, " "], past);
         return {
             nonImperative,
             future,
             past,
+            habitualPast,
         };
     }
     return {
@@ -447,10 +449,12 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
                 [info.complement, " ", bridge, " "],
                 stativeAux.intransitive[aspect].past,
             );
+            const habitualPast = addToForm([baParticle, " "], past);
             return {
                 nonImperative,
                 future,
                 past,
+                habitualPast,
             };
         }
         const root = noPersInfs(info.root[aspect]).long;
@@ -458,10 +462,12 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
         const nonImperative = addToForm([root, " "], aux.nonImperative);
         const future = addToForm([baParticle, " "], nonImperative);
         const past = addToForm([root, " "], aux.past);
+        const habitualPast = addToForm([baParticle, " "], past);
         return {
             nonImperative, // ROOT LONG + kedulStat[aspect].nonImperative
             future, // به ba + ROOT LONG + this.nonImperative
             past, // ROOT LONG + kedulStat[aspect].past
+            habitualPast,
         };
     }
     const simpleVerbParticiple = {
@@ -562,6 +568,7 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
         nonImperative: allOnePersonVerbForm(as.nonImperative, person),
         future: allOnePersonVerbForm(as.future, person),
         past: allOnePersonVerbForm(as.past, person),
+        habitualPast: allOnePersonInflection(as.past, person),
     });
     return {
         ...conj,
