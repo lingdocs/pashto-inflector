@@ -317,6 +317,7 @@ export type AspectContentPassive = {
     future: VerbForm; // ba + this.nonImperative
     past: VerbForm; // ROOT LONG + kedulStat[ASPECT].past
     habitualPast: VerbForm;
+    modal: ModalContent,
 }
 
 export type ParticipleForm = SingleOrLengthOpts<UnisexInflections> | SingleOrLengthOpts<PsString>;

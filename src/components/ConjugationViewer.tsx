@@ -197,6 +197,7 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
             return undefined;
         }
     })();
+    console.log(conjugation);
     if (conjugation === undefined) {
         // don't show the conjugation viewer if the verb can't be conjugated
         return null;

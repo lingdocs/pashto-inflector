@@ -179,12 +179,14 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
         const future = addToForm([baParticle, " "], nonImperative);
         const past = addToForm([complement, " "], passive[aspect].past);
         const habitualPast = addToForm([baParticle, " "], past);
+        const modal = makePassiveModalSection([complement, " "], stativeAux.intransitive.imperfective.modal);
         return {
             nonImperative,
             future,
             past,
             habitualPast,
-        };
+            modal,
+        }
     }
     return {
         info,
@@ -450,11 +452,15 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
                 stativeAux.intransitive[aspect].past,
             );
             const habitualPast = addToForm([baParticle, " "], past);
+            const modal = makePassiveModalSection([
+                noPersInfs(info.root.imperfective).long, " ",
+            ], stativeAux.intransitive.imperfective.modal);
             return {
                 nonImperative,
                 future,
                 past,
                 habitualPast,
+                modal,
             };
         }
         const root = noPersInfs(info.root[aspect]).long;
@@ -463,11 +469,14 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
         const future = addToForm([baParticle, " "], nonImperative);
         const past = addToForm([root, " "], aux.past);
         const habitualPast = addToForm([baParticle, " "], past);
+        const auxModal = aux.modal;
+        const modal = makePassiveModalSection([noPersInfs(info.root.imperfective).long, " "], auxModal);
         return {
             nonImperative, // ROOT LONG + kedulStat[aspect].nonImperative
             future, // به ba + ROOT LONG + this.nonImperative
             past, // ROOT LONG + kedulStat[aspect].past
             habitualPast,
+            modal,
         };
     }
     const simpleVerbParticiple = {
@@ -485,6 +494,16 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
         imperfective: makePassiveAspectContent("imperfective"),
         perfective: makePassiveAspectContent("perfective"),
         perfect: perfect,
+    };
+}
+
+function makePassiveModalSection(base: Array<" " | T.SingleOrLengthOpts<T.PsString> | T.SingleOrLengthOpts<T.UnisexInflections> | T.SingleOrLengthOpts<T.PsString>[] | T.SingleOrLengthOpts<T.PsString[]> | T.OptionalPersonInflections<T.PsString> | T.VerbBlock>, auxModal: T.ModalContent): T.ModalContent {
+    return {
+        nonImperative: addToForm(base, auxModal.nonImperative),
+        future: addToForm(base, auxModal.future),
+        past: addToForm(base, auxModal.past),
+        habitualPast: addToForm(base, auxModal.habitualPast),
+        hypotheticalPast: addToForm(base, auxModal.hypotheticalPast),
     };
 }
 
@@ -569,6 +588,8 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
         future: allOnePersonVerbForm(as.future, person),
         past: allOnePersonVerbForm(as.past, person),
         habitualPast: allOnePersonInflection(as.past, person),
+        // TODO: check if this is ok
+        modal: as.modal,
     });
     return {
         ...conj,
