@@ -101,6 +101,220 @@ const kedulStatModal: T.ModalContent = {
     },
 };
 
+const kawulPassive: T.AspectContentPassive = {
+    nonImperative: [
+        [[{p: "کول کېږم", f: "kawul kéGum"}], [{p: "کول کېږو", f: "kawul kéGoo"}]],
+        [[{p: "کول کېږم", f: "kawul kéGum"}], [{p: "کول کېږو", f: "kawul kéGoo"}]],
+        [[{p: "کول کېږې", f: "kawul kéGe"}], [{p: "کول کېږئ", f: "kawul kéGeyy"}]],
+        [[{p: "کول کېږې", f: "kawul kéGe"}], [{p: "کول کېږئ", f: "kawul kéGeyy"}]],
+        [[{p: "کول کېږي", f: "kawul kéGee"}], [{p: "کول کېږي", f: "kawul kéGee"}]],
+        [[{p: "کول کېږي", f: "kawul kéGee"}], [{p: "کول کېږي", f: "kawul kéGee"}]],
+    ],
+    future: [
+        [[{p: "به کول کېږم", f: "ba kawul kéGum"}], [{p: "به کول کېږو", f: "ba kawul kéGoo"}]],
+        [[{p: "به کول کېږم", f: "ba kawul kéGum"}], [{p: "به کول کېږو", f: "ba kawul kéGoo"}]],
+        [[{p: "به کول کېږې", f: "ba kawul kéGe"}], [{p: "به کول کېږئ", f: "ba kawul kéGeyy"}]],
+        [[{p: "به کول کېږې", f: "ba kawul kéGe"}], [{p: "به کول کېږئ", f: "ba kawul kéGeyy"}]],
+        [[{p: "به کول کېږي", f: "ba kawul kéGee"}], [{p: "به کول کېږي", f: "ba kawul kéGee"}]],
+        [[{p: "به کول کېږي", f: "ba kawul kéGee"}], [{p: "به کول کېږي", f: "ba kawul kéGee"}]],
+    ],
+    past: {
+        short: [
+            [[{p: "کول کېدم", f: "kawul kedúm"}], [{p: "کول کېدو", f: "kawul kedóo"}]],
+            [[{p: "کول کېدم", f: "kawul kedúm"}], [{p: "کول کېدو", f: "kawul kedóo"}]],
+            [[{p: "کول کېدې", f: "kawul kedé"}], [{p: "کول کېدئ", f: "kawul kedéyy"}]],
+            [[{p: "کول کېدې", f: "kawul kedé"}], [{p: "کول کېدئ", f: "kawul kedéyy"}]],
+            [[{p: "کول کېده", f: "kawul kedú"}, {p: "کول کېدو", f: "kawul kedó"}], [{p: "کول کېدل", f: "kawul kedúl"}]],
+            [[{p: "کول کېده", f: "kawul kedá"}], [{p: "کول کېدې", f: "kawul kedé"}]],
+        ],
+        long: [
+            [[{p: "کول کېدلم", f: "kawul kedúlum"}], [{p: "کول کېدلو", f: "kawul kedúloo"}]],
+            [[{p: "کول کېدلم", f: "kawul kedúlum"}], [{p: "کول کېدلو", f: "kawul kedúloo"}]],
+            [[{p: "کول کېدلې", f: "kawul kedúle"}], [{p: "کول کېدلئ", f: "kawul kedúleyy"}]],
+            [[{p: "کول کېدلې", f: "kawul kedúle"}], [{p: "کول کېدلئ", f: "kawul kedúleyy"}]],
+            [[{p: "کول کېدله", f: "kawul kedúlu"}, {p: "کول کېدلو", f: "kawul kedúlo"}], [{p: "کول کېدل", f: "kawul kedúl"}]],
+            [[{p: "کول کېدله", f: "kawul kedúla"}], [{p: "کول کېدلې", f: "kawul kedúle"}]],
+        ],
+    },
+    habitualPast: {
+        short: [
+            [[{p: "به کول کېدم", f: "ba kawul kedúm"}], [{p: "به کول کېدو", f: "ba kawul kedóo"}]],
+            [[{p: "به کول کېدم", f: "ba kawul kedúm"}], [{p: "به کول کېدو", f: "ba kawul kedóo"}]],
+            [[{p: "به کول کېدې", f: "ba kawul kedé"}], [{p: "به کول کېدئ", f: "ba kawul kedéyy"}]],
+            [[{p: "به کول کېدې", f: "ba kawul kedé"}], [{p: "به کول کېدئ", f: "ba kawul kedéyy"}]],
+            [[{p: "به کول کېده", f: "ba kawul kedú"}, {p: "به کول کېدو", f: "ba kawul kedó"}], [{p: "به کول کېدل", f: "ba kawul kedúl"}]],
+            [[{p: "به کول کېده", f: "ba kawul kedá"}], [{p: "به کول کېدې", f: "ba kawul kedé"}]],
+        ],
+        long: [
+            [[{p: "به کول کېدلم", f: "ba kawul kedúlum"}], [{p: "به کول کېدلو", f: "ba kawul kedúloo"}]],
+            [[{p: "به کول کېدلم", f: "ba kawul kedúlum"}], [{p: "به کول کېدلو", f: "ba kawul kedúloo"}]],
+            [[{p: "به کول کېدلې", f: "ba kawul kedúle"}], [{p: "به کول کېدلئ", f: "ba kawul kedúleyy"}]],
+            [[{p: "به کول کېدلې", f: "ba kawul kedúle"}], [{p: "به کول کېدلئ", f: "ba kawul kedúleyy"}]],
+            [[{p: "به کول کېدله", f: "ba kawul kedúlu"}, {p: "به کول کېدلو", f: "ba kawul kedúlo"}], [{p: "به کول کېدل", f: "ba kawul kedúl"}]],
+            [[{p: "به کول کېدله", f: "ba kawul kedúla"}], [{p: "به کول کېدلې", f: "ba kawul kedúle"}]],
+        ],
+    },
+    modal: {
+        nonImperative: {
+            long: [
+                [[{ p: "کول کېدلی شم", f: "kawul kedúley shum" }, { p: "کول کېدلای شم", f: "kawul kedúlaay shum" }], [{ p: "کول کېدلی شو", f: "kawul kedúley shoo" }, { p: "کول کېدلای شو", f: "kawul kedúlaay shoo" }]],
+                [[{ p: "کول کېدلی شم", f: "kawul kedúley shum" }, { p: "کول کېدلای شم", f: "kawul kedúlaay shum" }], [{ p: "کول کېدلی شو", f: "kawul kedúley shoo" }, { p: "کول کېدلای شو", f: "kawul kedúlaay shoo" }]],
+                [[{ p: "کول کېدلی شې", f: "kawul kedúley she" }, { p: "کول کېدلای شې", f: "kawul kedúlaay she" }], [{ p: "کول کېدلی شئ", f: "kawul kedúley sheyy" }, { p: "کول کېدلای شئ", f: "kawul kedúlaay sheyy" }]],
+                [[{ p: "کول کېدلی شې", f: "kawul kedúley she" }, { p: "کول کېدلای شې", f: "kawul kedúlaay she" }], [{ p: "کول کېدلی شئ", f: "kawul kedúley sheyy" }, { p: "کول کېدلای شئ", f: "kawul kedúlaay sheyy" }]],
+                [[{ p: "کول کېدلی شي", f: "kawul kedúley shee" }, { p: "کول کېدلای شي", f: "kawul kedúlaay shee" }], [{ p: "کول کېدلی شي", f: "kawul kedúley shee" }, { p: "کول کېدلای شي", f: "kawul kedúlaay shee" }]],
+                [[{ p: "کول کېدلی شي", f: "kawul kedúley shee" }, { p: "کول کېدلای شي", f: "kawul kedúlaay shee" }], [{ p: "کول کېدلی شي", f: "kawul kedúley shee" }, { p: "کول کېدلای شي", f: "kawul kedúlaay shee" }]],
+            ],
+            short: [
+                [[{ p: "کول کېدی شم", f: "kawul kedéy shum" }, { p: "کول کېدای شم", f: "kawul kedáay shum" }], [{ p: "کول کېدی شو", f: "kawul kedéy shoo" }, { p: "کول کېدای شو", f: "kawul kedáay shoo" }]],
+                [[{ p: "کول کېدی شم", f: "kawul kedéy shum" }, { p: "کول کېدای شم", f: "kawul kedáay shum" }], [{ p: "کول کېدی شو", f: "kawul kedéy shoo" }, { p: "کول کېدای شو", f: "kawul kedáay shoo" }]],
+                [[{ p: "کول کېدی شې", f: "kawul kedéy she" }, { p: "کول کېدای شې", f: "kawul kedáay she" }], [{ p: "کول کېدی شئ", f: "kawul kedéy sheyy" }, { p: "کول کېدای شئ", f: "kawul kedáay sheyy" }]],
+                [[{ p: "کول کېدی شې", f: "kawul kedéy she" }, { p: "کول کېدای شې", f: "kawul kedáay she" }], [{ p: "کول کېدی شئ", f: "kawul kedéy sheyy" }, { p: "کول کېدای شئ", f: "kawul kedáay sheyy" }]],
+                [[{ p: "کول کېدی شي", f: "kawul kedéy shee" }, { p: "کول کېدای شي", f: "kawul kedáay shee" }], [{ p: "کول کېدی شي", f: "kawul kedéy shee" }, { p: "کول کېدای شي", f: "kawul kedáay shee" }]],
+                [[{ p: "کول کېدی شي", f: "kawul kedéy shee" }, { p: "کول کېدای شي", f: "kawul kedáay shee" }], [{ p: "کول کېدی شي", f: "kawul kedéy shee" }, { p: "کول کېدای شي", f: "kawul kedáay shee" }]],
+            ],
+        },
+        future: {
+            long: [
+                [[{ p: "به کول کېدلی شم", f: "ba kawul kedúley shum" }, { p: "به کول کېدلای شم", f: "ba kawul kedúlaay shum" }], [{ p: "به کول کېدلی شو", f: "ba kawul kedúley shoo" }, { p: "به کول کېدلای شو", f: "ba kawul kedúlaay shoo" }]],
+                [[{ p: "به کول کېدلی شم", f: "ba kawul kedúley shum" }, { p: "به کول کېدلای شم", f: "ba kawul kedúlaay shum" }], [{ p: "به کول کېدلی شو", f: "ba kawul kedúley shoo" }, { p: "به کول کېدلای شو", f: "ba kawul kedúlaay shoo" }]],
+                [[{ p: "به کول کېدلی شې", f: "ba kawul kedúley she" }, { p: "به کول کېدلای شې", f: "ba kawul kedúlaay she" }], [{ p: "به کول کېدلی شئ", f: "ba kawul kedúley sheyy" }, { p: "به کول کېدلای شئ", f: "ba kawul kedúlaay sheyy" }]],
+                [[{ p: "به کول کېدلی شې", f: "ba kawul kedúley she" }, { p: "به کول کېدلای شې", f: "ba kawul kedúlaay she" }], [{ p: "به کول کېدلی شئ", f: "ba kawul kedúley sheyy" }, { p: "به کول کېدلای شئ", f: "ba kawul kedúlaay sheyy" }]],
+                [[{ p: "به کول کېدلی شي", f: "ba kawul kedúley shee" }, { p: "به کول کېدلای شي", f: "ba kawul kedúlaay shee" }], [{ p: "به کول کېدلی شي", f: "ba kawul kedúley shee" }, { p: "به کول کېدلای شي", f: "ba kawul kedúlaay shee" }]],
+                [[{ p: "به کول کېدلی شي", f: "ba kawul kedúley shee" }, { p: "به کول کېدلای شي", f: "ba kawul kedúlaay shee" }], [{ p: "به کول کېدلی شي", f: "ba kawul kedúley shee" }, { p: "به کول کېدلای شي", f: "ba kawul kedúlaay shee" }]],
+            ],
+            short: [
+                [[{ p: "به کول کېدی شم", f: "ba kawul kedéy shum" }, { p: "به کول کېدای شم", f: "ba kawul kedáay shum" }], [{ p: "به کول کېدی شو", f: "ba kawul kedéy shoo" }, { p: "به کول کېدای شو", f: "ba kawul kedáay shoo" }]],
+                [[{ p: "به کول کېدی شم", f: "ba kawul kedéy shum" }, { p: "به کول کېدای شم", f: "ba kawul kedáay shum" }], [{ p: "به کول کېدی شو", f: "ba kawul kedéy shoo" }, { p: "به کول کېدای شو", f: "ba kawul kedáay shoo" }]],
+                [[{ p: "به کول کېدی شې", f: "ba kawul kedéy she" }, { p: "به کول کېدای شې", f: "ba kawul kedáay she" }], [{ p: "به کول کېدی شئ", f: "ba kawul kedéy sheyy" }, { p: "به کول کېدای شئ", f: "ba kawul kedáay sheyy" }]],
+                [[{ p: "به کول کېدی شې", f: "ba kawul kedéy she" }, { p: "به کول کېدای شې", f: "ba kawul kedáay she" }], [{ p: "به کول کېدی شئ", f: "ba kawul kedéy sheyy" }, { p: "به کول کېدای شئ", f: "ba kawul kedáay sheyy" }]],
+                [[{ p: "به کول کېدی شي", f: "ba kawul kedéy shee" }, { p: "به کول کېدای شي", f: "ba kawul kedáay shee" }], [{ p: "به کول کېدی شي", f: "ba kawul kedéy shee" }, { p: "به کول کېدای شي", f: "ba kawul kedáay shee" }]],
+                [[{ p: "به کول کېدی شي", f: "ba kawul kedéy shee" }, { p: "به کول کېدای شي", f: "ba kawul kedáay shee" }], [{ p: "به کول کېدی شي", f: "ba kawul kedéy shee" }, { p: "به کول کېدای شي", f: "ba kawul kedáay shee" }]],
+            ],
+        },
+        past: {
+            long: [
+                [[{ p: "کول کېدلی شوم", f: "kawul kedúley shwum" }, { p: "کول کېدلای شوم", f: "kawul kedúlaay shwum" }], [{ p: "کول کېدلی شو", f: "kawul kedúley shoo" }, { p: "کول کېدلای شو", f: "kawul kedúlaay shoo" }]],
+                [[{ p: "کول کېدلی شوم", f: "kawul kedúley shwum" }, { p: "کول کېدلای شوم", f: "kawul kedúlaay shwum" }], [{ p: "کول کېدلی شو", f: "kawul kedúley shoo" }, { p: "کول کېدلای شو", f: "kawul kedúlaay shoo" }]],
+                [[{ p: "کول کېدلی شوې", f: "kawul kedúley shwe" }, { p: "کول کېدلای شوې", f: "kawul kedúlaay shwe" }], [{ p: "کول کېدلی شوئ", f: "kawul kedúley shweyy" }, { p: "کول کېدلای شوئ", f: "kawul kedúlaay shweyy" }]],
+                [[{ p: "کول کېدلی شوې", f: "kawul kedúley shwe" }, { p: "کول کېدلای شوې", f: "kawul kedúlaay shwe" }], [{ p: "کول کېدلی شوئ", f: "kawul kedúley shweyy" }, { p: "کول کېدلای شوئ", f: "kawul kedúlaay shweyy" }]],
+                [[{ p: "کول کېدلی شو", f: "kawul kedúley sho" }, { p: "کول کېدلای شو", f: "kawul kedúlaay sho" }], [{ p: "کول کېدلی شول", f: "kawul kedúley shwul" }, { p: "کول کېدلای شول", f: "kawul kedúlaay shwul" }, { p: "کول کېدلی شو", f: "kawul kedúley shoo" }, { p: "کول کېدلای شو", f: "kawul kedúlaay shoo" }]],
+                [[{ p: "کول کېدلی شوه", f: "kawul kedúley shwa" }, { p: "کول کېدلای شوه", f: "kawul kedúlaay shwa" }], [{ p: "کول کېدلی شولې", f: "kawul kedúley shwule" }, { p: "کول کېدلای شولې", f: "kawul kedúlaay shwule" }, { p: "کول کېدلی شوې", f: "kawul kedúley shwe" }, { p: "کول کېدلای شوې", f: "kawul kedúlaay shwe" }]],
+            ],
+            short: [
+                [[{ p: "کول کېدی شوم", f: "kawul kedéy shwum" }, { p: "کول کېدای شوم", f: "kawul kedáay shwum" }], [{ p: "کول کېدی شو", f: "kawul kedéy shoo" }, { p: "کول کېدای شو", f: "kawul kedáay shoo" }]],
+                [[{ p: "کول کېدی شوم", f: "kawul kedéy shwum" }, { p: "کول کېدای شوم", f: "kawul kedáay shwum" }], [{ p: "کول کېدی شو", f: "kawul kedéy shoo" }, { p: "کول کېدای شو", f: "kawul kedáay shoo" }]],
+                [[{ p: "کول کېدی شوې", f: "kawul kedéy shwe" }, { p: "کول کېدای شوې", f: "kawul kedáay shwe" }], [{ p: "کول کېدی شوئ", f: "kawul kedéy shweyy" }, { p: "کول کېدای شوئ", f: "kawul kedáay shweyy" }]],
+                [[{ p: "کول کېدی شوې", f: "kawul kedéy shwe" }, { p: "کول کېدای شوې", f: "kawul kedáay shwe" }], [{ p: "کول کېدی شوئ", f: "kawul kedéy shweyy" }, { p: "کول کېدای شوئ", f: "kawul kedáay shweyy" }]],
+                [[{ p: "کول کېدی شو", f: "kawul kedéy sho" }, { p: "کول کېدای شو", f: "kawul kedáay sho" }], [{ p: "کول کېدی شول", f: "kawul kedéy shwul" }, { p: "کول کېدای شول", f: "kawul kedáay shwul" }, { p: "کول کېدی شو", f: "kawul kedéy shoo" }, { p: "کول کېدای شو", f: "kawul kedáay shoo" }]],
+                [[{ p: "کول کېدی شوه", f: "kawul kedéy shwa" }, { p: "کول کېدای شوه", f: "kawul kedáay shwa" }], [{ p: "کول کېدی شولې", f: "kawul kedéy shwule" }, { p: "کول کېدای شولې", f: "kawul kedáay shwule" }, { p: "کول کېدی شوې", f: "kawul kedéy shwe" }, { p: "کول کېدای شوې", f: "kawul kedáay shwe" }]],
+            ],
+        },
+        habitualPast: {
+            long: [
+                [[{ p: "به کول کېدلی شوم", f: "ba kawul kedúley shwum" }, { p: "به کول کېدلای شوم", f: "ba kawul kedúlaay shwum" }], [{ p: "به کول کېدلی شو", f: "ba kawul kedúley shoo" }, { p: "به کول کېدلای شو", f: "ba kawul kedúlaay shoo" }]],
+                [[{ p: "به کول کېدلی شوم", f: "ba kawul kedúley shwum" }, { p: "به کول کېدلای شوم", f: "ba kawul kedúlaay shwum" }], [{ p: "به کول کېدلی شو", f: "ba kawul kedúley shoo" }, { p: "به کول کېدلای شو", f: "ba kawul kedúlaay shoo" }]],
+                [[{ p: "به کول کېدلی شوې", f: "ba kawul kedúley shwe" }, { p: "به کول کېدلای شوې", f: "ba kawul kedúlaay shwe" }], [{ p: "به کول کېدلی شوئ", f: "ba kawul kedúley shweyy" }, { p: "به کول کېدلای شوئ", f: "ba kawul kedúlaay shweyy" }]],
+                [[{ p: "به کول کېدلی شوې", f: "ba kawul kedúley shwe" }, { p: "به کول کېدلای شوې", f: "ba kawul kedúlaay shwe" }], [{ p: "به کول کېدلی شوئ", f: "ba kawul kedúley shweyy" }, { p: "به کول کېدلای شوئ", f: "ba kawul kedúlaay shweyy" }]],
+                [[{ p: "به کول کېدلی شو", f: "ba kawul kedúley sho" }, { p: "به کول کېدلای شو", f: "ba kawul kedúlaay sho" }], [{ p: "به کول کېدلی شول", f: "ba kawul kedúley shwul" }, { p: "به کول کېدلای شول", f: "ba kawul kedúlaay shwul" }, { p: "به کول کېدلی شو", f: "ba kawul kedúley shoo" }, { p: "به کول کېدلای شو", f: "ba kawul kedúlaay shoo" }]],
+                [[{ p: "به کول کېدلی شوه", f: "ba kawul kedúley shwa" }, { p: "به کول کېدلای شوه", f: "ba kawul kedúlaay shwa" }], [{ p: "به کول کېدلی شولې", f: "ba kawul kedúley shwule" }, { p: "به کول کېدلای شولې", f: "ba kawul kedúlaay shwule" }, { p: "به کول کېدلی شوې", f: "ba kawul kedúley shwe" }, { p: "به کول کېدلای شوې", f: "ba kawul kedúlaay shwe" }]],
+            ],
+            short: [
+                [[{ p: "به کول کېدی شوم", f: "ba kawul kedéy shwum" }, { p: "به کول کېدای شوم", f: "ba kawul kedáay shwum" }], [{ p: "به کول کېدی شو", f: "ba kawul kedéy shoo" }, { p: "به کول کېدای شو", f: "ba kawul kedáay shoo" }]],
+                [[{ p: "به کول کېدی شوم", f: "ba kawul kedéy shwum" }, { p: "به کول کېدای شوم", f: "ba kawul kedáay shwum" }], [{ p: "به کول کېدی شو", f: "ba kawul kedéy shoo" }, { p: "به کول کېدای شو", f: "ba kawul kedáay shoo" }]],
+                [[{ p: "به کول کېدی شوې", f: "ba kawul kedéy shwe" }, { p: "به کول کېدای شوې", f: "ba kawul kedáay shwe" }], [{ p: "به کول کېدی شوئ", f: "ba kawul kedéy shweyy" }, { p: "به کول کېدای شوئ", f: "ba kawul kedáay shweyy" }]],
+                [[{ p: "به کول کېدی شوې", f: "ba kawul kedéy shwe" }, { p: "به کول کېدای شوې", f: "ba kawul kedáay shwe" }], [{ p: "به کول کېدی شوئ", f: "ba kawul kedéy shweyy" }, { p: "به کول کېدای شوئ", f: "ba kawul kedáay shweyy" }]],
+                [[{ p: "به کول کېدی شو", f: "ba kawul kedéy sho" }, { p: "به کول کېدای شو", f: "ba kawul kedáay sho" }], [{ p: "به کول کېدی شول", f: "ba kawul kedéy shwul" }, { p: "به کول کېدای شول", f: "ba kawul kedáay shwul" }, { p: "به کول کېدی شو", f: "ba kawul kedéy shoo" }, { p: "به کول کېدای شو", f: "ba kawul kedáay shoo" }]],
+                [[{ p: "به کول کېدی شوه", f: "ba kawul kedéy shwa" }, { p: "به کول کېدای شوه", f: "ba kawul kedáay shwa" }], [{ p: "به کول کېدی شولې", f: "ba kawul kedéy shwule" }, { p: "به کول کېدای شولې", f: "ba kawul kedáay shwule" }, { p: "به کول کېدی شوې", f: "ba kawul kedéy shwe" }, { p: "به کول کېدای شوې", f: "ba kawul kedáay shwe" }]],
+            ],
+        },
+        hypotheticalPast: {
+            long: [
+                [[{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدلای شوای", f: "kawul kedúlaay shwaay" }], [{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدای شوی", f: "kawul kedúlaay shwey" }]],   
+                [[{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدلای شوای", f: "kawul kedúlaay shwaay" }], [{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدای شوی", f: "kawul kedúlaay shwey" }]],   
+                [[{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدلای شوای", f: "kawul kedúlaay shwaay" }], [{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدای شوی", f: "kawul kedúlaay shwey" }]],   
+                [[{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدلای شوای", f: "kawul kedúlaay shwaay" }], [{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدای شوی", f: "kawul kedúlaay shwey" }]],   
+                [[{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدلای شوای", f: "kawul kedúlaay shwaay" }], [{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدای شوی", f: "kawul kedúlaay shwey" }]],   
+                [[{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدلای شوای", f: "kawul kedúlaay shwaay" }], [{ p: "کول کېدلی شوای", f: "kawul kedúley shwaay" }, { p: "کول کېدلی شوی", f: "kawul kedúley shwey" }, { p: "کول کېدای شوی", f: "kawul kedúlaay shwey" }]],
+            ],   
+            short: [
+                [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],   
+                [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],   
+                [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],   
+                [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],   
+                [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],   
+                [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کول کېدای شوی", f: "kawul kedáay shwey" }]],
+            ],   
+        },
+    },
+};
+
+const kawulPerfectPassive: T.PerfectContent = {
+    halfPerfect: [
+        [[{p: "کول شوی", f: "kawul shuwey"}], [{p: "کول شوي", f: "kawul shuwee"}]],
+        [[{p: "کول شوې", f: "kawul shuwe"}], [{p: "کول شوې", f: "kawul shuwe"}]],
+        [[{p: "کول شوی", f: "kawul shuwey"}], [{p: "کول شوي", f: "kawul shuwee"}]],
+        [[{p: "کول شوې", f: "kawul shuwe"}], [{p: "کول شوې", f: "kawul shuwe"}]],
+        [[{p: "کول شوی", f: "kawul shuwey"}], [{p: "کول شوي", f: "kawul shuwee"}]],
+        [[{p: "کول شوې", f: "kawul shuwe"}], [{p: "کول شوې", f: "kawul shuwe"}]],
+    ],
+    past: [
+        [[{p: "کول شوی وم", f: "kawul shuwey wum"}], [{p: "کول شوي وو", f: "kawul shuwee woo"}]],
+        [[{p: "کول شوې وم", f: "kawul shuwe wum"}], [{p: "کول شوې وو", f: "kawul shuwe woo"}]],
+        [[{p: "کول شوی وې", f: "kawul shuwey we"}], [{p: "کول شوي وئ", f: "kawul shuwee weyy"}]],
+        [[{p: "کول شوې وې", f: "kawul shuwe we"}], [{p: "کول شوې وئ", f: "kawul shuwe weyy"}]],
+        [[{p: "کول شوی و", f: "kawul shuwey wo"}], [{p: "کول شوي وو", f: "kawul shuwee woo"}]],
+        [[{p: "کول شوې وه", f: "kawul shuwe wa"}], [{p: "کول شوې وې", f: "kawul shuwe we"}]],
+    ],
+    present: [
+        [[{p: "کول شوی یم", f: "kawul shuwey yum"}], [{p: "کول شوي یو", f: "kawul shuwee yoo"}]],
+        [[{p: "کول شوې یم", f: "kawul shuwe yum"}], [{p: "کول شوې یو", f: "kawul shuwe yoo"}]],
+        [[{p: "کول شوی یې", f: "kawul shuwey ye"}], [{p: "کول شوي یئ", f: "kawul shuwee yeyy"}]],
+        [[{p: "کول شوې یې", f: "kawul shuwe ye"}], [{p: "کول شوې یئ", f: "kawul shuwe yeyy"}]],
+        [[{p: "کول شوی دی", f: "kawul shuwey dey"}], [{p: "کول شوي دي", f: "kawul shuwee dee"}]],
+        [[{p: "کول شوې ده", f: "kawul shuwe da"}], [{p: "کول شوې دي", f: "kawul shuwe dee"}]],
+    ],
+    habitual: [
+        [[{p: "کول شوی یم", f: "kawul shuwey yum"}], [{p: "کول شوي یو", f: "kawul shuwee yoo"}]],
+        [[{p: "کول شوې یم", f: "kawul shuwe yum"}], [{p: "کول شوې یو", f: "kawul shuwe yoo"}]],
+        [[{p: "کول شوی یې", f: "kawul shuwey ye"}], [{p: "کول شوي یئ", f: "kawul shuwee yeyy"}]],
+        [[{p: "کول شوې یې", f: "kawul shuwe ye"}], [{p: "کول شوې یئ", f: "kawul shuwe yeyy"}]],
+        [[{p: "کول شوی وي", f: "kawul shuwey wee"}], [{p: "کول شوي وي", f: "kawul shuwee wee"}]],
+        [[{p: "کول شوې وي", f: "kawul shuwe wee"}], [{p: "کول شوې وي", f: "kawul shuwe wee"}]],
+    ],
+    subjunctive: [
+        [[{p: "کول شوی وم", f: "kawul shuwey wum"}], [{p: "کول شوي وو", f: "kawul shuwee woo"}]],
+        [[{p: "کول شوې وم", f: "kawul shuwe wum"}], [{p: "کول شوې وو", f: "kawul shuwe woo"}]],
+        [[{p: "کول شوی وې", f: "kawul shuwey we"}], [{p: "کول شوي وئ", f: "kawul shuwee weyy"}]],
+        [[{p: "کول شوې وې", f: "kawul shuwe we"}], [{p: "کول شوې وئ", f: "kawul shuwe weyy"}]],
+        [[{p: "کول شوی وي", f: "kawul shuwey wee"}], [{p: "کول شوي وي", f: "kawul shuwee wee"}]],
+        [[{p: "کول شوې وي", f: "kawul shuwe wee"}], [{p: "کول شوې وي", f: "kawul shuwe wee"}]],
+    ],
+    future: [
+        [[{p: "به کول شوی یم", f: "ba kawul shuwey yum"}], [{p: "به کول شوي یو", f: "ba kawul shuwee yoo"}]],
+        [[{p: "به کول شوې یم", f: "ba kawul shuwe yum"}], [{p: "به کول شوې یو", f: "ba kawul shuwe yoo"}]],
+        [[{p: "به کول شوی یې", f: "ba kawul shuwey ye"}], [{p: "به کول شوي یئ", f: "ba kawul shuwee yeyy"}]],
+        [[{p: "به کول شوې یې", f: "ba kawul shuwe ye"}], [{p: "به کول شوې یئ", f: "ba kawul shuwe yeyy"}]],
+        [[{p: "به کول شوی وي", f: "ba kawul shuwey wee"}], [{p: "به کول شوي وي", f: "ba kawul shuwee wee"}]],
+        [[{p: "به کول شوې وي", f: "ba kawul shuwe wee"}], [{p: "به کول شوې وي", f: "ba kawul shuwe wee"}]],
+    ],
+    affirmational: [
+        [[{p: "به کول شوی وم", f: "ba kawul shuwey wum"}], [{p: "به کول شوي وو", f: "ba kawul shuwee woo"}]],
+        [[{p: "به کول شوې وم", f: "ba kawul shuwe wum"}], [{p: "به کول شوې وو", f: "ba kawul shuwe woo"}]],
+        [[{p: "به کول شوی وې", f: "ba kawul shuwey we"}], [{p: "به کول شوي وئ", f: "ba kawul shuwee weyy"}]],
+        [[{p: "به کول شوې وې", f: "ba kawul shuwe we"}], [{p: "به کول شوې وئ", f: "ba kawul shuwe weyy"}]],
+        [[{p: "به کول شوی و", f: "ba kawul shuwey wo"}], [{p: "به کول شوي وو", f: "ba kawul shuwee woo"}]],
+        [[{p: "به کول شوې وه", f: "ba kawul shuwe wa"}], [{p: "به کول شوې وې", f: "ba kawul shuwe we"}]],
+    ],
+    pastSubjunctiveHypothetical: [
+        [[{p: "به کول شوی وای", f: "ba kawul shuwey waay"}, {p: "به کول شوی وی", f: "ba kawul shuwey wey"}], [{p: "به کول شوي وای", f: "ba kawul shuwee waay"}, {p: "به کول شوي وی", f: "ba kawul shuwee wey"}]],
+        [[{p: "به کول شوې وای", f: "ba kawul shuwe waay"}, {p: "به کول شوې وی", f: "ba kawul shuwe wey"}], [{p: "به کول شوې وای", f: "ba kawul shuwe waay"}, {p: "به کول شوې وی", f: "ba kawul shuwe wey"}]],
+        [[{p: "به کول شوی وای", f: "ba kawul shuwey waay"}, {p: "به کول شوی وی", f: "ba kawul shuwey wey"}], [{p: "به کول شوي وای", f: "ba kawul shuwee waay"}, {p: "به کول شوي وی", f: "ba kawul shuwee wey"}]],
+        [[{p: "به کول شوې وای", f: "ba kawul shuwe waay"}, {p: "به کول شوې وی", f: "ba kawul shuwe wey"}], [{p: "به کول شوې وای", f: "ba kawul shuwe waay"}, {p: "به کول شوې وی", f: "ba kawul shuwe wey"}]],
+        [[{p: "به کول شوی وای", f: "ba kawul shuwey waay"}, {p: "به کول شوی وی", f: "ba kawul shuwey wey"}], [{p: "به کول شوي وای", f: "ba kawul shuwee waay"}, {p: "به کول شوي وی", f: "ba kawul shuwee wey"}]],
+        [[{p: "به کول شوې وای", f: "ba kawul shuwe waay"}, {p: "به کول شوې وی", f: "ba kawul shuwe wey"}], [{p: "به کول شوې وای", f: "ba kawul shuwe waay"}, {p: "به کول شوې وی", f: "ba kawul shuwe wey"}]],
+    ],
+};
+
 export const kedulStat: T.VerbConjugation = {
     info: {
         transitivity: "intransitive",
@@ -127,33 +341,33 @@ export const kedulStat: T.VerbConjugation = {
     },
     imperfective: {
         nonImperative: [
-            [[{p: "کېږم", f: "keGum"}], [{p: "کېږو", f: "keGoo"}]],
-            [[{p: "کېږم", f: "keGum"}], [{p: "کېږو", f: "keGoo"}]],
-            [[{p: "کېږې", f: "keGe"}], [{p: "کېږئ", f: "keGeyy"}]],
-            [[{p: "کېږې", f: "keGe"}], [{p: "کېږئ", f: "keGeyy"}]],
-            [[{p: "کېږي", f: "keGee"}], [{p: "کېږي", f: "keGee"}]],
-            [[{p: "کېږي", f: "keGee"}], [{p: "کېږي", f: "keGee"}]],
+            [[{p: "کېږم", f: "kéGum"}], [{p: "کېږو", f: "kéGoo"}]],
+            [[{p: "کېږم", f: "kéGum"}], [{p: "کېږو", f: "kéGoo"}]],
+            [[{p: "کېږې", f: "kéGe"}], [{p: "کېږئ", f: "kéGeyy"}]],
+            [[{p: "کېږې", f: "kéGe"}], [{p: "کېږئ", f: "kéGeyy"}]],
+            [[{p: "کېږي", f: "kéGee"}], [{p: "کېږي", f: "kéGee"}]],
+            [[{p: "کېږي", f: "kéGee"}], [{p: "کېږي", f: "kéGee"}]],
         ],
         future: [
-            [[{p: "به کېږم", f: "ba keGum"}], [{p: "به کېږو", f: "ba keGoo"}]],
-            [[{p: "به کېږم", f: "ba keGum"}], [{p: "به کېږو", f: "ba keGoo"}]],
-            [[{p: "به کېږې", f: "ba keGe"}], [{p: "به کېږئ", f: "ba keGeyy"}]],
-            [[{p: "به کېږې", f: "ba keGe"}], [{p: "به کېږئ", f: "ba keGeyy"}]],
-            [[{p: "به کېږي", f: "ba keGee"}], [{p: "به کېږي", f: "ba keGee"}]],
-            [[{p: "به کېږي", f: "ba keGee"}], [{p: "به کېږي", f: "ba keGee"}]],
+            [[{p: "به کېږم", f: "ba kéGum"}], [{p: "به کېږو", f: "ba kéGoo"}]],
+            [[{p: "به کېږم", f: "ba kéGum"}], [{p: "به کېږو", f: "ba kéGoo"}]],
+            [[{p: "به کېږې", f: "ba kéGe"}], [{p: "به کېږئ", f: "ba kéGeyy"}]],
+            [[{p: "به کېږې", f: "ba kéGe"}], [{p: "به کېږئ", f: "ba kéGeyy"}]],
+            [[{p: "به کېږي", f: "ba kéGee"}], [{p: "به کېږي", f: "ba kéGee"}]],
+            [[{p: "به کېږي", f: "ba kéGee"}], [{p: "به کېږي", f: "ba kéGee"}]],
         ],
         imperative: [
-            [[{ p: "کېږه", f: "keGa" }], [{ p: "کېږئ", f: "keGeyy" }]],
-            [[{ p: "کېږه", f: "keGa" }], [{ p: "کېږئ", f: "keGeyy" }]]
+            [[{ p: "کېږه", f: "kéGa" }], [{ p: "کېږئ", f: "kéGeyy" }]],
+            [[{ p: "کېږه", f: "kéGa" }], [{ p: "کېږئ", f: "kéGeyy" }]]
         ],
         past: {
             short: [
-                [[{p: "کېدم", f: "kedum"}], [{p: "کېدو", f: "kedoo"}]],
-                [[{p: "کېدم", f: "kedum"}], [{p: "کېدو", f: "kedoo"}]],
-                [[{p: "کېدې", f: "kede"}], [{p: "کېدئ", f: "kedeyy"}]],
-                [[{p: "کېدې", f: "kede"}], [{p: "کېدئ", f: "kedeyy"}]],
-                [[{p: "کېده", f: "kedu"}, {p: "کېدو", f: "kedo"}], [{p: "کېدل", f: "kedul"}]],
-                [[{p: "کېده", f: "keda"}], [{p: "کېدې", f: "kede"}]],
+                [[{p: "کېدم", f: "kedúm"}], [{p: "کېدو", f: "kedóo"}]],
+                [[{p: "کېدم", f: "kedúm"}], [{p: "کېدو", f: "kedóo"}]],
+                [[{p: "کېدې", f: "kedé"}], [{p: "کېدئ", f: "kedéyy"}]],
+                [[{p: "کېدې", f: "kedé"}], [{p: "کېدئ", f: "kedéyy"}]],
+                [[{p: "کېده", f: "kedú"}, {p: "کېدو", f: "kedó"}], [{p: "کېدل", f: "kedul"}]],
+                [[{p: "کېده", f: "kedá"}], [{p: "کېدې", f: "kedé"}]],
             ],
             long: [
                 [[{p: "کېدلم", f: "kedulum"}], [{p: "کېدلو", f: "keduloo"}]],
@@ -166,12 +380,12 @@ export const kedulStat: T.VerbConjugation = {
         },
         habitualPast: {
             short: [
-                [[{p: "به کېدم", f: "ba kedum"}], [{p: "به کېدو", f: "ba kedoo"}]],
-                [[{p: "به کېدم", f: "ba kedum"}], [{p: "به کېدو", f: "ba kedoo"}]],
-                [[{p: "به کېدې", f: "ba kede"}], [{p: "به کېدئ", f: "ba kedeyy"}]],
-                [[{p: "به کېدې", f: "ba kede"}], [{p: "به کېدئ", f: "ba kedeyy"}]],
-                [[{p: "به کېده", f: "ba kedu"}, {p: "به کېدو", f: "ba kedo"}], [{p: "به کېدل", f: "ba kedul"}]],
-                [[{p: "به کېده", f: "ba keda"}], [{p: "به کېدې", f: "ba kede"}]],
+                [[{p: "به کېدم", f: "ba kedum"}], [{p: "به کېدو", f: "ba kedóo"}]],
+                [[{p: "به کېدم", f: "ba kedum"}], [{p: "به کېدو", f: "ba kedóo"}]],
+                [[{p: "به کېدې", f: "ba kedé"}], [{p: "به کېدئ", f: "ba kedéyy"}]],
+                [[{p: "به کېدې", f: "ba kedé"}], [{p: "به کېدئ", f: "ba kedéyy"}]],
+                [[{p: "به کېده", f: "ba kedu"}, {p: "به کېدو", f: "ba kedó"}], [{p: "به کېدل", f: "ba kedul"}]],
+                [[{p: "به کېده", f: "ba kedá"}], [{p: "به کېدې", f: "ba kedé"}]],
             ],
             long: [
                 [[{p: "به کېدلم", f: "ba kedulum"}], [{p: "به کېدلو", f: "ba keduloo"}]],
@@ -386,33 +600,33 @@ export const kedulDyn: T.VerbConjugation = {
     },
     imperfective: {
         nonImperative: [
-            [[{p: "کېږم", f: "keGum"}], [{p: "کېږو", f: "keGoo"}]],
-            [[{p: "کېږم", f: "keGum"}], [{p: "کېږو", f: "keGoo"}]],
-            [[{p: "کېږې", f: "keGe"}], [{p: "کېږئ", f: "keGeyy"}]],
-            [[{p: "کېږې", f: "keGe"}], [{p: "کېږئ", f: "keGeyy"}]],
-            [[{p: "کېږي", f: "keGee"}], [{p: "کېږي", f: "keGee"}]],
-            [[{p: "کېږي", f: "keGee"}], [{p: "کېږي", f: "keGee"}]],
+            [[{p: "کېږم", f: "kéGum"}], [{p: "کېږو", f: "kéGoo"}]],
+            [[{p: "کېږم", f: "kéGum"}], [{p: "کېږو", f: "kéGoo"}]],
+            [[{p: "کېږې", f: "kéGe"}], [{p: "کېږئ", f: "kéGeyy"}]],
+            [[{p: "کېږې", f: "kéGe"}], [{p: "کېږئ", f: "kéGeyy"}]],
+            [[{p: "کېږي", f: "kéGee"}], [{p: "کېږي", f: "kéGee"}]],
+            [[{p: "کېږي", f: "kéGee"}], [{p: "کېږي", f: "kéGee"}]],
         ],
         future: [
-            [[{p: "به کېږم", f: "ba keGum"}], [{p: "به کېږو", f: "ba keGoo"}]],
-            [[{p: "به کېږم", f: "ba keGum"}], [{p: "به کېږو", f: "ba keGoo"}]],
-            [[{p: "به کېږې", f: "ba keGe"}], [{p: "به کېږئ", f: "ba keGeyy"}]],
-            [[{p: "به کېږې", f: "ba keGe"}], [{p: "به کېږئ", f: "ba keGeyy"}]],
-            [[{p: "به کېږي", f: "ba keGee"}], [{p: "به کېږي", f: "ba keGee"}]],
-            [[{p: "به کېږي", f: "ba keGee"}], [{p: "به کېږي", f: "ba keGee"}]],
+            [[{p: "به کېږم", f: "ba kéGum"}], [{p: "به کېږو", f: "ba kéGoo"}]],
+            [[{p: "به کېږم", f: "ba kéGum"}], [{p: "به کېږو", f: "ba kéGoo"}]],
+            [[{p: "به کېږې", f: "ba kéGe"}], [{p: "به کېږئ", f: "ba kéGeyy"}]],
+            [[{p: "به کېږې", f: "ba kéGe"}], [{p: "به کېږئ", f: "ba kéGeyy"}]],
+            [[{p: "به کېږي", f: "ba kéGee"}], [{p: "به کېږي", f: "ba kéGee"}]],
+            [[{p: "به کېږي", f: "ba kéGee"}], [{p: "به کېږي", f: "ba kéGee"}]],
         ],
         imperative: [
-            [[{ p: "کېږه", f: "keGa" }], [{ p: "کېږئ", f: "keGeyy" }]],
-            [[{ p: "کېږه", f: "keGa" }], [{ p: "کېږئ", f: "keGeyy" }]]
+            [[{ p: "کېږه", f: "kéGa" }], [{ p: "کېږئ", f: "kéGeyy" }]],
+            [[{ p: "کېږه", f: "kéGa" }], [{ p: "کېږئ", f: "kéGeyy" }]]
         ],
         past: {
             short: [
-                [[{p: "کېدم", f: "kedum"}], [{p: "کېدو", f: "kedoo"}]],
-                [[{p: "کېدم", f: "kedum"}], [{p: "کېدو", f: "kedoo"}]],
-                [[{p: "کېدې", f: "kede"}], [{p: "کېدئ", f: "kedeyy"}]],
-                [[{p: "کېدې", f: "kede"}], [{p: "کېدئ", f: "kedeyy"}]],
-                [[{p: "کېده", f: "kedu"}, {p: "کېدو", f: "kedo"}], [{p: "کېدل", f: "kedul"}]],
-                [[{p: "کېده", f: "keda"}], [{p: "کېدې", f: "kede"}]],
+                [[{p: "کېدم", f: "kedum"}], [{p: "کېدو", f: "kedóo"}]],
+                [[{p: "کېدم", f: "kedum"}], [{p: "کېدو", f: "kedóo"}]],
+                [[{p: "کېدې", f: "kedé"}], [{p: "کېدئ", f: "kedéyy"}]],
+                [[{p: "کېدې", f: "kedé"}], [{p: "کېدئ", f: "kedéyy"}]],
+                [[{p: "کېده", f: "kedu"}, {p: "کېدو", f: "kedó"}], [{p: "کېدل", f: "kedul"}]],
+                [[{p: "کېده", f: "kedá"}], [{p: "کېدې", f: "kedé"}]],
             ],
             long: [
                 [[{p: "کېدلم", f: "kedulum"}], [{p: "کېدلو", f: "keduloo"}]],
@@ -425,12 +639,12 @@ export const kedulDyn: T.VerbConjugation = {
         },
         habitualPast: {
             short: [
-                [[{p: "به کېدم", f: "ba kedum"}], [{p: "به کېدو", f: "ba kedoo"}]],
-                [[{p: "به کېدم", f: "ba kedum"}], [{p: "به کېدو", f: "ba kedoo"}]],
-                [[{p: "به کېدې", f: "ba kede"}], [{p: "به کېدئ", f: "ba kedeyy"}]],
-                [[{p: "به کېدې", f: "ba kede"}], [{p: "به کېدئ", f: "ba kedeyy"}]],
-                [[{p: "به کېده", f: "ba kedu"}, {p: "به کېدو", f: "ba kedo"}], [{p: "به کېدل", f: "ba kedul"}]],
-                [[{p: "به کېده", f: "ba keda"}], [{p: "به کېدې", f: "ba kede"}]],
+                [[{p: "به کېدم", f: "ba kedum"}], [{p: "به کېدو", f: "ba kedóo"}]],
+                [[{p: "به کېدم", f: "ba kedum"}], [{p: "به کېدو", f: "ba kedóo"}]],
+                [[{p: "به کېدې", f: "ba kedé"}], [{p: "به کېدئ", f: "ba kedéyy"}]],
+                [[{p: "به کېدې", f: "ba kedé"}], [{p: "به کېدئ", f: "ba kedéyy"}]],
+                [[{p: "به کېده", f: "ba kedu"}, {p: "به کېدو", f: "ba kedó"}], [{p: "به کېدل", f: "ba kedul"}]],
+                [[{p: "به کېده", f: "ba kedá"}], [{p: "به کېدې", f: "ba kedé"}]],
             ],
             long: [
                 [[{p: "به کېدلم", f: "ba kedulum"}], [{p: "به کېدلو", f: "ba keduloo"}]],
@@ -1076,6 +1290,11 @@ export const kawulStat: T.VerbConjugation = {
             },
         },
     },
+    passive: {
+        imperfective: kawulPassive,
+        perfective: kawulPassive,
+        perfect: kawulPerfectPassive,
+    },
     hypothetical: kawulHypothetical,
     participle: {
         past: {
@@ -1104,192 +1323,6 @@ export const kawulStat: T.VerbConjugation = {
         },
     },
     perfect: kawulPerfect,
-    // passive: {
-    //     imperfective: {
-    //         nonImperative: [
-    //             [{p: "کول کېږم", f: "kawul keGum"}, {p: "کول کېږو", f: "kawul keGoo"}],
-    //             [{p: "کول کېږې", f: "kawul keGe"}, {p: "کول کېږئ", f: "kawul keGeyy"}],
-    //             [{p: "کول کېږي", f: "kawul keGee"}, {p: "کول کېږي", f: "kawul keGee"}],
-    //         ],
-    //         future: [
-    //             [{p: "به کول کېږم", f: "ba kawul keGum"}, {p: "به کول کېږو", f: "ba kawul keGoo"}],
-    //             [{p: "به کول کېږې", f: "ba kawul keGe"}, {p: "به کول کېږئ", f: "ba kawul keGeyy"}],
-    //             [{p: "به کول کېږي", f: "ba kawul keGee"}, {p: "به کول کېږي", f: "ba kawul keGee"}],
-    //         ],
-    //         past: {
-    //             short: [
-    //                 [[{p: "کول کېدم", f: "kawul kedum"}], [{p: "کول کېدو", f: "kawul kedoo"}]],
-    //                 [[{p: "کول کېدم", f: "kawul kedum"}], [{p: "کول کېدو", f: "kawul kedoo"}]],
-    //                 [[{p: "کول کېدې", f: "kawul kede"}], [{p: "کول کېدئ", f: "kawul kedeyy"}]],
-    //                 [[{p: "کول کېدې", f: "kawul kede"}], [{p: "کول کېدئ", f: "kawul kedeyy"}]],
-    //                 [[{p: "کول کېده", f: "kawul kedu"}, {p: "کول کېدو", f: "kawul kedo"}], [{p: "کول کېدل", f: "kawul kedul"}]],
-    //                 [[{p: "کول کېده", f: "kawul keda"}], [{p: "کول کېدې", f: "kawul kede"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کول کېدلم", f: "kawul kedulum"}], [{p: "کول کېدلو", f: "kawul keduloo"}]],
-    //                 [[{p: "کول کېدلم", f: "kawul kedulum"}], [{p: "کول کېدلو", f: "kawul keduloo"}]],
-    //                 [[{p: "کول کېدلې", f: "kawul kedule"}], [{p: "کول کېدلئ", f: "kawul keduleyy"}]],
-    //                 [[{p: "کول کېدلې", f: "kawul kedule"}], [{p: "کول کېدلئ", f: "kawul keduleyy"}]],
-    //                 [[{p: "کول کېدله", f: "kawul kedulu"}, {p: "کول کېدلو", f: "kawul kedulo"}], [{p: "کول کېدل", f: "kawul kedul"}]],
-    //                 [[{p: "کول کېدله", f: "kawul kedula"}], [{p: "کول کېدلې", f: "kawul kedule"}]],
-    //             ],
-    //         },
-    //     },
-    //     perfective: {
-    //         nonImperative: {
-    //             short: [
-    //                 [{p: "کړلی کېږم", f: "kRuley keGum"}, {p: "کړلی کېږو", f: "kRuley keGoo"}],
-    //                 [{p: "کړلی کېږې", f: "kRuley keGe"}, {p: "کړلی کېږئ", f: "kRuley keGeyy"}],
-    //                 [{p: "کړلی کېږي", f: "kRuley keGee"}, {p: "کړلی کېږي", f: "kRuley keGee"}],
-    //             ],
-    //             long: [
-    //                 [{p: "کړی کېږم", f: "kRey keGum"}, {p: "کړی کېږو", f: "kRey keGoo"}],
-    //                 [{p: "کړی کېږې", f: "kRey keGe"}, {p: "کړی کېږئ", f: "kRey keGeyy"}],
-    //                 [{p: "کړی کېږي", f: "kRey keGee"}, {p: "کړی کېږي", f: "kRey keGee"}],
-    //             ],
-    //         },
-    //         future: {
-    //             short: [
-    //                 [{p: "به کړلی کېږم", f: "ba kRuley keGum"}, {p: "به کړلی کېږو", f: "ba kRuley keGoo"}],
-    //                 [{p: "به کړلی کېږې", f: "ba kRuley keGe"}, {p: "به کړلی کېږئ", f: "ba kRuley keGeyy"}],
-    //                 [{p: "به کړلی کېږي", f: "ba kRuley keGee"}, {p: "به کړلی کېږي", f: "ba kRuley keGee"}],
-    //             ],
-    //             long: [
-    //                 [{p: "به کړی کېږم", f: "ba kRey keGum"}, {p: "به کړی کېږو", f: "ba kRey keGoo"}],
-    //                 [{p: "به کړی کېږې", f: "ba kRey keGe"}, {p: "به کړی کېږئ", f: "ba kRey keGeyy"}],
-    //                 [{p: "به کړی کېږي", f: "ba kRey keGee"}, {p: "به کړی کېږي", f: "ba kRey keGee"}],
-    //             ],
-    //         },
-    //         past: {
-    //             short: [
-    //                 [[{p: "کړی شوم", f: "kRey shwum"}], [{p: "کړی شو", f: "kRey shoo"}]],
-    //                 [[{p: "کړی شوم", f: "kRey shwum"}], [{p: "کړی شو", f: "kRey shoo"}]],
-    //                 [[{p: "کړی شوې", f: "kRey shwe"}], [{p: "کړی شوئ", f: "kRey shweyy"}]],
-    //                 [[{p: "کړی شوې", f: "kRey shwe"}], [{p: "کړی شوئ", f: "kRey shweyy"}]],
-    //                 [[{p: "کړی شو", f: "kRey sho"}], [{p: "کړی شو", f: "kRey shoo"}, {p: "کړی شول", f: "kRey shwul"}]],
-    //                 [[{p: "کړی شوه", f: "kRey shwa"}], [{p: "کړی شوې", f: "kRey shwe"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوم", f: "kRúley shwum"}], [{p: "کړلی شو", f: "kRúley shoo"}]],
-    //                 [[{p: "کړلی شوم", f: "kRúley shwum"}], [{p: "کړلی شو", f: "kRúley shoo"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shwe"}], [{p: "کړلی شوئ", f: "kRúley shweyy"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shwe"}], [{p: "کړلی شوئ", f: "kRúley shweyy"}]],
-    //                 [[{p: "کړلی شو", f: "kRúley sho"}], [{p: "کړلی شو", f: "kRúley shoo"}, {p: "کړلی شول", f: "kRúley shwul"}]],
-    //                 [[{p: "کړلی شوه", f: "kRúley shwa"}], [{p: "کړلی شوې", f: "kRúley shwe"}]],
-    //             ],
-    //         },
-    //     },
-    //     perfect: {
-    //         halfPerfect: {
-    //             short: [
-    //                 [[{p: "کړی شوی", f: "kRéy shuwey"}], [{p: "کړی شوي", f: "kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې", f: "kRéy shuwe"}], [{p: "کړی شوې", f: "kRéy shuwe"}]],
-    //                 [[{p: "کړی شوی", f: "kRéy shuwey"}], [{p: "کړی شوي", f: "kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې", f: "kRéy shuwe"}], [{p: "کړی شوې", f: "kRéy shuwe"}]],
-    //                 [[{p: "کړی شوی", f: "kRéy shuwey"}], [{p: "کړی شوي", f: "kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې", f: "kRéy shuwe"}], [{p: "کړی شوې", f: "kRéy shuwe"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوی", f: "kRúley shuwey"}], [{p: "کړلی شوي", f: "kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shuwe"}], [{p: "کړلی شوې", f: "kRúley shuwe"}]],
-    //                 [[{p: "کړلی شوی", f: "kRúley shuwey"}], [{p: "کړلی شوي", f: "kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shuwe"}], [{p: "کړلی شوې", f: "kRúley shuwe"}]],
-    //                 [[{p: "کړلی شوی", f: "kRúley shuwey"}], [{p: "کړلی شوي", f: "kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shuwe"}], [{p: "کړلی شوې", f: "kRúley shuwe"}]],
-    //             ],
-    //         },
-    //         past: {
-    //             short: [
-    //                 [[{p: "کړی شوی وم", f: "kRéy shuwey wum"}], [{p: "کړی شوي وو", f: "kRéy shuwee woo"}]],
-    //                 [[{p: "کړی شوې وم", f: "kRéy shuwe wum"}], [{p: "کړی شوې وو", f: "kRéy shuwe woo"}]],
-    //                 [[{p: "کړی شوی وې", f: "kRéy shuwey we"}], [{p: "کړی شوي وئ", f: "kRéy shuwee weyy"}]],
-    //                 [[{p: "کړی شوې وې", f: "kRéy shuwe we"}], [{p: "کړی شوې وئ", f: "kRéy shuwe weyy"}]],
-    //                 [[{p: "کړی شوی و", f: "kRéy shuwey wo"}], [{p: "کړی شوي وو", f: "kRéy shuwee woo"}]],
-    //                 [[{p: "کړی شوې وه", f: "kRéy shuwe wa"}], [{p: "کړی شوې وې", f: "kRéy shuwe we"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوی وم", f: "kRúley shuwey wum"}], [{p: "کړلی شوي وو", f: "kRúley shuwee woo"}]],
-    //                 [[{p: "کړلی شوې وم", f: "kRúley shuwe wum"}], [{p: "کړلی شوې وو", f: "kRúley shuwe woo"}]],
-    //                 [[{p: "کړلی شوی وې", f: "kRúley shuwey we"}], [{p: "کړلی شوي وئ", f: "kRúley shuwee weyy"}]],
-    //                 [[{p: "کړلی شوې وې", f: "kRúley shuwe we"}], [{p: "کړلی شوې وئ", f: "kRúley shuwe weyy"}]],
-    //                 [[{p: "کړلی شوی و", f: "kRúley shuwey wo"}], [{p: "کړلی شوي وو", f: "kRúley shuwee woo"}]],
-    //                 [[{p: "کړلی شوې وه", f: "kRúley shuwe wa"}], [{p: "کړلی شوې وې", f: "kRúley shuwe we"}]],
-    //             ],
-    //         },
-    //         present: {
-    //             short: [
-    //                 [[{p: "کړی شوی یم", f: "kRéy shuwey yum"}], [{p: "کړی شوي یو", f: "kRéy shuwee yoo"}]],
-    //                 [[{p: "کړی شوې یم", f: "kRéy shuwe yum"}], [{p: "کړی شوې یو", f: "kRéy shuwe yoo"}]],
-    //                 [[{p: "کړی شوی یې", f: "kRéy shuwey ye"}], [{p: "کړی شوي یئ", f: "kRéy shuwee yeyy"}]],
-    //                 [[{p: "کړی شوې یې", f: "kRéy shuwe ye"}], [{p: "کړی شوې یئ", f: "kRéy shuwe yeyy"}]],
-    //                 [[{p: "کړی شوی دی", f: "kRéy shuwey dey"}], [{p: "کړی شوي دي", f: "kRéy shuwee dee"}]],
-    //                 [[{p: "کړی شوې ده", f: "kRéy shuwe da"}], [{p: "کړی شوې دي", f: "kRéy shuwe dee"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوی یم", f: "kRúley shuwey yum"}], [{p: "کړلی شوي یو", f: "kRúley shuwee yoo"}]],
-    //                 [[{p: "کړلی شوې یم", f: "kRúley shuwe yum"}], [{p: "کړلی شوې یو", f: "kRúley shuwe yoo"}]],
-    //                 [[{p: "کړلی شوی یې", f: "kRúley shuwey ye"}], [{p: "کړلی شوي یئ", f: "kRúley shuwee yeyy"}]],
-    //                 [[{p: "کړلی شوې یې", f: "kRúley shuwe ye"}], [{p: "کړلی شوې یئ", f: "kRúley shuwe yeyy"}]],
-    //                 [[{p: "کړلی شوی دی", f: "kRúley shuwey dey"}], [{p: "کړلی شوي دي", f: "kRúley shuwee dee"}]],
-    //                 [[{p: "کړلی شوې ده", f: "kRúley shuwe da"}], [{p: "کړلی شوې دي", f: "kRúley shuwe dee"}]],
-    //             ],
-    //         },
-    //         future: {
-    //             short: [
-    //                 [[{p: "به کړی شوی یم", f: "ba kRéy shuwey yum"}], [{p: "به کړی شوي یو", f: "ba kRéy shuwee yoo"}]],
-    //                 [[{p: "به کړی شوې یم", f: "ba kRéy shuwe yum"}], [{p: "به کړی شوې یو", f: "ba kRéy shuwe yoo"}]],
-    //                 [[{p: "به کړی شوی یې", f: "ba kRéy shuwey ye"}], [{p: "به کړی شوي یئ", f: "ba kRéy shuwee yeyy"}]],
-    //                 [[{p: "به کړی شوې یې", f: "ba kRéy shuwe ye"}], [{p: "به کړی شوې یئ", f: "ba kRéy shuwe yeyy"}]],
-    //                 [[{p: "به کړی شوی وي", f: "ba kRéy shuwey wee"}], [{p: "به کړی شوي وي", f: "ba kRéy shuwee wee"}]],
-    //                 [[{p: "به کړی شوې وي", f: "ba kRéy shuwe wee"}], [{p: "به کړی شوې وي", f: "ba kRéy shuwe wee"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "به کړلی شوی یم", f: "ba kRúley shuwey yum"}], [{p: "به کړلی شوي یو", f: "ba kRúley shuwee yoo"}]],
-    //                 [[{p: "به کړلی شوې یم", f: "ba kRúley shuwe yum"}], [{p: "به کړلی شوې یو", f: "ba kRúley shuwe yoo"}]],
-    //                 [[{p: "به کړلی شوی یې", f: "ba kRúley shuwey ye"}], [{p: "به کړلی شوي یئ", f: "ba kRúley shuwee yeyy"}]],
-    //                 [[{p: "به کړلی شوې یې", f: "ba kRúley shuwe ye"}], [{p: "به کړلی شوې یئ", f: "ba kRúley shuwe yeyy"}]],
-    //                 [[{p: "به کړلی شوی وي", f: "ba kRúley shuwey wee"}], [{p: "به کړلی شوي وي", f: "ba kRúley shuwee wee"}]],
-    //                 [[{p: "به کړلی شوې وي", f: "ba kRúley shuwe wee"}], [{p: "به کړلی شوې وي", f: "ba kRúley shuwe wee"}]],
-    //             ],
-    //         },
-    //         affirmational: {
-    //             short: [
-    //                 [[{p: "به کړی شوی وم", f: "ba kRéy shuwey wum"}], [{p: "به کړی شوي وو", f: "ba kRéy shuwee woo"}]],
-    //                 [[{p: "به کړی شوې وم", f: "ba kRéy shuwe wum"}], [{p: "به کړی شوې وو", f: "ba kRéy shuwe woo"}]],
-    //                 [[{p: "به کړی شوی وې", f: "ba kRéy shuwey we"}], [{p: "به کړی شوي وئ", f: "ba kRéy shuwee weyy"}]],
-    //                 [[{p: "به کړی شوې وې", f: "ba kRéy shuwe we"}], [{p: "به کړی شوې وئ", f: "ba kRéy shuwe weyy"}]],
-    //                 [[{p: "به کړی شوی و", f: "ba kRéy shuwey wo"}], [{p: "به کړی شوي وو", f: "ba kRéy shuwee woo"}]],
-    //                 [[{p: "به کړی شوې وه", f: "ba kRéy shuwe wa"}], [{p: "به کړی شوې وې", f: "ba kRéy shuwe we"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "به کړلی شوی وم", f: "ba kRúley shuwey wum"}], [{p: "به کړلی شوي وو", f: "ba kRúley shuwee woo"}]],
-    //                 [[{p: "به کړلی شوې وم", f: "ba kRúley shuwe wum"}], [{p: "به کړلی شوې وو", f: "ba kRúley shuwe woo"}]],
-    //                 [[{p: "به کړلی شوی وې", f: "ba kRúley shuwey we"}], [{p: "به کړلی شوي وئ", f: "ba kRúley shuwee weyy"}]],
-    //                 [[{p: "به کړلی شوې وې", f: "ba kRúley shuwe we"}], [{p: "به کړلی شوې وئ", f: "ba kRúley shuwe weyy"}]],
-    //                 [[{p: "به کړلی شوی و", f: "ba kRúley shuwey wo"}], [{p: "به کړلی شوي وو", f: "ba kRúley shuwee woo"}]],
-    //                 [[{p: "به کړلی شوې وه", f: "ba kRúley shuwe wa"}], [{p: "به کړلی شوې وې", f: "ba kRúley shuwe we"}]],
-    //             ],
-    //         },
-    //         pastSubjunctiveHypothetical: {
-    //             short: [
-    //                 [[{p: "کړی شوی وای", f: "ba kRéy shuwey"}], [{p: "به کړی شوي", f: "ba kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې وای", f: "ba kRéy shuwe"}], [{p: "به کړی شوې", f: "ba kRéy shuwe"}]],
-    //                 [[{p: "کړی شوی وای", f: "ba kRéy shuwey"}], [{p: "به کړی شوي", f: "ba kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې وای", f: "ba kRéy shuwe"}], [{p: "به کړی شوې", f: "ba kRéy shuwe"}]],
-    //                 [[{p: "کړی شوی وای", f: "ba kRéy shuwey"}], [{p: "به کړی شوي", f: "ba kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې وای", f: "ba kRéy shuwe"}], [{p: "به کړی شوې", f: "ba kRéy shuwe"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوی وای", f: "ba kRúley shuwey"}], [{p: "به کړلی شوي", f: "ba kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې وای", f: "ba kRúley shuwe"}], [{p: "به کړلی شوې", f: "ba kRúley shuwe"}]],
-    //                 [[{p: "کړلی شوی وای", f: "ba kRúley shuwey"}], [{p: "به کړلی شوي", f: "ba kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې وای", f: "ba kRúley shuwe"}], [{p: "به کړلی شوې", f: "ba kRúley shuwe"}]],
-    //                 [[{p: "کړلی شوی وای", f: "ba kRúley shuwey"}], [{p: "به کړلی شوي", f: "ba kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې وای", f: "ba kRúley shuwe"}], [{p: "به کړلی شوې", f: "ba kRúley shuwe"}]],
-    //             ],
-    //         },
-    //     },
-    // },
 };
 
 // TODO: This is kind of bad because the info can get generated perfectly and tested but we're returning it by hand here?
@@ -1614,192 +1647,11 @@ export const kawulDyn: T.VerbConjugation = {
         },
     },
     perfect: kawulPerfect,
-    // passive: {
-    //     imperfective: {
-    //         nonImperative: [
-    //             [{p: "کول کېږم", f: "kawul keGum"}, {p: "کول کېږو", f: "kawul keGoo"}],
-    //             [{p: "کول کېږې", f: "kawul keGe"}, {p: "کول کېږئ", f: "kawul keGeyy"}],
-    //             [{p: "کول کېږي", f: "kawul keGee"}, {p: "کول کېږي", f: "kawul keGee"}],
-    //         ],
-    //         future: [
-    //             [{p: "به کول کېږم", f: "ba kawul keGum"}, {p: "به کول کېږو", f: "ba kawul keGoo"}],
-    //             [{p: "به کول کېږې", f: "ba kawul keGe"}, {p: "به کول کېږئ", f: "ba kawul keGeyy"}],
-    //             [{p: "به کول کېږي", f: "ba kawul keGee"}, {p: "به کول کېږي", f: "ba kawul keGee"}],
-    //         ],
-    //         past: {
-    //             short: [
-    //                 [[{p: "کول کېدم", f: "kawul kedum"}], [{p: "کول کېدو", f: "kawul kedoo"}]],
-    //                 [[{p: "کول کېدم", f: "kawul kedum"}], [{p: "کول کېدو", f: "kawul kedoo"}]],
-    //                 [[{p: "کول کېدې", f: "kawul kede"}], [{p: "کول کېدئ", f: "kawul kedeyy"}]],
-    //                 [[{p: "کول کېدې", f: "kawul kede"}], [{p: "کول کېدئ", f: "kawul kedeyy"}]],
-    //                 [[{p: "کول کېده", f: "kawul kedu"}, {p: "کول کېدو", f: "kawul kedo"}], [{p: "کول کېدل", f: "kawul kedul"}]],
-    //                 [[{p: "کول کېده", f: "kawul keda"}], [{p: "کول کېدې", f: "kawul kede"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کول کېدلم", f: "kawul kedulum"}], [{p: "کول کېدلو", f: "kawul keduloo"}]],
-    //                 [[{p: "کول کېدلم", f: "kawul kedulum"}], [{p: "کول کېدلو", f: "kawul keduloo"}]],
-    //                 [[{p: "کول کېدلې", f: "kawul kedule"}], [{p: "کول کېدلئ", f: "kawul keduleyy"}]],
-    //                 [[{p: "کول کېدلې", f: "kawul kedule"}], [{p: "کول کېدلئ", f: "kawul keduleyy"}]],
-    //                 [[{p: "کول کېدله", f: "kawul kedulu"}, {p: "کول کېدلو", f: "kawul kedulo"}], [{p: "کول کېدل", f: "kawul kedul"}]],
-    //                 [[{p: "کول کېدله", f: "kawul kedula"}], [{p: "کول کېدلې", f: "kawul kedule"}]],
-    //             ],
-    //         },
-    //     },
-    //     perfective: {
-    //         nonImperative: {
-    //             short: [
-    //                 [{p: "کړلی کېږم", f: "kRuley keGum"}, {p: "کړلی کېږو", f: "kRuley keGoo"}],
-    //                 [{p: "کړلی کېږې", f: "kRuley keGe"}, {p: "کړلی کېږئ", f: "kRuley keGeyy"}],
-    //                 [{p: "کړلی کېږي", f: "kRuley keGee"}, {p: "کړلی کېږي", f: "kRuley keGee"}],
-    //             ],
-    //             long: [
-    //                 [{p: "کړی کېږم", f: "kRey keGum"}, {p: "کړی کېږو", f: "kRey keGoo"}],
-    //                 [{p: "کړی کېږې", f: "kRey keGe"}, {p: "کړی کېږئ", f: "kRey keGeyy"}],
-    //                 [{p: "کړی کېږي", f: "kRey keGee"}, {p: "کړی کېږي", f: "kRey keGee"}],
-    //             ],
-    //         },
-    //         future: {
-    //             short: [
-    //                 [{p: "به کړلی کېږم", f: "ba kRuley keGum"}, {p: "به کړلی کېږو", f: "ba kRuley keGoo"}],
-    //                 [{p: "به کړلی کېږې", f: "ba kRuley keGe"}, {p: "به کړلی کېږئ", f: "ba kRuley keGeyy"}],
-    //                 [{p: "به کړلی کېږي", f: "ba kRuley keGee"}, {p: "به کړلی کېږي", f: "ba kRuley keGee"}],
-    //             ],
-    //             long: [
-    //                 [{p: "به کړی کېږم", f: "ba kRey keGum"}, {p: "به کړی کېږو", f: "ba kRey keGoo"}],
-    //                 [{p: "به کړی کېږې", f: "ba kRey keGe"}, {p: "به کړی کېږئ", f: "ba kRey keGeyy"}],
-    //                 [{p: "به کړی کېږي", f: "ba kRey keGee"}, {p: "به کړی کېږي", f: "ba kRey keGee"}],
-    //             ],
-    //         },
-    //         past: {
-    //             short: [
-    //                 [[{p: "کړی شوم", f: "kRey shwum"}], [{p: "کړی شو", f: "kRey shoo"}]],
-    //                 [[{p: "کړی شوم", f: "kRey shwum"}], [{p: "کړی شو", f: "kRey shoo"}]],
-    //                 [[{p: "کړی شوې", f: "kRey shwe"}], [{p: "کړی شوئ", f: "kRey shweyy"}]],
-    //                 [[{p: "کړی شوې", f: "kRey shwe"}], [{p: "کړی شوئ", f: "kRey shweyy"}]],
-    //                 [[{p: "کړی شو", f: "kRey sho"}], [{p: "کړی شو", f: "kRey shoo"}, {p: "کړی شول", f: "kRey shwul"}]],
-    //                 [[{p: "کړی شوه", f: "kRey shwa"}], [{p: "کړی شوې", f: "kRey shwe"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوم", f: "kRúley shwum"}], [{p: "کړلی شو", f: "kRúley shoo"}]],
-    //                 [[{p: "کړلی شوم", f: "kRúley shwum"}], [{p: "کړلی شو", f: "kRúley shoo"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shwe"}], [{p: "کړلی شوئ", f: "kRúley shweyy"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shwe"}], [{p: "کړلی شوئ", f: "kRúley shweyy"}]],
-    //                 [[{p: "کړلی شو", f: "kRúley sho"}], [{p: "کړلی شو", f: "kRúley shoo"}, {p: "کړلی شول", f: "kRúley shwul"}]],
-    //                 [[{p: "کړلی شوه", f: "kRúley shwa"}], [{p: "کړلی شوې", f: "kRúley shwe"}]],
-    //             ],
-    //         },
-    //     },
-    //     perfect: {
-    //         halfPerfect: {
-    //             short: [
-    //                 [[{p: "کړی شوی", f: "kRéy shuwey"}], [{p: "کړی شوي", f: "kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې", f: "kRéy shuwe"}], [{p: "کړی شوې", f: "kRéy shuwe"}]],
-    //                 [[{p: "کړی شوی", f: "kRéy shuwey"}], [{p: "کړی شوي", f: "kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې", f: "kRéy shuwe"}], [{p: "کړی شوې", f: "kRéy shuwe"}]],
-    //                 [[{p: "کړی شوی", f: "kRéy shuwey"}], [{p: "کړی شوي", f: "kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې", f: "kRéy shuwe"}], [{p: "کړی شوې", f: "kRéy shuwe"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوی", f: "kRúley shuwey"}], [{p: "کړلی شوي", f: "kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shuwe"}], [{p: "کړلی شوې", f: "kRúley shuwe"}]],
-    //                 [[{p: "کړلی شوی", f: "kRúley shuwey"}], [{p: "کړلی شوي", f: "kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shuwe"}], [{p: "کړلی شوې", f: "kRúley shuwe"}]],
-    //                 [[{p: "کړلی شوی", f: "kRúley shuwey"}], [{p: "کړلی شوي", f: "kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې", f: "kRúley shuwe"}], [{p: "کړلی شوې", f: "kRúley shuwe"}]],
-    //             ],
-    //         },
-    //         past: {
-    //             short: [
-    //                 [[{p: "کړی شوی وم", f: "kRéy shuwey wum"}], [{p: "کړی شوي وو", f: "kRéy shuwee woo"}]],
-    //                 [[{p: "کړی شوې وم", f: "kRéy shuwe wum"}], [{p: "کړی شوې وو", f: "kRéy shuwe woo"}]],
-    //                 [[{p: "کړی شوی وې", f: "kRéy shuwey we"}], [{p: "کړی شوي وئ", f: "kRéy shuwee weyy"}]],
-    //                 [[{p: "کړی شوې وې", f: "kRéy shuwe we"}], [{p: "کړی شوې وئ", f: "kRéy shuwe weyy"}]],
-    //                 [[{p: "کړی شوی و", f: "kRéy shuwey wo"}], [{p: "کړی شوي وو", f: "kRéy shuwee woo"}]],
-    //                 [[{p: "کړی شوې وه", f: "kRéy shuwe wa"}], [{p: "کړی شوې وې", f: "kRéy shuwe we"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوی وم", f: "kRúley shuwey wum"}], [{p: "کړلی شوي وو", f: "kRúley shuwee woo"}]],
-    //                 [[{p: "کړلی شوې وم", f: "kRúley shuwe wum"}], [{p: "کړلی شوې وو", f: "kRúley shuwe woo"}]],
-    //                 [[{p: "کړلی شوی وې", f: "kRúley shuwey we"}], [{p: "کړلی شوي وئ", f: "kRúley shuwee weyy"}]],
-    //                 [[{p: "کړلی شوې وې", f: "kRúley shuwe we"}], [{p: "کړلی شوې وئ", f: "kRúley shuwe weyy"}]],
-    //                 [[{p: "کړلی شوی و", f: "kRúley shuwey wo"}], [{p: "کړلی شوي وو", f: "kRúley shuwee woo"}]],
-    //                 [[{p: "کړلی شوې وه", f: "kRúley shuwe wa"}], [{p: "کړلی شوې وې", f: "kRúley shuwe we"}]],
-    //             ],
-    //         },
-    //         present: {
-    //             short: [
-    //                 [[{p: "کړی شوی یم", f: "kRéy shuwey yum"}], [{p: "کړی شوي یو", f: "kRéy shuwee yoo"}]],
-    //                 [[{p: "کړی شوې یم", f: "kRéy shuwe yum"}], [{p: "کړی شوې یو", f: "kRéy shuwe yoo"}]],
-    //                 [[{p: "کړی شوی یې", f: "kRéy shuwey ye"}], [{p: "کړی شوي یئ", f: "kRéy shuwee yeyy"}]],
-    //                 [[{p: "کړی شوې یې", f: "kRéy shuwe ye"}], [{p: "کړی شوې یئ", f: "kRéy shuwe yeyy"}]],
-    //                 [[{p: "کړی شوی دی", f: "kRéy shuwey dey"}], [{p: "کړی شوي دي", f: "kRéy shuwee dee"}]],
-    //                 [[{p: "کړی شوې ده", f: "kRéy shuwe da"}], [{p: "کړی شوې دي", f: "kRéy shuwe dee"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوی یم", f: "kRúley shuwey yum"}], [{p: "کړلی شوي یو", f: "kRúley shuwee yoo"}]],
-    //                 [[{p: "کړلی شوې یم", f: "kRúley shuwe yum"}], [{p: "کړلی شوې یو", f: "kRúley shuwe yoo"}]],
-    //                 [[{p: "کړلی شوی یې", f: "kRúley shuwey ye"}], [{p: "کړلی شوي یئ", f: "kRúley shuwee yeyy"}]],
-    //                 [[{p: "کړلی شوې یې", f: "kRúley shuwe ye"}], [{p: "کړلی شوې یئ", f: "kRúley shuwe yeyy"}]],
-    //                 [[{p: "کړلی شوی دی", f: "kRúley shuwey dey"}], [{p: "کړلی شوي دي", f: "kRúley shuwee dee"}]],
-    //                 [[{p: "کړلی شوې ده", f: "kRúley shuwe da"}], [{p: "کړلی شوې دي", f: "kRúley shuwe dee"}]],
-    //             ],
-    //         },
-    //         future: {
-    //             short: [
-    //                 [[{p: "به کړی شوی یم", f: "ba kRéy shuwey yum"}], [{p: "به کړی شوي یو", f: "ba kRéy shuwee yoo"}]],
-    //                 [[{p: "به کړی شوې یم", f: "ba kRéy shuwe yum"}], [{p: "به کړی شوې یو", f: "ba kRéy shuwe yoo"}]],
-    //                 [[{p: "به کړی شوی یې", f: "ba kRéy shuwey ye"}], [{p: "به کړی شوي یئ", f: "ba kRéy shuwee yeyy"}]],
-    //                 [[{p: "به کړی شوې یې", f: "ba kRéy shuwe ye"}], [{p: "به کړی شوې یئ", f: "ba kRéy shuwe yeyy"}]],
-    //                 [[{p: "به کړی شوی وي", f: "ba kRéy shuwey wee"}], [{p: "به کړی شوي وي", f: "ba kRéy shuwee wee"}]],
-    //                 [[{p: "به کړی شوې وي", f: "ba kRéy shuwe wee"}], [{p: "به کړی شوې وي", f: "ba kRéy shuwe wee"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "به کړلی شوی یم", f: "ba kRúley shuwey yum"}], [{p: "به کړلی شوي یو", f: "ba kRúley shuwee yoo"}]],
-    //                 [[{p: "به کړلی شوې یم", f: "ba kRúley shuwe yum"}], [{p: "به کړلی شوې یو", f: "ba kRúley shuwe yoo"}]],
-    //                 [[{p: "به کړلی شوی یې", f: "ba kRúley shuwey ye"}], [{p: "به کړلی شوي یئ", f: "ba kRúley shuwee yeyy"}]],
-    //                 [[{p: "به کړلی شوې یې", f: "ba kRúley shuwe ye"}], [{p: "به کړلی شوې یئ", f: "ba kRúley shuwe yeyy"}]],
-    //                 [[{p: "به کړلی شوی وي", f: "ba kRúley shuwey wee"}], [{p: "به کړلی شوي وي", f: "ba kRúley shuwee wee"}]],
-    //                 [[{p: "به کړلی شوې وي", f: "ba kRúley shuwe wee"}], [{p: "به کړلی شوې وي", f: "ba kRúley shuwe wee"}]],
-    //             ],
-    //         },
-    //         affirmational: {
-    //             short: [
-    //                 [[{p: "به کړی شوی وم", f: "ba kRéy shuwey wum"}], [{p: "به کړی شوي وو", f: "ba kRéy shuwee woo"}]],
-    //                 [[{p: "به کړی شوې وم", f: "ba kRéy shuwe wum"}], [{p: "به کړی شوې وو", f: "ba kRéy shuwe woo"}]],
-    //                 [[{p: "به کړی شوی وې", f: "ba kRéy shuwey we"}], [{p: "به کړی شوي وئ", f: "ba kRéy shuwee weyy"}]],
-    //                 [[{p: "به کړی شوې وې", f: "ba kRéy shuwe we"}], [{p: "به کړی شوې وئ", f: "ba kRéy shuwe weyy"}]],
-    //                 [[{p: "به کړی شوی و", f: "ba kRéy shuwey wo"}], [{p: "به کړی شوي وو", f: "ba kRéy shuwee woo"}]],
-    //                 [[{p: "به کړی شوې وه", f: "ba kRéy shuwe wa"}], [{p: "به کړی شوې وې", f: "ba kRéy shuwe we"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "به کړلی شوی وم", f: "ba kRúley shuwey wum"}], [{p: "به کړلی شوي وو", f: "ba kRúley shuwee woo"}]],
-    //                 [[{p: "به کړلی شوې وم", f: "ba kRúley shuwe wum"}], [{p: "به کړلی شوې وو", f: "ba kRúley shuwe woo"}]],
-    //                 [[{p: "به کړلی شوی وې", f: "ba kRúley shuwey we"}], [{p: "به کړلی شوي وئ", f: "ba kRúley shuwee weyy"}]],
-    //                 [[{p: "به کړلی شوې وې", f: "ba kRúley shuwe we"}], [{p: "به کړلی شوې وئ", f: "ba kRúley shuwe weyy"}]],
-    //                 [[{p: "به کړلی شوی و", f: "ba kRúley shuwey wo"}], [{p: "به کړلی شوي وو", f: "ba kRúley shuwee woo"}]],
-    //                 [[{p: "به کړلی شوې وه", f: "ba kRúley shuwe wa"}], [{p: "به کړلی شوې وې", f: "ba kRúley shuwe we"}]],
-    //             ],
-    //         },
-    //         pastSubjunctiveHypothetical: {
-    //             short: [
-    //                 [[{p: "کړی شوی وای", f: "ba kRéy shuwey"}], [{p: "به کړی شوي", f: "ba kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې وای", f: "ba kRéy shuwe"}], [{p: "به کړی شوې", f: "ba kRéy shuwe"}]],
-    //                 [[{p: "کړی شوی وای", f: "ba kRéy shuwey"}], [{p: "به کړی شوي", f: "ba kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې وای", f: "ba kRéy shuwe"}], [{p: "به کړی شوې", f: "ba kRéy shuwe"}]],
-    //                 [[{p: "کړی شوی وای", f: "ba kRéy shuwey"}], [{p: "به کړی شوي", f: "ba kRéy shuwee"}]],
-    //                 [[{p: "کړی شوې وای", f: "ba kRéy shuwe"}], [{p: "به کړی شوې", f: "ba kRéy shuwe"}]],
-    //             ],
-    //             long: [
-    //                 [[{p: "کړلی شوی وای", f: "ba kRúley shuwey"}], [{p: "به کړلی شوي", f: "ba kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې وای", f: "ba kRúley shuwe"}], [{p: "به کړلی شوې", f: "ba kRúley shuwe"}]],
-    //                 [[{p: "کړلی شوی وای", f: "ba kRúley shuwey"}], [{p: "به کړلی شوي", f: "ba kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې وای", f: "ba kRúley shuwe"}], [{p: "به کړلی شوې", f: "ba kRúley shuwe"}]],
-    //                 [[{p: "کړلی شوی وای", f: "ba kRúley shuwey"}], [{p: "به کړلی شوي", f: "ba kRúley shuwee"}]],
-    //                 [[{p: "کړلی شوې وای", f: "ba kRúley shuwe"}], [{p: "به کړلی شوې", f: "ba kRúley shuwe"}]],
-    //             ],
-    //         },
-    //     },
-    // },
+    passive: {
+        imperfective: kawulPassive,
+        perfective: kawulPassive,
+        perfect: kawulPerfectPassive,
+    },
 };
 
 const tlulModal: T.ModalContent = {
@@ -2774,12 +2626,12 @@ export const warkawul: T.VerbConjugation = {
     //         ],
     //         past: {
     //             short: [
-    //                 [[{p: "ورکول کېدم", f: "wărkawul kedum"}], [{p: "ورکول کېدو", f: "wărkawul kedoo"}]],
-    //                 [[{p: "ورکول کېدم", f: "wărkawul kedum"}], [{p: "ورکول کېدو", f: "wărkawul kedoo"}]],
-    //                 [[{p: "ورکول کېدې", f: "wărkawul kede"}], [{p: "ورکول کېدئ", f: "wărkawul kedeyy"}]],
-    //                 [[{p: "ورکول کېدې", f: "wărkawul kede"}], [{p: "ورکول کېدئ", f: "wărkawul kedeyy"}]],
-    //                 [[{p: "ورکول کېده", f: "wărkawul kedu"}, {p: "ورکول کېدو", f: "wărkawul kedo"}], [{p: "ورکول کېدل", f: "wărkawul kedul"}]],
-    //                 [[{p: "ورکول کېده", f: "wărkawul keda"}], [{p: "ورکول کېدې", f: "wărkawul kede"}]],
+    //                 [[{p: "ورکول کېدم", f: "wărkawul kedum"}], [{p: "ورکول کېدو", f: "wărkawul kedóo"}]],
+    //                 [[{p: "ورکول کېدم", f: "wărkawul kedum"}], [{p: "ورکول کېدو", f: "wărkawul kedóo"}]],
+    //                 [[{p: "ورکول کېدې", f: "wărkawul kedé"}], [{p: "ورکول کېدئ", f: "wărkawul kedéyy"}]],
+    //                 [[{p: "ورکول کېدې", f: "wărkawul kedé"}], [{p: "ورکول کېدئ", f: "wărkawul kedéyy"}]],
+    //                 [[{p: "ورکول کېده", f: "wărkawul kedu"}, {p: "ورکول کېدو", f: "wărkawul kedó"}], [{p: "ورکول کېدل", f: "wărkawul kedul"}]],
+    //                 [[{p: "ورکول کېده", f: "wărkawul kedá"}], [{p: "ورکول کېدې", f: "wărkawul kedé"}]],
     //             ],
     //             long: [
     //                 [[{p: "ورکول کېدلم", f: "wărkawul kedulum"}], [{p: "ورکول کېدلو", f: "wărkawul keduloo"}]],
