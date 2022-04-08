@@ -6,7 +6,7 @@
  *
  */
 
-import { makePsString } from "./p-text-helpers";
+import { makePsString } from "./accent-and-ps-utils";
 import { 
     accentOnFront,
     accentPastParticiple,

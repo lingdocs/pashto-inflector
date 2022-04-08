@@ -24,11 +24,13 @@ import {
     complementInflects,
     concatInflections,
     unisexInfToObjectMatrix,
-    inflectYey,
     allOnePersonInflection,
     psStringEquals,
-    makePsString,
 } from "./p-text-helpers";
+import { makePsString } from "./accent-and-ps-utils";
+import { 
+    inflectYey,
+} from "./pashto-inflector";
 import {
     accentOnNFromEnd,
 } from "./accent-helpers";

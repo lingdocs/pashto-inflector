@@ -6,9 +6,6 @@
  *
  */
 
-import {
-    inflectRegularYeyUnisex,
-} from "./pashto-inflector";
 import { baParticle } from "./grammar-units";
 import {
     getVerbBlockPosFromPerson,
@@ -21,6 +18,7 @@ import {
 } from "./accent-helpers";
 import { phoneticsConsonants } from "./pashto-consonants";
 import { simplifyPhonetics } from "./simplify-phonetics";
+import { makePsString, removeFVarients } from "./accent-and-ps-utils";
 
 // export function concatPsStringWithVars(...items: Array<T.PsString | " " | "">): T.PsString[] {
 
@@ -182,25 +180,6 @@ export function ensureBaAt(ps: T.FullForm<T.PsString>, pos: number): T.FullForm<
     return baInserted;
 }
 
-export function removeFVarients(x: T.DictionaryEntry): T.DictionaryEntryNoFVars;
-export function removeFVarients(x: T.PsString): T.PsStringNoFVars;
-export function removeFVarients(x: string): T.FStringNoFVars;
-export function removeFVarients(x: string | T.PsString | T.DictionaryEntry): T.FStringNoFVars | T.PsStringNoFVars | T.DictionaryEntryNoFVars {
-    if (typeof x === "string") {
-        return x.split(",")[0] as T.FStringNoFVars;
-    }
-    if ("ts" in x) {
-        return {
-            ...x,
-            f: removeFVarients(x.f),
-        } as unknown as T.DictionaryEntryNoFVars;
-    }
-    return {
-        ...x,
-        f: removeFVarients(x.f),
-    } as unknown as T.PsStringNoFVars;
-}
-
 /**
  * Lets us know if all the forms of a verb block are the same
  * 
@@ -212,16 +191,6 @@ export function isAllOne (block: T.VerbBlock | T.ImperativeBlock): boolean {
         psStringEquals(row[0][0], src[0][0][0]) &&
         psStringEquals(row[1][0], src[1][0][0])
     ), true) as unknown as boolean;
-}
-
-/**
- * Creates a Pashto string structure
- * 
- * @param p - the Pashto text
- * @param f - the phonetics text
- */
-export function makePsString(p: string, f: string): T.PsString {
-    return { p, f };
 }
 
 /**
@@ -635,15 +604,7 @@ export function removeRetroflexR(ps: T.PsString): T.PsString {
     };
 }
 
-export function inflectYey(ps: T.SingleOrLengthOpts<T.PsString>): T.SingleOrLengthOpts<T.UnisexInflections> {
-    if ("long" in ps) {
-        return {
-            long: inflectYey(ps.long) as T.UnisexInflections,
-            short: inflectYey(ps.short) as T.UnisexInflections,
-        }
-    }
-    return inflectRegularYeyUnisex(ps.p, ps.f);
-}
+
 
 export function clamp(s: string, chars: number): string {
     return `${s.slice(0, 20)}${s.length > 20 ? "..." : ""}`;
@@ -1010,4 +971,26 @@ export function endsWith(
             ((matchAccent ? f.slice(-fEnd.length) : removeAccents(f.slice(-fEnd.length))) === (matchAccent ? fEnd : removeAccents(fEnd)))
             : true)
     );
+}
+
+export function firstVariation(s: string): string {
+    return s.split(/[,|;]/)[0].trim();
+}
+
+export function psStringFromEntry(entry: T.PsString): T.PsString {
+    return {
+        p: entry.p,
+        f: removeFVarients(entry.f),
+    };
+}
+
+export function getLong<U>(x: T.SingleOrLengthOpts<U>): U {
+    if ("long" in x) {
+        return x.long;
+    }
+    return x;
+}
+
+export function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }

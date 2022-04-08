@@ -8,12 +8,10 @@
 
 import {
     concatPsString,
-    makePsString,
     psStringEquals,
     removeEndingL,
     yulEndingInfinitive,
     removeRetroflexR,
-    inflectYey,
     unisexInfToObjectMatrix,
     complementInflects,
     beginsWithDirectionalPronoun,
@@ -21,9 +19,15 @@ import {
     removeStartingTick,
     ensureShortWurShwaShift,
     choosePersInf,
-    removeFVarients,
     isUnisexSet,
 } from "./p-text-helpers";
+import {
+    makePsString,
+    removeFVarients,
+} from "./accent-and-ps-utils";
+import { 
+    inflectYey,
+} from "./pashto-inflector";
 import {
     accentOnFront,
     accentOnNFromEnd,

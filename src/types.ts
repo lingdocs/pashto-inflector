@@ -473,3 +473,167 @@ export type DisplayFormSubgroup = {
 }
 
 export type AayTail = "ey" | "aay";
+
+export type NounEntry = DictionaryEntry & { c: string } & { __brand: "a noun entry" };
+export type MascNounEntry = NounEntry & { __brand2: "a masc noun entry" };
+export type FemNounEntry = NounEntry & { __brand2: "a fem noun entry" };
+export type UnisexNounEntry = MascNounEntry & { __brand3: "a unisex noun entry" };
+export type AdverbEntry = DictionaryEntry & { c: string } & { __brand: "an adverb entry" };
+export type LocativeAdverbEntry = AdverbEntry & { __brand2: "a locative adverb entry" };
+export type AdjectiveEntry = DictionaryEntry & { c: string } & { __brand: "an adjective entry" };
+export type VerbEntry = {
+    entry: DictionaryEntry & { __brand: "a verb entry" },
+    // TODO: the compliment could also be typed? Maybe?
+    complement?: DictionaryEntry,
+};
+
+export type SingularEntry<T extends NounEntry> = T & { __brand7: "a singular noun - as opposed to an always plural noun" };
+export type PluralNounEntry<T extends NounEntry> = T & { __brand7: "a noun that is always plural" };
+
+export type Pattern1Entry<T> = T & { __brand3: "basic inflection pattern" };
+export type Pattern2Entry<T> = T & { __brand3: "ending in unstressed ی pattern" };
+export type Pattern3Entry<T> = T & { __brand3: "ending in stressed ی pattern" };
+export type Pattern4Entry<T> = T & { __brand3: "Pashtoon pattern" };
+export type Pattern5Entry<T> = T & { __brand3: "short squish pattern" };
+export type Pattern6FemEntry<T extends FemNounEntry> = T & { __brand3: "non anim. ending in ي" };
+export type NonInflecting<T> = T & { __brand3: "non-inflecting" };
+
+export type Entry = NounEntry | AdjectiveEntry | AdverbEntry | VerbEntry;
+
+export type Words = {
+    nouns: NounEntry[],
+    adjectives: AdjectiveEntry[],
+    verbs: VerbEntry[],
+    adverbs: AdverbEntry[],
+}
+
+export type VPSelection = {
+    type: "VPSelection",
+    subject: NPSelection,
+    object: Exclude<VerbObject, undefined>,
+    verb: Exclude<VerbSelection, "object">,
+};
+
+// TODO: make this Rendered<VPSelection> with recursive Rendered<>
+export type VPRendered = {
+    type: "VPRendered",
+    king: "subject" | "object",
+    servant: "subject" | "object" | undefined,
+    isPast: boolean,
+    isTransitive: boolean,
+    isCompound: "stative" | "dynamic" | false,
+    subject: Rendered<NPSelection>,
+    object: Rendered<NPSelection> | ObjectNP,
+    verb: VerbRendered,
+    englishBase?: string[],
+}
+
+export type VerbTense = "presentVerb"
+    | "subjunctiveVerb"
+    | "perfectiveFuture"
+    | "imperfectiveFuture"
+    | "perfectivePast"
+    | "imperfectivePast"
+    | "habitualPerfectivePast"
+    | "habitualImperfectivePast";
+
+export type EquativeTense = "present" | "subjunctive" | "habitual" | "past" | "future" | "wouldBe" | "pastSubjunctive";
+export type NounNumber = "singular" | "plural";
+
+export type PerfectTense = `${EquativeTense} perfect`;
+
+export type VerbSelection = {
+    type: "verb",
+    verb: VerbEntry,
+    dynAuxVerb?: VerbEntry,
+    object: VerbObject, // TODO: should have a locked in (but number changeable noun) here for dynamic compounds
+    transitivity: Transitivity,
+    isCompound: "stative" | "dynamic" | false,
+    voice: "active" | "passive",
+    changeTransitivity?: (t: "transitive" | "grammatically transitive") => VerbSelection,
+    changeStatDyn?: (t: "stative" | "dynamic") => VerbSelection,
+    changeVoice?: (v: "active" | "passive", subj?: NPSelection) => VerbSelection,
+    // TODO: changeStativeDynamic
+    // TODO: add in aspect element here??
+    negative: boolean,
+} & ({  
+    tense: VerbTense,
+    tenseCategory: "basic" | "modal",
+} | {
+    tense: PerfectTense,
+    tenseCategory: "perfect"
+});
+
+export type VerbRendered = Omit<VerbSelection, "object"> & {
+    ps: { 
+        head: PsString | undefined,
+        rest: SingleOrLengthOpts<
+            PsString[]
+        >,
+    },
+    hasBa: boolean,
+    person: Person,
+};
+
+export type VerbObject = 
+    // transitive verb - object not selected yet
+    undefined |
+    // transitive verb - obect selected
+    NPSelection |
+    // grammatically transitive verb with unspoken 3rd pers masc plur entity
+    // or intransitive "none"
+    ObjectNP;
+
+export type NPSelection = NounSelection | PronounSelection | ParticipleSelection;
+
+export type NPType = "noun" | "pronoun" | "participle";
+
+export type ObjectNP = "none" | Person.ThirdPlurMale;
+
+// TODO require/import Person and PsString
+export type NounSelection = {
+    type: "noun",
+    entry: NounEntry,
+    gender: Gender,
+    number: NounNumber,
+    dynamicComplement?: boolean,
+    // TODO: Implement
+    // adjectives: [],
+    // TODO: Implement
+    // possesor: NPSelection | undefined,
+    /* method only present if it's possible to change gender */
+    changeGender?: (gender: Gender) => NounSelection, 
+    /* method only present if it's possible to change number */
+    changeNumber?: (number: NounNumber) => NounSelection,
+};
+
+// take an argument for subject/object in rendering English
+export type PronounSelection = {
+    type: "pronoun",
+    person: Person,
+    distance: "near" | "far",
+};
+
+export type ParticipleSelection = {
+    type: "participle",
+    verb: VerbEntry,
+};
+
+// not object
+// type Primitive = string | Function | number | boolean | Symbol | undefined | null;
+// If T has key K ("user"), replace it
+export type ReplaceKey<T, K extends string, R> = T extends Record<K, unknown> ? (Omit<T, K> & Record<K, R>) : T;
+
+export type FormVersion = { removeKing: boolean, shrinkServant: boolean };
+
+export type Rendered<T extends NPSelection> = ReplaceKey<
+    Omit<T, "changeGender" | "changeNumber" | "changeDistance">,
+    "e",
+    string
+> & {
+    ps: PsString[],
+    e?: string,
+    inflected: boolean,
+    person: Person,
+};
+// TODO: recursive changing this down into the possesor etc.

@@ -7,8 +7,8 @@
  */
 
 import { useEffect, useState } from "react";
-import ConjugationViewer from "./components/ConjugationViewer";
 import verbs from "./verbs";
+import nounsAdjs from "./nouns-adjs";
 import Pashto from "./components/Pashto";
 import Phonetics from "./components/Phonetics";
 import { getVerbInfo } from "./lib/verb-info";
@@ -23,7 +23,9 @@ import {
     Modal
 } from "react-bootstrap";
 import * as T from "./types";
+import { isNounEntry } from "./lib/type-predicates";
 import defualtTextOptions from "./lib/default-text-options";
+import PhraseBuilder from "./components/vp-explorer/VPExplorer";
 const textOptionsLocalStorageName = "textOptions2";
 type VerbType = "simple" | "stative compound" | "dynamic compound";
 const verbTypes: VerbType[] = [
@@ -31,6 +33,7 @@ const verbTypes: VerbType[] = [
     "stative compound",
     "dynamic compound",
 ];
+const nouns = nounsAdjs.filter(isNounEntry);
 
 const transitivities: T.Transitivity[] = [
     "transitive",
@@ -192,7 +195,7 @@ function App() {
                     <p className="lead my-4">
                         Each form is made from one simple <samp>formula</samp> which <a href="https://www.lingdocs.com/blog/pashto-verbs-master-chart">works for all verbs</a>. 👨‍🔬
                     </p>
-                    <p>Choose a verb 👇, look at its roots and stems 🌳, see how all the forms are made and what they mean. 🤓</p>
+                    <p>Choose a verb 👇, look at its roots and stems 🌳, see how all the forms are made. 🤓</p>
                 </div>
                 <div className="d-block mx-auto card" style={{ maxWidth: "700px", background: "var(--closer)"}}>
                     <div className="card-body">
@@ -288,11 +291,14 @@ function App() {
                         </div>
                     </div>
                 </div>
-                {v?.verb.entry && <ConjugationViewer
-                    entry={v?.verb.entry}
-                    complement={v?.verb.complement}
-                    textOptions={textOptions}
-                />}
+                {v?.verb.entry && <div style={{ paddingBottom: "100px" }}>
+                    <PhraseBuilder
+                        verb={v.verb as T.VerbEntry}
+                        nouns={nouns}
+                        verbs={verbs}
+                        opts={textOptions}
+                    />
+                </div>}
             </div>
         </main>
         <Modal show={showingTextOptions} onHide={() => setShowingTextOptions(false)}>

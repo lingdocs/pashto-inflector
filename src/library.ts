@@ -6,7 +6,7 @@
  *
  */
 
- import {
+import {
     conjugateVerb,
 } from "./lib/verb-conjugation";
 import {
@@ -15,6 +15,7 @@ import {
 import {
     getVerbInfo,
 } from "./lib/verb-info";
+import { makeVerbSelection } from "./components/vp-explorer/verb-selection";
 import ConjugationViewer from "./components/ConjugationViewer";
 import InflectionsTable from "./components/InflectionsTable";
 import Pashto from "./components/Pashto";
@@ -24,12 +25,18 @@ import ButtonSelect from "./components/ButtonSelect";
 import VerbFormDisplay from "./components/VerbFormDisplay";
 import VerbTable from "./components/VerbTable";
 import Examples from "./components/Examples";
+import Hider from "./components/Hider";
+import EntrySelect from "./components/EntrySelect";
 import VerbInfo, { RootsAndStems } from "./components/verb-info/VerbInfo";
+import VPExplorer from "./components/vp-explorer/VPExplorer";
+import useStickyState from "./lib/useStickyState";
+import {
+    makePsString,
+    removeFVarients,
+} from "./lib/accent-and-ps-utils";
 import {
     addToForm,
     concatPsString,
-    makePsString,
-    removeFVarients,
     isVerbBlock,
     isImperativeBlock,
     isPluralInflectionSet,
@@ -39,6 +46,10 @@ import {
     endsWith,
     hasBaParticle,
     psRemove,
+    firstVariation,
+    psStringFromEntry,
+    getLong,
+    capitalizeFirstLetter,
 } from "./lib/p-text-helpers";
 import {
     getEnglishWord,
@@ -48,6 +59,11 @@ import {
     standardizePhonetics,
 } from "./lib/standardize-pashto";
 import { phoneticsToDiacritics } from "./lib/phonetics-to-diacritics";
+import {
+    randomPerson,
+    isInvalidSubjObjCombo,
+    randomSubjObj,
+} from "./lib/np-tools";
 import {
     convertSpelling,
     revertSpelling,
@@ -100,6 +116,7 @@ import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
 import genderColors from "./lib/gender-colors";
 import * as Types from "./types";
+import * as typePredicates from "./lib/type-predicates";
 
 export {
     // FUNCTIONS
@@ -143,13 +160,23 @@ export {
     countSyllables,
     hasBaParticle,
     psRemove,
+    firstVariation,
+    capitalizeFirstLetter,
+    psStringFromEntry,
+    getLong,
+    makeVerbSelection,
+    useStickyState,
+    randomPerson,
+    isInvalidSubjObjCombo,
+    randomSubjObj,
     // protobuf helpers
     readDictionary,
     writeDictionary,
     readDictionaryInfo,
     writeDictionaryInfo,
     // COMPONENTS
-    ConjugationViewer,
+    VPExplorer,
+    ConjugationViewer, // TODO: Deprecated - remove
     Examples,
     VerbFormDisplay,
     VerbTable,
@@ -160,7 +187,10 @@ export {
     Phonetics,
     InlinePs,
     ButtonSelect,
+    Hider,
+    EntrySelect,
     // OTHER
+    typePredicates,
     grammarUnits,
     pashtoConsonants,
     defaultTextOptions,

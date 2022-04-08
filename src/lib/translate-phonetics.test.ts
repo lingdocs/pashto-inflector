@@ -73,6 +73,7 @@ translations.forEach((t) => {
     // check each dialect with given system
     dialects.forEach((dialect) => {
       test(
+        // @ts-ignore
         `${t.original} should be translated to ${t.ipa[dialect]} using ${system} with ${dialect} dialect`,
         () => {
           const translated = translatePhonetics(t.original, {
@@ -81,6 +82,7 @@ translations.forEach((t) => {
             // @ts-ignore
             dialect,
           });
+          // @ts-ignore
           expect(translated).toBe(t[system][dialect]);
         },
       );

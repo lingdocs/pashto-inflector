@@ -11,8 +11,8 @@ import InlinePs from "../InlinePs";
 import Pashto from "../Pashto";
 import Phonetics from "../Phonetics";
 import {
-    makePsString
-} from "../../lib/p-text-helpers";
+    makePsString,
+} from "../../lib/accent-and-ps-utils";
 import { Modal } from "react-bootstrap";
 import stativeCompTrans from "./stative-compound-transitive.svg";
 import stativeCompIntrans from "./stative-compound-intransitive.svg";

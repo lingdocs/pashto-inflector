@@ -23,6 +23,6 @@ const sampleDictionary: T.Dictionary = {
 }
 
 test("should encode and decode", () => {
-    expect(readDictionaryInfo(writeDictionaryInfo(sampleDictionaryInfo))).toEqual(sampleDictionaryInfo);
-    expect(readDictionary(writeDictionary(sampleDictionary))).toEqual(sampleDictionary);
+    expect(readDictionaryInfo(writeDictionaryInfo(sampleDictionaryInfo) as Uint8Array)).toEqual(sampleDictionaryInfo);
+    expect(readDictionary(writeDictionary(sampleDictionary) as Uint8Array)).toEqual(sampleDictionary);
 });

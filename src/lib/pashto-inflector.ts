@@ -11,8 +11,6 @@ import {
   concatInflections,
   splitDoubleWord,
   ensureUnisexInflections,
-  makePsString,
-  removeFVarients,
   concatPsString,
   endsInConsonant,
   endsInAaOrOo,
@@ -22,6 +20,7 @@ import {
   removeEndTick,
   endsWith,
 } from "./p-text-helpers";
+import { makePsString, removeFVarients } from "./accent-and-ps-utils";
 import {
   accentFSylsOnNFromEnd,
   hasAccents,
@@ -624,4 +623,14 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     return { arabicPlural, plural: pashtoPlural };
   }
   return undefined;
+}
+
+export function inflectYey(ps: T.SingleOrLengthOpts<T.PsString>): T.SingleOrLengthOpts<T.UnisexInflections> {
+  if ("long" in ps) {
+      return {
+          long: inflectYey(ps.long) as T.UnisexInflections,
+          short: inflectYey(ps.short) as T.UnisexInflections,
+      }
+  }
+  return inflectRegularYeyUnisex(ps.p, ps.f);
 }

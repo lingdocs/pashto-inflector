@@ -152,6 +152,7 @@ export function randomNumber(minInclusive: number, maxExclusive: number): number
     return Math.floor(Math.random() * (maxExclusive - minInclusive) + minInclusive); 
 }
 
+// TODO: deprecate this because we have it in np-tools?
 /**
  * Sees if a possiblePerson (for subject/object) is possible, given the other person
  * 
@@ -173,6 +174,7 @@ export function personIsAllowed(possiblePerson: T.Person, existingPerson?: T.Per
     return true;
 }
 
+// TODO: deprecate this because we have it in np-tools?
 /**
  * Picks a random person while assuring that the other person is not in conflict
  * 

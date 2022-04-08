@@ -6,8 +6,8 @@
  *
  */
 
-import { makePsString, removeFVarients } from "./p-text-helpers";
 import * as T from "../types";
+import { makePsString, removeFVarients } from "./accent-and-ps-utils";
 
 /**
  * Returns a Pashto string (or string with Length options) ensuring that

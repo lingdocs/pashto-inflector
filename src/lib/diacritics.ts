@@ -29,7 +29,7 @@ import {
     PhonemeStatus,
 } from "./diacritics-helpers";
 
-import { removeFVarients } from "./p-text-helpers";
+import { removeFVarients } from "./accent-and-ps-utils";
 import { pipe } from "rambda";
 
 /**

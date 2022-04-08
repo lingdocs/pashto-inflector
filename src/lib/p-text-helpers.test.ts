@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-
+import { makePsString, removeFVarients } from "./accent-and-ps-utils";
 import {
     concatPsString,
-    makePsString,
     removeEndingL,
     yulEndingInfinitive,
     mapVerbBlock,
@@ -22,7 +21,6 @@ import {
     splitDoubleWord,
     endsInConsonant,
     addOEnding,
-    removeFVarients,
     endsInShwa,
     splitPsByVarients,
     endsWith,
@@ -701,8 +699,8 @@ test(`splitDoubleWord should work`, () => {
             c: "adj.",
             i: 1,
         },
-    ] 
-    expect(splitDoubleWord(orig)).toEqual(out);
+    ];
+    expect(splitDoubleWord(removeFVarients(orig))).toEqual(out);
 });
 
 // test(`allThirdPersMascPlur should work`, () => {
