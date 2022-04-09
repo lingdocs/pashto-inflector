@@ -151,7 +151,7 @@ export function VPExplorer(props: {
                 handleChange={handleChangeMode}
             />
         </div>
-        {(verb && (typeof verb.object === "object") && (verb.isCompound !== "dynamic") && (mode !== "charts")) &&
+        {(verb && (typeof verb.object === "object") && (verb.isCompound !== "dynamic") && (mode === "phrases")) &&
             <div className="text-center mt-4">
                 <button onClick={handleSubjObjSwap} className="btn btn-sm btn-light">
                     <i className="fas fa-exchange-alt mr-2" /> subj/obj
