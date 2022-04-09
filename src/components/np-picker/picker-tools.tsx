@@ -29,7 +29,8 @@ export const zIndexProps = {
 };
 
 export function makeVerbSelectOption(e: T.VerbEntry, opts: T.TextOptions): { value: string, label: string | JSX.Element } {
-    const eng = getEnglishVerb(e.entry);
+    const engV = getEnglishVerb(e.entry);
+    const eng = engV || truncateEnglish(e.entry.e);
     const ps = plainTextPsAdjustment(
         { p: e.entry.p, f: removeFVarients(e.entry.f) },
         opts,
@@ -62,16 +63,17 @@ function plainTextPsAdjustment(ps: T.PsString, opts: T.TextOptions): T.PsString 
     return { p: getP(ps), f: getF(ps.f) };
 }
 
+function truncateEnglish(s: string): string {
+    const maxLength = 16;
+    return s.length <= maxLength
+        ? s
+        : s.slice(0, maxLength) + "…";
+}
+
 export function makeSelectOption(
     e: T.DictionaryEntry | T.VerbEntry | T.NounEntry | T.AdjectiveEntry | T.LocativeAdverbEntry,
     opts: T.TextOptions,    
 ): { value: string, label: string } {
-    function truncateEnglish(s: string) {
-        const maxLength = 16;
-        return s.length <= maxLength
-            ? maxLength
-            : s.slice(0, maxLength) + "…";
-    }
     const entry = "entry" in e ? e.entry : e;
     const eng = (() => {
         try {
