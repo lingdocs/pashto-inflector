@@ -79,8 +79,6 @@ export function getEnglishVerb(entry: T.DictionaryEntry): string {
 
 export function getEnglishParticiple(entry: T.DictionaryEntry): string {
     if (!entry.ec) {
-        console.log("errored participle");
-        console.log(entry);
         throw new Error("no english information for participle");
     }
     const ec = parseEc(entry.ec);

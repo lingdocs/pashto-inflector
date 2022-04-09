@@ -19,6 +19,8 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
     isVerbSelect?: boolean,
     opts: T.TextOptions,
 }) {
+    const placeholder = "entries" in props ? "Select…" : "Search Pashto";
+    const minWidth = "9rem";
     function makeOption(e: E | T.DictionaryEntry) {
         if ("entry" in e) {
             return (props.isVerbSelect ? makeVerbSelectOption : makeSelectOption)(e, props.opts);
@@ -40,7 +42,7 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
             if (!s) return;
             props.onChange(s);
         }
-        return <div>
+        return <div style={{ minWidth }}>
             <AsyncSelect
                 isSearchable={true}
                 className="mb-2"
@@ -48,7 +50,7 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
                 onChange={onChange}
                 defaultOptions={[]}
                 loadOptions={options}
-                placeholder={props.name ? `Select ${props.name}...` : undefined}
+                placeholder={placeholder}
                 {...zIndexProps}
             />
         </div>;
@@ -74,14 +76,14 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
         if (!s) return;
         props.onChange(s);
     }
-    return <div>
+    return <div style={{ minWidth }}>
         <Select
             isSearchable={true}
             value={value}
             onChange={onChange}
             className="mb-2"
             options={options}
-            placeholder={props.name ? `Select ${props.name}...` : undefined}
+            placeholder={placeholder}
             {...zIndexProps}
         />
     </div>

@@ -9,7 +9,7 @@ export function isNounEntry(e: T.Entry | T.DictionaryEntry): e is T.NounEntry {
     return !!(e.c && (e.c.includes("n. m.") || e.c.includes("n. f.")));
 }
 
-export function isAdjectiveEntry(e: T.Entry): e is T.AdjectiveEntry {
+export function isAdjectiveEntry(e: T.Entry | T.DictionaryEntry): e is T.AdjectiveEntry {
     if ("entry" in e) return false;
     return !!e.c?.includes("adj.") && !isNounEntry(e);
 }
