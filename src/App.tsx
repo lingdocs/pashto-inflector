@@ -6,7 +6,7 @@
  *
  */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import verbs from "./verbs";
 import nounsAdjs from "./nouns-adjs";
 import Pashto from "./components/Pashto";
@@ -26,7 +26,7 @@ import * as T from "./types";
 import { isNounEntry } from "./lib/type-predicates";
 import defualtTextOptions from "./lib/default-text-options";
 import PhraseBuilder from "./components/vp-explorer/VPExplorer";
-const textOptionsLocalStorageName = "textOptions2";
+import { useStickyState } from "./library";
 type VerbType = "simple" | "stative compound" | "dynamic compound";
 const verbTypes: VerbType[] = [
     "simple",
@@ -48,13 +48,13 @@ const allVerbs = verbs.map((v: { entry: T.DictionaryEntry, complement?: T.Dictio
 }));
 
 function App() {
-    const [verbTs, setVerbTs] = useState<number>(0);
-    const [verbTypeShowing, setVerbTypeShowing] = useState<VerbType>("simple");
-    const [regularIrregular, setRegularIrregular] = useState<"regular" | "irregular">("regular");
-    const [transitivityShowing, setTransitivityShowing] = useState<T.Transitivity>("intransitive");
-    const [showingTextOptions, setShowingTextOptions] = useState<boolean>(false);
-    const [textOptions, setTextOptions] = useState<T.TextOptions>(defualtTextOptions);
-    const [theme, setTheme] = useState<"light" | "dark">("light");
+    const [verbTs, setVerbTs] = useStickyState<number>(0, "verbTs1");
+    const [verbTypeShowing, setVerbTypeShowing] = useStickyState<VerbType>("simple", "vTypeShowing");
+    const [regularIrregular, setRegularIrregular] = useStickyState<"regular" | "irregular">("regular", "regIrreg");
+    const [transitivityShowing, setTransitivityShowing] = useStickyState<T.Transitivity>("intransitive", "transitivityShowing1");
+    const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(false, "showTextOpts1");
+    const [textOptions, setTextOptions] = useStickyState<T.TextOptions>(defualtTextOptions, "textOpts1");
+    const [theme, setTheme] = useStickyState<"light" | "dark">("light", "theme1");
     // const onlyGrammTrans = (arr: Transitivity[]) => (
     //     arr.length === 1 && arr[0] === "grammatically transitive"
     // );
@@ -63,45 +63,6 @@ function App() {
     //         setVerbTypesShowing([...verbTypesShowing, "simple"]);
     //     }
     // }
-
-    useEffect(() => {
-        const verbTsRaw = localStorage.getItem("verbTs");
-        const verbTypeShowing = localStorage.getItem("verbTypeShowing") as undefined | VerbType;
-        const regularIrregular = localStorage.getItem("regularIrregular") as "regular" | "irregular";
-        const transitivitiyShowing = localStorage.getItem("transitivityShowing") as undefined | T.Transitivity;
-        const theme = localStorage.getItem("theme");
-        const textOptionst = localStorage.getItem(textOptionsLocalStorageName);
-        if (regularIrregular) {
-            setRegularIrregular(regularIrregular);
-        }
-        if (verbTsRaw) {
-            setVerbTs(JSON.parse(verbTsRaw));
-        }
-        if (verbTypeShowing) {
-            setVerbTypeShowing(verbTypeShowing);
-        }
-        if (transitivitiyShowing) {
-            setTransitivityShowing(transitivitiyShowing);
-        }
-        if (theme) {
-            setTheme(theme as "light" | "dark");
-        }
-        if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            setTheme("dark");
-        }
-        if (textOptionst) {
-            setTextOptions(JSON.parse(textOptionst) as T.TextOptions);
-        }
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem("verbTs", verbTs.toString());
-        localStorage.setItem("regularIrregular", regularIrregular);
-        localStorage.setItem("verbTypeShowing", verbTypeShowing);
-        localStorage.setItem("transitivityShowing", transitivityShowing);
-        localStorage.setItem(textOptionsLocalStorageName, JSON.stringify(textOptions));
-        localStorage.setItem("theme", theme);
-    });
 
     useEffect(() => {
         document.documentElement.setAttribute("data-theme", theme);

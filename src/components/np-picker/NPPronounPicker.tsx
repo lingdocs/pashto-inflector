@@ -60,7 +60,7 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts }: {
     clearButton?: JSX.Element,
     opts: T.TextOptions,
 }) {
-    const [display, setDisplay] = useStickyState<"persons" | "p" | "e">("persons", "prounoun-picker-display"); 
+    const [display, setDisplay] = useStickyState<"persons" | "p" | "e">("e", "prounoun-picker-display"); 
 
     const p = personToPickerState(pronoun.person);
     function handleClick(row: number, col: number) {

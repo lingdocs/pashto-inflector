@@ -41,21 +41,40 @@ export function VPExplorer(props: {
     getNounByTs: (ts: number) => T.NounEntry | undefined,
     getVerbByTs: (ts: number) => T.VerbEntry | undefined,
 })) {
+    console.log("passedVerb", props.verb);
     const [subject, setSubject] = useStickyState<T.NPSelection | undefined>(undefined, "subjectNPSelection");
+    // not quite working with stickyState
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">("phrases", "verbExplorerMode");
+    // const [mode, setMode] = useState<"charts" | "phrases" | "quiz">("charts");
     const [showAnswer, setShowAnswer] = useState<boolean>(false);
     const passedVerb = props.verb;
-    const [verb, setVerb] = useStickyState<T.VerbSelection | undefined>(
-        passedVerb
-            ? (old) => makeVerbSelection(passedVerb, setSubject, old)
-            : undefined,
-        "verbExplorerVerb",
-    );
+    // this isn't quite working
+    // const [verb, setVerb] = useStickyState<T.VerbSelection | undefined>(
+    //     passedVerb
+    //         ? (old) => makeVerbSelection(passedVerb, setSubject, old)
+    //         : undefined,
+    //     "verbExplorerVerb",
+    // );
+    const [verb, setVerb] = useState<T.VerbSelection | undefined>(
+        passedVerb ? makeVerbSelection(passedVerb, setSubject) : undefined
+    )
+    useEffect(() => {
+        if (mode === "quiz") {
+            if (!verb) setMode("phrases");
+            handleResetQuiz();
+        }
+        // TODO: better system with all this
+        // eslint-disable-next-line
+    }, []);
     useEffect(() => {
         if (!passedVerb) {
             setVerb(undefined);
         } else {
             setVerb(o => makeVerbSelection(passedVerb, setSubject, o));
+            if (mode === "quiz") {
+                // TODO: Better
+                setMode("charts");
+            }
         }
         // eslint-disable-next-line
     }, [passedVerb]);
@@ -204,6 +223,8 @@ export function VPExplorer(props: {
             <VPDisplay VP={verbPhrase} opts={props.opts} />
         }
         {(verb && (mode === "charts")) && <ChartDisplay VS={verb} opts={props.opts} />}
+        {mode === "quiz" && <div style={{ height: "300px" }}>
+        </div>}
     </div>
 }
 

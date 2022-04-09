@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
  * @param key a key for saving the state in locolStorage
  * @returns 
  */
-export default function useStickyState<T extends string | object | boolean | undefined | null>(defaultValue: T | ((old: T | undefined) => T), key: string): [
+export default function useStickyState<T extends string | number | object | boolean | undefined | null>(defaultValue: T | ((old: T | undefined) => T), key: string): [
   value: T,
   setValue: React.Dispatch<React.SetStateAction<T>>,
 ] {
