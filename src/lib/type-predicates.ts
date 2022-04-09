@@ -27,8 +27,12 @@ export function isNounOrAdjEntry(e: T.Entry): e is (T.NounEntry | T.AdjectiveEnt
     return isNounEntry(e) || isAdjectiveEntry(e);
 }
 
+export function isVerbDictionaryEntry(e: T.DictionaryEntry): e is T.VerbDictionaryEntry {
+    return e && !!e.c?.startsWith("v.")
+}
+
 export function isVerbEntry(e: T.Entry | T.DictionaryEntry): e is T.VerbEntry {
-    return "entry" in e && !!e.entry.c?.startsWith("v.");
+    return "entry" in e && isVerbDictionaryEntry(e.entry);
 }
 
 export function isMascNounEntry(e: T.NounEntry | T.AdjectiveEntry): e is T.MascNounEntry {

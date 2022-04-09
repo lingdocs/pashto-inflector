@@ -481,8 +481,9 @@ export type UnisexNounEntry = MascNounEntry & { __brand3: "a unisex noun entry" 
 export type AdverbEntry = DictionaryEntry & { c: string } & { __brand: "an adverb entry" };
 export type LocativeAdverbEntry = AdverbEntry & { __brand2: "a locative adverb entry" };
 export type AdjectiveEntry = DictionaryEntry & { c: string } & { __brand: "an adjective entry" };
+export type VerbDictionaryEntry = DictionaryEntry & { __brand: "a verb entry" };
 export type VerbEntry = {
-    entry: DictionaryEntry & { __brand: "a verb entry" },
+    entry: VerbDictionaryEntry,
     // TODO: the compliment could also be typed? Maybe?
     complement?: DictionaryEntry,
 };
