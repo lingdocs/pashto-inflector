@@ -31,7 +31,9 @@ export function isVerbDictionaryEntry(e: T.DictionaryEntry): e is T.VerbDictiona
     return !!e.c?.startsWith("v.");
 }
 
-export function isVerbEntry(e: T.Entry | T.DictionaryEntry): e is T.VerbEntry {
+export function isVerbEntry(
+    e: T.Entry | T.DictionaryEntry | { entry: T.DictionaryEntry, comp?: T.DictionaryEntry }
+): e is T.VerbEntry {
     return "entry" in e && isVerbDictionaryEntry(e.entry);
 }
 
