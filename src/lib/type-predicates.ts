@@ -28,7 +28,7 @@ export function isNounOrAdjEntry(e: T.Entry): e is (T.NounEntry | T.AdjectiveEnt
 }
 
 export function isVerbDictionaryEntry(e: T.DictionaryEntry): e is T.VerbDictionaryEntry {
-    return e && !!e.c?.startsWith("v.")
+    return !!e.c?.startsWith("v.");
 }
 
 export function isVerbEntry(e: T.Entry | T.DictionaryEntry): e is T.VerbEntry {
