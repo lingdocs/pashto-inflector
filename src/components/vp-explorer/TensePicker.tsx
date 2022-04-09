@@ -58,7 +58,7 @@ const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense 
 function TensePicker({ onChange, verb, mode }: {
     verb: T.VerbSelection | undefined,
     onChange: (p: T.VerbSelection | undefined) => void,
-    mode: "charts" | "phrases",
+    mode: "charts" | "phrases" | "quiz",
 }) {
     function onTenseSelect(o: { value: T.VerbTense | T.PerfectTense } | null) {
         const value = o?.value ? o.value : undefined; 

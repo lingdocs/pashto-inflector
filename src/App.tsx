@@ -33,6 +33,7 @@ const verbTypes: VerbType[] = [
     "stative compound",
     "dynamic compound",
 ];
+
 const nouns = nounsAdjs.filter(isNounEntry);
 
 const transitivities: T.Transitivity[] = [

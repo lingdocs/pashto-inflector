@@ -50,7 +50,7 @@ export function isInvalidSubjObjCombo(subj: T.Person, obj: T.Person): boolean {
     );
 }
 
-export function randomSubjObj(old?: { subj: T.Person, obj: T.Person }): { subj: T.Person, obj: T.Person } {
+export function randomSubjObj(old?: { subj: T.Person, obj?: T.Person }): { subj: T.Person, obj: T.Person } {
     let subj = 0;
     let obj = 0;
     do {

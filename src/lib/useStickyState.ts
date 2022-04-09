@@ -8,12 +8,9 @@ import { useEffect, useState } from "react";
  * @param key a key for saving the state in locolStorage
  * @returns 
  */
-export default function useStickyState<T extends string | object | boolean | undefined | null>(
-  defaultValue: T | ((old: T | undefined) => T),
-  key: string
-): [
-    value: T,
-    setValue: React.Dispatch<React.SetStateAction<T>>,
+export default function useStickyState<T extends string | object | boolean | undefined | null>(defaultValue: T | ((old: T | undefined) => T), key: string): [
+  value: T,
+  setValue: React.Dispatch<React.SetStateAction<T>>,
 ] {
   const [value, setValue] = useState<T>(() => {
     const v = window.localStorage.getItem(key);
@@ -30,7 +27,7 @@ export default function useStickyState<T extends string | object | boolean | und
       if (typeof defaultValue === "function") {
         return defaultValue(old);
       }
-      return defaultValue;
+      return old;
     } catch (e) {
       console.error("error parsting saved state from stickState");
       return (typeof defaultValue === "function")

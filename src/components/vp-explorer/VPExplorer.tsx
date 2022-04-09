@@ -11,7 +11,8 @@ import * as T from "../../types";
 import ChartDisplay from "./ChartDisplay";
 import useStickyState from "../../lib/useStickyState";
 import { makeVerbSelection } from "./verb-selection";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { randomSubjObj } from "../../library";
 
 const kingEmoji = "👑";
 const servantEmoji = "🙇‍♂️";
@@ -41,7 +42,8 @@ export function VPExplorer(props: {
     getVerbByTs: (ts: number) => T.VerbEntry | undefined,
 })) {
     const [subject, setSubject] = useStickyState<T.NPSelection | undefined>(undefined, "subjectNPSelection");
-    const [mode, setMode] = useStickyState<"charts" | "phrases">("phrases", "verbExplorerMode");
+    const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">("phrases", "verbExplorerMode");
+    const [showAnswer, setShowAnswer] = useState<boolean>(false);
     const passedVerb = props.verb;
     const [verb, setVerb] = useStickyState<T.VerbSelection | undefined>(
         passedVerb
@@ -57,6 +59,28 @@ export function VPExplorer(props: {
         }
         // eslint-disable-next-line
     }, [passedVerb]);
+    function handleChangeMode(m: "charts" | "phrases" | "quiz") {
+        if (m === "quiz") {
+            handleResetQuiz();
+        }
+        setMode(m);
+    }
+    function handleSetVerb(v: T.VerbSelection | undefined) {
+        if (v?.verb.entry.ts !== verb?.verb.entry.ts) {
+            handleResetQuiz();
+        }
+        setVerb(v);
+    }
+    function handleResetQuiz() {
+        if (!verb) {
+            alert("Choose a verb to quiz");
+            return;
+        }
+        const { S, V } = setRandomQuizState(subject, verb);
+        setShowAnswer(false);
+        setSubject(S);
+        setVerb(V);
+    }
     function handleSubjectChange(subject: T.NPSelection | undefined, skipPronounConflictCheck?: boolean) {
         if (!skipPronounConflictCheck && hasPronounConflict(subject, verb?.object)) {
             alert("That combination of pronouns is not allowed");
@@ -94,17 +118,18 @@ export function VPExplorer(props: {
             verb={verb}
             subject={subject}
             changeSubject={(s) => handleSubjectChange(s, true)}
-            onChange={setVerb}
+            onChange={handleSetVerb}
             opts={props.opts}
         />
-        <div className="mt-2 mb-3">
+        <div className="mt-2 mb-3 text-center">
             <ButtonSelect
                 value={mode}
                 options={[
                     { label: "Charts", value: "charts" },
                     { label: "Phrases", value: "phrases" },
+                    { label: "Quiz", value: "quiz" },
                 ]}
-                handleChange={setMode}
+                handleChange={handleChangeMode}
             />
         </div>
         {(verb && (typeof verb.object === "object") && (verb.isCompound !== "dynamic") && (mode !== "charts")) &&
@@ -131,6 +156,7 @@ export function VPExplorer(props: {
                         counterPart={verb ? verb.object : undefined}
                         onChange={handleSubjectChange}
                         opts={props.opts}
+                        cantClear={mode === "quiz"}
                     />
                 </div>
                 {verb && (verb.object !== "none") && <div className="my-2">
@@ -152,21 +178,32 @@ export function VPExplorer(props: {
                             counterPart={subject}
                             onChange={handleObjectChange}
                             opts={props.opts}
+                            cantClear={mode === "quiz"}
                         />}
                 </div>}
             </>}
             <div className="my-2">
                 <TensePicker
                     verb={verb}
-                    onChange={setVerb}
+                    onChange={handleSetVerb}
                     mode={mode}
                 />
             </div>
         </div>
-        {(verbPhrase && (mode === "phrases")) &&
+        {(verb && (mode === "quiz")) && <div className="text-center my-2">
+            <button
+                className="btn btn-primary"
+                onClick={showAnswer ? handleResetQuiz : () => setShowAnswer(true)}
+            >
+                {showAnswer
+                    ? <>Next <i className="ml-1 fas fa-random"/></>
+                    : <>Show Answer</>}
+            </button>
+        </div>}
+        {(verbPhrase && ((mode === "phrases") || (mode === "quiz" && showAnswer))) &&
             <VPDisplay VP={verbPhrase} opts={props.opts} />
         }
-        {(verb && (mode === "charts")) && <ChartDisplay VS={verb} opts={props.opts} />} 
+        {(verb && (mode === "charts")) && <ChartDisplay VS={verb} opts={props.opts} />}
     </div>
 }
 
@@ -211,4 +248,45 @@ function switchSubjObj({ subject, verb }: SOClump): SOClump {
             object: subject,
         }
     };
+}
+
+function setRandomQuizState(subject: T.NPSelection | undefined, verb: T.VerbSelection): {
+    S: T.NPSelection,
+    V: T.VerbSelection,
+} {
+    const oldSubj = (subject?.type === "pronoun")
+        ? subject.person
+        : undefined;
+    const oldObj = (typeof verb?.object === "object" && verb.object.type === "pronoun")
+        ? verb.object.person
+        : undefined;
+    const { subj, obj } = randomSubjObj(
+        oldSubj !== undefined ? { subj: oldSubj, obj: oldObj } : undefined
+    );
+    const randSubj: T.PronounSelection = subject?.type === "pronoun" ? {
+        ...subject,
+        person: subj,
+    } : {
+        type: "pronoun",
+        distance: "far",
+        person: subj,
+    };
+    const randObj: T.PronounSelection = typeof verb?.object === "object" && verb.object.type === "pronoun" ? {
+        ...verb.object,
+        person: obj,
+    } : {
+        type: "pronoun",
+        distance: "far",
+        person: obj,
+    };
+    return {
+        // TODO: Randomize the near/far ??
+        S: randSubj,
+        V: {
+            ...verb,
+            object: (typeof verb.object === "object" || verb.object === undefined)
+                ? randObj
+                : verb.object,
+        },
+    }
 }

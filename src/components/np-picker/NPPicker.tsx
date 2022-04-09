@@ -18,6 +18,7 @@ function NPPicker(props: {
     counterPart: T.NPSelection | T.VerbObject | undefined,
     asObject?: boolean,
     opts: T.TextOptions,
+    cantClear?: boolean,
 } & ({
     nouns: (s: string) => T.NounEntry[],
     verbs: (s: string) => T.VerbEntry[],
@@ -52,7 +53,9 @@ function NPPicker(props: {
         }
     }
     const isDynamicComplement = props.np && props.np.type === "noun" && props.np.dynamicComplement;
-    const clearButton = <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>X</button>;
+    const clearButton = !props.cantClear
+        ? <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>X</button>
+        : <div></div>;
     return <div>
         {!npType && <div className="text-center mt-3">
             {/* <div className="h6 mr-3">

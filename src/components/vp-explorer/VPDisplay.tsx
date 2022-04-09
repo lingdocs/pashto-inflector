@@ -1,13 +1,13 @@
-import { useState } from "react";
 import { renderVP, compileVP } from "../../lib/phrase-building/index";
 import * as T from "../../types";
 import InlinePs from "../InlinePs";
 import AbbreviationFormSelector from "./AbbreviationFormSelector";
 import { isPastTense } from "../../lib/phrase-building/vp-tools";
+import { useStickyState } from "../../library";
 
 function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
-    const [form, setForm] = useState<T.FormVersion>({ removeKing: false, shrinkServant: false });
-    const [OSV, setOSV] = useState<boolean>(false);
+    const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationForm");
+    const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
     const result = compileVP(renderVP(VP), { ...form, OSV });
     return <div className="text-center mt-2">
         {VP.verb.transitivity === "transitive" && <div className="form-check mb-2">
