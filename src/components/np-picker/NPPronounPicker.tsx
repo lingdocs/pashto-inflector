@@ -105,7 +105,9 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts }: {
                 value={pronoun.distance}
                 handleChange={(g) => handlePronounTypeChange(g as "far" | "near")}
             />
-            <button className="btn btn-sm btn-outline" onClick={handleDisplayChange}>{display === "persons" ? "#" : display === "p" ? "PS" : "EN"}</button>
+            <button className="btn btn-sm btn-outline-secondary" onClick={handleDisplayChange}>
+                {display === "persons" ? "#" : display === "p" ? "PS" : "EN"}
+            </button>
         </div>
         <table className="table table-bordered table-sm" style={{ textAlign: "center", minWidth: "100px", tableLayout: "fixed" }}>
             <tbody>

@@ -66,14 +66,26 @@ export function makeSelectOption(
     e: T.DictionaryEntry | T.VerbEntry | T.NounEntry | T.AdjectiveEntry | T.LocativeAdverbEntry,
     opts: T.TextOptions,    
 ): { value: string, label: string } {
+    function truncateEnglish(s: string) {
+        const maxLength = 16;
+        return s.length <= maxLength
+            ? maxLength
+            : s.slice(0, maxLength) + "…";
+    }
     const entry = "entry" in e ? e.entry : e;
-    const eng = (isVerbEntry(e)) 
-        ? (getEnglishParticiple(e.entry))
-        : getEnglishWord(e);
+    const eng = (() => {
+        try {
+            return (isVerbEntry(e)) 
+                ? (getEnglishParticiple(e.entry))
+                : getEnglishWord(e);
+        } catch(err) {
+            return "";
+        }
+    })();
     const english = typeof eng === "string"
         ? eng
         : !eng
-        ? ""
+        ? truncateEnglish(entry.e)
         : ("singular" in eng && eng.singular !== undefined)
         ? eng.singular
         : eng.plural;

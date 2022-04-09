@@ -103,6 +103,7 @@ function NPNounPicker(props: ({
                 handleChange={setPatternFilter}
             />
         </div>} */}
+        <h6>Noun</h6>
         {!(props.noun && props.noun.dynamicComplement) ? <div>
             <EntrySelect
                 value={props.noun?.entry}

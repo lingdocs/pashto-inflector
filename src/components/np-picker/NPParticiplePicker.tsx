@@ -28,6 +28,7 @@ function NPParticiplePicker(props: ({
     }
     return <div style={{ maxWidth: "225px" }}>
         {props.clearButton}
+        <h6>Participle</h6>
         <EntrySelect
             value={props.participle?.verb}
             {..."getVerbByTs" in props ? {
