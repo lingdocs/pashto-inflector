@@ -30,7 +30,7 @@ const servantEmoji = "🙇‍♂️";
 
 // TODO: error handling on error with rendering etc
 export function VPExplorer(props: {
-    verb?: T.VerbEntry,
+    verb: T.VerbEntry,
     opts: T.TextOptions,
 } & ({
     nouns: T.NounEntry[],
@@ -45,9 +45,7 @@ export function VPExplorer(props: {
     const [subject, setSubject] = useStickyState<T.NPSelection | undefined>(undefined, "subjectNPSelection");
     // not quite working with stickyState
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">("phrases", "verbExplorerMode");
-    // const [mode, setMode] = useState<"charts" | "phrases" | "quiz">("charts");
     const [showAnswer, setShowAnswer] = useState<boolean>(false);
-    const passedVerb = props.verb;
     // this isn't quite working
     // const [verb, setVerb] = useStickyState<T.VerbSelection | undefined>(
     //     passedVerb
@@ -55,8 +53,8 @@ export function VPExplorer(props: {
     //         : undefined,
     //     "verbExplorerVerb",
     // );
-    const [verb, setVerb] = useState<T.VerbSelection | undefined>(
-        passedVerb ? makeVerbSelection(passedVerb, setSubject) : undefined
+    const [verb, setVerb] = useState<T.VerbSelection>(
+        makeVerbSelection(props.verb, setSubject)
     )
     useEffect(() => {
         if (mode === "quiz") {
@@ -67,24 +65,20 @@ export function VPExplorer(props: {
         // eslint-disable-next-line
     }, []);
     useEffect(() => {
-        if (!passedVerb) {
-            setVerb(undefined);
-        } else {
-            setVerb(o => makeVerbSelection(passedVerb, setSubject, o));
-            if (mode === "quiz") {
-                // TODO: Better
-                setMode("charts");
-            }
+        setVerb(o => makeVerbSelection(props.verb, setSubject, o));
+        if (mode === "quiz") {
+            // TODO: Better
+            setMode("charts");
         }
         // eslint-disable-next-line
-    }, [passedVerb]);
+    }, [props.verb]);
     function handleChangeMode(m: "charts" | "phrases" | "quiz") {
         if (m === "quiz") {
             handleResetQuiz();
         }
         setMode(m);
     }
-    function handleSetVerb(v: T.VerbSelection | undefined) {
+    function handleSetVerb(v: T.VerbSelection) {
         if (v?.verb.entry.ts !== verb?.verb.entry.ts) {
             handleResetQuiz();
         }
@@ -237,7 +231,7 @@ function hasPronounConflict(subject: T.NPSelection | undefined, object: undefine
     return isInvalidSubjObjCombo(subjPronoun.person, objPronoun.person);
 }
 
-function verbPhraseComplete({ subject, verb }: { subject: T.NPSelection | undefined, verb: T.VerbSelection | undefined }): T.VPSelection | undefined {
+function verbPhraseComplete({ subject, verb }: { subject: T.NPSelection | undefined, verb: T.VerbSelection }): T.VPSelection | undefined {
     if (!subject) return undefined;
     if (!verb) return undefined;
     if (verb.object === undefined) return undefined;
@@ -257,7 +251,7 @@ function showRole(VP: T.VPRendered | undefined, member: "subject" | "object") {
         : "";
 }
 
-type SOClump = { subject: T.NPSelection | undefined, verb: T.VerbSelection | undefined };
+type SOClump = { subject: T.NPSelection | undefined, verb: T.VerbSelection };
 function switchSubjObj({ subject, verb }: SOClump): SOClump {
     if (!subject|| !verb || !verb.object || !(typeof verb.object === "object")) {
         return { subject, verb };
@@ -305,7 +299,11 @@ function setRandomQuizState(subject: T.NPSelection | undefined, verb: T.VerbSele
         S: randSubj,
         V: {
             ...verb,
-            object: (typeof verb.object === "object" || verb.object === undefined)
+            object: (
+                (typeof verb.object === "object" && !(verb.object.type === "noun" && verb.object.dynamicComplement))
+                ||
+                verb.object === undefined
+            )
                 ? randObj
                 : verb.object,
         },

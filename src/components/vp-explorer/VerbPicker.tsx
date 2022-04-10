@@ -16,9 +16,9 @@ function VerbPicker(props: ({
     verbs: (s: string) => T.VerbEntry[],
     getVerbByTs: (ts: number) => T.VerbEntry | undefined;
 }) & {
-    verb: T.VerbSelection | undefined,
+    verb: T.VerbSelection,
     subject: T.NPSelection | undefined,
-    onChange: (p: T.VerbSelection | undefined) => void,
+    onChange: (p: T.VerbSelection) => void,
     changeSubject: (p: T.NPSelection | undefined) => void,
     opts: T.TextOptions,
     verbLocked: boolean,
@@ -45,7 +45,7 @@ function VerbPicker(props: ({
     function onVerbSelect(v: T.VerbEntry | undefined) {
         // TODO: what to do when clearing
         if (!v) {
-            return props.onChange(v);
+            return;
         }
         props.onChange(makeVerbSelection(v, props.changeSubject, props.verb));
     }
