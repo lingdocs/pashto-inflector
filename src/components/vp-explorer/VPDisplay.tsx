@@ -5,7 +5,7 @@ import AbbreviationFormSelector from "./AbbreviationFormSelector";
 import { isPastTense } from "../../lib/phrase-building/vp-tools";
 import { useStickyState } from "../../library";
 
-function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
+function VPDisplay({ VP, opts }: { VP: T.VPSelectionComplete, opts: T.TextOptions }) {
     const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationForm");
     const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
     const result = compileVP(renderVP(VP), { ...form, OSV });
@@ -46,7 +46,7 @@ function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
     </div>
 }
 
-function whatsAdjustable(VP: T.VPSelection): "both" | "king" | "servant" {
+function whatsAdjustable(VP: T.VPSelectionComplete): "both" | "king" | "servant" {
     // TODO: intransitive dynamic compounds?
     return (VP.verb.isCompound === "dynamic" && VP.verb.transitivity === "transitive")
         ? (isPastTense(VP.verb.tense) ? "servant" : "king")

@@ -508,13 +508,6 @@ export type Words = {
     adverbs: AdverbEntry[],
 }
 
-export type VPSelection = {
-    type: "VPSelection",
-    subject: NPSelection,
-    object: Exclude<VerbObject, undefined>,
-    verb: Exclude<VerbSelection, "object">,
-};
-
 // TODO: make this Rendered<VPSelection> with recursive Rendered<>
 export type VPRendered = {
     type: "VPRendered",
@@ -542,6 +535,18 @@ export type EquativeTense = "present" | "subjunctive" | "habitual" | "past" | "f
 export type NounNumber = "singular" | "plural";
 
 export type PerfectTense = `${EquativeTense} perfect`;
+
+export type VPSelectionState = {
+    subject: NPSelection | undefined,
+    verb: VerbSelection,
+};
+
+export type VPSelectionComplete = {
+    type: "VPSelectionComplete",
+    subject: NPSelection,
+    object: Exclude<VerbObject, undefined>,
+    verb: Exclude<VerbSelection, "object">,
+};
 
 export type VerbSelection = {
     type: "verb",

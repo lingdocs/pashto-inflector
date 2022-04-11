@@ -15,7 +15,6 @@ import {
 import {
     getVerbInfo,
 } from "./lib/verb-info";
-import { makeVerbSelection } from "./components/vp-explorer/verb-selection";
 import ConjugationViewer from "./components/ConjugationViewer";
 import InflectionsTable from "./components/InflectionsTable";
 import Pashto from "./components/Pashto";
@@ -164,7 +163,6 @@ export {
     capitalizeFirstLetter,
     psStringFromEntry,
     getLong,
-    makeVerbSelection,
     useStickyState,
     randomPerson,
     isInvalidSubjObjCombo,

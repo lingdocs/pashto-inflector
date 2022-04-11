@@ -6,7 +6,7 @@ import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
 import { isPerfectTense } from "../../lib/phrase-building/vp-tools";
 
-const tenseOptions: { label: string | JSX.Element, value: T.VerbTense }[] = [{
+const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense }[] = [{
     label: <div><i className="fas fa-video mr-2" />present</div>,
     value: "presentVerb",
 }, {
@@ -55,34 +55,53 @@ const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense 
     value: "pastSubjunctive perfect",
 }];
 
-function TensePicker({ onChange, verb, mode }: {
-    verb: T.VerbSelection,
-    onChange: (p: T.VerbSelection) => void,
+export function getRandomTense(type: "basic" | "modal", o?: T.VerbTense): T.VerbTense;
+export function getRandomTense(type: "perfect", o?: T.PerfectTense | T.VerbTense): T.PerfectTense;
+export function getRandomTense(type: "basic" | "modal" | "perfect", o?: T.PerfectTense | T.VerbTense): T.PerfectTense | T.VerbTense {
+    let tns: T.PerfectTense | T.VerbTense;
+    const tenseOptions = type === "perfect" ? perfectTenseOptions : verbTenseOptions;
+    do {
+        tns = tenseOptions[
+            Math.floor(Math.random()*tenseOptions.length)
+        ].value;
+    } while (o === tns);
+    return tns;
+}
+
+function TensePicker({ onChange, vps, mode }: {
+    vps: T.VPSelectionState,
+    onChange: (p: T.VPSelectionState) => void,
     mode: "charts" | "phrases" | "quiz",
 }) {
     function onTenseSelect(o: { value: T.VerbTense | T.PerfectTense } | null) {
         const value = o?.value ? o.value : undefined; 
-        if (verb && value) {
+        if (vps.verb && value) {
             if (isPerfectTense(value)) {
                 onChange({
-                    ...verb,
-                    tense: value,
-                    tenseCategory: "perfect",
+                    ...vps,
+                    verb: {
+                        ...vps.verb,
+                        tense: value,
+                        tenseCategory: "perfect",
+                    },
                 });
             } else {
                 onChange({
-                    ...verb,
-                    tense: value,
-                    tenseCategory: verb.tenseCategory === "perfect" ? "basic" : verb.tenseCategory,
+                    ...vps,
+                    verb: {
+                        ...vps.verb,
+                        tense: value,
+                        tenseCategory: vps.verb.tenseCategory === "perfect" ? "basic" : vps.verb.tenseCategory,
+                    },
                 });
             }
         }
     }
     function moveTense(dir: "forward" | "back") {
-        if (!verb) return;
+        if (!vps.verb) return;
         return () => {
-            const tenses = verb.tenseCategory === "perfect" ? perfectTenseOptions : tenseOptions;
-            const currIndex = tenses.findIndex(tn => tn.value === verb.tense)
+            const tenses = vps.verb.tenseCategory === "perfect" ? perfectTenseOptions : verbTenseOptions;
+            const currIndex = tenses.findIndex(tn => tn.value === vps.verb.tense)
             if (currIndex === -1) {
                 console.error("error moving tense", dir);
                 return;
@@ -95,39 +114,48 @@ function TensePicker({ onChange, verb, mode }: {
         };
     }
     function onPosNegSelect(value: string) {
-        if (verb) {
+        if (vps.verb) {
             onChange({
-                ...verb,
-                negative: value === "true",
+                ...vps,
+                verb: {
+                    ...vps.verb,
+                    negative: value === "true",
+                },
             });
         }
     }
     function onTenseCategorySelect(value: "basic" | "modal" | "perfect") {
-        if (verb) {
+        if (vps.verb) {
             if (value === "perfect") {
                 onChange({
-                    ...verb,
-                    tenseCategory: value,
-                    tense: isPerfectTense(verb.tense) ? verb.tense : "present perfect",
+                    ...vps,
+                    verb: {
+                        ...vps.verb,
+                        tenseCategory: value,
+                        tense: isPerfectTense(vps.verb.tense) ? vps.verb.tense : "present perfect",
+                    },
                 });
             } else {
                 onChange({
-                    ...verb,
-                    tenseCategory: value,
-                    tense: isPerfectTense(verb.tense) ? "presentVerb" : verb.tense,
+                    ...vps,
+                    verb: {
+                        ...vps.verb,
+                        tenseCategory: value,
+                        tense: isPerfectTense(vps.verb.tense) ? "presentVerb" : vps.verb.tense,
+                    }
                 });
             }
         }
     }
-    const tOptions = (verb?.tenseCategory === "perfect") ? perfectTenseOptions : tenseOptions;
+    const tOptions = (vps.verb?.tenseCategory === "perfect") ? perfectTenseOptions : verbTenseOptions;
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
             <div className="d-flex flex-row justify-content-between align-items-center">
                 <div className="h5">Tense:</div>
-                {verb && <div className="mb-2">
+                {vps.verb && <div className="mb-2">
                     <ButtonSelect
                         small
-                        value={verb.tenseCategory}
+                        value={vps.verb.tenseCategory}
                         options={[{
                             label: "Basic",
                             value: "basic",
@@ -145,19 +173,19 @@ function TensePicker({ onChange, verb, mode }: {
             <Select
                 isSearchable={false}
                 // for some reason can't use tOptions with find here;
-                value={verb && ([...tenseOptions, ...perfectTenseOptions].find(o => o.value === verb.tense))}
+                value={vps.verb && ([...verbTenseOptions, ...perfectTenseOptions].find(o => o.value === vps.verb.tense))}
                 onChange={onTenseSelect}
                 className="mb-2"
                 options={tOptions}
                 {...zIndexProps}
             />
-            {verb && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
+            {vps.verb && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
                 <div className="btn btn-light clickable" onClick={moveTense("back")}>
                     <i className="fas fa-chevron-left" />
                 </div>
                 {mode !== "charts" && <ButtonSelect
                     small
-                    value={verb.negative.toString()}
+                    value={vps.verb.negative.toString()}
                     options={[{
                         label: "Pos.",
                         value: "false",

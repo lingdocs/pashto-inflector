@@ -87,6 +87,10 @@ function App() {
         if (transitivity === "grammatically transitive") {
             setVerbTypeShowing("simple");
         }
+        if (transitivity === "intransitive" && verbTypeShowing === "dynamic compound") {
+            setTransitivityShowing("transitive");
+            return;
+        }
         setTransitivityShowing(e.target.value as T.Transitivity);
     }
     const isRegularVerb = (entry: T.DictionaryEntry): boolean => (

@@ -27,7 +27,7 @@ import { renderEnglishVPBase } from "./english-vp-rendering";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
 
-export function renderVP(VP: T.VPSelection): T.VPRendered {
+export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     // Sentence Rules Logic
     const isPast = isPastTense(VP.verb.tense);
     const isTransitive = VP.object !== "none";
