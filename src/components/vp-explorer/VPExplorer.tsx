@@ -349,10 +349,10 @@ function makeQuizState(oldVps: T.VPSelectionState): { VPS: T.VPSelectionState, q
     // don't do the SO switches every time
     const wholeTimeSOSwitch = randFromArray([true, false]);
     [1, 2, 3].forEach(() => {
-        // TODO: don't repeat tenses
         let v: T.VPSelectionState;
         do {
             const SOSwitch = wholeTimeSOSwitch && randFromArray([true, false]);
+            // TODO: if switich subj and obj, include the tense being correct maybe
             v = getRandomVPSelection("tenses")(
                 SOSwitch ? switchSubjObj(vps) : vps,
             );
