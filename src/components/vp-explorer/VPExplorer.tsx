@@ -18,6 +18,7 @@ import InlinePs from "../InlinePs";
 import { psStringEquals } from "../../lib/p-text-helpers";
 import classNames from "classnames";
 import { randFromArray } from "../../lib/misc-helpers";
+import playAudio from "../../lib/play-audio";
 // import { useReward } from 'react-rewards';
 
 const kingEmoji = "👑";
@@ -144,6 +145,8 @@ export function VPExplorer(props: {
     function checkQuizAnswer(a: T.PsString) {
         if (!quizState) return;
         if (isInAnswer(a, quizState.answer)) {
+            const toPlay = randFromArray([true, false, false]);
+            if (toPlay) playAudio(`correct-${randFromArray([1,2,3])}`);
             setShowCheck(true);
             setTimeout(() => {
                 handleResetQuiz();
@@ -156,6 +159,7 @@ export function VPExplorer(props: {
                 setCurrentCorrectEmoji(randFromArray(correctEmoji));
             }, checkDuration * 2);
         } else {
+            playAudio(`wrong-${randFromArray([1,2])}`);
             navigator.vibrate(250);
             setQuizState({
                 ...quizState,
