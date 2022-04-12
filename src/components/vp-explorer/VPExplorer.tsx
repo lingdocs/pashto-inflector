@@ -19,6 +19,7 @@ import { psStringEquals } from "../../lib/p-text-helpers";
 import classNames from "classnames";
 import { randFromArray } from "../../lib/misc-helpers";
 import playAudio from "../../lib/play-audio";
+import "./VPExplorer.css";
 // import { useReward } from 'react-rewards';
 
 const kingEmoji = "👑";
