@@ -11,20 +11,29 @@ import * as T from "../../types";
 import ChartDisplay from "./ChartDisplay";
 import useStickyState from "../../lib/useStickyState";
 import { makeVPSelectionState } from "./verb-selection";
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { randomSubjObj } from "../../library";
 import shuffleArray from "../../lib/shuffle-array";
 import InlinePs from "../InlinePs";
 import { psStringEquals } from "../../lib/p-text-helpers";
-import classNames from "classnames";
 import { randFromArray } from "../../lib/misc-helpers";
 import playAudio from "../../lib/play-audio";
-import "./VPExplorer.css";
 // import { useReward } from 'react-rewards';
 
 const kingEmoji = "👑";
 const servantEmoji = "🙇‍♂️";
 const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", "🕺", "💃", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
+
+const answerFeedback: CSSProperties = {
+    "fontSize": "4rem",
+    "transition": "opacity 0.3s ease-in",
+    "opacity": 0.9,
+    "position": "fixed",
+    "top": "60%",
+    "left": "50%",
+    "zIndex": 99999999,
+    "transform": "translate(-50%, -50%)",
+}
 
 // TODO: Drill Down text display options
 
@@ -256,9 +265,8 @@ export function VPExplorer(props: {
             <VPDisplay VP={verbPhrase} opts={props.opts} />
         }
         {(vps.verb && (mode === "charts")) && <ChartDisplay VS={vps.verb} opts={props.opts} />}
-        <span id="rewardId" />
         {(mode === "quiz" && quizState) && <div className="text-center">
-            <div style={{ fontSize: "4rem" }} className={classNames("answer-feedback", { hide: !showCheck })}>
+            <div style={showCheck ? answerFeedback : { ...answerFeedback, opacity: 0 }}>
                 {currentCorrectEmoji}
             </div>
             {quizState.result === "waiting" ? <>
