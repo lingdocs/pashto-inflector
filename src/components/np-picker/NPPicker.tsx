@@ -58,9 +58,9 @@ function NPPicker(props: {
         : <div></div>;
     return <div>
         {!npType && <div className="text-center mt-3">
-            {/* <div className="h6 mr-3">
+            <div className="h6 mr-3">
                 Choose NP
-            </div> */}
+            </div>
             {npTypes.map((npt) => <div className="mb-2">
                 <button
                     key={npt}

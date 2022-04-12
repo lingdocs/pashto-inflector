@@ -111,6 +111,7 @@ import {
     splitUpSyllables,
     countSyllables,
 } from "./lib/accent-helpers";
+import shuffleArray from "./lib/shuffle-array";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
 import genderColors from "./lib/gender-colors";
@@ -167,6 +168,7 @@ export {
     randomPerson,
     isInvalidSubjObjCombo,
     randomSubjObj,
+    shuffleArray,
     // protobuf helpers
     readDictionary,
     writeDictionary,

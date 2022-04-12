@@ -26,6 +26,7 @@
     "classnames": "^2.2.6",
     "pbf": "^3.2.1",
     "rambda": "^6.7.0",
+    "react-rewards": "^2.0.3",
     "react-select": "^5.2.2"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@ import VerbPicker from "./VerbPicker";
 import TensePicker, { getRandomTense } from "./TensePicker";
 import VPDisplay from "./VPDisplay";
 import ButtonSelect from "../ButtonSelect";
-import { renderVP } from "../../lib/phrase-building/index";
+import { renderVP, compileVP } from "../../lib/phrase-building/index";
 import {
     isInvalidSubjObjCombo,
 } from "../../lib/phrase-building/vp-tools";
@@ -13,6 +13,10 @@ import useStickyState from "../../lib/useStickyState";
 import { makeVPSelectionState } from "./verb-selection";
 import { useEffect, useState } from "react";
 import { randomSubjObj } from "../../library";
+import shuffleArray from "../../lib/shuffle-array";
+import InlinePs from "../InlinePs";
+import { psStringEquals } from "../../lib/p-text-helpers";
+// import { useReward } from 'react-rewards';
 
 const kingEmoji = "👑";
 const servantEmoji = "🙇‍♂️";
@@ -29,8 +33,17 @@ const servantEmoji = "🙇‍♂️";
 // TODO: option to show 3 modes  Phrases - Charts - Quiz
 
 // TODO: error handling on error with rendering etc
-type MixState = "NPs" | "tenses" | "both";
 
+type QuizState = {
+    answer: {
+        ps: T.SingleOrLengthOpts<T.PsString[]>;
+        e?: string[] | undefined;
+    },
+    options: T.PsString[],
+    result: "waiting" | "fail",
+}
+
+type MixType = "NPs" | "tenses" | "both";
 export function VPExplorer(props: {
     verb: T.VerbEntry,
     opts: T.TextOptions,
@@ -48,12 +61,17 @@ export function VPExplorer(props: {
         "vpsState1",    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">("phrases", "verbExplorerMode");
-    const [mix, setMix] = useStickyState<MixState>("NPs", "mixState1");
-    const [showAnswer, setShowAnswer] = useState<boolean>(false);
+    const [quizState, setQuizState] = useState<QuizState | undefined>(undefined);
+    // const { reward } = useReward('rewardId', "emoji", {
+    //     emoji: ['🤓', '😊', '🥳', "👏", "💯", "😎", "👍"],
+    //     lifetime: 50,
+    //     elementCount: 10,
+    //     elementSize: 30,
+    // });
     useEffect(() => {
         setVps(o => {
             if (mode === "quiz") {
-                return setRandomQuizState(mix)(
+                return getRandomVPSelection("both")(
                     makeVPSelectionState(props.verb, o)
                 );
             }
@@ -72,8 +90,9 @@ export function VPExplorer(props: {
             alert("Choose a verb to quiz");
             return;
         }
-        setShowAnswer(false);
-        setVps(setRandomQuizState(mix));
+        const { VPS, qs } = makeQuizState(vps);
+        setVps(VPS);
+        setQuizState(qs);
     }
     function handleSubjectChange(subject: T.NPSelection | undefined, skipPronounConflictCheck?: boolean) {
         if (!skipPronounConflictCheck && hasPronounConflict(subject, vps.verb?.object)) {
@@ -102,6 +121,24 @@ export function VPExplorer(props: {
         if (vps.verb?.isCompound === "dynamic") return;
         setVps(switchSubjObj)
     }
+    function quizLock<T>(f: T) {
+        if (mode === "quiz") {
+            return () => null;
+        }
+        return f;
+    }
+    function checkQuizAnswer(a: T.PsString) {
+        if (!quizState) return;
+        if (isInAnswer(a, quizState.answer)) {
+            // reward();
+            handleResetQuiz();
+        } else {
+            setQuizState({
+                ...quizState,
+                result: "fail",
+            });
+        }
+    }
     const verbPhrase: T.VPSelectionComplete | undefined = completeVPSelection(vps);
     const VPRendered = verbPhrase && renderVP(verbPhrase);
     return <div className="mt-3" style={{ maxWidth: "950px"}}>
@@ -127,19 +164,6 @@ export function VPExplorer(props: {
                 handleChange={handleChangeMode}
             />
         </div>
-        {mode === "quiz" && <div className="mt-2 mb-3 d-flex flex-row justify-content-center align-items-center">
-            <div className="mr-2">Mix:</div>
-            <ButtonSelect
-                small
-                value={mix}
-                options={[
-                    { label: "NPs", value: "NPs" },
-                    { label: "Tenses", value: "tenses" },
-                    { label: "Both", value: "both" },
-                ]}
-                handleChange={setMix}
-            />
-        </div>}
         {(vps.verb && (typeof vps.verb.object === "object") && (vps.verb.isCompound !== "dynamic") && (mode === "phrases")) &&
             <div className="text-center mt-4">
                 <button onClick={handleSubjObjSwap} className="btn btn-sm btn-light">
@@ -162,7 +186,7 @@ export function VPExplorer(props: {
                         }}
                         np={vps.subject}
                         counterPart={vps.verb ? vps.verb.object : undefined}
-                        onChange={handleSubjectChange}
+                        onChange={quizLock(handleSubjectChange)}
                         opts={props.opts}
                         cantClear={mode === "quiz"}
                     />
@@ -184,7 +208,7 @@ export function VPExplorer(props: {
                             asObject
                             np={vps.verb.object}
                             counterPart={vps.subject}
-                            onChange={handleObjectChange}
+                            onChange={quizLock(handleObjectChange)}
                             opts={props.opts}
                             cantClear={mode === "quiz"}
                         />}
@@ -193,25 +217,37 @@ export function VPExplorer(props: {
             <div className="my-2">
                 <TensePicker
                     vps={vps}
-                    onChange={setVps}
+                    onChange={quizLock(setVps)}
                     mode={mode}
                 />
             </div>
         </div>
-        {(vps.verb && (mode === "quiz")) && <div className="text-center my-2">
-            <button
-                className="btn btn-primary"
-                onClick={showAnswer ? handleResetQuiz : () => setShowAnswer(true)}
-            >
-                {showAnswer
-                    ? <>Next <i className="ml-1 fas fa-random"/></>
-                    : <>Show Answer</>}
-            </button>
-        </div>}
-        {(verbPhrase && ((mode === "phrases") || (mode === "quiz" && showAnswer))) &&
+        {(verbPhrase && (mode === "phrases")) &&
             <VPDisplay VP={verbPhrase} opts={props.opts} />
         }
         {(vps.verb && (mode === "charts")) && <ChartDisplay VS={vps.verb} opts={props.opts} />}
+        <span id="rewardId" />
+        {(mode === "quiz" && quizState) && <div className="text-center">
+            {quizState.result === "waiting" ? <>
+                <div className="text-muted my-3">Choose a correct answer:</div>
+                {quizState.options.map(o => <div className="pb-3">
+                    <div className="btn btn-outline-secondary" onClick={() => checkQuizAnswer(o)}>
+                        <InlinePs opts={props.opts}>{o}</InlinePs>
+                    </div>
+                </div>)}
+            </> : <div>
+                <div className="h5 mt-4">❌ Wrong 😭</div>
+                <div className="my-4">The correct answer was:</div>
+                <InlinePs opts={props.opts}>
+                    {quizState.options.find(x => isInAnswer(x, quizState.answer)) as T.PsString}
+                </InlinePs>
+                <div className="my-4">
+                    <button type="button" className="btn btn-primary" onClick={handleResetQuiz}>
+                        Try Again
+                    </button>
+                </div>
+            </div>}
+        </div>}
         {mode === "quiz" && <div style={{ height: "300px" }}>
             {/* spacer for blank space while quizzing */}
         </div>}
@@ -260,7 +296,63 @@ function switchSubjObj({ subject, verb }: T.VPSelectionState): T.VPSelectionStat
     };
 }
 
-function setRandomQuizState(mix: MixState) {
+function makeQuizState(oldVps: T.VPSelectionState): { VPS: T.VPSelectionState, qs: QuizState } {
+    function makeRes(x: T.VPSelectionState) {
+        const y = completeVPSelection(x);
+        if (!y) {
+            throw new Error("trying to make a quiz out of an incomplete VPSelection")
+        }
+        return compileVP(renderVP(y), { removeKing: false, shrinkServant: false });
+    }
+    const vps = getRandomVPSelection("both")(oldVps);
+    const wrongStates: T.VPSelectionState[] = [];
+    [1, 2, 3, 4].forEach(() => {
+        // TODO: don't repeat tenses
+        let v: T.VPSelectionState;
+        do {
+            v = getRandomVPSelection("tenses")(vps);
+            // eslint-disable-next-line
+        } while (wrongStates.find(x => x.verb.tense === v.verb.tense));
+        wrongStates.push(v);
+    });
+    const answer = makeRes(vps);
+    const wrongAnswers = wrongStates.map(makeRes);
+    const allAnswers = shuffleArray([...wrongAnswers, answer]);
+    const options = allAnswers.map(getOptionFromResult);
+    return {
+        VPS: vps,
+        qs: {
+            answer,
+            options,
+            result: "waiting",
+        },
+    };
+}
+
+function isInAnswer(a: T.PsString, answer: {
+    ps: T.SingleOrLengthOpts<T.PsString[]>;
+    e?: string[] | undefined;
+}): boolean {
+    if ("long" in answer.ps) {
+        return isInAnswer(a, { ...answer, ps: answer.ps.long }) ||
+            isInAnswer(a, { ...answer, ps: answer.ps.short }) ||
+            !!(answer.ps.mini && isInAnswer(a, { ...answer, ps: answer.ps.mini }));
+    }
+    return answer.ps.some((x) => psStringEquals(x, a));
+}
+
+function getOptionFromResult(r: {
+    ps: T.SingleOrLengthOpts<T.PsString[]>;
+    e?: string[] | undefined;
+}): T.PsString {
+    // TODO: randomize length pick
+    const ps = "long" in r.ps ? r.ps.long : r.ps;
+    // TODO: randomize version pick
+    return ps[0];
+}
+
+function getRandomVPSelection(mix: MixType = "both") {
+    // TODO: Type safety to make sure it's safe?
     return ({ subject, verb }: T.VPSelectionState): T.VPSelectionState => {
         if (mix === "tenses") {
             return {
