@@ -1,0 +1,13 @@
+.answer-feedback {
+    transition: opacity 0.3s ease-in;
+    opacity: 0.8;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 99999999;
+    transform: translate(-50%, -50%);
+}
+
+.hide {
+    opacity: 0;
+}
