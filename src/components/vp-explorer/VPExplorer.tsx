@@ -156,6 +156,7 @@ export function VPExplorer(props: {
                 setCurrentCorrectEmoji(randFromArray(correctEmoji));
             }, checkDuration * 2);
         } else {
+            navigator.vibrate(250);
             setQuizState({
                 ...quizState,
                 result: "fail",
