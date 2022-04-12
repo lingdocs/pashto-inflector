@@ -68,10 +68,11 @@ export function getRandomTense(type: "basic" | "modal" | "perfect", o?: T.Perfec
     return tns;
 }
 
-function TensePicker({ onChange, vps, mode }: {
+function TensePicker({ onChange, vps, mode, locked }: {
     vps: T.VPSelectionState,
     onChange: (p: T.VPSelectionState) => void,
     mode: "charts" | "phrases" | "quiz",
+    locked: boolean,
 }) {
     function onTenseSelect(o: { value: T.VerbTense | T.PerfectTense } | null) {
         const value = o?.value ? o.value : undefined; 
@@ -179,7 +180,7 @@ function TensePicker({ onChange, vps, mode }: {
                 options={tOptions}
                 {...zIndexProps}
             />
-            {vps.verb && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
+            {vps.verb && !locked && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
                 <div className="btn btn-light clickable" onClick={moveTense("back")}>
                     <i className="fas fa-chevron-left" />
                 </div>

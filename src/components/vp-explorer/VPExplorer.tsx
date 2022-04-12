@@ -16,10 +16,13 @@ import { randomSubjObj } from "../../library";
 import shuffleArray from "../../lib/shuffle-array";
 import InlinePs from "../InlinePs";
 import { psStringEquals } from "../../lib/p-text-helpers";
+import classNames from "classnames";
+import { randFromArray } from "../../lib/misc-helpers";
 // import { useReward } from 'react-rewards';
 
 const kingEmoji = "👑";
 const servantEmoji = "🙇‍♂️";
+const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", "🕺", "💃", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
 
 // TODO: Drill Down text display options
 
@@ -33,6 +36,8 @@ const servantEmoji = "🙇‍♂️";
 // TODO: option to show 3 modes  Phrases - Charts - Quiz
 
 // TODO: error handling on error with rendering etc
+
+const checkDuration = 400;
 
 type QuizState = {
     answer: {
@@ -62,6 +67,8 @@ export function VPExplorer(props: {
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">("phrases", "verbExplorerMode");
     const [quizState, setQuizState] = useState<QuizState | undefined>(undefined);
+    const [showCheck, setShowCheck] = useState<boolean>(false);
+    const [currentCorrectEmoji, setCurrentCorrectEmoji] = useState<string>(randFromArray(correctEmoji));
     // const { reward } = useReward('rewardId', "emoji", {
     //     emoji: ['🤓', '😊', '🥳', "👏", "💯", "😎", "👍"],
     //     lifetime: 50,
@@ -69,11 +76,17 @@ export function VPExplorer(props: {
     //     elementSize: 30,
     // });
     useEffect(() => {
+        if (mode === "quiz") {
+            handleResetQuiz();
+        }
+        // eslint-disable-next-line
+    }, []);
+    useEffect(() => {
         setVps(o => {
             if (mode === "quiz") {
-                return getRandomVPSelection("both")(
-                    makeVPSelectionState(props.verb, o)
-                );
+                const { VPS, qs } = makeQuizState(vps);
+                setQuizState(qs);
+                return VPS;
             }
             return makeVPSelectionState(props.verb, o);
         });
@@ -130,8 +143,17 @@ export function VPExplorer(props: {
     function checkQuizAnswer(a: T.PsString) {
         if (!quizState) return;
         if (isInAnswer(a, quizState.answer)) {
-            // reward();
-            handleResetQuiz();
+            setShowCheck(true);
+            setTimeout(() => {
+                handleResetQuiz();
+            }, checkDuration / 2);
+            setTimeout(() => {
+                setShowCheck(false);
+            }, checkDuration);
+            // this sucks, have to do this so the emoji doesn't change in the middle of animation
+            setTimeout(() => {
+                setCurrentCorrectEmoji(randFromArray(correctEmoji));
+            }, checkDuration * 2);
         } else {
             setQuizState({
                 ...quizState,
@@ -219,6 +241,7 @@ export function VPExplorer(props: {
                     vps={vps}
                     onChange={quizLock(setVps)}
                     mode={mode}
+                    locked={!!(mode === "quiz" && quizState)}
                 />
             </div>
         </div>
@@ -228,10 +251,15 @@ export function VPExplorer(props: {
         {(vps.verb && (mode === "charts")) && <ChartDisplay VS={vps.verb} opts={props.opts} />}
         <span id="rewardId" />
         {(mode === "quiz" && quizState) && <div className="text-center">
+            <div style={{ fontSize: "4rem" }} className={classNames("answer-feedback", { hide: !showCheck })}>
+                {currentCorrectEmoji}
+            </div>
             {quizState.result === "waiting" ? <>
                 <div className="text-muted my-3">Choose a correct answer:</div>
-                {quizState.options.map(o => <div className="pb-3">
-                    <div className="btn btn-outline-secondary" onClick={() => checkQuizAnswer(o)}>
+                {quizState.options.map(o => <div className="pb-3" key={o.f}>
+                    <div className="btn btn-answer btn-outline-secondary" onClick={() => {
+                        checkQuizAnswer(o);
+                    }}>
                         <InlinePs opts={props.opts}>{o}</InlinePs>
                     </div>
                 </div>)}
@@ -247,9 +275,6 @@ export function VPExplorer(props: {
                     </button>
                 </div>
             </div>}
-        </div>}
-        {mode === "quiz" && <div style={{ height: "300px" }}>
-            {/* spacer for blank space while quizzing */}
         </div>}
     </div>
 }
@@ -398,7 +423,7 @@ function getRandomVPSelection(mix: MixType = "both") {
         };
         return {
             subject: s,
-            verb: mix === "both" ? randomizeTense(v, false) : v,
+            verb: randomizeTense(v, true),
         };
     };
 };

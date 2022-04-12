@@ -152,6 +152,12 @@ export function randomNumber(minInclusive: number, maxExclusive: number): number
     return Math.floor(Math.random() * (maxExclusive - minInclusive) + minInclusive); 
 }
 
+export function randFromArray<M>(arr: M[]): M {
+    return arr[
+        Math.floor(Math.random()*arr.length)
+    ];
+}
+
 // TODO: deprecate this because we have it in np-tools?
 /**
  * Sees if a possiblePerson (for subject/object) is possible, given the other person
