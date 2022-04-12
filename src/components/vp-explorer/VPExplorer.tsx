@@ -84,7 +84,8 @@ export function VPExplorer(props: {
     useEffect(() => {
         setVps(o => {
             if (mode === "quiz") {
-                const { VPS, qs } = makeQuizState(vps);
+                const newvps = makeVPSelectionState(props.verb, o);
+                const { VPS, qs } = makeQuizState(newvps);
                 setQuizState(qs);
                 return VPS;
             }
@@ -331,11 +332,16 @@ function makeQuizState(oldVps: T.VPSelectionState): { VPS: T.VPSelectionState, q
     }
     const vps = getRandomVPSelection("both")(oldVps);
     const wrongStates: T.VPSelectionState[] = [];
-    [1, 2, 3, 4].forEach(() => {
+    // don't do the SO switches every time
+    const wholeTimeSOSwitch = randFromArray([true, false]);
+    [1, 2, 3].forEach(() => {
         // TODO: don't repeat tenses
         let v: T.VPSelectionState;
         do {
-            v = getRandomVPSelection("tenses")(vps);
+            const SOSwitch = wholeTimeSOSwitch && randFromArray([true, false]);
+            v = getRandomVPSelection("tenses")(
+                SOSwitch ? switchSubjObj(vps) : vps,
+            );
             // eslint-disable-next-line
         } while (wrongStates.find(x => x.verb.tense === v.verb.tense));
         wrongStates.push(v);
@@ -370,9 +376,10 @@ function getOptionFromResult(r: {
     ps: T.SingleOrLengthOpts<T.PsString[]>;
     e?: string[] | undefined;
 }): T.PsString {
-    // TODO: randomize length pick
-    const ps = "long" in r.ps ? r.ps.long : r.ps;
-    // TODO: randomize version pick
+    const ps = "long" in r.ps
+        ? r.ps[randFromArray(["short", "long"] as ("short" | "long")[])]
+        : r.ps;
+    // not randomizing version pick (for now)
     return ps[0];
 }
 
