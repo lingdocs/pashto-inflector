@@ -117,7 +117,7 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts }: {
                             const active = (p.row === i && p.col === j)
                             return <td
                                 onClick={() => handleClick(i, j)}
-                                className={classNames({ "table-active": active })}
+                                className={classNames({ "table-active": active, "text-on-gender-color": active })}
                                 style={{
                                     backgroundColor: active ? gColors[p.gender] : "inherit",
                                     padding: "0.25rem 0",

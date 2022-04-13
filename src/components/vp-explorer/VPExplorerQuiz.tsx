@@ -153,6 +153,9 @@ function VPExplorerQuiz(props: {
                     </> : <div>
                         <div className="text-muted my-3">Type the <strong>verb in Pashto script</strong> to finish the phrase:</div>
                         <form onSubmit={e => {
+                            if (!answerBlank) {
+                                alert("Enter the verb in Pashto script");
+                            };
                             e.preventDefault();
                             checkAnswer({ text: answerBlank, withBa });
                         }}>

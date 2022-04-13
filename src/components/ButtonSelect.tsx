@@ -26,7 +26,7 @@ function ButtonSelect<L extends string>(props: PickerProps<L>) {
                     "btn",
                     "btn-outline-secondary",
                     { active: props.value === option.value },
-                    { "btn-sm": props.small || props.xSmall }
+                    { "btn-sm": props.small || props.xSmall },
                 )}
                 onClick={() => props.handleChange(option.value)}
                 style={{
@@ -36,7 +36,9 @@ function ButtonSelect<L extends string>(props: PickerProps<L>) {
                         { backgroundColor: option.color } : {},
                 }}
             >
-                {option.label}
+                <span className={classNames([{ "text-on-gender-color": option.color && (props.value === option.value) }])}>
+                    {option.label}
+                </span>
             </button>
         ))}
     </div>

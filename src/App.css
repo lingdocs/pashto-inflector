@@ -18,6 +18,7 @@
     /* change with theme */
     --theme-shade: #fefefe;
     --close: #f5f5f5;
+    --text-on-gender-color: #333;
     --closer: #eee;
     --farther: #555;
     --farthest: #333;
@@ -29,6 +30,7 @@
 [data-theme="dark"] {
     --theme-shade: #121418;
     --close: #1d1f25;
+    --text-on-gender-color: #1d1f25;
     --closer: #2c3039;
     --farther: #bbb;
     --farthest: #999;
@@ -52,6 +54,10 @@ body {
 
 .p-text {
     font-size: var(--p-text-size);
+}
+
+.text-on-gender-color {
+    color: var(--text-on-gender-color)
 }
 
 pre {
