@@ -30,18 +30,20 @@ import { renderEnglishVPBase } from "./english-vp-rendering";
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     // Sentence Rules Logic
     const isPast = isPastTense(VP.verb.tense);
-    const isTransitive = VP.object !== "none";
+    const isTransitive = VP.verb.object !== "none";
     const { king, servant } = getKingAndServant(isPast, isTransitive);
-    const kingPerson = getPersonFromNP(VP[king]);
+    const kingPerson = getPersonFromNP(
+        king === "subject" ? VP.subject : VP.verb.object,
+    );
     // TODO: more elegant way of handling this type safety
     if (kingPerson === undefined) {
         throw new Error("king of sentance does not exist");
     }
     const subjectPerson = getPersonFromNP(VP.subject);
-    const objectPerson = getPersonFromNP(VP.object);
+    const objectPerson = getPersonFromNP(VP.verb.object);
     // TODO: also don't inflect if it's a pattern one animate noun
     const inflectSubject = isPast && isTransitive && !isMascSingAnimatePattern4(VP.subject);
-    const inflectObject = !isPast && isFirstOrSecondPersPronoun(VP.object);
+    const inflectObject = !isPast && isFirstOrSecondPersPronoun(VP.verb.object);
     // Render Elements
     return {
         type: "VPRendered",
@@ -51,11 +53,11 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         isTransitive,
         isCompound: VP.verb.isCompound,
         subject: renderNPSelection(VP.subject, inflectSubject, false, "subject"),
-        object: renderNPSelection(VP.object, inflectObject, true, "object"),
+        object: renderNPSelection(VP.verb.object, inflectObject, true, "object"),
         verb: renderVerbSelection(VP.verb, kingPerson, objectPerson),
         englishBase: renderEnglishVPBase({
             subjectPerson,
-            object: VP.verb.isCompound === "dynamic" ? "none" : VP.object,
+            object: VP.verb.isCompound === "dynamic" ? "none" : VP.verb.object,
             vs: VP.verb,
         }),
     };
@@ -300,7 +302,7 @@ function getInf(infs: T.InflectorOutput, t: "plural" | "arabicPlural" | "inflect
     return [];
 }
 
-function getKingAndServant(isPast: boolean, isTransitive: boolean): 
+export function getKingAndServant(isPast: boolean, isTransitive: boolean): 
     { king: "subject", servant: "object" } |
     { king: "object", servant: "subject" } |
     { king: "subject", servant: undefined } {

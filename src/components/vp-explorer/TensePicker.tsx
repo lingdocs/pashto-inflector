@@ -69,8 +69,8 @@ export function getRandomTense(type: "basic" | "modal" | "perfect", o?: T.Perfec
 }
 
 function TensePicker({ onChange, vps, mode, locked }: {
-    vps: T.VPSelectionState,
-    onChange: (p: T.VPSelectionState) => void,
+    vps: T.VPSelection,
+    onChange: (p: T.VPSelection) => void,
     mode: "charts" | "phrases" | "quiz",
     locked: boolean,
 }) {

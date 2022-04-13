@@ -7,8 +7,8 @@ import { isPerfectTense } from "../../lib/phrase-building/vp-tools";
 
 export function makeVPSelectionState(
     verb: T.VerbEntry,
-    os?: T.VPSelectionState,
-): T.VPSelectionState {
+    os?: T.VPSelection,
+): T.VPSelection {
     const info = getVerbInfo(verb.entry, verb.complement);
     const subject = (os?.verb.voice === "passive" && info.type === "dynamic compound")
         ? makeNounSelection(info.objComplement.entry as T.NounEntry, true)

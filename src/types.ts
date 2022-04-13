@@ -536,16 +536,18 @@ export type NounNumber = "singular" | "plural";
 
 export type PerfectTense = `${EquativeTense} perfect`;
 
-export type VPSelectionState = {
+export type VPSelection = {
     subject: NPSelection | undefined,
     verb: VerbSelection,
 };
 
 export type VPSelectionComplete = {
-    type: "VPSelectionComplete",
     subject: NPSelection,
+    verb: VerbSelectionComplete,
+};
+
+export type VerbSelectionComplete = Exclude<VerbSelection, "object"> & {
     object: Exclude<VerbObject, undefined>,
-    verb: Exclude<VerbSelection, "object">,
 };
 
 export type VerbSelection = {

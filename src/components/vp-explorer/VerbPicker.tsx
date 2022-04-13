@@ -9,8 +9,8 @@ import useStickyState from "../../lib/useStickyState";
 // TODO: dark on past tense selecitons
 
 function VerbPicker(props: {
-    vps: T.VPSelectionState,
-    onChange: (p: T.VPSelectionState) => void,
+    vps: T.VPSelection,
+    onChange: (p: T.VPSelection) => void,
     opts: T.TextOptions,
 }) {
     const [showRootsAndStems, setShowRootsAndStems] = useStickyState<boolean>(false, "showRootsAndStems");
@@ -31,18 +31,13 @@ function VerbPicker(props: {
                 props.onChange({
                     ...props.vps,
                     subject: props.vps.verb.object,
-                })
-            }
-            if (value === "active") {
+                });
+            } else {
                 props.onChange({
                     ...props.vps,
-                    subject: undefined,
+                    verb: props.vps.verb.changeVoice(value, value === "active" ? props.vps.subject : undefined),
                 });
             }
-            props.onChange({
-                ...props.vps,
-                verb: props.vps.verb.changeVoice(value, value === "active" ? props.vps.subject : undefined),
-            });
         }
     }
     function notInstransitive(t: "transitive" | "intransitive" | "grammatically transitive"): "transitive" | "grammatically transitive" {

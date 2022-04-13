@@ -159,3 +159,10 @@ export function isSingularEntry<U extends T.NounEntry>(e: U): e is T.SingularEnt
 export function isArrayOneOrMore<U>(a: U[]): a is T.ArrayOneOrMore<U> {
     return a.length > 0;
 }
+
+export function isVPSelectionComplete(vps: T.VPSelection | T.VPSelectionComplete): vps is T.VPSelectionComplete {
+    if ((vps.subject !== undefined) && (vps.verb.object !== undefined)) {
+        return true;
+    }
+    return false;
+}
