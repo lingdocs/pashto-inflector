@@ -362,7 +362,7 @@ function combineSegments(loe: (Segment | " " | "" | T.PsString)[]): T.PsString[]
     );
 }
 
-function flattenLengths(r: T.SingleOrLengthOpts<T.PsString[]>): T.PsString[] {
+export function flattenLengths(r: T.SingleOrLengthOpts<T.PsString[]>): T.PsString[] {
     if ("long" in r) {
         return Object.values(r).flat();
     }

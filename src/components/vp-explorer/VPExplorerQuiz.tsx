@@ -1,19 +1,23 @@
 import { CSSProperties, useState } from "react";
 import * as T from "../../types";
 import { randFromArray } from "../../lib/misc-helpers";
-import { randomSubjObj } from "../../library";
+import { baParticle } from "../../lib/grammar-units";
+import { randomSubjObj } from "../../lib/np-tools";
+import { standardizePashto } from "../../lib/standardize-pashto";
 import shuffleArray from "../../lib/shuffle-array";
 import InlinePs from "../InlinePs";
 import { psStringEquals } from "../../lib/p-text-helpers";
 import { renderVP, compileVP } from "../../lib/phrase-building/index";
 import { getRandomTense } from "./TensePicker";
-import { switchSubjObj } from "../../lib/phrase-building/vp-tools";
+import { removeBa, switchSubjObj } from "../../lib/phrase-building/vp-tools";
 import playAudio from "../../lib/play-audio";
 import TensePicker from "./TensePicker";
 import Keyframes from "../Keyframes";
 import energyDrink from "./energy-drink.jpg";
+import { flattenLengths } from "../../lib/phrase-building/compile-vp";
+import { concatPsString } from "../../lib/p-text-helpers";
 
-const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", "🕺", "💃", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
+const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
 
 const answerFeedback: CSSProperties = {
     "fontSize": "4rem",
@@ -27,17 +31,24 @@ const answerFeedback: CSSProperties = {
 }
 
 const checkDuration = 400;
-const stageLength = 7;
+const stageLength = 6;
 
-type QuizState = {
+type QuizState = ({
     stage: "multiple choice",
-    qNumber: number,
-    vps: T.VPSelectionComplete,
     answer: {
         ps: T.SingleOrLengthOpts<T.PsString[]>;
         e?: string[] | undefined;
     },
     options: T.PsString[],
+} | {
+    stage: "blanks",
+    answer: {
+        ps: T.PsString[],
+        withBa: boolean,
+    },
+}) & {
+    qNumber: number,
+    vps: T.VPSelectionComplete,
     result: "waiting" | "fail",
 }
 type MixType = "NPs" | "tenses" | "both";
@@ -49,10 +60,18 @@ function VPExplorerQuiz(props: {
     const startingQs = tickQuizState(props.vps);
     const [quizState, setQuizState] = useState<QuizState>(startingQs);
     const [showCheck, setShowCheck] = useState<boolean>(false);
+    const [answerBlank, setAnswerBlank] = useState<string>("");
+    const [withBa, setWithBa] = useState<boolean>(false);
     const [currentCorrectEmoji, setCurrentCorrectEmoji] = useState<string>(randFromArray(correctEmoji));
-    function checkQuizAnswer(a: T.PsString) {
+    function checkAnswer(a: T.PsString | { text: string, withBa: boolean }) {
         if (!quizState) return;
-        if (isInAnswer(a, quizState.answer)) {
+        const correct = "p" in a 
+            ? isInAnswer(a, quizState.answer)
+            // @ts-ignore // TODO: CLEANUP
+            : blanksAnswerCorrect(a, quizState.answer);
+        setAnswerBlank("");
+        setWithBa(false);
+        if (correct) {
             const toPlay = randFromArray([true, false, false]);
             if (toPlay) playAudio(`correct-${randFromArray([1,2,3])}`);
             setShowCheck(true);
@@ -79,6 +98,8 @@ function VPExplorerQuiz(props: {
     const { subject, object } = rendered;
     const { e } = compileVP(rendered, { removeKing: false, shrinkServant: false });
     function handleRestart() {
+        setWithBa(false);
+        setAnswerBlank("");
         setQuizState(tickQuizState(quizState.vps));
     }
     return <div className="mt-4">
@@ -86,11 +107,11 @@ function VPExplorerQuiz(props: {
         <div className="d-flex flex-row justify-content-around flex-wrap">
             <div className="my-2">
                 <div className="h5 text-center">Subject</div>
-                <QuizNPDisplay>{subject}</QuizNPDisplay>
+                <QuizNPDisplay opts={props.opts} stage={quizState.stage}>{subject}</QuizNPDisplay>
             </div>
             {(object !== "none") && <div className="my-2">
                 <div className="h5 text-center">Object</div>
-                <QuizNPDisplay>{object}</QuizNPDisplay>
+                <QuizNPDisplay opts={props.opts} stage={quizState.stage}>{object}</QuizNPDisplay>
             </div>}
             <div className="my-2">
                 <TensePicker
@@ -110,7 +131,7 @@ function VPExplorerQuiz(props: {
             {quizState.qNumber === stageLength ?
                 <div className="mt-4" style={{ animation: "fade-in 0.5s" }}>
                     <h4>👏 Congratulations</h4>
-                    <p className="lead">You finished the first level!</p>
+                    <p className="lead">You finished the first two levels!</p>
                     <p>The <strong>other levels are still in development</strong>... In the meantime have an energy drink.</p>
                     <div className="mb-4">
                         <img src={energyDrink} alt="energy-dring" className="img-fluid" />
@@ -120,27 +141,72 @@ function VPExplorerQuiz(props: {
                     </button>
                 </div>
                 : (quizState.result === "waiting"
-                    ? <>
+                    ? (quizState.stage === "multiple choice" ? <>
                         <div className="text-muted my-3">Choose a correct answer:</div>
                         {quizState.options.map(o => <div className="pb-3" key={o.f} style={{ animation: "fade-in 0.5s" }}>
-                            <button className="btn btn-answer btn-outline-secondary" onClick={() => {
-                                checkQuizAnswer(o);
-                            }}>
+                            <button
+                                className="btn btn-answer btn-outline-secondary"
+                                onClick={() => checkAnswer(o)}>
                                 <InlinePs opts={props.opts}>{o}</InlinePs>
                             </button>
                         </div>)}
-                    </>
+                    </> : <div>
+                        <div className="text-muted my-3">Type the <strong>verb in Pashto script</strong> to finish the phrase:</div>
+                        <form onSubmit={e => {
+                            e.preventDefault();
+                            checkAnswer({ text: answerBlank, withBa: false });
+                        }}>
+                            <div className="mb-3" style={{ maxWidth: "250px", margin: "0 auto"}}>
+                                <input
+                                    type="text"
+                                    dir="auto"
+                                    className="form-control"
+                                    placeholder="type verb here"
+                                    value={answerBlank}
+                                    onChange={e => setAnswerBlank(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-check mb-4" style={{ fontSize: "large" }}>
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    checked={withBa}
+                                    onChange={e => setWithBa(e.target.checked)}
+                                />
+                                <label className="form-check-label text-muted" htmlFor="OSVCheckbox">
+                                    add <InlinePs opts={props.opts}>{baParticle}</InlinePs> in phrase
+                                </label>
+                            </div>
+                            <button type="submit" className="btn btn-primary">
+                                Check
+                            </button>
+                        </form>
+                    </div>)
                     : <div style={{ animation: "fade-in 0.5s" }}>
                         <div className="h4 mt-4">❌ Wrong 😭</div>
-                        <div className="my-4 lead">The correct answer was:</div>
-                        <InlinePs opts={props.opts}>
-                            {quizState.options.find(x => isInAnswer(x, quizState.answer)) as T.PsString}
-                        </InlinePs>
-                        <div className="my-4">
-                            <button type="button" className="btn btn-primary" onClick={handleRestart}>
-                                Try Again
-                            </button>
-                        </div>
+                        {quizState.stage === "multiple choice" ?
+                            <div>
+                                <div className="my-4 lead">The correct answer was:</div>
+                                <InlinePs opts={props.opts}>
+                                    {quizState.options.find(x => isInAnswer(x, quizState.answer)) as T.PsString}
+                                </InlinePs>
+                            </div>
+                        :
+                            <div>
+                                <div className="my-4 lead">Possible correct answers were:</div>
+                                {quizState.answer.ps.map((p, i) => <div key={i}>
+                                    <InlinePs opts={props.opts}>{p}</InlinePs>
+                                </div>)}
+                                <div className="mt-2">
+                                    <strong>{("withBa" in quizState.answer && quizState.answer.withBa) ? "With" : "without"}</strong>
+                                    {` `}
+                                    a <InlinePs opts={props.opts}>{baParticle}</InlinePs> in the phrase
+                                </div>
+                            </div>
+                        }
+                        <button type="button" className="btn btn-primary mt-4" onClick={handleRestart}>
+                            Try Again
+                        </button>
                     </div>)
             }
             <Keyframes name="fade-in" from={{ opacity: 0 }} to={{ opacity: 1 }} />
@@ -148,7 +214,22 @@ function VPExplorerQuiz(props: {
     </div>;
 }
 
+function blanksAnswerCorrect(a: { text: string, withBa: boolean }, answer: { ps: T.PsString[], withBa?: boolean }): boolean {
+    const p = standardizePashto(a.text).trim();
+    const given = removeBa({ p, f: "" }).p;
+    return (
+        a.withBa === answer.withBa
+        &&
+        answer.ps.some(x => x.p === given)
+    );
+}
+
 function ProgressBar({ quizState }: { quizState: QuizState }) {
+    function getPercentageDone({ current, total }: { current: number, total: number }): number {
+        return Math.round(
+            (current / total) * 100
+        );
+    }
     function getProgressWidth(): string {
         const num = getPercentageDone({ current: quizState.qNumber, total: stageLength });
         return `${num}%`;
@@ -163,22 +244,27 @@ function ProgressBar({ quizState }: { quizState: QuizState }) {
 
         </div>
         <div>
-            Level 1: Multiple Choice
+            {quizState.stage === "multiple choice"
+                ? "Level 1: Multiple Choice"
+                : "Level 2: Type the Verb"}
         </div>
     </div>;
 }
 
-function getPercentageDone(progress: { current: number, total: number }): number {
-    return Math.round(
-        (progress.current / (progress.total + 1)) * 100
-    );
-}
-
-function QuizNPDisplay({ children }: { children: T.Rendered<T.NPSelection> | T.Person.ThirdPlurMale }) {
+function QuizNPDisplay({ children, stage, opts }: {
+    stage: "blanks" | "multiple choice",
+    children: T.Rendered<T.NPSelection> | T.Person.ThirdPlurMale,
+    opts: T.TextOptions,
+}) {
     return <div className="mb-3">
         {(typeof children === "number")
             ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
-            : <div style={{ fontSize: "larger" }}>{children.e}</div>}
+            : <div className="text-centered" style={{ fontSize: "large" }}>
+                    {stage === "blanks" && <div>
+                        <InlinePs opts={opts}>{children.ps[0]}</InlinePs>
+                    </div>}
+                    <div>{children.e}</div>
+            </div>}
     </div>;
 }
 
@@ -211,19 +297,49 @@ function tickQuizState(startingWith: T.VPSelection | QuizState): QuizState {
         } while (wrongVpsS.find(x => x.verb.tense === v.verb.tense));
         wrongVpsS.push(v);
     });
+    const qNumber = "stage" in startingWith ? (startingWith.qNumber + 1) : 0;
+    const beatFirstStage = "stage" in startingWith && (qNumber === stageLength) && startingWith.stage === "multiple choice"; 
+    const stage = beatFirstStage
+        ? "blanks"
+        : ("stage" in startingWith ? startingWith.stage : "multiple choice");
+    const blanksAnswer = getBlanksAnswer(newVps);
+    if (stage === "blanks") {
+        return {
+            stage,
+            qNumber: beatFirstStage ? 0 : qNumber,
+            vps: newVps,
+            answer: blanksAnswer,
+            result: "waiting",
+        };
+    }
     const answer = makeRes(newVps);
     const wrongAnswers = wrongVpsS.map(makeRes);
     const allAnswers = shuffleArray([...wrongAnswers, answer]);
     const options = allAnswers.map(getOptionFromResult);
-    const qNumber = ("stage" in startingWith) ? (startingWith.qNumber + 1) : 0;
     return {
-        stage: "multiple choice",
-        qNumber,
+        stage,
+        qNumber: beatFirstStage ? 0 : qNumber,
         vps: newVps,
         answer,
         options,
         result: "waiting",
     };
+}
+
+function getBlanksAnswer(vps: T.VPSelectionComplete): { ps: T.PsString[], withBa: boolean } {
+    const { verb } = renderVP(vps);
+    const { head, rest } = verb.ps;
+    const ps = flattenLengths(rest).map(x => {
+        const y = removeBa(x);
+        if (head) {
+            return concatPsString(head, y);
+        }
+        return y;
+    });
+    return {
+        ps,
+        withBa: verb.hasBa,
+    }
 }
 
 function isInAnswer(a: T.PsString, answer: {

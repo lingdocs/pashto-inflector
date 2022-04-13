@@ -6,7 +6,6 @@ import { isPastTense } from "../../lib/phrase-building/vp-tools";
 import { useStickyState } from "../../library";
 import { isVPSelectionComplete } from "../../lib/type-predicates";
 
-
 function VPDisplay({ VP, opts }: { VP: T.VPSelection | T.VPSelectionComplete, opts: T.TextOptions }) {
     const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationForm");
     const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
