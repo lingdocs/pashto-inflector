@@ -166,7 +166,7 @@ function TensePicker({ onChange, vps, mode }: {
                             label: "Modal",
                             value: "modal",
                         }]}
-                        handleChange={mode === "quiz" ? onTenseCategorySelect : () => null}
+                        handleChange={mode !== "quiz" ? onTenseCategorySelect : () => null}
                     />
                 </div>}
             </div>

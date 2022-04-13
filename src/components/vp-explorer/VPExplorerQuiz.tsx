@@ -87,7 +87,7 @@ function VPExplorerQuiz(props: {
             }, checkDuration * 2);
         } else {
             playAudio(`wrong-${randFromArray([1,2])}`);
-            navigator.vibrate(250);
+            navigator.vibrate(300);
             setQuizState({
                 ...quizState,
                 result: "fail",
