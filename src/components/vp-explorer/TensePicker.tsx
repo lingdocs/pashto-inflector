@@ -68,11 +68,10 @@ export function getRandomTense(type: "basic" | "modal" | "perfect", o?: T.Perfec
     return tns;
 }
 
-function TensePicker({ onChange, vps, mode, locked }: {
+function TensePicker({ onChange, vps, mode }: {
     vps: T.VPSelection,
     onChange: (p: T.VPSelection) => void,
     mode: "charts" | "phrases" | "quiz",
-    locked: boolean,
 }) {
     function onTenseSelect(o: { value: T.VerbTense | T.PerfectTense } | null) {
         const value = o?.value ? o.value : undefined; 
@@ -167,7 +166,7 @@ function TensePicker({ onChange, vps, mode, locked }: {
                             label: "Modal",
                             value: "modal",
                         }]}
-                        handleChange={onTenseCategorySelect}
+                        handleChange={mode === "quiz" ? onTenseCategorySelect : () => null}
                     />
                 </div>}
             </div>
@@ -180,11 +179,11 @@ function TensePicker({ onChange, vps, mode, locked }: {
                 options={tOptions}
                 {...zIndexProps}
             />
-            {vps.verb && !locked && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
+            {vps.verb && (mode !== "quiz") && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
                 <div className="btn btn-light clickable" onClick={moveTense("back")}>
                     <i className="fas fa-chevron-left" />
                 </div>
-                {mode !== "charts" && <ButtonSelect
+                {mode === "phrases" && <ButtonSelect
                     small
                     value={vps.verb.negative.toString()}
                     options={[{

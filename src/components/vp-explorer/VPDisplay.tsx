@@ -4,10 +4,20 @@ import InlinePs from "../InlinePs";
 import AbbreviationFormSelector from "./AbbreviationFormSelector";
 import { isPastTense } from "../../lib/phrase-building/vp-tools";
 import { useStickyState } from "../../library";
+import { isVPSelectionComplete } from "../../lib/type-predicates";
 
-function VPDisplay({ VP, opts }: { VP: T.VPSelectionComplete, opts: T.TextOptions }) {
+
+function VPDisplay({ VP, opts }: { VP: T.VPSelection | T.VPSelectionComplete, opts: T.TextOptions }) {
     const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationForm");
     const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
+    if (!isVPSelectionComplete(VP)) {
+        return <div className="lead text-muted text-center mt-4">
+            {(() => {
+                const twoNPs = (VP.subject === undefined) && (VP.verb.object === undefined);
+                return `Choose NP${twoNPs ? "s " : ""} to make a phrase`;
+            })()}
+        </div>;
+    }
     const result = compileVP(renderVP(VP), { ...form, OSV });
     return <div className="text-center mt-2">
         {VP.verb.transitivity === "transitive" && <div className="form-check mb-2">

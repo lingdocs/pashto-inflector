@@ -1,9 +1,9 @@
 import NPPicker from "../np-picker/NPPicker";
 import VerbPicker from "./VerbPicker";
-import TensePicker, { getRandomTense } from "./TensePicker";
+import TensePicker from "./TensePicker";
 import VPDisplay from "./VPDisplay";
 import ButtonSelect from "../ButtonSelect";
-import { renderVP, compileVP } from "../../lib/phrase-building/index";
+
 import {
     isInvalidSubjObjCombo,
 } from "../../lib/phrase-building/vp-tools";
@@ -11,32 +11,15 @@ import * as T from "../../types";
 import ChartDisplay from "./ChartDisplay";
 import useStickyState from "../../lib/useStickyState";
 import { makeVPSelectionState } from "./verb-selection";
-import { CSSProperties, useEffect, useState } from "react";
-import { randomSubjObj } from "../../library";
-import shuffleArray from "../../lib/shuffle-array";
-import InlinePs from "../InlinePs";
-import { psStringEquals } from "../../lib/p-text-helpers";
-import { randFromArray } from "../../lib/misc-helpers";
-import playAudio from "../../lib/play-audio";
-import { isVPSelectionComplete } from "../../lib/type-predicates";
+import { useEffect } from "react";
 import { getKingAndServant } from "../../lib/phrase-building/render-vp";
 import { isPastTense } from "../../lib/phrase-building/vp-tools";
-// import { useReward } from 'react-rewards';
+import VPExplorerQuiz from "./VPExplorerQuiz";
+import { switchSubjObj } from "../../lib/phrase-building/vp-tools"
 
 const kingEmoji = "👑";
 const servantEmoji = "🙇‍♂️";
-const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", "🕺", "💃", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
 
-const answerFeedback: CSSProperties = {
-    "fontSize": "4rem",
-    "transition": "opacity 0.3s ease-in",
-    "opacity": 0.9,
-    "position": "fixed",
-    "top": "60%",
-    "left": "50%",
-    "zIndex": 99999999,
-    "transform": "translate(-50%, -50%)",
-}
 
 // TODO: make answerFeedback emojis appear at random translate angles a little bit
 // add energy drinks? 
@@ -54,18 +37,6 @@ const answerFeedback: CSSProperties = {
 
 // TODO: error handling on error with rendering etc
 
-const checkDuration = 400;
-
-type QuizState = {
-    answer: {
-        ps: T.SingleOrLengthOpts<T.PsString[]>;
-        e?: string[] | undefined;
-    },
-    options: T.PsString[],
-    result: "waiting" | "fail",
-}
-
-type MixType = "NPs" | "tenses" | "both";
 export function VPExplorer(props: {
     verb: T.VerbEntry,
     opts: T.TextOptions,
@@ -90,33 +61,16 @@ export function VPExplorer(props: {
         },
         "verbExplorerMode",
     );
-    const [quizState, setQuizState] = useState<QuizState | undefined>(undefined);
-    const [showCheck, setShowCheck] = useState<boolean>(false);
-    const [currentCorrectEmoji, setCurrentCorrectEmoji] = useState<string>(randFromArray(correctEmoji));
+
     useEffect(() => {
-        setVps(o => {
+        setVps(oldVps => {
             if (mode === "quiz") {
                 setMode("phrases");
             }
-            return makeVPSelectionState(props.verb, o);
+            return makeVPSelectionState(props.verb, oldVps);
         });
         // eslint-disable-next-line
     }, [props.verb]);
-    function handleChangeMode(m: "charts" | "phrases" | "quiz") {
-        if (m === "quiz") {
-            handleResetQuiz();
-        }
-        setMode(m);
-    }
-    function handleResetQuiz() {
-        if (!vps.verb) {
-            alert("Choose a verb to quiz");
-            return;
-        }
-        const { VPS, qs } = makeQuizState(vps);
-        setVps(VPS);
-        setQuizState(qs);
-    }
     function handleSubjectChange(subject: T.NPSelection | undefined, skipPronounConflictCheck?: boolean) {
         if (!skipPronounConflictCheck && hasPronounConflict(subject, vps.verb?.object)) {
             alert("That combination of pronouns is not allowed");
@@ -153,31 +107,6 @@ export function VPExplorer(props: {
         }
         return f;
     }
-    function checkQuizAnswer(a: T.PsString) {
-        if (!quizState) return;
-        if (isInAnswer(a, quizState.answer)) {
-            const toPlay = randFromArray([true, false, false]);
-            if (toPlay) playAudio(`correct-${randFromArray([1,2,3])}`);
-            setShowCheck(true);
-            setTimeout(() => {
-                handleResetQuiz();
-            }, checkDuration / 2);
-            setTimeout(() => {
-                setShowCheck(false);
-            }, checkDuration);
-            // this sucks, have to do this so the emoji doesn't change in the middle of animation
-            setTimeout(() => {
-                setCurrentCorrectEmoji(randFromArray(correctEmoji));
-            }, checkDuration * 2);
-        } else {
-            playAudio(`wrong-${randFromArray([1,2])}`);
-            navigator.vibrate(250);
-            setQuizState({
-                ...quizState,
-                result: "fail",
-            });
-        }
-    }
     return <div className="mt-3" style={{ maxWidth: "950px"}}>
         <VerbPicker
             {..."getNounByTs" in props ? {
@@ -198,7 +127,7 @@ export function VPExplorer(props: {
                     { label: "Phrases", value: "phrases" },
                     { label: "Quiz", value: "quiz" },
                 ]}
-                handleChange={handleChangeMode}
+                handleChange={setMode}
             />
         </div>
         {(vps.verb && (typeof vps.verb.object === "object") && (vps.verb.isCompound !== "dynamic") && (mode === "phrases")) &&
@@ -207,8 +136,8 @@ export function VPExplorer(props: {
                     <i className="fas fa-exchange-alt mr-2" /> subj/obj
                 </button>
             </div>}
-        <div className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
-            {mode !== "charts" && <>
+        {mode !== "quiz" && <div className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
+            {mode === "phrases" && <>
                 <div className="my-2">
                     <div className="h5 text-center">Subject {showRole(vps, "subject")}</div>
                     <NPPicker
@@ -223,9 +152,8 @@ export function VPExplorer(props: {
                         }}
                         np={vps.subject}
                         counterPart={vps.verb ? vps.verb.object : undefined}
-                        onChange={quizLock(handleSubjectChange)}
+                        onChange={handleSubjectChange}
                         opts={props.opts}
-                        cantClear={mode === "quiz"}
                     />
                 </div>
                 {vps.verb && (vps.verb.object !== "none") && <div className="my-2">
@@ -245,9 +173,8 @@ export function VPExplorer(props: {
                             asObject
                             np={vps.verb.object}
                             counterPart={vps.subject}
-                            onChange={quizLock(handleObjectChange)}
+                            onChange={handleObjectChange}
                             opts={props.opts}
-                            cantClear={mode === "quiz"}
                         />}
                 </div>}
             </>}
@@ -256,40 +183,12 @@ export function VPExplorer(props: {
                     vps={vps}
                     onChange={quizLock(setVps)}
                     mode={mode}
-                    locked={!!(mode === "quiz" && quizState)}
                 />
             </div>
-        </div>
-        {(isVPSelectionComplete(vps) && (mode === "phrases")) &&
-            <VPDisplay VP={vps} opts={props.opts} />
-        }
-        {(vps.verb && (mode === "charts")) && <ChartDisplay VS={vps.verb} opts={props.opts} />}
-        {(mode === "quiz" && quizState) && <div className="text-center">
-            <div style={showCheck ? answerFeedback : { ...answerFeedback, opacity: 0 }}>
-                {currentCorrectEmoji}
-            </div>
-            {quizState.result === "waiting" ? <>
-                <div className="text-muted my-3">Choose a correct answer:</div>
-                {quizState.options.map(o => <div className="pb-3" key={o.f}>
-                    <div className="btn btn-answer btn-outline-secondary" onClick={() => {
-                        checkQuizAnswer(o);
-                    }}>
-                        <InlinePs opts={props.opts}>{o}</InlinePs>
-                    </div>
-                </div>)}
-            </> : <div>
-                <div className="h5 mt-4">❌ Wrong 😭</div>
-                <div className="my-4">The correct answer was:</div>
-                <InlinePs opts={props.opts}>
-                    {quizState.options.find(x => isInAnswer(x, quizState.answer)) as T.PsString}
-                </InlinePs>
-                <div className="my-4">
-                    <button type="button" className="btn btn-primary" onClick={handleResetQuiz}>
-                        Try Again
-                    </button>
-                </div>
-            </div>}
         </div>}
+        {mode === "phrases" && <VPDisplay VP={vps} opts={props.opts} />}
+        {mode === "charts" && <ChartDisplay VS={vps.verb} opts={props.opts} />}
+        {mode === "quiz" && <VPExplorerQuiz opts={props.opts} vps={vps} />}
     </div>
 }
 
@@ -312,139 +211,4 @@ function showRole(VP: T.VPSelection, member: "subject" | "object") {
             {(roles.king === member ? kingEmoji : roles.servant === member ? servantEmoji : "")}
         </span>
         : "";
-}
-
-function switchSubjObj({ subject, verb }: T.VPSelection): T.VPSelection {
-    if (!subject|| !verb || !verb.object || !(typeof verb.object === "object")) {
-        return { subject, verb };
-    }
-    return {
-        subject: verb.object,
-        verb: {
-            ...verb,
-            object: subject,
-        }
-    };
-}
-
-function makeQuizState(oldVps: T.VPSelection): { VPS: T.VPSelectionComplete, qs: QuizState } {
-    function makeRes(x: T.VPSelectionComplete) {
-        return compileVP(renderVP(x), { removeKing: false, shrinkServant: false });
-    }
-    const vps = getRandomVPSelection("both")(oldVps);
-    const wrongStates: T.VPSelectionComplete[] = [];
-    // don't do the SO switches every time
-    const wholeTimeSOSwitch = randFromArray([true, false]);
-    [1, 2, 3].forEach(() => {
-        let v: T.VPSelectionComplete;
-        do {
-            const SOSwitch = wholeTimeSOSwitch && randFromArray([true, false]);
-            // TODO: if switich subj and obj, include the tense being correct maybe
-            v = getRandomVPSelection("tenses")(
-                SOSwitch ? switchSubjObj(vps) : vps,
-            );
-            // eslint-disable-next-line
-        } while (wrongStates.find(x => x.verb.tense === v.verb.tense));
-        wrongStates.push(v);
-    });
-    const answer = makeRes(vps);
-    const wrongAnswers = wrongStates.map(makeRes);
-    const allAnswers = shuffleArray([...wrongAnswers, answer]);
-    const options = allAnswers.map(getOptionFromResult);
-    return {
-        VPS: vps,
-        qs: {
-            answer,
-            options,
-            result: "waiting",
-        },
-    };
-}
-
-function isInAnswer(a: T.PsString, answer: {
-    ps: T.SingleOrLengthOpts<T.PsString[]>;
-    e?: string[] | undefined;
-}): boolean {
-    if ("long" in answer.ps) {
-        return isInAnswer(a, { ...answer, ps: answer.ps.long }) ||
-            isInAnswer(a, { ...answer, ps: answer.ps.short }) ||
-            !!(answer.ps.mini && isInAnswer(a, { ...answer, ps: answer.ps.mini }));
-    }
-    return answer.ps.some((x) => psStringEquals(x, a));
-}
-
-function getOptionFromResult(r: {
-    ps: T.SingleOrLengthOpts<T.PsString[]>;
-    e?: string[] | undefined;
-}): T.PsString {
-    const ps = "long" in r.ps
-        ? r.ps[randFromArray(["short", "long"] as ("short" | "long")[])]
-        : r.ps;
-    // not randomizing version pick (for now)
-    return ps[0];
-}
-
-function getRandomVPSelection(mix: MixType = "both") {
-    // TODO: Type safety to make sure it's safe?
-    return ({ subject, verb }: T.VPSelection): T.VPSelectionComplete => {
-        const oldSubj = (subject?.type === "pronoun")
-            ? subject.person
-            : undefined;
-        const oldObj = (typeof verb?.object === "object" && verb.object.type === "pronoun")
-            ? verb.object.person
-            : undefined;
-        const { subj, obj } = randomSubjObj(
-            oldSubj !== undefined ? { subj: oldSubj, obj: oldObj } : undefined
-        );
-        const randSubj: T.PronounSelection = subject?.type === "pronoun" ? {
-            ...subject,
-            person: subj,
-        } : {
-            type: "pronoun",
-            distance: "far",
-            person: subj,
-        };
-        const randObj: T.PronounSelection = typeof verb?.object === "object" && verb.object.type === "pronoun" ? {
-            ...verb.object,
-            person: obj,
-        } : {
-            type: "pronoun",
-            distance: "far",
-            person: obj,
-        };
-        const s = randSubj;
-        // ensure that the verb selection is complete
-        const v: T.VerbSelectionComplete = {
-            ...verb,
-            object: (
-                (typeof verb.object === "object" && !(verb.object.type === "noun" && verb.object.dynamicComplement))
-                ||
-                verb.object === undefined
-            )
-                ? randObj
-                : verb.object,
-        };
-        if (mix === "tenses") {
-            return {
-                subject: subject !== undefined ? subject : randSubj,
-                verb: randomizeTense(v, true),
-            }
-        }
-        return {
-            subject: s,
-            verb: randomizeTense(v, true),
-        };
-    };
-};
-
-function randomizeTense(verb: T.VerbSelectionComplete, dontRepeatTense: boolean): T.VerbSelectionComplete {
-    return {
-        ...verb,
-        tense: getRandomTense(
-            // TODO: WHY ISN'T THE OVERLOADING ON THIS
-            // @ts-ignore
-            verb.tenseCategory,
-            dontRepeatTense ? verb.tense : undefined,
-        ),
-    };
 }

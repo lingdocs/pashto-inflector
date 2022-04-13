@@ -154,3 +154,16 @@ export function removeDuplicates(psv: T.PsString[]): T.PsString[] {
         ))
     ));
 }
+
+export function switchSubjObj({ subject, verb }: T.VPSelection): T.VPSelection {
+    if (!subject|| !verb || !verb.object || !(typeof verb.object === "object")) {
+        return { subject, verb };
+    }
+    return {
+        subject: verb.object,
+        verb: {
+            ...verb,
+            object: subject,
+        }
+    };
+}
