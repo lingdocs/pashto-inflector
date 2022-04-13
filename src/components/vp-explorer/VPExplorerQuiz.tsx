@@ -31,7 +31,7 @@ const answerFeedback: CSSProperties = {
 }
 
 const checkDuration = 400;
-const stageLength = 6;
+const stageLength = 5;
 
 type QuizState = ({
     stage: "multiple choice",
@@ -154,7 +154,7 @@ function VPExplorerQuiz(props: {
                         <div className="text-muted my-3">Type the <strong>verb in Pashto script</strong> to finish the phrase:</div>
                         <form onSubmit={e => {
                             e.preventDefault();
-                            checkAnswer({ text: answerBlank, withBa: false });
+                            checkAnswer({ text: answerBlank, withBa });
                         }}>
                             <div className="mb-3" style={{ maxWidth: "250px", margin: "0 auto"}}>
                                 <input
