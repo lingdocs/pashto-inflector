@@ -10,6 +10,8 @@ import { getRandomTense } from "./TensePicker";
 import { switchSubjObj } from "../../lib/phrase-building/vp-tools";
 import playAudio from "../../lib/play-audio";
 import TensePicker from "./TensePicker";
+import Keyframes from "../Keyframes";
+import energyDrink from "./energy-drink.jpeg";
 
 const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", "🕺", "💃", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
 
@@ -25,8 +27,12 @@ const answerFeedback: CSSProperties = {
 }
 
 const checkDuration = 400;
+const stageLength = 7;
 
 type QuizState = {
+    stage: "multiple choice",
+    qNumber: number,
+    vps: T.VPSelectionComplete,
     answer: {
         ps: T.SingleOrLengthOpts<T.PsString[]>;
         e?: string[] | undefined;
@@ -40,16 +46,10 @@ function VPExplorerQuiz(props: {
     opts: T.TextOptions,
     vps: T.VPSelection,
 }) {
-    const startingQs = makeQuizState(props.vps);
-    const [vps, setVps] = useState<T.VPSelectionComplete>(startingQs.VPS)
-    const [quizState, setQuizState] = useState<QuizState>(startingQs.qs);
+    const startingQs = tickQuizState(props.vps);
+    const [quizState, setQuizState] = useState<QuizState>(startingQs);
     const [showCheck, setShowCheck] = useState<boolean>(false);
     const [currentCorrectEmoji, setCurrentCorrectEmoji] = useState<string>(randFromArray(correctEmoji));
-    function handleResetQuiz() {
-        const { VPS, qs } = makeQuizState(vps);
-        setVps(VPS);
-        setQuizState(qs);
-    }
     function checkQuizAnswer(a: T.PsString) {
         if (!quizState) return;
         if (isInAnswer(a, quizState.answer)) {
@@ -57,7 +57,7 @@ function VPExplorerQuiz(props: {
             if (toPlay) playAudio(`correct-${randFromArray([1,2,3])}`);
             setShowCheck(true);
             setTimeout(() => {
-                handleResetQuiz();
+                setQuizState(tickQuizState);
             }, checkDuration / 2);
             setTimeout(() => {
                 setShowCheck(false);
@@ -75,11 +75,15 @@ function VPExplorerQuiz(props: {
             });
         }
     }
-    const rendered = renderVP(vps);
+    const rendered = renderVP(quizState.vps);
     const { subject, object } = rendered;
     const { e } = compileVP(rendered, { removeKing: false, shrinkServant: false });
-    return <div>
-        <div className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
+    function handleRestart() {
+        setQuizState(tickQuizState(quizState.vps));
+    }
+    return <div className="mt-4">
+        <ProgressBar quizState={quizState} />
+        <div className="d-flex flex-row justify-content-around flex-wrap">
             <div className="my-2">
                 <div className="h5 text-center">Subject</div>
                 <QuizNPDisplay>{subject}</QuizNPDisplay>
@@ -90,42 +94,84 @@ function VPExplorerQuiz(props: {
             </div>}
             <div className="my-2">
                 <TensePicker
-                    vps={vps}
+                    vps={quizState.vps}
                     onChange={() => null}
                     mode={"quiz"}
                 />
             </div>
         </div>
-        {e && <div className="text-center text-muted text-small">
+        {e && <div className="text-center text-muted">
             {e.map(eLine => <div key={eLine}>{eLine}</div>)}
         </div>}
         <div className="text-center">
             <div style={showCheck ? answerFeedback : { ...answerFeedback, opacity: 0 }}>
                 {currentCorrectEmoji}
             </div>
-            {quizState.result === "waiting" ? <>
-                <div className="text-muted my-3">Choose a correct answer:</div>
-                {quizState.options.map(o => <div className="pb-3" key={o.f}>
-                    <div className="btn btn-answer btn-outline-secondary" onClick={() => {
-                        checkQuizAnswer(o);
-                    }}>
-                        <InlinePs opts={props.opts}>{o}</InlinePs>
+            {quizState.qNumber === stageLength ?
+                <div className="mt-4" style={{ animation: "fade-in 0.5s" }}>
+                    <h4>👏 Congratulations</h4>
+                    <p className="lead">You finished the first level!</p>
+                    <p>The <strong>other levels are still in development</strong>... In the meantime have an energy drink.</p>
+                    <div className="mb-4">
+                        <img src={energyDrink} alt="energy-dring" className="img-fluid" />
                     </div>
-                </div>)}
-            </> : <div>
-                <div className="h5 mt-4">❌ Wrong 😭</div>
-                <div className="my-4">The correct answer was:</div>
-                <InlinePs opts={props.opts}>
-                    {quizState.options.find(x => isInAnswer(x, quizState.answer)) as T.PsString}
-                </InlinePs>
-                <div className="my-4">
-                    <button type="button" className="btn btn-primary" onClick={handleResetQuiz}>
-                        Try Again
+                    <button type="button" className="btn btn-primary" onClick={handleRestart}>
+                        Restart
                     </button>
                 </div>
-            </div>}
+                : (quizState.result === "waiting"
+                    ? <>
+                        <div className="text-muted my-3">Choose a correct answer:</div>
+                        {quizState.options.map(o => <div className="pb-3" key={o.f} style={{ animation: "fade-in 0.5s" }}>
+                            <button className="btn btn-answer btn-outline-secondary" onClick={() => {
+                                checkQuizAnswer(o);
+                            }}>
+                                <InlinePs opts={props.opts}>{o}</InlinePs>
+                            </button>
+                        </div>)}
+                    </>
+                    : <div style={{ animation: "fade-in 0.5s" }}>
+                        <div className="h4 mt-4">❌ Wrong 😭</div>
+                        <div className="my-4 lead">The correct answer was:</div>
+                        <InlinePs opts={props.opts}>
+                            {quizState.options.find(x => isInAnswer(x, quizState.answer)) as T.PsString}
+                        </InlinePs>
+                        <div className="my-4">
+                            <button type="button" className="btn btn-primary" onClick={handleRestart}>
+                                Try Again
+                            </button>
+                        </div>
+                    </div>)
+            }
+            <Keyframes name="fade-in" from={{ opacity: 0 }} to={{ opacity: 1 }} />
         </div>
     </div>;
+}
+
+function ProgressBar({ quizState }: { quizState: QuizState }) {
+    function getProgressWidth(): string {
+        const num = getPercentageDone({ current: quizState.qNumber, total: stageLength });
+        return `${num}%`;
+    }
+    return <div className="mb-3">
+        <div className="progress mb-1" style={{ height: "3px" }}>
+            <div
+                className={`progress-bar bg-${quizState.result === "fail" ? "danger" : "primary"}`}
+                role="progressbar"
+                style={{ width: getProgressWidth() }}
+            />
+
+        </div>
+        <div>
+            Level 1: Multiple Choice
+        </div>
+    </div>;
+}
+
+function getPercentageDone(progress: { current: number, total: number }): number {
+    return Math.round(
+        (progress.current / (progress.total + 1)) * 100
+    );
 }
 
 function QuizNPDisplay({ children }: { children: T.Rendered<T.NPSelection> | T.Person.ThirdPlurMale }) {
@@ -136,14 +182,21 @@ function QuizNPDisplay({ children }: { children: T.Rendered<T.NPSelection> | T.P
     </div>;
 }
 
-
-function makeQuizState(oldVps: T.VPSelection): { VPS: T.VPSelectionComplete, qs: QuizState } {
+/**
+ * creates a fresh QuizState when a VPSelection is passed
+ * advances a QuizState when a QuizState is passed
+ * 
+ * @param startingWith 
+ * @returns 
+ */
+function tickQuizState(startingWith: T.VPSelection | QuizState): QuizState {
     function makeRes(x: T.VPSelectionComplete) {
         return compileVP(renderVP(x), { removeKing: false, shrinkServant: false });
     }
+    const oldVps = "stage" in startingWith ? startingWith.vps : startingWith;
     // for now, always inforce positive
-    const vps = getRandomVPSelection("both")({ ...oldVps, verb: { ...oldVps.verb, negative: false }});
-    const wrongStates: T.VPSelectionComplete[] = [];
+    const newVps = getRandomVPSelection("both")({ ...oldVps, verb: { ...oldVps.verb, negative: false }});
+    const wrongVpsS: T.VPSelectionComplete[] = [];
     // don't do the SO switches every time
     const wholeTimeSOSwitch = randFromArray([true, false]);
     [1, 2, 3].forEach(() => {
@@ -152,23 +205,24 @@ function makeQuizState(oldVps: T.VPSelection): { VPS: T.VPSelectionComplete, qs:
             const SOSwitch = wholeTimeSOSwitch && randFromArray([true, false]);
             // TODO: if switich subj and obj, include the tense being correct maybe
             v = getRandomVPSelection("tenses")(
-                SOSwitch ? switchSubjObj(vps) : vps,
+                SOSwitch ? switchSubjObj(newVps) : newVps,
             );
             // eslint-disable-next-line
-        } while (wrongStates.find(x => x.verb.tense === v.verb.tense));
-        wrongStates.push(v);
+        } while (wrongVpsS.find(x => x.verb.tense === v.verb.tense));
+        wrongVpsS.push(v);
     });
-    const answer = makeRes(vps);
-    const wrongAnswers = wrongStates.map(makeRes);
+    const answer = makeRes(newVps);
+    const wrongAnswers = wrongVpsS.map(makeRes);
     const allAnswers = shuffleArray([...wrongAnswers, answer]);
     const options = allAnswers.map(getOptionFromResult);
+    const qNumber = ("stage" in startingWith) ? (startingWith.qNumber + 1) : 0;
     return {
-        VPS: vps,
-        qs: {
-            answer,
-            options,
-            result: "waiting",
-        },
+        stage: "multiple choice",
+        qNumber,
+        vps: newVps,
+        answer,
+        options,
+        result: "waiting",
     };
 }
 
@@ -224,8 +278,14 @@ function getRandomVPSelection(mix: MixType = "both") {
             distance: "far",
             person: obj,
         };
-        const s = randSubj;
         // ensure that the verb selection is complete
+        if (mix === "tenses") {
+            return {
+                subject: subject !== undefined ? subject : randSubj,
+                // @ts-ignore
+                verb: randomizeTense(verb, true),
+            }
+        }
         const v: T.VerbSelectionComplete = {
             ...verb,
             object: (
@@ -236,14 +296,8 @@ function getRandomVPSelection(mix: MixType = "both") {
                 ? randObj
                 : verb.object,
         };
-        if (mix === "tenses") {
-            return {
-                subject: subject !== undefined ? subject : randSubj,
-                verb: randomizeTense(v, true),
-            }
-        }
         return {
-            subject: s,
+            subject: randSubj,
             verb: randomizeTense(v, true),
         };
     };
