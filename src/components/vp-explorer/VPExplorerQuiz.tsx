@@ -11,7 +11,7 @@ import { switchSubjObj } from "../../lib/phrase-building/vp-tools";
 import playAudio from "../../lib/play-audio";
 import TensePicker from "./TensePicker";
 import Keyframes from "../Keyframes";
-import energyDrink from "./energy-drink.jpeg";
+import energyDrink from "./energy-drink.jpg";
 
 const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", "🕺", "💃", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
 

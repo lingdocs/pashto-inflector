@@ -15,4 +15,10 @@ fs.mkdir("dist/node_modules", {}, (err) => {
             fs.copySync(file, `dist/components/verb-info/${path.basename(file)}`);
         });
     });
+    glob("src/components/vp-explorer/*.jpg", (err, files) => {
+        if (err) throw err;
+        files.forEach((file) => {
+            fs.copySync(file, `dist/components/vp-explorer/${path.basename(file)}`);
+        });
+    });
 });
