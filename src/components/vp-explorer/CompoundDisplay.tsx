@@ -29,7 +29,7 @@ function CompoundFormula({ a, b }: {
 function CompoundDisplay({ info, opts, handleLinkClick }: {
     info: T.NonComboVerbInfo,
     opts: T.TextOptions,
-    handleLinkClick: ((ts: number) => void) | 0,
+    handleLinkClick: ((ts: number) => void) | "none",
 }) {
     const isComplement = ("complement" in info || "objComplement" in info);
     if (!isComplement) {
@@ -83,7 +83,7 @@ function CompoundDisplay({ info, opts, handleLinkClick }: {
                 </div>}
                 b={<div
                     className={classNames([{ clickable: handleLinkClick }])}
-                    onClick={(handleLinkClick)
+                    onClick={(handleLinkClick !== "none")
                         ? () => handleLinkClick(info.entry.entry.ts)
                         : undefined}>
                     <div>

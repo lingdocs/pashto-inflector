@@ -39,7 +39,7 @@ const servantIcon = <i className="mx-1 fas fa-male" />;
 export function VPExplorer(props: {
     verb: T.VerbEntry,
     opts: T.TextOptions,
-    handleLinkClick: ((ts: number) => undefined) | 0,
+    handleLinkClick: ((ts: number) => void) | "none",
 } & ({
     nouns: T.NounEntry[],
     verbs: T.VerbEntry[],

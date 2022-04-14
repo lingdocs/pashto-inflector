@@ -12,7 +12,7 @@ function VerbPicker(props: {
     vps: T.VPSelection,
     onChange: (p: T.VPSelection) => void,
     opts: T.TextOptions,
-    handleLinkClick: ((ts: number) => void) | 0,
+    handleLinkClick: ((ts: number) => void) | "none",
 }) {
     const [showRootsAndStems, setShowRootsAndStems] = useStickyState<boolean>(false, "showRootsAndStems");
     const infoRaw = props.vps.verb ? getVerbInfo(props.vps.verb.verb.entry, props.vps.verb.verb.complement) : undefined;
