@@ -56,7 +56,7 @@ function NPPicker(props: {
     const clearButton = !props.cantClear
         ? <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>X</button>
         : <div></div>;
-    return <div>
+    return <div style={{ minWidth: "9rem" }}>
         {!npType && <div className="text-center mt-3">
             <div className="h6 mr-3">
                 Choose NP

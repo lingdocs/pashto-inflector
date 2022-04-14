@@ -1,11 +1,36 @@
 import * as T from "../types";
-import Select from "react-select";
+import { StyleHTMLAttributes } from "react";
+import Select, { StylesConfig } from "react-select";
 import AsyncSelect from "react-select/async";
 import {
     makeSelectOption,
     makeVerbSelectOption,
-    zIndexProps,
 } from "./np-picker/picker-tools";
+
+const customStyles: StylesConfig = {
+    menuPortal: (base) => ({
+        ...base,
+        zIndex: 99999,
+    }),
+    menu: (base) => ({
+        ...base,
+        zIndex: 999999,
+    }),
+    option: (provided, state) => ({
+        ...provided,
+        padding: "10px 5px",
+    }),
+    input: (base) => ({
+        ...base,
+        padding: 0,
+    }),
+    singleValue: (provided, state) => {
+        const opacity = state.isDisabled ? 0.5 : 1;
+        const transition = 'opacity 300ms';
+
+        return { ...provided, opacity, transition };
+    }
+}
 
 function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
     entries: E[]
@@ -18,9 +43,10 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
     name: string | undefined,
     isVerbSelect?: boolean,
     opts: T.TextOptions,
+    style?: StyleHTMLAttributes<HTMLDivElement>,
 }) {
+    const divStyle = props.style || { width: "13rem" };
     const placeholder = "entries" in props ? "Select…" : "Search Pashto";
-    const minWidth = "9rem";
     function makeOption(e: E | T.DictionaryEntry) {
         if ("entry" in e) {
             return (props.isVerbSelect ? makeVerbSelectOption : makeSelectOption)(e, props.opts);
@@ -42,16 +68,17 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
             if (!s) return;
             props.onChange(s);
         }
-        return <div style={{ minWidth }}>
+        return <div style={divStyle}>
             <AsyncSelect
+                styles={customStyles}
                 isSearchable={true}
                 className="mb-2"
                 value={value}
+                // @ts-ignore
                 onChange={onChange}
                 defaultOptions={[]}
                 loadOptions={options}
                 placeholder={placeholder}
-                {...zIndexProps}
             />
         </div>;
     }
@@ -76,15 +103,16 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
         if (!s) return;
         props.onChange(s);
     }
-    return <div style={{ minWidth }}>
+    return <div style={divStyle}>
         <Select
+            styles={customStyles}
             isSearchable={true}
             value={value}
+            // @ts-ignore
             onChange={onChange}
             className="mb-2"
             options={options}
             placeholder={placeholder}
-            {...zIndexProps}
         />
     </div>
 }

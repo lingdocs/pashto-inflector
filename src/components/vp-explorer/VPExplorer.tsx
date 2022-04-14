@@ -3,7 +3,7 @@ import VerbPicker from "./VerbPicker";
 import TensePicker from "./TensePicker";
 import VPDisplay from "./VPDisplay";
 import ButtonSelect from "../ButtonSelect";
-
+import { Modal } from "react-bootstrap";
 import {
     isInvalidSubjObjCombo,
 } from "../../lib/phrase-building/vp-tools";
@@ -11,15 +11,14 @@ import * as T from "../../types";
 import ChartDisplay from "./ChartDisplay";
 import useStickyState from "../../lib/useStickyState";
 import { makeVPSelectionState } from "./verb-selection";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getKingAndServant } from "../../lib/phrase-building/render-vp";
 import { isPastTense } from "../../lib/phrase-building/vp-tools";
 import VPExplorerQuiz from "./VPExplorerQuiz";
-import { switchSubjObj } from "../../lib/phrase-building/vp-tools"
+import { switchSubjObj } from "../../lib/phrase-building/vp-tools";
 
-const kingEmoji = "👑";
-const servantEmoji = "🙇‍♂️";
-
+const kingIcon = <i className="mx-1 fas fa-crown" />;
+const servantIcon = <i className="mx-1 fas fa-male" />;
 
 // TODO: make answerFeedback emojis appear at random translate angles a little bit
 // add energy drinks? 
@@ -61,7 +60,9 @@ export function VPExplorer(props: {
         },
         "verbExplorerMode",
     );
-
+    const [showingKingExplanation, setShowingKingExplanation] = useState<"subject" | "object" | false>(false);
+    const [showingServantExplanation, setShowingServantExplanation] = useState<"subject" | "object" | false>(false);
+    const roles = getKingAndServant(isPastTense(vps.verb.tense), vps.verb.transitivity !== "intransitive");
     useEffect(() => {
         setVps(oldVps => {
             if (mode === "quiz") {
@@ -139,7 +140,9 @@ export function VPExplorer(props: {
         {mode !== "quiz" && <div className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
             {mode === "phrases" && <>
                 <div className="my-2">
-                    <div className="h5 text-center">Subject {showRole(vps, "subject")}</div>
+                    {roles.king === "subject" 
+                        ? <div className="h5 text-center clickable" onClick={() => setShowingKingExplanation("subject")}>Subject {kingIcon}</div>
+                        : <div className="h5 text-center clickable" onClick={() => setShowingKingExplanation("subject")}>Subject {servantIcon}</div>}
                     <NPPicker
                         {..."getNounByTs" in props ? {
                             getNounByTs: props.getNounByTs,
@@ -157,7 +160,9 @@ export function VPExplorer(props: {
                     />
                 </div>
                 {vps.verb && (vps.verb.object !== "none") && <div className="my-2">
-                    <div className="h5 text-center">Object {showRole(vps, "object")}</div>
+                {roles.king === "object" 
+                        ? <div className="h5 text-center clickable" onClick={() => setShowingKingExplanation("object")}>Object {kingIcon}</div>
+                        : <div className="h5 text-center clickable" onClick={() => setShowingServantExplanation("object")}>Object {servantIcon}</div>}
                     {(typeof vps.verb.object === "number")
                         ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
                         : <NPPicker
@@ -189,6 +194,64 @@ export function VPExplorer(props: {
         {mode === "phrases" && <VPDisplay VP={vps} opts={props.opts} />}
         {mode === "charts" && <ChartDisplay VS={vps.verb} opts={props.opts} />}
         {mode === "quiz" && <VPExplorerQuiz opts={props.opts} vps={vps} />}
+        <Modal show={!!showingKingExplanation} onHide={() => setShowingKingExplanation(false)}>
+            <Modal.Header closeButton>
+            <Modal.Title>About the King {kingIcon}</Modal.Title>
+            </Modal.Header>
+                <Modal.Body>
+                    In this tense/form, the {showingKingExplanation} is the <strong>king</strong> {kingIcon} of the phrase. That means that:
+                    <ul className="mt-2">
+                        <li>
+                            <div>It controls the verb conjugation. The verb agrees with the gender and number of the king.</div>
+                        </li>
+                        <li>
+                            <div>👍 It <strong>can</strong> be removed / left out from the phrase.</div>
+                            <div className="text-muted">(You can kill the king)</div>
+                        </li>
+                        <li>
+                            <div>🙅‍♂️ It <strong>cannot be</strong> shrunk it into a <a target="_blank" rel="noreferrer" href="https://grammar.lingdocs.com/pronouns/pronouns-mini/">mini-pronoun</a>. 👶</div>
+                            <div className="text-muted">(You can't shrink the king)</div>
+                        </li>
+                    </ul>
+                    <p>Mnemonic for shortening phrases:</p>
+                    <p className="text-muted">"🚫 Kill the king 👶 Shrink the servant"</p>
+                </Modal.Body>
+            <Modal.Footer>
+                <button type="button" className="btn btn-primary clb" onClick={() => setShowingKingExplanation(false)}>
+                    Close
+                </button>
+            </Modal.Footer>
+        </Modal>
+        <Modal show={!!showingServantExplanation} onHide={() => setShowingServantExplanation(false)}>
+            <Modal.Header closeButton>
+            <Modal.Title>About the Servant {servantIcon}</Modal.Title>
+            </Modal.Header>
+                <Modal.Body>
+                    <p>
+                        In this tense/form, the {showingServantExplanation} is the <strong>servant</strong> {servantIcon} of the phrase. That means that:
+                    </p>
+                    <ul>
+                        <li>
+                            It does not affect the conjugation of the verb. That's the king's job.
+                        </li>
+                        <li>
+                            <div>👍 It <strong>can</strong> shrink it into a <a target="_blank" rel="noreferrer" href="https://grammar.lingdocs.com/pronouns/pronouns-mini/">mini-pronoun</a>. 👶</div>
+                            <div className="text-muted">(You can <strong>shrink the servant</strong>)</div>
+                        </li>
+                        <li>
+                            <div>🙅‍♂️ It <strong>cannot</strong> be removed / left out of the phrase</div>
+                            <div className="text-muted">(You can't kill the servant)</div>
+                        </li>
+                    </ul>
+                    <p>Mnemonic for shortening phrases:</p>
+                    <p className="text-muted">"🚫 Kill the king 👶 Shrink the servant"</p>
+                </Modal.Body>
+            <Modal.Footer>
+                <button type="button" className="btn btn-primary clb" onClick={() => setShowingServantExplanation(false)}>
+                    Close
+                </button>
+            </Modal.Footer>
+        </Modal>
     </div>
 }
 
@@ -201,14 +264,4 @@ function hasPronounConflict(subject: T.NPSelection | undefined, object: undefine
     return isInvalidSubjObjCombo(subjPronoun.person, objPronoun.person);
 }
 
-function showRole(VP: T.VPSelection, member: "subject" | "object") {
-    const roles = getKingAndServant(
-        isPastTense(VP.verb.tense),
-        VP.verb.transitivity !== "intransitive",
-    );
-    return VP 
-        ? <span className="ml-2">
-            {(roles.king === member ? kingEmoji : roles.servant === member ? servantEmoji : "")}
-        </span>
-        : "";
-}
+
