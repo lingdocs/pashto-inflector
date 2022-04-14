@@ -111,6 +111,7 @@ import {
     splitUpSyllables,
     countSyllables,
 } from "./lib/accent-helpers";
+import NPPicker from "./components/np-picker/NPPicker";
 import shuffleArray from "./lib/shuffle-array";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
@@ -189,6 +190,7 @@ export {
     ButtonSelect,
     Hider,
     EntrySelect,
+    NPPicker,
     // OTHER
     typePredicates,
     grammarUnits,
