@@ -15,6 +15,9 @@ const toTest = [
     {
         entry: {"i":10996,"ts":1527812856,"p":"لیکل","g":"","f":"leekul","e":"to write","c":"v. trans."},
         result: {
+            entry: {
+                entry: {"i":10996,"ts":1527812856,"p":"لیکل","g":"","f":"leekul","e":"to write","c":"v. trans."},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -52,6 +55,9 @@ const toTest = [
     {
         entry: {"i":10243,"ts":1527812645,"p":"ګرځېدل","g":"","f":"gurdzedul","e":"to walk, wander, turn about; to become, to be","c":"v. intrans.","shortIntrans":true},
         result: {
+            entry: {
+                entry: {"i":10243,"ts":1527812645,"p":"ګرځېدل","g":"","f":"gurdzedul","e":"to walk, wander, turn about; to become, to be","c":"v. intrans.","shortIntrans":true},
+            },
             transitivity: "intransitive",
             type: "simple",
             yulEnding: false,
@@ -104,6 +110,9 @@ const toTest = [
     {
         entry: {"i":13664,"ts":1527823376,"p":"وتل","g":"","f":"watul","e":"to go out, exit, leave, emerge","c":"v. intrans. irreg.","psp":"وځ","psf":"oodz","tppp":"واته","tppf":"waatu"},
         result: {
+            entry: {
+                entry: {"i":13664,"ts":1527823376,"p":"وتل","g":"","f":"watul","e":"to go out, exit, leave, emerge","c":"v. intrans. irreg.","psp":"وځ","psf":"oodz","tppp":"واته","tppf":"waatu"},
+            },
             transitivity: "intransitive",
             type: "simple",
             yulEnding: false,
@@ -157,6 +166,9 @@ const toTest = [
     {
         entry: {"i":13801,"ts":1527816865,"p":"وړل","g":"","f":"oRúl, wRul, wuRúl","e":"to take, carry, bear, move (inanimate objects); to win, earn (subjunctive یوسي - yósee or ویسي - wéesee, simple past یو یې وړلو - yo ye wRulo)","separationAtP":2,"separationAtF":2,"c":"v. trans. irreg.","ssp":"یوس","ssf":"yos","prp":"یوړل","prf":"yóRul","noOo":true,"diacExcept":true},
         result: {
+            entry: {
+                entry: {"i":13801,"ts":1527816865,"p":"وړل","g":"","f":"oRúl","e":"to take, carry, bear, move (inanimate objects); to win, earn (subjunctive یوسي - yósee or ویسي - wéesee, simple past یو یې وړلو - yo ye wRulo)","separationAtP":2,"separationAtF":2,"c":"v. trans. irreg.","ssp":"یوس","ssf":"yos","prp":"یوړل","prf":"yóRul","noOo":true,"diacExcept":true},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -206,6 +218,9 @@ const toTest = [
     {
         entry: {"i":13801,"ts":1527816865,"p":"وړل","g":"","f":"wRul, oRúl, wuRúl","e":"to take, carry, bear, move (inanimate objects); to win, earn (subjunctive یوسي - yósee or ویسي - wéesee, simple past یو یې وړلو - yo ye wRulo)","separationAtP":2,"separationAtF":2,"c":"v. trans. irreg.","ssp":"یوس","ssf":"yos","prp":"یوړل","prf":"yóRul","noOo":true,"diacExcept":true},
         result: {
+            entry: {
+                entry: {"i":13801,"ts":1527816865,"p":"وړل","g":"","f":"wRul","e":"to take, carry, bear, move (inanimate objects); to win, earn (subjunctive یوسي - yósee or ویسي - wéesee, simple past یو یې وړلو - yo ye wRulo)","separationAtP":2,"separationAtF":2,"c":"v. trans. irreg.","ssp":"یوس","ssf":"yos","prp":"یوړل","prf":"yóRul","noOo":true,"diacExcept":true},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -255,6 +270,9 @@ const toTest = [
     {
         entry: {"i":6503,"ts":1527815214,"p":"راوړل","g":"","f":"raawRúl","e":"to bring, deliver (inanimate objects)","separationAtP":2,"separationAtF":3,"c":"v. trans. irreg.","noOo":true},
         result: {
+            entry: {
+                entry: {"i":6503,"ts":1527815214,"p":"راوړل","g":"","f":"raawRúl","e":"to bring, deliver (inanimate objects)","separationAtP":2,"separationAtF":3,"c":"v. trans. irreg.","noOo":true},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -304,6 +322,9 @@ const toTest = [
     {
         entry: {"i":5514,"ts":1527812790,"p":"خوړل","g":"","f":"khoRul","e":"to eat, to bite","c":"v. trans.","psp":"خور","psf":"khor","tppp":"خوړ","tppf":"khoR"},
         result: {
+            entry: {
+                entry: {"i":5514,"ts":1527812790,"p":"خوړل","g":"","f":"khoRul","e":"to eat, to bite","c":"v. trans.","psp":"خور","psf":"khor","tppp":"خوړ","tppf":"khoR"},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -351,6 +372,9 @@ const toTest = [
     {
         entry: {"i":1675,"ts":1527822381,"p":"بنګېدل","g":"","f":"bungedúl","e":"to buzz, hum, jingle; to snuffle, to speak nasally, or with a twang","c":"v. intrans."},
         result: {
+            entry: {
+                entry: {"i":1675,"ts":1527822381,"p":"بنګېدل","g":"","f":"bungedúl","e":"to buzz, hum, jingle; to snuffle, to speak nasally, or with a twang","c":"v. intrans."},
+            },
             transitivity: "intransitive",
             type: "simple",
             yulEnding: false,
@@ -392,6 +416,9 @@ const toTest = [
     {
         entry: {"i":10144,"ts":1527812759,"p":"کېناستل","g":"","f":"kenaastul","e":"to sit","separationAtP":2,"separationAtF":2,"c":"v. intrans. irreg.","psp":"کېن","psf":"ken","noOo":true},
         result: {
+            entry: {
+                entry: {"i":10144,"ts":1527812759,"p":"کېناستل","g":"","f":"kenaastul","e":"to sit","separationAtP":2,"separationAtF":2,"c":"v. intrans. irreg.","psp":"کېن","psf":"ken","noOo":true},
+            },
             transitivity: "intransitive",
             type: "simple",
             yulEnding: false,
@@ -433,6 +460,9 @@ const toTest = [
     {
         entry: {"i":445,"ts":1527811605,"p":"ازمویل","g":"","f":"azmoyul","e":"to attempt, try; to experiment, test","c":"v. trans.","sepOo":true},
         result: {
+            entry: {
+                entry: {"i":445,"ts":1527811605,"p":"ازمویل","g":"","f":"azmoyul","e":"to attempt, try; to experiment, test","c":"v. trans.","sepOo":true},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: true,
@@ -464,6 +494,9 @@ const toTest = [
     {
         entry: {"i":8896,"ts":1527812627,"p":"غوښتل","g":"","f":"ghwuxtul, ghoxtul","e":"to want, to request","c":"v. trans.","psp":"غواړ","psf":"ghwaaR"},
         result: {
+            entry: {
+                entry: {"i":8896,"ts":1527812627,"p":"غوښتل","g":"","f":"ghwuxtul","e":"to want, to request","c":"v. trans.","psp":"غواړ","psf":"ghwaaR"},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -500,6 +533,9 @@ const toTest = [
     {
         entry: {"i":300,"ts":1527817298,"p":"اخیستل","g":"","f":"akheestul","e":"to take, buy, purchase, receive; to shave, cut with scissors","c":"v. trans.","psp":"اخل","psf":"akhl"}, 
         result: {
+            entry: {
+                entry: {"i":300,"ts":1527817298,"p":"اخیستل","g":"","f":"akheestul","e":"to take, buy, purchase, receive; to shave, cut with scissors","c":"v. trans.","psp":"اخل","psf":"akhl"}, 
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -536,6 +572,9 @@ const toTest = [
     {
         entry: {"i":300,"ts":1527817299,"p":"آخیستل","g":"","f":"aakheestul","e":"to take, buy, purchase, receive; to shave, cut with scissors","c":"v. trans.","psp":"اخل","psf":"akhl"}, 
         result: {
+            entry: {
+                entry: {"i":300,"ts":1527817299,"p":"آخیستل","g":"","f":"aakheestul","e":"to take, buy, purchase, receive; to shave, cut with scissors","c":"v. trans.","psp":"اخل","psf":"akhl"}, 
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -573,6 +612,9 @@ const toTest = [
     {
         entry: {"i":1105,"ts":1527816146,"p":"ایستل","g":"","f":"eestul","e":"to throw out, discard, chuck, toss; to extract, to take out","c":"v. trans.","psp":"باس","psf":"baas"},
         result: {
+            entry: {
+                entry: {"i":1105,"ts":1527816146,"p":"ایستل","g":"","f":"eestul","e":"to throw out, discard, chuck, toss; to extract, to take out","c":"v. trans.","psp":"باس","psf":"baas"},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -609,6 +651,9 @@ const toTest = [
     {
         entry: {"i":1106,"ts":1596485537794,"p":"اېستل","g":"","f":"estul","e":"to throw out, discard, chuck, toss; to extract, to take out","c":"v. trans.","psp":"باس","psf":"baas"},
         result: {
+            entry: {
+                entry: {"i":1106,"ts":1596485537794,"p":"اېستل","g":"","f":"estul","e":"to throw out, discard, chuck, toss; to extract, to take out","c":"v. trans.","psp":"باس","psf":"baas"},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -643,6 +688,9 @@ const toTest = [
     {
         entry: {"i":2766,"ts":1527815165,"p":"پېژندل","g":"","f":"pejzandul","e":"to recognize, know, meet","c":"v. trans.","psp":"پېژن","psf":"pejzan","tppp":"پېژاند","tppf":"pejzaand"},
         result: {
+            entry: {
+                entry: {"i":2766,"ts":1527815165,"p":"پېژندل","g":"","f":"pejzandul","e":"to recognize, know, meet","c":"v. trans.","psp":"پېژن","psf":"pejzan","tppp":"پېژاند","tppf":"pejzaand"},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -678,6 +726,9 @@ const toTest = [
     {
         entry: {"i":5413,"ts":1527812767,"p":"خندل","g":"","f":"khandul","e":"to laugh","c":"v. gramm. trans.","psp":"خاند","psf":"khaand"},
         result: {
+            entry: {
+                entry: {"i":5413,"ts":1527812767,"p":"خندل","g":"","f":"khandul","e":"to laugh","c":"v. gramm. trans.","psp":"خاند","psf":"khaand"},
+            },
             transitivity: "grammatically transitive",
             type: "simple",
             yulEnding: false,
@@ -711,6 +762,10 @@ const toTest = [
         entry: {"i":5367,"ts":1577898915919,"p":"خفه کول","g":"","f":"khufa kawul","e":"to make sad, to grieve, to annoy; to choke, to make suffocate","l":1527812798,"c":"v. stat. comp. trans."},
         complement: {"i":5366,"ts":1527812798,"p":"خفه","g":"","f":"khufa","e":"sad, upset, angry; choked, suffocated","c":"adj."},
         result: {
+            entry: {
+                entry: {"i":5367,"ts":1577898915919,"p":"خفه کول","g":"","f":"khufa kawul","e":"to make sad, to grieve, to annoy; to choke, to make suffocate","l":1527812798,"c":"v. stat. comp. trans."},
+                complement: {"i":5366,"ts":1527812798,"p":"خفه","g":"","f":"khufa","e":"sad, upset, angry; choked, suffocated","c":"adj."},        
+            },
             transitivity: "transitive",
             type: "stative compound",
             yulEnding: false,
@@ -763,6 +818,10 @@ const toTest = [
         entry: {"i":5368,"ts":1577898920635,"p":"خفه کېدل","g":"","f":"khufa kedul","e":"to be sad, grieved, annoyed, upset; to be choked, to suffocate","l":1527812798,"c":"v. stat. comp. intrans."},
         complement: {"i":5366,"ts":1527812798,"p":"خفه","g":"","f":"khufa","e":"sad, upset, angry; choked, suffocated","c":"adj."},
         result: {
+            entry: {
+                entry: {"i":5368,"ts":1577898920635,"p":"خفه کېدل","g":"","f":"khufa kedul","e":"to be sad, grieved, annoyed, upset; to be choked, to suffocate","l":1527812798,"c":"v. stat. comp. intrans."},
+                complement: {"i":5366,"ts":1527812798,"p":"خفه","g":"","f":"khufa","e":"sad, upset, angry; choked, suffocated","c":"adj."},        
+            },
             transitivity: "intransitive",
             type: "stative compound",
             yulEnding: false,
@@ -807,6 +866,10 @@ const toTest = [
         entry: {"i":2182,"ts":1571859113828,"p":"پخول","g":"","f":"pakhawul","e":"to cook, prepare, to cause to ripen, mature","l":1574867531681,"c":"v. stat. comp. trans."},
         complement: {"i":2610,"ts":1574867531681,"p":"پوخ","g":"","f":"pokh","e":"mature, ripe, ready, cooked, able, skillful, experienced, tried, tested, true","c":"adj. irreg.","infap":"پاخه","infaf":"paakhu","infbp":"پخ","infbf":"pakh"},
         result: {
+            entry: {
+                entry: {"i":2182,"ts":1571859113828,"p":"پخول","g":"","f":"pakhawul","e":"to cook, prepare, to cause to ripen, mature","l":1574867531681,"c":"v. stat. comp. trans."},
+                complement: {"i":2610,"ts":1574867531681,"p":"پوخ","g":"","f":"pokh","e":"mature, ripe, ready, cooked, able, skillful, experienced, tried, tested, true","c":"adj. irreg.","infap":"پاخه","infaf":"paakhu","infbp":"پخ","infbf":"pakh"},        
+            },
             transitivity: "transitive",
             type: "stative compound",
             yulEnding: false,
@@ -926,6 +989,10 @@ const toTest = [
         entry: {"i":7205,"ts":1591033069786,"p":"ستړی کېدل","g":"","f":"stuRey kedul","e":"to get tired, fatigued","l":1527815306,"c":"v. stat. comp. intrans."},
         complement: {"i":7204,"ts":1527815306,"p":"ستړی","g":"","f":"stúRey","e":"tired","c":"adj."},
         result: {
+            entry: {
+                entry: {"i":7205,"ts":1591033069786,"p":"ستړی کېدل","g":"","f":"stuRey kedul","e":"to get tired, fatigued","l":1527815306,"c":"v. stat. comp. intrans."},
+                complement: {"i":7204,"ts":1527815306,"p":"ستړی","g":"","f":"stúRey","e":"tired","c":"adj."},        
+            },
             transitivity: "intransitive",
             type: "stative compound",
             yulEnding: false,
@@ -1037,6 +1104,10 @@ const toTest = [
         entry: {"i":1895,"ts":1527812277,"p":"بیانول","g":"","f":"bayaanawul","e":"to describe, tell, explain, narrate","l":1527814259,"c":"v. stat. comp. trans."},
         complement: {"i":1893,"ts":1527814259,"p":"بیان","g":"","f":"bayaan","e":"description, statement, speaking, narration, sermon","c":"n. m.","app":"بیانات","apf":"bayaanaat"},
         result: {
+            entry: {
+                entry: {"i":1895,"ts":1527812277,"p":"بیانول","g":"","f":"bayaanawul","e":"to describe, tell, explain, narrate","l":1527814259,"c":"v. stat. comp. trans."},
+                complement: {"i":1893,"ts":1527814259,"p":"بیان","g":"","f":"bayaan","e":"description, statement, speaking, narration, sermon","c":"n. m.","app":"بیانات","apf":"bayaanaat"},        
+            },
             transitivity: "transitive",
             type: "stative compound",
             yulEnding: false,
@@ -1088,6 +1159,9 @@ const toTest = [
     {
         entry: {"i":1068,"ts":1527815139,"p":"اوسېدل","g":"","f":"osedul","e":"to live, reside, stay, be","c":"v. intrans.","shortIntrans":true,"diacExcept":true},
         result: {
+            entry: {
+                entry: {"i":1068,"ts":1527815139,"p":"اوسېدل","g":"","f":"osedul","e":"to live, reside, stay, be","c":"v. intrans.","shortIntrans":true,"diacExcept":true},
+            },
             transitivity: "intransitive",
             type: "simple",
             yulEnding: false,
@@ -1134,6 +1208,9 @@ const toTest = [
     {
         entry: {"i":2058,"ts":1527814038,"p":"پاڅېدل","g":"","f":"paatsedul","e":"to get up, rise, wake up","c":"v. intrans.","separationAtP":2,"separationAtF":3,"shortIntrans":true,"noOo":true},
         result: {
+            entry: {
+                entry: {"i":2058,"ts":1527814038,"p":"پاڅېدل","g":"","f":"paatsedul","e":"to get up, rise, wake up","c":"v. intrans.","separationAtP":2,"separationAtF":3,"shortIntrans":true,"noOo":true},
+            },
             transitivity: "intransitive",
             type: "simple",
             yulEnding: false,
@@ -1178,6 +1255,9 @@ const toTest = [
     {
         entry: {"i":10246,"ts":1527812752,"p":"کول","g":"","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
         result: {
+            entry: {
+                entry: {"i":10246,"ts":1527812752,"p":"کول","g":"","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -1227,6 +1307,9 @@ const toTest = [
     {
         entry: {"i":10059,"ts":1579015359582,"p":"کول","g":"","f":"kawul","e":"to make ____ ____ (as in \"He's making me angry.\")","c":"v. trans. irreg. stat. aux.","ssp":"کړ","ssf":"kR","prp":"کړل","prf":"kRul","pprtp":"کړی","pprtf":"kúRey","noOo":true},
         result: {
+            entry: {
+                entry: {"i":10059,"ts":1579015359582,"p":"کول","g":"","f":"kawul","e":"to make ____ ____ (as in \"He's making me angry.\")","c":"v. trans. irreg. stat. aux.","ssp":"کړ","ssf":"kR","prp":"کړل","prf":"kRul","pprtp":"کړی","pprtf":"kúRey","noOo":true},
+            },
             transitivity: "transitive",
             type: "simple",
             yulEnding: false,
@@ -1267,6 +1350,9 @@ const toTest = [
     {
         entry: {"i":10124,"ts":1581086654898,"p":"کېدل","g":"","f":"kedul","e":"to become _____","c":"v. intrans. irreg. aux. stat.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true},
         result: {
+            entry: {
+                entry: {"i":10124,"ts":1581086654898,"p":"کېدل","g":"","f":"kedul","e":"to become _____","c":"v. intrans. irreg. aux. stat.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true},
+            },
             transitivity: "intransitive",
             type: "simple",
             yulEnding: false,
@@ -1299,6 +1385,9 @@ const toTest = [
     {
         entry: {"i":10124,"ts":1527812754,"p":"کېدل","g":"","f":"kedul","e":"to happen, occur","c":"v. intrans. irreg. aux. dyn.","ssp":"وش","ssf":"óosh","prp":"وشول","prf":"óoshwul","pprtp":"شوی","pprtf":"shúwey","diacExcept":true},
         result: {
+            entry: {
+                entry: {"i":10124,"ts":1527812754,"p":"کېدل","g":"","f":"kedul","e":"to happen, occur","c":"v. intrans. irreg. aux. dyn.","ssp":"وش","ssf":"óosh","prp":"وشول","prf":"óoshwul","pprtp":"شوی","pprtf":"shúwey","diacExcept":true},
+            },
             transitivity: "intransitive",
             type: "simple",
             yulEnding: false,
@@ -1332,6 +1421,10 @@ const toTest = [
         entry: {"i":9371,"ts":1527812732,"p":"کار کول","g":"","f":"kaar kawul","e":"to work","l":1527822084,"c":"v. dyn. comp. trans."},
         complement: {"i":9369,"ts":1527822084,"p":"کار","g":"","f":"kaar","e":"work, job, business, stuff to do","c":"n. m."},
         result: {
+            entry: {
+                entry: {"i":9371,"ts":1527812732,"p":"کار کول","g":"","f":"kaar kawul","e":"to work","l":1527822084,"c":"v. dyn. comp. trans."},
+                complement: {"i":9369,"ts":1527822084,"p":"کار","g":"","f":"kaar","e":"work, job, business, stuff to do","c":"n. m."},        
+            },
             type: "dynamic compound",
             transitivity: "transitive",
             yulEnding: null,
@@ -1372,6 +1465,10 @@ const toTest = [
             },
             auxVerb: {"i":10058,"ts":1527812752,"p":"کول","g":"","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
             intransitiveForm: {
+                entry: {
+                    entry: {"i":9371,"ts":1527812732,"p":"کار کېدل","g":"","f":"kaar kedul","e":"to work","l":1527822084,"c":"v. intrans. dyn. comp."},
+                    complement: {"i":9369,"ts":1527822084,"p":"کار","g":"","f":"kaar","e":"work, job, business, stuff to do","c":"n. m."},        
+                },
                 type: "dynamic compound",
                 transitivity: "intransitive",
                 yulEnding: null,
@@ -1410,6 +1507,10 @@ const toTest = [
         entry: {"i":12101,"ts":1527812939,"p":"منډې وهل","g":"","f":"munDe wahul","e":"to run","l":1527815805,"c":"v. dyn. comp. trans. sing. or plur."},
         complement: {"i":12098,"ts":1527815805,"p":"منډه","g":"","f":"múnDa","e":"run, running","c":"n. f."},
         result: {
+            entry: {
+                entry: {"i":12101,"ts":1527812939,"p":"منډې وهل","g":"","f":"munDe wahul","e":"to run","l":1527815805,"c":"v. dyn. comp. trans. sing. or plur."},
+                complement: {"i":12098,"ts":1527815805,"p":"منډه","g":"","f":"múnDa","e":"run, running","c":"n. f."},        
+            },
             type: "dynamic compound",
             transitivity: "transitive",
             yulEnding: null,
@@ -1453,6 +1554,10 @@ const toTest = [
                 tppf: "waahu",
             },
             singularForm: {
+                entry: {
+                    entry: {"i":12101,"ts":1527812939,"p":"منډې وهل","g":"","f":"munDe wahul","e":"to run","l":1527815805,"c":"v. dyn. comp. trans. sing. or plur."},
+                    complement: {"i":12098,"ts":1527815805,"p":"منډه","g":"","f":"múnDa","e":"run, running","c":"n. f."},            
+                },
                 type: "dynamic compound",
                 transitivity: "transitive",
                 yulEnding: null,
@@ -1501,6 +1606,10 @@ const toTest = [
         entry: {"i":10554,"ts":1579034883717,"p":"لاړې تېرول","g":"","f":"laaRe terawul","e":"to spit ?? (other fluids too??)","l":1527823566,"c":"v. dyn. comp. trans."},
         complement: {"i":10553,"ts":1527823567,"p":"لاړې","g":"","f":"laaRe","e":"spit, saliva, slobber, slime","c":"n. f. pl."},
         result: {
+            entry: {
+                entry: {"i":10554,"ts":1579034883717,"p":"لاړې تېرول","g":"","f":"laaRe terawul","e":"to spit ?? (other fluids too??)","l":1527823566,"c":"v. dyn. comp. trans."},
+                complement: {"i":10553,"ts":1527823567,"p":"لاړې","g":"","f":"laaRe","e":"spit, saliva, slobber, slime","c":"n. f. pl."},        
+            },
             type: "dynamic compound",
             transitivity: "transitive",
             yulEnding: null,
@@ -1551,6 +1660,10 @@ const toTest = [
             type: "dynamic or stative compound",
             transitivity: "transitive",
             dynamic: {
+                entry: {
+                    entry: {"i":7910,"ts":1527819253,"p":"شروع کول","g":"","f":"shUróo' kawul","e":"to start, to begin","l":1527819252,"c":"v. dyn. comp. trans."},
+                    complement: {"i":7909,"ts":1527819252,"p":"شروع","g":"","f":"shUróo'","e":"beginning, start, undertaking","c":"n. m."},
+                },
                 type: "dynamic compound",
                 transitivity: "transitive",
                 yulEnding: null,
@@ -1591,6 +1704,10 @@ const toTest = [
                 },
                 auxVerb: {"i":10058,"ts":1527812752,"p":"کول","g":"","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
                 intransitiveForm: {
+                    entry: {
+                        entry: {"i":7910,"ts":1527819253,"p":"شروع کېدل","g":"","f":"shUróo' kedul","e":"to start, to begin","l":1527819252,"c":"v. intrans. dyn. comp."},
+                        complement: {"i":7909,"ts":1527819252,"p":"شروع","g":"","f":"shUróo'","e":"beginning, start, undertaking","c":"n. m."},
+                    },
                     type: "dynamic compound",
                     transitivity: "intransitive",
                     yulEnding: null,
@@ -1625,6 +1742,10 @@ const toTest = [
                 },
             },
             stative: {
+                entry: {
+                    entry: {"i":7910,"ts":1527819253,"p":"شروع کول","g":"","f":"shUróo' kawul","e":"to start, to begin","l":1527819252,"c":"v. stat. comp. trans."},
+                    complement: {"i":7909,"ts":1527819252,"p":"شروع","g":"","f":"shUróo'","e":"beginning, start, undertaking","c":"n. m."},
+                },
                 type: "stative compound",
                 transitivity: "transitive",
                 yulEnding: false,
@@ -1682,6 +1803,10 @@ const toTest = [
             type: "dynamic or generative stative compound",
             transitivity: "transitive",
             dynamic: {
+                entry: {
+                    entry: {"i":4770,"ts":1608137130992,"p":"چیغه کول","g":"","f":"chéegha kawul","e":"to yell, scream, cry out","l":1527813972,"c":"v. dyn. comp. trans."},
+                    complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},        
+                },
                 type: "dynamic compound",
                 transitivity: "transitive",
                 yulEnding: null,
@@ -1722,6 +1847,10 @@ const toTest = [
                 },
                 auxVerb: {"i":10058,"ts":1527812752,"p":"کول","g":"","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
                 intransitiveForm: {
+                    entry: {
+                        entry: {"i":4770,"ts":1608137130992,"p":"چیغه کېدل","g":"","f":"chéegha kedul","e":"to yell, scream, cry out","l":1527813972,"c":"v. intrans. dyn. comp."},
+                        complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},                
+                    },
                     type: "dynamic compound",
                     transitivity: "intransitive",
                     yulEnding: null,
@@ -1756,6 +1885,10 @@ const toTest = [
                 },
             },
             stative: {
+                entry: {
+                    entry: {"i":4770,"ts":1608137130992,"p":"چیغه کول","g":"","f":"chéegha kawul","e":"to yell, scream, cry out","l":1527813972,"c":"v. gen. stat. comp. trans."},
+                    complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},            
+                },
                 type: "generative stative compound",
                 transitivity: "transitive",
                 yulEnding: null,
@@ -1801,10 +1934,14 @@ const toTest = [
     {
         entry: {"i":4770,"ts":1608137130992,"p":"چیغې کول","g":"","f":"chéeghe kawul","e":"to yell, scream, cry out","l":1527813972,"c":"v. gen. stat./dyn. comp. trans."},
         complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},
-        result: {
+        result: { 
             "type": "dynamic or generative stative compound",
             "transitivity": "transitive",
             "dynamic": {
+                entry: {
+                    entry: {"i":4770,"ts":1608137130992,"p":"چیغې کول","g":"","f":"chéeghe kawul","e":"to yell, scream, cry out","l":1527813972,"c":"v. dyn. comp. trans."},
+                    complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},            
+                },
                 "type": "dynamic compound",
                 "transitivity": "transitive",
                 "yulEnding": null,
@@ -1932,6 +2069,10 @@ const toTest = [
                     "diacExcept": true
                 },
                 "singularForm": {
+                    entry: {
+                        entry: {"i":4770,"ts":1608137130992,"p":"چیغې کول","g":"","f":"chéeghe kawul","e":"to yell, scream, cry out","l":1527813972,"c":"v. dyn. comp. trans."},
+                        complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},            
+                    },
                     "type": "dynamic compound",
                     "transitivity": "transitive",
                     "yulEnding": null,
@@ -2055,6 +2196,10 @@ const toTest = [
                         "diacExcept": true
                     },
                     "intransitiveForm": {
+                        entry: {
+                            entry: {"i":4770,"ts":1608137130992,"p":"چیغې کېدل","g":"","f":"chéeghe kedul","e":"to yell, scream, cry out","l":1527813972,"c":"v. intrans. dyn. comp."},
+                            complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},            
+                        },
                         "type": "dynamic compound",
                         "transitivity": "intransitive",
                         "yulEnding": null,
@@ -2156,6 +2301,10 @@ const toTest = [
                             "diacExcept": true
                         },
                         "singularForm": {
+                            entry: {
+                                entry: {"i":4770,"ts":1608137130992,"p":"چیغې کېدل","g":"","f":"chéeghe kedul","e":"to yell, scream, cry out","l":1527813972,"c":"v. intrans. dyn. comp."},
+                                complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},            
+                            },
                             "type": "dynamic compound",
                             "transitivity": "intransitive",
                             "yulEnding": null,
@@ -2256,6 +2405,10 @@ const toTest = [
                     }
                 },
                 "intransitiveForm": {
+                    entry: {
+                        entry: {"i":4770,"ts":1608137130992,"p":"چیغې کېدل","g":"","f":"chéeghe kedul","e":"to yell, scream, cry out","l":1527813972,"c":"v. intrans. dyn. comp."},
+                        complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},                
+                    },
                     "type": "dynamic compound",
                     "transitivity": "intransitive",
                     "yulEnding": null,
@@ -2357,6 +2510,10 @@ const toTest = [
                         "diacExcept": true
                     },
                     "singularForm": {
+                        entry: {
+                            entry: {"i":4770,"ts":1608137130992,"p":"چیغې کېدل","g":"","f":"chéeghe kedul","e":"to yell, scream, cry out","l":1527813972,"c":"v. intrans. dyn. comp."},
+                            complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},                
+                        },
                         "type": "dynamic compound",
                         "transitivity": "intransitive",
                         "yulEnding": null,
@@ -2457,6 +2614,10 @@ const toTest = [
                 }
             },
             "stative": {
+                entry: {
+                    entry: {"i":4770,"ts":1608137130992,"p":"چیغې کول","g":"","f":"chéeghe kawul","e":"to yell, scream, cry out","l":1527813972,"c":"v. gen. stat. comp. trans."},
+                    complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},            
+                },
                 "type": "generative stative compound",
                 "transitivity": "transitive",
                 "yulEnding": null,
@@ -2568,6 +2729,10 @@ const toTest = [
                     "person": 11
                 },
                 "singularForm": {
+                    entry: {
+                        entry: {"i":4770,"ts":1608137130992,"p":"چیغې کول","g":"","f":"chéeghe kawul","e":"to yell, scream, cry out","l":1527813972,"c":"v. gen. stat. comp. trans."},
+                        complement: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},                
+                    },
                     "type": "generative stative compound",
                     "transitivity": "transitive",
                     "yulEnding": null,
