@@ -318,6 +318,9 @@ const kawulPerfectPassive: T.PerfectContent = {
 
 export const kedulStat: T.VerbConjugation = {
     info: {
+        entry: {
+            entry: {"ts":1581086654898,"i":10645,"p":"کېدل","f":"kedul","g":"kedul","e":"to become _____","c":"v. intrans. irreg.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true,"ec":"become","ep":"_____"} as T.VerbDictionaryEntry,
+        },
         transitivity: "intransitive",
         type: "simple",
         yulEnding: false,
@@ -572,6 +575,9 @@ export const kedulStat: T.VerbConjugation = {
 
 export const kedulDyn: T.VerbConjugation = {
     info: {
+        entry: {
+            entry: {"ts":1527812754,"i":10644,"p":"کېدل","f":"kedul","g":"kedul","e":"to happen, occur","c":"v. intrans. irreg.","ssp":"وش","ssf":"óosh","prp":"وشول","prf":"óoshwul","pprtp":"شوی","pprtf":"shúwey","diacExcept":true,"ec":"happen"} as T.VerbDictionaryEntry,
+        },
         transitivity: "intransitive",
         type: "simple",
         yulEnding: false,
@@ -1010,6 +1016,9 @@ const kawulHypothetical: T.VerbForm = {
 
 export const kawulStat: T.VerbConjugation = {
     info: {
+        entry: {
+            entry: {"ts":1579015359582,"i":10579,"p":"کول","f":"kawul","g":"kawul","e":"to make ____ ____ (as in \"He's making me angry.\")","c":"v. trans. irreg.","ssp":"کړ","ssf":"kR","prp":"کړل","prf":"kRul","pprtp":"کړی","pprtf":"kúRey","noOo":true,"ec":"make,makes,making,made,made","ep":"_____"} as T.VerbDictionaryEntry,
+        },
         transitivity: "transitive",
         type: "simple",
         yulEnding: false,
@@ -1475,6 +1484,9 @@ export const kawulStat: T.VerbConjugation = {
 // leads to possible discrepency when changing things, almost like two sources of truth?
 export const kawulDyn: T.VerbConjugation = {
     info: {
+        entry: {
+            entry: {"ts":1527812752,"i":10578,"p":"کول","f":"kawul","g":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true,"ec":"do,does,doing,did,done"} as T.VerbDictionaryEntry,
+        },
         transitivity: "transitive",
         type: "simple",
         yulEnding: false,
@@ -2040,6 +2052,9 @@ const tlulModal: T.ModalContent = {
 
 export const tlul: T.VerbConjugation = {
     info: {
+        entry: {
+            entry: {"ts":1527815348,"i":3638,"p":"تلل","f":"tlul","g":"tlul","e":"to go","c":"v. intrans. irreg.","psp":"ځ","psf":"dz","ssp":"لاړ ش","ssf":"láaR sh","prp":"لاړ","prf":"láaR","ec":"go,goes,going,went,gone"} as T.VerbDictionaryEntry,
+        },
         transitivity: "intransitive",
         type: "simple",
         yulEnding: false,
@@ -2416,6 +2431,9 @@ export const dynamicAux = {
 
 export const warkawul: T.VerbConjugation = {
     info: {
+        entry: {
+            entry: {"ts":1527813914,"i":14222,"p":"ورکول","f":"wărkawul","g":"warkawul","e":"to give (to him/her/it - towards third person)","c":"v. trans."} as T.VerbDictionaryEntry,
+        },
         transitivity: "transitive",
         type: "simple",
         yulEnding: false,

@@ -39,6 +39,7 @@ const servantIcon = <i className="mx-1 fas fa-male" />;
 export function VPExplorer(props: {
     verb: T.VerbEntry,
     opts: T.TextOptions,
+    handleLinkClick: ((ts: number) => undefined) | 0,
 } & ({
     nouns: T.NounEntry[],
     verbs: T.VerbEntry[],
@@ -119,6 +120,7 @@ export function VPExplorer(props: {
             vps={vps}
             onChange={quizLock(setVps)}
             opts={props.opts}
+            handleLinkClick={props.handleLinkClick}
         />
         <div className="mt-2 mb-3 text-center">
             <ButtonSelect
@@ -142,7 +144,7 @@ export function VPExplorer(props: {
                 <div className="my-2">
                     {roles.king === "subject" 
                         ? <div className="h5 text-center clickable" onClick={() => setShowingKingExplanation("subject")}>Subject {kingIcon}</div>
-                        : <div className="h5 text-center clickable" onClick={() => setShowingKingExplanation("subject")}>Subject {servantIcon}</div>}
+                        : <div className="h5 text-center clickable" onClick={() => setShowingServantExplanation("subject")}>Subject {servantIcon}</div>}
                     <NPPicker
                         {..."getNounByTs" in props ? {
                             getNounByTs: props.getNounByTs,
@@ -202,7 +204,7 @@ export function VPExplorer(props: {
                     In this tense/form, the {showingKingExplanation} is the <strong>king</strong> {kingIcon} of the phrase. That means that:
                     <ul className="mt-2">
                         <li>
-                            <div>It controls the verb conjugation. The verb agrees with the gender and number of the king.</div>
+                            <div>It <strong>controls the verb conjugation</strong>. The verb agrees with the gender and number of the king.</div>
                         </li>
                         <li>
                             <div>👍 It <strong>can</strong> be removed / left out from the phrase.</div>

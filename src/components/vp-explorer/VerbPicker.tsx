@@ -4,7 +4,7 @@ import { RootsAndStems } from "../verb-info/VerbInfo";
 import { getVerbInfo } from "../../lib/verb-info";
 import Hider from "../Hider";
 import useStickyState from "../../lib/useStickyState";
-
+import CompoundDisplay from "./CompoundDisplay";
 
 // TODO: dark on past tense selecitons
 
@@ -12,6 +12,7 @@ function VerbPicker(props: {
     vps: T.VPSelection,
     onChange: (p: T.VPSelection) => void,
     opts: T.TextOptions,
+    handleLinkClick: ((ts: number) => void) | 0,
 }) {
     const [showRootsAndStems, setShowRootsAndStems] = useStickyState<boolean>(false, "showRootsAndStems");
     const infoRaw = props.vps.verb ? getVerbInfo(props.vps.verb.verb.entry, props.vps.verb.verb.complement) : undefined;
@@ -60,6 +61,11 @@ function VerbPicker(props: {
         }
     }
     return <div className="mb-3">
+        {info && <CompoundDisplay
+            info={info}
+            opts={props.opts}
+            handleLinkClick={props.handleLinkClick}
+        />}
         {info && <div className="mt-3 mb-1 text-center">
             <Hider
                 showing={showRootsAndStems}

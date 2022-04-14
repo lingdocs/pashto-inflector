@@ -27,7 +27,7 @@ export function isNounOrAdjEntry(e: T.Entry): e is (T.NounEntry | T.AdjectiveEnt
     return isNounEntry(e) || isAdjectiveEntry(e);
 }
 
-export function isVerbDictionaryEntry(e: T.DictionaryEntry): e is T.VerbDictionaryEntry {
+export function isVerbDictionaryEntry(e: T.DictionaryEntry | T.DictionaryEntryNoFVars): e is T.VerbDictionaryEntry {
     return !!e.c?.startsWith("v.");
 }
 

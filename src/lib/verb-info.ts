@@ -137,6 +137,11 @@ export function getVerbInfo(
     const idiosyncraticThirdMascSing = getIdiosyncraticThirdMascSing(entry);
 
     const baseInfo: T.VerbInfoBase = {
+        entry: {
+            // TODO: cleanup the type safety with the DictionaryNoFVars messing things up etc
+            entry: entry as unknown as T.VerbDictionaryEntry,
+            complement,
+        },
         transitivity,
         yulEnding,
         root,
@@ -226,6 +231,11 @@ function getGenerativeStativeCompoundVerbInfo(
         past: concatPsString(compUsed, " ", bases.participle.past),
     }
     return {
+        entry: {
+            // TODO: cleanup the type safety with the DictionaryNoFVars messing things up etc
+            entry: entry as unknown as T.VerbDictionaryEntry,
+            complement: comp,
+        },
         type: "generative stative compound",
         transitivity,
         yulEnding,
@@ -310,6 +320,11 @@ function getDynamicCompoundInfo(entry: T.DictionaryEntryNoFVars, comp: T.Diction
         ? makeIntransitiveFormOfEntry(entry)
         : null;
     return {
+        entry: {
+            // TODO: cleanup the type safety with the DictionaryNoFVars messing things up etc
+            entry: entry as unknown as T.VerbDictionaryEntry,
+            complement: comp,
+        },
         type: "dynamic compound",
         transitivity,
         yulEnding,

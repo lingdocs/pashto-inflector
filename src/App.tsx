@@ -259,6 +259,7 @@ function App() {
                 </div>
                 {v?.verb.entry && <div style={{ paddingBottom: "100px" }}>
                     <PhraseBuilder
+                        handleLinkClick={0}
                         verb={v.verb as T.VerbEntry}
                         nouns={nouns}
                         verbs={verbs}

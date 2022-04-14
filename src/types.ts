@@ -160,6 +160,7 @@ export enum Person {
 // INPUT
 // all information to be passed to conjugating functions
 export type VerbInfoBase = {
+    entry: VerbEntry,
     transitivity: Transitivity;
     yulEnding: boolean | null;
     stem: VerbStemSet;
