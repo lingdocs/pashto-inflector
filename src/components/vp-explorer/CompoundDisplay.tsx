@@ -6,6 +6,10 @@ import {
 } from "../../lib/accent-and-ps-utils";
 import { ReactNode } from "react";
 import classNames from "classnames";
+import {
+    kawulStat,
+    kedulStat,
+} from "../../lib/irregular-conjugations";
 
 function CompoundFormula({ a, b }: {
     a: ReactNode,
@@ -84,7 +88,15 @@ function CompoundDisplay({ info, opts, handleLinkClick }: {
                 b={<div
                     className={classNames([{ clickable: handleLinkClick }])}
                     onClick={(handleLinkClick !== "none")
-                        ? () => handleLinkClick(info.entry.entry.ts)
+                        ? () => handleLinkClick(
+                            "auxVerb" in info
+                                // dyanmic compound auxVerb ts
+                                ? info.auxVerb.ts
+                                // stative compound auxVerb ts
+                                : ((info.transitivity === "intransitive"
+                                    ? kedulStat
+                                    : kawulStat).info.entry.entry.ts)
+                        )
                         : undefined}>
                     <div>
                         <Pashto opts={opts}>{aux.ps}</Pashto>
