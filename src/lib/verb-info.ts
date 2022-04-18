@@ -69,7 +69,7 @@ export function getVerbInfo(
     complmnt?: T.DictionaryEntry,
 ): T.VerbInfo {
     const entry = removeFVarients(ent);
-    const complement = complmnt ? removeFVarients(complmnt) : undefined;
+    const complement = (complmnt && ent.c?.includes("comp.")) ? removeFVarients(complmnt) : undefined;
     const type = getType(entry);
     if (type === "transitive or grammatically transitive simple") {
         return {
