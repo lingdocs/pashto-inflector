@@ -8,7 +8,7 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
-   sodipodi:docname="sentence-structure.svg"
+   sodipodi:docname="vp-structure.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -30,9 +30,9 @@
      fit-margin-bottom="10"
      units="px"
      width="708.26672px"
-     inkscape:zoom="0.51029737"
-     inkscape:cx="455.6167"
-     inkscape:cy="436.02028"
+     inkscape:zoom="0.35279519"
+     inkscape:cx="633.51204"
+     inkscape:cy="-296.20585"
      inkscape:window-width="1440"
      inkscape:window-height="847"
      inkscape:window-x="0"
@@ -199,8 +199,8 @@
        x="16.162476"
        y="11.622981" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.868766;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 100.74353,24.58879 V 145.4719"
+       style="fill:none;stroke:#000000;stroke-width:0.892521;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 100.74353,24.58879 V 152.17302"
        id="path75" />
     <g
        aria-label="intransitive"
@@ -460,8 +460,7 @@
          id="path79166" />
     </g>
     <g
-       aria-label="infl. 1st + 2nd
-pronoun"
+       aria-label="infl. 1st + 2nd pronoun"
        transform="matrix(0.26458333,0,0,0.26458333,38.760473,-57.593256)"
        id="text31446"
        style="font-size:18.6667px;line-height:1.25;white-space:pre;shape-inside:url(#rect31448)">
@@ -765,8 +764,7 @@ pronoun"
          id="path79296" />
     </g>
     <g
-       aria-label="controls the verb
-can be left out"
+       aria-label="controls the verb can be left out"
        transform="matrix(0.26458333,0,0,0.26458333,-8.6327206,30.587097)"
        id="text72313-6"
        style="font-size:18.6667px;line-height:1.25;white-space:pre;shape-inside:url(#rect72315-4)">
