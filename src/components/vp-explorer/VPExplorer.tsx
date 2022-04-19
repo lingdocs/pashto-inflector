@@ -48,7 +48,7 @@ export function VPExplorer(props: {
 })) {
     const [vps, setVps] = useStickyState<T.VPSelection>(
         savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState1",    
+        "vpsState2",    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
         savedMode => {
@@ -59,7 +59,10 @@ export function VPExplorer(props: {
         "verbExplorerMode",
     );
     const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
-    const roles = getKingAndServant(isPastTense(vps.verb.tense), vps.verb.transitivity !== "intransitive");
+    const roles = getKingAndServant(
+        isPastTense(vps.verb.tenseCategory === "perfect" ? vps.verb.perfectTense : vps.verb.verbTense),
+        vps.verb.transitivity !== "intransitive",
+    );
     useEffect(() => {
         setVps(oldVps => {
             if (mode === "quiz") {

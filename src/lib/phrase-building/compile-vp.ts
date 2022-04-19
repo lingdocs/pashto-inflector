@@ -12,6 +12,7 @@ import {
     removeBa,
     removeDuplicates,
 } from "./vp-tools";
+import { isModalTense, isPerfectTense } from "../type-predicates";
 
 type Form = T.FormVersion & { OSV?: boolean };
 export function compileVP(VP: T.VPRendered, form: Form): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
@@ -129,7 +130,7 @@ function putKidsInKidsSection(segments: Segment[], kids: Segment[]): Segment[] {
 }
 
 function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[], V: T.VerbRendered): Segment[][] {
-    const hasLeapfrog = V.tenseCategory === "modal" || V.tenseCategory === "perfect";
+    const hasLeapfrog = isPerfectTense(V.tense) || isModalTense(V.tense);
     const rest = (() => {
         if (hasLeapfrog) {
             const [restF, restLast] = splitOffLeapfrogWord(restRaw);

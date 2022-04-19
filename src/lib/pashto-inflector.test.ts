@@ -674,6 +674,22 @@ const nouns: Array<{
             }
         }
     },
+    // TODO: uncomment this
+    // {
+    //     in: {"ts":1527812591,"i":6286,"p":"دواړه","f":"dwáaRu","g":"dwaaRu","e":"both","c":"n. m. pl. unisex / adj."},
+    //     out: {
+    //         plural: {
+    //             masc: [
+    //                 [{ p: "دواړه", f: "dwáaRu" }],
+    //                 [{ p: "دواړو", f: "dwáaRo" }],
+    //             ],
+    //             fem: [
+    //                 [{ p: "دواړې", f: "dwáaRe" }],
+    //                 [{ p: "دواړو", f: "dwáaRo" }],
+    //             ],
+    //         }
+    //     }
+    // },
     // Masculine non-inflecting
     {
         in: {

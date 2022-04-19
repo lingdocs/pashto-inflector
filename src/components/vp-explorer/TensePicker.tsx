@@ -4,7 +4,7 @@ import {
 } from "../np-picker/picker-tools";
 import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
-import { isPerfectTense } from "../../lib/phrase-building/vp-tools";
+import { isModalTense, isPerfectTense, isVerbTense } from "../../lib/type-predicates";
 
 const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense }[] = [{
     label: <div><i className="fas fa-video mr-2" />present</div>,
@@ -34,32 +34,37 @@ const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense }[] = 
 
 const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense }[] = [{
     label: "Present Perfect",
-    value: "present perfect",
+    value: "presentPerfect",
 }, {
     label: "Habitual Perfect",
-    value: "habitual perfect",
+    value: "habitualPerfect",
 }, {
     label: "Subjunctive Perfect",
-    value: "subjunctive perfect",
+    value: "subjunctivePerfect",
 }, {
     label: "Future Perfect",
-    value: "future perfect",
+    value: "futurePerfect",
 }, {
     label: "Past Perfect",
-    value: "past perfect",
+    value: "pastPerfect",
 }, {
     label: `"Would Be" Perfect`,
-    value: "wouldBe perfect",
+    value: "wouldBePerfect",
 }, {
     label: "Past Subjunctive Perfect",
-    value: "pastSubjunctive perfect",
+    value: "pastSubjunctivePerfect",
 }];
 
-export function getRandomTense(type: "basic" | "modal", o?: T.VerbTense): T.VerbTense;
-export function getRandomTense(type: "perfect", o?: T.PerfectTense | T.VerbTense): T.PerfectTense;
-export function getRandomTense(type: "basic" | "modal" | "perfect", o?: T.PerfectTense | T.VerbTense): T.PerfectTense | T.VerbTense {
-    let tns: T.PerfectTense | T.VerbTense;
-    const tenseOptions = type === "perfect" ? perfectTenseOptions : verbTenseOptions;
+export function getRandomTense(o?: T.PerfectTense | T.VerbTense | T.ModalTense): T.PerfectTense | T.VerbTense | T.ModalTense {
+    let tns: T.PerfectTense | T.VerbTense | T.ModalTense;
+    const oldTenseCategory = !o
+        ? undefined
+        : getTenseCategory(o);
+    const tenseOptions = oldTenseCategory === "perfect"
+        ? perfectTenseOptions
+        : oldTenseCategory === "modal"
+        ? verbTenseOptions.map(x => ({ ...x, value: `${x.value}Modal` as T.ModalTense }))
+        : verbTenseOptions;
     do {
         tns = tenseOptions[
             Math.floor(Math.random()*tenseOptions.length)
@@ -68,40 +73,49 @@ export function getRandomTense(type: "basic" | "modal" | "perfect", o?: T.Perfec
     return tns;
 }
 
-function TensePicker({ onChange, vps, mode }: {
+function TensePicker(props: ({
     vps: T.VPSelection,
+} | {
+    vpsComplete: T.VPSelectionComplete,
+}) & {
     onChange: (p: T.VPSelection) => void,
     mode: "charts" | "phrases" | "quiz",
 }) {
     function onTenseSelect(o: { value: T.VerbTense | T.PerfectTense } | null) {
-        const value = o?.value ? o.value : undefined; 
-        if (vps.verb && value) {
+        if ("vpsComplete" in props) return;
+        const value = o?.value ? o.value : undefined;
+        if (props.vps.verb && value) {
             if (isPerfectTense(value)) {
-                onChange({
-                    ...vps,
+                props.onChange({
+                    ...props.vps,
                     verb: {
-                        ...vps.verb,
-                        tense: value,
+                        ...props.vps.verb,
+                        perfectTense: value,
                         tenseCategory: "perfect",
                     },
                 });
             } else {
-                onChange({
-                    ...vps,
+                props.onChange({
+                    ...props.vps,
                     verb: {
-                        ...vps.verb,
-                        tense: value,
-                        tenseCategory: vps.verb.tenseCategory === "perfect" ? "basic" : vps.verb.tenseCategory,
+                        ...props.vps.verb,
+                        verbTense: value,
+                        tenseCategory: props.vps.verb.tenseCategory === "perfect"
+                            ? "basic"
+                            : props.vps.verb.tenseCategory,
                     },
                 });
             }
         }
     }
     function moveTense(dir: "forward" | "back") {
-        if (!vps.verb) return;
+        if ("vpsComplete" in props) return;
+        if (!props.vps.verb) return;
         return () => {
-            const tenses = vps.verb.tenseCategory === "perfect" ? perfectTenseOptions : verbTenseOptions;
-            const currIndex = tenses.findIndex(tn => tn.value === vps.verb.tense)
+            const tenses = props.vps.verb.tenseCategory === "perfect" ? perfectTenseOptions : verbTenseOptions;
+            const currIndex = tenses.findIndex(tn => tn.value === props.vps.verb[
+                props.vps.verb.tenseCategory === "perfect" ? "perfectTense" : "verbTense"
+            ]);
             if (currIndex === -1) {
                 console.error("error moving tense", dir);
                 return;
@@ -114,48 +128,42 @@ function TensePicker({ onChange, vps, mode }: {
         };
     }
     function onPosNegSelect(value: string) {
-        if (vps.verb) {
-            onChange({
-                ...vps,
+        if ("vpsComplete" in props) return;
+        if (props.vps.verb) {
+            props.onChange({
+                ...props.vps,
                 verb: {
-                    ...vps.verb,
+                    ...props.vps.verb,
                     negative: value === "true",
                 },
             });
         }
     }
     function onTenseCategorySelect(value: "basic" | "modal" | "perfect") {
-        if (vps.verb) {
-            if (value === "perfect") {
-                onChange({
-                    ...vps,
-                    verb: {
-                        ...vps.verb,
-                        tenseCategory: value,
-                        tense: isPerfectTense(vps.verb.tense) ? vps.verb.tense : "present perfect",
-                    },
-                });
-            } else {
-                onChange({
-                    ...vps,
-                    verb: {
-                        ...vps.verb,
-                        tenseCategory: value,
-                        tense: isPerfectTense(vps.verb.tense) ? "presentVerb" : vps.verb.tense,
-                    }
-                });
-            }
+        if ("vpsComplete" in props) return;
+        if (props.vps.verb) {
+            props.onChange({
+                ...props.vps,
+                verb: {
+                    ...props.vps.verb,
+                    tenseCategory: value,
+                },
+            });
         }
     }
-    const tOptions = (vps.verb?.tenseCategory === "perfect") ? perfectTenseOptions : verbTenseOptions;
+    const tOptions = ("vps" in props && (props.vps.verb?.tenseCategory === "perfect"))
+        ? perfectTenseOptions
+        : verbTenseOptions;
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
             <div className="d-flex flex-row justify-content-between align-items-center">
                 <div className="h5">Tense:</div>
-                {vps.verb && <div className="mb-2">
+                {("vpsComplete" in props || props.vps.verb) && <div className="mb-2">
                     <ButtonSelect
                         small
-                        value={vps.verb.tenseCategory}
+                        value={"vpsComplete" in props 
+                            ? getTenseCategory(props.vpsComplete.verb.tense)
+                            : props.vps.verb.tenseCategory}
                         options={[{
                             label: "Basic",
                             value: "basic",
@@ -166,26 +174,32 @@ function TensePicker({ onChange, vps, mode }: {
                             label: "Modal",
                             value: "modal",
                         }]}
-                        handleChange={mode !== "quiz" ? onTenseCategorySelect : () => null}
+                        handleChange={props.mode !== "quiz" ? onTenseCategorySelect : () => null}
                     />
                 </div>}
             </div>
-            <Select
+            {"vpsComplete" in props
+                ? <div style={{ fontSize: "larger" }} className="mb-3">
+                    {[...verbTenseOptions, ...perfectTenseOptions].find(o => o.value === props.vpsComplete.verb.tense)?.label}
+                </div>
+            : <Select
                 isSearchable={false}
                 // for some reason can't use tOptions with find here;
-                value={vps.verb && ([...verbTenseOptions, ...perfectTenseOptions].find(o => o.value === vps.verb.tense))}
+                value={props.vps.verb && ([...verbTenseOptions, ...perfectTenseOptions].find(o => o.value === props.vps.verb[
+                    props.vps.verb.tenseCategory === "perfect" ? "perfectTense" : "verbTense"
+                ]))}
                 onChange={onTenseSelect}
                 className="mb-2"
                 options={tOptions}
                 {...zIndexProps}
-            />
-            {vps.verb && (mode !== "quiz") && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
+            />}
+            {"vps" in props && props.vps.verb && (props.mode !== "quiz") && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
                 <div className="btn btn-light clickable" onClick={moveTense("back")}>
                     <i className="fas fa-chevron-left" />
                 </div>
-                {mode === "phrases" && <ButtonSelect
+                {props.mode === "phrases" && <ButtonSelect
                     small
-                    value={vps.verb.negative.toString()}
+                    value={props.vps.verb.negative.toString()}
                     options={[{
                         label: "Pos.",
                         value: "false",
@@ -204,3 +218,16 @@ function TensePicker({ onChange, vps, mode }: {
 }
 
 export default TensePicker;
+
+function getTenseCategory(tense: T.VerbTense | T.PerfectTense | T.ModalTense): "basic" | "perfect" | "modal" {
+    if (isPerfectTense(tense)) {
+        return "perfect";
+    }
+    if (isVerbTense(tense)) {
+        return "basic";
+    }
+    if (isModalTense(tense)) {
+        return "modal";
+    }
+    throw new Error("can't catagorize tense");
+}

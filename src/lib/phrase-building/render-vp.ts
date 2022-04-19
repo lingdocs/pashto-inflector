@@ -19,10 +19,12 @@ import {
     getPersonFromNP,
     removeBa,
     isPastTense,
-    isPerfectTense,
     getTenseVerbForm,
 } from "./vp-tools";
-import { isPattern4Entry } from "../type-predicates";
+import {
+    isPattern4Entry,
+    isPerfectTense,
+} from "../type-predicates";
 import { renderEnglishVPBase } from "./english-vp-rendering";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
@@ -129,7 +131,7 @@ function renderParticipleSelection(p: T.ParticipleSelection, inflected: boolean)
     };
 }
 
-function renderVerbSelection(vs: T.VerbSelection, person: T.Person, objectPerson: T.Person | undefined): T.VerbRendered {
+function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, objectPerson: T.Person | undefined): T.VerbRendered {
     const v = vs.dynAuxVerb || vs.verb;
     const conjugations = conjugateVerb(v.entry, v.complement);
     // TODO: error handle this?
@@ -148,14 +150,14 @@ function renderVerbSelection(vs: T.VerbSelection, person: T.Person, objectPerson
     }
 }
 
-function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelection, person: T.Person, objectPerson: T.Person | undefined): {
+function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComplete, person: T.Person, objectPerson: T.Person | undefined): {
     ps: {
         head: T.PsString | undefined,
         rest: T.SingleOrLengthOpts<T.PsString[]>,
     },
     hasBa: boolean,
 } { 
-    const f = getTenseVerbForm(conj, vs.tense, vs.tenseCategory, vs.voice);
+    const f = getTenseVerbForm(conj, vs.tense, vs.voice);
     const block = getMatrixBlock(f, objectPerson, person);
     const perfective = isPerfective(vs.tense);
     const verbForm = getVerbFromBlock(block, person);
@@ -324,12 +326,15 @@ function isFirstOrSecondPersPronoun(o: "none" | T.NPSelection | T.Person.ThirdPl
     return [0,1,2,3,6,7,8,9].includes(o.person);
 }
 
-function isPerfective(t: T.VerbTense | T.PerfectTense): boolean {
+function isPerfective(t: T.VerbTense | T.PerfectTense | T.ModalTense): boolean {
     if (isPerfectTense(t)) return false;
     if (t === "presentVerb" || t === "imperfectiveFuture" || t === "imperfectivePast" || t === "habitualImperfectivePast") {
         return false;
     }
     if (t === "perfectiveFuture" || t === "subjunctiveVerb" || t === "perfectivePast" || t === "habitualPerfectivePast") {
+        return true;
+    }
+    if (t === "perfectiveFutureModal" || t === "subjunctiveVerbModal" || t === "perfectivePastModal" || t === "habitualPerfectivePastModal") {
         return true;
     }
     throw new Error("tense not implemented yet");

@@ -1,4 +1,7 @@
-import { getTenseVerbForm } from "../../lib/phrase-building/vp-tools";
+import {
+    getTenseVerbForm,
+    getTenseFromVerbSelection,
+} from "../../lib/phrase-building/vp-tools";
 import VerbFormDisplay from "../VerbFormDisplay";
 import { conjugateVerb } from "../../lib/verb-conjugation";
 import * as T from "../../types";
@@ -13,7 +16,7 @@ function ChartDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptions }
         : ("transitive" in rawConjugations)
         ? rawConjugations[VS.transitivity === "grammatically transitive" ? "grammaticallyTransitive" : "transitive"]
         : rawConjugations;
-    const form = getTenseVerbForm(conjugations, VS.tense, VS.tenseCategory, VS.voice);
+    const form = getTenseVerbForm(conjugations, getTenseFromVerbSelection(VS), VS.voice);
     return <div className="mb-4">
         <VerbFormDisplay
             displayForm={form}

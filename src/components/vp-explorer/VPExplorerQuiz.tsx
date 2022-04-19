@@ -9,7 +9,7 @@ import InlinePs from "../InlinePs";
 import { psStringEquals } from "../../lib/p-text-helpers";
 import { renderVP, compileVP } from "../../lib/phrase-building/index";
 import { getRandomTense } from "./TensePicker";
-import { removeBa, switchSubjObj } from "../../lib/phrase-building/vp-tools";
+import { getTenseFromVerbSelection, removeBa, switchSubjObj } from "../../lib/phrase-building/vp-tools";
 import playAudio from "../../lib/play-audio";
 import TensePicker from "./TensePicker";
 import Keyframes from "../Keyframes";
@@ -57,7 +57,7 @@ function VPExplorerQuiz(props: {
     opts: T.TextOptions,
     vps: T.VPSelection,
 }) {
-    const startingQs = tickQuizState(props.vps);
+    const startingQs = tickQuizState(completeVPs(props.vps));
     const [quizState, setQuizState] = useState<QuizState>(startingQs);
     const [showCheck, setShowCheck] = useState<boolean>(false);
     const [answerBlank, setAnswerBlank] = useState<string>("");
@@ -115,7 +115,7 @@ function VPExplorerQuiz(props: {
             </div>}
             <div className="my-2">
                 <TensePicker
-                    vps={quizState.vps}
+                    vpsComplete={quizState.vps}
                     onChange={() => null}
                     mode={"quiz"}
                 />
@@ -278,7 +278,7 @@ function QuizNPDisplay({ children, stage, opts }: {
  * @param startingWith 
  * @returns 
  */
-function tickQuizState(startingWith: T.VPSelection | QuizState): QuizState {
+function tickQuizState(startingWith: T.VPSelectionComplete | QuizState): QuizState {
     function makeRes(x: T.VPSelectionComplete) {
         return compileVP(renderVP(x), { removeKing: false, shrinkServant: false });
     }
@@ -369,13 +369,54 @@ function getOptionFromResult(r: {
     return ps[0];
 }
 
+function completeVPs(vps: T.VPSelection): T.VPSelectionComplete {
+    const oldSubj = vps.subject?.type === "pronoun"
+        ? vps.subject.person
+        : undefined;
+    const oldObj = (typeof vps.verb.object === "object" && vps.verb.object.type === "pronoun")
+        ? vps.verb.object.person
+        : undefined;
+    const { subj, obj } = randomSubjObj(
+        oldSubj === undefined
+            ? undefined
+            : {
+                subj: oldSubj,
+                obj: oldObj,
+            }
+    );
+    const verb: T.VerbSelectionComplete = {
+        ...vps.verb,
+        object: (
+            (typeof vps.verb.object === "object" && !(vps.verb.object.type === "noun" && vps.verb.object.dynamicComplement))
+            ||
+            vps.verb.object === undefined
+        )
+            ? {
+                type: "pronoun",
+                distance: "far",
+                person: obj,
+            }
+            : vps.verb.object,
+        tense: getTenseFromVerbSelection(vps.verb),
+    };
+    return {
+        ...vps,
+        subject: {
+            type: "pronoun",
+            distance: "far",
+            person: subj,
+        },
+        verb,
+    };
+}
+
 function getRandomVPSelection(mix: MixType = "both") {
     // TODO: Type safety to make sure it's safe?
-    return ({ subject, verb }: T.VPSelection): T.VPSelectionComplete => {
-        const oldSubj = (subject?.type === "pronoun")
+    return ({ subject, verb }: T.VPSelectionComplete): T.VPSelectionComplete => {
+        const oldSubj = (subject.type === "pronoun")
             ? subject.person
             : undefined;
-        const oldObj = (typeof verb?.object === "object" && verb.object.type === "pronoun")
+        const oldObj = (typeof verb.object === "object" && verb.object.type === "pronoun")
             ? verb.object.person
             : undefined;
         const { subj, obj } = randomSubjObj(
@@ -401,7 +442,6 @@ function getRandomVPSelection(mix: MixType = "both") {
         if (mix === "tenses") {
             return {
                 subject: subject !== undefined ? subject : randSubj,
-                // @ts-ignore
                 verb: randomizeTense(verb, true),
             }
         }
@@ -426,9 +466,6 @@ function randomizeTense(verb: T.VerbSelectionComplete, dontRepeatTense: boolean)
     return {
         ...verb,
         tense: getRandomTense(
-            // TODO: WHY ISN'T THE OVERLOADING ON THIS
-            // @ts-ignore
-            verb.tenseCategory,
             dontRepeatTense ? verb.tense : undefined,
         ),
     };

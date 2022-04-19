@@ -2,14 +2,17 @@ import { renderVP, compileVP } from "../../lib/phrase-building/index";
 import * as T from "../../types";
 import InlinePs from "../InlinePs";
 import AbbreviationFormSelector from "./AbbreviationFormSelector";
-import { isPastTense } from "../../lib/phrase-building/vp-tools";
+import {
+    isPastTense,
+    completeVPSelection,
+} from "../../lib/phrase-building/vp-tools";
 import { useStickyState } from "../../library";
-import { isVPSelectionComplete } from "../../lib/type-predicates";
 
-function VPDisplay({ VP, opts }: { VP: T.VPSelection | T.VPSelectionComplete, opts: T.TextOptions }) {
+function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
     const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationForm");
     const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
-    if (!isVPSelectionComplete(VP)) {
+    const VPComplete = completeVPSelection(VP); 
+    if (!VPComplete) {
         return <div className="lead text-muted text-center mt-4">
             {(() => {
                 const twoNPs = (VP.subject === undefined) && (VP.verb.object === undefined);
@@ -17,7 +20,7 @@ function VPDisplay({ VP, opts }: { VP: T.VPSelection | T.VPSelectionComplete, op
             })()}
         </div>;
     }
-    const result = compileVP(renderVP(VP), { ...form, OSV });
+    const result = compileVP(renderVP(VPComplete), { ...form, OSV });
     return <div className="text-center mt-2">
         {VP.verb.transitivity === "transitive" && <div className="form-check mb-2">
             <input
@@ -32,7 +35,7 @@ function VPDisplay({ VP, opts }: { VP: T.VPSelection | T.VPSelectionComplete, op
             </label>
         </div>}
         <AbbreviationFormSelector
-            adjustable={whatsAdjustable(VP)}
+            adjustable={whatsAdjustable(VPComplete)}
             form={form}
             onChange={setForm}
         />

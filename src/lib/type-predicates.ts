@@ -160,9 +160,30 @@ export function isArrayOneOrMore<U>(a: U[]): a is T.ArrayOneOrMore<U> {
     return a.length > 0;
 }
 
-export function isVPSelectionComplete(vps: T.VPSelection | T.VPSelectionComplete): vps is T.VPSelectionComplete {
-    if ((vps.subject !== undefined) && (vps.verb.object !== undefined)) {
-        return true;
-    }
-    return false;
+export function isPerfectTense(tense: T.VerbTense | T.EquativeTense | T.ModalTense | T.PerfectTense): tense is T.PerfectTense {
+    return tense.endsWith("Perfect");
 }
+
+export function isVerbTense(tense: T.VerbTense | T.EquativeTense | T.ModalTense | T.PerfectTense): tense is T.VerbTense {
+    const verbTenses: T.VerbTense[] = [
+        "presentVerb",
+        "subjunctiveVerb",
+        "perfectiveFuture",
+        "imperfectiveFuture",
+        "perfectivePast",
+        "imperfectivePast",
+        "habitualPerfectivePast",
+        "habitualImperfectivePast",
+    ];
+    return verbTenses.some(x => x === tense);
+}
+
+export function isModalTense(tense: T.VerbTense | T.EquativeTense | T.ModalTense | T.PerfectTense): tense is T.ModalTense {
+    return tense.endsWith("Modal");
+}
+
+export function isEquativeTense(t: T.VerbTense | T.EquativeTense | T.PerfectTense | T.ModalTense): t is T.EquativeTense {
+    return (t === "present" || t === "future" || t === "habitual" || t === "past" || t === "wouldBe" || t === "subjunctive" || t === "pastSubjunctive");
+}
+
+

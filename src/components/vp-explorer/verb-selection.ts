@@ -3,7 +3,6 @@ import {
 } from "../np-picker/picker-tools";
 import * as T from "../../types";
 import { getVerbInfo } from "../../lib/verb-info";
-import { isPerfectTense } from "../../lib/phrase-building/vp-tools";
 
 export function makeVPSelectionState(
     verb: T.VerbEntry,
@@ -46,28 +45,15 @@ export function makeVPSelectionState(
             : "dynamic" in info
                 ? { entry: info.dynamic.auxVerb } as T.VerbEntry
                 : undefined;
-    const tenseSelection = ((): { tenseCategory: "perfect", tense: T.PerfectTense } | {
-        tenseCategory: "basic" | "modal",
-        tense: T.VerbTense,
-    } => {
-        if (!os) {
-            return { tense: "presentVerb", tenseCategory: "basic" };
-        }
-        if (os.verb.tenseCategory === "modal") {
-            return { tenseCategory: "modal", tense: isPerfectTense(os.verb.tense) ? "presentVerb" : os.verb.tense };
-        }
-        if (os.verb.tenseCategory === "basic") {
-            return { tenseCategory: "basic", tense: isPerfectTense(os.verb.tense) ? "presentVerb" : os.verb.tense };
-        }
-        return { tenseCategory: "perfect", tense: isPerfectTense(os.verb.tense) ? os.verb.tense : "present perfect" };
-    })();
     return {
         subject,
         verb: {
             type: "verb",
             verb: verb,
             dynAuxVerb,
-            ...tenseSelection,
+            verbTense: os ? os.verb.verbTense : "presentVerb",
+            perfectTense: os ? os.verb.perfectTense : "presentPerfect",
+            tenseCategory: os ? os.verb.tenseCategory : "basic",
             object,
             transitivity,
             isCompound,

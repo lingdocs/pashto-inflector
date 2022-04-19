@@ -535,7 +535,8 @@ export type VerbTense = "presentVerb"
 export type EquativeTense = "present" | "subjunctive" | "habitual" | "past" | "future" | "wouldBe" | "pastSubjunctive";
 export type NounNumber = "singular" | "plural";
 
-export type PerfectTense = `${EquativeTense} perfect`;
+export type PerfectTense = `${EquativeTense}Perfect`;
+export type ModalTense = `${VerbTense}Modal`;
 
 export type VPSelection = {
     subject: NPSelection | undefined,
@@ -547,9 +548,10 @@ export type VPSelectionComplete = {
     verb: VerbSelectionComplete,
 };
 
-export type VerbSelectionComplete = Exclude<VerbSelection, "object"> & {
+export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "tenseCategory"> & {
     object: Exclude<VerbObject, undefined>,
-};
+    tense: VerbTense | PerfectTense | ModalTense,
+}
 
 export type VerbSelection = {
     type: "verb",
@@ -565,15 +567,12 @@ export type VerbSelection = {
     // TODO: changeStativeDynamic
     // TODO: add in aspect element here??
     negative: boolean,
-} & ({  
-    tense: VerbTense,
-    tenseCategory: "basic" | "modal",
-} | {
-    tense: PerfectTense,
-    tenseCategory: "perfect"
-});
+    verbTense: VerbTense,
+    perfectTense: PerfectTense,
+    tenseCategory: "basic" | "modal" | "perfect",
+};
 
-export type VerbRendered = Omit<VerbSelection, "object"> & {
+export type VerbRendered = Omit<VerbSelectionComplete, "object"> & {
     ps: { 
         head: PsString | undefined,
         rest: SingleOrLengthOpts<
