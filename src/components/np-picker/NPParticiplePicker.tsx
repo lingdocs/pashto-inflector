@@ -16,7 +16,6 @@ function NPParticiplePicker(props: ({
 }) & {
     participle: T.ParticipleSelection | undefined,
     onChange: (p: T.ParticipleSelection | undefined) => void,
-    clearButton: JSX.Element,
     opts: T.TextOptions,
 }) {
     function onEntrySelect(entry: T.VerbEntry | undefined) {
@@ -27,7 +26,6 @@ function NPParticiplePicker(props: ({
         props.onChange(makeParticipleSelection(entry));
     }
     return <div style={{ maxWidth: "225px" }}>
-        {props.clearButton}
         <h6>Participle</h6>
         <EntrySelect
             value={props.participle?.verb}

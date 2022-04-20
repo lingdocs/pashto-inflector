@@ -63,7 +63,6 @@ function NPNounPicker(props: ({
 }) & {
     noun: T.NounSelection | undefined,
     onChange: (p: T.NounSelection | undefined) => void,
-    clearButton?: JSX.Element,
     opts: T.TextOptions,
 }) {
     // const [patternFilter, setPatternFilter] = useState<FilterPattern | undefined>(undefined);
@@ -82,14 +81,6 @@ function NPNounPicker(props: ({
     //     setShowFilter(false);
     // }
     return <div style={{ maxWidth: "225px", minWidth: "125px" }}>
-        <div className="d-flex flex-row justify-content-left">
-            {props.clearButton}
-            {/* {(!showFilter && !(noun?.dynamicComplement))  && <div className="text-right">
-                <button className="btn btn-sm btn-light mb-2 text-small" onClick={() => setShowFilter(true)}>
-                    <i className="fas fa-filter fa-xs" />
-                </button>
-            </div>} */}
-        </div>
         {/* {showFilter && <div className="mb-2 text-center">
             <div className="d-flex flex-row justify-content-between">
                 <div className="text-small mb-1">Filter by inflection pattern</div>

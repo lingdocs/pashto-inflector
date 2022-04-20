@@ -57,10 +57,10 @@ const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense 
 }];
 
 const imperativeTenseOptions: { label: string | JSX.Element, value: T.ImperativeTense }[] = [{
-    label: <div><i className="fas fa-video mr-2" />imperfective imp.</div>,
+    label: <div><i className="fas fa-video mr-2" />imperfective imperative</div>,
     value: "imperfectiveImperative",
 }, {
-    label: <div><i className="fas fa-camera mr-2" />perfective imp.</div>,
+    label: <div><i className="fas fa-camera mr-2" />perfective imperative</div>,
     value: "perfectiveImperative",
 }];
 

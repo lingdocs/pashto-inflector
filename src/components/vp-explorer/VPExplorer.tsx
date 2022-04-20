@@ -133,17 +133,11 @@ export function VPExplorer(props: {
                     { label: "Phrases", value: "phrases" },
                     { label: "Quiz", value: "quiz" },
                 ]}
-                handleChange={(x) => {
-                    // TODO: remove this and implement the imperative in quiz
-                    // if (x === "quiz") {
-
-                    // }
-                    setMode(x);
-                }}
+                handleChange={setMode}
             />
         </div>
         {(vps.verb && (typeof vps.verb.object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
-            <div className="text-center mt-4">
+            <div className="text-center my-2">
                 <button onClick={handleSubjObjSwap} className="btn btn-sm btn-light">
                     <i className="fas fa-exchange-alt mr-2" /> subj/obj
                 </button>
@@ -151,10 +145,10 @@ export function VPExplorer(props: {
         {mode !== "quiz" && <div className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
             {mode === "phrases" && <>
                 <div className="my-2">
-                    {roles.king === "subject" 
-                        ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>Subject {roleIcon.king}</div>
-                        : <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>Subject {roleIcon.servant}</div>}
                     <NPPicker
+                        heading={roles.king === "subject" 
+                            ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>Subject {roleIcon.king}</div>
+                            : <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>Subject {roleIcon.servant}</div>}
                         {..."getNounByTs" in props ? {
                             getNounByTs: props.getNounByTs,
                             getVerbByTs: props.getVerbByTs,
@@ -172,12 +166,12 @@ export function VPExplorer(props: {
                     />
                 </div>
                 {vps.verb && (vps.verb.object !== "none") && <div className="my-2">
-                {roles.king === "object" 
-                        ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
-                        : <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>Object {roleIcon.servant}</div>}
                     {(typeof vps.verb.object === "number")
                         ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
                         : <NPPicker
+                            heading={roles.king === "object" 
+                                ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
+                                : <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>Object {roleIcon.servant}</div>}
                             {..."getNounByTs" in props ? {
                                 getNounByTs: props.getNounByTs,
                                 getVerbByTs: props.getVerbByTs,

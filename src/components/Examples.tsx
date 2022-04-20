@@ -27,14 +27,16 @@ function Examples({
     children,
     ex,
     opts,
+    lineHeight,
 }: {
     ex?: PsStringWSub | PsStringWSub[] | T.PsJSX | T.PsJSX[],
     children: PsStringWSub | PsStringWSub[],
     opts: T.TextOptions,
+    lineHeight?: 0 | 1 | 2 | 3 | 4,
 }) {
     const examples = children || ex;
     const Example = ({ children: text }: { children: PsStringWSub }) => (
-        <div className="mt-1 mb-3">
+        <div className={lineHeight !== undefined ? `mb-${lineHeight}` : `mt-1 mb-3`}>
             <div>
                 <Pashto opts={opts}>{text}</Pashto>
             </div>

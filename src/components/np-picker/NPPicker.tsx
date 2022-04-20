@@ -14,6 +14,7 @@ import { isSecondPerson } from "../../lib/phrase-building/vp-tools";
 const npTypes: T.NPType[] = ["pronoun", "noun", "participle"];
 
 function NPPicker(props: {
+    heading?: JSX.Element,
     onChange: (nps: T.NPSelection | undefined) => void,
     np: T.NPSelection | undefined,
     counterPart: T.NPSelection | T.VerbObject | undefined,
@@ -58,11 +59,21 @@ function NPPicker(props: {
         }
     }
     const isDynamicComplement = props.np && props.np.type === "noun" && props.np.dynamicComplement;
-    const clearButton = !props.cantClear
+    const clearButton = (!props.cantClear && !props.is2ndPersonPicker && !isDynamicComplement) 
         ? <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>X</button>
         : <div></div>;
-    return <div style={{ minWidth: "9rem" }}>
-        {!npType && <div className="text-center mt-3">
+    return <>
+        <div className="d-flex flex-row justify-content-between">
+            <div></div>
+            <div>
+                {props.heading}
+            </div>
+            <div>
+                {npType && clearButton}
+            </div>
+        </div>
+        <div style={{ minWidth: "9rem" }}>
+        {!npType && <div className="text-center">
             <div className="h6 mr-3">
                 Choose NP
             </div>
@@ -82,7 +93,6 @@ function NPPicker(props: {
                 asObject={props.asObject}
                 pronoun={props.np}
                 onChange={props.onChange}
-                clearButton={clearButton}
                 is2ndPersonPicker={props.is2ndPersonPicker}
                 opts={props.opts}
             />
@@ -96,7 +106,6 @@ function NPPicker(props: {
                 }}
                 noun={(props.np && props.np.type === "noun") ? props.np : undefined}
                 onChange={props.onChange}
-                clearButton={!isDynamicComplement ? clearButton : undefined}
                 opts={props.opts}
             />
             : npType === "participle"
@@ -109,12 +118,12 @@ function NPPicker(props: {
                 }}
                 participle={(props.np && props.np.type === "participle") ? props.np : undefined}
                 onChange={props.onChange}
-                clearButton={clearButton}
                 opts={props.opts}
             />
             : null
         }
-    </div>;
+    </div>
+    </>;
 }
 
 // {(npType && !isDynamicComplement) && }

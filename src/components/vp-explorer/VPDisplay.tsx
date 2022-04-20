@@ -1,12 +1,12 @@
 import { renderVP, compileVP } from "../../lib/phrase-building/index";
 import * as T from "../../types";
-import InlinePs from "../InlinePs";
 import AbbreviationFormSelector from "./AbbreviationFormSelector";
 import {
     isPastTense,
     completeVPSelection,
 } from "../../lib/phrase-building/vp-tools";
 import { useStickyState } from "../../library";
+import Examples from "../Examples";
 
 function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
     const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationForm");
@@ -21,7 +21,7 @@ function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
         </div>;
     }
     const result = compileVP(renderVP(VPComplete), { ...form, OSV });
-    return <div className="text-center mt-2">
+    return <div className="text-center">
         {VP.verb.transitivity === "transitive" && <div className="form-check mb-2">
             <input
                 className="form-check-input"
@@ -52,7 +52,7 @@ function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
             </div>
             : <VariationLayer vs={result.ps} opts={opts} />
         }
-        {result.e && <div className="text-muted">
+        {result.e && <div className="text-muted mt-3">
             {result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>}
     </div>
@@ -74,9 +74,7 @@ function whatsAdjustable(VP: T.VPSelectionComplete): "both" | "king" | "servant"
 
 function VariationLayer({ vs, opts }: { vs: T.PsString[], opts: T.TextOptions }) {
     return <div className="mb-2">
-        {vs.map((r, i) => <div key={i}>
-            <InlinePs opts={opts}>{r}</InlinePs>
-        </div>)}
+        <Examples opts={opts} lineHeight={0}>{vs}</Examples>
     </div>;
 }
 

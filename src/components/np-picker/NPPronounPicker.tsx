@@ -103,8 +103,7 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2nd
         ? [pSpecA[1]]
         : pSpecA;
     return <div style={{ maxWidth: "145px", padding: 0 }}>
-        {clearButton}
-        <div className="d-flex flex-row justify-content-between mb-3">
+        <div className="d-flex flex-row justify-content-between mb-2">
             {isThirdPerson(pronoun.person) ? <ButtonSelect
                 xSmall
                 options={[
@@ -133,7 +132,7 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2nd
                                 className={classNames({ "table-active": active, "text-on-gender-color": active })}
                                 style={{
                                     backgroundColor: active ? gColors[p.gender] : "inherit",
-                                    padding: "0.25rem 0",
+                                    padding: "0.15rem 0",
                                 }}
                             >
                                 <div className="my-1">
