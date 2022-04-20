@@ -177,6 +177,7 @@ function TensePicker(props: ({
                     ...props.vps,
                     verb: {
                         ...props.vps.verb,
+                        voice: "active",
                         tenseCategory: value,
                     },
                 }));
@@ -196,6 +197,8 @@ function TensePicker(props: ({
         : ("vps" in props && (props.vps.verb?.tenseCategory === "imperative"))
         ? imperativeTenseOptions
         : verbTenseOptions;
+    const showImperativeOption = ("vps" in props && props.vps.verb.voice === "active")
+        || ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
             <div className="h5">Tense:</div>
@@ -205,7 +208,7 @@ function TensePicker(props: ({
                     value={"vpsComplete" in props 
                         ? getTenseCategory(props.vpsComplete.verb.tense)
                         : props.vps.verb.tenseCategory}
-                    options={[{
+                    options={showImperativeOption ? [{
                         label: "Basic",
                         value: "basic",
                     }, {
@@ -217,6 +220,15 @@ function TensePicker(props: ({
                     }, {
                         label: "Imperative",
                         value: "imperative",
+                    }] : [{
+                        label: "Basic",
+                        value: "basic",
+                    }, {
+                        label: "Perfect",
+                        value: "perfect",
+                    }, {
+                        label: "Modal",
+                        value: "modal",
                     }]}
                     handleChange={props.mode !== "quiz" ? onTenseCategorySelect : () => null}
                 />

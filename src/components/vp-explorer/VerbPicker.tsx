@@ -28,10 +28,14 @@ function VerbPicker(props: {
     }
     function onVoiceSelect(value: "active" | "passive") {
         if (props.vps.verb && props.vps.verb.changeVoice) {
+            if (value === "passive" && props.vps.verb.tenseCategory === "imperative") {
+                return;
+            }
             if (value === "passive" && (typeof props.vps.verb.object === "object")) {
                 props.onChange({
                     ...props.vps,
                     subject: props.vps.verb.object,
+                    verb: props.vps.verb.changeVoice(value, props.vps.verb.object),
                 });
             } else {
                 props.onChange({
@@ -98,7 +102,12 @@ function VerbPicker(props: {
                 <ButtonSelect
                     small
                     value={props.vps.verb.voice}
-                    options={[{
+                    options={props.vps.verb.tenseCategory === "imperative"  
+                    ? [{
+                        label: "Active",
+                        value: "active",
+                    }]
+                    : [{
                         label: "Active",
                         value: "active",
                     }, {
