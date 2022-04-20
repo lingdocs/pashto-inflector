@@ -13,6 +13,7 @@ import {
     hasBaParticle,
     psStringFromEntry,
     getLong,
+    isImperativeBlock,
 } from "../p-text-helpers";
 import { removeAccents } from "../accent-helpers";
 import {
@@ -26,6 +27,7 @@ import {
     isPerfectTense,
 } from "../type-predicates";
 import { renderEnglishVPBase } from "./english-vp-rendering";
+import { personGender } from "../../library";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
 
@@ -157,7 +159,8 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
     },
     hasBa: boolean,
 } { 
-    const f = getTenseVerbForm(conj, vs.tense, vs.voice);
+    // TODO: handle the imperative form here
+    const f = getTenseVerbForm(conj, vs.tense, vs.voice, vs.negative);
     const block = getMatrixBlock(f, objectPerson, person);
     const perfective = isPerfective(vs.tense);
     const verbForm = getVerbFromBlock(block, person);
@@ -178,8 +181,11 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
     return { hasBa, ps: { head: undefined, rest: verbForm }};
 }
 
-function getVerbFromBlock(block: T.SingleOrLengthOpts<T.VerbBlock>, person: T.Person): T.SingleOrLengthOpts<T.PsString[]> {
-    function grabFromBlock(b: T.VerbBlock, [row, col]: [ row: number, col: number ]): T.PsString[] {
+function getVerbFromBlock(block: T.SingleOrLengthOpts<T.VerbBlock | T.ImperativeBlock>, person: T.Person): T.SingleOrLengthOpts<T.PsString[]> {
+    function grabFromBlock(b: T.VerbBlock | T.ImperativeBlock, [row, col]: [ row: number, col: number ]): T.PsString[] {
+        if (isImperativeBlock(b)) {
+            return b[personGender(person) === "masc" ? 0 : 1][col];
+        }
         return b[row][col];
     }
     const pos = getVerbBlockPosFromPerson(person);
@@ -326,7 +332,7 @@ function isFirstOrSecondPersPronoun(o: "none" | T.NPSelection | T.Person.ThirdPl
     return [0,1,2,3,6,7,8,9].includes(o.person);
 }
 
-function isPerfective(t: T.VerbTense | T.PerfectTense | T.ModalTense): boolean {
+function isPerfective(t: T.Tense): boolean {
     if (isPerfectTense(t)) return false;
     if (t === "presentVerb" || t === "imperfectiveFuture" || t === "imperfectivePast" || t === "habitualImperfectivePast") {
         return false;
@@ -337,7 +343,10 @@ function isPerfective(t: T.VerbTense | T.PerfectTense | T.ModalTense): boolean {
     if (t === "perfectiveFutureModal" || t === "subjunctiveVerbModal" || t === "perfectivePastModal" || t === "habitualPerfectivePastModal") {
         return true;
     }
-    throw new Error("tense not implemented yet");
+    if (t === "perfectiveImperative") {
+        return true;
+    }
+    return false;
 }
 
 function isMascSingAnimatePattern4(np: T.NPSelection): boolean {

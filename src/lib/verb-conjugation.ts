@@ -106,11 +106,11 @@ export function conjugateVerb(entry: T.DictionaryEntry, complement?: T.Dictionar
 }
 
 function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjugation {
-    const willUseImperative = !(
-        info.type === "dynamic compound"
-        && info.transitivity === "intransitive"
-        && info.auxVerb.p === "کېدل"
-    );
+    // const willUseImperative = !(
+    //     info.type === "dynamic compound"
+    //     && info.transitivity === "intransitive"
+    //     && info.auxVerb.p === "کېدل"
+    // );
     const auxConj = enforceObject(
         conjugateVerb(info.auxVerb, info.auxVerbComplement) as T.VerbConjugation,
         info.objComplement.person,
@@ -136,18 +136,14 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
         const ac = auxConj[aspect];
         const nonImperative = addToForm([complement, " "], ac.nonImperative);
         const future = addToForm([baParticle, " "], nonImperative);
-        const imperative = (ac.imperative && willUseImperative)
-            ? addToForm([complement, " "], ac.imperative)
-            : null;
+        const imperative = addToForm([complement, " "], ac.imperative);
         const past = addToForm([complement, " "], auxConj[aspect].past);
         const habitualPast = addToForm([baParticle, " "], past);
         const modal = makeDynamicModalContent();
         return {
             nonImperative,
             future,
-            ...imperative ? {
-                imperative,
-            } : {},
+            imperative,
             past,
             habitualPast,
             modal,
@@ -183,6 +179,7 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
         const habitualPast = addToForm([baParticle, " "], past);
         const modal = makePassiveModalSection([complement, " "], stativeAux.intransitive.imperfective.modal);
         return {
+            imperative: undefined,
             nonImperative,
             future,
             past,
@@ -317,9 +314,7 @@ function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbIn
         stativeAux[transitivity][aspect].nonImperative,
     );
     const future = addToForm([baParticle, " "], nonImperative);
-    const imperative = aux.imperative
-        ? addToForm([presentComplement, " "], aux.imperative)
-        : null;
+    const imperative = addToForm([presentComplement, " "], aux.imperative);
     const past = addToForm([info.complement, " "], aux.past);
     const habitualPast = addToForm([baParticle, " "], past);
     return {
@@ -327,9 +322,7 @@ function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbIn
         future,
         past,
         habitualPast,
-        ...imperative ? {
-            imperative,
-        } : {},
+        imperative,
         modal: info.transitivity === "transitive"
             ? makeTransitiveStativeModalContent()
             : makeJoinedModalContent(info, "imperfective"),
@@ -458,6 +451,7 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
                 noPersInfs(info.root.imperfective).long, " ",
             ], stativeAux.intransitive.imperfective.modal);
             return {
+                imperative: undefined,
                 nonImperative,
                 future,
                 past,
@@ -474,6 +468,7 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
         const auxModal = aux.modal;
         const modal = makePassiveModalSection([noPersInfs(info.root.imperfective).long, " "], auxModal);
         return {
+            imperative: undefined,
             nonImperative, // ROOT LONG + kedulStat[aspect].nonImperative
             future, // به ba + ROOT LONG + this.nonImperative
             past, // ROOT LONG + kedulStat[aspect].past
@@ -560,9 +555,7 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
     const modifyPastInAspect = (as: T.AspectContent): T.AspectContent => ({
         nonImperative: allOnePersonInflection(as.nonImperative, person),
         future: allOnePersonInflection(as.future, person),
-        ...as.imperative ? {
-            imperative: allOnePersonInflection(as.imperative, person),
-        } : {},
+        imperative: allOnePersonInflection(as.imperative, person),
         past: allOnePersonVerbForm(as.past, person),
         habitualPast: allOnePersonInflection(as.habitualPast, person),
         modal: {
@@ -586,6 +579,7 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
         pastSubjunctiveHypothetical: allOnePersonVerbForm(perf.pastSubjunctiveHypothetical, person),
     });
     const modifyPassiveAspect = (as: T.AspectContentPassive): T.AspectContentPassive => ({
+        imperative: undefined,
         nonImperative: allOnePersonVerbForm(as.nonImperative, person),
         future: allOnePersonVerbForm(as.future, person),
         past: allOnePersonVerbForm(as.past, person),

@@ -40,7 +40,7 @@ function agreementInfo(info: T.NonComboVerbInfo, displayForm: T.DisplayForm): Re
 }
 
 function VerbFormDisplay({ displayForm, textOptions, info, showingFormInfo, english, shortDefault }: {
-    displayForm: T.DisplayForm | T.VerbForm,
+    displayForm: T.DisplayForm | T.VerbForm | T.ImperativeForm,
     english?: T.EnglishBlock | string,
     textOptions: T.TextOptions,
     showingFormInfo: boolean,

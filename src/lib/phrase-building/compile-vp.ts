@@ -12,7 +12,7 @@ import {
     removeBa,
     removeDuplicates,
 } from "./vp-tools";
-import { isModalTense, isPerfectTense } from "../type-predicates";
+import { isImperativeTense, isModalTense, isPerfectTense } from "../type-predicates";
 
 type Form = T.FormVersion & { OSV?: boolean };
 export function compileVP(VP: T.VPRendered, form: Form): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
@@ -159,7 +159,9 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
             headSegment ? [headSegment, rest] : [rest],
         ];
     }
-    const nu: T.PsString = { p: "نه", f: "nú" };
+    const nu: T.PsString = isImperativeTense(V.tense)
+        ? { p: "مه", f: "mú" }
+        : { p: "نه", f: "nú" };
     if (!headSegment) {
         if ("front" in rest) {
             return [

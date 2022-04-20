@@ -2,6 +2,9 @@ import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
 import useStickyState from "../../lib/useStickyState";
 import classNames from "classnames";
+import {
+    isSecondPerson, isThirdPerson,
+} from "../../lib/phrase-building/vp-tools";
 
 const gColors = {
     masc: "LightSkyBlue",
@@ -53,15 +56,18 @@ function pickerStateToPerson(s: PickerState): T.Person {
         + (6 * s.col);
 }
 
-function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts }: {
+function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2ndPersonPicker }: {
     pronoun: T.PronounSelection,
     onChange: (p: T.PronounSelection) => void,
     asObject?: boolean,
     clearButton?: JSX.Element,
     opts: T.TextOptions,
+    is2ndPersonPicker?: boolean,
 }) {
+    if (is2ndPersonPicker && !isSecondPerson(pronoun.person)) {
+        throw new Error("can't use 2ndPerson NPProunounPicker without a pronoun");
+    }
     const [display, setDisplay] = useStickyState<"persons" | "p" | "e">("e", "prounoun-picker-display"); 
-
     const p = personToPickerState(pronoun.person);
     function handleClick(row: number, col: number) {
         const person = pickerStateToPerson({ ...p, row, col });
@@ -92,11 +98,14 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts }: {
         setDisplay(newPerson);
     }
     const prs = labels(!!asObject)[display];
-    const pSpec = "near" in prs ? prs[pronoun.distance] : prs;
+    const pSpecA = "near" in prs ? prs[pronoun.distance] : prs;
+    const pSpec = is2ndPersonPicker
+        ? [pSpecA[1]]
+        : pSpecA;
     return <div style={{ maxWidth: "145px", padding: 0 }}>
         {clearButton}
-        <div className="d-flex flex-row justify-content-around mb-3">
-            <ButtonSelect
+        <div className="d-flex flex-row justify-content-between mb-3">
+            {isThirdPerson(pronoun.person) ? <ButtonSelect
                 xSmall
                 options={[
                     { label: "Far", value: "far" },
@@ -104,7 +113,7 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts }: {
                 ]}
                 value={pronoun.distance}
                 handleChange={(g) => handlePronounTypeChange(g as "far" | "near")}
-            />
+            /> : <div>{` `}</div>}
             <button className="btn btn-sm btn-outline-secondary" onClick={handleDisplayChange}>
                 {display === "persons" ? "#" : display === "p" ? "PS" : "EN"}
             </button>
@@ -114,9 +123,13 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts }: {
                 {pSpec.map((rw, i) => (
                     <tr>
                         {rw.map((r, j) => {
-                            const active = (p.row === i && p.col === j)
+                            const active = is2ndPersonPicker
+                                ? (p.col === j)
+                                : (p.row === i && p.col === j);
                             return <td
-                                onClick={() => handleClick(i, j)}
+                                onClick={() => {
+                                    handleClick(is2ndPersonPicker ? 1 : i, j);
+                                }}
                                 className={classNames({ "table-active": active, "text-on-gender-color": active })}
                                 style={{
                                     backgroundColor: active ? gColors[p.gender] : "inherit",

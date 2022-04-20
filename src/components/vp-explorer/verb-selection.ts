@@ -53,6 +53,7 @@ export function makeVPSelectionState(
             dynAuxVerb,
             verbTense: os ? os.verb.verbTense : "presentVerb",
             perfectTense: os ? os.verb.perfectTense : "presentPerfect",
+            imperativeTense: os ? os.verb.imperativeTense : "imperfectiveImperative",
             tenseCategory: os ? os.verb.tenseCategory : "basic",
             object,
             transitivity,

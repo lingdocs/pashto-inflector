@@ -296,12 +296,16 @@ export type AspectContent = {
     // ROOT = info.root[ASPECT]
     nonImperative: VerbForm; // STEM + pres ending
     future: VerbForm; // به + this.nonImperative
-    imperative?: ImperativeForm; // STEM + imperative ending
-    // -- optional because not used for intransitive verison of kawul dynamic compounds
+    imperative: ImperativeForm; // STEM + imperative ending
     past: VerbForm; // ROOT + past ending
     habitualPast: VerbForm; // ba + past
     modal: ModalContent;
 }
+
+// ASPECT -> AspectContentPssive
+export type AspectContentPassive = Omit<AspectContent, "imperative"> & {
+    imperative: undefined,
+};
 
 export type ModalContent = {
     nonImperative: VerbForm; // ROOT + ey + kedulStat.perfective.nonImperative
@@ -309,16 +313,6 @@ export type ModalContent = {
     past: VerbForm; // ROOT + ey + kedulStat.perfective.past
     habitualPast: VerbForm; // ba + past
     hypotheticalPast: VerbForm; // ROOT + ey + shw + ey
-}
-
-// ASPECT -> AspectContentPssive
-export type AspectContentPassive = {
-    // ROOT = info.root[ASPECT]
-    nonImperative: VerbForm; // ROOT LONG + kedulStat[ASPECT].nonImperative
-    future: VerbForm; // ba + this.nonImperative
-    past: VerbForm; // ROOT LONG + kedulStat[ASPECT].past
-    habitualPast: VerbForm;
-    modal: ModalContent,
 }
 
 export type ParticipleForm = SingleOrLengthOpts<UnisexInflections> | SingleOrLengthOpts<PsString>;
@@ -531,12 +525,13 @@ export type VerbTense = "presentVerb"
     | "imperfectivePast"
     | "habitualPerfectivePast"
     | "habitualImperfectivePast";
-
-export type EquativeTense = "present" | "subjunctive" | "habitual" | "past" | "future" | "wouldBe" | "pastSubjunctive";
 export type NounNumber = "singular" | "plural";
 
+export type EquativeTense = "present" | "subjunctive" | "habitual" | "past" | "future" | "wouldBe" | "pastSubjunctive";
 export type PerfectTense = `${EquativeTense}Perfect`;
 export type ModalTense = `${VerbTense}Modal`;
+export type ImperativeTense = `${Aspect}Imperative`;
+export type Tense = EquativeTense | VerbTense | PerfectTense | ModalTense | ImperativeTense;
 
 export type VPSelection = {
     subject: NPSelection | undefined,
@@ -550,7 +545,7 @@ export type VPSelectionComplete = {
 
 export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "tenseCategory"> & {
     object: Exclude<VerbObject, undefined>,
-    tense: VerbTense | PerfectTense | ModalTense,
+    tense: VerbTense | PerfectTense | ModalTense | ImperativeTense,
 }
 
 export type VerbSelection = {
@@ -569,7 +564,8 @@ export type VerbSelection = {
     negative: boolean,
     verbTense: VerbTense,
     perfectTense: PerfectTense,
-    tenseCategory: "basic" | "modal" | "perfect",
+    imperativeTense: ImperativeTense,
+    tenseCategory: "basic" | "modal" | "perfect" | "imperative",
 };
 
 export type VerbRendered = Omit<VerbSelectionComplete, "object"> & {

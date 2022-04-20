@@ -16,7 +16,7 @@ function ChartDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptions }
         : ("transitive" in rawConjugations)
         ? rawConjugations[VS.transitivity === "grammatically transitive" ? "grammaticallyTransitive" : "transitive"]
         : rawConjugations;
-    const form = getTenseVerbForm(conjugations, getTenseFromVerbSelection(VS), VS.voice);
+    const form = getTenseVerbForm(conjugations, getTenseFromVerbSelection(VS), VS.voice, VS.negative);
     return <div className="mb-4">
         <VerbFormDisplay
             displayForm={form}

@@ -103,6 +103,7 @@ const kedulStatModal: T.ModalContent = {
 };
 
 const kawulStatOrDynImperfectivePassive: T.AspectContentPassive = {
+    imperative: undefined,
     nonImperative: [
         [[{p: "کول کېږم", f: "kawul kéGum"}], [{p: "کول کېږو", f: "kawul kéGoo"}]],
         [[{p: "کول کېږم", f: "kawul kéGum"}], [{p: "کول کېږو", f: "kawul kéGoo"}]],
@@ -1303,6 +1304,7 @@ export const kawulStat: T.VerbConjugation = {
     passive: {
         imperfective: kawulStatOrDynImperfectivePassive,
         perfective: {
+            imperative: undefined,
             nonImperative: [
                 [[{p: "وکړل شم", f: "óokRul shum"}], [{p: "وکړل شو", f: "óokRul shoo"}]],
                 [[{p: "وکړل شم", f: "óokRul shum"}], [{p: "وکړل شو", f: "óokRul shoo"}]],
@@ -1808,6 +1810,7 @@ export const kawulDyn: T.VerbConjugation = {
     passive: {
         imperfective: kawulStatOrDynImperfectivePassive,
         perfective: {
+            imperative: undefined,
             nonImperative: [
                 [[{p: "کړل شم", f: "kRul shum"}], [{p: "کړل شو", f: "kRul shoo"}]],
                 [[{p: "کړل شم", f: "kRul shum"}], [{p: "کړل شو", f: "kRul shoo"}]],

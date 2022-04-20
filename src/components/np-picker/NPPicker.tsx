@@ -8,6 +8,7 @@ import {
 } from "../../lib/np-tools";
 import { useState, useEffect } from "react";
 import * as T from "../../types";
+import { isSecondPerson } from "../../lib/phrase-building/vp-tools";
 // import { capitalizeFirstLetter } from "../../lib/text-tools";
 
 const npTypes: T.NPType[] = ["pronoun", "noun", "participle"];
@@ -19,6 +20,7 @@ function NPPicker(props: {
     asObject?: boolean,
     opts: T.TextOptions,
     cantClear?: boolean,
+    is2ndPersonPicker?: boolean,
 } & ({
     nouns: (s: string) => T.NounEntry[],
     verbs: (s: string) => T.VerbEntry[],
@@ -28,6 +30,9 @@ function NPPicker(props: {
     nouns: T.NounEntry[],
     verbs: T.VerbEntry[],
 })) {
+    if (props.is2ndPersonPicker && ((props.np?.type !== "pronoun") || !isSecondPerson(props.np.person))) {
+        throw new Error("can't use 2ndPerson NPPicker without a pronoun");
+    }
     const [npType, setNpType] = useState<T.NPType | undefined>(props.np ? props.np.type : undefined);
     useEffect(() => {
         setNpType(props.np ? props.np.type : undefined);
@@ -78,6 +83,7 @@ function NPPicker(props: {
                 pronoun={props.np}
                 onChange={props.onChange}
                 clearButton={clearButton}
+                is2ndPersonPicker={props.is2ndPersonPicker}
                 opts={props.opts}
             />
             : npType === "noun"

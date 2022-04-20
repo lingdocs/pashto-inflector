@@ -69,7 +69,6 @@ function App() {
     }, [theme])
 
     const handleVerbIndexChange = (e: any) => {
-        console.log("changing to", e.target.value);
         setVerbTs(parseInt(e.target.value));
     }
     const handleTypeSelection = (e: any) => {

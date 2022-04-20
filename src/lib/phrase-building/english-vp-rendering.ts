@@ -2,6 +2,7 @@ import * as T from "../../types";
 import { getVerbBlockPosFromPerson, parseEc } from "../misc-helpers";
 import * as grammarUnits from "../grammar-units";
 import {
+    isImperativeTense,
     isPerfectTense,
     isVerbTense,
     // isModalTense,
@@ -232,11 +233,24 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
             `$SUBJ would${n ? " not" : ""} be able to be ${v[4]}`,
         ]),
     };
+    const imperativeBuilders: Record<
+        T.ImperativeTense,
+        (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => string[]
+    > = {
+        imperfectiveImperative: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
+            `${n ? "don't " : ""}${ec[0]}`,
+        ]),
+        perfectiveImperative: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
+            `${n ? "don't " : ""}${ec[0]}`,
+        ]),
+    };
     const base = (
         isPerfectTense(vs.tense)
             ? (vs.voice === "active" ? perfectBuilders : passivePerfectBuilders)[vs.tense]
             : isVerbTense(vs.tense)
             ? (vs.voice === "active" ? basicBuilders : passiveBasicBuilders)[vs.tense]
+            : isImperativeTense(vs.tense)
+            ? imperativeBuilders[vs.tense]
             : (vs.voice === "active" ? modalBuilders : passiveModalBuilders)[vs.tense])(subjectPerson, ec, vs.negative);
     return base.map(b => `${b}${typeof object === "object" ? " $OBJ" : ""}${ep ? ` ${ep}` : ""}`);
 }

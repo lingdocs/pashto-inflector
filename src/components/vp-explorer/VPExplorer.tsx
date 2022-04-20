@@ -17,6 +17,10 @@ import VPExplorerQuiz from "./VPExplorerQuiz";
 import { switchSubjObj } from "../../lib/phrase-building/vp-tools";
 import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationModal";
 
+// TO FINISH IMPERATIVE STUFF!!
+// TODO: English Builders for imperatives
+// TODO: Quiz with imperatives
+
 // TODO: make answerFeedback emojis appear at random translate angles a little bit
 // add energy drinks? 
 
@@ -48,7 +52,7 @@ export function VPExplorer(props: {
 })) {
     const [vps, setVps] = useStickyState<T.VPSelection>(
         savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState2",    
+        "vpsState5",    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
         savedMode => {
@@ -129,10 +133,16 @@ export function VPExplorer(props: {
                     { label: "Phrases", value: "phrases" },
                     { label: "Quiz", value: "quiz" },
                 ]}
-                handleChange={setMode}
+                handleChange={(x) => {
+                    // TODO: remove this and implement the imperative in quiz
+                    // if (x === "quiz") {
+
+                    // }
+                    setMode(x);
+                }}
             />
         </div>
-        {(vps.verb && (typeof vps.verb.object === "object") && (vps.verb.isCompound !== "dynamic") && (mode === "phrases")) &&
+        {(vps.verb && (typeof vps.verb.object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
             <div className="text-center mt-4">
                 <button onClick={handleSubjObjSwap} className="btn btn-sm btn-light">
                     <i className="fas fa-exchange-alt mr-2" /> subj/obj
@@ -154,6 +164,7 @@ export function VPExplorer(props: {
                             nouns: props.nouns,
                             verbs: props.verbs,
                         }}
+                        is2ndPersonPicker={vps.verb.tenseCategory === "imperative"}
                         np={vps.subject}
                         counterPart={vps.verb ? vps.verb.object : undefined}
                         onChange={handleSubjectChange}

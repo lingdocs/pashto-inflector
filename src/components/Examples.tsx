@@ -14,7 +14,6 @@ type PsStringWSub = T.PsString & { sub?: any };
 
 function EnglishContent({ children }: { children: (string | JSX.Element)[] | (string | JSX.Element) }) {
     if (Array.isArray(children)) {
-        console.log(children);
         return <>
             {children.map((x) => <EnglishContent>{x}</EnglishContent>)}
         </>

@@ -16,6 +16,7 @@ import Keyframes from "../Keyframes";
 import energyDrink from "./energy-drink.jpg";
 import { flattenLengths } from "../../lib/phrase-building/compile-vp";
 import { concatPsString } from "../../lib/p-text-helpers";
+import { isImperativeTense } from "../../lib/type-predicates";
 
 const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
 
@@ -384,6 +385,7 @@ function completeVPs(vps: T.VPSelection): T.VPSelectionComplete {
                 obj: oldObj,
             }
     );
+    const t = getTenseFromVerbSelection(vps.verb);
     const verb: T.VerbSelectionComplete = {
         ...vps.verb,
         object: (
@@ -397,7 +399,7 @@ function completeVPs(vps: T.VPSelection): T.VPSelectionComplete {
                 person: obj,
             }
             : vps.verb.object,
-        tense: getTenseFromVerbSelection(vps.verb),
+        tense: isImperativeTense(t) ? "presentVerb" : t,
     };
     return {
         ...vps,
