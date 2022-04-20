@@ -543,7 +543,7 @@ export type VPSelectionComplete = {
     verb: VerbSelectionComplete,
 };
 
-export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "tenseCategory"> & {
+export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "imperfectiveTense" | "tenseCategory"> & {
     object: Exclude<VerbObject, undefined>,
     tense: VerbTense | PerfectTense | ModalTense | ImperativeTense,
 }

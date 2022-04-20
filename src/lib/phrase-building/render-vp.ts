@@ -162,7 +162,9 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
     // TODO: handle the imperative form here
     const f = getTenseVerbForm(conj, vs.tense, vs.voice, vs.negative);
     const block = getMatrixBlock(f, objectPerson, person);
-    const perfective = isPerfective(vs.tense);
+    const perfective = (vs.tense === "perfectiveImperative" && vs.negative)
+        ? false
+        : isPerfective(vs.tense);
     const verbForm = getVerbFromBlock(block, person);
     const hasBa = hasBaParticle(getLong(verbForm)[0]);
     if (perfective) {
