@@ -1,5 +1,6 @@
 import ButtonSelect from "../ButtonSelect";
 import * as T from "../../types";
+import { roleIcon } from "./VPExplorerExplanationModal";
 
 const options = [
     {
@@ -7,15 +8,15 @@ const options = [
         value: "full",
     },
     {
-        label: "🚫 King",
+        label: <div>Kill {roleIcon.king}</div>,
         value: "noKing",
     },
     {
-        label: "👶 Servant",
+        label: <div>Shrink {roleIcon.servant}</div>,
         value: "shrinkServant",
     },
     {
-        label: "👶 🚫 Both",
+        label: <div>Both</div>,
         value: "shortest",
     },
 ];
