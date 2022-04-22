@@ -26,7 +26,7 @@ import * as T from "./types";
 import { isNounEntry } from "./lib/type-predicates";
 import defualtTextOptions from "./lib/default-text-options";
 import PhraseBuilder from "./components/vp-explorer/VPExplorer";
-import { useStickyState } from "./library";
+import useStickyState from "./lib/useStickyState";
 type VerbType = "simple" | "stative compound" | "dynamic compound";
 const verbTypes: VerbType[] = [
     "simple",

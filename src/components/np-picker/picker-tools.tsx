@@ -23,11 +23,6 @@ import {
     translatePhonetics,
 } from "../../lib/translate-phonetics";
 
-export const zIndexProps = {
-    menuPortalTarget: document.body, 
-    styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
-};
-
 export function makeVerbSelectOption(e: T.VerbEntry, opts: T.TextOptions): { value: string, label: string | JSX.Element } {
     const engV = getEnglishVerb(e.entry);
     const eng = engV || truncateEnglish(e.entry.e);

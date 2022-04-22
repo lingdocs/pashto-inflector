@@ -27,7 +27,7 @@ import {
     isPerfectTense,
 } from "../type-predicates";
 import { renderEnglishVPBase } from "./english-vp-rendering";
-import { personGender } from "../../library";
+import { personGender } from "../../lib/misc-helpers";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
 

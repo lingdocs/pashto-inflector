@@ -1,67 +1,83 @@
 import Select from "react-select";
-import {
-    zIndexProps,
-} from "../np-picker/picker-tools";
 import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
 import { isImperativeTense, isModalTense, isPerfectTense, isVerbTense } from "../../lib/type-predicates";
 import { ensure2ndPersSubjPronounAndNoConflict } from "../../lib/phrase-building/vp-tools";
+import useStickyState from "../../lib/useStickyState";
+import { customStyles } from "../EntrySelect";
 
-const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense }[] = [{
+const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense, formula: string }[] = [{
     label: <div><i className="fas fa-video mr-2" />present</div>,
     value: "presentVerb",
+    formula: "imperfective stem + present verb ending",
 }, {
     label: <div><i className="fas fa-camera mr-2" />subjunctive</div>,
     value: "subjunctiveVerb",
+    formula: "perfective stem + present verb ending",
 }, {
     label: <div><i className="fas fa-video mr-2" />imperfective future</div>,
     value: "imperfectiveFuture",
+    formula: "ba + present",
 }, {
     label: <div><i className="fas fa-camera mr-2" />perfective future</div>,
     value: "perfectiveFuture",
+    formula: "ba + subjunctive",
 }, {
     label: <div><i className="fas fa-video mr-2" />continuous past</div>,
     value: "imperfectivePast",
+    formula: "imperfective root + past verb ending",
 }, {
     label: <div><i className="fas fa-camera mr-2" />simple past</div>,
     value: "perfectivePast",
+    formula: "perfective root + past verb ending",
 }, {
     label: <div><i className="fas fa-video mr-2" />habitual continual past</div>,
     value: "habitualImperfectivePast",
+    formula: "ba + contiunous past",
 }, {
     label: <div><i className="fas fa-camera mr-2" />habitual simple past</div>,
     value: "habitualPerfectivePast",
+    formula: "ba + simple past",
 }];
 
-const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense }[] = [{
+const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense, formula: string }[] = [{
     label: "Present Perfect",
     value: "presentPerfect",
+    formula: "past participle + present equative",
 }, {
     label: "Habitual Perfect",
     value: "habitualPerfect",
+    formula: "past participle + habitual equative",
 }, {
     label: "Subjunctive Perfect",
     value: "subjunctivePerfect",
+    formula: "past participle + subjunctive equative",
 }, {
     label: "Future Perfect",
     value: "futurePerfect",
+    formula: "past participle + future equative",
 }, {
     label: "Past Perfect",
     value: "pastPerfect",
+    formula: "past participle + past equative",
 }, {
     label: `"Would Be" Perfect`,
     value: "wouldBePerfect",
+    formula: `past participle + "would be" equative`,
 }, {
     label: "Past Subjunctive Perfect",
     value: "pastSubjunctivePerfect",
+    formula: "past participle + past subjunctive equative",
 }];
 
-const imperativeTenseOptions: { label: string | JSX.Element, value: T.ImperativeTense }[] = [{
+const imperativeTenseOptions: { label: string | JSX.Element, value: T.ImperativeTense, formula: string }[] = [{
     label: <div><i className="fas fa-video mr-2" />imperfective imperative</div>,
     value: "imperfectiveImperative",
+    formula: "imperfective stem + imperative ending",
 }, {
     label: <div><i className="fas fa-camera mr-2" />perfective imperative</div>,
     value: "perfectiveImperative",
+    formula: "perfective stem + imperative ending",
 }];
 
 export function getRandomTense(o?: T.PerfectTense | T.VerbTense | T.ModalTense | T.ImperativeTense): T.PerfectTense | T.VerbTense | T.ModalTense | T.ImperativeTense {
@@ -92,6 +108,7 @@ function TensePicker(props: ({
     onChange: (p: T.VPSelection) => void,
     mode: "charts" | "phrases" | "quiz",
 }) {
+    const [showFormula, setShowFormula] = useStickyState<boolean>(false, "showFormula");
     function onTenseSelect(o: { value: T.VerbTense | T.PerfectTense | T.ImperativeTense } | null) {
         if ("vpsComplete" in props) return;
         const value = o?.value ? o.value : undefined;
@@ -199,9 +216,15 @@ function TensePicker(props: ({
         : verbTenseOptions;
     const showImperativeOption = ("vps" in props && props.vps.verb.voice === "active")
         || ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
+    const canShowFormula = "vps" in props && props.vps.verb.tenseCategory !== "modal";
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
-            <div className="h5">Tense:</div>
+            <div className="d-flex flex-row justify-content-between align-items-center">
+                <div className="h5">Tense:</div>
+                {canShowFormula && <div className="clickable mb-2 small" onClick={() => setShowFormula(x => !x)}>
+                    🧪 {!showFormula ? "Show" : "Hide"} Formula
+                </div>}
+            </div>
             {("vpsComplete" in props || props.vps.verb) && <div className="mb-2">
                 <ButtonSelect
                     small
@@ -237,22 +260,25 @@ function TensePicker(props: ({
                 ? <div style={{ fontSize: "larger" }} className="mb-3">
                     {[...verbTenseOptions, ...perfectTenseOptions, ...imperativeTenseOptions].find(o => o.value === props.vpsComplete.verb.tense)?.label}
                 </div>
-            : <Select
-                isSearchable={false}
-                // for some reason can't use tOptions with find here;
-                value={props.vps.verb && ([...verbTenseOptions, ...perfectTenseOptions, ...imperativeTenseOptions].find(o => o.value === props.vps.verb[
-                    props.vps.verb.tenseCategory === "perfect"
-                        ? "perfectTense"
-                        : props.vps.verb.tenseCategory === "imperative"
-                        ? "imperativeTense"
-                        : "verbTense"
-                ]))}
-                onChange={onTenseSelect}
-                className="mb-2"
-                options={tOptions}
-                {...zIndexProps}
-            />}
-            {"vps" in props && props.vps.verb && (props.mode !== "quiz") && <div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
+            : <>
+                <Select
+                    isSearchable={false}
+                    // for some reason can't use tOptions with find here;
+                    value={props.vps.verb && ([...verbTenseOptions, ...perfectTenseOptions, ...imperativeTenseOptions].find(o => o.value === props.vps.verb[
+                        props.vps.verb.tenseCategory === "perfect"
+                            ? "perfectTense"
+                            : props.vps.verb.tenseCategory === "imperative"
+                            ? "imperativeTense"
+                            : "verbTense"
+                    ]))}
+                    // @ts-ignore - gets messed up when using customStyles
+                    onChange={onTenseSelect}
+                    className="mb-2"
+                    options={tOptions}
+                    styles={customStyles}
+                />
+            </>}
+            {"vps" in props && props.vps.verb && (props.mode !== "quiz") && <div className="d-flex flex-row justify-content-between align-items-center mt-2 mb-1" style={{ width: "100%" }}>
                 <div className="btn btn-light clickable" onClick={moveTense("back")}>
                     <i className="fas fa-chevron-left" />
                 </div>
@@ -272,6 +298,23 @@ function TensePicker(props: ({
                     <i className="fas fa-chevron-right" />
                 </div>
             </div>}
+            {(canShowFormula && "vps" in props && showFormula && props.vps.verb.tenseCategory !== "modal") && (() => {
+                // TODO: Be able to show modal formulas too
+                const curr = (props.vps.verb.tenseCategory === "imperative" && props.vps.verb.negative)
+                    ? imperativeTenseOptions.find(x => x.value === "imperfectiveImperative")
+                    : [...verbTenseOptions, ...perfectTenseOptions, ...imperativeTenseOptions].find(o => o.value === props.vps.verb[
+                        props.vps.verb.tenseCategory === "perfect"
+                            ? "perfectTense"
+                            : props.vps.verb.tenseCategory === "imperative"
+                            ? "imperativeTense"
+                            : "verbTense"
+                    ]);
+                if (curr && "formula" in curr) {
+                    return <div style={{ width: "250px", overflowY: "auto" }}>
+                        <samp>{curr.formula}</samp>
+                    </div>
+                }
+            })()}
         </div>
     </div>;
 }

@@ -7,7 +7,7 @@ import {
     makeVerbSelectOption,
 } from "./np-picker/picker-tools";
 
-const customStyles: StylesConfig = {
+export const customStyles: StylesConfig = {
     menuPortal: (base) => ({
         ...base,
         zIndex: 99999,
@@ -19,17 +19,12 @@ const customStyles: StylesConfig = {
     option: (provided, state) => ({
         ...provided,
         padding: "10px 5px",
+        color: "#121418",
     }),
     input: (base) => ({
         ...base,
         padding: 0,
     }),
-    singleValue: (provided, state) => {
-        const opacity = state.isDisabled ? 0.5 : 1;
-        const transition = 'opacity 300ms';
-
-        return { ...provided, opacity, transition };
-    }
 }
 
 function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
@@ -108,7 +103,7 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
             styles={customStyles}
             isSearchable={true}
             value={value}
-            // @ts-ignore
+            // @ts-ignore - gets messed up when using customStyles
             onChange={onChange}
             className="mb-2"
             options={options}

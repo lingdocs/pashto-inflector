@@ -5,7 +5,7 @@ import {
     isPastTense,
     completeVPSelection,
 } from "../../lib/phrase-building/vp-tools";
-import { useStickyState } from "../../library";
+import useStickyState from "../../lib/useStickyState";
 import Examples from "../Examples";
 
 function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
