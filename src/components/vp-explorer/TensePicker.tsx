@@ -6,38 +6,46 @@ import { ensure2ndPersSubjPronounAndNoConflict } from "../../lib/phrase-building
 import useStickyState from "../../lib/useStickyState";
 import { customStyles } from "../EntrySelect";
 
-const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense, formula: string }[] = [{
+const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense, formula: string, modalFormula: string, }[] = [{
     label: <div><i className="fas fa-video mr-2" />present</div>,
     value: "presentVerb",
     formula: "imperfective stem + present verb ending",
+    modalFormula: `imperfective root + tail + kedul "to become" subjunctive`,
 }, {
     label: <div><i className="fas fa-camera mr-2" />subjunctive</div>,
     value: "subjunctiveVerb",
     formula: "perfective stem + present verb ending",
+    modalFormula: `perfective root + tail + kedul "to become" subjunctive`,
 }, {
     label: <div><i className="fas fa-video mr-2" />imperfective future</div>,
     value: "imperfectiveFuture",
     formula: "ba + present",
+    modalFormula: `ba + present modal`,
 }, {
     label: <div><i className="fas fa-camera mr-2" />perfective future</div>,
     value: "perfectiveFuture",
     formula: "ba + subjunctive",
+    modalFormula: `ba + subjunctive modal`,
 }, {
     label: <div><i className="fas fa-video mr-2" />continuous past</div>,
     value: "imperfectivePast",
     formula: "imperfective root + past verb ending",
+    modalFormula: `imperfective root + tail + kedul "to become" simple past`,
 }, {
     label: <div><i className="fas fa-camera mr-2" />simple past</div>,
     value: "perfectivePast",
     formula: "perfective root + past verb ending",
+    modalFormula: `perfective root + tail + kedul "to become" simple past`,
 }, {
     label: <div><i className="fas fa-video mr-2" />habitual continual past</div>,
     value: "habitualImperfectivePast",
     formula: "ba + contiunous past",
+    modalFormula: `ba + imperfective past modal`,
 }, {
     label: <div><i className="fas fa-camera mr-2" />habitual simple past</div>,
     value: "habitualPerfectivePast",
     formula: "ba + simple past",
+    modalFormula: `ba + perfective past modal`,
 }];
 
 const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense, formula: string }[] = [{
@@ -216,12 +224,11 @@ function TensePicker(props: ({
         : verbTenseOptions;
     const showImperativeOption = ("vps" in props && props.vps.verb.voice === "active")
         || ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
-    const canShowFormula = "vps" in props && props.vps.verb.tenseCategory !== "modal";
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
             <div className="d-flex flex-row justify-content-between align-items-center">
                 <div className="h5">Tense:</div>
-                {canShowFormula && <div className="clickable mb-2 small" onClick={() => setShowFormula(x => !x)}>
+                {"vps" in props && <div className="clickable mb-2 small" onClick={() => setShowFormula(x => !x)}>
                     🧪 {!showFormula ? "Show" : "Hide"} Formula
                 </div>}
             </div>
@@ -298,7 +305,7 @@ function TensePicker(props: ({
                     <i className="fas fa-chevron-right" />
                 </div>
             </div>}
-            {(canShowFormula && "vps" in props && showFormula && props.vps.verb.tenseCategory !== "modal") && (() => {
+            {("vps" in props && showFormula) && (() => {
                 // TODO: Be able to show modal formulas too
                 const curr = (props.vps.verb.tenseCategory === "imperative" && props.vps.verb.negative)
                     ? imperativeTenseOptions.find(x => x.value === "imperfectiveImperative")
@@ -309,9 +316,14 @@ function TensePicker(props: ({
                             ? "imperativeTense"
                             : "verbTense"
                     ]);
+                const formula = !curr
+                    ? ""
+                    : ("modalFormula" in curr && props.vps.verb.tenseCategory === "modal")
+                    ? curr.modalFormula
+                    : curr.formula;
                 if (curr && "formula" in curr) {
-                    return <div style={{ width: "250px", overflowY: "auto" }}>
-                        <samp>{curr.formula}</samp>
+                    return <div className="mb-2" style={{ width: "250px", overflowY: "auto" }}>
+                        <samp>{formula}</samp>
                     </div>
                 }
             })()}
