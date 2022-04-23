@@ -40,12 +40,12 @@ const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense, formu
     label: <div><i className="fas fa-video mr-2" />habitual continual past</div>,
     value: "habitualImperfectivePast",
     formula: "ba + contiunous past",
-    modalFormula: `ba + imperfective past modal`,
+    modalFormula: `ba + simple past modal`,
 }, {
     label: <div><i className="fas fa-camera mr-2" />habitual simple past</div>,
     value: "habitualPerfectivePast",
     formula: "ba + simple past",
-    modalFormula: `ba + perfective past modal`,
+    modalFormula: `ba + continuous past modal`,
 }];
 
 const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense, formula: string }[] = [{
