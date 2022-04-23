@@ -18,7 +18,7 @@ function NPPicker(props: {
     onChange: (nps: T.NPSelection | undefined) => void,
     np: T.NPSelection | undefined,
     counterPart: T.NPSelection | T.VerbObject | undefined,
-    asObject?: boolean,
+    role: "subject" | "object" | "ergative",
     opts: T.TextOptions,
     cantClear?: boolean,
     is2ndPersonPicker?: boolean,
@@ -90,7 +90,7 @@ function NPPicker(props: {
         </div>}
         {(npType === "pronoun" && props.np?.type === "pronoun")
             ? <PronounPicker
-                asObject={props.asObject}
+                role={props.role}
                 pronoun={props.np}
                 onChange={props.onChange}
                 is2ndPersonPicker={props.is2ndPersonPicker}

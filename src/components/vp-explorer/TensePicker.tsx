@@ -224,11 +224,12 @@ function TensePicker(props: ({
         : verbTenseOptions;
     const showImperativeOption = ("vps" in props && props.vps.verb.voice === "active")
         || ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
+    const canHaveFormula = "vps" in props && props.vps.verb.voice === "active";
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
             <div className="d-flex flex-row justify-content-between align-items-center">
                 <div className="h5">Tense:</div>
-                {"vps" in props && <div className="clickable mb-2 small" onClick={() => setShowFormula(x => !x)}>
+                {canHaveFormula && <div className="clickable mb-2 small" onClick={() => setShowFormula(x => !x)}>
                     🧪 {!showFormula ? "Show" : "Hide"} Formula
                 </div>}
             </div>
@@ -305,7 +306,7 @@ function TensePicker(props: ({
                     <i className="fas fa-chevron-right" />
                 </div>
             </div>}
-            {("vps" in props && showFormula) && (() => {
+            {(canHaveFormula && showFormula) && (() => {
                 // TODO: Be able to show modal formulas too
                 const curr = (props.vps.verb.tenseCategory === "imperative" && props.vps.verb.negative)
                     ? imperativeTenseOptions.find(x => x.value === "imperfectiveImperative")

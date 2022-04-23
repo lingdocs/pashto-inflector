@@ -63,8 +63,9 @@ export function VPExplorer(props: {
         "verbExplorerMode",
     );
     const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
+    const isPast = isPastTense(vps.verb.tenseCategory === "perfect" ? vps.verb.perfectTense : vps.verb.verbTense);
     const roles = getKingAndServant(
-        isPastTense(vps.verb.tenseCategory === "perfect" ? vps.verb.perfectTense : vps.verb.verbTense),
+        isPast,
         vps.verb.transitivity !== "intransitive",
     );
     useEffect(() => {
@@ -158,6 +159,10 @@ export function VPExplorer(props: {
                             nouns: props.nouns,
                             verbs: props.verbs,
                         }}
+                        role={(isPast && vps.verb.transitivity !== "intransitive")
+                            ? "ergative"
+                            : "subject"
+                        }
                         is2ndPersonPicker={vps.verb.tenseCategory === "imperative"}
                         np={vps.subject}
                         counterPart={vps.verb ? vps.verb.object : undefined}
@@ -181,7 +186,7 @@ export function VPExplorer(props: {
                                 nouns: props.nouns,
                                 verbs: props.verbs,
                             }}
-                            asObject
+                            role="object"
                             np={vps.verb.object}
                             counterPart={vps.subject}
                             onChange={handleObjectChange}

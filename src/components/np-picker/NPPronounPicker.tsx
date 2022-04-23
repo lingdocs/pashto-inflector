@@ -3,7 +3,7 @@ import ButtonSelect from "../ButtonSelect";
 import useStickyState from "../../lib/useStickyState";
 import classNames from "classnames";
 import {
-    isSecondPerson, isThirdPerson,
+    isSecondPerson,
 } from "../../lib/phrase-building/vp-tools";
 
 const gColors = {
@@ -11,13 +11,14 @@ const gColors = {
     fem: "pink",
 };
 
-const labels = (asObject: boolean) => ({
-    persons: [
-        ["1st", "1st pl."],
-        ["2nd", "2nd pl."],
-        ["3rd", "3rd pl."],
-    ],
-    e: asObject ? [
+// TODO: better logic on this
+const labels = (role: "subject" | "object" | "ergative") => ({
+    // persons: [
+    //     ["1st", "1st pl."],
+    //     ["2nd", "2nd pl."],
+    //     ["3rd", "3rd pl."],
+    // ],
+    e: role === "object" ? [
         ["me", "us"],
         ["you", "you pl."],
         [{ masc: "him/it", fem: "her/it"}, "them"],
@@ -26,7 +27,7 @@ const labels = (asObject: boolean) => ({
         ["You", "You pl."],
         [{ masc: "He/It", fem: "She/It"}, "They"],
     ],
-    p: {
+    p: role === "subject" ? {
         far: [
             ["زه", "مونږ"],
             ["ته", "تاسو"],
@@ -36,6 +37,28 @@ const labels = (asObject: boolean) => ({
             ["زه", "مونږ"],
             ["ته", "تاسو"],
             [{ masc: "دی", fem: "دا" }, "دوي"],
+        ],
+    } : role === "object" ? {
+        far: [
+            ["زه", "مونږ"],
+            ["ته", "تاسو"],
+            [{ masc: "هغهٔ", fem: "هغې" }, "هغوي"],
+        ],
+        near: [
+            ["زه", "مونږ"],
+            ["ته", "تاسو"],
+            [{ masc: "دهٔ", fem: "دې" }, "دوي"],
+        ],
+    } : {
+        far: [
+            ["ما", "مونږ"],
+            ["تا", "تاسو"],
+            [{ masc: "هغهٔ", fem: "هغې" }, "هغوي"],
+        ],
+        near: [
+            ["ما", "مونږ"],
+            ["تا", "تاسو"],
+            [{ masc: "دهٔ", fem: "دې" }, "دوي"],
         ],
     },
 });
@@ -56,10 +79,10 @@ function pickerStateToPerson(s: PickerState): T.Person {
         + (6 * s.col);
 }
 
-function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2ndPersonPicker }: {
+function NPPronounPicker({ onChange, pronoun, role, clearButton, opts, is2ndPersonPicker }: {
     pronoun: T.PronounSelection,
     onChange: (p: T.PronounSelection) => void,
-    asObject?: boolean,
+    role: "object" | "subject" | "ergative",
     clearButton?: JSX.Element,
     opts: T.TextOptions,
     is2ndPersonPicker?: boolean,
@@ -67,7 +90,7 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2nd
     if (is2ndPersonPicker && !isSecondPerson(pronoun.person)) {
         throw new Error("can't use 2ndPerson NPProunounPicker without a pronoun");
     }
-    const [display, setDisplay] = useStickyState<"persons" | "p" | "e">("e", "prounoun-picker-display"); 
+    const [display, setDisplay] = useStickyState<"p" | "e">("e", "prounoun-picker-display2"); 
     const p = personToPickerState(pronoun.person);
     function handleClick(row: number, col: number) {
         const person = pickerStateToPerson({ ...p, row, col });
@@ -90,21 +113,19 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2nd
         });
     }
     function handleDisplayChange() {
-        const newPerson = display === "persons"
-            ? "p"
-            : display === "p"
+        const newPerson = display === "p"
             ? "e"
-            : "persons";
+            : "p";
         setDisplay(newPerson);
     }
-    const prs = labels(!!asObject)[display];
+    const prs = labels(role)[display];
     const pSpecA = "near" in prs ? prs[pronoun.distance] : prs;
     const pSpec = is2ndPersonPicker
         ? [pSpecA[1]]
         : pSpecA;
     return <div style={{ maxWidth: "145px", padding: 0 }}>
         <div className="d-flex flex-row justify-content-between mb-2">
-            {isThirdPerson(pronoun.person) ? <ButtonSelect
+            <ButtonSelect
                 xSmall
                 options={[
                     { label: "Far", value: "far" },
@@ -112,9 +133,9 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2nd
                 ]}
                 value={pronoun.distance}
                 handleChange={(g) => handlePronounTypeChange(g as "far" | "near")}
-            /> : <div>{` `}</div>}
+            />
             <button className="btn btn-sm btn-outline-secondary" onClick={handleDisplayChange}>
-                {display === "persons" ? "#" : display === "p" ? "PS" : "EN"}
+                {display === "p" ? "PS" : display === "e" ? "PS" : "EN"}
             </button>
         </div>
         <table className="table table-bordered table-sm" style={{ textAlign: "center", minWidth: "100px", tableLayout: "fixed" }}>
@@ -125,6 +146,7 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2nd
                             const active = is2ndPersonPicker
                                 ? (p.col === j)
                                 : (p.row === i && p.col === j);
+                            const content = typeof r === "string" ? r : r[p.gender];
                             return <td
                                 onClick={() => {
                                     handleClick(is2ndPersonPicker ? 1 : i, j);
@@ -136,7 +158,7 @@ function NPPronounPicker({ onChange, pronoun, asObject, clearButton, opts, is2nd
                                 }}
                             >
                                 <div className="my-1">
-                                    {typeof r === "string" ? r : r[p.gender]}
+                                    {content}
                                 </div>
                             </td>;
                         })}
