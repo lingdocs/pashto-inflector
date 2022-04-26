@@ -113,6 +113,7 @@ import {
     countSyllables,
 } from "./lib/accent-helpers";
 import NPPicker from "./components/np-picker/NPPicker";
+import EPExplorer from "./components/ep-explorer/EPExplorer";
 import shuffleArray from "./lib/shuffle-array";
 import defaultTextOptions from "./lib/default-text-options";
 import * as grammarUnits from "./lib/grammar-units";
@@ -178,6 +179,7 @@ export {
     readDictionaryInfo,
     writeDictionaryInfo,
     // COMPONENTS
+    EPExplorer,
     VPExplorer,
     ConjugationViewer, // TODO: Deprecated - remove
     Examples,

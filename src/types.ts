@@ -496,13 +496,6 @@ export type NonInflecting<T> = T & { __brand3: "non-inflecting" };
 
 export type Entry = NounEntry | AdjectiveEntry | AdverbEntry | VerbEntry;
 
-export type Words = {
-    nouns: NounEntry[],
-    adjectives: AdjectiveEntry[],
-    verbs: VerbEntry[],
-    adverbs: AdverbEntry[],
-}
-
 // TODO: make this Rendered<VPSelectionComplete> with recursive Rendered<>
 export type VPRendered = {
     type: "VPRendered",
