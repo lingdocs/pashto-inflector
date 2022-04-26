@@ -14,7 +14,7 @@ import { isSecondPerson } from "../../lib/phrase-building/vp-tools";
 const npTypes: T.NPType[] = ["pronoun", "noun", "participle"];
 
 function NPPicker(props: {
-    heading?: JSX.Element,
+    heading?: JSX.Element | string,
     onChange: (nps: T.NPSelection | undefined) => void,
     np: T.NPSelection | undefined,
     counterPart: T.NPSelection | T.VerbObject | undefined,
@@ -22,15 +22,8 @@ function NPPicker(props: {
     opts: T.TextOptions,
     cantClear?: boolean,
     is2ndPersonPicker?: boolean,
-} & ({
-    nouns: (s: string) => T.NounEntry[],
-    verbs: (s: string) => T.VerbEntry[],
-    getNounByTs: (ts: number) => T.NounEntry | undefined,
-    getVerbByTs: (ts: number) => T.VerbEntry | undefined,
-} | {
-    nouns: T.NounEntry[],
-    verbs: T.VerbEntry[],
-})) {
+    entryFeeder: T.EntryFeeder,
+}) {
     if (props.is2ndPersonPicker && ((props.np?.type !== "pronoun") || !isSecondPerson(props.np.person))) {
         throw new Error("can't use 2ndPerson NPPicker without a pronoun");
     }
@@ -66,7 +59,9 @@ function NPPicker(props: {
         <div className="d-flex flex-row justify-content-between">
             <div></div>
             <div>
-                {props.heading}
+                {typeof props.heading === "string"
+                    ? <div className="h5 text-center">{props.heading}</div>
+                    : props.heading}
             </div>
             <div>
                 {npType && clearButton}
@@ -77,7 +72,7 @@ function NPPicker(props: {
             <div className="h6 mr-3">
                 Choose NP
             </div>
-            {npTypes.map((npt) => <div className="mb-2">
+            {npTypes.map((npt) => <div key={npt} className="mb-2">
                 <button
                     key={npt}
                     type="button"
@@ -98,24 +93,14 @@ function NPPicker(props: {
             />
             : npType === "noun"
             ? <NounPicker
-                {..."getNounByTs" in props ? {
-                    nouns: props.nouns,
-                    getNounByTs: props.getNounByTs,
-                } : {
-                    nouns: props.nouns,
-                }}
+                entryFeeder={props.entryFeeder.nouns}
                 noun={(props.np && props.np.type === "noun") ? props.np : undefined}
                 onChange={props.onChange}
                 opts={props.opts}
             />
             : npType === "participle"
             ? <ParticiplePicker
-                {..."getVerbByTs" in props ? {
-                    verbs: props.verbs,
-                    getVerbByTs: props.getVerbByTs,
-                } : {
-                    verbs: props.verbs,
-                }}
+                entryFeeder={props.entryFeeder.verbs}
                 participle={(props.np && props.np.type === "participle") ? props.np : undefined}
                 onChange={props.onChange}
                 opts={props.opts}

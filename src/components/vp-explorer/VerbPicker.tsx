@@ -9,8 +9,8 @@ import CompoundDisplay from "./CompoundDisplay";
 // TODO: dark on past tense selecitons
 
 function VerbPicker(props: {
-    vps: T.VPSelection,
-    onChange: (p: T.VPSelection) => void,
+    vps: T.VPSelectionState,
+    onChange: (p: T.VPSelectionState) => void,
     opts: T.TextOptions,
     handleLinkClick: ((ts: number) => void) | "none",
 }) {

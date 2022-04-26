@@ -126,6 +126,24 @@ const adjectives: Array<{
             },
         },
     },
+    // regular adjective ending in a consonant with an accent already
+    {
+        in: {"ts":1527818704,"i":352,"p":"ارت","f":"arát","g":"arat","e":"wide, spacious, extensive","c":"adj."},
+        out: {
+            inflections: {
+                masc: [
+                    [{p: "ارت", f: "arát"}],
+                    [{p: "ارت", f: "arát"}],
+                    [{p: "ارتو", f: "aráto"}],
+                ],
+                fem: [
+                    [{p: "ارته", f: "aráta"}],
+                    [{p: "ارتې", f: "aráte"}],
+                    [{p: "ارتو", f: "aráto"}],
+                ],
+            },
+        },
+    },
     {
         in: {
             ts: 1527812862,

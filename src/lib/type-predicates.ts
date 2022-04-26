@@ -14,12 +14,12 @@ export function isAdjectiveEntry(e: T.Entry | T.DictionaryEntry): e is T.Adjecti
     return !!e.c?.includes("adj.") && !isNounEntry(e);
 }
 
-export function isAdverbEntry(e: T.Entry): e is T.AdverbEntry {
+export function isAdverbEntry(e: T.Entry | T.DictionaryEntry): e is T.AdverbEntry {
     if ("entry" in e) return false;
     return !!e.c?.includes("adv.");
 }
 
-export function isLocativeAdverbEntry(e: T.Entry): e is T.LocativeAdverbEntry {
+export function isLocativeAdverbEntry(e: T.Entry | T.DictionaryEntry): e is T.LocativeAdverbEntry {
     return isAdverbEntry(e) && e.c.includes("loc. adv.");
 }
 

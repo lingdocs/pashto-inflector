@@ -27,12 +27,8 @@ export const customStyles: StylesConfig = {
     }),
 }
 
-function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
-    entries: E[]
-} | { 
-    searchF: (search: string) => E[],
-    getByTs: (ts: number) => E | undefined,
-}) & {
+function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: {
+    entryFeeder: T.EntryFeederSingleType<E>,
     value: E | undefined,
     onChange: (value: E | undefined) => void,
     name: string | undefined,
@@ -49,17 +45,19 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
         return makeSelectOption(e, props.opts);
     }
     const value = props.value ? makeOption(props.value) : undefined;
-    if ("searchF" in props) {
+    if ("search" in props.entryFeeder) {
+        const search = props.entryFeeder.search;
+        const getByTs = props.entryFeeder.getByTs;
         const options = (searchString: string) => 
             new Promise<{ value: string, label: string | JSX.Element }[]>(resolve => {
-                resolve(props.searchF(searchString).map(makeOption));
+                resolve(search(searchString).map(makeOption));
             });
         const onChange = (v: { label: string | JSX.Element, value: string } | null) => {
             if (!v) {
                 props.onChange(undefined);
                 return;
             }
-            const s = props.getByTs(parseInt(v.value));
+            const s = getByTs(parseInt(v.value));
             if (!s) return;
             props.onChange(s);
         }
@@ -77,7 +75,8 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
             />
         </div>;
     }
-    const options = props.entries
+    const entries = props.entryFeeder;
+    const options = entries
         .sort((a, b) => {
             if ("entry" in a) {
                 return a.entry.p.localeCompare("p" in b ? b.p : b.entry.p, "af-PS")
@@ -90,7 +89,7 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: ({
             props.onChange(undefined);
             return;
         }
-        const s = props.entries.find(e => (
+        const s = entries.find(e => (
             ("entry" in e) 
                 ? e.entry.ts.toString() === v.value
                 : e.ts.toString() === v.value

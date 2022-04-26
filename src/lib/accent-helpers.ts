@@ -58,7 +58,7 @@ export function accentPastParticiple(s: T.PsString): T.PsString {
 }
 
 export function splitUpSyllables(f: string): string[] {
-    return f.match(/ |([^a|e|i|o|u| ]*(aa|a|ey|ee|e|oo|o|i|u)[^a|e|i|o|u| ]*)/ig) || [] as string[];
+    return f.match(/ |([^a|á|e|é|i|í|o|ó|u|ú| ]*(aa|áa|a|á|ey|éy|ee|ée|e|é|oo|óo|o|ó|i|í|u|ú)[^a|á|e|é|i|í|o|ó|u|ú| ]*)/ig) || [] as string[];
 }
 
 export function countSyllables(f: T.PsString | string): number {
@@ -110,7 +110,11 @@ function accentSyllable(s: string): string {
 
 export function removeAccents(s: T.PsString): T.PsString; 
 export function removeAccents(s: string): string; 
-export function removeAccents(s: T.PsString | string): T.PsString | string {
+export function removeAccents(s: T.PsString[]): T.PsString[];
+export function removeAccents(s: T.PsString | string | T.PsString[]): T.PsString | string | T.PsString[] {
+    if (Array.isArray(s)) {
+        return s.map(t => removeAccents(t));
+    }
     if (typeof s !== "string") {
         return {
             ...s,

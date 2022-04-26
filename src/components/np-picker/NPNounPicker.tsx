@@ -55,12 +55,8 @@ import EntrySelect from "../EntrySelect";
 //         : () => true;
 // }
 
-function NPNounPicker(props: ({
-    nouns: T.NounEntry[],
-} | {
-    nouns: (s: string) => T.NounEntry[],
-    getNounByTs: (ts: number) => T.NounEntry | undefined;
-}) & {
+function NPNounPicker(props: {
+    entryFeeder: T.EntryFeederSingleType<T.NounEntry>,
     noun: T.NounSelection | undefined,
     onChange: (p: T.NounSelection | undefined) => void,
     opts: T.TextOptions,
@@ -98,12 +94,7 @@ function NPNounPicker(props: ({
         {!(props.noun && props.noun.dynamicComplement) ? <div>
             <EntrySelect
                 value={props.noun?.entry}
-                {..."getNounByTs" in props ? {
-                    getByTs: props.getNounByTs,
-                    searchF: props.nouns
-                } : {
-                    entries: props.nouns,
-                }}
+                entryFeeder={props.entryFeeder}
                 onChange={onEntrySelect}
                 name="Noun"
                 opts={props.opts}

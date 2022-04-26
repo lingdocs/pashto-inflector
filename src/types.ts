@@ -503,7 +503,7 @@ export type Words = {
     adverbs: AdverbEntry[],
 }
 
-// TODO: make this Rendered<VPSelection> with recursive Rendered<>
+// TODO: make this Rendered<VPSelectionComplete> with recursive Rendered<>
 export type VPRendered = {
     type: "VPRendered",
     king: "subject" | "object",
@@ -533,7 +533,7 @@ export type ModalTense = `${VerbTense}Modal`;
 export type ImperativeTense = `${Aspect}Imperative`;
 export type Tense = EquativeTense | VerbTense | PerfectTense | ModalTense | ImperativeTense;
 
-export type VPSelection = {
+export type VPSelectionState = {
     subject: NPSelection | undefined,
     verb: VerbSelection,
 };
@@ -611,6 +611,16 @@ export type NounSelection = {
     changeNumber?: (number: NounNumber) => NounSelection,
 };
 
+export type AdjectiveSelection = {
+    type: "adjective",
+    entry: AdjectiveEntry,
+}
+
+export type LocativeAdverbSelection = {
+    type: "loc. adv.",
+    entry: LocativeAdverbEntry,
+}
+
 // take an argument for subject/object in rendering English
 export type PronounSelection = {
     type: "pronoun",
@@ -630,7 +640,7 @@ export type ReplaceKey<T, K extends string, R> = T extends Record<K, unknown> ? 
 
 export type FormVersion = { removeKing: boolean, shrinkServant: boolean };
 
-export type Rendered<T extends NPSelection> = ReplaceKey<
+export type Rendered<T extends NPSelection | EqCompSelection> = ReplaceKey<
     Omit<T, "changeGender" | "changeNumber" | "changeDistance">,
     "e",
     string
@@ -641,3 +651,67 @@ export type Rendered<T extends NPSelection> = ReplaceKey<
     person: Person,
 };
 // TODO: recursive changing this down into the possesor etc.
+
+export type EPSelectionState = {
+    subject: NPSelection | undefined,
+    predicate: {
+        type: "NP" | "Complement",
+        NP: NPSelection | undefined,
+        Complement: EqCompSelection | undefined,
+    },
+    equative: EquativeSelection,
+};
+
+export type EPSelectionComplete = Omit<EPSelectionState, "subject" | "predicate"> & {
+    subject: NPSelection,
+    predicate: {
+        type: "NP",
+        selection: NPSelection,
+    } | {
+        type: "Complement",
+        selection: EqCompSelection,
+    },
+};
+
+export type EqCompType = "adjective" | "loc. adv."; // TODO: - more
+export type EqCompSelection = AdjectiveSelection | LocativeAdverbSelection; // TODO: - more
+
+export type EquativeSelection = {
+    tense: EquativeTense,
+    negative: boolean,
+};
+
+export type EquativeRendered = EquativeSelection & {
+    ps: SingleOrLengthOpts<PsString[]>,
+    person: Person,
+    hasBa: boolean,
+}
+
+export type EPRendered = {
+    type: "EPRendered",
+    king: "subject" | "predicate",
+    subject: Rendered<NPSelection>,
+    predicate: Rendered<NPSelection | EqCompSelection>,
+    equative: EquativeRendered,
+    englishBase?: string[],
+}
+
+export type EntryFeeder = {
+    nouns: EntryLookupPortal<NounEntry>,
+    verbs: EntryLookupPortal<VerbEntry>,
+    adjectives: EntryLookupPortal<AdjectiveEntry>,
+    locativeAdverbs: EntryLookupPortal<LocativeAdverbEntry>,
+} | {
+    nouns: NounEntry[],
+    verbs: VerbEntry[],
+    adjectives: AdjectiveEntry[],
+    locativeAdverbs: LocativeAdverbEntry[],
+}
+
+export type EntryFeederSingleType<X extends VerbEntry | DictionaryEntry> = X[] | EntryLookupPortal<X>;
+
+export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
+    search: (s: string) => X[],
+    getByTs: (s: number) => X,
+}
+

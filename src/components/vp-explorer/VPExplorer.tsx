@@ -7,7 +7,7 @@ import {
     isInvalidSubjObjCombo,
 } from "../../lib/phrase-building/vp-tools";
 import * as T from "../../types";
-import ChartDisplay from "./ChartDisplay";
+import ChartDisplay from "./VPChartDisplay";
 import useStickyState from "../../lib/useStickyState";
 import { makeVPSelectionState } from "./verb-selection";
 import { useEffect, useState } from "react";
@@ -41,16 +41,9 @@ export function VPExplorer(props: {
     verb: T.VerbEntry,
     opts: T.TextOptions,
     handleLinkClick: ((ts: number) => void) | "none",
-} & ({
-    nouns: T.NounEntry[],
-    verbs: T.VerbEntry[],
-} | {
-    nouns: (s: string) => T.NounEntry[],
-    verbs: (s: string) => T.VerbEntry[],
-    getNounByTs: (ts: number) => T.NounEntry | undefined,
-    getVerbByTs: (ts: number) => T.VerbEntry | undefined,
-})) {
-    const [vps, setVps] = useStickyState<T.VPSelection>(
+    entryFeeder: T.EntryFeeder,
+}) {
+    const [vps, setVps] = useStickyState<T.VPSelectionState>(
         savedVps => makeVPSelectionState(props.verb, savedVps),
         "vpsState5",    
     );
@@ -115,12 +108,6 @@ export function VPExplorer(props: {
     }
     return <div className="mt-3" style={{ maxWidth: "950px"}}>
         <VerbPicker
-            {..."getNounByTs" in props ? {
-                getVerbByTs: props.getVerbByTs,
-                verbs: props.verbs,
-            } : {
-                verbs: props.verbs,
-            }}
             vps={vps}
             onChange={quizLock(setVps)}
             opts={props.opts}
@@ -150,15 +137,7 @@ export function VPExplorer(props: {
                         heading={roles.king === "subject" 
                             ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>Subject {roleIcon.king}</div>
                             : <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>Subject {roleIcon.servant}</div>}
-                        {..."getNounByTs" in props ? {
-                            getNounByTs: props.getNounByTs,
-                            getVerbByTs: props.getVerbByTs,
-                            nouns: props.nouns,
-                            verbs: props.verbs,
-                        } : {
-                            nouns: props.nouns,
-                            verbs: props.verbs,
-                        }}
+                        entryFeeder={props.entryFeeder}
                         role={(isPast && vps.verb.transitivity !== "intransitive")
                             ? "ergative"
                             : "subject"
@@ -177,15 +156,7 @@ export function VPExplorer(props: {
                             heading={roles.king === "object" 
                                 ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
                                 : <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>Object {roleIcon.servant}</div>}
-                            {..."getNounByTs" in props ? {
-                                getNounByTs: props.getNounByTs,
-                                getVerbByTs: props.getVerbByTs,
-                                nouns: props.nouns,
-                                verbs: props.verbs,
-                            } : {
-                                nouns: props.nouns,
-                                verbs: props.verbs,
-                            }}
+                            entryFeeder={props.entryFeeder}
                             role="object"
                             np={vps.verb.object}
                             counterPart={vps.subject}

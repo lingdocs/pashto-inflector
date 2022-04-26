@@ -49,7 +49,7 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
     };
   }
   if (w.c && w.c.includes("pl.")) {
-    return handlePluralNoun(w);
+    return handlePluralNounOrAdj(w);
   }
   if (w.c && (w.c.includes("adj.") || w.c.includes("unisex") || w.c.includes("num"))) {
     return handleUnisexWord(w);
@@ -104,7 +104,7 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   return false;
 }
 
-function handlePluralNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
+function handlePluralNounOrAdj(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
   if (!w.c || !w.c.includes("n.")) return false;
   const plurals = makePlural(w);
   if (w.noInf) {
@@ -261,7 +261,7 @@ function inflectEmphasizedYeyUnisex(p: string, f: string): T.UnisexInflections {
 }
 
 function inflectConsonantEndingUnisex(p: string, f: string): T.UnisexInflections {
-  const fSyls = splitUpSyllables(f);
+  const fSyls = splitUpSyllables(removeAccents(f));
   const iBase = fSyls.length === 1
     ? makePsString(p, accentFSylsOnNFromEnd(fSyls, 0))
     : makePsString(p, f);

@@ -81,7 +81,7 @@ export function chooseParticipleInflection(
     return pPartInfs; // already just one thing
 }
 
-export function getPersonNumber(gender: "masc" | "fem", number: "singular" | "plural"): T.Person {
+export function getPersonNumber(gender: T.Gender, number: T.NounNumber): T.Person {
     const base = gender === "masc" ? 4 : 5;
     return base + (number === "singular" ? 0 : 6);
 }
@@ -129,8 +129,12 @@ export function getAuxTransitivity(trans: T.Transitivity): "transitive" | "intra
     return trans === "intransitive" ? "intransitive" : "transitive";
 }
 
-export function personGender(person: T.Person): "masc" | "fem" {
+export function personGender(person: T.Person): T.Gender {
     return person % 2 === 0 ? "masc" : "fem";
+}
+
+export function personNumber(person: T.Person): T.NounNumber {
+    return personIsPlural(person) ? "plural" : "singular";
 }
 
 export function personIsPlural(person: T.Person): boolean {

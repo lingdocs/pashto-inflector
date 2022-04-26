@@ -109,11 +109,11 @@ export function getRandomTense(o?: T.PerfectTense | T.VerbTense | T.ModalTense |
 }
 
 function TensePicker(props: ({
-    vps: T.VPSelection,
+    vps: T.VPSelectionState,
 } | {
     vpsComplete: T.VPSelectionComplete,
 }) & {
-    onChange: (p: T.VPSelection) => void,
+    onChange: (p: T.VPSelectionState) => void,
     mode: "charts" | "phrases" | "quiz",
 }) {
     const [showFormula, setShowFormula] = useStickyState<boolean>(false, "showFormula");
@@ -228,7 +228,7 @@ function TensePicker(props: ({
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
             <div className="d-flex flex-row justify-content-between align-items-center">
-                <div className="h5">Tense:</div>
+                <div className="h5">Verb Tense:</div>
                 {canHaveFormula && <div className="clickable mb-2 small" onClick={() => setShowFormula(x => !x)}>
                     🧪 {!showFormula ? "Show" : "Hide"} Formula
                 </div>}

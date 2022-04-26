@@ -6,8 +6,8 @@ import { getVerbInfo } from "../../lib/verb-info";
 
 export function makeVPSelectionState(
     verb: T.VerbEntry,
-    os?: T.VPSelection,
-): T.VPSelection {
+    os?: T.VPSelectionState,
+): T.VPSelectionState {
     const info = getVerbInfo(verb.entry, verb.complement);
     const subject = (os?.verb.voice === "passive" && info.type === "dynamic compound")
         ? makeNounSelection(info.objComplement.entry as T.NounEntry, true)

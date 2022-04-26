@@ -8,11 +8,11 @@ const options = [
         value: "full",
     },
     {
-        label: <div>Kill {roleIcon.king}</div>,
+        label: <div className="m1-2">No {roleIcon.king}</div>,
         value: "noKing",
     },
     {
-        label: <div>Shrink {roleIcon.servant}</div>,
+        label: <div>Mini {roleIcon.servant}</div>,
         value: "shrinkServant",
     },
     {

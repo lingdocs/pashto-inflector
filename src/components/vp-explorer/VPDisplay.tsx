@@ -8,7 +8,7 @@ import {
 import useStickyState from "../../lib/useStickyState";
 import Examples from "../Examples";
 
-function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
+function VPDisplay({ VP, opts }: { VP: T.VPSelectionState, opts: T.TextOptions }) {
     const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationForm");
     const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
     const VPComplete = completeVPSelection(VP); 
@@ -21,7 +21,7 @@ function VPDisplay({ VP, opts }: { VP: T.VPSelection, opts: T.TextOptions }) {
         </div>;
     }
     const result = compileVP(renderVP(VPComplete), { ...form, OSV });
-    return <div className="text-center">
+    return <div className="text-center mt-1">
         {VP.verb.transitivity === "transitive" && <div className="form-check mb-2">
             <input
                 className="form-check-input"

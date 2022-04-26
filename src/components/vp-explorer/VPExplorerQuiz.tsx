@@ -14,7 +14,7 @@ import playAudio from "../../lib/play-audio";
 import TensePicker from "./TensePicker";
 import Keyframes from "../Keyframes";
 import energyDrink from "./energy-drink.jpg";
-import { flattenLengths } from "../../lib/phrase-building/compile-vp";
+import { flattenLengths } from "../../lib/phrase-building/segment";
 import { concatPsString } from "../../lib/p-text-helpers";
 import { isImperativeTense } from "../../lib/type-predicates";
 
@@ -56,7 +56,7 @@ type MixType = "NPs" | "tenses" | "both";
 
 function VPExplorerQuiz(props: {
     opts: T.TextOptions,
-    vps: T.VPSelection,
+    vps: T.VPSelectionState,
 }) {
     const startingQs = tickQuizState(completeVPs(props.vps));
     const [quizState, setQuizState] = useState<QuizState>(startingQs);
@@ -370,7 +370,7 @@ function getOptionFromResult(r: {
     return ps[0];
 }
 
-function completeVPs(vps: T.VPSelection): T.VPSelectionComplete {
+function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
     const oldSubj = vps.subject?.type === "pronoun"
         ? vps.subject.person
         : undefined;

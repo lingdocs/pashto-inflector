@@ -23,7 +23,7 @@ import {
     Modal
 } from "react-bootstrap";
 import * as T from "./types";
-import { isNounEntry } from "./lib/type-predicates";
+import { isAdjectiveEntry, isLocativeAdverbEntry, isNounEntry } from "./lib/type-predicates";
 import defualtTextOptions from "./lib/default-text-options";
 import PhraseBuilder from "./components/vp-explorer/VPExplorer";
 import useStickyState from "./lib/useStickyState";
@@ -35,6 +35,14 @@ const verbTypes: VerbType[] = [
 ];
 
 const nouns = nounsAdjs.filter(isNounEntry);
+const adjectives = nounsAdjs.filter(isAdjectiveEntry);
+const locativeAdverbs = nounsAdjs.filter(isLocativeAdverbEntry);
+const entryFeeder: T.EntryFeeder = {
+    locativeAdverbs,
+    nouns,
+    adjectives,
+    verbs,
+};
 
 const transitivities: T.Transitivity[] = [
     "transitive",
@@ -46,6 +54,8 @@ const allVerbs = verbs.map((v: { entry: T.DictionaryEntry, complement?: T.Dictio
     verb: v,
     info: getVerbInfo(v.entry, v.complement),
 }));
+
+
 
 function App() {
     const [verbTs, setVerbTs] = useStickyState<number>(0, "verbTs1");
@@ -215,6 +225,7 @@ function App() {
                                                 name="verb-type"
                                                 checked={verbTypeShowing === type}
                                                 value={type}
+                                                onChange={() => null}
                                             />
                                             <label className="form-check-label">
                                                 {type}
@@ -244,6 +255,7 @@ function App() {
                                                 type="radio"
                                                 name="transitivity"
                                                 checked={transitivityShowing === transitivity}
+                                                onChange={() => null}
                                                 value={transitivity} 
                                             />
                                             <label className="form-check-label">
@@ -260,8 +272,7 @@ function App() {
                     <PhraseBuilder
                         handleLinkClick="none"
                         verb={v.verb as T.VerbEntry}
-                        nouns={nouns}
-                        verbs={verbs}
+                        entryFeeder={entryFeeder}
                         opts={textOptions}
                     />
                 </div>}

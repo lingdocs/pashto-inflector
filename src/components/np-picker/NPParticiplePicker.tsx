@@ -8,12 +8,8 @@ function makeParticipleSelection(verb: T.VerbEntry): T.ParticipleSelection {
     };
 }
 
-function NPParticiplePicker(props: ({
-    verbs: T.VerbEntry[],
-} | {
-    verbs: (s: string) => T.VerbEntry[],
-    getVerbByTs: (ts: number) => T.VerbEntry | undefined;
-}) & {
+function NPParticiplePicker(props: {
+    entryFeeder: T.EntryFeederSingleType<T.VerbEntry>,
     participle: T.ParticipleSelection | undefined,
     onChange: (p: T.ParticipleSelection | undefined) => void,
     opts: T.TextOptions,
@@ -29,12 +25,7 @@ function NPParticiplePicker(props: ({
         <h6>Participle</h6>
         <EntrySelect
             value={props.participle?.verb}
-            {..."getVerbByTs" in props ? {
-                getByTs: props.getVerbByTs,
-                searchF: props.verbs,
-            } : {
-                entries: props.verbs,
-            }}
+            entryFeeder={props.entryFeeder}
             onChange={onEntrySelect}
             name="Pariticple"
             opts={props.opts}

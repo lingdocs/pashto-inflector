@@ -193,9 +193,9 @@ export function removeDuplicates(psv: T.PsString[]): T.PsString[] {
     ));
 }
 
-export function switchSubjObj(vps: T.VPSelection): T.VPSelection;
+export function switchSubjObj(vps: T.VPSelectionState): T.VPSelectionState;
 export function switchSubjObj(vps: T.VPSelectionComplete): T.VPSelectionComplete;
-export function switchSubjObj(vps: T.VPSelection | T.VPSelectionComplete): T.VPSelection | T.VPSelectionComplete {
+export function switchSubjObj(vps: T.VPSelectionState | T.VPSelectionComplete): T.VPSelectionState | T.VPSelectionComplete {
     if ("tenseCategory" in vps.verb) {
         if (!vps.subject || !(typeof vps.verb.object === "object") || (vps.verb.tenseCategory === "imperative")) {
             return vps;
@@ -222,7 +222,7 @@ export function switchSubjObj(vps: T.VPSelection | T.VPSelectionComplete): T.VPS
     };
 }
 
-export function completeVPSelection(vps: T.VPSelection): T.VPSelectionComplete | undefined {
+export function completeVPSelection(vps: T.VPSelectionState): T.VPSelectionComplete | undefined {
     if (vps.subject === undefined) {
         return undefined;
     }
@@ -261,7 +261,7 @@ export function isThirdPerson(p: T.Person): boolean {
     );
 }
 
-export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelection): T.VPSelection {
+export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): T.VPSelectionState {
     console.log("checking more...", vps);
     const subjIs2ndPerson = (vps.subject?.type === "pronoun") && isSecondPerson(vps.subject.person);
     const objIs2ndPerson = (typeof vps.verb.object === "object")

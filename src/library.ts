@@ -95,6 +95,7 @@ import {
     personIsPlural,
     personGender,
     parseEc,
+    personNumber,
 } from "./lib/misc-helpers";
 import {
     simplifyPhonetics,
@@ -170,6 +171,7 @@ export {
     isInvalidSubjObjCombo,
     randomSubjObj,
     shuffleArray,
+    personNumber,
     // protobuf helpers
     readDictionary,
     writeDictionary,

@@ -141,13 +141,14 @@ function NPPronounPicker({ onChange, pronoun, role, clearButton, opts, is2ndPers
         <table className="table table-bordered table-sm" style={{ textAlign: "center", minWidth: "100px", tableLayout: "fixed" }}>
             <tbody>
                 {pSpec.map((rw, i) => (
-                    <tr>
+                    <tr key={`pronounPickerRow${i}`}>
                         {rw.map((r, j) => {
                             const active = is2ndPersonPicker
                                 ? (p.col === j)
                                 : (p.row === i && p.col === j);
                             const content = typeof r === "string" ? r : r[p.gender];
                             return <td
+                                key={`pronounPickerCell${i}${j}`}
                                 onClick={() => {
                                     handleClick(is2ndPersonPicker ? 1 : i, j);
                                 }}

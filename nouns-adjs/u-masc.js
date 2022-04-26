@@ -5,7 +5,6 @@ module.exports = [
     { ts: 1588857967561, e: `bull` }, // غوایه - ghwaayú
     { ts: 1527817108, e: `look, gaze, examination, inspection, spying` }, // کاته - kaatu
     { ts: 1527817768, e: `raven, crow` }, // کارګه - kaargu
-    { ts: 1527819245, e: `master of house, head of family, married man` }, // کوربانه - korbaanú
     { ts: 1527818516, e: `swimming, bathing` }, // لمبېده - lambedú
     { ts: 1527813986, e: `sunset, west` }, // لمر پرېواته - lmarprewaatu
     { ts: 1527813992, e: `sunset` }, // لمر لوېده - lmarlwedu
