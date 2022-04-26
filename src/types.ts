@@ -712,6 +712,6 @@ export type EntryFeederSingleType<X extends VerbEntry | DictionaryEntry> = X[] |
 
 export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
     search: (s: string) => X[],
-    getByTs: (s: number) => X,
+    getByTs: (ts: number) => (X | undefined),
 }
 
