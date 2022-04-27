@@ -53,7 +53,7 @@ export function VPExplorer(props: {
             if (savedMode === "quiz") return "phrases";
             return savedMode;
         },
-        "verbExplorerMode",
+        "verbExplorerMode2",
     );
     const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
     const isPast = isPastTense(vps.verb.tenseCategory === "perfect" ? vps.verb.perfectTense : vps.verb.verbTense);

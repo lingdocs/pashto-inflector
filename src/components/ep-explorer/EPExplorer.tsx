@@ -31,7 +31,7 @@ function EPExplorer(props: {
             tense: "present",
             negative: false,
         },
-    }, "EPSelectionState");
+    }, "EPSelectionState2");
     function handlePredicateTypeChange(type: "NP" | "Complement") {
         setEps(o => ({
             ...o,
