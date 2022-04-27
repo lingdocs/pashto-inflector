@@ -6,6 +6,7 @@ function AdjectivePicker(props: {
     adjective: T.AdjectiveSelection | undefined,
     onChange: (p: T.AdjectiveSelection | undefined) => void,
     opts: T.TextOptions,
+    noTitle?: boolean,
 }) {
     function onEntrySelect(entry: T.AdjectiveEntry | undefined) {
         if (!entry) {
@@ -14,7 +15,7 @@ function AdjectivePicker(props: {
         props.onChange(makeAdjectiveSelection(entry));
     }
     return <div style={{ maxWidth: "225px", minWidth: "125px" }}>
-        <h6>Adjective</h6>
+        {!props.noTitle && <h6>Adjective</h6>}
         <div>
             <EntrySelect
                 value={props.adjective?.entry}

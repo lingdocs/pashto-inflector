@@ -93,7 +93,7 @@ function NPPicker(props: {
             />
             : npType === "noun"
             ? <NounPicker
-                entryFeeder={props.entryFeeder.nouns}
+                entryFeeder={props.entryFeeder}
                 noun={(props.np && props.np.type === "noun") ? props.np : undefined}
                 onChange={props.onChange}
                 opts={props.opts}

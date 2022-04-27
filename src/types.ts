@@ -592,16 +592,11 @@ export type NounSelection = {
     type: "noun",
     entry: NounEntry,
     gender: Gender,
+    genderCanChange: boolean,
     number: NounNumber,
+    numberCanChange: boolean,
     dynamicComplement?: boolean,
-    // TODO: Implement
-    // adjectives: [],
-    // TODO: Implement
-    // possesor: NPSelection | undefined,
-    /* method only present if it's possible to change gender */
-    changeGender?: (gender: Gender) => NounSelection, 
-    /* method only present if it's possible to change number */
-    changeNumber?: (number: NounNumber) => NounSelection,
+    adjectives: AdjectiveSelection[],
 };
 
 export type AdjectiveSelection = {
@@ -633,8 +628,8 @@ export type ReplaceKey<T, K extends string, R> = T extends Record<K, unknown> ? 
 
 export type FormVersion = { removeKing: boolean, shrinkServant: boolean };
 
-export type Rendered<T extends NPSelection | EqCompSelection> = ReplaceKey<
-    Omit<T, "changeGender" | "changeNumber" | "changeDistance">,
+export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection> = ReplaceKey<
+    Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives">,
     "e",
     string
 > & {
@@ -642,6 +637,8 @@ export type Rendered<T extends NPSelection | EqCompSelection> = ReplaceKey<
     e?: string,
     inflected: boolean,
     person: Person,
+    // TODO: better recursive thing
+    adjectives?: Rendered<AdjectiveSelection>[],
 };
 // TODO: recursive changing this down into the possesor etc.
 

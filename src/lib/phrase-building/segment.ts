@@ -25,10 +25,23 @@ export type Segment = { ps: T.PsString[] } & SegmentDescriptions & {
     adjust: (o: { ps?: T.PsString | T.PsString[] | ((ps: T.PsString) => T.PsString), desc?: SDT[] }) => Segment,
 };
 
+function addAdjectives(ps: T.PsString[], adjectives?: T.Rendered<T.AdjectiveSelection>[]): T.PsString[] {
+    if (!adjectives) return ps;
+    return ps.map(p => {
+        // TODO: more thorough use of all possible variends?
+        return concatPsString(...adjectives.map(a => a.ps[0]), p);
+    });
+}
+
 export function makeSegment(
-    ps: T.PsString | T.PsString[],
+    input: T.Rendered<T.NounSelection> | T.PsString | T.PsString[],
     options?: (keyof SegmentDescriptions)[],     
 ): Segment {
+    const ps: T.PsString[] = Array.isArray(input)
+        ? input
+        : "type" in input
+        ? addAdjectives(input.ps, input.adjectives)
+        : [input];
     return {
         ps: Array.isArray(ps) ? ps : [ps],
         ...options && options.reduce((all, curr) => ({
@@ -39,6 +52,7 @@ export function makeSegment(
             return {
                 ...this,
                 ...o.ps ? {
+                    // TODO: is this ok with the adjectives?
                     ps: Array.isArray(o.ps)
                         ? o.ps
                         : "p" in o.ps

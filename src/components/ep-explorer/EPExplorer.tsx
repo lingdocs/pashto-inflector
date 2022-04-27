@@ -173,18 +173,21 @@ function massageSubjectChange(subject: T.NPSelection | undefined, old: T.EPSelec
     }
     if (subject.type === "pronoun" && old.predicate.type === "NP" && old.predicate.NP?.type === "noun" && isUnisexNounEntry(old.predicate.NP.entry)) {
         const predicate = old.predicate.NP;
-        const numberAdjusted = predicate.changeNumber
-            ? predicate.changeNumber(personNumber(subject.person))
-            : predicate;
-        const fullyAdjusted = numberAdjusted.changeGender
-            ? numberAdjusted.changeGender(personGender(subject.person))
-            : numberAdjusted;
+        const adjusted = {
+            ...predicate,
+            ...predicate.numberCanChange ? {
+                number: personNumber(subject.person),
+            } : {},
+            ...predicate.genderCanChange ? {
+                gender: personGender(subject.person),
+            } : {},
+        }
         return {
             ...old,
             subject,
             predicate: {
                 ...old.predicate,
-                NP: fullyAdjusted,
+                NP: adjusted,
             },
         };
     }

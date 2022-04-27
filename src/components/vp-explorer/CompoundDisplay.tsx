@@ -68,7 +68,7 @@ function CompoundDisplay({ info, opts, handleLinkClick }: {
             <div className="text-center">{info.type}</div>
             <CompoundFormula
                 a={<div
-                        className={classNames([{ clickable: handleLinkClick }])}
+                        className={classNames([{ clickable: typeof handleLinkClick === "function" }])}
                         onClick={(handleLinkClick)
                             // @ts-ignore - thinks there might not be a complement, but there will be
                             ? () => handleLinkClick(info.entry.complement?.ts)

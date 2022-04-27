@@ -43,7 +43,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const inflectSubject = isPast && isTransitive && !isMascSingAnimatePattern4(VP.subject);
     const inflectObject = !isPast && isFirstOrSecondPersPronoun(VP.verb.object);
     // Render Elements
-    return {
+    const b: T.VPRendered = {
         type: "VPRendered",
         king,
         servant,
@@ -59,6 +59,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
             vs: VP.verb,
         }),
     };
+    return b;
 }
 
 function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, objectPerson: T.Person | undefined): T.VerbRendered {

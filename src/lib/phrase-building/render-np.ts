@@ -11,6 +11,7 @@ import {
 } from "../p-text-helpers";
 import { parseEc } from "../misc-helpers";
 import { getEnglishWord } from "../get-english-word";
+import { renderAdjectiveSelection } from "./render-adj";
 
 export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject"): T.Rendered<T.NPSelection>
 export function renderNPSelection(NP: T.NPSelection | T.ObjectNP, inflected: boolean, inflectEnglish: boolean, role: "object"): T.Rendered<T.NPSelection> | T.Person.ThirdPlurMale | "none";
@@ -48,9 +49,11 @@ function renderNounSelection(n: T.NounSelection, inflected: boolean): T.Rendered
             ? ps
             : [psStringFromEntry(n.entry)];
     })();
+    const person = getPersonNumber(n.gender, n.number);
     return {
         ...n,
-        person: getPersonNumber(n.gender, n.number),
+        adjectives: n.adjectives.map(a => renderAdjectiveSelection(a, person, inflected)),
+        person,
         inflected,
         ps: pashto,
         e: english,

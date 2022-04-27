@@ -7,10 +7,10 @@ import { renderNPSelection } from "./render-np";
 import { getPersonFromVerbForm } from "../../lib/misc-helpers";
 import { getVerbBlockPosFromPerson } from "../misc-helpers";
 import { getEnglishWord } from "../get-english-word";
-import { isUnisexSet, psStringFromEntry } from "../p-text-helpers";
-import { inflectWord } from "../pashto-inflector";
+import { psStringFromEntry } from "../p-text-helpers";
 import { personGender, personIsPlural } from "../../library";
 import { isLocativeAdverbEntry } from "../type-predicates";
+import { renderAdjectiveSelection } from "./render-adj";
 
 export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
     const kingPerson = (EP.subject.type === "pronoun")
@@ -71,26 +71,7 @@ function renderEqCompSelection(s: T.EqCompSelection, person: T.Person): T.Render
         };
     }
     if (s.type === "adjective") {
-        const infs = inflectWord(s.entry);
-        if (!infs) return {
-            type: "adjective",
-            entry: s.entry,
-            ps: [psStringFromEntry(s.entry)],
-            e,
-            inflected: false,
-            person,
-        }
-        if (!infs.inflections || !isUnisexSet(infs.inflections)) {
-            throw new Error("error getting inflections for adjective, looks like a noun's inflections");
-        }
-        return {
-            type: "adjective",
-            entry: s.entry,
-            ps: chooseInflection(infs.inflections, person),
-            e,
-            inflected: false,
-            person,
-        };
+        return renderAdjectiveSelection(s, person, false)
     }
     throw new Error("invalid EqCompSelection");
 }

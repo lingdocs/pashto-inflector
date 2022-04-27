@@ -20,6 +20,7 @@ import {
     removeDuplicates,
 } from "./vp-tools";
 import { isImperativeTense, isModalTense, isPerfectTense } from "../type-predicates";
+import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
 
 type Form = T.FormVersion & { OSV?: boolean };
 export function compileVP(VP: T.VPRendered, form: Form): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
@@ -79,8 +80,8 @@ function compilePs({ NPs, kids, verb: { head, rest }, VP }: CompilePsInput): T.S
 
 function getSegmentsAndKids(VP: T.VPRendered, form: Form): { kids: Segment[], NPs: Segment[][] } {
     const SO = {
-        subject: VP.subject.ps,
-        object: typeof VP.object === "object" ? VP.object.ps : undefined,
+        subject: getPashtoFromRendered(VP.subject),
+        object: typeof VP.object === "object" ? getPashtoFromRendered(VP.object) : undefined,
     }
     const removeKing = form.removeKing && !(VP.isCompound === "dynamic" && VP.isPast);
     const shrinkServant = form.shrinkServant && !(VP.isCompound === "dynamic" && !VP.isPast);
@@ -282,8 +283,10 @@ function compileEnglish(VP: T.VPRendered): string[] | undefined {
     function insertEWords(e: string, { subject, object }: { subject: string, object?: string }): string {
         return e.replace("$SUBJ", subject).replace("$OBJ", object || "");
     }
-    const engSubj = VP.subject.e || undefined;
-    const engObj = (typeof VP.object === "object" && VP.object.e) ? VP.object.e : undefined;
+    const engSubj = getEnglishFromRendered(VP.subject);
+    const engObj = typeof VP.object === "object"
+        ? getEnglishFromRendered(VP.object)
+        : undefined;
     // require all English parts for making the English phrase
     return (VP.englishBase && engSubj && (engObj || typeof VP.object !== "object"))
         ? VP.englishBase.map(e => insertEWords(e, {

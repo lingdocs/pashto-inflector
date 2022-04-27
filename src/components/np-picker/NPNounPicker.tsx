@@ -4,9 +4,9 @@ import {
 import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
 import InlinePs from "../InlinePs";
-// import { useState } from "react";
 // import { isFemNounEntry, isPattern1Entry, isPattern2Entry, isPattern3Entry, isPattern4Entry, isPattern5Entry, isPattern6FemEntry } from "../../lib/type-predicates";
 import EntrySelect from "../EntrySelect";
+import AdjectiveManager from "./AdjectiveManager";
 
 // const filterOptions = [
 //     {
@@ -56,7 +56,7 @@ import EntrySelect from "../EntrySelect";
 // }
 
 function NPNounPicker(props: {
-    entryFeeder: T.EntryFeederSingleType<T.NounEntry>,
+    entryFeeder: T.EntryFeeder,
     noun: T.NounSelection | undefined,
     onChange: (p: T.NounSelection | undefined) => void,
     opts: T.TextOptions,
@@ -76,6 +76,14 @@ function NPNounPicker(props: {
     //     setPatternFilter(undefined);
     //     setShowFilter(false);
     // }
+    function handelAdjectivesUpdate(adjectives: T.AdjectiveSelection[]) {
+        if (props.noun) {
+            props.onChange({
+                ...props.noun,
+                adjectives,
+            });
+        }
+    }
     return <div style={{ maxWidth: "225px", minWidth: "125px" }}>
         {/* {showFilter && <div className="mb-2 text-center">
             <div className="d-flex flex-row justify-content-between">
@@ -90,11 +98,17 @@ function NPNounPicker(props: {
                 handleChange={setPatternFilter}
             />
         </div>} */}
+        {props.noun && <AdjectiveManager
+            adjectives={props.noun?.adjectives}
+            entryFeeder={props.entryFeeder.adjectives}
+            opts={props.opts}
+            onChange={handelAdjectivesUpdate}
+        />}
         <h6>Noun</h6>
         {!(props.noun && props.noun.dynamicComplement) ? <div>
             <EntrySelect
                 value={props.noun?.entry}
-                entryFeeder={props.entryFeeder}
+                entryFeeder={props.entryFeeder.nouns}
                 onChange={onEntrySelect}
                 name="Noun"
                 opts={props.opts}
@@ -112,30 +126,36 @@ function NPNounPicker(props: {
         </div>}
         {props.noun && <div className="my-2 d-flex flex-row justify-content-around align-items-center">
             <div>
-                {props.noun.changeGender ? <ButtonSelect
+                {props.noun.genderCanChange ? <ButtonSelect
                     small
                     options={[
                         { label: "Masc", value: "masc" },
                         { label: "Fem", value: "fem" },
                     ]}
                     value={props.noun.gender}
-                    handleChange={(g) => {
-                        if (!props.noun || !props.noun.changeGender) return;
-                        props.onChange(props.noun.changeGender(g));
+                    handleChange={(gender) => {
+                        if (!props.noun || !props.noun.genderCanChange) return;
+                        props.onChange({
+                            ...props.noun,
+                            gender, 
+                        });
                     }}
                 /> : props.noun.gender === "masc" ? "Masc." : "Fem."}
             </div>
             <div>
-                {props.noun.changeNumber ? <ButtonSelect
+                {props.noun.numberCanChange ? <ButtonSelect
                     small
                     options={[
                         { label: "Sing.", value: "singular" },
                         { label: "Plur.", value: "plural" },
                     ]}
                     value={props.noun.number}
-                    handleChange={(n) => {
-                        if (!props.noun || !props.noun.changeNumber) return;
-                        props.onChange(props.noun.changeNumber(n));
+                    handleChange={(number) => {
+                        if (!props.noun || !props.noun.numberCanChange) return;
+                        props.onChange({
+                            ...props.noun,
+                            number,
+                        });
                     }}
                 /> : props.noun.number === "singular" ? "Sing." : "Plur."}
             </div>

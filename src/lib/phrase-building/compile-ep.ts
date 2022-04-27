@@ -11,10 +11,11 @@ import {
     flattenLengths,
 } from "./segment";
 import { removeAccents } from "../accent-helpers";
+import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
 
-export function compileEP(EP: T.EPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
-export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths: true): { ps: T.PsString[], e?: string [] };
-export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths?: true): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] } {
+export function compileEP(EP: T.EPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
+export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths: true): { ps: T.PsString[], e?: string[] };
+export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths?: true): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
     const { kids, NPs } = getSegmentsAndKids(EP, form);
     const equative = EP.equative.ps;
     const psResult = compilePs({
@@ -36,12 +37,12 @@ function getSegmentsAndKids(EP: T.EPRendered, form: T.FormVersion): { kids: Segm
         }
         return [s];
     }
-    const subject = makeSegment(EP.subject.ps);
-    const predicate = makeSegment(EP.predicate.ps);
+    const subject = makeSegment(getPashtoFromRendered(EP.subject));
+    const predicate = makeSegment(getPashtoFromRendered(EP.predicate));
     return {
         kids: EP.equative.hasBa
-                ? [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])]
-                : [],
+            ? [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])]
+            : [],
         NPs: [
             ...ifNotRemoved(subject, "subject"),
             ...ifNotRemoved(predicate, "predicate"),
@@ -77,8 +78,8 @@ function compileEnglish(EP: T.EPRendered): string[] | undefined {
     function insertEWords(e: string, { subject, predicate }: { subject: string, predicate: string }): string {
         return e.replace("$SUBJ", subject).replace("$PRED", predicate || "");
     }
-    const engSubj = EP.subject.e || undefined;
-    const engPred = EP.predicate.e || undefined;
+    const engSubj = getEnglishFromRendered(EP.subject);
+    const engPred = getEnglishFromRendered(EP.predicate);
     // require all English parts for making the English phrase
     return (EP.englishBase && engSubj && engPred)
         ? EP.englishBase.map(e => insertEWords(e, {

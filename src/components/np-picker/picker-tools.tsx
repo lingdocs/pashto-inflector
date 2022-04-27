@@ -102,23 +102,10 @@ export function makeNounSelection(entry: T.NounEntry, dynamicComplement?: true):
         type: "noun",
         entry,
         gender: isMascNounEntry(entry) ? "masc" : "fem",
+        genderCanChange: isUnisexNounEntry(entry),
         number,
+        numberCanChange: number === "singular",
+        adjectives: [],
         dynamicComplement,
-        ...isUnisexNounEntry(entry) ? {
-            changeGender: function(gender: T.Gender): T.NounSelection {
-                return {
-                    ...this,
-                    gender,
-                };
-            },
-        } : {},
-        ...number === "singular" ? {
-            changeNumber: function(number: T.NounNumber): T.NounSelection {
-                return {
-                    ...this,
-                    number,
-                };
-            },
-        } : {},
     };
 }
