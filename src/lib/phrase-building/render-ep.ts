@@ -8,12 +8,17 @@ import { getPersonFromVerbForm } from "../../lib/misc-helpers";
 import { getVerbBlockPosFromPerson } from "../misc-helpers";
 import { getEnglishWord } from "../get-english-word";
 import { psStringFromEntry } from "../p-text-helpers";
-import { personGender, personIsPlural } from "../../library";
 import { isLocativeAdverbEntry } from "../type-predicates";
 import { renderAdjectiveSelection } from "./render-adj";
 
 export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
-    const kingPerson = (EP.subject.type === "pronoun")
+    const king = (EP.subject.type === "pronoun")
+        ? "subject"
+        : EP.predicate.type === "NP"
+        ? "predicate"
+        : "subject";
+    // TODO: less repetative logic
+    const kingPerson = king === "subject"
         ? getPersonFromNP(EP.subject)
         : EP.predicate.type === "NP"
         ? getPersonFromNP(EP.predicate.selection)
@@ -21,12 +26,13 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
     return {
         type: "EPRendered",
         king: EP.predicate.type === "Complement" ? "subject" : "predicate",
-        subject: renderNPSelection(EP.subject, false, false, "subject"),
+        subject: renderNPSelection(EP.subject, false, false, "subject", king === "subject" ? "king" : "none"),
         predicate: EP.predicate.type === "NP"
-            ? renderNPSelection(EP.predicate.selection, false, true, "subject")
+            ? renderNPSelection(EP.predicate.selection, false, true, "subject", "king")
             : renderEqCompSelection(EP.predicate.selection, kingPerson),
         equative: renderEquative(EP.equative, kingPerson),
         englishBase: equativeBuilders[EP.equative.tense](kingPerson, EP.equative.negative),
+        shrunkenPossesive: EP.shrunkenPossesive,
     };
 }
 
@@ -68,10 +74,11 @@ function renderEqCompSelection(s: T.EqCompSelection, person: T.Person): T.Render
             e,
             inflected: false,
             person,
+            role: "none",
         };
     }
     if (s.type === "adjective") {
-        return renderAdjectiveSelection(s, person, false)
+        return renderAdjectiveSelection(s, person, false, "none")
     }
     throw new Error("invalid EqCompSelection");
 }
@@ -136,9 +143,9 @@ function getEnglishConj(p: T.Person, e: string | T.EnglishBlock): string {
     return e[row][col];
 }
 
-function chooseInflection(inflections: T.UnisexSet<T.InflectionSet>, pers: T.Person): T.ArrayOneOrMore<T.PsString> {
-    const gender = personGender(pers);
-    const plural = personIsPlural(pers);
-    return inflections[gender][plural ? 1 : 0];
-}
+// function chooseInflection(inflections: T.UnisexSet<T.InflectionSet>, pers: T.Person): T.ArrayOneOrMore<T.PsString> {
+//     const gender = personGender(pers);
+//     const plural = personIsPlural(pers);
+//     return inflections[gender][plural ? 1 : 0];
+// }
 

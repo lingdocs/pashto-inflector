@@ -162,41 +162,8 @@ export function randFromArray<M>(arr: M[]): M {
     ];
 }
 
-// TODO: deprecate this because we have it in np-tools?
-/**
- * Sees if a possiblePerson (for subject/object) is possible, given the other person
- * 
- * @param possiblePerson 
- * @param existingPerson 
- */
-export function personIsAllowed(possiblePerson: T.Person, existingPerson?: T.Person): boolean {
-    const isFirstPerson = (p: T.Person) => [0, 1, 6, 7].includes(p);
-    const isSecondPerson = (p: T.Person) => [2, 3, 8, 9].includes(p);
-    // can't have both subject and object be 1st person
-    if (isFirstPerson(possiblePerson) && (existingPerson && isFirstPerson(existingPerson))) {
-        return false;
-    }
-    // can't have both subject and object be 2nd person
-    if (isSecondPerson(possiblePerson) && (existingPerson && isSecondPerson(existingPerson))) {
-        return false;
-    }
-    // otherwise it's ok
-    return true;
-}
-
-// TODO: deprecate this because we have it in np-tools?
-/**
- * Picks a random person while assuring that the other person is not in conflict
- * 
- * @param other 
- */
-export function randomPerson(other?: T.Person): T.Person {
-    let newPerson: T.Person;
-    do {
-        newPerson = randomNumber(0, 12);
-    } while(!personIsAllowed(newPerson, other));
-    return newPerson;
-}
+export const isFirstPerson = (p: T.Person) => [0, 1, 6, 7].includes(p);
+export const isSecondPerson = (p: T.Person) => [2, 3, 8, 9].includes(p);
 
 export function incrementPerson(p: T.Person): T.Person {
     return (p + 1) % 12;

@@ -17,7 +17,7 @@ function chooseInflection(inflections: T.UnisexSet<T.InflectionSet>, pers: T.Per
     return inflections[gender][infNumber];
 }
 
-export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Person, inflected: boolean): T.Rendered<T.AdjectiveSelection> {
+export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Person, inflected: boolean, role: "king" | "servant" | "none"): T.Rendered<T.AdjectiveSelection> {
     const infs = inflectWord(a.entry);
     const eWord = getEnglishWord(a.entry);
     const e = !eWord
@@ -31,6 +31,7 @@ export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Pers
         ps: [psStringFromEntry(a.entry)],
         e,
         inflected: false,
+        role,
         person,
     }
     if (!infs.inflections || !isUnisexSet(infs.inflections)) {
@@ -42,6 +43,7 @@ export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Pers
         ps: chooseInflection(infs.inflections, person, inflected),
         e,
         inflected: false,
+        role,
         person,
     };
 }

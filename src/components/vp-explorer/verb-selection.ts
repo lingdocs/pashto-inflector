@@ -95,5 +95,6 @@ export function makeVPSelectionState(
                 },
             } : {},
         },
+        shrunkenPossesive: os ? os.shrunkenPossesive : undefined,
     };
 }

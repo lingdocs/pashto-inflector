@@ -12,7 +12,7 @@ const gColors = {
 };
 
 // TODO: better logic on this
-const labels = (role: "subject" | "object" | "ergative") => ({
+const labels = (role: "subject" | "object" | "ergative" | "possesor") => ({
     // persons: [
     //     ["1st", "1st pl."],
     //     ["2nd", "2nd pl."],
@@ -20,11 +20,15 @@ const labels = (role: "subject" | "object" | "ergative") => ({
     // ],
     e: role === "object" ? [
         ["me", "us"],
-        ["you", "you pl."],
+        ["you", "y'all"],
         [{ masc: "him/it", fem: "her/it"}, "them"],
+    ] : role === "possesor" ? [
+        ["my", "our"],
+        ["your", "y'all's"],
+        [{ masc: "his/its", fem: "her/its"}, "their"],
     ] : [
         ["I", "We"],
-        ["You", "You pl."],
+        ["You", "Y'all"],
         [{ masc: "He/It", fem: "She/It"}, "They"],
     ],
     p: role === "subject" ? {
@@ -48,6 +52,17 @@ const labels = (role: "subject" | "object" | "ergative") => ({
             ["زه", "مونږ"],
             ["ته", "تاسو"],
             [{ masc: "دهٔ", fem: "دې" }, "دوي"],
+        ],
+    } : role === "possesor" ? {
+        far: [
+            ["زما", "زمونږ"],
+            ["ستا", "ستاسو"],
+            [{ masc: "د هغهٔ", fem: "د هغې" }, "د هغوي"],
+        ],
+        near: [
+            ["زما", "زمونږ"],
+            ["ستا", "ستاسو"],
+            [{ masc: "د دهٔ", fem: "د دې" }, "د دوي"],
         ],
     } : {
         far: [
@@ -79,11 +94,10 @@ function pickerStateToPerson(s: PickerState): T.Person {
         + (6 * s.col);
 }
 
-function NPPronounPicker({ onChange, pronoun, role, clearButton, opts, is2ndPersonPicker }: {
+function NPPronounPicker({ onChange, pronoun, role, opts, is2ndPersonPicker }: {
     pronoun: T.PronounSelection,
     onChange: (p: T.PronounSelection) => void,
-    role: "object" | "subject" | "ergative",
-    clearButton?: JSX.Element,
+    role: "object" | "subject" | "ergative" | "possesor",
     opts: T.TextOptions,
     is2ndPersonPicker?: boolean,
 }) {

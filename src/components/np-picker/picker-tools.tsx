@@ -106,6 +106,7 @@ export function makeNounSelection(entry: T.NounEntry, dynamicComplement?: true):
         number,
         numberCanChange: number === "singular",
         adjectives: [],
+        possesor: undefined,
         dynamicComplement,
     };
 }

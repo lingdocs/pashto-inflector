@@ -1,6 +1,6 @@
 import * as T from "../../types";
 import {
-    concatPsString,
+    concatPsString, psStringEquals,
 } from "../p-text-helpers";
 import {
     Segment,
@@ -13,7 +13,6 @@ import {
 import {
     removeAccents,
 } from "../accent-helpers";
-import { getVerbBlockPosFromPerson } from "../misc-helpers";
 import * as grammarUnits from "../grammar-units";
 import {
     removeBa,
@@ -21,6 +20,11 @@ import {
 } from "./vp-tools";
 import { isImperativeTense, isModalTense, isPerfectTense } from "../type-predicates";
 import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
+import {
+    orderKidsSection,
+    findPossesiveToShrink,
+    shrinkNP,
+} from "./compile-tools";
 
 type Form = T.FormVersion & { OSV?: boolean };
 export function compileVP(VP: T.VPRendered, form: Form): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
@@ -79,20 +83,33 @@ function compilePs({ NPs, kids, verb: { head, rest }, VP }: CompilePsInput): T.S
 }
 
 function getSegmentsAndKids(VP: T.VPRendered, form: Form): { kids: Segment[], NPs: Segment[][] } {
-    const SO = {
-        subject: getPashtoFromRendered(VP.subject),
-        object: typeof VP.object === "object" ? getPashtoFromRendered(VP.object) : undefined,
-    }
     const removeKing = form.removeKing && !(VP.isCompound === "dynamic" && VP.isPast);
     const shrinkServant = form.shrinkServant && !(VP.isCompound === "dynamic" && !VP.isPast);
-
-    const toShrink = (() => {
+    const toShrinkServant = (() => {
         if (!shrinkServant) return undefined;
         if (!VP.servant) return undefined;
         const servant = VP[VP.servant];
         if (typeof servant !== "object") return undefined;
         return servant;
     })();
+    const shrunkenServant = toShrinkServant ? shrinkNP(toShrinkServant) : undefined;
+    const possToShrink = findPossesiveToShrink(VP);
+    const shrunkenPossesive = possToShrink ? shrinkNP(possToShrink) : undefined;
+    const shrunkenPossAllowed = possToShrink && shrunkenPossesive && (
+        !shrunkenServant || !psStringEquals(shrunkenPossesive.ps[0], shrunkenServant.ps[0])
+    ) && (
+        // can only shrink the possesive if the parent of the possesive is still in full form  
+        !(possToShrink.role === "king" && removeKing) 
+        &&
+        !(possToShrink.role === "servant" && shrinkServant)
+    );
+    const shrinkPossUid = shrunkenPossAllowed
+        ? VP.shrunkenPossesive
+        : undefined;
+    const SO = {
+        subject: getPashtoFromRendered(VP.subject, shrinkPossUid, false),
+        object: typeof VP.object === "object" ? getPashtoFromRendered(VP.object, shrinkPossUid, VP.subject.person) : undefined,
+    };
     function getSegment(t: "subject" | "object"): Segment | undefined {
         const word = (VP.servant === t)
             ? (!shrinkServant ? SO[t] : undefined)
@@ -106,12 +123,14 @@ function getSegmentsAndKids(VP: T.VPRendered, form: Form): { kids: Segment[], NP
     const object = getSegment("object");
 
     return {
-        kids: [
+        kids: orderKidsSection([
             ...VP.verb.hasBa
                 ? [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])] : [],
-            ...toShrink
-                ? [shrinkNP(toShrink)] : [],
-        ],
+            ...shrunkenServant
+                ? [shrunkenServant] : [],
+            ...(shrunkenPossesive && shrunkenPossAllowed)
+                ? [shrunkenPossesive] : [],
+        ]),
         NPs: [
             [
                 ...subject ? [subject] : [],
@@ -236,11 +255,6 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
     ];
 }
 
-function shrinkNP(np: T.Rendered<T.NPSelection>): Segment {
-    const [row, col] = getVerbBlockPosFromPerson(np.person);
-    return makeSegment(grammarUnits.pronouns.mini[row][col], ["isKid", "isMiniPronoun"]);
-}
-
 function mergeSegments(s1: Segment, s2: Segment, noSpace?: "no space"): Segment {
     if (noSpace) {
         return s2.adjust({ ps: (p) => concatPsString(s1.ps[0], p) });
@@ -295,4 +309,3 @@ function compileEnglish(VP: T.VPRendered): string[] | undefined {
         }))
         : undefined;
 }
-

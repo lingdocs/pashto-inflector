@@ -15,12 +15,14 @@ import { getForms } from "../lib/conjugation-forms";
 import { conjugateVerb } from "../lib/verb-conjugation";
 import PersonSelection from "./PersonSelection";
 import {
-    personIsAllowed,
-    randomPerson,
     incrementPerson,
     parseEc,
 } from "../lib/misc-helpers";
 import * as T from "../types";
+import {
+    randomPerson,
+    isInvalidSubjObjCombo,
+} from "../lib/np-tools";
 
 const VerbChoiceWarning = () => (
     <>
@@ -100,7 +102,7 @@ function reducer(state: State, action: Action): State {
         let newPerson = person;
         let otherPerson = state[oppositeRole(setting)];
         let otherSetting = oppositeRole(setting);
-        while (!personIsAllowed(newPerson, otherPerson)) {
+        while (isInvalidSubjObjCombo(newPerson, otherPerson)) {
             otherPerson = incrementPerson(otherPerson);
         }
         return { ...state, [setting]: newPerson, [otherSetting]: otherPerson };
@@ -127,9 +129,9 @@ function reducer(state: State, action: Action): State {
         case "randomPerson":
             return {
                 ...state,
-                [action.payload]: randomPerson(
-                    state[action.payload === "subject" ? "object" : "subject"]
-                ),
+                [action.payload]: randomPerson({
+                    prev: state[action.payload === "subject" ? "object" : "subject"]
+                }),
             };
         case "setShowingFormInfo":
             return {

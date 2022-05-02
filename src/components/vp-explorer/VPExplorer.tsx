@@ -45,7 +45,7 @@ export function VPExplorer(props: {
 }) {
     const [vps, setVps] = useStickyState<T.VPSelectionState>(
         savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState5",    
+        "vpsState6",    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
         savedMode => {
@@ -97,6 +97,12 @@ export function VPExplorer(props: {
         if (vps.verb?.isCompound === "dynamic") return;
         setVps(switchSubjObj)
     }
+    function handleShrinkPossesive(shrunkenPossesive: number | undefined) {
+        setVps(o => ({
+            ...o,
+            shrunkenPossesive,
+        }));
+    }
     function quizLock<T>(f: T) {
         if (mode === "quiz") {
             return () => {
@@ -142,10 +148,12 @@ export function VPExplorer(props: {
                             ? "ergative"
                             : "subject"
                         }
+                        shrunkenPossesiveInPhrase={vps.shrunkenPossesive}
                         is2ndPersonPicker={vps.verb.tenseCategory === "imperative"}
                         np={vps.subject}
                         counterPart={vps.verb ? vps.verb.object : undefined}
                         onChange={handleSubjectChange}
+                        handleShrinkPossesive={handleShrinkPossesive}
                         opts={props.opts}
                     />
                 </div>
@@ -153,6 +161,8 @@ export function VPExplorer(props: {
                     {(typeof vps.verb.object === "number")
                         ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
                         : <NPPicker
+                            shrunkenPossesiveInPhrase={vps.shrunkenPossesive}
+                            handleShrinkPossesive={handleShrinkPossesive}
                             heading={roles.king === "object" 
                                 ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
                                 : <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>Object {roleIcon.servant}</div>}

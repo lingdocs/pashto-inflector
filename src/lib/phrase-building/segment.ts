@@ -12,7 +12,7 @@ type SegmentDescriptions = {
     isVerbHead?: boolean,
     isOoOrWaaHead?: boolean,
     isVerbRest?: boolean,
-    isMiniPronoun?: boolean,
+    isMiniPronoun?: number,
     isKid?: boolean,
     // TODO: Simplify to just isKidAfterHead?
     isKidBetweenHeadAndRest?: boolean,
@@ -25,28 +25,23 @@ export type Segment = { ps: T.PsString[] } & SegmentDescriptions & {
     adjust: (o: { ps?: T.PsString | T.PsString[] | ((ps: T.PsString) => T.PsString), desc?: SDT[] }) => Segment,
 };
 
-function addAdjectives(ps: T.PsString[], adjectives?: T.Rendered<T.AdjectiveSelection>[]): T.PsString[] {
-    if (!adjectives) return ps;
-    return ps.map(p => {
-        // TODO: more thorough use of all possible variends?
-        return concatPsString(...adjectives.map(a => a.ps[0]), p);
-    });
-}
 
 export function makeSegment(
-    input: T.Rendered<T.NounSelection> | T.PsString | T.PsString[],
-    options?: (keyof SegmentDescriptions)[],     
+    input: T.PsString | T.PsString[],
+    options?: (keyof SegmentDescriptions | 1 | 2 | 3)[],     
 ): Segment {
     const ps: T.PsString[] = Array.isArray(input)
         ? input
-        : "type" in input
-        ? addAdjectives(input.ps, input.adjectives)
         : [input];
     return {
         ps: Array.isArray(ps) ? ps : [ps],
         ...options && options.reduce((all, curr) => ({
             ...all,
-            [curr]: true,
+            ...typeof curr === "number" ? {
+                isMiniPronoun: curr,
+            } : {
+                [curr]: true,
+            },
         }), {}),
         adjust: function(o): Segment {
             return {

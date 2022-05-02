@@ -31,7 +31,8 @@ function EPExplorer(props: {
             tense: "present",
             negative: false,
         },
-    }, "EPSelectionState2");
+        shrunkenPossesive: undefined,
+    }, "EPSelectionState3");
     function handlePredicateTypeChange(type: "NP" | "Complement") {
         setEps(o => ({
             ...o,
@@ -56,6 +57,12 @@ function EPExplorer(props: {
             },
         }));
     }
+    function handleShrinkPossesive(shrunkenPossesive: number | undefined) {
+        setEps(o => ({
+            ...o,
+            shrunkenPossesive,
+        }));
+    }
     const king = eps.subject?.type === "pronoun"
         ? "subject"
         : eps.predicate.type === "Complement"
@@ -76,6 +83,8 @@ function EPExplorer(props: {
             {mode === "phrases" && <>
                 <div className="my-2">
                     <NPPicker
+                        shrunkenPossesiveInPhrase={eps.shrunkenPossesive}
+                        handleShrinkPossesive={handleShrinkPossesive}
                         heading={<div className="h5 text-center">Subject {king === "subject" ? roleIcon.king : ""}</div>}
                         entryFeeder={props.entryFeeder}
                         np={eps.subject}
@@ -99,6 +108,8 @@ function EPExplorer(props: {
                         />
                     </div>
                     {eps.predicate.type === "NP" ? <NPPicker
+                        shrunkenPossesiveInPhrase={eps.shrunkenPossesive}
+                        handleShrinkPossesive={handleShrinkPossesive}
                         entryFeeder={props.entryFeeder}
                         np={eps.predicate.type === "NP" ? eps.predicate.NP : undefined}
                         counterPart={undefined}

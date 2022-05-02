@@ -445,6 +445,7 @@ function getRandomVPSelection(mix: MixType = "both") {
             return {
                 subject: subject !== undefined ? subject : randSubj,
                 verb: randomizeTense(verb, true),
+                shrunkenPossesive: undefined,
             }
         }
         const v: T.VerbSelectionComplete = {
@@ -460,6 +461,7 @@ function getRandomVPSelection(mix: MixType = "both") {
         return {
             subject: randSubj,
             verb: randomizeTense(v, true),
+            shrunkenPossesive: undefined,
         };
     };
 };

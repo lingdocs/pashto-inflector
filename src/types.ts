@@ -501,6 +501,7 @@ export type VPRendered = {
     type: "VPRendered",
     king: "subject" | "object",
     servant: "subject" | "object" | undefined,
+    shrunkenPossesive: number | undefined,
     isPast: boolean,
     isTransitive: boolean,
     isCompound: "stative" | "dynamic" | false,
@@ -529,11 +530,13 @@ export type Tense = EquativeTense | VerbTense | PerfectTense | ModalTense | Impe
 export type VPSelectionState = {
     subject: NPSelection | undefined,
     verb: VerbSelection,
+    shrunkenPossesive: undefined | number,
 };
 
 export type VPSelectionComplete = {
     subject: NPSelection,
     verb: VerbSelectionComplete,
+    shrunkenPossesive: undefined | number,
 };
 
 export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "imperfectiveTense" | "tenseCategory"> & {
@@ -587,6 +590,11 @@ export type NPType = "noun" | "pronoun" | "participle";
 
 export type ObjectNP = "none" | Person.ThirdPlurMale;
 
+export type PossesorSelection = {
+    uid: number,
+    np: NPSelection,
+}
+
 // TODO require/import Person and PsString
 export type NounSelection = {
     type: "noun",
@@ -597,6 +605,7 @@ export type NounSelection = {
     numberCanChange: boolean,
     dynamicComplement?: boolean,
     adjectives: AdjectiveSelection[],
+    possesor: undefined | PossesorSelection,
 };
 
 export type AdjectiveSelection = {
@@ -619,6 +628,7 @@ export type PronounSelection = {
 export type ParticipleSelection = {
     type: "participle",
     verb: VerbEntry,
+    possesor: undefined | PossesorSelection,
 };
 
 // not object
@@ -629,7 +639,7 @@ export type ReplaceKey<T, K extends string, R> = T extends Record<K, unknown> ? 
 export type FormVersion = { removeKing: boolean, shrinkServant: boolean };
 
 export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection> = ReplaceKey<
-    Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives">,
+    Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,
     "e",
     string
 > & {
@@ -637,8 +647,13 @@ export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelectio
     e?: string,
     inflected: boolean,
     person: Person,
+    role: "king" | "servant" | "none",
     // TODO: better recursive thing
     adjectives?: Rendered<AdjectiveSelection>[],
+    possesor?: {
+        uid: number,
+        np: Rendered<NPSelection>,
+    },
 };
 // TODO: recursive changing this down into the possesor etc.
 
@@ -650,6 +665,7 @@ export type EPSelectionState = {
         Complement: EqCompSelection | undefined,
     },
     equative: EquativeSelection,
+    shrunkenPossesive: undefined | number,
 };
 
 export type EPSelectionComplete = Omit<EPSelectionState, "subject" | "predicate"> & {
@@ -684,6 +700,7 @@ export type EPRendered = {
     predicate: Rendered<NPSelection | EqCompSelection>,
     equative: EquativeRendered,
     englishBase?: string[],
+    shrunkenPossesive: undefined | number,
 }
 
 export type EntryFeeder = {

@@ -5,6 +5,7 @@ function makeParticipleSelection(verb: T.VerbEntry): T.ParticipleSelection {
     return {
         type: "participle",
         verb,
+        possesor: undefined,
     };
 }
 

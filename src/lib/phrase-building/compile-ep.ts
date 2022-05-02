@@ -12,6 +12,11 @@ import {
 } from "./segment";
 import { removeAccents } from "../accent-helpers";
 import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
+import {
+    orderKidsSection,
+    findPossesiveToShrink,
+    shrinkNP,
+} from "./compile-tools";
 
 export function compileEP(EP: T.EPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
 export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths: true): { ps: T.PsString[], e?: string[] };
@@ -37,12 +42,20 @@ function getSegmentsAndKids(EP: T.EPRendered, form: T.FormVersion): { kids: Segm
         }
         return [s];
     }
-    const subject = makeSegment(getPashtoFromRendered(EP.subject));
-    const predicate = makeSegment(getPashtoFromRendered(EP.predicate));
+    const possToShrink = findPossesiveToShrink(EP);
+    const shrunkenPossAllowed = !(form.removeKing && possToShrink?.role === "king");
+    const possUid = shrunkenPossAllowed ? EP.shrunkenPossesive : undefined;
+    const subject = makeSegment(getPashtoFromRendered(EP.subject, possUid, false));
+    const predicate = makeSegment(getPashtoFromRendered(EP.predicate, possUid, false));
     return {
-        kids: EP.equative.hasBa
-            ? [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])]
-            : [],
+        kids: orderKidsSection([
+            ...EP.equative.hasBa
+                ? [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])]
+                : [],
+            ...(possToShrink && shrunkenPossAllowed)
+                ? [shrinkNP(possToShrink)]
+                : [],
+        ]),
         NPs: [
             ...ifNotRemoved(subject, "subject"),
             ...ifNotRemoved(predicate, "predicate"),

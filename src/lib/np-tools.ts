@@ -1,5 +1,6 @@
 import * as T from "../types";
-import { parseEc } from "../lib/misc-helpers";
+import { isFirstPerson, parseEc } from "../lib/misc-helpers";
+import { isSecondPerson } from "./phrase-building/vp-tools";
 
 function getRandPers(): T.Person {
     return Math.floor(Math.random() * 12);
@@ -31,22 +32,10 @@ export function randomPerson(a?: { prev?: T.Person, counterPart?: T.VerbObject |
 }
 
 export function isInvalidSubjObjCombo(subj: T.Person, obj: T.Person): boolean {
-    const firstPeople = [
-        T.Person.FirstSingMale,
-        T.Person.FirstSingFemale,
-        T.Person.FirstPlurMale,
-        T.Person.FirstPlurFemale,
-    ];
-    const secondPeople = [
-        T.Person.SecondSingMale,
-        T.Person.SecondSingFemale,
-        T.Person.SecondPlurMale,
-        T.Person.SecondPlurFemale,
-    ];
     return (
-        (firstPeople.includes(subj) && firstPeople.includes(obj))
+        (isFirstPerson(subj) && isFirstPerson(obj))
         ||
-        (secondPeople.includes(subj) && secondPeople.includes(obj))
+        (isSecondPerson(subj) && isSecondPerson(obj))
     );
 }
 

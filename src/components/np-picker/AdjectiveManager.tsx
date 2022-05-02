@@ -36,14 +36,12 @@ function AdjectiveManager(props: {
     // flippedList.reverse();
     // console.log(props.adjectives);
     return <div className="mb-1">
-        {!!props.adjectives.length && <div className="d-flex flex-row justify-content-between">
-            <h6>Adjectives</h6>
-            {!adding ? <h6 onClick={() => setAdding(true)}>+ Adj.</h6> : <div></div>}
-        </div>}
         {adding && <div>
-            <div className="d-flex flex-row justify-content-between">
+            <div className="d-flex flex-row justify-content-between mb-1">
                 <div>Add Adjective</div>
-                <div onClick={() => setAdding(false)}>Cancel</div>
+                <div className="clickable" onClick={() => setAdding(false)}>
+                    <i className="fas fa-trash" />
+                </div>
             </div>
             <AdjectivePicker
                 noTitle
@@ -53,21 +51,27 @@ function AdjectiveManager(props: {
                 onChange={handleAddNew}
             />
         </div>}
-        {props.adjectives.map((adj, i) => (
-            <div className="d-flex flex-row align-items-baseline">
-                <AdjectivePicker
-                    noTitle
-                    key={`adj${i}`}
-                    adjective={adj}
-                    entryFeeder={props.entryFeeder}
-                    opts={props.opts}
-                    onChange={handleChange(i)}
-                />
-                <div onClick={deleteAdj(i)} className="ml-4">
-                    <div className="fas fa-trash" />
+        {props.adjectives.map((adj, i) => <div key={i}>
+            <div className="d-flex flex-row justify-content-between">
+                <div>Adjective</div>
+                <div className="d-flex flex-row align-items-baseline">
+                    {!!props.adjectives.length && !adding && <div>
+                        <h6 onClick={() => setAdding(true)}>+ Adj.</h6>
+                    </div>}
+                    <div onClick={deleteAdj(i)} className="ml-4">
+                        <div className="fas fa-trash" />
+                    </div>
                 </div>
             </div>
-        ))}
+            <AdjectivePicker
+                noTitle
+                key={`adj${i}`}
+                adjective={adj}
+                entryFeeder={props.entryFeeder}
+                opts={props.opts}
+                onChange={handleChange(i)}
+            />
+        </div>)}
         {!adding && !props.adjectives.length && <h6 className="clickable" style={{ float: "right" }}>
             <div onClick={() => setAdding(true)}>+ Adj.</div>
         </h6>}

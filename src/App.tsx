@@ -27,6 +27,7 @@ import { isAdjectiveEntry, isLocativeAdverbEntry, isNounEntry } from "./lib/type
 import defualtTextOptions from "./lib/default-text-options";
 import PhraseBuilder from "./components/vp-explorer/VPExplorer";
 import useStickyState from "./lib/useStickyState";
+import { EPExplorer } from "./library";
 type VerbType = "simple" | "stative compound" | "dynamic compound";
 const verbTypes: VerbType[] = [
     "simple",
@@ -276,6 +277,11 @@ function App() {
                         opts={textOptions}
                     />
                 </div>}
+                <h4>🆕 Equative Phrase Builder</h4>
+                <EPExplorer
+                    opts={textOptions}
+                    entryFeeder={entryFeeder}
+                />
             </div>
         </main>
         <Modal show={showingTextOptions} onHide={() => setShowingTextOptions(false)}>
