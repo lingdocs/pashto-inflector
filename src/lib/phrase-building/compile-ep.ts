@@ -35,7 +35,7 @@ export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths?
     };
 }
 
-function getSegmentsAndKids(EP: T.EPRendered, form: T.FormVersion): { kids: Segment[], NPs: Segment[] } {
+function getSegmentsAndKids(EP: T.EPRendered, form: Omit<T.FormVersion, "shrinkServant">): { kids: Segment[], NPs: Segment[] } {
     function ifNotRemoved(s: Segment, role: "subject" | "predicate"): Segment[] {
         if (form.removeKing && EP.king === role) {
             return [];

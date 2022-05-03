@@ -509,6 +509,7 @@ export type VPRendered = {
     object: Rendered<NPSelection> | ObjectNP,
     verb: VerbRendered,
     englishBase?: string[],
+    form: FormVersion,
 }
 
 export type VerbTense = "presentVerb"
@@ -531,12 +532,14 @@ export type VPSelectionState = {
     subject: NPSelection | undefined,
     verb: VerbSelection,
     shrunkenPossesive: undefined | number,
+    form: FormVersion,
 };
 
 export type VPSelectionComplete = {
     subject: NPSelection,
     verb: VerbSelectionComplete,
     shrunkenPossesive: undefined | number,
+    form: FormVersion,
 };
 
 export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "imperfectiveTense" | "tenseCategory"> & {
@@ -664,6 +667,7 @@ export type EPSelectionState = {
     },
     equative: EquativeSelection,
     shrunkenPossesive: undefined | number,
+    form: FormVersion,
 };
 
 export type EPSelectionComplete = Omit<EPSelectionState, "subject" | "predicate"> & {
@@ -675,6 +679,7 @@ export type EPSelectionComplete = Omit<EPSelectionState, "subject" | "predicate"
         type: "Complement",
         selection: EqCompSelection,
     },
+    form: FormVersion,
 };
 
 export type EqCompType = "adjective" | "loc. adv."; // TODO: - more
@@ -699,6 +704,7 @@ export type EPRendered = {
     equative: EquativeRendered,
     englishBase?: string[],
     shrunkenPossesive: undefined | number,
+    form: FormVersion,
 }
 
 export type EntryFeeder = {

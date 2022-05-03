@@ -59,6 +59,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
             object: VP.verb.isCompound === "dynamic" ? "none" : VP.verb.object,
             vs: VP.verb,
         }),
+        form: VP.form,
     };
     return b;
 }

@@ -66,6 +66,7 @@ export function makeVPSelectionState(
             canChangeVoice: transitivity === "transitive",
             canChangeStatDyn: "stative" in info,
         },
+        form: os ? os.form : { removeKing: false, shrinkServant: false },
         shrunkenPossesive: os ? os.shrunkenPossesive : undefined,
     };
 }

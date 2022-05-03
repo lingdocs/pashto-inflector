@@ -2,11 +2,13 @@ import * as T from "../../types";
 import { renderEP } from "../../lib/phrase-building/render-ep";
 import { compileEP } from "../../lib/phrase-building/compile-ep";
 import AbbreviationFormSelector from "../vp-explorer/AbbreviationFormSelector";
-import useStickyState from "../../lib/useStickyState";
 import Examples from "../Examples";
 
-function EPDisplay({ eps, opts }: { eps: T.EPSelectionState, opts: T.TextOptions }) {
-    const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationFormEq");
+function EPDisplay({ eps, opts, setForm }: {
+    eps: T.EPSelectionState,
+    opts: T.TextOptions,
+    setForm: (form: T.FormVersion) => void,
+}) {
     const EP = completeEPSelection(eps);
     if (!EP) {
         return <div className="lead text-center my-4">
@@ -20,11 +22,11 @@ function EPDisplay({ eps, opts }: { eps: T.EPSelectionState, opts: T.TextOptions
         </div>
     }
     const rendered = renderEP(EP);
-    const result = compileEP(rendered, form);
+    const result = compileEP(rendered, EP.form);
     return <div className="text-center pt-3">
         <AbbreviationFormSelector
             adjustable="king"
-            form={{ ...form, shrinkServant: false }}
+            form={EP.form}
             onChange={setForm}
         />
         {"long" in result.ps ?

@@ -16,17 +16,11 @@ import { isPastTense } from "../../lib/phrase-building/vp-tools";
 import VPExplorerQuiz from "./VPExplorerQuiz";
 import { switchSubjObj } from "../../lib/phrase-building/vp-tools";
 import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationModal";
+// @ts-ignore
+import LZString from "lz-string";
 
-// TO FINISH IMPERATIVE STUFF!!
-// TODO: English Builders for imperatives
-// TODO: Quiz with imperatives
+const phraseURLParam = "VPPhrase";
 
-// TODO: make answerFeedback emojis appear at random translate angles a little bit
-// add energy drinks? 
-
-// TODO: Drill Down text display options
-
-// TODO: SHOW KING AND SERVANT ONCE TENSE PICKED, EVEN IF NPs not selected
 // TODO: Issue with dynamic compounds english making with plurals
 // TODO: Issue with "the money were taken"
 // TODO: Use the same component for PronounPicker and NPPronounPicker (sizing issue)
@@ -38,14 +32,17 @@ import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationMod
 // TODO: error handling on error with rendering etc
 
 export function VPExplorer(props: {
+    loaded?: T.VPSelectionState,
     verb: T.VerbEntry,
     opts: T.TextOptions,
     handleLinkClick: ((ts: number) => void) | "none",
     entryFeeder: T.EntryFeeder,
 }) {
     const [vps, setVps] = useStickyState<T.VPSelectionState>(
-        savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState7",    
+        props.loaded
+            ? props.loaded
+            : savedVps => makeVPSelectionState(props.verb, savedVps),
+        "vpsState8",    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
         savedMode => {
@@ -55,12 +52,20 @@ export function VPExplorer(props: {
         },
         "verbExplorerMode2",
     );
+    const [showShareClipped, setShowShareClipped] = useState<boolean>(false);
     const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
     const isPast = isPastTense(vps.verb.tenseCategory === "perfect" ? vps.verb.perfectTense : vps.verb.verbTense);
     const roles = getKingAndServant(
         isPast,
         vps.verb.transitivity !== "intransitive",
     );
+    useEffect(() => {
+        const VPSFromUrl = getVPSFromUrl();
+        if (VPSFromUrl) {
+            setVps(VPSFromUrl);
+        }
+        // eslint-disable-next-line
+    }, []);
     useEffect(() => {
         setVps(oldVps => {
             if (mode === "quiz") {
@@ -112,6 +117,21 @@ export function VPExplorer(props: {
         }
         return f;
     }
+    function handleSetForm(form: T.FormVersion) {
+        setVps(o => ({
+            ...o,
+            form,
+        }));
+    }
+    // for some crazy reason I can't get the URI share thing to encode and decode properly
+    function handleCopyShareLink() {
+        const shareUrl = getShareUrl(vps);
+        navigator.clipboard.writeText(shareUrl);
+        setShowShareClipped(true);
+        setTimeout(() => {
+            setShowShareClipped(false);
+        }, 1000);
+    }
     return <div className="mt-3" style={{ maxWidth: "950px"}}>
         <VerbPicker
             vps={vps}
@@ -119,7 +139,9 @@ export function VPExplorer(props: {
             opts={props.opts}
             handleLinkClick={props.handleLinkClick}
         />
-        <div className="mt-2 mb-3 text-center">
+        <div className="mt-2 mb-3 d-flex flex-row justify-content-between align-items-center">
+            <div style={{ width: "1rem" }}>
+            </div>
             <ButtonSelect
                 value={mode}
                 options={[
@@ -129,6 +151,13 @@ export function VPExplorer(props: {
                 ]}
                 handleChange={setMode}
             />
+            <div
+                className="clickable"
+                onClick={mode === "phrases" ? handleCopyShareLink : undefined}
+                style={{ width: "1rem" }}
+            >
+                {mode === "phrases" ? <i className="fas fa-share-alt" /> : ""}
+            </div>
         </div>
         {(vps.verb && (typeof vps.verb.object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
             <div className="text-center my-2">
@@ -183,13 +212,26 @@ export function VPExplorer(props: {
                 />
             </div>
         </div>}
-        {mode === "phrases" && <VPDisplay VP={vps} opts={props.opts} />}
+        {mode === "phrases" && <VPDisplay
+            VP={vps}
+            opts={props.opts}
+            setForm={handleSetForm}
+        />}
         {mode === "charts" && <ChartDisplay VS={vps.verb} opts={props.opts} />}
         {mode === "quiz" && <VPExplorerQuiz opts={props.opts} vps={vps} />}
         <VPExplorerExplanationModal
             showing={showingExplanation}
             setShowing={setShowingExplanation}
         />
+        {showShareClipped && <div className="alert alert-primary text-center" role="alert" style={{
+            position: "fixed",
+            top: "30%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 9999999999999,
+        }}>
+            Phrase URL copied to clipboard
+        </div>}
     </div>
 }
 
@@ -202,4 +244,19 @@ function hasPronounConflict(subject: T.NPSelection | undefined, object: undefine
     return isInvalidSubjObjCombo(subjPronoun.person, objPronoun.person);
 }
 
+function getShareUrl(vps: T.VPSelectionState): string {
+    const stringJSON = JSON.stringify(vps);
+    const encoded = LZString.compressToEncodedURIComponent(stringJSON);
+    const url = new URL(window.location.href);
+    url.searchParams.append(phraseURLParam, encoded);
+    return url.toString();
+}
+
+function getVPSFromUrl(): T.VPSelectionState | undefined {
+    const params = new URLSearchParams(window.location.search);
+    const fromParams = params.get(phraseURLParam);
+    if (!fromParams) return;
+    const decoded = LZString.decompressFromEncodedURIComponent(fromParams);
+    return JSON.parse(decoded) as T.VPSelectionState;
+}
 

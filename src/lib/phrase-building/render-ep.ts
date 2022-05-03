@@ -33,6 +33,7 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
         equative: renderEquative(EP.equative, kingPerson),
         englishBase: equativeBuilders[EP.equative.tense](kingPerson, EP.equative.negative),
         shrunkenPossesive: EP.shrunkenPossesive,
+        form: EP.form,
     };
 }
 

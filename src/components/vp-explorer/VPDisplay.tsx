@@ -8,8 +8,11 @@ import {
 import useStickyState from "../../lib/useStickyState";
 import Examples from "../Examples";
 
-function VPDisplay({ VP, opts }: { VP: T.VPSelectionState, opts: T.TextOptions }) {
-    const [form, setForm] = useStickyState<T.FormVersion>({ removeKing: false, shrinkServant: false }, "abbreviationForm");
+function VPDisplay({ VP, opts, setForm }: {
+    VP: T.VPSelectionState,
+    opts: T.TextOptions,
+    setForm: (form: T.FormVersion) => void,
+}) {
     const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
     const VPComplete = completeVPSelection(VP); 
     if (!VPComplete) {
@@ -20,7 +23,7 @@ function VPDisplay({ VP, opts }: { VP: T.VPSelectionState, opts: T.TextOptions }
             })()}
         </div>;
     }
-    const result = compileVP(renderVP(VPComplete), { ...form, OSV });
+    const result = compileVP(renderVP(VPComplete), { ...VP.form, OSV });
     return <div className="text-center mt-1">
         {VP.verb.transitivity === "transitive" && <div className="form-check mb-2">
             <input
@@ -36,7 +39,7 @@ function VPDisplay({ VP, opts }: { VP: T.VPSelectionState, opts: T.TextOptions }
         </div>}
         <AbbreviationFormSelector
             adjustable={whatsAdjustable(VPComplete)}
-            form={form}
+            form={VP.form}
             onChange={setForm}
         />
         {"long" in result.ps ?

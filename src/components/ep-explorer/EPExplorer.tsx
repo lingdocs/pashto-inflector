@@ -32,7 +32,8 @@ function EPExplorer(props: {
             negative: false,
         },
         shrunkenPossesive: undefined,
-    }, "EPSelectionState3");
+        form: { removeKing: false, shrinkServant: false },
+    }, "EPSelectionState10");
     function handlePredicateTypeChange(type: "NP" | "Complement") {
         setEps(o => ({
             ...o,
@@ -61,6 +62,12 @@ function EPExplorer(props: {
         setEps(o => ({
             ...o,
             shrunkenPossesive,
+        }));
+    }
+    function handleSetForm(form: T.FormVersion) {
+        setEps(o => ({
+            ...o,
+            form,
         }));
     }
     const king = eps.subject?.type === "pronoun"
@@ -134,7 +141,11 @@ function EPExplorer(props: {
             </div>
         </div>
         {mode === "charts" && <EqChartsDisplay tense={eps.equative.tense} opts={props.opts} />}
-        {mode === "phrases" && <EPDisplay opts={props.opts} eps={eps} />}
+        {mode === "phrases" && <EPDisplay
+            opts={props.opts}
+            eps={eps}
+            setForm={handleSetForm}
+        />}
     </div>;
 }
 
