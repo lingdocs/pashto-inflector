@@ -1,15 +1,12 @@
 import PronounPicker from "./NPPronounPicker";
 import NounPicker from "./NPNounPicker";
 import ParticiplePicker from "./NPParticiplePicker";
-// import { getEnglishPronoun } from "../../lib/english-pronoun-tools";
-// import { ButtonSelect } from "@lingdocs/pashto-inflector";
 import {
     randomPerson,
 } from "../../lib/np-tools";
 import { useState, useEffect } from "react";
 import * as T from "../../types";
 import { isSecondPerson } from "../../lib/phrase-building/vp-tools";
-// import { capitalizeFirstLetter } from "../../lib/text-tools";
 
 const npTypes: T.NPType[] = ["pronoun", "noun", "participle"];
 
@@ -33,6 +30,7 @@ function NPPicker(props: {
     const [npType, setNpType] = useState<T.NPType | undefined>(props.np ? props.np.type : undefined);
     useEffect(() => {
         setNpType(props.np ? props.np.type : undefined);
+        setAddingPoss(false);
     }, [props.np]);
     function handleClear() {
         if (props.np && props.np.type === "noun" && props.np.dynamicComplement) return;
@@ -186,9 +184,8 @@ function checkForNewPossesor(n: T.NPSelection | undefined, old: T.PossesorSelect
     return false;
 }
 
-// TODO: BETTER UID
 function makeUID() {
-    return Math.floor(Math.random() * 50000);
+    return Math.floor(Math.random() * 10000000);
 }
 
 export default NPPicker;

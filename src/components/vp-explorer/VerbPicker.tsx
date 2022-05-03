@@ -5,6 +5,7 @@ import { getVerbInfo } from "../../lib/verb-info";
 import Hider from "../Hider";
 import useStickyState from "../../lib/useStickyState";
 import CompoundDisplay from "./CompoundDisplay";
+import { changeStatDyn, changeTransitivity, changeVoice } from "./verb-selection";
 
 // TODO: dark on past tense selecitons
 
@@ -27,7 +28,7 @@ function VerbPicker(props: {
         return <div>ERROR: Verb version should be select first</div>;
     }
     function onVoiceSelect(value: "active" | "passive") {
-        if (props.vps.verb && props.vps.verb.changeVoice) {
+        if (props.vps.verb && props.vps.verb.canChangeVoice) {
             if (value === "passive" && props.vps.verb.tenseCategory === "imperative") {
                 return;
             }
@@ -35,12 +36,12 @@ function VerbPicker(props: {
                 props.onChange({
                     ...props.vps,
                     subject: props.vps.verb.object,
-                    verb: props.vps.verb.changeVoice(value, props.vps.verb.object),
+                    verb: changeVoice(props.vps.verb, value, props.vps.verb.object),
                 });
             } else {
                 props.onChange({
                     ...props.vps,
-                    verb: props.vps.verb.changeVoice(value, value === "active" ? props.vps.subject : undefined),
+                    verb: changeVoice(props.vps.verb, value, value === "active" ? props.vps.subject : undefined),
                 });
             }
         }
@@ -49,18 +50,18 @@ function VerbPicker(props: {
         return t === "intransitive" ? "transitive" : t;
     }
     function handleChangeTransitivity(t: "transitive" | "grammatically transitive") {
-        if (props.vps.verb && props.vps.verb.changeTransitivity) {
+        if (props.vps.verb && props.vps.verb.canChangeTransitivity) {
             props.onChange({
                 ...props.vps,
-                verb: props.vps.verb.changeTransitivity(t),
+                verb: changeTransitivity(props.vps.verb, t),
             });
         }
     }
     function handleChangeStatDyn(c: "stative" | "dynamic") {
-        if (props.vps.verb && props.vps.verb.changeStatDyn) {
+        if (props.vps.verb && props.vps.verb.canChangeStatDyn) {
             props.onChange({
                 ...props.vps,
-                verb: props.vps.verb.changeStatDyn(c),
+                verb: changeStatDyn(props.vps.verb, c),
             });
         }
     }
@@ -84,7 +85,7 @@ function VerbPicker(props: {
             </Hider>
         </div>}
         <div className="d-flex flex-row justify-content-around flex-wrap" style={{ maxWidth: "400px", margin: "0 auto" }}>
-            {props.vps.verb && props.vps.verb.changeTransitivity && <div className="text-center my-2">
+            {props.vps.verb && props.vps.verb.canChangeTransitivity && <div className="text-center my-2">
                 <ButtonSelect
                     small
                     options={[{
@@ -98,7 +99,7 @@ function VerbPicker(props: {
                     handleChange={handleChangeTransitivity}
                 />
             </div>}
-            {props.vps.verb && props.vps.verb.changeVoice && <div className="text-center my-2">
+            {props.vps.verb && props.vps.verb.canChangeVoice && <div className="text-center my-2">
                 <ButtonSelect
                     small
                     value={props.vps.verb.voice}
@@ -117,7 +118,7 @@ function VerbPicker(props: {
                     handleChange={onVoiceSelect}
                 />
             </div>}
-            {props.vps.verb && props.vps.verb.changeStatDyn && <div className="text-center my-2">
+            {props.vps.verb && props.vps.verb.canChangeStatDyn && <div className="text-center my-2">
                 <ButtonSelect
                     small
                     options={[{

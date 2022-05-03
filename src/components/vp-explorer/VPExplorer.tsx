@@ -45,7 +45,7 @@ export function VPExplorer(props: {
 }) {
     const [vps, setVps] = useStickyState<T.VPSelectionState>(
         savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState6",    
+        "vpsState7",    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
         savedMode => {

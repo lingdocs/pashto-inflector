@@ -550,13 +550,11 @@ export type VerbSelection = {
     dynAuxVerb?: VerbEntry,
     object: VerbObject, // TODO: should have a locked in (but number changeable noun) here for dynamic compounds
     transitivity: Transitivity,
+    canChangeTransitivity: boolean,
+    canChangeStatDyn: boolean,
     isCompound: "stative" | "dynamic" | false,
     voice: "active" | "passive",
-    changeTransitivity?: (t: "transitive" | "grammatically transitive") => VerbSelection,
-    changeStatDyn?: (t: "stative" | "dynamic") => VerbSelection,
-    changeVoice?: (v: "active" | "passive", subj?: NPSelection) => VerbSelection,
-    // TODO: changeStativeDynamic
-    // TODO: add in aspect element here??
+    canChangeVoice: boolean,
     negative: boolean,
     verbTense: VerbTense,
     perfectTense: PerfectTense,
