@@ -30,7 +30,7 @@ function NPPicker(props: {
     const [npType, setNpType] = useState<T.NPType | undefined>(props.np ? props.np.type : undefined);
     useEffect(() => {
         setNpType(props.np ? props.np.type : undefined);
-        setAddingPoss(false);
+        // setAddingPoss(false);
     }, [props.np]);
     function handleClear() {
         if (props.np && props.np.type === "noun" && props.np.dynamicComplement) return;
