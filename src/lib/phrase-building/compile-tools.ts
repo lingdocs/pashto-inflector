@@ -26,28 +26,55 @@ export function orderKidsSection(kids: Segment[]): Segment[] {
     });
 }
 
-export function findPossesiveToShrink(VP: T.VPRendered | T.EPRendered): T.Rendered<T.NPSelection> | undefined {
-    const uid = VP.shrunkenPossesive;
-    function findPossesiveInNP(NP: T.Rendered<T.NPSelection> | T.ObjectNP | undefined): T.Rendered<T.NPSelection> | undefined {
-        if (NP === undefined) return undefined;
-        if (typeof NP !== "object") return undefined;
-        if (!NP.possesor) return undefined;
-        if (NP.possesor.uid === uid) {
-            return NP.possesor.np;
-        }
-        return findPossesiveInNP(NP.possesor.np);
+function findPossesiveInNP(NP: T.Rendered<T.NPSelection> | T.ObjectNP | undefined, uid: number): T.Rendered<T.NPSelection> | undefined {
+    if (NP === undefined) return undefined;
+    if (typeof NP !== "object") return undefined;
+    if (!NP.possesor) return undefined;
+    if (NP.possesor.uid === uid) {
+        return NP.possesor.np;
     }
+    return findPossesiveInNP(NP.possesor.np, uid);
+}
+
+export function findPossesiveToShrinkInEP(EP: T.EPRendered): {
+    np: T.Rendered<T.NPSelection>,
+    from: "subject" | "predicate",
+} | undefined {
+    const uid = EP.shrunkenPossesive;
     if (uid === undefined) return undefined;
-    const objPred: T.Rendered<T.NPSelection> | undefined = ("object" in VP)
-        ? (typeof VP.object === "object" ? VP.object : undefined)
-        : (VP.predicate.type === "noun" || VP.predicate.type === "participle" || VP.predicate.type === "pronoun")
-        // typescript is dumb here;
-        ? VP.predicate as T.Rendered<T.NPSelection>
+    const inSubject = findPossesiveInNP(EP.subject, uid);
+    if (inSubject) {
+        return {
+            np: inSubject,
+            from: "subject",
+        };
+    }
+    if (EP.predicate.type === "adjective" || EP.predicate.type === "loc. adv.") {
+        return undefined;
+        
+    }
+    // ts being stupid
+    const predicate = EP.predicate as T.Rendered<T.NPSelection>;
+    const inPredicate = findPossesiveInNP(predicate, uid);
+    if (inPredicate) {
+        return {
+            np: inPredicate,
+            from: "predicate",
+        };
+    }
+    return undefined;
+}
+
+export function findPossesiveToShrinkInVP(VP: T.VPRendered): T.Rendered<T.NPSelection> | undefined {
+    const uid = VP.shrunkenPossesive;
+    if (uid === undefined) return undefined;
+    const obj: T.Rendered<T.NPSelection> | undefined = ("object" in VP && typeof VP.object === "object")
+        ? VP.object
         : undefined;
     return (
-        findPossesiveInNP(VP.subject)
+        findPossesiveInNP(VP.subject, uid)
         ||
-        findPossesiveInNP(objPred)
+        findPossesiveInNP(obj, uid)
     );
 }
 

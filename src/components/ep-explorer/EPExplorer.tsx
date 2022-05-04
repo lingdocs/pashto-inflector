@@ -1,17 +1,27 @@
 import * as T from "../../types";
-import useStickyState from "../../lib/useStickyState";
+import useStickyState, { useStickyReducer } from "../../lib/useStickyState";
 import NPPicker from "../np-picker/NPPicker";
 import EquativePicker from "./EquativePicker";
 import EPDisplay from "./EPDisplay";
 import ButtonSelect from "../ButtonSelect";
 import EqCompPicker from "./eq-comp-picker/EqCompPicker";
 import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
-import { isUnisexNounEntry } from "../../lib/type-predicates";
-import {
-    personGender,
-    personNumber,
-} from "../../lib/misc-helpers";
 import EqChartsDisplay from "./EqChartsDisplay";
+import epsReducer from "./eps-reducer";
+const blankEps: T.EPSelectionState = {
+    subject: undefined,
+    predicate: {
+        type: "Complement",
+        NP: undefined,
+        Complement: undefined,
+    },
+    equative: {
+        tense: "present",
+        negative: false,
+    },
+    shrunkenPossesive: undefined,
+    omitSubject: false,
+};
 
 // TODO: put the clear button beside the title in the predicate picker?
 
@@ -20,56 +30,7 @@ function EPExplorer(props: {
     entryFeeder: T.EntryFeeder,
 }) {
     const [mode, setMode] = useStickyState<"charts" | "phrases">("charts", "EPExplorerMode");
-    const [eps, setEps] = useStickyState<T.EPSelectionState>({
-        subject: undefined,
-        predicate: {
-            type: "Complement",
-            NP: undefined,
-            Complement: undefined,
-        },
-        equative: {
-            tense: "present",
-            negative: false,
-        },
-        shrunkenPossesive: undefined,
-        form: { removeKing: false, shrinkServant: false },
-    }, "EPSelectionState10");
-    function handlePredicateTypeChange(type: "NP" | "Complement") {
-        setEps(o => ({
-            ...o,
-            predicate: {
-                ...o.predicate,
-                type,
-            },
-        }));
-    }
-    function handleSetSubject(subject: T.NPSelection | undefined) {
-        setEps(old => massageSubjectChange(subject, old));
-    }
-    function setPredicateNP(selection: T.NPSelection | undefined) {
-        setEps(o => massageNPPredicateChange(selection, o))
-    }
-    function setPredicateComp(selection: T.EqCompSelection | undefined) {
-        setEps(o => ({
-            ...o,
-            predicate: {
-                ...o.predicate,
-                Complement: selection
-            },
-        }));
-    }
-    function handleShrinkPossesive(shrunkenPossesive: number | undefined) {
-        setEps(o => ({
-            ...o,
-            shrunkenPossesive,
-        }));
-    }
-    function handleSetForm(form: T.FormVersion) {
-        setEps(o => ({
-            ...o,
-            form,
-        }));
-    }
+    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPSelectionState10");
     const king = eps.subject?.type === "pronoun"
         ? "subject"
         : eps.predicate.type === "Complement"
@@ -91,13 +52,13 @@ function EPExplorer(props: {
                 <div className="my-2">
                     <NPPicker
                         shrunkenPossesiveInPhrase={eps.shrunkenPossesive}
-                        handleShrinkPossesive={handleShrinkPossesive}
+                        handleShrinkPossesive={payload => adjustEps({ type: "shrink possesive", payload })}
                         heading={<div className="h5 text-center">Subject {king === "subject" ? roleIcon.king : ""}</div>}
                         entryFeeder={props.entryFeeder}
                         np={eps.subject}
                         counterPart={undefined}
                         role="subject"
-                        onChange={handleSetSubject}
+                        onChange={payload => adjustEps({ type: "set subject", payload })}
                         opts={props.opts}
                     />
                 </div>
@@ -111,21 +72,21 @@ function EPExplorer(props: {
                                 { value: "Complement", label: "Complement" },
                             ]}
                             value={eps.predicate.type}
-                            handleChange={handlePredicateTypeChange}
+                            handleChange={payload => adjustEps({ type: "set predicate type", payload })}
                         />
                     </div>
                     {eps.predicate.type === "NP" ? <NPPicker
                         shrunkenPossesiveInPhrase={eps.shrunkenPossesive}
-                        handleShrinkPossesive={handleShrinkPossesive}
+                        handleShrinkPossesive={payload => adjustEps({ type: "shrink possesive", payload })}
                         entryFeeder={props.entryFeeder}
                         np={eps.predicate.type === "NP" ? eps.predicate.NP : undefined}
                         counterPart={undefined}
                         role="subject"
-                        onChange={setPredicateNP}
+                        onChange={payload => adjustEps({ type: "set predicate NP", payload })}
                         opts={props.opts}
                     /> : <EqCompPicker
                         comp={eps.predicate.type === "Complement" ? eps.predicate.Complement : undefined}
-                        onChange={setPredicateComp}
+                        onChange={payload => adjustEps({ type: "set predicate comp", payload })}
                         opts={props.opts}
                         entryFeeder={props.entryFeeder}
                     />}
@@ -135,7 +96,7 @@ function EPExplorer(props: {
                 <div className="h5 text-center clickable">Equative</div>
                 <EquativePicker
                     equative={eps.equative}
-                    onChange={(equative) => setEps(o => ({ ...o, equative }))}
+                    onChange={payload => adjustEps({ type: "set equative", payload })}
                     hideNegative={mode === "charts"}
                 />
             </div>
@@ -144,95 +105,9 @@ function EPExplorer(props: {
         {mode === "phrases" && <EPDisplay
             opts={props.opts}
             eps={eps}
-            setForm={handleSetForm}
+            setOmitSubject={payload => adjustEps({ type: "set omitSubject", payload })}
         />}
     </div>;
 }
 
 export default EPExplorer;
-
-function massageNPPredicateChange(selection: T.NPSelection | undefined, old: T.EPSelectionState): T.EPSelectionState {
-    if (!selection) {
-        return {
-            ...old,
-            predicate: {
-                ...old.predicate,
-                NP: selection,
-            },
-        };
-    }
-    if (old.subject?.type === "pronoun" && selection.type === "noun" && isUnisexNounEntry(selection.entry)) {
-        const { gender, number } = selection;
-        const pronoun = old.subject.person;
-        const newPronoun = movePersonNumber(movePersonGender(pronoun, gender), number);
-        return {
-            ...old,
-            subject: {
-                ...old.subject,
-                person: newPronoun,
-            },
-            predicate: {
-                ...old.predicate,
-                NP: selection,
-            },
-        };
-    }
-    return {
-        ...old,
-        predicate: {
-            ...old.predicate,
-            NP: selection,
-        },
-    };
-}
-
-function massageSubjectChange(subject: T.NPSelection | undefined, old: T.EPSelectionState): T.EPSelectionState {
-    if (!subject) {
-        return {
-            ...old,
-            subject,
-        };
-    }
-    if (subject.type === "pronoun" && old.predicate.type === "NP" && old.predicate.NP?.type === "noun" && isUnisexNounEntry(old.predicate.NP.entry)) {
-        const predicate = old.predicate.NP;
-        const adjusted = {
-            ...predicate,
-            ...predicate.numberCanChange ? {
-                number: personNumber(subject.person),
-            } : {},
-            ...predicate.genderCanChange ? {
-                gender: personGender(subject.person),
-            } : {},
-        }
-        return {
-            ...old,
-            subject,
-            predicate: {
-                ...old.predicate,
-                NP: adjusted,
-            },
-        };
-    }
-    return {
-        ...old,
-        subject,
-    };
-}
-
-function movePersonGender(p: T.Person, gender: T.Gender): T.Person {
-    const pGender = personGender(p);
-    if (gender === pGender) {
-        return p;
-    }
-    return (gender === "masc") ? (p - 1) : (p + 1);
-}
-
-function movePersonNumber(p: T.Person, number: T.NounNumber): T.Person {
-    const pNumber = personNumber(p);
-    if (pNumber === number) {
-        return p;
-    }
-    return (number === "plural")
-        ? (p + 6)
-        : (p - 6);
-}

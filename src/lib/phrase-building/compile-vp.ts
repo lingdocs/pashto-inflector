@@ -22,7 +22,7 @@ import { isImperativeTense, isModalTense, isPerfectTense } from "../type-predica
 import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
 import {
     orderKidsSection,
-    findPossesiveToShrink,
+    findPossesiveToShrinkInVP,
     shrinkNP,
 } from "./compile-tools";
 
@@ -93,7 +93,7 @@ function getSegmentsAndKids(VP: T.VPRendered, form: Form): { kids: Segment[], NP
         return servant;
     })();
     const shrunkenServant = toShrinkServant ? shrinkNP(toShrinkServant) : undefined;
-    const possToShrink = findPossesiveToShrink(VP);
+    const possToShrink = findPossesiveToShrinkInVP(VP);
     const shrunkenPossesive = possToShrink ? shrinkNP(possToShrink) : undefined;
     const shrunkenPossAllowed = possToShrink && shrunkenPossesive && (
         !shrunkenServant || !psStringEquals(shrunkenPossesive.ps[0], shrunkenServant.ps[0])

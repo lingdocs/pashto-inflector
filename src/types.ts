@@ -667,7 +667,7 @@ export type EPSelectionState = {
     },
     equative: EquativeSelection,
     shrunkenPossesive: undefined | number,
-    form: FormVersion,
+    omitSubject: boolean,
 };
 
 export type EPSelectionComplete = Omit<EPSelectionState, "subject" | "predicate"> & {
@@ -679,7 +679,7 @@ export type EPSelectionComplete = Omit<EPSelectionState, "subject" | "predicate"
         type: "Complement",
         selection: EqCompSelection,
     },
-    form: FormVersion,
+    omitSubject: boolean,
 };
 
 export type EqCompType = "adjective" | "loc. adv."; // TODO: - more
@@ -700,11 +700,11 @@ export type EPRendered = {
     type: "EPRendered",
     king: "subject" | "predicate",
     subject: Rendered<NPSelection>,
-    predicate: Rendered<NPSelection | EqCompSelection>,
+    predicate: Rendered<NPSelection> | Rendered<EqCompSelection>,
     equative: EquativeRendered,
     englishBase?: string[],
     shrunkenPossesive: undefined | number,
-    form: FormVersion,
+    omitSubject: boolean,
 }
 
 export type EntryFeeder = {

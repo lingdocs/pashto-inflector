@@ -3,21 +3,18 @@ import VerbPicker from "./VerbPicker";
 import TensePicker from "./TensePicker";
 import VPDisplay from "./VPDisplay";
 import ButtonSelect from "../ButtonSelect";
-import {
-    isInvalidSubjObjCombo,
-} from "../../lib/phrase-building/vp-tools";
 import * as T from "../../types";
 import ChartDisplay from "./VPChartDisplay";
-import useStickyState from "../../lib/useStickyState";
+import useStickyState, { useStickyReducer } from "../../lib/useStickyState";
 import { makeVPSelectionState } from "./verb-selection";
 import { useEffect, useState } from "react";
 import { getKingAndServant } from "../../lib/phrase-building/render-vp";
 import { isPastTense } from "../../lib/phrase-building/vp-tools";
 import VPExplorerQuiz from "./VPExplorerQuiz";
-import { switchSubjObj } from "../../lib/phrase-building/vp-tools";
 import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationModal";
 // @ts-ignore
 import LZString from "lz-string";
+import { vpsReducer } from "./vps-reducer";
 
 const phraseURLParam = "VPPhrase";
 
@@ -38,7 +35,8 @@ export function VPExplorer(props: {
     handleLinkClick: ((ts: number) => void) | "none",
     entryFeeder: T.EntryFeeder,
 }) {
-    const [vps, setVps] = useStickyState<T.VPSelectionState>(
+    const [vps, adjustVps] = useStickyReducer(
+        vpsReducer,
         props.loaded
             ? props.loaded
             : savedVps => makeVPSelectionState(props.verb, savedVps),
@@ -62,51 +60,41 @@ export function VPExplorer(props: {
     useEffect(() => {
         const VPSFromUrl = getVPSFromUrl();
         if (VPSFromUrl) {
-            setVps(VPSFromUrl);
+            adjustVps({
+                type: "load vps",
+                payload: VPSFromUrl
+            });
         }
         // eslint-disable-next-line
     }, []);
     useEffect(() => {
-        setVps(oldVps => {
-            if (mode === "quiz") {
-                setMode("phrases");
-            }
-            return makeVPSelectionState(props.verb, oldVps);
+        const newVps = makeVPSelectionState(props.verb, vps);
+        adjustVps({
+            type: "load vps",
+            payload: newVps,
         });
         // eslint-disable-next-line
     }, [props.verb]);
     function handleSubjectChange(subject: T.NPSelection | undefined, skipPronounConflictCheck?: boolean) {
-        if (!skipPronounConflictCheck && hasPronounConflict(subject, vps.verb?.object)) {
-            alert("That combination of pronouns is not allowed");
-            return;
-        }
-        setVps(o => ({ ...o, subject }));
+        adjustVps({
+            type: "set subject",
+            payload: { subject, skipPronounConflictCheck },
+        });
     }
     function handleObjectChange(object: T.NPSelection | undefined) {
-        if (!vps.verb) return;
-        if ((vps.verb.object === "none") || (typeof vps.verb.object === "number")) return;
-        // check for pronoun conflict
-        if (hasPronounConflict(vps.subject, object)) {
-            alert("That combination of pronouns is not allowed");
-            return;
-        }
-        setVps(o => ({
-            ...o,
-            verb: {
-                ...o.verb,
-                object,
-            },
-        }));
+        adjustVps({
+            type: "set object",
+            payload: object,
+        });
     }
     function handleSubjObjSwap() {
-        if (vps.verb?.isCompound === "dynamic") return;
-        setVps(switchSubjObj)
+        adjustVps({ type: "swap subj/obj" });
     }
     function handleShrinkPossesive(shrunkenPossesive: number | undefined) {
-        setVps(o => ({
-            ...o,
-            shrunkenPossesive,
-        }));
+        adjustVps({
+            type: "shrink possesive",
+            payload: shrunkenPossesive,
+        });
     }
     function quizLock<T>(f: T) {
         if (mode === "quiz") {
@@ -118,10 +106,10 @@ export function VPExplorer(props: {
         return f;
     }
     function handleSetForm(form: T.FormVersion) {
-        setVps(o => ({
-            ...o,
-            form,
-        }));
+        adjustVps({
+            type: "set form",
+            payload: form,
+        });
     }
     // for some crazy reason I can't get the URI share thing to encode and decode properly
     function handleCopyShareLink() {
@@ -135,7 +123,7 @@ export function VPExplorer(props: {
     return <div className="mt-3" style={{ maxWidth: "950px"}}>
         <VerbPicker
             vps={vps}
-            onChange={quizLock(setVps)}
+            onChange={quizLock(adjustVps)}
             opts={props.opts}
             handleLinkClick={props.handleLinkClick}
         />
@@ -207,7 +195,7 @@ export function VPExplorer(props: {
             <div className="my-2">
                 <TensePicker
                     vps={vps}
-                    onChange={quizLock(setVps)}
+                    onChange={quizLock(adjustVps)}
                     mode={mode}
                 />
             </div>
@@ -236,13 +224,6 @@ export function VPExplorer(props: {
 }
 
 export default VPExplorer;
-
-function hasPronounConflict(subject: T.NPSelection | undefined, object: undefined | T.VerbObject): boolean {
-    const subjPronoun = (subject && subject.type === "pronoun") ? subject : undefined;
-    const objPronoun = (object && typeof object === "object" && object.type === "pronoun") ? object : undefined; 
-    if (!subjPronoun || !objPronoun) return false;
-    return isInvalidSubjObjCombo(subjPronoun.person, objPronoun.person);
-}
 
 function getShareUrl(vps: T.VPSelectionState): string {
     const stringJSON = JSON.stringify(vps);

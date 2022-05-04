@@ -5,13 +5,15 @@ import { getVerbInfo } from "../../lib/verb-info";
 import Hider from "../Hider";
 import useStickyState from "../../lib/useStickyState";
 import CompoundDisplay from "./CompoundDisplay";
-import { changeStatDyn, changeTransitivity, changeVoice } from "./verb-selection";
+import {
+    VpsReducerAction
+} from "./vps-reducer";
 
 // TODO: dark on past tense selecitons
 
 function VerbPicker(props: {
     vps: T.VPSelectionState,
-    onChange: (p: T.VPSelectionState) => void,
+    onChange: (a: VpsReducerAction) => void,
     opts: T.TextOptions,
     handleLinkClick: ((ts: number) => void) | "none",
 }) {
@@ -28,42 +30,25 @@ function VerbPicker(props: {
         return <div>ERROR: Verb version should be select first</div>;
     }
     function onVoiceSelect(value: "active" | "passive") {
-        if (props.vps.verb && props.vps.verb.canChangeVoice) {
-            if (value === "passive" && props.vps.verb.tenseCategory === "imperative") {
-                return;
-            }
-            if (value === "passive" && (typeof props.vps.verb.object === "object")) {
-                props.onChange({
-                    ...props.vps,
-                    subject: props.vps.verb.object,
-                    verb: changeVoice(props.vps.verb, value, props.vps.verb.object),
-                });
-            } else {
-                props.onChange({
-                    ...props.vps,
-                    verb: changeVoice(props.vps.verb, value, value === "active" ? props.vps.subject : undefined),
-                });
-            }
-        }
+        props.onChange({
+            type: "set voice",
+            payload: value,
+        });
     }
     function notInstransitive(t: "transitive" | "intransitive" | "grammatically transitive"): "transitive" | "grammatically transitive" {
         return t === "intransitive" ? "transitive" : t;
     }
-    function handleChangeTransitivity(t: "transitive" | "grammatically transitive") {
-        if (props.vps.verb && props.vps.verb.canChangeTransitivity) {
-            props.onChange({
-                ...props.vps,
-                verb: changeTransitivity(props.vps.verb, t),
-            });
-        }
+    function handleChangeTransitivity(payload: "transitive" | "grammatically transitive") {
+        props.onChange({
+            type: "set transitivity",
+            payload,
+        });
     }
-    function handleChangeStatDyn(c: "stative" | "dynamic") {
-        if (props.vps.verb && props.vps.verb.canChangeStatDyn) {
-            props.onChange({
-                ...props.vps,
-                verb: changeStatDyn(props.vps.verb, c),
-            });
-        }
+    function handleChangeStatDyn(payload: "stative" | "dynamic") {
+        props.onChange({
+            type: "set statDyn",
+            payload,
+        });
     }
     return <div className="mb-3">
         {info && <CompoundDisplay

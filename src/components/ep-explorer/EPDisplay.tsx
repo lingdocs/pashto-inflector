@@ -1,13 +1,13 @@
 import * as T from "../../types";
 import { renderEP } from "../../lib/phrase-building/render-ep";
 import { compileEP } from "../../lib/phrase-building/compile-ep";
-import AbbreviationFormSelector from "../vp-explorer/AbbreviationFormSelector";
 import Examples from "../Examples";
+import ButtonSelect from "../ButtonSelect";
 
-function EPDisplay({ eps, opts, setForm }: {
+function EPDisplay({ eps, opts, setOmitSubject }: {
     eps: T.EPSelectionState,
     opts: T.TextOptions,
-    setForm: (form: T.FormVersion) => void,
+    setOmitSubject: (value: "true" | "false") => void,
 }) {
     const EP = completeEPSelection(eps);
     if (!EP) {
@@ -22,13 +22,19 @@ function EPDisplay({ eps, opts, setForm }: {
         </div>
     }
     const rendered = renderEP(EP);
-    const result = compileEP(rendered, EP.form);
+    const result = compileEP(rendered);
     return <div className="text-center pt-3">
-        <AbbreviationFormSelector
-            adjustable="king"
-            form={EP.form}
-            onChange={setForm}
-        />
+        <div className="mb-2">
+            <ButtonSelect
+                small
+                value={(eps.omitSubject ? "true" : "false") as "true" | "false"}
+                options={[
+                    { value: "false", label: "Full"},
+                    { value: "true", label: "No Subj."},
+                ]}
+                handleChange={setOmitSubject}
+            />
+        </div>
         {"long" in result.ps ?
             <div>
                 <VariationLayer vs={result.ps.long} opts={opts} />

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+type SaveableData = string | number | object | boolean | undefined | null
+
 /**
  * replacement from the React useState hook that will persist the state in local storage
  * 
@@ -8,7 +10,7 @@ import { useEffect, useState } from "react";
  * @param key a key for saving the state in locolStorage
  * @returns 
  */
-export default function useStickyState<T extends string | number | object | boolean | undefined | null>(defaultValue: T | ((old: T | undefined) => T), key: string): [
+export default function useStickyState<T extends SaveableData>(defaultValue: T | ((old: T | undefined) => T), key: string): [
   value: T,
   setValue: React.Dispatch<React.SetStateAction<T>>,
 ] {
@@ -41,4 +43,18 @@ export default function useStickyState<T extends string | number | object | bool
   }, [key, value]);
 
   return [value, setValue];
+}
+
+export function useStickyReducer<T extends SaveableData, A>(
+  reducer: (state: T, dispatch: A) => T,
+  defaultValue: T | ((old: T | undefined) => T),
+  key: string,
+): [T, (action: A) => void] {
+  const [state, unsafeSetState] = useStickyState<T>(defaultValue, key);
+  function adjustState(action: A) {
+    unsafeSetState(oldState => {
+      return reducer(oldState, action);
+    });
+  }
+  return [state, adjustState];
 }

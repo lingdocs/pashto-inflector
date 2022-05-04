@@ -14,14 +14,14 @@ import { removeAccents } from "../accent-helpers";
 import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
 import {
     orderKidsSection,
-    findPossesiveToShrink,
+    findPossesiveToShrinkInEP,
     shrinkNP,
 } from "./compile-tools";
 
-export function compileEP(EP: T.EPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
-export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths: true): { ps: T.PsString[], e?: string[] };
-export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths?: true): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
-    const { kids, NPs } = getSegmentsAndKids(EP, form);
+export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
+export function compileEP(EP: T.EPRendered, combineLengths: true): { ps: T.PsString[], e?: string[] };
+export function compileEP(EP: T.EPRendered, combineLengths?: true): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
+    const { kids, NPs } = getSegmentsAndKids(EP);
     const equative = EP.equative.ps;
     const psResult = compilePs({
         NPs,
@@ -35,15 +35,9 @@ export function compileEP(EP: T.EPRendered, form: T.FormVersion, combineLengths?
     };
 }
 
-function getSegmentsAndKids(EP: T.EPRendered, form: Omit<T.FormVersion, "shrinkServant">): { kids: Segment[], NPs: Segment[] } {
-    function ifNotRemoved(s: Segment, role: "subject" | "predicate"): Segment[] {
-        if (form.removeKing && EP.king === role) {
-            return [];
-        }
-        return [s];
-    }
-    const possToShrink = findPossesiveToShrink(EP);
-    const shrunkenPossAllowed = !(form.removeKing && possToShrink?.role === "king");
+function getSegmentsAndKids(EP: T.EPRendered): { kids: Segment[], NPs: Segment[] } {
+    const possToShrink = findPossesiveToShrinkInEP(EP);
+    const shrunkenPossAllowed = !((possToShrink?.from === "subject") && EP.omitSubject);
     const possUid = shrunkenPossAllowed ? EP.shrunkenPossesive : undefined;
     const subject = makeSegment(getPashtoFromRendered(EP.subject, possUid, false));
     const predicate = makeSegment(getPashtoFromRendered(EP.predicate, possUid, false));
@@ -53,12 +47,12 @@ function getSegmentsAndKids(EP: T.EPRendered, form: Omit<T.FormVersion, "shrinkS
                 ? [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])]
                 : [],
             ...(possToShrink && shrunkenPossAllowed)
-                ? [shrinkNP(possToShrink)]
+                ? [shrinkNP(possToShrink.np)]
                 : [],
         ]),
         NPs: [
-            ...ifNotRemoved(subject, "subject"),
-            ...ifNotRemoved(predicate, "predicate"),
+            ...EP.omitSubject ? [] : [subject],
+            predicate
         ],
     };
 }

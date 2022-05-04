@@ -2,9 +2,11 @@ import Select from "react-select";
 import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
 import { isImperativeTense, isModalTense, isPerfectTense, isVerbTense } from "../../lib/type-predicates";
-import { ensure2ndPersSubjPronounAndNoConflict } from "../../lib/phrase-building/vp-tools";
 import useStickyState from "../../lib/useStickyState";
 import { customStyles } from "../EntrySelect";
+import {
+    VpsReducerAction
+} from "./vps-reducer";
 
 const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense, formula: string, modalFormula: string, }[] = [{
     label: <div><i className="fas fa-video mr-2" />present</div>,
@@ -113,45 +115,17 @@ function TensePicker(props: ({
 } | {
     vpsComplete: T.VPSelectionComplete,
 }) & {
-    onChange: (p: T.VPSelectionState) => void,
+    onChange: (p: VpsReducerAction) => void,
     mode: "charts" | "phrases" | "quiz",
 }) {
     const [showFormula, setShowFormula] = useStickyState<boolean>(false, "showFormula");
     function onTenseSelect(o: { value: T.VerbTense | T.PerfectTense | T.ImperativeTense } | null) {
         if ("vpsComplete" in props) return;
-        const value = o?.value ? o.value : undefined;
-        if (props.vps.verb && value) {
-            if (isPerfectTense(value)) {
-                props.onChange({
-                    ...props.vps,
-                    verb: {
-                        ...props.vps.verb,
-                        perfectTense: value,
-                        tenseCategory: "perfect",
-                    },
-                });
-            } else if (isImperativeTense(value)) {
-                props.onChange({
-                    ...props.vps,
-                    verb: {
-                        ...props.vps.verb,
-                        imperativeTense: value,
-                        tenseCategory: "imperative",
-                    },
-                });
-            } else {
-                props.onChange({
-                    ...props.vps,
-                    verb: {
-                        ...props.vps.verb,
-                        verbTense: value,
-                        tenseCategory: props.vps.verb.tenseCategory === "perfect"
-                            ? "basic"
-                            : props.vps.verb.tenseCategory,
-                    },
-                });
-            }
-        }
+        const tense = o?.value ? o.value : undefined;
+        props.onChange({
+            type: "set tense",
+            payload: tense,
+        });
     }
     function moveTense(dir: "forward" | "back") {
         if ("vpsComplete" in props) return;
@@ -182,40 +156,19 @@ function TensePicker(props: ({
             onTenseSelect(newTense);
         };
     }
-    function onPosNegSelect(value: string) {
+    function onPosNegSelect(payload: "true" | "false") {
         if ("vpsComplete" in props) return;
-        if (props.vps.verb) {
-            props.onChange({
-                ...props.vps,
-                verb: {
-                    ...props.vps.verb,
-                    negative: value === "true",
-                },
-            });
-        }
+        props.onChange({
+            type: "set negativity",
+            payload,
+        });
     }
-    function onTenseCategorySelect(value: "basic" | "modal" | "perfect" | "imperative") {
+    function onTenseCategorySelect(payload: "basic" | "modal" | "perfect" | "imperative") {
         if ("vpsComplete" in props) return;
-        if (props.vps.verb) {
-            if (value === "imperative") {
-                props.onChange(ensure2ndPersSubjPronounAndNoConflict({
-                    ...props.vps,
-                    verb: {
-                        ...props.vps.verb,
-                        voice: "active",
-                        tenseCategory: value,
-                    },
-                }));
-                return;
-            }
-            props.onChange({
-                ...props.vps,
-                verb: {
-                    ...props.vps.verb,
-                    tenseCategory: value,
-                },
-            });
-        }
+        props.onChange({
+            type: "set tense category",
+            payload,
+        });
     }
     const tOptions = ("vps" in props && (props.vps.verb?.tenseCategory === "perfect"))
         ? perfectTenseOptions
@@ -292,7 +245,7 @@ function TensePicker(props: ({
                 </div>
                 {props.mode === "phrases" && <ButtonSelect
                     small
-                    value={props.vps.verb.negative.toString()}
+                    value={props.vps.verb.negative.toString() as "true" | "false"}
                     options={[{
                         label: "Pos.",
                         value: "false",
