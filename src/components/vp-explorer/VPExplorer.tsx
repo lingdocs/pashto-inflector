@@ -180,7 +180,7 @@ function VPExplorer(props: {
                                 <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>{roleIcon.servant}</span>
                                 {` `}
                                 {(rendered && rendered.whatsAdjustable !== "king") && 
-                                    <span onClick={toggleServantShrink} className="ml-3">
+                                    <span onClick={toggleServantShrink} className="ml-3 clickable">
                                         {!servantIsShrunk ? "🪄" : "👶"}
                                     </span>
                                 }
@@ -211,7 +211,7 @@ function VPExplorer(props: {
                                     <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>{roleIcon.servant}</span>
                                     {` `}
                                     {(rendered && rendered.whatsAdjustable !== "king") && 
-                                        <span onClick={toggleServantShrink} className="ml-3">
+                                        <span onClick={toggleServantShrink} className="ml-3 clickable">
                                             {!servantIsShrunk ? "🪄" : "👶"}
                                         </span>
                                     }
@@ -272,6 +272,8 @@ function getShareUrl(vps: T.VPSelectionState): string {
     const stringJSON = JSON.stringify(vps);
     const encoded = LZString.compressToEncodedURIComponent(stringJSON);
     const url = new URL(window.location.href);
+    // need to delete or else you could just get a second param written after
+    // which gets ignored
     url.searchParams.delete(phraseURLParam);
     url.searchParams.append(phraseURLParam, encoded);
     return url.toString();
