@@ -62,6 +62,7 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
     }
     function doReduce(): T.VPSelectionState {
         if (action.type === "load vps") {
+            console.log("doing loading", action.payload);
             return action.payload;
         }
         if (action.type === "set subject") {

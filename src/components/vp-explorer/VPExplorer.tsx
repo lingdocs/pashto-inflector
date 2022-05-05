@@ -66,9 +66,19 @@ function VPExplorer(props: {
             setAlert(undefined);
         }, 1500);
     }
+    // useEffect(() => {
+    //     const newVps = makeVPSelectionState(props.verb, vps);
+    //     adjustVps({
+    //         type: "load vps",
+    //         payload: newVps,
+    //     });
+    //     // eslint-disable-next-line
+    // }, [props.verb]);
     useEffect(() => {
         const VPSFromUrl = getVPSFromUrl();
+        console.log({ VPSFromUrl });
         if (VPSFromUrl) {
+            setMode("phrases");
             adjustVps({
                 type: "load vps",
                 payload: VPSFromUrl
@@ -76,14 +86,6 @@ function VPExplorer(props: {
         }
         // eslint-disable-next-line
     }, []);
-    useEffect(() => {
-        const newVps = makeVPSelectionState(props.verb, vps);
-        adjustVps({
-            type: "load vps",
-            payload: newVps,
-        });
-        // eslint-disable-next-line
-    }, [props.verb]);
     function handleSubjectChange(subject: T.NPSelection | undefined, skipPronounConflictCheck?: boolean) {
         adjustVps({
             type: "set subject",
@@ -270,6 +272,7 @@ function getShareUrl(vps: T.VPSelectionState): string {
     const stringJSON = JSON.stringify(vps);
     const encoded = LZString.compressToEncodedURIComponent(stringJSON);
     const url = new URL(window.location.href);
+    url.searchParams.delete(phraseURLParam);
     url.searchParams.append(phraseURLParam, encoded);
     return url.toString();
 }
