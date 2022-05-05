@@ -12,7 +12,7 @@ import {
 import { parseEc } from "../misc-helpers";
 import { getEnglishWord } from "../get-english-word";
 import { renderAdjectiveSelection } from "./render-adj";
-import { isPattern5Entry, isUnisexNounEntry } from "../type-predicates";
+import { isPattern5Entry, isUnisexAnimNounEntry } from "../type-predicates";
 
 export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection>;
 export function renderNPSelection(NP: T.NPSelection | T.ObjectNP, inflected: boolean, inflectEnglish: boolean, role: "object", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection> | T.Person.ThirdPlurMale | "none";
@@ -87,13 +87,18 @@ function renderParticipleSelection(p: T.ParticipleSelection, inflected: boolean,
     };
 }
 
-function renderPossesor(possesor: { np: T.NPSelection, uid: number } | undefined, possesorRole: "servant" | "king" | "none"): { np: T.Rendered<T.NPSelection>, uid: number } | undefined {
+function renderPossesor(possesor: T.PossesorSelection | undefined, possesorRole: "servant" | "king" | "none"): T.RenderedPossesorSelection | undefined {
     if (!possesor) return undefined;
+    const isSingUnisexAnim5PatternNoun = (possesor.np.type === "noun"
+        && possesor.np.number === "singular"
+        && isUnisexAnimNounEntry(possesor.np.entry)
+        && isPattern5Entry(possesor.np.entry)
+    );
     return {
-        uid: possesor.uid,
+        shrunken: possesor.shrunken,
         np: renderNPSelection(
             possesor.np,
-            !(possesor.np.type === "noun" && isUnisexNounEntry(possesor.np.entry) && isPattern5Entry(possesor.np.entry)),
+            !isSingUnisexAnim5PatternNoun,
             false,
             "subject",
             possesorRole,

@@ -1,6 +1,6 @@
 import * as T from "../../types";
-import { renderEP } from "../../lib/phrase-building/render-ep";
-import { compileEP } from "../../lib/phrase-building/compile-ep";
+import { completeEPSelection, renderEP } from "../../lib/phrase-building/render-ep";
+import { compileEP } from "../../lib/phrase-building/compile";
 import Examples from "../Examples";
 import ButtonSelect from "../ButtonSelect";
 
@@ -59,35 +59,6 @@ function VariationLayer({ vs, opts }: { vs: T.PsString[], opts: T.TextOptions })
     return <div className="mb-2">
         <Examples opts={opts} lineHeight={0}>{vs}</Examples>
     </div>;
-}
-
-function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionComplete | undefined {
-    if (!eps.subject) {
-        return undefined;
-    }
-    if (eps.predicate.type === "Complement") {
-        const selection = eps.predicate.Complement;
-        if (!selection) return undefined;
-        return {
-            ...eps,
-            subject: eps.subject,
-            predicate: {
-                type: "Complement",
-                selection,
-            },
-        };
-    }
-    // predicate is NP
-    const selection = eps.predicate.NP;
-    if (!selection) return undefined;
-    return {
-        ...eps,
-        subject: eps.subject,
-        predicate: {
-            type: "NP",
-            selection,
-        },
-    };
 }
 
 export default EPDisplay;

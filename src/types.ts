@@ -473,6 +473,7 @@ export type NounEntry = DictionaryEntry & { c: string } & { __brand: "a noun ent
 export type MascNounEntry = NounEntry & { __brand2: "a masc noun entry" };
 export type FemNounEntry = NounEntry & { __brand2: "a fem noun entry" };
 export type UnisexNounEntry = MascNounEntry & { __brand3: "a unisex noun entry" };
+export type UnisexAnimNounEntry = UnisexNounEntry & { __brand4: "an anim unisex noun entry" };
 export type AdverbEntry = DictionaryEntry & { c: string } & { __brand: "an adverb entry" };
 export type LocativeAdverbEntry = AdverbEntry & { __brand2: "a locative adverb entry" };
 export type AdjectiveEntry = DictionaryEntry & { c: string } & { __brand: "an adjective entry" };
@@ -501,7 +502,6 @@ export type VPRendered = {
     type: "VPRendered",
     king: "subject" | "object",
     servant: "subject" | "object" | undefined,
-    shrunkenPossesive: number | undefined,
     isPast: boolean,
     isTransitive: boolean,
     isCompound: "stative" | "dynamic" | false,
@@ -510,6 +510,7 @@ export type VPRendered = {
     verb: VerbRendered,
     englishBase?: string[],
     form: FormVersion,
+    whatsAdjustable: "both" | "king" | "servant",
 }
 
 export type VerbTense = "presentVerb"
@@ -531,14 +532,12 @@ export type Tense = EquativeTense | VerbTense | PerfectTense | ModalTense | Impe
 export type VPSelectionState = {
     subject: NPSelection | undefined,
     verb: VerbSelection,
-    shrunkenPossesive: undefined | number,
     form: FormVersion,
 };
 
 export type VPSelectionComplete = {
     subject: NPSelection,
     verb: VerbSelectionComplete,
-    shrunkenPossesive: undefined | number,
     form: FormVersion,
 };
 
@@ -592,7 +591,7 @@ export type NPType = "noun" | "pronoun" | "participle";
 export type ObjectNP = "none" | Person.ThirdPlurMale;
 
 export type PossesorSelection = {
-    uid: number,
+    shrunken: boolean,
     np: NPSelection,
 }
 
@@ -639,6 +638,13 @@ export type ReplaceKey<T, K extends string, R> = T extends Record<K, unknown> ? 
 
 export type FormVersion = { removeKing: boolean, shrinkServant: boolean };
 
+// TODO: rendered should would for rendering T.PossesorSelection etc
+// look recursively down on something
+export type RenderedPossesorSelection = {
+    np: Rendered<NPSelection>,
+    shrunken: boolean,
+};
+
 export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection> = ReplaceKey<
     Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,
     "e",
@@ -652,7 +658,7 @@ export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelectio
     // TODO: better recursive thing
     adjectives?: Rendered<AdjectiveSelection>[],
     possesor?: {
-        uid: number,
+        shrunken: boolean,
         np: Rendered<NPSelection>,
     },
 };
@@ -666,7 +672,6 @@ export type EPSelectionState = {
         Complement: EqCompSelection | undefined,
     },
     equative: EquativeSelection,
-    shrunkenPossesive: undefined | number,
     omitSubject: boolean,
 };
 
@@ -703,7 +708,6 @@ export type EPRendered = {
     predicate: Rendered<NPSelection> | Rendered<EqCompSelection>,
     equative: EquativeRendered,
     englishBase?: string[],
-    shrunkenPossesive: undefined | number,
     omitSubject: boolean,
 }
 

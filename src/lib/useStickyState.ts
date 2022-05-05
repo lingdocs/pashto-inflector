@@ -46,15 +46,16 @@ export default function useStickyState<T extends SaveableData>(defaultValue: T |
 }
 
 export function useStickyReducer<T extends SaveableData, A>(
-  reducer: (state: T, dispatch: A) => T,
+  reducer: (state: T, dispatch: A, sendAlert?: (msg: string) => void) => T,
   defaultValue: T | ((old: T | undefined) => T),
   key: string,
-): [T, (action: A) => void] {
+  sendAlert?: (msg: string) => void,
+): [T, (action: A) => void, ((msg: string) => void) | undefined] {
   const [state, unsafeSetState] = useStickyState<T>(defaultValue, key);
   function adjustState(action: A) {
     unsafeSetState(oldState => {
-      return reducer(oldState, action);
+      return reducer(oldState, action, sendAlert);
     });
   }
-  return [state, adjustState];
+  return [state, adjustState, sendAlert];
 }

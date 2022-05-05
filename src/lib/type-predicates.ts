@@ -49,6 +49,10 @@ export function isUnisexNounEntry(e: T.NounEntry | T.AdjectiveEntry): e is T.Uni
     return isNounEntry(e) && e.c.includes("unisex");
 }
 
+export function isUnisexAnimNounEntry(e: T.NounEntry | T.AdjectiveEntry): e is T.UnisexAnimNounEntry {
+    return isUnisexNounEntry(e) && e.c.includes("anim.");
+}
+
 export function isAdjOrUnisexNounEntry(e: T.Entry): e is (T.AdjectiveEntry | T.UnisexNounEntry) {
     return isAdjectiveEntry(e) || (
         isNounEntry(e) && isUnisexNounEntry(e)
@@ -136,9 +140,7 @@ export function isPattern5Entry<T extends (T.NounEntry | T.AdjectiveEntry)>(e: T
     return (
         !!(e.infap && e.infaf && e.infbp && e.infbf)
         &&
-        (e.infaf.slice(-1) === "u")
-        &&
-        !e.infap.slice(1).includes("ا")
+        e.infap.includes("ا")
     );
 }
 

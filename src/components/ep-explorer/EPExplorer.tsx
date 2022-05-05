@@ -8,6 +8,8 @@ import EqCompPicker from "./eq-comp-picker/EqCompPicker";
 import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
 import EqChartsDisplay from "./EqChartsDisplay";
 import epsReducer from "./eps-reducer";
+import { useState } from "react";
+import { completeEPSelection } from "../../lib/phrase-building/render-ep";
 const blankEps: T.EPSelectionState = {
     subject: undefined,
     predicate: {
@@ -19,7 +21,6 @@ const blankEps: T.EPSelectionState = {
         tense: "present",
         negative: false,
     },
-    shrunkenPossesive: undefined,
     omitSubject: false,
 };
 
@@ -30,12 +31,20 @@ function EPExplorer(props: {
     entryFeeder: T.EntryFeeder,
 }) {
     const [mode, setMode] = useStickyState<"charts" | "phrases">("charts", "EPExplorerMode");
-    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPSelectionState10");
+    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState", flashMessage);
+    const [alert, setAlert] = useState<string | undefined>(undefined);
     const king = eps.subject?.type === "pronoun"
         ? "subject"
         : eps.predicate.type === "Complement"
         ? "subject"
         : "predicate";
+    function flashMessage(msg: string) {
+        setAlert(msg);
+        setTimeout(() => {
+            setAlert(undefined);
+        }, 1500);
+    }
+    const phraseIsComplete = !!completeEPSelection(eps);
     return <div>
         <div className="mt-2 mb-3 text-center">
             <ButtonSelect
@@ -51,8 +60,7 @@ function EPExplorer(props: {
             {mode === "phrases" && <>
                 <div className="my-2">
                     <NPPicker
-                        shrunkenPossesiveInPhrase={eps.shrunkenPossesive}
-                        handleShrinkPossesive={payload => adjustEps({ type: "shrink possesive", payload })}
+                        phraseIsComplete={phraseIsComplete}
                         heading={<div className="h5 text-center">Subject {king === "subject" ? roleIcon.king : ""}</div>}
                         entryFeeder={props.entryFeeder}
                         np={eps.subject}
@@ -76,8 +84,7 @@ function EPExplorer(props: {
                         />
                     </div>
                     {eps.predicate.type === "NP" ? <NPPicker
-                        shrunkenPossesiveInPhrase={eps.shrunkenPossesive}
-                        handleShrinkPossesive={payload => adjustEps({ type: "shrink possesive", payload })}
+                        phraseIsComplete={phraseIsComplete}
                         entryFeeder={props.entryFeeder}
                         np={eps.predicate.type === "NP" ? eps.predicate.NP : undefined}
                         counterPart={undefined}
@@ -107,6 +114,15 @@ function EPExplorer(props: {
             eps={eps}
             setOmitSubject={payload => adjustEps({ type: "set omitSubject", payload })}
         />}
+        {alert && <div className="alert alert-warning text-center" role="alert" style={{
+            position: "fixed",
+            top: "30%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 9999999999999,
+        }}>
+            {alert}
+        </div>}
     </div>;
 }
 

@@ -32,7 +32,6 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
             : renderEqCompSelection(EP.predicate.selection, kingPerson),
         equative: renderEquative(EP.equative, kingPerson),
         englishBase: equativeBuilders[EP.equative.tense](kingPerson, EP.equative.negative),
-        shrunkenPossesive: EP.shrunkenPossesive,
         omitSubject: EP.omitSubject,
     };
 }
@@ -150,3 +149,32 @@ function getEnglishConj(p: T.Person, e: string | T.EnglishBlock): string {
 //     return inflections[gender][plural ? 1 : 0];
 // }
 
+
+export function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionComplete | undefined {
+    if (!eps.subject) {
+        return undefined;
+    }
+    if (eps.predicate.type === "Complement") {
+        const selection = eps.predicate.Complement;
+        if (!selection) return undefined;
+        return {
+            ...eps,
+            subject: eps.subject,
+            predicate: {
+                type: "Complement",
+                selection,
+            },
+        };
+    }
+    // predicate is NP
+    const selection = eps.predicate.NP;
+    if (!selection) return undefined;
+    return {
+        ...eps,
+        subject: eps.subject,
+        predicate: {
+            type: "NP",
+            selection,
+        },
+    };
+}

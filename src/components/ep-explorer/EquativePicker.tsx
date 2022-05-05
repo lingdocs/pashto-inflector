@@ -2,7 +2,7 @@ import * as T from "../../types"
 import Select from "react-select";
 import ButtonSelect from "../ButtonSelect";
 
-export const zIndexProps = {
+const zIndexProps = {
     menuPortalTarget: document.body, 
     styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
 };

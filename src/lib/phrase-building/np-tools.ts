@@ -22,14 +22,39 @@ function getBaseAndAdjectives(np: T.Rendered<T.NPSelection | T.EqCompSelection>)
     ));
 }
 
-export function getPashtoFromRendered(np: T.Rendered<T.NPSelection | T.EqCompSelection>, shrunkenPossesive: number | undefined, subjectsPerson: false | T.Person): T.PsString[] {
-    const base = getBaseAndAdjectives(np);
-    if (!np.possesor || np.possesor.uid === shrunkenPossesive) {
-        return base;
+function trimOffShrunkenPossesive(p: T.Rendered<T.NPSelection>): T.Rendered<T.NPSelection> {
+    if (!("possesor" in p)) {
+        return p;
     }
-    return addPossesor(np.possesor.np, base, subjectsPerson);
+    if (!p.possesor) {
+        return p;
+    }
+    if (p.possesor.shrunken) {
+        return {
+            ...p,
+            possesor: undefined,
+        };
+    }
+    return {
+        ...p,
+        possesor: {
+            ...p.possesor,
+            np: trimOffShrunkenPossesive(p.possesor.np),
+        }
+    }
 }
 
+export function getPashtoFromRendered(np: T.Rendered<T.NPSelection> | T.Rendered<T.EqCompSelection>, subjectsPerson: false | T.Person): T.PsString[] {
+    const base = getBaseAndAdjectives(np);
+    if (np.type !== "loc. adv." && np.type !== "adjective") {
+        // ts being dumb
+        const trimmed = trimOffShrunkenPossesive(np as T.Rendered<T.NPSelection>);
+        if (trimmed.possesor) {
+            return addPossesor(trimmed.possesor.np, base, subjectsPerson);
+        }
+    }
+    return base;
+}
 
 function addPossesor(owner: T.Rendered<T.NPSelection>, existing: T.PsString[], subjectsPerson: false | T.Person): T.PsString[] {
     function willBeReflexive(subj: T.Person, obj: T.Person): boolean {

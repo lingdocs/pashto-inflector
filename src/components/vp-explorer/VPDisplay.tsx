@@ -1,21 +1,16 @@
-import { renderVP, compileVP } from "../../lib/phrase-building/index";
+import { compileVP } from "../../lib/phrase-building/compile";
 import * as T from "../../types";
 import AbbreviationFormSelector from "./AbbreviationFormSelector";
-import {
-    isPastTense,
-    completeVPSelection,
-} from "../../lib/phrase-building/vp-tools";
 import useStickyState from "../../lib/useStickyState";
 import Examples from "../Examples";
 
 function VPDisplay({ VP, opts, setForm }: {
-    VP: T.VPSelectionState,
+    VP: T.VPSelectionState | T.VPRendered,
     opts: T.TextOptions,
     setForm: (form: T.FormVersion) => void,
 }) {
     const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
-    const VPComplete = completeVPSelection(VP); 
-    if (!VPComplete) {
+    if (!("type" in VP)) {
         return <div className="lead text-muted text-center mt-4">
             {(() => {
                 const twoNPs = (VP.subject === undefined) && (VP.verb.object === undefined);
@@ -23,7 +18,7 @@ function VPDisplay({ VP, opts, setForm }: {
             })()}
         </div>;
     }
-    const result = compileVP(renderVP(VPComplete), { ...VP.form, OSV });
+    const result = compileVP(VP, { ...VP.form, OSV });
     return <div className="text-center mt-1">
         {VP.verb.transitivity === "transitive" && <div className="form-check mb-2">
             <input
@@ -38,7 +33,7 @@ function VPDisplay({ VP, opts, setForm }: {
             </label>
         </div>}
         <AbbreviationFormSelector
-            adjustable={whatsAdjustable(VPComplete)}
+            adjustable={VP.whatsAdjustable}
             form={VP.form}
             onChange={setForm}
         />
@@ -59,20 +54,6 @@ function VPDisplay({ VP, opts, setForm }: {
             {result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>}
     </div>
-}
-
-function whatsAdjustable(VP: T.VPSelectionComplete): "both" | "king" | "servant" {
-    // TODO: intransitive dynamic compounds?
-    return (VP.verb.isCompound === "dynamic" && VP.verb.transitivity === "transitive")
-        ? (isPastTense(VP.verb.tense) ? "servant" : "king")
-        : VP.verb.transitivity === "transitive"
-        ? "both"
-        : VP.verb.transitivity === "intransitive"
-        ? "king"
-        // grammTrans
-        : isPastTense(VP.verb.tense)
-        ? "servant"
-        : "king";
 }
 
 function VariationLayer({ vs, opts }: { vs: T.PsString[], opts: T.TextOptions }) {

@@ -67,15 +67,6 @@ export function makeVPSelectionState(
             canChangeStatDyn: "stative" in info,
         },
         form: os ? os.form : { removeKing: false, shrinkServant: false },
-        shrunkenPossesive: os ? os.shrunkenPossesive : undefined,
-    };
-}
-
-export function changeVoice(v: T.VerbSelection, voice: "active" | "passive", s: T.NPSelection | undefined): T.VerbSelection {
-    return {
-        ...v,
-        voice,
-        object: voice === "active" ? s : "none",
     };
 }
 

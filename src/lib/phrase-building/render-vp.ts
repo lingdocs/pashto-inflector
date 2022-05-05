@@ -47,7 +47,6 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         type: "VPRendered",
         king,
         servant,
-        shrunkenPossesive: VP.shrunkenPossesive,
         isPast,
         isTransitive,
         isCompound: VP.verb.isCompound,
@@ -60,8 +59,23 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
             vs: VP.verb,
         }),
         form: VP.form,
+        whatsAdjustable: whatsAdjustable(VP),
     };
     return b;
+}
+
+function whatsAdjustable(VP: T.VPSelectionComplete): "both" | "king" | "servant" {
+    // TODO: intransitive dynamic compounds?
+    return (VP.verb.isCompound === "dynamic" && VP.verb.transitivity === "transitive")
+        ? (isPastTense(VP.verb.tense) ? "servant" : "king")
+        : VP.verb.transitivity === "transitive"
+        ? (VP.verb.voice === "active" ? "both" : "king")
+        : VP.verb.transitivity === "intransitive"
+        ? "king"
+        // grammTrans
+        : isPastTense(VP.verb.tense)
+        ? "servant"
+        : "king";
 }
 
 function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, objectPerson: T.Person | undefined): T.VerbRendered {

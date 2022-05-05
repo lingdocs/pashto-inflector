@@ -7,7 +7,8 @@ import { standardizePashto } from "../../lib/standardize-pashto";
 import shuffleArray from "../../lib/shuffle-array";
 import InlinePs from "../InlinePs";
 import { psStringEquals } from "../../lib/p-text-helpers";
-import { renderVP, compileVP } from "../../lib/phrase-building/index";
+import { renderVP } from "../../lib/phrase-building/render-vp";
+import { compileVP } from "../../lib/phrase-building/compile";
 import { getRandomTense } from "./TensePicker";
 import { getTenseFromVerbSelection, removeBa, switchSubjObj } from "../../lib/phrase-building/vp-tools";
 import playAudio from "../../lib/play-audio";
@@ -445,7 +446,6 @@ function getRandomVPSelection(mix: MixType = "both") {
             return {
                 subject: subject !== undefined ? subject : randSubj,
                 verb: randomizeTense(verb, true),
-                shrunkenPossesive: undefined,
                 form: { removeKing: false, shrinkServant: false },
             }
         }
@@ -462,7 +462,6 @@ function getRandomVPSelection(mix: MixType = "both") {
         return {
             subject: randSubj,
             verb: randomizeTense(v, true),
-            shrunkenPossesive: undefined,
             form: { removeKing: false, shrinkServant: false },
         };
     };
