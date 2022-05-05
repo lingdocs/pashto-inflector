@@ -31,7 +31,7 @@ function EPExplorer(props: {
     entryFeeder: T.EntryFeeder,
 }) {
     const [mode, setMode] = useStickyState<"charts" | "phrases">("charts", "EPExplorerMode");
-    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState", flashMessage);
+    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState2", flashMessage);
     const [alert, setAlert] = useState<string | undefined>(undefined);
     const king = eps.subject?.type === "pronoun"
         ? "subject"
