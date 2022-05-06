@@ -96,6 +96,7 @@ import {
     personGender,
     parseEc,
     personNumber,
+    randFromArray,
 } from "./lib/misc-helpers";
 import {
     simplifyPhonetics,
@@ -115,6 +116,16 @@ import {
 import {
     makeNounSelection,
 } from "./components/np-picker/picker-tools";
+import {
+    renderEP,
+} from "./lib/phrase-building/render-ep";
+import {
+    renderVP,
+} from "./lib/phrase-building/render-vp";
+import {
+    compileEP,
+    compileVP,
+} from "./lib/phrase-building/compile";
 import NPPicker from "./components/np-picker/NPPicker";
 import EPExplorer from "./components/ep-explorer/EPExplorer";
 import shuffleArray from "./lib/shuffle-array";
@@ -177,6 +188,11 @@ export {
     shuffleArray,
     personNumber,
     makeNounSelection,
+    randFromArray,
+    renderEP,
+    renderVP,
+    compileEP,
+    compileVP,
     // protobuf helpers
     readDictionary,
     writeDictionary,
