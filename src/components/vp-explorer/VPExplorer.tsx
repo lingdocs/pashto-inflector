@@ -66,14 +66,14 @@ function VPExplorer(props: {
             setAlert(undefined);
         }, 1500);
     }
-    // useEffect(() => {
-    //     const newVps = makeVPSelectionState(props.verb, vps);
-    //     adjustVps({
-    //         type: "load vps",
-    //         payload: newVps,
-    //     });
-    //     // eslint-disable-next-line
-    // }, [props.verb]);
+    useEffect(() => {
+        const newVps = makeVPSelectionState(props.verb, vps);
+        adjustVps({
+            type: "load vps",
+            payload: newVps,
+        });
+        // eslint-disable-next-line
+    }, [props.verb]);
     useEffect(() => {
         const VPSFromUrl = getVPSFromUrl();
         console.log({ VPSFromUrl });
@@ -123,7 +123,7 @@ function VPExplorer(props: {
         setShowShareClipped(true);
         setTimeout(() => {
             setShowShareClipped(false);
-        }, 1000);
+        }, 1250);
     }
     const VPS = completeVPSelection(vps);
     const phraseIsComplete = !!VPS;
@@ -180,7 +180,7 @@ function VPExplorer(props: {
                                 <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>{roleIcon.servant}</span>
                                 {` `}
                                 {(rendered && rendered.whatsAdjustable !== "king") && 
-                                    <span onClick={toggleServantShrink} className="ml-3 clickable">
+                                    <span onClick={toggleServantShrink} className="mx-2 clickable">
                                         {!servantIsShrunk ? "🪄" : "👶"}
                                     </span>
                                 }
@@ -211,7 +211,7 @@ function VPExplorer(props: {
                                     <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>{roleIcon.servant}</span>
                                     {` `}
                                     {(rendered && rendered.whatsAdjustable !== "king") && 
-                                        <span onClick={toggleServantShrink} className="ml-3 clickable">
+                                        <span onClick={toggleServantShrink} className="mx-2 clickable">
                                             {!servantIsShrunk ? "🪄" : "👶"}
                                         </span>
                                     }

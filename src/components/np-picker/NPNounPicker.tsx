@@ -70,7 +70,7 @@ function NPNounPicker(props: {
         if (!entry) {
             return props.onChange(undefined);
         }
-        props.onChange(makeNounSelection(entry));
+        props.onChange(makeNounSelection(entry, props.noun));
     }
     // function handleFilterClose() {
     //     setPatternFilter(undefined);

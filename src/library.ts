@@ -112,6 +112,9 @@ import {
     splitUpSyllables,
     countSyllables,
 } from "./lib/accent-helpers";
+import {
+    makeNounSelection,
+} from "./components/np-picker/picker-tools";
 import NPPicker from "./components/np-picker/NPPicker";
 import EPExplorer from "./components/ep-explorer/EPExplorer";
 import shuffleArray from "./lib/shuffle-array";
@@ -173,6 +176,7 @@ export {
     randomSubjObj,
     shuffleArray,
     personNumber,
+    makeNounSelection,
     // protobuf helpers
     readDictionary,
     writeDictionary,

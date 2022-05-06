@@ -96,7 +96,7 @@ export function makeSelectOption(
     };
 }
 
-export function makeNounSelection(entry: T.NounEntry, dynamicComplement?: true): T.NounSelection {
+export function makeNounSelection(entry: T.NounEntry, old: T.NounSelection | undefined, dynamicComplement?: true): T.NounSelection {
     const number = isPluralNounEntry(entry) ? "plural" : "singular";
     return {
         type: "noun",
@@ -105,8 +105,8 @@ export function makeNounSelection(entry: T.NounEntry, dynamicComplement?: true):
         genderCanChange: isUnisexNounEntry(entry),
         number,
         numberCanChange: number === "singular",
-        adjectives: [],
-        possesor: undefined,
+        adjectives: (!dynamicComplement && old) ? old.adjectives : [],
+        possesor: !dynamicComplement ? old?.possesor : undefined,
         dynamicComplement,
     };
 }

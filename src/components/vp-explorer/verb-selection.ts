@@ -10,7 +10,7 @@ export function makeVPSelectionState(
 ): T.VPSelectionState {
     const info = getVerbInfo(verb.entry, verb.complement);
     const subject = (os?.verb.voice === "passive" && info.type === "dynamic compound")
-        ? makeNounSelection(info.objComplement.entry as T.NounEntry, true)
+        ? makeNounSelection(info.objComplement.entry as T.NounEntry, undefined, true)
         : (os?.subject || undefined);
     function getTransObjFromos() {
         if (
@@ -28,7 +28,7 @@ export function makeVPSelectionState(
     const object = (transitivity === "grammatically transitive")
         ? T.Person.ThirdPlurMale
         : (info.type === "dynamic compound" && os?.verb.voice !== "passive")
-            ? makeNounSelection(info.objComplement.entry as T.NounEntry, true)
+            ? makeNounSelection(info.objComplement.entry as T.NounEntry, undefined, true)
             : (transitivity === "transitive" && os?.verb.voice !== "passive")
                 ? getTransObjFromos()
                 : "none";
@@ -79,7 +79,7 @@ export function changeStatDyn(v: T.VerbSelection, s: "dynamic" | "stative"): T.V
         ...v,
         isCompound: s,
         object: s === "dynamic"
-            ? makeNounSelection(info.dynamic.objComplement.entry as T.NounEntry, true)
+            ? makeNounSelection(info.dynamic.objComplement.entry as T.NounEntry, undefined, true)
             : undefined,
         dynAuxVerb: s === "dynamic"
             ? { entry: info.dynamic.auxVerb } as T.VerbEntry
