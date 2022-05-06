@@ -240,3 +240,10 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
         ? [items[0], items[1], items[2], items[3], items[4]]
         : makeRegularConjugations(items[0]);
 }
+
+export function chooseLength<N>(x: T.SingleOrLengthOpts<N>, length: "long" | "short"): N {
+    if ("long" in x) {
+        return x[length]; 
+    }
+    return x;
+}

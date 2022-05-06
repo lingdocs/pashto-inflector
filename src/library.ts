@@ -97,7 +97,11 @@ import {
     parseEc,
     personNumber,
     randFromArray,
+    chooseLength,
 } from "./lib/misc-helpers";
+import {
+    flattenLengths,
+} from "./lib/phrase-building/segment";
 import {
     simplifyPhonetics,
 } from "./lib/simplify-phonetics";
@@ -193,6 +197,8 @@ export {
     renderVP,
     compileEP,
     compileVP,
+    chooseLength,
+    flattenLengths,
     // protobuf helpers
     readDictionary,
     writeDictionary,

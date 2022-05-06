@@ -257,7 +257,7 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
 
 export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: { equative: boolean }): { ps: T.PsString[], e?: string[] };
-export function compileEP(EP: T.EPRendered, combineLengths?: true, blankOut?: { equative: boolean }): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
+export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: { equative: boolean }): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
     const { kids, NPs } = getEPSegmentsAndKids(EP);
     const equative = EP.equative.ps;
     const psResult = compileEPPs({
