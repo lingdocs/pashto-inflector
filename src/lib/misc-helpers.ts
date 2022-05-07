@@ -164,6 +164,7 @@ export function randFromArray<M>(arr: M[]): M {
 
 export const isFirstPerson = (p: T.Person) => [0, 1, 6, 7].includes(p);
 export const isSecondPerson = (p: T.Person) => [2, 3, 8, 9].includes(p);
+export const isThirdPerson = (p: T.Person) => [4, 5, 10, 11].includes(p);
 
 export function incrementPerson(p: T.Person): T.Person {
     return (p + 1) % 12;

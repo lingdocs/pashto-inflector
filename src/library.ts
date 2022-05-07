@@ -98,6 +98,9 @@ import {
     personNumber,
     randFromArray,
     chooseLength,
+    isFirstPerson,
+    isSecondPerson,
+    isThirdPerson,
 } from "./lib/misc-helpers";
 import {
     flattenLengths,
@@ -199,6 +202,9 @@ export {
     compileVP,
     chooseLength,
     flattenLengths,
+    isFirstPerson,
+    isSecondPerson,
+    isThirdPerson,
     // protobuf helpers
     readDictionary,
     writeDictionary,

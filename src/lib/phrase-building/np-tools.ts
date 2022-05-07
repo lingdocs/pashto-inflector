@@ -95,7 +95,8 @@ function addArticlesAndAdjs(np: T.Rendered<T.NounSelection>): string | undefined
                 if (!curr.e) throw new Error("no english for adjective");
                 return accum + curr.e + " ";
             }, "");
-        return `${articles}${adjs}${word}`;
+        const genderTag = np.genderCanChange ? (np.gender === "fem" ? " (f.)" : " (m.)") : "";
+        return `${articles}${adjs}${word}${genderTag}`;
     } catch (e) {
         return undefined;
     }
