@@ -77,6 +77,9 @@ import {
     standardizeEntry,
 } from "./lib/validate-entry";
 import {
+    psJSXMap,
+} from "./lib/jsx-map";
+import {
     readDictionary,
     writeDictionary,
     readDictionaryInfo,
@@ -205,6 +208,7 @@ export {
     isFirstPerson,
     isSecondPerson,
     isThirdPerson,
+    psJSXMap,
     // protobuf helpers
     readDictionary,
     writeDictionary,
