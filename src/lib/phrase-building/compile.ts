@@ -30,6 +30,7 @@ const blank: T.PsString = {
     p: "______",
     f: "______",
 };
+type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean };
 
 const kidsBlank = makeSegment({ p: "___", f: "___" }, ["isKid"]);
 
@@ -256,7 +257,6 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
     ];
 }
 
-type BlankoutOptions = { equative: boolean, ba: boolean, kidsSection: boolean };
 export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
