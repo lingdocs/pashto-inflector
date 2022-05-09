@@ -23,25 +23,22 @@ function EnglishContent({ children }: { children: (string | JSX.Element)[] | (st
     </div>;
 }
 
-function Examples({ 
-    children,
-    ex,
-    opts,
-    lineHeight,
-}: {
-    ex?: PsStringWSub | PsStringWSub[] | T.PsJSX | T.PsJSX[],
-    children: PsStringWSub | PsStringWSub[],
+function Examples(props: ({
+    ex: T.PsJSX | T.PsJSX[] | PsStringWSub | PsStringWSub[],
+} | {
+    children: T.PsJSX | T.PsJSX[] | PsStringWSub | PsStringWSub[],
+}) & {
     opts: T.TextOptions,
     lineHeight?: 0 | 1 | 2 | 3 | 4,
 }) {
-    const examples = children || ex;
+    const examples = "children" in props ? props.children : props.ex;
     const Example = ({ children: text }: { children: PsStringWSub }) => (
-        <div className={lineHeight !== undefined ? `mb-${lineHeight}` : `mt-1 mb-3`}>
+        <div className={props.lineHeight !== undefined ? `mb-${props.lineHeight}` : `mt-1 mb-3`}>
             <div>
-                <Pashto opts={opts}>{text}</Pashto>
+                <Pashto opts={props.opts}>{text}</Pashto>
             </div>
             <div>
-                <Phonetics opts={opts}>{text}</Phonetics>
+                <Phonetics opts={props.opts}>{text}</Phonetics>
             </div>
             {text.e && <EnglishContent>
                 {text.e}
@@ -53,9 +50,11 @@ function Examples({
     );
     return Array.isArray(examples) ?
         <div>
+            {/* @ts-ignore */}
             {examples.map((example, i) => <Example key={i}>{example}</Example>)}
         </div>
         :
+        // @ts-ignore
         <Example>{examples}</Example>;
 }
 

@@ -93,6 +93,7 @@ const equativeBuilders: Record<T.EquativeTense, (p: T.Person, n: boolean) => str
         return [
             `$SUBJ ${getEnglishConj(p, g.englishEquative.present)}${not(n)} $PRED`,
             `$SUBJ tend${isThirdPersonSing(p) ? "s" : ""}${not(n)} to be $PRED`,
+            `$SUBJ ${n ? "don't " : ""}be $PRED`,
         ];
     },
     subjunctive: (p, n) => {

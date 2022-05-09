@@ -19,7 +19,7 @@ import * as T from "../types";
  * @param dealWithString 
  * @returns 
  */
-export function psJSXMap(ps: T.PsJSX, target: "p" | "f", dealWithString: (ps: T.PsString) => string): JSX.Element {
+export function psJSXMap(ps: T.PsJSX, target: "p" | "f", dealWithString: (ps: T.PsString) => string | JSX.Element): JSX.Element {
     const base = ps[target];
     const sec = ps[target === "p" ? "f" : "p"];
     try {
