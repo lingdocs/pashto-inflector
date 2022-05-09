@@ -27,9 +27,11 @@ import { completeVPSelection } from "./vp-tools";
 import { renderVP } from "./render-vp";
 
 const blank: T.PsString = {
-    p: "_______",
-    f: "_______",
+    p: "______",
+    f: "______",
 };
+
+const kidsBlank = makeSegment({ p: "___", f: "___" }, ["isKid"]);
 
 type Form = T.FormVersion & { OSV?: boolean };
 export function compileVP(VP: T.VPRendered, form: Form): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
@@ -254,11 +256,11 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
     ];
 }
 
-
+type BlankoutOptions = { equative: boolean, ba: boolean, kidsSection: boolean };
 export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
-export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: { equative: boolean }): { ps: T.PsString[], e?: string[] };
-export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: { equative: boolean }): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
-    const { kids, NPs } = getEPSegmentsAndKids(EP);
+export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string[] };
+export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
+    const { kids, NPs } = getEPSegmentsAndKids(EP, blankOut);
     const equative = EP.equative.ps;
     const psResult = compileEPPs({
         NPs,
@@ -272,14 +274,15 @@ export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?:
     };
 }
 
-export function getEPSegmentsAndKids(EP: T.EPRendered): { kids: Segment[], NPs: Segment[] } {
+export function getEPSegmentsAndKids(EP: T.EPRendered, blankOut?: BlankoutOptions): { kids: Segment[], NPs: Segment[] } {
     const possToShrink = findPossesivesToShrinkInEP(EP);
     const subject = makeSegment(getPashtoFromRendered(EP.subject, false));
     const predicate = makeSegment(getPashtoFromRendered(EP.predicate, false));
     return {
-        kids: orderKidsSection([
+        kids: blankOut?.kidsSection ? [kidsBlank] : orderKidsSection([
             ...EP.equative.hasBa
-                ? [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])]
+                ? (
+                    blankOut?.ba ? [kidsBlank] : [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])])
                 : [],
             ...possToShrink.map(a => shrinkNP(a.np)),
         ]),
