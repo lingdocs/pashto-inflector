@@ -133,6 +133,9 @@ import {
     renderVP,
 } from "./lib/phrase-building/render-vp";
 import {
+    renderNPSelection,
+} from "./lib/phrase-building/render-np";
+import {
     compileEP,
     compileVP,
 } from "./lib/phrase-building/compile";
@@ -209,6 +212,7 @@ export {
     isSecondPerson,
     isThirdPerson,
     psJSXMap,
+    renderNPSelection,
     // protobuf helpers
     readDictionary,
     writeDictionary,
