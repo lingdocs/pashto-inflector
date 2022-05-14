@@ -64,6 +64,10 @@ import {
     randomSubjObj,
 } from "./lib/np-tools";
 import {
+    getEnglishFromRendered,
+    getPashtoFromRendered,
+} from "./lib/phrase-building/np-tools"; // TODO should be one np-tools file?
+import {
     convertSpelling,
     revertSpelling,
 } from "./lib/convert-spelling";
@@ -213,6 +217,8 @@ export {
     isThirdPerson,
     psJSXMap,
     renderNPSelection,
+    getEnglishFromRendered,
+    getPashtoFromRendered,
     // protobuf helpers
     readDictionary,
     writeDictionary,
