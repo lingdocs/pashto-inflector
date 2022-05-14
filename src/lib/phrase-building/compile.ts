@@ -182,13 +182,14 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
         if ("front" in rest) {
             return [
                 // pefect nu dey me leeduley and nu me dey leeduley
-                [
-                    mergeSegments(
-                        makeSegment(nu, ["isNu"]),
-                        rest.last.adjust({ ps: removeAccents }),
-                    ),
-                    rest.front.adjust({ ps: removeAccents }),
-                ],
+                // actually don't think this is correct - keeping it out for now
+                // [
+                //     mergeSegments(
+                //         makeSegment(nu, ["isNu"]),
+                //         rest.last.adjust({ ps: removeAccents }),
+                //     ),
+                //     rest.front.adjust({ ps: removeAccents }),
+                // ],
                 [
                     makeSegment(nu, ["isNu"]),
                     rest.last.adjust({ ps: removeAccents }),
