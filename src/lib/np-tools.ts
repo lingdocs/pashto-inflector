@@ -71,7 +71,7 @@ export function getEnglishParticiple(entry: T.DictionaryEntry): string {
         throw new Error("no english information for participle");
     }
     const ec = parseEc(entry.ec);
-    const participle = ec[2];
+    const participle = `${ec[2]} / to ${ec[0]}`;
     return (entry.ep)
         ? `${participle} ${entry.ep}`
         : participle;

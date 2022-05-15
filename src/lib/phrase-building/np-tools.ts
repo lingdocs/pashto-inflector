@@ -102,18 +102,22 @@ function addArticlesAndAdjs(np: T.Rendered<T.NounSelection>): string | undefined
     }
 }
 
-function addPossesors(possesor: T.Rendered<T.NPSelection> | undefined, base: string | undefined): string | undefined {
+function addPossesors(possesor: T.Rendered<T.NPSelection> | undefined, base: string | undefined, type: "noun" | "participle"): string | undefined {
     function removeArticles(s: string): string {
         return s.replace("(the) ", "").replace("(a/the) ", "");
     }
     if (!base) return undefined;
     if (!possesor) return base;
     if (possesor.type === "pronoun") {
-        return `${pronounPossEng(possesor.person)} ${removeArticles(base)}`;
+        return type === "noun"
+            ? `${pronounPossEng(possesor.person)} ${removeArticles(base)}`
+            : `(${pronounPossEng(possesor.person)}) ${removeArticles(base)} (${possesor.e})`
     }
     const possesorE = getEnglishFromRendered(possesor);
     if (!possesorE) return undefined;
-    return `${possesorE}'s ${removeArticles(base)}`;
+    return type === "noun"
+        ? `${possesorE}'s ${removeArticles(base)}`
+        : `(${possesorE}'s) ${removeArticles(base)} (${possesorE})`;
 }
 
 function pronounPossEng(p: T.Person): string {
@@ -143,10 +147,10 @@ export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSel
     if (r.type === "loc. adv." || r.type === "adjective") {
         return r.e;
     }
-    if (r.type === "noun") {
+    if (r.type !== "pronoun") {
         // TODO: shouldn't have to do this 'as' - should be automatically narrowing
         const np = r as T.Rendered<T.NounSelection>;
-        return addPossesors(np.possesor?.np, addArticlesAndAdjs(np));
+        return addPossesors(np.possesor?.np, addArticlesAndAdjs(np), r.type);
     }
     // TODO: possesives in English for participles and pronouns too!
     return r.e;

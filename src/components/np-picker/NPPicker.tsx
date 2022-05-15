@@ -90,6 +90,7 @@ function NPPicker(props: {
     const clearButton = (!props.cantClear && !props.is2ndPersonPicker && !isDynamicComplement) 
         ? <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>X</button>
         : <div></div>;
+    const possesiveLabel = props.np?.type === "participle" ? "Subj/Obj" : "Possesor";
     return <>
         <div className="d-flex flex-row justify-content-between">
             <div></div>
@@ -124,7 +125,7 @@ function NPPicker(props: {
             background: (props.np.possesor?.shrunken && !props.isShrunk) ? shrunkenBackground : "inherit",    
         }}>
             <div className="d-flex flex-row text-muted mb-2">
-                <div>Possesive:</div>
+                <div>{possesiveLabel}:</div>
                 {(props.np.possesor && !props.isShrunk) && <div className="clickable ml-3 mr-2" onClick={handleToggleShrunken}>
                     {!props.np.possesor.shrunken ? "🪄" : "👶"}
                 </div>}
@@ -147,7 +148,7 @@ function NPPicker(props: {
             />
         </div>}
         {(npType === "noun" || npType === "participle") && props.np && !addingPoss && <div>
-            <span className="clickable text-muted" onClick={() => setAddingPoss(true)}>+ Possesive</span>
+            <span className="clickable text-muted" onClick={() => setAddingPoss(true)}>+ {possesiveLabel}</span>
         </div>}
         {(npType === "pronoun" && props.np?.type === "pronoun")
             ? <PronounPicker

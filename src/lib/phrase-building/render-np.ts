@@ -9,7 +9,9 @@ import {
     concatPsString,
     psStringFromEntry,
 } from "../p-text-helpers";
-import { parseEc } from "../misc-helpers";
+import {
+    getEnglishParticiple,
+} from "../../lib/np-tools";
 import { getEnglishWord } from "../get-english-word";
 import { renderAdjectiveSelection } from "./render-adj";
 import { isPattern5Entry, isUnisexAnimNounEntry } from "../type-predicates";
@@ -83,11 +85,11 @@ function renderParticipleSelection(p: T.ParticipleSelection, inflected: boolean,
         // TODO: More robust inflection of inflecting pariticiples - get from the conjugation engine 
         ps: [psStringFromEntry(p.verb.entry)].map(ps => inflected ? concatPsString(ps, { p: "و", f: "o" }) : ps),
         e: getEnglishParticiple(p.verb.entry),
-        possesor: renderPossesor(p.possesor, role),
+        possesor: renderPossesor(p.possesor, "subj/obj"),
     };
 }
 
-function renderPossesor(possesor: T.PossesorSelection | undefined, possesorRole: "servant" | "king" | "none"): T.RenderedPossesorSelection | undefined {
+function renderPossesor(possesor: T.PossesorSelection | undefined, possesorRole: "servant" | "king" | "none" | "subj/obj"): T.RenderedPossesorSelection | undefined {
     if (!possesor) return undefined;
     const isSingUnisexAnim5PatternNoun = (possesor.np.type === "noun"
         && possesor.np.number === "singular"
@@ -99,9 +101,9 @@ function renderPossesor(possesor: T.PossesorSelection | undefined, possesorRole:
         np: renderNPSelection(
             possesor.np,
             !isSingUnisexAnim5PatternNoun,
-            false,
+            possesorRole === "subj/obj" ? true : false,
             "subject",
-            possesorRole,
+            possesorRole === "subj/obj" ? "none" : possesorRole,
         ),
     };
 }
@@ -116,20 +118,6 @@ function getInf(infs: T.InflectorOutput, t: "plural" | "arabicPlural" | "inflect
         return iset[inflectionNumber];
     }
     return [];
-}
-
-
-function getEnglishParticiple(entry: T.DictionaryEntry): string {
-    if (!entry.ec) {
-        console.log("errored participle");
-        console.log(entry);
-        throw new Error("no english information for participle");
-    }
-    const ec = parseEc(entry.ec);
-    const participle = ec[2];
-    return (entry.ep)
-        ? `${participle} ${entry.ep}`
-        : participle;
 }
 
 function getEnglishFromNoun(entry: T.DictionaryEntry, number: T.NounNumber): string {

@@ -23,6 +23,7 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
         : EP.predicate.type === "NP"
         ? getPersonFromNP(EP.predicate.selection)
         : getPersonFromNP(EP.subject);
+    const kingIsParticiple = EP[king].type === "participle";
     return {
         type: "EPRendered",
         king: EP.predicate.type === "Complement" ? "subject" : "predicate",
@@ -31,7 +32,10 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
             ? renderNPSelection(EP.predicate.selection, false, true, "subject", "king")
             : renderEqCompSelection(EP.predicate.selection, kingPerson),
         equative: renderEquative(EP.equative, kingPerson),
-        englishBase: equativeBuilders[EP.equative.tense](kingPerson, EP.equative.negative),
+        englishBase: equativeBuilders[EP.equative.tense](
+            kingIsParticiple ? T.Person.ThirdSingMale : kingPerson,
+            EP.equative.negative,
+        ),
         omitSubject: EP.omitSubject,
     };
 }
@@ -133,7 +137,7 @@ function isThirdPersonSing(p: T.Person): boolean {
     return p === T.Person.ThirdSingMale || p === T.Person.ThirdPlurFemale;
 }
 function not(n: boolean): string {
-    return n ? "not " : "";
+    return n ? " not " : "";
 }
 
 function getEnglishConj(p: T.Person, e: string | T.EnglishBlock): string {
