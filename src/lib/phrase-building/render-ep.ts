@@ -10,6 +10,7 @@ import { getEnglishWord } from "../get-english-word";
 import { psStringFromEntry } from "../p-text-helpers";
 import { isLocativeAdverbEntry } from "../type-predicates";
 import { renderAdjectiveSelection } from "./render-adj";
+import { renderSandwich } from "./render-sandwich";
 
 export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
     const king = (EP.subject.type === "pronoun")
@@ -65,6 +66,9 @@ function renderEquative(es: T.EquativeSelection, person: T.Person): T.EquativeRe
 }
 
 function renderEqCompSelection(s: T.EqCompSelection, person: T.Person): T.Rendered<T.EqCompSelection> {
+    if (s.type === "sandwich") {
+        return renderSandwich(s);
+    }
     const e = getEnglishWord(s.entry);
     if (!e || typeof e !== "string") {
         console.log(e);

@@ -15,12 +15,12 @@ export function makeVPSelectionState(
     function getTransObjFromos() {
         if (
             !os ||
-            os.verb.object === "none" ||
-            typeof os.verb.object === "number" ||
+            os.object === "none" ||
+            typeof os.object === "number" ||
             os.verb.isCompound === "dynamic" ||
-            (os.verb.object?.type === "noun" && os.verb.object.dynamicComplement)
+            (os.object?.type === "noun" && os.object.dynamicComplement)
         ) return undefined;
-        return os.verb.object;
+        return os.object;
     }
     const transitivity: T.Transitivity = "grammaticallyTransitive" in info
         ? "transitive"
@@ -47,6 +47,7 @@ export function makeVPSelectionState(
                 : undefined;
     return {
         subject,
+        object,
         verb: {
             type: "verb",
             verb: verb,
@@ -55,7 +56,6 @@ export function makeVPSelectionState(
             perfectTense: os ? os.verb.perfectTense : "presentPerfect",
             imperativeTense: os ? os.verb.imperativeTense : "imperfectiveImperative",
             tenseCategory: os ? os.verb.tenseCategory : "basic",
-            object,
             transitivity,
             isCompound,
             voice: transitivity === "transitive"
@@ -70,27 +70,33 @@ export function makeVPSelectionState(
     };
 }
 
-export function changeStatDyn(v: T.VerbSelection, s: "dynamic" | "stative"): T.VerbSelection {
-    const info = getVerbInfo(v.verb.entry, v.verb.complement);
+export function changeStatDyn(v: T.VPSelectionState, s: "dynamic" | "stative"): T.VPSelectionState {
+    const info = getVerbInfo(v.verb.verb.entry, v.verb.verb.complement);
     if (!("stative" in info)) {
         return v;
     }
     return {
         ...v,
-        isCompound: s,
         object: s === "dynamic"
             ? makeNounSelection(info.dynamic.objComplement.entry as T.NounEntry, undefined, true)
             : undefined,
-        dynAuxVerb: s === "dynamic"
-            ? { entry: info.dynamic.auxVerb } as T.VerbEntry
-            : undefined,
+        verb: {
+            ...v.verb,
+            isCompound: s,
+            dynAuxVerb: s === "dynamic"
+                ? { entry: info.dynamic.auxVerb } as T.VerbEntry
+                : undefined,
+        },
     };
 }
 
-export function changeTransitivity(v: T.VerbSelection, transitivity: "transitive" | "grammatically transitive"): T.VerbSelection {
+export function changeTransitivity(v: T.VPSelectionState, transitivity: "transitive" | "grammatically transitive"): T.VPSelectionState {
     return {
         ...v,
-        transitivity,
         object: transitivity === "grammatically transitive" ? T.Person.ThirdPlurMale : undefined,
+        verb: {
+            ...v.verb,
+            transitivity,
+        },
     };
 }

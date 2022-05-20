@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import * as T from "../../../types";
 import AdjectivePicker from "../../np-picker/AdjectivePicker";
 import LocativeAdverbPicker from "./LocativeAdverbPicker";
-const compTypes: T.EqCompType[] = ["adjective", "loc. adv."];
+import SandwichPicker from "../../np-picker/SandwichPicker";
+const compTypes: T.EqCompType[] = ["adjective", "loc. adv.", "sandwich"];
 
 function EqCompPicker(props: {
     onChange: (comp: T.EqCompSelection | undefined) => void,
@@ -12,9 +13,13 @@ function EqCompPicker(props: {
     heading?: JSX.Element | string,
     entryFeeder: T.EntryFeeder,
 }) {
-    const [compType, setCompType] = useState<T.EqCompType | undefined>(props.comp ? props.comp.type : undefined);
+    const [compType, setCompType] = useState<T.EqCompType | undefined>(props.comp
+        ? props.comp.type
+        : undefined);
     useEffect(() => {
-        setCompType(props.comp ? props.comp.type : undefined);
+        setCompType(props.comp
+            ? props.comp.type
+            : undefined);
     }, [props.comp]);
     function handleClear() {
         setCompType(undefined);
@@ -68,6 +73,15 @@ function EqCompPicker(props: {
                 adjective={props.comp?.type === "loc. adv." ? props.comp : undefined}
                 opts={props.opts}
                 onChange={props.onChange}
+            />
+            : compType === "sandwich"
+            ? <SandwichPicker
+                onChange={props.onChange}
+                opts={props.opts}
+                sandwich={props.comp?.type === "sandwich" ? props.comp : undefined}
+                entryFeeder={props.entryFeeder}
+                // TODO: get phraseIsComplete working here
+                phraseIsComplete={false}
             />
             : null}
         </div>

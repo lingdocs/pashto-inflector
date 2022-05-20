@@ -49,8 +49,12 @@ export function isUnisexNounEntry(e: T.NounEntry | T.AdjectiveEntry): e is T.Uni
     return isNounEntry(e) && e.c.includes("unisex");
 }
 
+export function isAnimNounEntry(e: T.NounEntry | T.AdverbEntry): e is T.AnimNounEntry {
+    return e.c.includes("anim.");
+}
+
 export function isUnisexAnimNounEntry(e: T.NounEntry | T.AdjectiveEntry): e is T.UnisexAnimNounEntry {
-    return isUnisexNounEntry(e) && e.c.includes("anim.");
+    return isUnisexNounEntry(e) && isAnimNounEntry(e);
 }
 
 export function isAdjOrUnisexNounEntry(e: T.Entry): e is (T.AdjectiveEntry | T.UnisexNounEntry) {
@@ -191,4 +195,3 @@ export function isEquativeTense(t: T.Tense): t is T.EquativeTense {
 export function isImperativeTense(tense: T.Tense): tense is T.ImperativeTense {
     return tense === "imperfectiveImperative" || tense === "perfectiveImperative";
 }
-

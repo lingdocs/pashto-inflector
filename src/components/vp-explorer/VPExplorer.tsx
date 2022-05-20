@@ -67,10 +67,9 @@ function VPExplorer(props: {
         }, 1500);
     }
     useEffect(() => {
-        const newVps = makeVPSelectionState(props.verb, vps);
         adjustVps({
-            type: "load vps",
-            payload: newVps,
+            type: "set verb",
+            payload: props.verb,
         });
         // eslint-disable-next-line
     }, [props.verb]);
@@ -161,7 +160,7 @@ function VPExplorer(props: {
                 {mode === "phrases" ? <i className="fas fa-share-alt" /> : ""}
             </div>
         </div>
-        {(vps.verb && (typeof vps.verb.object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
+        {(vps.verb && (typeof vps.object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
             <div className="text-center my-2">
                 <button onClick={handleSubjObjSwap} className="btn btn-sm btn-light">
                     <i className="fas fa-exchange-alt mr-2" /> subj/obj
@@ -192,14 +191,14 @@ function VPExplorer(props: {
                         }
                         is2ndPersonPicker={vps.verb.tenseCategory === "imperative"}
                         np={vps.subject}
-                        counterPart={vps.verb ? vps.verb.object : undefined}
+                        counterPart={vps.verb ? vps.object : undefined}
                         onChange={handleSubjectChange}
                         opts={props.opts}
                         isShrunk={(servantIsShrunk && roles.servant === "subject")}
                     />
                 </div>
-                {vps.verb && (vps.verb.object !== "none") && <div className="my-2" style={{ background: (servantIsShrunk && roles.servant === "object") ? shrunkenBackground : "inherit" }}>
-                    {(typeof vps.verb.object === "number")
+                {vps.verb && (vps.object !== "none") && <div className="my-2" style={{ background: (servantIsShrunk && roles.servant === "object") ? shrunkenBackground : "inherit" }}>
+                    {(typeof vps.object === "number")
                         ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
                         : <NPPicker
                             phraseIsComplete={phraseIsComplete}
@@ -218,7 +217,7 @@ function VPExplorer(props: {
                                 </div>}
                             entryFeeder={props.entryFeeder}
                             role="object"
-                            np={vps.verb.object}
+                            np={vps.object}
                             counterPart={vps.subject}
                             onChange={handleObjectChange}
                             opts={props.opts}

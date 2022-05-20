@@ -10,6 +10,9 @@ import {
     isImperativeTense,
 } from "../../lib/type-predicates";
 import { checkForMiniPronounsError } from "../../lib/phrase-building/compile";
+import {
+    makeVPSelectionState,
+} from "./verb-selection";
 
 export type VpsReducerAction = {
     type: "load vps",
@@ -48,7 +51,10 @@ export type VpsReducerAction = {
     payload: "basic" | "modal" | "perfect" | "imperative",
 } | {
     type: "toggle servant shrink",
-};
+} | {
+    type: "set verb",
+    payload: T.VerbEntry,
+}
 
 export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, sendAlert?: (msg: string) => void): T.VPSelectionState {
     return ensureMiniPronounsOk(vps, doReduce());
@@ -70,7 +76,7 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
             if (
                 !skipPronounConflictCheck
                 &&
-                hasPronounConflict(subject, vps.verb?.object)
+                hasPronounConflict(subject, vps.object)
             ) {
                 if (sendAlert) sendAlert("That combination of pronouns is not allowed");
                 return vps;
@@ -82,7 +88,7 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
         }
         if (action.type === "set object") {
             if (!vps.verb) return vps;
-            if ((vps.verb.object === "none") || (typeof vps.verb.object === "number")) {
+            if ((vps.object === "none") || (typeof vps.object === "number")) {
                 return vps;
             }
             const object = action.payload;
@@ -93,10 +99,7 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
             }
             return {
                 ...vps,
-                verb: {
-                    ...vps.verb,
-                    object,
-                },
+                object,
             };
         }
         if (action.type === "swap subj/obj") {
@@ -118,10 +121,10 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                 if (voice === "passive") {
                     return {
                         ...vps,
-                        subject: typeof vps.verb.object === "object" ? vps.verb.object : undefined,
+                        subject: typeof vps.object === "object" ? vps.object : undefined,
+                        object: "none",
                         verb: {
                             ...vps.verb,
-                            object: "none",
                             voice,
                         },
                     };
@@ -129,10 +132,9 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                     return {
                         ...vps,
                         subject: undefined,
+                        object: typeof vps.subject === "object" ? vps.subject : undefined,
                         verb: {
                             ...vps.verb,
-                            // TODO: is this ok??
-                            object: typeof vps.subject === "object" ? vps.subject : undefined,
                             voice,
                         },
                     };
@@ -143,17 +145,11 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
         }
         if (action.type === "set transitivity") {
             if (!(vps.verb && vps.verb.canChangeTransitivity)) return vps;
-            return {
-                ...vps,
-                verb: changeTransitivity(vps.verb, action.payload),
-            };
+            return changeTransitivity(vps, action.payload);
         }
         if (action.type === "set statDyn") {
             if (!(vps.verb && vps.verb.canChangeStatDyn)) return vps;
-            return {
-                ...vps,
-                verb: changeStatDyn(vps.verb, action.payload),
-            };
+            return changeStatDyn(vps, action.payload);
         }
         if (action.type === "set negativity") {
             if (!vps.verb) return vps;
@@ -220,14 +216,17 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                 },
             };
         }
-        // if (action.type === "toggle servant shrink") {
-        return {
-            ...vps,
-            form: {
-                ...vps.form,
-                shrinkServant: !vps.form.shrinkServant,
-            },
-        };
+        if (action.type === "toggle servant shrink") {
+            return {
+                ...vps,
+                form: {
+                    ...vps.form,
+                    shrinkServant: !vps.form.shrinkServant,
+                },
+            };
+        }
+        // if (action.type === "set verb") {
+            return makeVPSelectionState(action.payload, vps);
         // }
     }
 }

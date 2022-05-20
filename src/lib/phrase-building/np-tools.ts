@@ -6,6 +6,9 @@ import * as T from "../../types";
 import { concatPsString } from "../p-text-helpers";
 
 function getBaseAndAdjectives(np: T.Rendered<T.NPSelection | T.EqCompSelection>): T.PsString[] {
+    if (np.type === "sandwich") {
+        return getSandwichPsBaseAndAdjectives(np);
+    }
     const adjs = np.adjectives;
     if (!adjs) {
         return np.ps;
@@ -20,6 +23,32 @@ function getBaseAndAdjectives(np: T.Rendered<T.NPSelection | T.EqCompSelection>)
             p,
         )
     ));
+}
+
+function getSandwichPsBaseAndAdjectives(s: T.Rendered<T.SandwichSelection<T.Sandwich>>): T.PsString[] {
+    const insideBase = getBaseAndAdjectives(s.inside);
+    const willContractWithPronoun = s.before && s.before.p === "د" && s.inside.type === "pronoun"
+        && (isFirstPerson(s.inside.person) || isSecondPerson(s.inside.person))
+    const contracted = (willContractWithPronoun && s.inside.type === "pronoun")
+        ? contractPronoun(s.inside)
+        : undefined
+    return insideBase.map((inside) => (
+        concatPsString(
+            (s.before && !willContractWithPronoun) ? s.before : "",
+            s.before ? " " : "",
+            contracted ? contracted : inside,
+            s.after ? " " : "",
+            s.after ? s.after : "",
+        )
+    ));
+}
+
+function contractPronoun(n: T.Rendered<T.PronounSelection>): T.PsString | undefined {
+    return isFirstPerson(n.person)
+        ? concatPsString({ p: "ز", f: "z" }, n.ps[0])
+        : isSecondPerson(n.person)
+        ? concatPsString({ p: "س", f: "s" }, n.ps[0])
+        : undefined;
 }
 
 function trimOffShrunkenPossesive(p: T.Rendered<T.NPSelection>): T.Rendered<T.NPSelection> {
@@ -46,12 +75,20 @@ function trimOffShrunkenPossesive(p: T.Rendered<T.NPSelection>): T.Rendered<T.NP
 
 export function getPashtoFromRendered(np: T.Rendered<T.NPSelection> | T.Rendered<T.EqCompSelection>, subjectsPerson: false | T.Person): T.PsString[] {
     const base = getBaseAndAdjectives(np);
-    if (np.type !== "loc. adv." && np.type !== "adjective") {
-        // ts being dumb
-        const trimmed = trimOffShrunkenPossesive(np as T.Rendered<T.NPSelection>);
-        if (trimmed.possesor) {
-            return addPossesor(trimmed.possesor.np, base, subjectsPerson);
-        }
+    if (np.type === "loc. adv." || np.type === "adjective") {
+        return base;
+    }
+    const trimmed = np.type === "sandwich" ? {
+        ...np,
+        inside: trimOffShrunkenPossesive(np.inside),
+    } : trimOffShrunkenPossesive(np);
+    if (trimmed.type === "sandwich") {
+        return trimmed.inside.possesor
+            ? addPossesor(trimmed.inside.possesor.np, base, subjectsPerson)
+            : base;
+    }
+    if (trimmed.possesor) {
+        return addPossesor(trimmed.possesor.np, base, subjectsPerson);
     }
     return base;
 }
@@ -143,6 +180,9 @@ function pronounPossEng(p: T.Person): string {
 }
 
 export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSelection>): string | undefined {
+    if (r.type === "sandwich") {
+        return getEnglishFromRenderedSandwich(r);
+    }
     if (!r.e) return undefined;
     if (r.type === "loc. adv." || r.type === "adjective") {
         return r.e;
@@ -155,3 +195,9 @@ export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSel
     // TODO: possesives in English for participles and pronouns too!
     return r.e;
 }
+
+function getEnglishFromRenderedSandwich(r: T.Rendered<T.SandwichSelection<T.Sandwich>>): string | undefined {
+    const insideE = getEnglishFromRendered(r.inside);
+    if (!insideE) return undefined;
+    return `${r.e} ${insideE}`;
+} 

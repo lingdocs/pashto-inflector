@@ -28,20 +28,20 @@ import { renderNPSelection } from "./render-np";
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     // Sentence Rules Logic
     const isPast = isPastTense(VP.verb.tense);
-    const isTransitive = VP.verb.object !== "none";
+    const isTransitive = VP.object !== "none";
     const { king, servant } = getKingAndServant(isPast, isTransitive);
     const kingPerson = getPersonFromNP(
-        king === "subject" ? VP.subject : VP.verb.object,
+        king === "subject" ? VP.subject : VP.object,
     );
     // TODO: more elegant way of handling this type safety
     if (kingPerson === undefined) {
         throw new Error("king of sentance does not exist");
     }
     const subjectPerson = getPersonFromNP(VP.subject);
-    const objectPerson = getPersonFromNP(VP.verb.object);
+    const objectPerson = getPersonFromNP(VP.object);
     // TODO: also don't inflect if it's a pattern one animate noun
     const inflectSubject = isPast && isTransitive && !isMascSingAnimatePattern4(VP.subject);
-    const inflectObject = !isPast && isFirstOrSecondPersPronoun(VP.verb.object);
+    const inflectObject = !isPast && isFirstOrSecondPersPronoun(VP.object);
     // Render Elements
     const b: T.VPRendered = {
         type: "VPRendered",
@@ -51,11 +51,11 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         isTransitive,
         isCompound: VP.verb.isCompound,
         subject: renderNPSelection(VP.subject, inflectSubject, false, "subject", king === "subject" ? "king" : "servant"),
-        object: renderNPSelection(VP.verb.object, inflectObject, true, "object", king === "object" ? "king" : "servant"),
+        object: renderNPSelection(VP.object, inflectObject, true, "object", king === "object" ? "king" : "servant"),
         verb: renderVerbSelection(VP.verb, kingPerson, objectPerson),
         englishBase: renderEnglishVPBase({
             subjectPerson,
-            object: VP.verb.isCompound === "dynamic" ? "none" : VP.verb.object,
+            object: VP.verb.isCompound === "dynamic" ? "none" : VP.object,
             vs: VP.verb,
         }),
         form: VP.form,

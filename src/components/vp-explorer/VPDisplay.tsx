@@ -13,7 +13,7 @@ function VPDisplay({ VP, opts, setForm }: {
     if (!("type" in VP)) {
         return <div className="lead text-muted text-center mt-4">
             {(() => {
-                const twoNPs = (VP.subject === undefined) && (VP.verb.object === undefined);
+                const twoNPs = (VP.subject === undefined) && (VP.object === undefined);
                 return `Choose NP${twoNPs ? "s " : ""} to make a phrase`;
             })()}
         </div>;

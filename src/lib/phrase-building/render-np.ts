@@ -14,7 +14,7 @@ import {
 } from "../../lib/np-tools";
 import { getEnglishWord } from "../get-english-word";
 import { renderAdjectiveSelection } from "./render-adj";
-import { isPattern5Entry, isUnisexAnimNounEntry } from "../type-predicates";
+import { isPattern5Entry, isAnimNounEntry } from "../type-predicates";
 
 export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection>;
 export function renderNPSelection(NP: T.NPSelection | T.ObjectNP, inflected: boolean, inflectEnglish: boolean, role: "object", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection> | T.Person.ThirdPlurMale | "none";
@@ -93,7 +93,7 @@ function renderPossesor(possesor: T.PossesorSelection | undefined, possesorRole:
     if (!possesor) return undefined;
     const isSingUnisexAnim5PatternNoun = (possesor.np.type === "noun"
         && possesor.np.number === "singular"
-        && isUnisexAnimNounEntry(possesor.np.entry)
+        && isAnimNounEntry(possesor.np.entry)
         && isPattern5Entry(possesor.np.entry)
     );
     return {

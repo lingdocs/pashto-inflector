@@ -197,48 +197,85 @@ export function switchSubjObj(vps: T.VPSelectionState): T.VPSelectionState;
 export function switchSubjObj(vps: T.VPSelectionComplete): T.VPSelectionComplete;
 export function switchSubjObj(vps: T.VPSelectionState | T.VPSelectionComplete): T.VPSelectionState | T.VPSelectionComplete {
     if ("tenseCategory" in vps.verb) {
-        if (!vps.subject || !(typeof vps.verb.object === "object") || (vps.verb.tenseCategory === "imperative")) {
+        if (!vps.subject || !(typeof vps.object === "object") || (vps.verb.tenseCategory === "imperative")) {
             return vps;
         }
         return {
             ...vps,
-            subject: vps.verb.object,
-            verb: {
-                ...vps.verb,
-                object: vps.subject,
-            },
+            subject: vps.object,
+            object: vps.subject,
         };
     }
-    if (!vps.subject|| !vps.verb || !(typeof vps.verb.object === "object")) {
+    if (!vps.subject|| !vps.verb || !(typeof vps.object === "object")) {
         return vps;
     }
     return {
         ...vps,
-        subject: vps.verb.object,
-        verb: {
-            ...vps.verb,
-            object: vps.subject,
-        }
+        subject: vps.object,
+        object: vps.subject,
     };
 }
+
+// export function insertSubjectSelection(vps: T.VPSelectionState, s: T.SubjectSelection): T.VPSelectionState {
+//     const index = vps.blocks.findIndex(f => f.type === "subjectSelection");
+//     if (index === -1) {
+//         throw new Error("couldn't find subjectSelection to insert over");
+//     }
+//     const blocks = [...vps.blocks];
+//     blocks[index] = s;
+//     return {
+//         ...vps,
+//         blocks,
+//     };
+// }
+
+// export function insertObjecttSelection(vps: T.VPSelectionState, o: T.ObjectSelection): T.VPSelectionState {
+//     const index = vps.blocks.findIndex(f => f.type === "objectSelection");
+//     if (index === -1) {
+//         throw new Error("couldn't find objectSelection to insert over");
+//     }
+//     const blocks = [...vps.blocks];
+//     blocks[index] = o;
+//     return {
+//         ...vps,
+//         blocks,
+//     };
+// }
+
+// export function getSubjectSelection(vps: T.VPSelectionState): T.SubjectSelection {
+//     const subject = vps.blocks.find(f => f.type === "subjectSelection");
+//     if (subject?.type !== "subjectSelection") {
+//         throw new Error("couldn't find subjectSelection");
+//     }
+//     return subject;
+// }
+
+// export function getObjectSelection(vps: T.VPSelectionState): T.ObjectSelection {
+//     const object = vps.blocks.find(f => f.type === "objectSelection");
+//     if (object?.type !== "objectSelection") {
+//         throw new Error("couldn't find objectSelection");
+//     }
+//     return object;
+// }
 
 export function completeVPSelection(vps: T.VPSelectionState): T.VPSelectionComplete | undefined {
     if (vps.subject === undefined) {
         return undefined;
     }
-    if (vps.verb.object === undefined) {
+    if (vps.object === undefined) {
         return undefined;
     }
     // necessary for this version on typscript ...
     const verb: T.VerbSelectionComplete = {
         ...vps.verb,
-        object: vps.verb.object,
         tense: getTenseFromVerbSelection(vps.verb),
     };
     const subject = vps.subject;
+    const object = vps.object
     return {
         ...vps,
         subject,
+        object,
         verb,
     };
 }
@@ -264,9 +301,9 @@ export function isThirdPerson(p: T.Person): boolean {
 export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): T.VPSelectionState {
     console.log("checking more...", vps);
     const subjIs2ndPerson = (vps.subject?.type === "pronoun") && isSecondPerson(vps.subject.person);
-    const objIs2ndPerson = (typeof vps.verb.object === "object")
-        && (vps.verb.object.type === "pronoun")
-        && isSecondPerson(vps.verb.object.person);
+    const objIs2ndPerson = (typeof vps.object === "object")
+        && (vps.object.type === "pronoun")
+        && isSecondPerson(vps.object.person);
     console.log({ subjIs2ndPerson, objIs2ndPerson });
     const default2ndPersSubject: T.PronounSelection = {
         type: "pronoun",
@@ -284,22 +321,19 @@ export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): 
         return vps;
     }
     if (subjIs2ndPerson && objIs2ndPerson)  {
-        if (typeof vps.verb.object !== "object" || vps.verb.object.type !== "pronoun") {
+        if (typeof vps.object !== "object" || vps.object.type !== "pronoun") {
             return vps;
         }
         return {
             ...vps,
-            verb: {
-                ...vps.verb,
-                object: {
-                    ...vps.verb.object,
-                    person: getNon2ndPersPronoun(),
-                },
+            object: {
+                ...vps.object,
+                person: getNon2ndPersPronoun(),
             },
         };
     }
     if (!subjIs2ndPerson && objIs2ndPerson) {
-        if (typeof vps.verb.object !== "object" || vps.verb.object.type !== "pronoun") {
+        if (typeof vps.object !== "object" || vps.object.type !== "pronoun") {
             return {
                 ...vps,
                 subject: default2ndPersSubject,
@@ -307,13 +341,10 @@ export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): 
         }
         return {
             ...vps,
-            subject: default2ndPersSubject, 
-            verb: {
-                ...vps.verb,
-                object: {
-                    ...vps.verb.object,
-                    person: getNon2ndPersPronoun(),
-                },
+            subject: default2ndPersSubject,
+            object: {
+                ...vps.object,
+                person: getNon2ndPersPronoun(),
             },
         };
     }

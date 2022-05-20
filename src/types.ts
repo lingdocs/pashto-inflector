@@ -472,6 +472,7 @@ export type AayTail = "ey" | "aay";
 export type NounEntry = DictionaryEntry & { c: string } & { __brand: "a noun entry" };
 export type MascNounEntry = NounEntry & { __brand2: "a masc noun entry" };
 export type FemNounEntry = NounEntry & { __brand2: "a fem noun entry" };
+export type AnimNounEntry = NounEntry & { __brand3: "a anim noun entry" }; 
 export type UnisexNounEntry = MascNounEntry & { __brand3: "a unisex noun entry" };
 export type UnisexAnimNounEntry = UnisexNounEntry & { __brand4: "an anim unisex noun entry" };
 export type AdverbEntry = DictionaryEntry & { c: string } & { __brand: "an adverb entry" };
@@ -529,20 +530,43 @@ export type ModalTense = `${VerbTense}Modal`;
 export type ImperativeTense = `${Aspect}Imperative`;
 export type Tense = EquativeTense | VerbTense | PerfectTense | ModalTense | ImperativeTense;
 
+export type SubjectSelection = {
+    type: "subjectSelection",
+    selection: NPSelection | undefined,
+};
+
+export type ObjectSelection = {
+    type: "objectSelection",
+    selection: NPSelection | ObjectNP | undefined,
+};
+
+export type SubjectSelectionComplete = {
+    type: "subjectSelectionComplete",
+    selection: NPSelection,
+};
+
+export type ObjectSelectionComplete = {
+    type: "objectSelection",
+    selection: NPSelection | ObjectNP,
+};
+
 export type VPSelectionState = {
+    // blocks: (SubjectSelection | ObjectSelection)[]
     subject: NPSelection | undefined,
+    object: NPSelection | ObjectNP | undefined,
     verb: VerbSelection,
     form: FormVersion,
 };
 
 export type VPSelectionComplete = {
+    // blocks: (SubjectSelectionComplete | ObjectSelectionComplete)[]
     subject: NPSelection,
+    object: NPSelection | ObjectNP,
     verb: VerbSelectionComplete,
     form: FormVersion,
 };
 
 export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "imperfectiveTense" | "tenseCategory"> & {
-    object: Exclude<VerbObject, undefined>,
     tense: VerbTense | PerfectTense | ModalTense | ImperativeTense,
 }
 
@@ -550,7 +574,6 @@ export type VerbSelection = {
     type: "verb",
     verb: VerbEntry,
     dynAuxVerb?: VerbEntry,
-    object: VerbObject, // TODO: should have a locked in (but number changeable noun) here for dynamic compounds
     transitivity: Transitivity,
     canChangeTransitivity: boolean,
     canChangeStatDyn: boolean,
@@ -586,6 +609,8 @@ export type VerbObject =
 
 export type NPSelection = NounSelection | PronounSelection | ParticipleSelection;
 
+export type APSelection = AdverbSelection | SandwichSelection<Sandwich>;
+
 export type NPType = "noun" | "pronoun" | "participle";
 
 export type ObjectNP = "none" | Person.ThirdPlurMale;
@@ -607,6 +632,11 @@ export type NounSelection = {
     adjectives: AdjectiveSelection[],
     possesor: undefined | PossesorSelection,
 };
+
+export type AdverbSelection = {
+    type: "adverb",
+    entry: AdverbEntry,
+}
 
 export type AdjectiveSelection = {
     type: "adjective",
@@ -645,23 +675,27 @@ export type RenderedPossesorSelection = {
     shrunken: boolean,
 };
 
-export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection> = ReplaceKey<
-    Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,
-    "e",
-    string
-> & {
-    ps: PsString[],
-    e?: string,
-    inflected: boolean,
-    person: Person,
-    role: "king" | "servant" | "none",
-    // TODO: better recursive thing
-    adjectives?: Rendered<AdjectiveSelection>[],
-    possesor?: {
-        shrunken: boolean,
-        np: Rendered<NPSelection>,
-    },
-};
+export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection | SandwichSelection<Sandwich>> = T extends SandwichSelection<Sandwich> 
+    ? Omit<SandwichSelection<Sandwich>, "inside"> & {
+        inside: Rendered<NPSelection>,
+    }
+    : ReplaceKey<
+        Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,
+        "e",
+        string
+    > & {
+        ps: PsString[],
+        e?: string,
+        inflected: boolean,
+        person: Person,
+        role: "king" | "servant" | "none",
+        // TODO: better recursive thing
+        adjectives?: Rendered<AdjectiveSelection>[],
+        possesor?: {
+            shrunken: boolean,
+            np: Rendered<NPSelection>,
+        },
+    };
 // TODO: recursive changing this down into the possesor etc.
 
 export type EPSelectionState = {
@@ -687,8 +721,19 @@ export type EPSelectionComplete = Omit<EPSelectionState, "subject" | "predicate"
     omitSubject: boolean,
 };
 
-export type EqCompType = "adjective" | "loc. adv."; // TODO: - more
-export type EqCompSelection = AdjectiveSelection | LocativeAdverbSelection; // TODO: - more
+export type EqCompType = "adjective" | "loc. adv." | "sandwich"
+export type EqCompSelection = AdjectiveSelection | LocativeAdverbSelection | SandwichSelection<Sandwich>;
+
+export type SandwichSelection<S extends Sandwich> = S & {
+    inside: NPSelection,
+};
+
+export type Sandwich = {
+    type: "sandwich",
+    before: PsString | undefined,
+    after: PsString | undefined,
+    e: string,
+};
 
 export type EquativeSelection = {
     tense: EquativeTense,

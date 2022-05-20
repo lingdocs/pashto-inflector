@@ -137,7 +137,7 @@ function NPPronounPicker({ onChange, pronoun, role, opts, is2ndPersonPicker }: {
     const pSpec = is2ndPersonPicker
         ? [pSpecA[1]]
         : pSpecA;
-    return <div style={{ maxWidth: "145px", padding: 0 }}>
+    return <div style={{ maxWidth: "145px", padding: 0, margin: "0 auto" }}>
         <div className="d-flex flex-row justify-content-between mb-2">
             <ButtonSelect
                 xSmall

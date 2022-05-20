@@ -375,8 +375,8 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
     const oldSubj = vps.subject?.type === "pronoun"
         ? vps.subject.person
         : undefined;
-    const oldObj = (typeof vps.verb.object === "object" && vps.verb.object.type === "pronoun")
-        ? vps.verb.object.person
+    const oldObj = (typeof vps.object === "object" && vps.object.type === "pronoun")
+        ? vps.object.person
         : undefined;
     const { subj, obj } = randomSubjObj(
         oldSubj === undefined
@@ -389,17 +389,6 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
     const t = getTenseFromVerbSelection(vps.verb);
     const verb: T.VerbSelectionComplete = {
         ...vps.verb,
-        object: (
-            (typeof vps.verb.object === "object" && !(vps.verb.object.type === "noun" && vps.verb.object.dynamicComplement))
-            ||
-            vps.verb.object === undefined
-        )
-            ? {
-                type: "pronoun",
-                distance: "far",
-                person: obj,
-            }
-            : vps.verb.object,
         tense: isImperativeTense(t) ? "presentVerb" : t,
     };
     return {
@@ -409,18 +398,29 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
             distance: "far",
             person: subj,
         },
+        object: (
+            (typeof vps.object === "object" && !(vps.object.type === "noun" && vps.object.dynamicComplement))
+            ||
+            vps.object === undefined
+        )
+            ? {
+                type: "pronoun",
+                distance: "far",
+                person: obj,
+            }
+            : vps.object,
         verb,
     };
 }
 
 function getRandomVPSelection(mix: MixType = "both") {
     // TODO: Type safety to make sure it's safe?
-    return ({ subject, verb }: T.VPSelectionComplete): T.VPSelectionComplete => {
+    return ({ subject, verb, object }: T.VPSelectionComplete): T.VPSelectionComplete => {
         const oldSubj = (subject.type === "pronoun")
             ? subject.person
             : undefined;
-        const oldObj = (typeof verb.object === "object" && verb.object.type === "pronoun")
-            ? verb.object.person
+        const oldObj = (typeof object === "object" && object.type === "pronoun")
+            ? object.person
             : undefined;
         const { subj, obj } = randomSubjObj(
             oldSubj !== undefined ? { subj: oldSubj, obj: oldObj } : undefined
@@ -433,8 +433,8 @@ function getRandomVPSelection(mix: MixType = "both") {
             distance: "far",
             person: subj,
         };
-        const randObj: T.PronounSelection = typeof verb?.object === "object" && verb.object.type === "pronoun" ? {
-            ...verb.object,
+        const randObj: T.PronounSelection = typeof object === "object" && object.type === "pronoun" ? {
+            ...object,
             person: obj,
         } : {
             type: "pronoun",
@@ -445,23 +445,21 @@ function getRandomVPSelection(mix: MixType = "both") {
         if (mix === "tenses") {
             return {
                 subject: subject !== undefined ? subject : randSubj,
+                object: object !== undefined ? object : randObj,
                 verb: randomizeTense(verb, true),
                 form: { removeKing: false, shrinkServant: false },
             }
         }
-        const v: T.VerbSelectionComplete = {
-            ...verb,
-            object: (
-                (typeof verb.object === "object" && !(verb.object.type === "noun" && verb.object.dynamicComplement))
-                ||
-                verb.object === undefined
-            )
-                ? randObj
-                : verb.object,
-        };
         return {
             subject: randSubj,
-            verb: randomizeTense(v, true),
+            object: (
+                (typeof object === "object" && !(object.type === "noun" && object.dynamicComplement))
+                ||
+                object === undefined
+            )
+                ? randObj
+                : object,
+            verb: randomizeTense(verb, true),
             form: { removeKing: false, shrinkServant: false },
         };
     };

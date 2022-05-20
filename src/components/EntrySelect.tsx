@@ -111,4 +111,69 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: {
     </div>
 }
 
+export function SandwichSelect<E extends T.Sandwich>(props: {
+    sandwiches: E[],
+    value: E | undefined,
+    onChange: (value: E | undefined) => void,
+    name: string | undefined,
+    opts: T.TextOptions,
+    style?: StyleHTMLAttributes<HTMLDivElement>,
+}) {
+    const divStyle = props.style || { width: "13rem" };
+    const placeholder = "Select Sandwich…";
+    const value = props.value ? makeSandwichOption(props.value) : undefined;
+    const options = props.sandwiches
+        // .sort((a, b) => {
+        //     if ("entry" in a) {
+        //         return a.before.p.localeCompare("p" in b ? b.p : b.entry.p, "af-PS")
+        //     }
+        //     return a.p.localeCompare("p" in b ? b.p : b.entry.p, "af-PS");
+        // })
+        .map(makeSandwichOption);
+    const onChange = (v: { label: string | JSX.Element, value: string } | null) => {
+        if (!v) {
+            props.onChange(undefined);
+            return;
+        }
+        const s = props.sandwiches.find(e => {
+            const sValue = JSON.parse(v.value) as T.Sandwich;
+            if (sValue.type !== "sandwich") throw new Error("error converting selected sandwich value to a sandwich");
+            return sandwichSideEq(e.before, sValue.before)
+                && sandwichSideEq(e.after, sValue.after)
+                && (e.e === sValue.e);
+        });
+        if (!s) return;
+        props.onChange(s);
+    }
+    return <div style={divStyle}>
+        <Select
+            styles={customStyles}
+            isSearchable={true}
+            value={value}
+            // @ts-ignore - gets messed up when using customStyles
+            onChange={onChange}
+            className="mb-2"
+            options={options}
+            placeholder={placeholder}
+        />
+    </div>
+}
+
+function sandwichSideEq(s1: T.PsString | undefined, s2: T.PsString | undefined): boolean {
+    if (s1 === undefined && s2 === undefined) {
+        return true
+    }
+    if (typeof s1 === "object" && typeof s2 === "object" && s1.p === s2.p) {
+        return true;
+    }
+    return false;
+}
+
+function makeSandwichOption(s: T.Sandwich): { label: string, value: string } {
+    return {
+        label: `${s.before ? s.before.p : ""} ... ${s.after ? s.after.p : ""} (${s.e})`,
+        value: JSON.stringify(s),
+    };
+}
+
 export default EntrySelect;
