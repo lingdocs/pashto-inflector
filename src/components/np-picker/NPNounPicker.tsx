@@ -60,6 +60,7 @@ function NPNounPicker(props: {
     noun: T.NounSelection | undefined,
     onChange: (p: T.NounSelection | undefined) => void,
     opts: T.TextOptions,
+    phraseIsComplete: boolean,
 }) {
     // const [patternFilter, setPatternFilter] = useState<FilterPattern | undefined>(undefined);
     // const [showFilter, setShowFilter] = useState<boolean>(false)
@@ -99,8 +100,9 @@ function NPNounPicker(props: {
             />
         </div>} */}
         {props.noun && <AdjectiveManager
+            phraseIsComplete={props.phraseIsComplete}
             adjectives={props.noun?.adjectives}
-            entryFeeder={props.entryFeeder.adjectives}
+            entryFeeder={props.entryFeeder}
             opts={props.opts}
             onChange={handelAdjectivesUpdate}
         />}

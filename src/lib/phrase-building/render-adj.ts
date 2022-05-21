@@ -9,6 +9,7 @@ import {
     personGender,
     personIsPlural,
 } from "../../lib/misc-helpers";
+import { renderSandwich } from "./render-sandwich";
 
 function chooseInflection(inflections: T.UnisexSet<T.InflectionSet>, pers: T.Person, inflected?: boolean): T.ArrayOneOrMore<T.PsString> {
     const gender = personGender(pers);
@@ -30,8 +31,8 @@ export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Pers
         entry: a.entry,
         ps: [psStringFromEntry(a.entry)],
         e,
-        inflected: false,
-        role,
+        inflected,
+        sandwich: a.sandwich ? renderSandwich(a.sandwich) : undefined,
         person,
     }
     if (!infs.inflections || !isUnisexSet(infs.inflections)) {
@@ -42,8 +43,8 @@ export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Pers
         entry: a.entry,
         ps: chooseInflection(infs.inflections, person, inflected),
         e,
-        inflected: false,
-        role,
+        inflected,
         person,
+        sandwich: a.sandwich ? renderSandwich(a.sandwich) : undefined,
     };
 }

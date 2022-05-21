@@ -9,7 +9,7 @@ function getBaseAndAdjectives(np: T.Rendered<T.NPSelection | T.EqCompSelection>)
     if (np.type === "sandwich") {
         return getSandwichPsBaseAndAdjectives(np);
     }
-    const adjs = np.adjectives;
+    const adjs = "adjectives" in np && np.adjectives;
     if (!adjs) {
         return np.ps;
     }
@@ -75,8 +75,19 @@ function trimOffShrunkenPossesive(p: T.Rendered<T.NPSelection>): T.Rendered<T.NP
 
 export function getPashtoFromRendered(np: T.Rendered<T.NPSelection> | T.Rendered<T.EqCompSelection>, subjectsPerson: false | T.Person): T.PsString[] {
     const base = getBaseAndAdjectives(np);
-    if (np.type === "loc. adv." || np.type === "adjective") {
+    if (np.type === "loc. adv.") {
         return base;
+    }
+    if (np.type === "adjective") {
+        if (!np.sandwich) {
+            return base 
+        }
+        const sandwichPs = getPashtoFromRendered(np.sandwich, false);
+        return base.flatMap(p => (
+            sandwichPs.flatMap(s => (
+                concatPsString(s, " ", p)
+            ))
+        ));
     }
     const trimmed = np.type === "sandwich" ? {
         ...np,
@@ -184,8 +195,11 @@ export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSel
         return getEnglishFromRenderedSandwich(r);
     }
     if (!r.e) return undefined;
-    if (r.type === "loc. adv." || r.type === "adjective") {
+    if (r.type === "loc. adv.") {
         return r.e;
+    }
+    if (r.type === "adjective") {
+        return getEnglishFromRenderedAdjective(r);
     }
     if (r.type !== "pronoun") {
         // TODO: shouldn't have to do this 'as' - should be automatically narrowing
@@ -200,4 +214,12 @@ function getEnglishFromRenderedSandwich(r: T.Rendered<T.SandwichSelection<T.Sand
     const insideE = getEnglishFromRendered(r.inside);
     if (!insideE) return undefined;
     return `${r.e} ${insideE}`;
-} 
+}
+
+function getEnglishFromRenderedAdjective(a: T.Rendered<T.AdjectiveSelection>): string | undefined {
+    if (!a.sandwich) {
+        return a.e;
+    }
+    if (!a.e) return undefined;
+    return `${a.e} ${getEnglishFromRenderedSandwich(a.sandwich)}`;
+}

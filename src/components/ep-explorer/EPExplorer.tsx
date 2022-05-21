@@ -92,6 +92,7 @@ function EPExplorer(props: {
                         onChange={payload => adjustEps({ type: "set predicate NP", payload })}
                         opts={props.opts}
                     /> : <EqCompPicker
+                        phraseIsComplete={phraseIsComplete}
                         comp={eps.predicate.type === "Complement" ? eps.predicate.Complement : undefined}
                         onChange={payload => adjustEps({ type: "set predicate comp", payload })}
                         opts={props.opts}

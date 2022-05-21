@@ -52,7 +52,9 @@ function NPPicker(props: {
             setNpType(ntp);
             onChange(pronoun);
         } else {
-            onChange(undefined);
+            if (props.np) {
+                onChange(undefined);
+            }
             setNpType(ntp);
         }
     }
@@ -126,7 +128,7 @@ function NPPicker(props: {
         }}>
             <div className="d-flex flex-row text-muted mb-2">
                 <div>{possesiveLabel}:</div>
-                {(props.np.possesor && !props.isShrunk) && <div className="clickable ml-3 mr-2" onClick={handleToggleShrunken}>
+                {(props.np.possesor && !props.isShrunk && props.phraseIsComplete) && <div className="clickable ml-3 mr-2" onClick={handleToggleShrunken}>
                     {!props.np.possesor.shrunken ? "🪄" : "👶"}
                 </div>}
                 <div className="clickable ml-2" onClick={() => {
@@ -160,6 +162,7 @@ function NPPicker(props: {
             />
             : npType === "noun"
             ? <NounPicker
+                phraseIsComplete={props.phraseIsComplete}
                 entryFeeder={props.entryFeeder}
                 noun={(props.np && props.np.type === "noun") ? props.np : undefined}
                 onChange={onChange}

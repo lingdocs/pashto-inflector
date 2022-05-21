@@ -4,9 +4,10 @@ import AdjectivePicker from "./AdjectivePicker";
 
 function AdjectiveManager(props: {
     adjectives: T.AdjectiveSelection[],
-    entryFeeder: T.EntryFeederSingleType<T.AdjectiveEntry>,
+    entryFeeder: T.EntryFeeder,
     opts: T.TextOptions,
-    onChange: (adjs: T.AdjectiveSelection[]) => void, 
+    onChange: (adjs: T.AdjectiveSelection[]) => void,
+    phraseIsComplete: boolean,
 }) {
     const [adding, setAdding] = useState<boolean>(false);
     function handleChange(i: number) {
@@ -44,6 +45,7 @@ function AdjectiveManager(props: {
                 </div>
             </div>
             <AdjectivePicker
+                phraseIsComplete={props.phraseIsComplete}
                 noTitle
                 adjective={undefined}
                 entryFeeder={props.entryFeeder}
@@ -64,6 +66,7 @@ function AdjectiveManager(props: {
                 </div>
             </div>
             <AdjectivePicker
+                phraseIsComplete={props.phraseIsComplete}
                 noTitle
                 key={`adj${i}`}
                 adjective={adj}

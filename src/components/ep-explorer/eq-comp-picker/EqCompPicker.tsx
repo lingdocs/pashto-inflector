@@ -6,6 +6,7 @@ import SandwichPicker from "../../np-picker/SandwichPicker";
 const compTypes: T.EqCompType[] = ["adjective", "loc. adv.", "sandwich"];
 
 function EqCompPicker(props: {
+    phraseIsComplete: boolean,
     onChange: (comp: T.EqCompSelection | undefined) => void,
     comp: T.EqCompSelection | undefined,
     opts: T.TextOptions,
@@ -62,10 +63,11 @@ function EqCompPicker(props: {
         <div style={{ minWidth: "9rem" }}>
             {compType === "adjective" ? 
                 <AdjectivePicker
-                    entryFeeder={props.entryFeeder.adjectives}
+                    entryFeeder={props.entryFeeder}
                     adjective={props.comp?.type === "adjective" ? props.comp : undefined}
                     opts={props.opts}
                     onChange={props.onChange}
+                    phraseIsComplete={props.phraseIsComplete}
                 />
             : compType === "loc. adv."
             ? <LocativeAdverbPicker
@@ -81,7 +83,7 @@ function EqCompPicker(props: {
                 sandwich={props.comp?.type === "sandwich" ? props.comp : undefined}
                 entryFeeder={props.entryFeeder}
                 // TODO: get phraseIsComplete working here
-                phraseIsComplete={false}
+                phraseIsComplete={props.phraseIsComplete}
             />
             : null}
         </div>

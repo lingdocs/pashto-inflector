@@ -641,6 +641,7 @@ export type AdverbSelection = {
 export type AdjectiveSelection = {
     type: "adjective",
     entry: AdjectiveEntry,
+    sandwich: SandwichSelection<Sandwich> | undefined,
 }
 
 export type LocativeAdverbSelection = {
@@ -678,6 +679,16 @@ export type RenderedPossesorSelection = {
 export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection | SandwichSelection<Sandwich>> = T extends SandwichSelection<Sandwich> 
     ? Omit<SandwichSelection<Sandwich>, "inside"> & {
         inside: Rendered<NPSelection>,
+    }
+    : T extends AdjectiveSelection 
+    ? {
+        type: "adjective",
+        entry: AdjectiveEntry,
+        ps: PsString[],
+        e?: string,
+        sandwich: Rendered<SandwichSelection<Sandwich>> | undefined,
+        inflected: boolean,
+        person: Person,
     }
     : ReplaceKey<
         Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,

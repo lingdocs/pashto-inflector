@@ -456,50 +456,71 @@ export function findPossesivesToShrinkInVP(VP: T.VPRendered, f: {
 
 function findPossesives(...nps: (T.Rendered<T.NPSelection> | T.ObjectNP | undefined)[]): T.Rendered<T.NPSelection>[] {
     return nps.reduce((accum, curr) => {
-        const res = findPossesiveInNP(curr);
-        if (res) return [...accum, res];
+        const res = findPossesivesInNP(curr);
+        if (res) return [...accum, ...res];
         return accum;
     }, [] as T.Rendered<T.NPSelection>[]);
 }
 
-function findPossesiveInNP(NP: T.Rendered<T.NPSelection> | T.ObjectNP | undefined): T.Rendered<T.NPSelection> | undefined {
-    if (NP === undefined) return undefined;
-    if (typeof NP !== "object") return undefined;
-    if (!NP.possesor) return undefined;
-    if (NP.possesor.shrunken) {
-        return NP.possesor.np;
+function findPossesivesInNP(NP: T.Rendered<T.NPSelection> | T.ObjectNP | undefined): T.Rendered<T.NPSelection>[] {
+    if (NP === undefined) return [];
+    if (typeof NP !== "object") return [];
+    if (!NP.possesor) return [];
+    if (NP.adjectives) {
+        const { adjectives, ...rest } = NP;
+        return [
+            ...findPossesivesInAdjectives(adjectives),
+            ...findPossesivesInNP(rest),
+        ];
     }
-    return findPossesiveInNP(NP.possesor.np);
+    if (NP.possesor.shrunken) {
+        return [NP.possesor.np];
+    }
+    return findPossesivesInNP(NP.possesor.np);
+}
+
+function findPossesivesInAdjectives(a: T.Rendered<T.AdjectiveSelection>[]): T.Rendered<T.NPSelection>[] {
+    return a.reduce((accum, curr): T.Rendered<T.NPSelection>[] => ([
+        ...accum,
+        ...findPossesivesInAdjective(curr),
+    ]), [] as T.Rendered<T.NPSelection>[])
+}
+
+function findPossesivesInAdjective(a: T.Rendered<T.AdjectiveSelection>): T.Rendered<T.NPSelection>[] {
+    if (!a.sandwich) return [];
+    return findPossesivesInNP(a.sandwich.inside);
 }
 
 type FoundNP = {
     np: T.Rendered<T.NPSelection>,
-    from: "subject" | "predicate",
+    from: "subject" | "predicate" | "AP",
 };
+
 export function findPossesivesToShrinkInEP(EP: T.EPRendered): FoundNP[] {
-    const inSubject = findPossesiveInNP(EP.subject);
-    const inPredicate = (EP.predicate.type === "adjective" || EP.predicate.type === "loc. adv.")
-        ? undefined
-        : findPossesiveInNP(
+    const inSubject: FoundNP[] = findPossesivesInNP(EP.subject).map(np => ({ np, from: "subject" }));
+    const inPredicate: FoundNP[] = ((EP.predicate.type === "loc. adv.")
+        ? []
+        : (EP.predicate.type === "adjective")
+        ? findPossesivesInAdjective(EP.predicate)
+        : findPossesivesInNP(
             // @ts-ignore - ts being dumb
             EP.predicate as T.NPSelection
-        );
+        )).map(np => ({ np, from: "predicate" }));
     return [
-        ...inSubject ? [{ np: inSubject, from: "subject"} as FoundNP] : [],
-        ...inPredicate ? [{ np: inPredicate, from: "predicate" } as FoundNP] : [],
+        ...inSubject,
+        ...inPredicate,
     ].filter(found => !(found.from === "subject" && EP.omitSubject));
 }
 
-export function findPossesiveToShrinkInVP(VP: T.VPRendered): T.Rendered<T.NPSelection> | undefined {
-    const obj: T.Rendered<T.NPSelection> | undefined = ("object" in VP && typeof VP.object === "object")
-        ? VP.object
-        : undefined;
-    return (
-        findPossesiveInNP(VP.subject)
-        ||
-        findPossesiveInNP(obj)
-    );
-}
+// export function findPossesiveToShrinkInVP(VP: T.VPRendered): T.Rendered<T.NPSelection>[] {
+//     const obj: T.Rendered<T.NPSelection> | undefined = ("object" in VP && typeof VP.object === "object")
+//         ? VP.object
+//         : undefined;
+//     return [
+//         ...findPossesivesInNP(VP.subject),
+//         ...findPossesivesInNP(obj),
+//     ];
+// }
 
 export function shrinkNP(np: T.Rendered<T.NPSelection>): Segment {
     function getFirstSecThird(): 1 | 2 | 3 {

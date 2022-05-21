@@ -37,6 +37,14 @@ function SandwichPicker(props: {
         });
     }
     return <div>
+        <div className="d-flex flex-row justify-content-between">
+            <div></div>
+            <div className="text-center">🥪 Sandwich</div>
+            <div className="clickable" onClick={() => props.onChange(undefined)}>
+                <i className="fas fa-trash" />
+            </div>
+        </div>
+        <div style={{ border: "1px #6C757D solid", padding: "3px" }}>
         {sandwichBase && <div className="mb-2" style={{ margin: "0 auto" }}>
             <NPPicker
                 onChange={handleNounChange}
@@ -46,7 +54,9 @@ function SandwichPicker(props: {
                 role="object"
                 cantClear={true}
                 entryFeeder={props.entryFeeder}
-                phraseIsComplete={props.phraseIsComplete}
+                // TODO: the shrinking of possesives in sandwiches gets messed up with compilinig 😩
+                // disabling it for now
+                phraseIsComplete={false}
             />
         </div>}
         <SandwichSelect
@@ -56,6 +66,7 @@ function SandwichPicker(props: {
             value={sandwichBase}
             onChange={handleSandwichChange}
         />
+        </div>
     </div>;
 }
 

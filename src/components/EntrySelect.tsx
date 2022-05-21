@@ -146,6 +146,7 @@ export function SandwichSelect<E extends T.Sandwich>(props: {
         props.onChange(s);
     }
     return <div style={divStyle}>
+        <div>Sandwich Base</div>
         <Select
             styles={customStyles}
             isSearchable={true}
