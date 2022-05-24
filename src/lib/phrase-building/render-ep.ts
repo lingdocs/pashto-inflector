@@ -11,24 +11,28 @@ import { psStringFromEntry } from "../p-text-helpers";
 import { isLocativeAdverbEntry } from "../type-predicates";
 import { renderAdjectiveSelection } from "./render-adj";
 import { renderSandwich } from "./render-sandwich";
+import { EPSBlocksAreComplete, getSubjectSelection } from "./blocks-utils";
 
 export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
-    const king = (EP.subject.type === "pronoun")
+    const subject = getSubjectSelection(EP.blocks).selection;
+    const king = (subject.type === "pronoun")
         ? "subject"
         : EP.predicate.type === "NP"
         ? "predicate"
         : "subject";
     // TODO: less repetative logic
     const kingPerson = king === "subject"
-        ? getPersonFromNP(EP.subject)
+        ? getPersonFromNP(subject)
         : EP.predicate.type === "NP"
         ? getPersonFromNP(EP.predicate.selection)
-        : getPersonFromNP(EP.subject);
-    const kingIsParticiple = EP[king].type === "participle";
+        : getPersonFromNP(subject);
+    const kingIsParticiple = king === "subject"
+        ? (subject.type === "participle")
+        : (EP.predicate.type === "NP" && EP.predicate.selection.type === "participle");
     return {
         type: "EPRendered",
         king: EP.predicate.type === "Complement" ? "subject" : "predicate",
-        subject: renderNPSelection(EP.subject, false, false, "subject", king === "subject" ? "king" : "none"),
+        blocks: renderEPSBlocks(EP.blocks, king),
         predicate: EP.predicate.type === "NP"
             ? renderNPSelection(EP.predicate.selection, false, true, "subject", "king")
             : renderEqCompSelection(EP.predicate.selection, kingPerson),
@@ -54,6 +58,21 @@ export function getEquativeForm(tense: T.EquativeTense): { hasBa: boolean, form:
     }
 }
 
+function renderEPSBlocks(blocks: T.EPSBlockComplete[], king: "subject" | "predicate"): (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>)[] {
+    return blocks.map(({ block }): (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>) => {
+        if (block.type === "adverb") {
+            return renderAdverbSelection(block);
+        }
+        if (block.type === "sandwich") {
+            return renderSandwich(block);
+        }
+        return {
+            type: "subjectSelection",
+            selection: renderNPSelection(block.selection, false, false, "subject", king === "subject" ? "king" : "none")
+        };
+    });
+}
+
 function renderEquative(es: T.EquativeSelection, person: T.Person): T.EquativeRendered {
     const { form, hasBa } = getEquativeForm(es.tense)
     const ps = getPersonFromVerbForm(form, person);
@@ -62,6 +81,20 @@ function renderEquative(es: T.EquativeSelection, person: T.Person): T.EquativeRe
         person,
         hasBa,
         ps,
+    };
+}
+
+function renderAdverbSelection(a: T.AdverbSelection): T.Rendered<T.AdverbSelection> {
+    const e = getEnglishWord(a.entry);
+    if (!e || typeof e !== "string") {
+        console.log(e);
+        throw new Error("error getting english for compliment");
+    }
+    return {
+        type: "adverb",
+        entry: a.entry,
+        ps: [psStringFromEntry(a.entry)],
+        e,
     };
 }
 
@@ -160,7 +193,7 @@ function getEnglishConj(p: T.Person, e: string | T.EnglishBlock): string {
 
 
 export function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionComplete | undefined {
-    if (!eps.subject) {
+    if (!EPSBlocksAreComplete(eps.blocks)) {
         return undefined;
     }
     if (eps.predicate.type === "Complement") {
@@ -168,7 +201,7 @@ export function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionCompl
         if (!selection) return undefined;
         return {
             ...eps,
-            subject: eps.subject,
+            blocks: eps.blocks,
             predicate: {
                 type: "Complement",
                 selection,
@@ -180,7 +213,7 @@ export function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionCompl
     if (!selection) return undefined;
     return {
         ...eps,
-        subject: eps.subject,
+        blocks: eps.blocks,
         predicate: {
             type: "NP",
             selection,

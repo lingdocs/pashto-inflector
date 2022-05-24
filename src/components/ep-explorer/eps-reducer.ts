@@ -5,6 +5,8 @@ import {
 } from "../../lib/misc-helpers";
 import { isUnisexNounEntry } from "../../lib/type-predicates";
 import { checkForMiniPronounsError } from "../../lib/phrase-building/compile";
+import { adjustSubjectSelection, getSubjectSelection, makeAPBlock } from "../../lib/phrase-building/blocks-utils";
+import { assertNever } from "assert-never";
 
 type EpsReducerAction = {
     type: "set predicate type",
@@ -24,6 +26,23 @@ type EpsReducerAction = {
 } | {
     type: "set equative",
     payload: T.EquativeSelection,
+} | {
+    type: "insert new AP",
+} | {
+    type: "set AP",
+    payload: {
+        index: number,
+        AP: T.APSelection | undefined,
+    },
+} | {
+    type: "remove AP",
+    payload: number,
+} | {
+    type: "shift block",
+    payload: {
+        index: number,
+        direction: "back" | "forward",
+    },
 };
 
 export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAction, sendAlert?: (msg: string) => void): T.EPSelectionState {
@@ -41,7 +60,7 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
         if (!subject) {
             return {
                 ...eps,
-                subject,
+                blocks: adjustSubjectSelection(eps.blocks, subject),
             };
         }
         if (subject.type === "pronoun" && eps.predicate.type === "NP" && eps.predicate.NP?.type === "noun" && isUnisexNounEntry(eps.predicate.NP.entry)) {
@@ -57,7 +76,7 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
             }
             return {
                 ...eps,
-                subject,
+                blocks: adjustSubjectSelection(eps.blocks, subject),
                 predicate: {
                     ...eps.predicate,
                     NP: adjusted,
@@ -66,7 +85,7 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
         }
         const n: T.EPSelectionState = {
             ...eps,
-            subject,
+            blocks: adjustSubjectSelection(eps.blocks, subject),
         };
         return subject ? ensureMiniPronounsOk(eps, n, sendAlert) : n;
     }
@@ -81,16 +100,17 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
                 },
             };
         }
-        if (eps.subject?.type === "pronoun" && selection.type === "noun" && isUnisexNounEntry(selection.entry)) {
+        const subject = getSubjectSelection(eps.blocks).selection;
+        if (subject?.type === "pronoun" && selection.type === "noun" && isUnisexNounEntry(selection.entry)) {
             const { gender, number } = selection;
-            const pronoun = eps.subject.person;
+            const pronoun = subject.person;
             const newPronoun = movePersonNumber(movePersonGender(pronoun, gender), number);
             return {
                 ...eps,
-                subject: {
-                    ...eps.subject,
+                blocks: adjustSubjectSelection(eps.blocks, {
+                    ...subject,
                     person: newPronoun,
-                },
+                }),
                 predicate: {
                     ...eps.predicate,
                     NP: selection,
@@ -122,12 +142,59 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
         };
         return ensureMiniPronounsOk(eps, n, sendAlert);
     }
-    // if (action.type === "set equative") {
+    if (action.type === "set equative") {
         return {
             ...eps,
             equative: action.payload,
         }
-    // }
+    }
+    if (action.type === "insert new AP") {
+        return {
+            ...eps,
+            blocks: [makeAPBlock(), ...eps.blocks],
+        };
+        // const index = action.payload;
+        // const newAP = undefined;
+        // return {
+        //     ...eps,
+        //     blocks: [...eps.blocks].splice(index, 0, newAP),
+        // };
+    }
+    if (action.type === "set AP") {
+        const blocks = [...eps.blocks];
+        const { index, AP } = action.payload;
+        blocks[index].block = AP;
+        return {
+            ...eps,
+            blocks,
+        };
+    }
+    if (action.type === "remove AP") {
+        const blocks = [...eps.blocks];
+        blocks.splice(action.payload, 1);
+        return {
+            ...eps,
+            blocks,
+        };
+    }
+    if (action.type === "shift block") {
+        const { index, direction } = action.payload;
+        const newIndex = index + (direction === "forward" ? 1 : -1); 
+        const blocks = [...eps.blocks];
+        if (newIndex >= blocks.length || newIndex < 0) {
+            return eps;
+            // var k = newIndex - blocks.length + 1;
+            // while (k--) {
+            //     blocks.push(undefined);
+            // }
+        }
+        blocks.splice(newIndex, 0, blocks.splice(index, 1)[0]);
+        return {
+            ...eps,
+            blocks,
+        };
+    }
+    assertNever(action);
 }
 
 function ensureMiniPronounsOk(old: T.EPSelectionState, eps: T.EPSelectionState, sendAlert?: (msg: string) => void): T.EPSelectionState {

@@ -30,6 +30,10 @@ function EqCompPicker(props: {
         props.onChange(undefined);
         setCompType(ctp);
     }
+    function handleSandwichExit() {
+        setCompType(undefined);
+        props.onChange(undefined);
+    }
     const clearButton = (compType && !props.cantClear) 
         ? <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>X</button>
         : <div></div>;
@@ -82,6 +86,7 @@ function EqCompPicker(props: {
                 opts={props.opts}
                 sandwich={props.comp?.type === "sandwich" ? props.comp : undefined}
                 entryFeeder={props.entryFeeder}
+                onExit={handleSandwichExit}
                 // TODO: get phraseIsComplete working here
                 phraseIsComplete={props.phraseIsComplete}
             />

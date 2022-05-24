@@ -8,10 +8,14 @@ import EqCompPicker from "./eq-comp-picker/EqCompPicker";
 import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
 import EqChartsDisplay from "./EqChartsDisplay";
 import epsReducer from "./eps-reducer";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { completeEPSelection } from "../../lib/phrase-building/render-ep";
+import { makeEPSBlocks, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
+import APPicker from "../ap-picker/APPicker";
+import autoAnimate from "@formkit/auto-animate";
+
 const blankEps: T.EPSelectionState = {
-    subject: undefined,
+    blocks: makeEPSBlocks(),
     predicate: {
         type: "Complement",
         NP: undefined,
@@ -31,9 +35,14 @@ function EPExplorer(props: {
     entryFeeder: T.EntryFeeder,
 }) {
     const [mode, setMode] = useStickyState<"charts" | "phrases">("charts", "EPExplorerMode");
-    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState2", flashMessage);
+    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState4", flashMessage);
     const [alert, setAlert] = useState<string | undefined>(undefined);
-    const king = eps.subject?.type === "pronoun"
+    const parent = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        parent.current && autoAnimate(parent.current);
+    }, [parent])
+    const subject = getSubjectSelection(eps.blocks).selection;
+    const king = subject?.type === "pronoun"
         ? "subject"
         : eps.predicate.type === "Complement"
         ? "subject"
@@ -56,21 +65,48 @@ function EPExplorer(props: {
                 handleChange={setMode}
             />
         </div>
-        <div className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
+        <div className="clickable h5" onClick={() => adjustEps({ type: "insert new AP" })}>+ AP</div>
+        <div ref={parent} className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
             {mode === "phrases" && <>
-                <div className="my-2">
-                    <NPPicker
-                        phraseIsComplete={phraseIsComplete}
-                        heading={<div className="h5 text-center">Subject {king === "subject" ? roleIcon.king : ""}</div>}
-                        entryFeeder={props.entryFeeder}
-                        np={eps.subject}
-                        counterPart={undefined}
-                        role="subject"
-                        onChange={payload => adjustEps({ type: "set subject", payload })}
-                        opts={props.opts}
-                    />
-                </div>
-                <div className="my-2">
+                {eps.blocks.map(({ block, key }, i) => (
+                    <div className="my-2 card block-card p-1 mx-1" key={key}>
+                        <div className="d-flex flex-row justify-content-between mb-1" style={{ height: "1rem" }}>
+                            {i > 0 ? <div
+                                className="small clickable ml-1"
+                                onClick={() => adjustEps({ type: "shift block", payload: { index: i, direction: "back" }})}
+                            >
+                                <i className="fas fa-chevron-left" />
+                            </div> : <div/>}
+                            {i < eps.blocks.length - 1 ? <div
+                                className="small clickable mr-1"
+                                onClick={() => adjustEps({ type: "shift block", payload: { index: i, direction: "forward" }})}
+                            >
+                                <i className="fas fa-chevron-right" />
+                            </div> : <div/>}
+                        </div>
+                        {block && block.type === "subjectSelection"
+                            ? <NPPicker
+                                phraseIsComplete={phraseIsComplete}
+                                heading={<div className="h5 text-center">Subject {king === "subject" ? roleIcon.king : ""}</div>}
+                                entryFeeder={props.entryFeeder}
+                                np={block.selection}
+                                counterPart={undefined}
+                                role="subject"
+                                onChange={payload => adjustEps({ type: "set subject", payload })}
+                                opts={props.opts}
+                            />
+                        : <APPicker
+                            phraseIsComplete={phraseIsComplete}
+                            heading="AP"
+                            entryFeeder={props.entryFeeder}
+                            AP={block}
+                            opts={props.opts}
+                            onChange={AP => adjustEps({ type: "set AP", payload: { index: i, AP } })}
+                            onRemove={() => adjustEps({ type: "remove AP", payload: i })}
+                        />}
+                    </div>
+                ))}
+                <div className="my-2 card block-card p-1">
                     <div className="h5 text-center">Predicate {king === "predicate" ? roleIcon.king : ""}</div>
                     <div className="mb-2 text-center">
                         <ButtonSelect

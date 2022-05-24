@@ -23,7 +23,7 @@ import {
     Modal
 } from "react-bootstrap";
 import * as T from "./types";
-import { isAdjectiveEntry, isLocativeAdverbEntry, isNounEntry } from "./lib/type-predicates";
+import { isAdjectiveEntry, isAdverbEntry, isLocativeAdverbEntry, isNounEntry } from "./lib/type-predicates";
 import defualtTextOptions from "./lib/default-text-options";
 import PhraseBuilder from "./components/vp-explorer/VPExplorer";
 import useStickyState from "./lib/useStickyState";
@@ -38,11 +38,13 @@ const verbTypes: VerbType[] = [
 const nouns = nounsAdjs.filter(isNounEntry);
 const adjectives = nounsAdjs.filter(isAdjectiveEntry);
 const locativeAdverbs = nounsAdjs.filter(isLocativeAdverbEntry);
+const adverbs = nounsAdjs.filter(isAdverbEntry);
 const entryFeeder: T.EntryFeeder = {
     locativeAdverbs,
     nouns,
     adjectives,
     verbs,
+    adverbs,
 };
 
 const transitivities: T.Transitivity[] = [

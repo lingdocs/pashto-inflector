@@ -216,48 +216,6 @@ export function switchSubjObj(vps: T.VPSelectionState | T.VPSelectionComplete): 
     };
 }
 
-// export function insertSubjectSelection(vps: T.VPSelectionState, s: T.SubjectSelection): T.VPSelectionState {
-//     const index = vps.blocks.findIndex(f => f.type === "subjectSelection");
-//     if (index === -1) {
-//         throw new Error("couldn't find subjectSelection to insert over");
-//     }
-//     const blocks = [...vps.blocks];
-//     blocks[index] = s;
-//     return {
-//         ...vps,
-//         blocks,
-//     };
-// }
-
-// export function insertObjecttSelection(vps: T.VPSelectionState, o: T.ObjectSelection): T.VPSelectionState {
-//     const index = vps.blocks.findIndex(f => f.type === "objectSelection");
-//     if (index === -1) {
-//         throw new Error("couldn't find objectSelection to insert over");
-//     }
-//     const blocks = [...vps.blocks];
-//     blocks[index] = o;
-//     return {
-//         ...vps,
-//         blocks,
-//     };
-// }
-
-// export function getSubjectSelection(vps: T.VPSelectionState): T.SubjectSelection {
-//     const subject = vps.blocks.find(f => f.type === "subjectSelection");
-//     if (subject?.type !== "subjectSelection") {
-//         throw new Error("couldn't find subjectSelection");
-//     }
-//     return subject;
-// }
-
-// export function getObjectSelection(vps: T.VPSelectionState): T.ObjectSelection {
-//     const object = vps.blocks.find(f => f.type === "objectSelection");
-//     if (object?.type !== "objectSelection") {
-//         throw new Error("couldn't find objectSelection");
-//     }
-//     return object;
-// }
-
 export function completeVPSelection(vps: T.VPSelectionState): T.VPSelectionComplete | undefined {
     if (vps.subject === undefined) {
         return undefined;

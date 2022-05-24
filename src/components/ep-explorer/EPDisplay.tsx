@@ -3,6 +3,7 @@ import { completeEPSelection, renderEP } from "../../lib/phrase-building/render-
 import { compileEP } from "../../lib/phrase-building/compile";
 import Examples from "../Examples";
 import ButtonSelect from "../ButtonSelect";
+import { getRenderedSubjectSelection, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
 
 function EPDisplay({ eps, opts, setOmitSubject }: {
     eps: T.EPSelectionState,
@@ -10,19 +11,21 @@ function EPDisplay({ eps, opts, setOmitSubject }: {
     setOmitSubject: (value: "true" | "false") => void,
 }) {
     const EP = completeEPSelection(eps);
+    const subject = getSubjectSelection(eps.blocks);
     if (!EP) {
         return <div className="lead text-center my-4">
-            {(!eps.subject && !eps.predicate[eps.predicate.type])
+            {(!subject && !eps.predicate[eps.predicate.type])
                 ? "Select Subject and Predicate"
-                : (eps.subject && !eps.predicate[eps.predicate.type])
+                : (subject && !eps.predicate[eps.predicate.type])
                 ? "Select Predicate"
-                : (!eps.subject && eps.predicate[eps.predicate.type])
+                : (!subject && eps.predicate[eps.predicate.type])
                 ? "Select Subject"
                 : ""}
         </div>
     }
     const rendered = renderEP(EP);
     const result = compileEP(rendered);
+    const renderedSubject = getRenderedSubjectSelection(rendered.blocks).selection;
     return <div className="text-center pt-3">
         <div className="mb-2">
             <ButtonSelect
@@ -47,7 +50,7 @@ function EPDisplay({ eps, opts, setOmitSubject }: {
             {result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>}
         {EP.predicate.selection.type === "participle" && <div style={{ maxWidth: "6 00px", margin: "0 auto" }} className="alert alert-warning mt-3 pt-4">
-            <p>⚠️ NOTE: This means that the subject {rendered.subject.e ? `(${rendered.subject.e})` : ""} is <strong>the action/idea</strong> of
+            <p>⚠️ NOTE: This means that the subject {renderedSubject.e ? `(${renderedSubject.e})` : ""} is <strong>the action/idea</strong> of
             {` `}
             "{rendered.predicate.e ? rendered.predicate.e : "the particple"}".</p>
             <p>It <strong>does not</strong> mean that the subject is doing the action, which is what the transaltion sounds like in English.</p>

@@ -28,14 +28,19 @@ function AdjectivePicker(props: {
             setAddingSandwich(false);
         }
     }
+    function handleSandwichExit() {
+        setAddingSandwich(false);
+        props.onChange(undefined);
+    }
     return <div style={{ maxWidth: "225px", minWidth: "125px" }}>
         {(props.adjective?.sandwich || addingSandwich) && <SandwichPicker
             onChange={handleSandwichChange}
             opts={props.opts}
             sandwich={props.adjective?.sandwich}
             entryFeeder={props.entryFeeder}
-            // TODO: get phraseIsComplete working here
-            phraseIsComplete={props.phraseIsComplete}
+            onExit={handleSandwichExit}
+            // TODO: not allowing shrinking any possesisives on sandwiches for now - need to work with the blocks and their special behaviour
+            phraseIsComplete={false}
         />}
         <div className="d-flex flex-row justify-content-between align-items-baseline">
             {!props.noTitle && <div>

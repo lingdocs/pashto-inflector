@@ -541,7 +541,7 @@ export type ObjectSelection = {
 };
 
 export type SubjectSelectionComplete = {
-    type: "subjectSelectionComplete",
+    type: "subjectSelection",
     selection: NPSelection,
 };
 
@@ -676,9 +676,16 @@ export type RenderedPossesorSelection = {
     shrunken: boolean,
 };
 
-export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection | SandwichSelection<Sandwich>> = T extends SandwichSelection<Sandwich> 
+export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection | SandwichSelection<Sandwich> | APSelection | SubjectSelectionComplete> = T extends SandwichSelection<Sandwich> 
     ? Omit<SandwichSelection<Sandwich>, "inside"> & {
         inside: Rendered<NPSelection>,
+    }
+    : T extends AdverbSelection
+    ? {
+        type: "adverb",
+        entry: AdverbEntry,
+        ps: PsString[],
+        e?: string,
     }
     : T extends AdjectiveSelection 
     ? {
@@ -689,6 +696,11 @@ export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelectio
         sandwich: Rendered<SandwichSelection<Sandwich>> | undefined,
         inflected: boolean,
         person: Person,
+    }
+    : T extends SubjectSelectionComplete
+    ? {
+        type: "subjectSelection",
+        selection: Rendered<NPSelection>,
     }
     : ReplaceKey<
         Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,
@@ -710,7 +722,7 @@ export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelectio
 // TODO: recursive changing this down into the possesor etc.
 
 export type EPSelectionState = {
-    subject: NPSelection | undefined,
+    blocks: EPSBlock[],
     predicate: {
         type: "NP" | "Complement",
         NP: NPSelection | undefined,
@@ -720,8 +732,17 @@ export type EPSelectionState = {
     omitSubject: boolean,
 };
 
-export type EPSelectionComplete = Omit<EPSelectionState, "subject" | "predicate"> & {
-    subject: NPSelection,
+export type EPSBlock = {
+    key: number,
+    block: SubjectSelection | APSelection | undefined,
+};
+export type EPSBlockComplete = {
+    key: number,
+    block: SubjectSelectionComplete | APSelection,
+};
+
+export type EPSelectionComplete = Omit<EPSelectionState, "predicate" | "blocks"> & {
+    blocks: EPSBlockComplete[],
     predicate: {
         type: "NP",
         selection: NPSelection,
@@ -760,7 +781,7 @@ export type EquativeRendered = EquativeSelection & {
 export type EPRendered = {
     type: "EPRendered",
     king: "subject" | "predicate",
-    subject: Rendered<NPSelection>,
+    blocks: (Rendered<SubjectSelectionComplete> | Rendered<APSelection>)[],
     predicate: Rendered<NPSelection> | Rendered<EqCompSelection>,
     equative: EquativeRendered,
     englishBase?: string[],
@@ -772,11 +793,13 @@ export type EntryFeeder = {
     verbs: EntryLookupPortal<VerbEntry>,
     adjectives: EntryLookupPortal<AdjectiveEntry>,
     locativeAdverbs: EntryLookupPortal<LocativeAdverbEntry>,
+    adverbs: EntryLookupPortal<AdverbEntry>,
 } | {
     nouns: NounEntry[],
     verbs: VerbEntry[],
     adjectives: AdjectiveEntry[],
     locativeAdverbs: LocativeAdverbEntry[],
+    adverbs: AdverbEntry[],
 }
 
 export type EntryFeederSingleType<X extends VerbEntry | DictionaryEntry> = X[] | EntryLookupPortal<X>;

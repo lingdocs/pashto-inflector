@@ -5,7 +5,7 @@ import {
 import * as T from "../../types";
 import { concatPsString } from "../p-text-helpers";
 
-function getBaseAndAdjectives(np: T.Rendered<T.NPSelection | T.EqCompSelection>): T.PsString[] {
+function getBaseAndAdjectives(np: T.Rendered<T.NPSelection | T.EqCompSelection | T.APSelection>): T.PsString[] {
     if (np.type === "sandwich") {
         return getSandwichPsBaseAndAdjectives(np);
     }
@@ -73,26 +73,26 @@ function trimOffShrunkenPossesive(p: T.Rendered<T.NPSelection>): T.Rendered<T.NP
     }
 }
 
-export function getPashtoFromRendered(np: T.Rendered<T.NPSelection> | T.Rendered<T.EqCompSelection>, subjectsPerson: false | T.Person): T.PsString[] {
-    const base = getBaseAndAdjectives(np);
-    if (np.type === "loc. adv.") {
+export function getPashtoFromRendered(b: T.Rendered<T.NPSelection> | T.Rendered<T.EqCompSelection> | T.Rendered<T.APSelection>, subjectsPerson: false | T.Person): T.PsString[] {
+    const base = getBaseAndAdjectives(b);
+    if (b.type === "loc. adv." || b.type === "adverb") {
         return base;
     }
-    if (np.type === "adjective") {
-        if (!np.sandwich) {
+    if (b.type === "adjective") {
+        if (!b.sandwich) {
             return base 
         }
-        const sandwichPs = getPashtoFromRendered(np.sandwich, false);
+        const sandwichPs = getPashtoFromRendered(b.sandwich, false);
         return base.flatMap(p => (
             sandwichPs.flatMap(s => (
                 concatPsString(s, " ", p)
             ))
         ));
     }
-    const trimmed = np.type === "sandwich" ? {
-        ...np,
-        inside: trimOffShrunkenPossesive(np.inside),
-    } : trimOffShrunkenPossesive(np);
+    const trimmed = b.type === "sandwich" ? {
+        ...b,
+        inside: trimOffShrunkenPossesive(b.inside),
+    } : trimOffShrunkenPossesive(b);
     if (trimmed.type === "sandwich") {
         return trimmed.inside.possesor
             ? addPossesor(trimmed.inside.possesor.np, base, subjectsPerson)
@@ -190,12 +190,12 @@ function pronounPossEng(p: T.Person): string {
     return "their";
 }
 
-export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSelection>): string | undefined {
+export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSelection | T.APSelection>): string | undefined {
     if (r.type === "sandwich") {
         return getEnglishFromRenderedSandwich(r);
     }
     if (!r.e) return undefined;
-    if (r.type === "loc. adv.") {
+    if (r.type === "loc. adv." || r.type === "adverb") {
         return r.e;
     }
     if (r.type === "adjective") {

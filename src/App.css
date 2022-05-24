@@ -68,6 +68,11 @@ pre {
     background: var(--closer);
 }
 
+.block-card {
+    background: var(--theme-shade);
+    border-color: var(--farther);
+}
+
 .list-group {
     background: var(--closer);
 }

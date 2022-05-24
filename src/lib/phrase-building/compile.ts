@@ -25,6 +25,7 @@ import { pronouns } from "../grammar-units";
 import { completeEPSelection, renderEP } from "./render-ep";
 import { completeVPSelection } from "./vp-tools";
 import { renderVP } from "./render-vp";
+import { getRenderedSubjectSelection } from "./blocks-utils";
 
 const blank: T.PsString = {
     p: "______",
@@ -62,6 +63,7 @@ type CompilePsInput = {
     },
     VP: T.VPRendered,
 }
+
 function compilePs({ NPs, kids, verb: { head, rest }, VP }: CompilePsInput): T.SingleOrLengthOpts<T.PsString[]> {
     if ("long" in rest) {
         return {
@@ -277,7 +279,19 @@ export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?:
 
 export function getEPSegmentsAndKids(EP: T.EPRendered, blankOut?: BlankoutOptions): { kids: Segment[], NPs: Segment[] } {
     const possToShrink = findPossesivesToShrinkInEP(EP);
-    const subject = makeSegment(getPashtoFromRendered(EP.subject, false));
+    const blocks = EP.blocks.reduce((accum, block) => {
+        if (block.type === "subjectSelection") {
+            if (EP.omitSubject) return accum;
+            return [
+                ...accum,
+                makeSegment(getPashtoFromRendered(block.selection, false)),
+            ];
+        }
+        return [
+            ...accum,
+            makeSegment(getPashtoFromRendered(block, false)),
+        ];
+    }, [] as Segment[]);
     const predicate = makeSegment(getPashtoFromRendered(EP.predicate, false));
     return {
         kids: blankOut?.kidsSection ? [kidsBlank] : orderKidsSection([
@@ -288,7 +302,7 @@ export function getEPSegmentsAndKids(EP: T.EPRendered, blankOut?: BlankoutOption
             ...possToShrink.map(a => shrinkNP(a.np)),
         ]),
         NPs: [
-            ...EP.omitSubject ? [] : [subject],
+            ...blocks,
             predicate
         ],
     };
@@ -319,18 +333,30 @@ function compileEPPs({ NPs, kids, equative, negative }: {
 }
 
 function compileEPEnglish(EP: T.EPRendered): string[] | undefined {
-    function insertEWords(e: string, { subject, predicate }: { subject: string, predicate: string }): string {
-        return e.replace("$SUBJ", subject).replace("$PRED", predicate || "");
+    function insertEWords(e: string, { subject, predicate, APs }: { subject: string, predicate: string, APs: string }): string {
+        return e.replace("$SUBJ", subject).replace("$PRED", predicate || "") + APs;
     }
-    const engSubj = getEnglishFromRendered(EP.subject);
+    const engSubj = getRenderedSubjectSelection(EP.blocks).selection.e;
     const engPred = getEnglishFromRendered(EP.predicate);
+    const engAPs = getEnglishAPs(EP.blocks);
     // require all English parts for making the English phrase
-    return (EP.englishBase && engSubj && engPred)
+    const b = (EP.englishBase && engSubj && engPred)
         ? EP.englishBase.map(e => insertEWords(e, {
             subject: engSubj,
             predicate: engPred,
+            APs: engAPs,
         }))
         : undefined;
+    return b;
+}
+
+function getEnglishAPs(blocks: (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>)[]) {
+    const APs = blocks.filter(x => x.type !== "subjectSelection") as T.Rendered<T.APSelection>[];
+    return APs.reduce((accum, curr) => {
+        const e = getEnglishFromRendered(curr);
+        if (!e) return accum;
+        return `${accum} ${e}`;
+    }, "");
 }
 
 
@@ -497,7 +523,24 @@ type FoundNP = {
 };
 
 export function findPossesivesToShrinkInEP(EP: T.EPRendered): FoundNP[] {
-    const inSubject: FoundNP[] = findPossesivesInNP(EP.subject).map(np => ({ np, from: "subject" }));
+    const inBlocks: FoundNP[] = EP.blocks.reduce((accum, block): FoundNP[] => {
+        if (block.type === "subjectSelection") {
+            if (EP.omitSubject) return accum;
+            const found: FoundNP[] = findPossesivesInNP(block.selection).map(np => ({ np, from: "subject" }));
+            return [
+                ...accum,
+                ...found,
+            ];
+        }
+        if (block.type === "sandwich") {
+            const found: FoundNP[] = findPossesivesInNP(block.inside).map(np => ({ np, from: "AP" }));
+            return [
+                ...accum,
+                ...found,
+            ];
+        }
+        return accum;
+    }, [] as FoundNP[]);
     const inPredicate: FoundNP[] = ((EP.predicate.type === "loc. adv.")
         ? []
         : (EP.predicate.type === "adjective")
@@ -507,9 +550,9 @@ export function findPossesivesToShrinkInEP(EP: T.EPRendered): FoundNP[] {
             EP.predicate as T.NPSelection
         )).map(np => ({ np, from: "predicate" }));
     return [
-        ...inSubject,
+        ...inBlocks,
         ...inPredicate,
-    ].filter(found => !(found.from === "subject" && EP.omitSubject));
+    ];
 }
 
 // export function findPossesiveToShrinkInVP(VP: T.VPRendered): T.Rendered<T.NPSelection>[] {
