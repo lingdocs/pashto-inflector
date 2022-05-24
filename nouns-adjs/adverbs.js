@@ -501,5 +501,4 @@ module.exports = [
 { ts: 1527823755, e: `again, once more` }, // دوباره - doobáara
 { ts: 1527816771, e: `short-term` }, // لنډ مهال - lanDmahaal
 { ts: 1588758395153, e: `just like that (abrev. of هم هغسې)` }, // همغسې - humaghase
-{ ts: 1527811620, e: `as` }, // په حیث - pu heys
 ];
