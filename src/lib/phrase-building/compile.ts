@@ -384,14 +384,14 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
     }
     const engSubj = getRenderedSubjectSelection(VP.blocks).selection;
     const obj = getRenderedObjectSelection(VP.blocks).selection;
-    const engObj = typeof obj === "object" ? obj.e : "";
+    const engObj = typeof obj === "object" ? obj : undefined;
     const engAPs = getEnglishAPs(VP.blocks);
     // require all English parts for making the English phrase
     return (VP.englishBase && engSubj && engObj !== undefined)
         ? VP.englishBase.map(e => insertEWords(e, {
             // TODO: make sure we actually have the english
             subject: getEnglishFromRendered(engSubj) || "",
-            object: getEnglishFromRendered(engSubj) || "",
+            object: engObj ? getEnglishFromRendered(engObj) : "",
             APs: engAPs,
         }))
         : undefined;
