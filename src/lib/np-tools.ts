@@ -54,8 +54,8 @@ export function randomSubjObj(old?: { subj: T.Person, obj?: T.Person }): { subj:
 }
 export function getEnglishVerb(entry: T.DictionaryEntry): string {
     if (!entry.ec) {
-        console.log("errored verb");
-        console.log(entry);
+        console.error("errored verb");
+        console.error(entry);
         throw new Error("no english information for verb");
     }
     if (entry.ep) {

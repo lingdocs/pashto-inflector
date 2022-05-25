@@ -18,6 +18,7 @@ import energyDrink from "./energy-drink.jpg";
 import { flattenLengths } from "../../lib/phrase-building/segment";
 import { concatPsString } from "../../lib/p-text-helpers";
 import { isImperativeTense } from "../../lib/type-predicates";
+import { adjustObjectSelection, adjustSubjectSelection, getObjectSelection, getRenderedObjectSelection, getRenderedSubjectSelection, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
 
 const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
 
@@ -97,7 +98,8 @@ function VPExplorerQuiz(props: {
         }
     }
     const rendered = renderVP(quizState.vps);
-    const { subject, object } = rendered;
+    const subject = getRenderedSubjectSelection(rendered.blocks).selection;
+    const object = getRenderedObjectSelection(rendered.blocks).selection;
     const { e } = compileVP(rendered, { removeKing: false, shrinkServant: false });
     function handleRestart() {
         setWithBa(false);
@@ -177,9 +179,10 @@ function VPExplorerQuiz(props: {
                                     type="checkbox"
                                     checked={withBa}
                                     onChange={e => setWithBa(e.target.checked)}
+                                    id="addBa"
                                 />
-                                <label className="form-check-label text-muted" htmlFor="OSVCheckbox">
-                                    add <InlinePs opts={props.opts}>{baParticle}</InlinePs> in phrase
+                                <label className="form-check-label text-muted" htmlFor="addBa">
+                                    add <InlinePs opts={props.opts}>{baParticle}</InlinePs> in kids' section
                                 </label>
                             </div>
                             <button type="submit" className="btn btn-primary">
@@ -372,11 +375,13 @@ function getOptionFromResult(r: {
 }
 
 function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
-    const oldSubj = vps.subject?.type === "pronoun"
-        ? vps.subject.person
+    const vpsSubj = getSubjectSelection(vps.blocks).selection;
+    const vpsObj = getObjectSelection(vps.blocks).selection;
+    const oldSubj = vpsSubj?.type === "pronoun"
+        ? vpsSubj.person
         : undefined;
-    const oldObj = (typeof vps.object === "object" && vps.object.type === "pronoun")
-        ? vps.object.person
+    const oldObj = (typeof vpsObj === "object" && vpsObj.type === "pronoun")
+        ? vpsObj.person
         : undefined;
     const { subj, obj } = randomSubjObj(
         oldSubj === undefined
@@ -393,29 +398,34 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
     };
     return {
         ...vps,
-        subject: {
-            type: "pronoun",
-            distance: "far",
-            person: subj,
-        },
-        object: (
-            (typeof vps.object === "object" && !(vps.object.type === "noun" && vps.object.dynamicComplement))
-            ||
-            vps.object === undefined
-        )
-            ? {
+        blocks: adjustObjectSelection(
+            adjustSubjectSelection(vps.blocks, {
                 type: "pronoun",
                 distance: "far",
-                person: obj,
-            }
-            : vps.object,
+                person: subj,
+            }),
+            (
+                (typeof vpsObj === "object" && !(vpsObj.type === "noun" && vpsObj.dynamicComplement))
+                ||
+                vpsObj === undefined
+            )
+                ? {
+                    type: "pronoun",
+                    distance: "far",
+                    person: obj,
+                }
+                : vpsObj,
+        ),
         verb,
     };
 }
 
 function getRandomVPSelection(mix: MixType = "both") {
     // TODO: Type safety to make sure it's safe?
-    return ({ subject, verb, object }: T.VPSelectionComplete): T.VPSelectionComplete => {
+    return (VPS: T.VPSelectionComplete): T.VPSelectionComplete => {
+        const subject = getSubjectSelection(VPS.blocks).selection;
+        const object = getObjectSelection(VPS.blocks).selection;
+        const verb = VPS.verb;
         const oldSubj = (subject.type === "pronoun")
             ? subject.person
             : undefined;
@@ -444,26 +454,38 @@ function getRandomVPSelection(mix: MixType = "both") {
         // ensure that the verb selection is complete
         if (mix === "tenses") {
             return {
-                subject: subject !== undefined ? subject : randSubj,
-                object: object !== undefined ? object : randObj,
+                blocks: possibleShuffleArray(adjustObjectSelection( 
+                    adjustSubjectSelection(VPS.blocks, subject !== undefined ? subject : randSubj),
+                    object !== undefined ? object : randObj,
+                )),
                 verb: randomizeTense(verb, true),
                 form: { removeKing: false, shrinkServant: false },
             }
         }
         return {
-            subject: randSubj,
-            object: (
-                (typeof object === "object" && !(object.type === "noun" && object.dynamicComplement))
-                ||
-                object === undefined
-            )
-                ? randObj
-                : object,
+            blocks: possibleShuffleArray(adjustObjectSelection(
+                adjustSubjectSelection(VPS.blocks, randSubj),
+                (
+                    (typeof object === "object" && !(object.type === "noun" && object.dynamicComplement))
+                    ||
+                    object === undefined
+                )
+                    ? randObj
+                    : object,
+            )),
             verb: randomizeTense(verb, true),
             form: { removeKing: false, shrinkServant: false },
         };
     };
 };
+
+function possibleShuffleArray<X>(arr: X[]): X[] {
+    const willShuffle = randFromArray([true, false, false]);
+    if (willShuffle) {
+        return shuffleArray(arr);
+    }
+    return arr;
+}
 
 function randomizeTense(verb: T.VerbSelectionComplete, dontRepeatTense: boolean): T.VerbSelectionComplete {
     return {

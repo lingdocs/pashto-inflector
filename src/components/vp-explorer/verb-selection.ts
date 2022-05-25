@@ -3,6 +3,7 @@ import {
 } from "../np-picker/picker-tools";
 import * as T from "../../types";
 import { getVerbInfo } from "../../lib/verb-info";
+import { adjustObjectSelection, getObjectSelection, getSubjectSelection, makeObjectSelection, makeSubjectSelection } from "../../lib/phrase-building/blocks-utils";
 
 export function makeVPSelectionState(
     verb: T.VerbEntry,
@@ -11,16 +12,17 @@ export function makeVPSelectionState(
     const info = getVerbInfo(verb.entry, verb.complement);
     const subject = (os?.verb.voice === "passive" && info.type === "dynamic compound")
         ? makeNounSelection(info.objComplement.entry as T.NounEntry, undefined, true)
-        : (os?.subject || undefined);
+        : (os?.blocks ? getSubjectSelection(os.blocks) : undefined);
     function getTransObjFromos() {
+        const osObj = os ? getObjectSelection(os.blocks).selection : undefined;
         if (
             !os ||
-            os.object === "none" ||
-            typeof os.object === "number" ||
+            osObj === "none" ||
+            typeof osObj === "number" ||
             os.verb.isCompound === "dynamic" ||
-            (os.object?.type === "noun" && os.object.dynamicComplement)
+            (osObj?.type === "noun" && osObj.dynamicComplement)
         ) return undefined;
-        return os.object;
+        return osObj;
     }
     const transitivity: T.Transitivity = "grammaticallyTransitive" in info
         ? "transitive"
@@ -45,9 +47,12 @@ export function makeVPSelectionState(
             : "dynamic" in info
                 ? { entry: info.dynamic.auxVerb } as T.VerbEntry
                 : undefined;
+    const blocks = [
+        { key: Math.random(), block: makeSubjectSelection(subject) },
+        { key: Math.random(), block: makeObjectSelection(object) },
+    ];
     return {
-        subject,
-        object,
+        blocks,
         verb: {
             type: "verb",
             verb: verb,
@@ -77,9 +82,12 @@ export function changeStatDyn(v: T.VPSelectionState, s: "dynamic" | "stative"): 
     }
     return {
         ...v,
-        object: s === "dynamic"
-            ? makeNounSelection(info.dynamic.objComplement.entry as T.NounEntry, undefined, true)
-            : undefined,
+        blocks: adjustObjectSelection(
+            v.blocks,
+            s === "dynamic"
+                ? makeNounSelection(info.dynamic.objComplement.entry as T.NounEntry, undefined, true)
+                : undefined,
+        ),
         verb: {
             ...v.verb,
             isCompound: s,
@@ -93,7 +101,7 @@ export function changeStatDyn(v: T.VPSelectionState, s: "dynamic" | "stative"): 
 export function changeTransitivity(v: T.VPSelectionState, transitivity: "transitive" | "grammatically transitive"): T.VPSelectionState {
     return {
         ...v,
-        object: transitivity === "grammatically transitive" ? T.Person.ThirdPlurMale : undefined,
+        blocks: adjustObjectSelection(v.blocks, transitivity === "grammatically transitive" ? T.Person.ThirdPlurMale : undefined),
         verb: {
             ...v.verb,
             transitivity,

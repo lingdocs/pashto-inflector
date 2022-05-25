@@ -206,7 +206,6 @@ export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSel
         const np = r as T.Rendered<T.NounSelection>;
         return addPossesors(np.possesor?.np, addArticlesAndAdjs(np), r.type);
     }
-    // TODO: possesives in English for participles and pronouns too!
     return r.e;
 }
 

@@ -1,37 +1,28 @@
 import { compileVP } from "../../lib/phrase-building/compile";
 import * as T from "../../types";
 import AbbreviationFormSelector from "./AbbreviationFormSelector";
-import useStickyState from "../../lib/useStickyState";
 import Examples from "../Examples";
+import { getObjectSelection, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
 
 function VPDisplay({ VP, opts, setForm }: {
     VP: T.VPSelectionState | T.VPRendered,
     opts: T.TextOptions,
     setForm: (form: T.FormVersion) => void,
 }) {
-    const [OSV, setOSV] = useStickyState<boolean>(false, "includeOSV");
     if (!("type" in VP)) {
         return <div className="lead text-muted text-center mt-4">
             {(() => {
-                const twoNPs = (VP.subject === undefined) && (VP.object === undefined);
-                return `Choose NP${twoNPs ? "s " : ""} to make a phrase`;
+                const subject = getSubjectSelection(VP.blocks).selection;
+                const object = getObjectSelection(VP.blocks).selection;
+                if (subject === undefined || object || undefined) {
+                    return `Choose NP${((subject === undefined) && (object === undefined)) ? "s " : ""} to make a phrase`;
+                }
+                return `Choose/remove AP to complete the phrase`; 
             })()}
         </div>;
     }
-    const result = compileVP(VP, { ...VP.form, OSV });
+    const result = compileVP(VP, { ...VP.form });
     return <div className="text-center mt-1">
-        {VP.verb.transitivity === "transitive" && <div className="form-check mb-2">
-            <input
-                className="form-check-input"
-                type="checkbox"
-                checked={OSV}
-                id="OSVCheckbox"
-                onChange={e => setOSV(e.target.checked)}
-            />
-            <label className="form-check-label text-muted" htmlFor="OSVCheckbox">
-                Include O S V
-            </label>
-        </div>}
         <AbbreviationFormSelector
             adjustable={VP.whatsAdjustable}
             form={VP.form}

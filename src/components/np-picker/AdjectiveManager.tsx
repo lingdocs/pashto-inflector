@@ -58,7 +58,7 @@ function AdjectiveManager(props: {
                 <div>Adjective</div>
                 <div className="d-flex flex-row align-items-baseline">
                     {!!props.adjectives.length && !adding && <div>
-                        <h6 onClick={() => setAdding(true)}>+ Adj.</h6>
+                        <h6 className="clickable" onClick={() => setAdding(true)}>+ Adj.</h6>
                     </div>}
                     <div onClick={deleteAdj(i)} className="ml-4">
                         <div className="fas fa-trash" />
@@ -76,7 +76,7 @@ function AdjectiveManager(props: {
             />
         </div>)}
         {!adding && !props.adjectives.length && <h6 className="clickable" style={{ float: "right" }}>
-            <div onClick={() => setAdding(true)}>+ Adj.</div>
+            <div className="clickable" onClick={() => setAdding(true)}>+ Adj.</div>
         </h6>}
     </div>;
 }

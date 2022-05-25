@@ -13,6 +13,7 @@ import { checkForMiniPronounsError } from "../../lib/phrase-building/compile";
 import {
     makeVPSelectionState,
 } from "./verb-selection";
+import { adjustObjectSelection, adjustSubjectSelection, getObjectSelection, getSubjectSelection, insertNewAP, removeAP, setAP, shiftBlock } from "../../lib/phrase-building/blocks-utils";
 
 export type VpsReducerAction = {
     type: "load vps",
@@ -54,7 +55,24 @@ export type VpsReducerAction = {
 } | {
     type: "set verb",
     payload: T.VerbEntry,
-}
+} | {
+    type: "insert new AP",
+} | {
+    type: "set AP",
+    payload: {
+        index: number,
+        AP: T.APSelection | undefined,
+    },
+} | {
+    type: "remove AP",
+    payload: number,
+} | {
+    type: "shift block",
+    payload: {
+        index: number,
+        direction: "back" | "forward",
+    },
+};
 
 export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, sendAlert?: (msg: string) => void): T.VPSelectionState {
     return ensureMiniPronounsOk(vps, doReduce());
@@ -68,38 +86,40 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
     }
     function doReduce(): T.VPSelectionState {
         if (action.type === "load vps") {
-            console.log("doing loading", action.payload);
             return action.payload;
         }
         if (action.type === "set subject") {
             const { subject, skipPronounConflictCheck } = action.payload;
+            const object = getObjectSelection(vps.blocks).selection;
             if (
                 !skipPronounConflictCheck
                 &&
-                hasPronounConflict(subject, vps.object)
+                hasPronounConflict(subject, object)
             ) {
                 if (sendAlert) sendAlert("That combination of pronouns is not allowed");
                 return vps;
             }
             return {
                 ...vps,
-                subject: action.payload.subject,
+                blocks: adjustSubjectSelection(vps.blocks, action.payload.subject),
             };
         }
         if (action.type === "set object") {
             if (!vps.verb) return vps;
-            if ((vps.object === "none") || (typeof vps.object === "number")) {
+            const objectB = getObjectSelection(vps.blocks).selection;
+            const subjectB = getSubjectSelection(vps.blocks).selection;
+            if ((objectB === "none") || (typeof objectB === "number")) {
                 return vps;
             }
             const object = action.payload;
             // check for pronoun conflict
-            if (hasPronounConflict(vps.subject, object)) {
+            if (hasPronounConflict(subjectB, object)) {
                 if (sendAlert) sendAlert("That combination of pronouns is not allowed");
                 return vps;
             }
             return {
                 ...vps,
-                object,
+                blocks: adjustObjectSelection(vps.blocks, object),
             };
         }
         if (action.type === "swap subj/obj") {
@@ -114,6 +134,8 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
         }
         if (action.type === "set voice") {
             if (vps.verb && vps.verb.canChangeVoice) {
+                const subject = getSubjectSelection(vps.blocks).selection;
+                const object = getObjectSelection(vps.blocks).selection;
                 const voice = action.payload;
                 if (voice === "passive" && vps.verb.tenseCategory === "imperative") {
                     return vps;
@@ -121,8 +143,10 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                 if (voice === "passive") {
                     return {
                         ...vps,
-                        subject: typeof vps.object === "object" ? vps.object : undefined,
-                        object: "none",
+                        blocks: adjustObjectSelection(
+                            adjustSubjectSelection(vps.blocks, typeof object === "object" ? object : undefined),
+                            "none",
+                        ),
                         verb: {
                             ...vps.verb,
                             voice,
@@ -131,8 +155,10 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                 } else {
                     return {
                         ...vps,
-                        subject: undefined,
-                        object: typeof vps.subject === "object" ? vps.subject : undefined,
+                        blocks: adjustObjectSelection(
+                            adjustSubjectSelection(vps.blocks, undefined),
+                            typeof subject === "object" ? subject : undefined,
+                        ),
                         verb: {
                             ...vps.verb,
                             voice,
@@ -225,9 +251,36 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                 },
             };
         }
-        // if (action.type === "set verb") {
+        if (action.type === "set verb") {
             return makeVPSelectionState(action.payload, vps);
-        // }
+        }
+        if (action.type === "insert new AP") {
+            return {
+                ...vps,
+                blocks: insertNewAP(vps.blocks),
+            };
+        }
+        if (action.type === "set AP") {
+            const { index, AP } = action.payload;
+            return {
+                ...vps,
+                blocks: setAP(vps.blocks, index, AP),
+            };
+        }
+        if (action.type === "remove AP") {
+            return {
+                ...vps,
+                blocks: removeAP(vps.blocks, action.payload),
+            };
+        }
+        if (action.type === "shift block") {
+            const { index, direction } = action.payload;
+            return {
+                ...vps,
+                blocks: shiftBlock(vps.blocks, index, direction),
+            };
+        }
+        throw new Error("unknown vpsReducer state");
     }
 }
 

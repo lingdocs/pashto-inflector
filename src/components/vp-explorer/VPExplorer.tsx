@@ -7,7 +7,7 @@ import * as T from "../../types";
 import ChartDisplay from "./VPChartDisplay";
 import useStickyState, { useStickyReducer } from "../../lib/useStickyState";
 import { makeVPSelectionState } from "./verb-selection";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getKingAndServant, renderVP } from "../../lib/phrase-building/render-vp";
 import { completeVPSelection, isPastTense } from "../../lib/phrase-building/vp-tools";
 import VPExplorerQuiz from "./VPExplorerQuiz";
@@ -16,6 +16,9 @@ import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationMod
 import LZString from "lz-string";
 import { vpsReducer } from "./vps-reducer";
 import { getShrunkenServant } from "../../lib/phrase-building/compile";
+import APPicker from "../ap-picker/APPicker";
+import autoAnimate from "@formkit/auto-animate";
+import { getObjectSelection, getSubjectSelection, isNoObject } from "../../lib/phrase-building/blocks-utils";
 
 const phraseURLParam = "VPPhrase";
 
@@ -41,7 +44,7 @@ function VPExplorer(props: {
         props.loaded
             ? props.loaded
             : savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState9",
+        "vpsState12",
         flashMessage,    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
@@ -55,6 +58,10 @@ function VPExplorer(props: {
     const [showShareClipped, setShowShareClipped] = useState<boolean>(false);
     const [alert, setAlert] = useState<string | undefined>(undefined);
     const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
+    const parent = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        parent.current && autoAnimate(parent.current);
+    }, [parent]);
     const isPast = isPastTense(vps.verb.tenseCategory === "perfect" ? vps.verb.perfectTense : vps.verb.verbTense);
     const roles = getKingAndServant(
         isPast,
@@ -75,7 +82,6 @@ function VPExplorer(props: {
     }, [props.verb]);
     useEffect(() => {
         const VPSFromUrl = getVPSFromUrl();
-        console.log({ VPSFromUrl });
         if (VPSFromUrl) {
             setMode("phrases");
             adjustVps({
@@ -124,6 +130,8 @@ function VPExplorer(props: {
             setShowShareClipped(false);
         }, 1250);
     }
+    const object = getObjectSelection(vps.blocks).selection;
+    const subject = getSubjectSelection(vps.blocks).selection;
     const VPS = completeVPSelection(vps);
     const phraseIsComplete = !!VPS;
     const rendered = VPS ? renderVP(VPS) : undefined;
@@ -160,54 +168,57 @@ function VPExplorer(props: {
                 {mode === "phrases" ? <i className="fas fa-share-alt" /> : ""}
             </div>
         </div>
-        {(vps.verb && (typeof vps.object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
+        {(vps.verb && (typeof object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
             <div className="text-center my-2">
                 <button onClick={handleSubjObjSwap} className="btn btn-sm btn-light">
                     <i className="fas fa-exchange-alt mr-2" /> subj/obj
                 </button>
             </div>}
-        {mode !== "quiz" && <div className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
+        {mode === "phrases" && <div className="clickable h5" onClick={() => adjustVps({ type: "insert new AP" })}>+ AP</div>}
+        {mode !== "quiz" && <div ref={parent} className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
             {mode === "phrases" && <>
-                <div className="my-2" style={{ background: (servantIsShrunk && roles.servant === "subject") ? shrunkenBackground : "inherit" }}>
-                    <NPPicker
-                        phraseIsComplete={phraseIsComplete}
-                        heading={roles.king === "subject" 
-                            ? <div className="h5 text-center" onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>Subject {roleIcon.king}</div>
-                            : <div className="h5 text-center">
-                                Subject
-                                {` `}
-                                <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>{roleIcon.servant}</span>
-                                {` `}
-                                {(rendered && rendered.whatsAdjustable !== "king") && 
-                                    <span onClick={toggleServantShrink} className="mx-2 clickable">
-                                        {!servantIsShrunk ? "🪄" : "👶"}
-                                    </span>
-                                }
-                            </div>}
-                        entryFeeder={props.entryFeeder}
-                        role={(isPast && vps.verb.transitivity !== "intransitive")
-                            ? "ergative"
-                            : "subject"
-                        }
-                        is2ndPersonPicker={vps.verb.tenseCategory === "imperative"}
-                        np={vps.subject}
-                        counterPart={vps.verb ? vps.object : undefined}
-                        onChange={handleSubjectChange}
-                        opts={props.opts}
-                        isShrunk={(servantIsShrunk && roles.servant === "subject")}
-                    />
-                </div>
-                {vps.verb && (vps.object !== "none") && <div className="my-2" style={{ background: (servantIsShrunk && roles.servant === "object") ? shrunkenBackground : "inherit" }}>
-                    {(typeof vps.object === "number")
-                        ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
-                        : <NPPicker
-                            phraseIsComplete={phraseIsComplete}
-                            heading={roles.king === "object" 
-                                ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
+                {vps.blocks.map(({ block, key }, i, blocks) => {
+                    if (isNoObject(block)) return null;
+                    return <div className="my-2 card block-card p-1 mx-1" key={key} style={{
+                        background: (servantIsShrunk && (
+                            (roles.servant === "subject" && block?.type === "subjectSelection")
+                            ||
+                            (roles.servant === "object" && block?.type === "objectSelection")
+                        )) ? shrunkenBackground : "inherit",
+                    }}>
+                        <div className="d-flex flex-row justify-content-between mb-1" style={{ height: "1rem" }}>
+                            {(i > 0 && !isNoObject(blocks[i - 1].block)) ? <div
+                                className="small clickable ml-1"
+                                onClick={() => adjustVps({ type: "shift block", payload: { index: i, direction: "back" }})}
+                            >
+                                <i className="fas fa-chevron-left" />
+                            </div> : <div/>}
+                            {(i < vps.blocks.length - 1 && !isNoObject(blocks[i + 1].block)) ? <div
+                                className="small clickable mr-1"
+                                onClick={() => adjustVps({ type: "shift block", payload: { index: i, direction: "forward" }})}
+                            >
+                                <i className="fas fa-chevron-right" />
+                            </div> : <div/>}
+                        </div>
+                        {(!block || block.type === "adverb" || block.type === "sandwich")
+                            ? <APPicker
+                                phraseIsComplete={phraseIsComplete}
+                                heading="AP"
+                                entryFeeder={props.entryFeeder}
+                                AP={block}
+                                opts={props.opts}
+                                onChange={AP => adjustVps({ type: "set AP", payload: { index: i, AP } })}
+                                onRemove={() => adjustVps({ type: "remove AP", payload: i })}
+                            />
+                            : (block?.type === "subjectSelection")
+                            ? <NPPicker
+                                phraseIsComplete={phraseIsComplete}
+                                heading={roles.king === "subject" 
+                                ? <div className="h5 text-center" onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>Subject {roleIcon.king}</div>
                                 : <div className="h5 text-center">
-                                    Object
+                                    Subject
                                     {` `}
-                                    <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>{roleIcon.servant}</span>
+                                    <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>{roleIcon.servant}</span>
                                     {` `}
                                     {(rendered && rendered.whatsAdjustable !== "king") && 
                                         <span onClick={toggleServantShrink} className="mx-2 clickable">
@@ -215,15 +226,48 @@ function VPExplorer(props: {
                                         </span>
                                     }
                                 </div>}
-                            entryFeeder={props.entryFeeder}
-                            role="object"
-                            np={vps.object}
-                            counterPart={vps.subject}
-                            onChange={handleObjectChange}
-                            opts={props.opts}
-                            isShrunk={(servantIsShrunk && roles.servant === "object")}
-                        />}
-                </div>}
+                                entryFeeder={props.entryFeeder}
+                                np={block.selection}
+                                counterPart={vps.verb ? object : undefined}
+                                role={(isPast && vps.verb.transitivity !== "intransitive")
+                                    ? "ergative"
+                                    : "subject"
+                                }
+                                onChange={handleSubjectChange}
+                                opts={props.opts}
+                                isShrunk={(servantIsShrunk && roles.servant === "subject")}
+                            />
+                            : (vps.verb && block?.type === "objectSelection" && block.selection !== "none")
+                            ? <div className="my-2" style={{ background: (servantIsShrunk && roles.servant === "object") ? shrunkenBackground : "inherit" }}>
+                                {(typeof block.selection === "number")
+                                    ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
+                                    : <NPPicker
+                                        phraseIsComplete={phraseIsComplete}
+                                        heading={roles.king === "object" 
+                                            ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
+                                            : <div className="h5 text-center">
+                                                Object
+                                                {` `}
+                                                <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>{roleIcon.servant}</span>
+                                                {` `}
+                                                {(rendered && rendered.whatsAdjustable !== "king") && 
+                                                    <span onClick={toggleServantShrink} className="mx-2 clickable">
+                                                        {!servantIsShrunk ? "🪄" : "👶"}
+                                                    </span>
+                                                }
+                                            </div>}
+                                        entryFeeder={props.entryFeeder}
+                                        role="object"
+                                        np={block.selection}
+                                        counterPart={subject}
+                                        onChange={handleObjectChange}
+                                        opts={props.opts}
+                                        isShrunk={(servantIsShrunk && roles.servant === "object")}
+                                    />}
+                            </div>
+                            : null}
+                    </div>;
+                })}
             </>}
             <div className="my-2">
                 <TensePicker

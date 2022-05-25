@@ -7,6 +7,7 @@ import {
 import { isImperativeTense, isPerfectTense } from "../type-predicates";
 import * as grammarUnits from "../../lib/grammar-units";
 import { randomNumber } from "../../lib/misc-helpers";
+import { adjustObjectSelection, adjustSubjectSelection, getObjectSelection, getSubjectSelection, VPSBlocksAreComplete } from "./blocks-utils";
 
 export function isInvalidSubjObjCombo(subj: T.Person, obj: T.Person): boolean {
     const firstPeople = [
@@ -193,34 +194,35 @@ export function removeDuplicates(psv: T.PsString[]): T.PsString[] {
     ));
 }
 
-export function switchSubjObj(vps: T.VPSelectionState): T.VPSelectionState;
-export function switchSubjObj(vps: T.VPSelectionComplete): T.VPSelectionComplete;
-export function switchSubjObj(vps: T.VPSelectionState | T.VPSelectionComplete): T.VPSelectionState | T.VPSelectionComplete {
+export function switchSubjObj<V extends T.VPSelectionState | T.VPSelectionComplete>(vps: V): V {
+    const subject = getSubjectSelection(vps.blocks).selection;
+    const object = getObjectSelection(vps.blocks).selection;
     if ("tenseCategory" in vps.verb) {
-        if (!vps.subject || !(typeof vps.object === "object") || (vps.verb.tenseCategory === "imperative")) {
+        if (!subject || !(typeof object === "object") || (vps.verb.tenseCategory === "imperative")) {
             return vps;
         }
         return {
             ...vps,
-            subject: vps.object,
-            object: vps.subject,
+            blocks: adjustObjectSelection(
+                adjustSubjectSelection(vps.blocks, object),
+                subject,
+            ),
         };
     }
-    if (!vps.subject|| !vps.verb || !(typeof vps.object === "object")) {
+    if (!subject|| !vps.verb || !(typeof object === "object")) {
         return vps;
     }
     return {
         ...vps,
-        subject: vps.object,
-        object: vps.subject,
+        blocks: adjustObjectSelection(
+            adjustSubjectSelection(vps.blocks, object),
+            subject,
+        ),
     };
 }
 
 export function completeVPSelection(vps: T.VPSelectionState): T.VPSelectionComplete | undefined {
-    if (vps.subject === undefined) {
-        return undefined;
-    }
-    if (vps.object === undefined) {
+    if (!VPSBlocksAreComplete(vps.blocks)) {
         return undefined;
     }
     // necessary for this version on typscript ...
@@ -228,13 +230,10 @@ export function completeVPSelection(vps: T.VPSelectionState): T.VPSelectionCompl
         ...vps.verb,
         tense: getTenseFromVerbSelection(vps.verb),
     };
-    const subject = vps.subject;
-    const object = vps.object
     return {
         ...vps,
-        subject,
-        object,
         verb,
+        blocks: vps.blocks,
     };
 }
 
@@ -257,12 +256,12 @@ export function isThirdPerson(p: T.Person): boolean {
 }
 
 export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): T.VPSelectionState {
-    console.log("checking more...", vps);
-    const subjIs2ndPerson = (vps.subject?.type === "pronoun") && isSecondPerson(vps.subject.person);
-    const objIs2ndPerson = (typeof vps.object === "object")
-        && (vps.object.type === "pronoun")
-        && isSecondPerson(vps.object.person);
-    console.log({ subjIs2ndPerson, objIs2ndPerson });
+    const subject = getSubjectSelection(vps.blocks).selection;
+    const object = getObjectSelection(vps.blocks).selection;
+    const subjIs2ndPerson = (subject?.type === "pronoun") && isSecondPerson(subject.person);
+    const objIs2ndPerson = (typeof object === "object")
+        && (object.type === "pronoun")
+        && isSecondPerson(object.person);
     const default2ndPersSubject: T.PronounSelection = {
         type: "pronoun",
         distance: "far",
@@ -279,41 +278,39 @@ export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): 
         return vps;
     }
     if (subjIs2ndPerson && objIs2ndPerson)  {
-        if (typeof vps.object !== "object" || vps.object.type !== "pronoun") {
+        if (typeof object !== "object" || object.type !== "pronoun") {
             return vps;
         }
         return {
             ...vps,
-            object: {
-                ...vps.object,
+            blocks: adjustObjectSelection(vps.blocks, {
+                ...object,
                 person: getNon2ndPersPronoun(),
-            },
+            }),
         };
     }
     if (!subjIs2ndPerson && objIs2ndPerson) {
-        if (typeof vps.object !== "object" || vps.object.type !== "pronoun") {
+        if (typeof object !== "object" || object.type !== "pronoun") {
             return {
                 ...vps,
-                subject: default2ndPersSubject,
+                blocks: adjustSubjectSelection(vps.blocks, default2ndPersSubject),
             };
         }
         return {
             ...vps,
-            subject: default2ndPersSubject,
-            object: {
-                ...vps.object,
-                person: getNon2ndPersPronoun(),
-            },
+            blocks: adjustObjectSelection(
+                adjustSubjectSelection(vps.blocks, default2ndPersSubject),
+                {
+                    ...object,
+                    person: getNon2ndPersPronoun(),
+                },
+            ),
         };
     }
     if (!subjIs2ndPerson && !objIs2ndPerson) {
-        console.log("returning last");
         return {
             ...vps,
-            subject: default2ndPersSubject, 
-            verb: {
-                ...vps.verb,
-            },
+            blocks: adjustSubjectSelection(vps.blocks, default2ndPersSubject),
         };
     }
     throw new Error("error ensuring compatible VPSelection for imperative verb");

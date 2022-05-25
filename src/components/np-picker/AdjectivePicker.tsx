@@ -46,9 +46,11 @@ function AdjectivePicker(props: {
             {!props.noTitle && <div>
                 <h6>Adjective</h6>
             </div>}
-            {(!addingSandwich && props.adjective && !props.adjective?.sandwich)
+            {/* not ready for sandwiches on adjectives */}
+            {/* {(!addingSandwich && props.adjective && !props.adjective?.sandwich)
                 ? <div className="clickable" onClick={() => setAddingSandwich(true)}>+ Sandwich</div>
-                : <div></div>}
+                : <div></div>} */}
+            <div />
         </div>
         <div className="mt-1">
             <EntrySelect

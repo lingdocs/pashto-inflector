@@ -497,7 +497,7 @@ export type Pattern6FemEntry<T extends FemNounEntry> = T & { __brand3: "non anim
 export type NonInflecting<T> = T & { __brand3: "non-inflecting" };
 
 export type Entry = NounEntry | AdjectiveEntry | AdverbEntry | VerbEntry;
-
+export type RenderedVPSBlock =  (Rendered<SubjectSelectionComplete> | Rendered<ObjectSelectionComplete> | Rendered<APSelection>);
 // TODO: make this Rendered<VPSelectionComplete> with recursive Rendered<>
 export type VPRendered = {
     type: "VPRendered",
@@ -506,8 +506,7 @@ export type VPRendered = {
     isPast: boolean,
     isTransitive: boolean,
     isCompound: "stative" | "dynamic" | false,
-    subject: Rendered<NPSelection>,
-    object: Rendered<NPSelection> | ObjectNP,
+    blocks: RenderedVPSBlock[],
     verb: VerbRendered,
     englishBase?: string[],
     form: FormVersion,
@@ -551,17 +550,13 @@ export type ObjectSelectionComplete = {
 };
 
 export type VPSelectionState = {
-    // blocks: (SubjectSelection | ObjectSelection)[]
-    subject: NPSelection | undefined,
-    object: NPSelection | ObjectNP | undefined,
+    blocks: VPSBlock[]
     verb: VerbSelection,
     form: FormVersion,
 };
 
 export type VPSelectionComplete = {
-    // blocks: (SubjectSelectionComplete | ObjectSelectionComplete)[]
-    subject: NPSelection,
-    object: NPSelection | ObjectNP,
+    blocks: VPSBlockComplete[]
     verb: VerbSelectionComplete,
     form: FormVersion,
 };
@@ -676,7 +671,7 @@ export type RenderedPossesorSelection = {
     shrunken: boolean,
 };
 
-export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection | SandwichSelection<Sandwich> | APSelection | SubjectSelectionComplete> = T extends SandwichSelection<Sandwich> 
+export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection | SandwichSelection<Sandwich> | APSelection | SubjectSelectionComplete | ObjectSelectionComplete> = T extends SandwichSelection<Sandwich> 
     ? Omit<SandwichSelection<Sandwich>, "inside"> & {
         inside: Rendered<NPSelection>,
     }
@@ -701,6 +696,11 @@ export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelectio
     ? {
         type: "subjectSelection",
         selection: Rendered<NPSelection>,
+    }
+    : T extends ObjectSelectionComplete
+    ? {
+        type: "objectSelection",
+        selection: Rendered<NPSelection> | Person.ThirdPlurMale | "none",
     }
     : ReplaceKey<
         Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,
@@ -739,6 +739,16 @@ export type EPSBlock = {
 export type EPSBlockComplete = {
     key: number,
     block: SubjectSelectionComplete | APSelection,
+};
+
+export type VPSBlock = {
+    key: number,
+    // TODO: confusing use of APSelection / should be like APSelection s APSelection complete like the others
+    block: SubjectSelection | ObjectSelection | (APSelection | undefined),
+};
+export type VPSBlockComplete = {
+    key: number,
+    block: SubjectSelectionComplete | ObjectSelectionComplete | APSelection,
 };
 
 export type EPSelectionComplete = Omit<EPSelectionState, "predicate" | "blocks"> & {

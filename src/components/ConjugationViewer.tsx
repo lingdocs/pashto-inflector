@@ -195,11 +195,10 @@ function ConjugationViewer({ entry, complement, textOptions, showOnly, highlight
         try {
             return conjugateVerb(entry, complement);
         } catch(e) {
-            console.log("conjugation error", e);
+            console.error("conjugation error", e);
             return undefined;
         }
     })();
-    console.log(conjugation);
     if (conjugation === undefined) {
         // don't show the conjugation viewer if the verb can't be conjugated
         return null;

@@ -22,26 +22,31 @@ import {
 import { renderEnglishVPBase } from "./english-vp-rendering";
 import { personGender } from "../../lib/misc-helpers";
 import { renderNPSelection } from "./render-np";
+import { getObjectSelection, getSubjectSelection } from "./blocks-utils";
+import { renderSandwich } from "./render-sandwich";
+import { renderAdverbSelection } from "./render-ep";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
+    const subject = getSubjectSelection(VP.blocks).selection;
+    const object = getObjectSelection(VP.blocks).selection;
     // Sentence Rules Logic
     const isPast = isPastTense(VP.verb.tense);
-    const isTransitive = VP.object !== "none";
+    const isTransitive = object !== "none";
     const { king, servant } = getKingAndServant(isPast, isTransitive);
     const kingPerson = getPersonFromNP(
-        king === "subject" ? VP.subject : VP.object,
+        king === "subject" ? subject : object,
     );
     // TODO: more elegant way of handling this type safety
     if (kingPerson === undefined) {
         throw new Error("king of sentance does not exist");
     }
-    const subjectPerson = getPersonFromNP(VP.subject);
-    const objectPerson = getPersonFromNP(VP.object);
+    const subjectPerson = getPersonFromNP(subject);
+    const objectPerson = getPersonFromNP(object);
     // TODO: also don't inflect if it's a pattern one animate noun
-    const inflectSubject = isPast && isTransitive && !isMascSingAnimatePattern4(VP.subject);
-    const inflectObject = !isPast && isFirstOrSecondPersPronoun(VP.object);
+    const inflectSubject = isPast && isTransitive && !isMascSingAnimatePattern4(subject);
+    const inflectObject = !isPast && isFirstOrSecondPersPronoun(object);
     // Render Elements
     const b: T.VPRendered = {
         type: "VPRendered",
@@ -50,18 +55,50 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         isPast,
         isTransitive,
         isCompound: VP.verb.isCompound,
-        subject: renderNPSelection(VP.subject, inflectSubject, false, "subject", king === "subject" ? "king" : "servant"),
-        object: renderNPSelection(VP.object, inflectObject, true, "object", king === "object" ? "king" : "servant"),
+        blocks: renderVPBlocks(VP.blocks, {
+            inflectSubject,
+            inflectObject,
+            king,
+        }),
         verb: renderVerbSelection(VP.verb, kingPerson, objectPerson),
         englishBase: renderEnglishVPBase({
             subjectPerson,
-            object: VP.verb.isCompound === "dynamic" ? "none" : VP.object,
+            object: VP.verb.isCompound === "dynamic" ? "none" : object,
             vs: VP.verb,
         }),
         form: VP.form,
         whatsAdjustable: whatsAdjustable(VP),
     };
     return b;
+}
+
+function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
+    inflectSubject: boolean,
+    inflectObject: boolean,
+    king: "subject" | "object",
+}): T.RenderedVPSBlock[] {
+    return blocks.map(({ block }): T.RenderedVPSBlock => {
+        if (block.type === "sandwich") {
+            return renderSandwich(block);
+        }
+        if (block.type === "adverb") {
+            return renderAdverbSelection(block);
+        }
+        if (block.type === "subjectSelection") {
+            return {
+                type: "subjectSelection",
+                selection: renderNPSelection(block.selection, config.inflectSubject, false, "subject", config.king === "subject" ? "king" : "servant"),
+            }
+        }
+        // if (block.type === "objectSelection") {
+            const object = typeof block === "object" ? block.selection : block;
+            const selection = renderNPSelection(object, config.inflectObject, true, "object", config.king === "object" ? "king" : "servant");
+            return {
+                type: "objectSelection",
+                selection,
+            };
+        // }
+    });
 }
 
 function whatsAdjustable(VP: T.VPSelectionComplete): "both" | "king" | "servant" {

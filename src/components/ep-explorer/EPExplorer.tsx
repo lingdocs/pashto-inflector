@@ -40,7 +40,7 @@ function EPExplorer(props: {
     const parent = useRef<HTMLDivElement>(null);
     useEffect(() => {
         parent.current && autoAnimate(parent.current);
-    }, [parent])
+    }, [parent]);
     const subject = getSubjectSelection(eps.blocks).selection;
     const king = subject?.type === "pronoun"
         ? "subject"
@@ -65,7 +65,7 @@ function EPExplorer(props: {
                 handleChange={setMode}
             />
         </div>
-        <div className="clickable h5" onClick={() => adjustEps({ type: "insert new AP" })}>+ AP</div>
+        {mode === "phrases" && <div className="clickable h5" onClick={() => adjustEps({ type: "insert new AP" })}>+ AP</div>}
         <div ref={parent} className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
             {mode === "phrases" && <>
                 {eps.blocks.map(({ block, key }, i) => (

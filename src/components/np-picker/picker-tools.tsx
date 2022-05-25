@@ -24,7 +24,13 @@ import {
 } from "../../lib/translate-phonetics";
 
 export function makeVerbSelectOption(e: T.VerbEntry, opts: T.TextOptions): { value: string, label: string | JSX.Element } {
-    const engV = getEnglishVerb(e.entry);
+    const engV = (() => {
+        try {
+            return getEnglishVerb(e.entry);
+        } catch(e) {
+            console.error("no english conjugations for verb");
+        }
+    })();
     const eng = engV || truncateEnglish(e.entry.e);
     const ps = plainTextPsAdjustment(
         { p: e.entry.p, f: removeFVarients(e.entry.f) },

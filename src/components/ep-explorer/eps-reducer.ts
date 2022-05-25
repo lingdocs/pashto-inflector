@@ -5,8 +5,7 @@ import {
 } from "../../lib/misc-helpers";
 import { isUnisexNounEntry } from "../../lib/type-predicates";
 import { checkForMiniPronounsError } from "../../lib/phrase-building/compile";
-import { adjustSubjectSelection, getSubjectSelection, makeAPBlock } from "../../lib/phrase-building/blocks-utils";
-import { assertNever } from "assert-never";
+import { adjustSubjectSelection, getSubjectSelection, insertNewAP, removeAP, setAP, shiftBlock } from "../../lib/phrase-building/blocks-utils";
 
 type EpsReducerAction = {
     type: "set predicate type",
@@ -151,50 +150,30 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
     if (action.type === "insert new AP") {
         return {
             ...eps,
-            blocks: [makeAPBlock(), ...eps.blocks],
+            blocks: insertNewAP(eps.blocks),
         };
-        // const index = action.payload;
-        // const newAP = undefined;
-        // return {
-        //     ...eps,
-        //     blocks: [...eps.blocks].splice(index, 0, newAP),
-        // };
     }
     if (action.type === "set AP") {
-        const blocks = [...eps.blocks];
         const { index, AP } = action.payload;
-        blocks[index].block = AP;
         return {
             ...eps,
-            blocks,
+            blocks: setAP(eps.blocks, index, AP),
         };
     }
     if (action.type === "remove AP") {
-        const blocks = [...eps.blocks];
-        blocks.splice(action.payload, 1);
         return {
             ...eps,
-            blocks,
+            blocks: removeAP(eps.blocks, action.payload),
         };
     }
     if (action.type === "shift block") {
         const { index, direction } = action.payload;
-        const newIndex = index + (direction === "forward" ? 1 : -1); 
-        const blocks = [...eps.blocks];
-        if (newIndex >= blocks.length || newIndex < 0) {
-            return eps;
-            // var k = newIndex - blocks.length + 1;
-            // while (k--) {
-            //     blocks.push(undefined);
-            // }
-        }
-        blocks.splice(newIndex, 0, blocks.splice(index, 1)[0]);
         return {
             ...eps,
-            blocks,
+            blocks: shiftBlock(eps.blocks, index, direction),
         };
     }
-    assertNever(action);
+    throw new Error("unknown epsReducer action");
 }
 
 function ensureMiniPronounsOk(old: T.EPSelectionState, eps: T.EPSelectionState, sendAlert?: (msg: string) => void): T.EPSelectionState {

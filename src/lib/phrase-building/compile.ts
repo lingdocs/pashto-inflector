@@ -25,7 +25,7 @@ import { pronouns } from "../grammar-units";
 import { completeEPSelection, renderEP } from "./render-ep";
 import { completeVPSelection } from "./vp-tools";
 import { renderVP } from "./render-vp";
-import { getRenderedSubjectSelection } from "./blocks-utils";
+import { getRenderedObjectSelection, getRenderedSubjectSelection } from "./blocks-utils";
 
 const blank: T.PsString = {
     p: "______",
@@ -35,14 +35,13 @@ type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean
 
 const kidsBlank = makeSegment({ p: "___", f: "___" }, ["isKid"]);
 
-type Form = T.FormVersion & { OSV?: boolean };
-export function compileVP(VP: T.VPRendered, form: Form): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
-export function compileVP(VP: T.VPRendered, form: Form, combineLengths: true): { ps: T.PsString[], e?: string [] };
-export function compileVP(VP: T.VPRendered, form: Form, combineLengths?: true): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] } {
+export function compileVP(VP: T.VPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
+export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths: true): { ps: T.PsString[], e?: string [] };
+export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?: true): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] } {
     const verb = VP.verb.ps;
-    const { kids, NPs } = getVPSegmentsAndKids(VP, form);
+    const { kids, blocks } = getVPSegmentsAndKids(VP, form);
     const psResult = compilePs({
-        NPs,
+        blocks,
         kids,
         verb,
         VP,
@@ -50,12 +49,12 @@ export function compileVP(VP: T.VPRendered, form: Form, combineLengths?: true): 
     return {
         ps: combineLengths ? flattenLengths(psResult) : psResult,
         // TODO: English doesn't quite work for dynamic compounds in passive voice
-        e: (VP.verb.voice === "passive" && VP.isCompound === "dynamic") ? undefined : compileEnglish(VP),
+        e: (VP.verb.voice === "passive" && VP.isCompound === "dynamic") ? undefined : compileEnglishVP(VP),
     };
 }
 
 type CompilePsInput = {
-    NPs: Segment[][],
+    blocks: Segment[],
     kids: Segment[],
     verb: {
         head: T.PsString | undefined,
@@ -64,13 +63,13 @@ type CompilePsInput = {
     VP: T.VPRendered,
 }
 
-function compilePs({ NPs, kids, verb: { head, rest }, VP }: CompilePsInput): T.SingleOrLengthOpts<T.PsString[]> {
+function compilePs({ blocks, kids, verb: { head, rest }, VP }: CompilePsInput): T.SingleOrLengthOpts<T.PsString[]> {
     if ("long" in rest) {
         return {
-            long: compilePs({ NPs, verb: { head, rest: rest.long }, VP, kids }) as T.PsString[],
-            short: compilePs({ NPs, verb: { head, rest: rest.short }, VP, kids }) as T.PsString[],
+            long: compilePs({ blocks, verb: { head, rest: rest.long }, VP, kids }) as T.PsString[],
+            short: compilePs({ blocks, verb: { head, rest: rest.short }, VP, kids }) as T.PsString[],
             ...rest.mini ? {
-                mini: compilePs({ NPs, verb: { head, rest: rest.mini }, VP, kids }) as T.PsString[],
+                mini: compilePs({ blocks, verb: { head, rest: rest.mini }, VP, kids }) as T.PsString[],
             } : {},
         };
     }
@@ -78,55 +77,62 @@ function compilePs({ NPs, kids, verb: { head, rest }, VP }: CompilePsInput): T.S
 
     // put together all the different possible permutations based on:
     // a. potential different versions of where the nu goes
-    return removeDuplicates(verbWNegativeVersions.flatMap((verbSegments) => (
-    // b. potential reordering of NPs
-        NPs.flatMap(NP => {
-            // for each permutation of the possible ordering of NPs and Verb + nu
-            // 1. put in kids in the kids section
-            const segments = putKidsInKidsSection([...NP, ...verbSegments], kids);
-            // 2. space out the words properly
-            const withProperSpaces = addSpacesBetweenSegments(segments);
-            // 3. throw it all together into a PsString for each permutation
-            return combineSegments(withProperSpaces);
-        })
-    )));
+    return removeDuplicates(verbWNegativeVersions.flatMap((verbSegments) => {
+        // for each permutation of the possible ordering of NPs and Verb + nu
+        // 1. put in kids in the kids section
+        const segments = putKidsInKidsSection([...blocks, ...verbSegments], kids);
+        // 2. space out the words properly
+        const withProperSpaces = addSpacesBetweenSegments(segments);
+        // 3. throw it all together into a PsString for each permutation
+        return combineSegments(withProperSpaces);
+    }));
 }
 
 export function getShrunkenServant(VP: T.VPRendered): Segment | undefined {
     const shrinkServant = VP.form.shrinkServant && !(VP.isCompound === "dynamic" && !VP.isPast);
-    const toShrinkServant = (() => {
+    const toShrinkServant: T.Rendered<T.NPSelection> | undefined = (() => {
         if (!shrinkServant) return undefined;
         if (!VP.servant) return undefined;
-        const servant = VP[VP.servant];
+        const servant = VP.servant === "subject"
+            ? getRenderedSubjectSelection(VP.blocks).selection
+            : getRenderedObjectSelection(VP.blocks).selection;
         if (typeof servant !== "object") return undefined;
         return servant;
     })();
     return toShrinkServant ? shrinkNP(toShrinkServant) : undefined;
 }
 
-export function getVPSegmentsAndKids(VP: T.VPRendered, form?: Form): { kids: Segment[], NPs: Segment[][] } {
+export function getVPSegmentsAndKids(VP: T.VPRendered, form?: T.FormVersion): { kids: Segment[], blocks: Segment[] } {
     const removeKing = VP.form.removeKing && !(VP.isCompound === "dynamic" && VP.isPast);
     const shrunkenServant = getShrunkenServant(VP);
     const possToShrink = findPossesivesToShrinkInVP(VP, {
         shrunkServant: !!shrunkenServant,
         removedKing: removeKing,
     });
-    const SO = {
-        subject: getPashtoFromRendered(VP.subject, false),
-        object: typeof VP.object === "object" ? getPashtoFromRendered(VP.object, VP.subject.person) : undefined,
-    };
-    function getSegment(t: "subject" | "object"): Segment | undefined {
-        const word = (VP.servant === t)
-            ? (!shrunkenServant ? SO[t] : undefined)
-            : (VP.king === t)
-            ? (!removeKing ? SO[t] : undefined)
-            : undefined;
-        if (!word) return undefined;
-        return makeSegment(word);
-    }
-    const subject = getSegment("subject");
-    const object = getSegment("object");
-
+    const subject = getRenderedSubjectSelection(VP.blocks).selection;
+    const blocks = VP.blocks.reduce((accum, block) => {
+        if (block.type === "subjectSelection") {
+            if (VP.servant === "subject" && shrunkenServant) return accum;
+            if (VP.king === "subject" && removeKing) return accum;
+            return [
+                ...accum,
+                makeSegment(getPashtoFromRendered(block.selection, false)),
+            ];
+        }
+        if (block.type === "objectSelection") {
+            if (VP.servant === "object" && shrunkenServant) return accum;
+            if (VP.king === "object" && removeKing) return accum;
+            if (typeof block.selection !== "object") return accum;
+            return [
+                ...accum,
+                makeSegment(getPashtoFromRendered(block.selection, subject.person)),
+            ]
+        }
+        return [
+            ...accum,
+            makeSegment(getPashtoFromRendered(block, false)),
+        ];
+    }, [] as Segment[]);
     return {
         kids: orderKidsSection([
             ...VP.verb.hasBa
@@ -135,14 +141,37 @@ export function getVPSegmentsAndKids(VP: T.VPRendered, form?: Form): { kids: Seg
                 ? [shrunkenServant] : [],
             ...possToShrink.map(shrinkNP),
         ]),
-        NPs: [
-            [
-                ...subject ? [subject] : [],
-                ...object ? [object] : [],
-            ],
-            // TODO: make this an option to also include O S V order ??
-            // also show O S V if both are showing
-            ...(subject && object && (form && form.OSV)) ? [[object, subject]] : [],
+        blocks: blocks,
+    };
+}
+
+export function getEPSegmentsAndKids(EP: T.EPRendered, blankOut?: BlankoutOptions): { kids: Segment[], blocks: Segment[] } {
+    const possToShrink = findPossesivesToShrinkInEP(EP);
+    const blocks = EP.blocks.reduce((accum, block) => {
+        if (block.type === "subjectSelection") {
+            if (EP.omitSubject) return accum;
+            return [
+                ...accum,
+                makeSegment(getPashtoFromRendered(block.selection, false)),
+            ];
+        }
+        return [
+            ...accum,
+            makeSegment(getPashtoFromRendered(block, false)),
+        ];
+    }, [] as Segment[]);
+    const predicate = makeSegment(getPashtoFromRendered(EP.predicate, false));
+    return {
+        kids: blankOut?.kidsSection ? [kidsBlank] : orderKidsSection([
+            ...EP.equative.hasBa
+                ? (
+                    blankOut?.ba ? [kidsBlank] : [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])])
+                : [],
+            ...possToShrink.map(a => shrinkNP(a.np)),
+        ]),
+        blocks: [
+            ...blocks,
+            predicate
         ],
     };
 }
@@ -263,65 +292,34 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
 export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
-    const { kids, NPs } = getEPSegmentsAndKids(EP, blankOut);
+    const { kids, blocks } = getEPSegmentsAndKids(EP, blankOut);
     const equative = EP.equative.ps;
     const psResult = compileEPPs({
-        NPs,
+        blocks,
         kids,
         equative: blankOut?.equative ? [blank] : equative,
         negative: EP.equative.negative,
     });
     return {
         ps: combineLengths ? flattenLengths(psResult) : psResult,
-        e: compileEPEnglish(EP),
+        e: compileEnglishEP(EP),
     };
 }
 
-export function getEPSegmentsAndKids(EP: T.EPRendered, blankOut?: BlankoutOptions): { kids: Segment[], NPs: Segment[] } {
-    const possToShrink = findPossesivesToShrinkInEP(EP);
-    const blocks = EP.blocks.reduce((accum, block) => {
-        if (block.type === "subjectSelection") {
-            if (EP.omitSubject) return accum;
-            return [
-                ...accum,
-                makeSegment(getPashtoFromRendered(block.selection, false)),
-            ];
-        }
-        return [
-            ...accum,
-            makeSegment(getPashtoFromRendered(block, false)),
-        ];
-    }, [] as Segment[]);
-    const predicate = makeSegment(getPashtoFromRendered(EP.predicate, false));
-    return {
-        kids: blankOut?.kidsSection ? [kidsBlank] : orderKidsSection([
-            ...EP.equative.hasBa
-                ? (
-                    blankOut?.ba ? [kidsBlank] : [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])])
-                : [],
-            ...possToShrink.map(a => shrinkNP(a.np)),
-        ]),
-        NPs: [
-            ...blocks,
-            predicate
-        ],
-    };
-}
-
-function compileEPPs({ NPs, kids, equative, negative }: {
-    NPs: Segment[],
+function compileEPPs({ blocks, kids, equative, negative }: {
+    blocks: Segment[],
     kids: Segment[],
     equative: T.SingleOrLengthOpts<T.PsString[]>,
     negative: boolean,
 }): T.SingleOrLengthOpts<T.PsString[]> {
     if ("long" in equative) {
         return {
-            long: compileEPPs({ NPs, kids, equative: equative.long, negative }) as T.PsString[],
-            short: compileEPPs({ NPs, kids, equative: equative.short, negative }) as T.PsString[],
+            long: compileEPPs({ blocks, kids, equative: equative.long, negative }) as T.PsString[],
+            short: compileEPPs({ blocks, kids, equative: equative.short, negative }) as T.PsString[],
         };
     }
     const allSegments = putKidsInKidsSection([
-        ...NPs,
+        ...blocks,
         ...negative ? [
             makeSegment({ p: "نه", f: "nú" }),
             makeSegment(removeAccents(equative))
@@ -332,25 +330,7 @@ function compileEPPs({ NPs, kids, equative, negative }: {
     return removeDuplicates(combineSegments(allSegments, "spaces"));
 }
 
-function compileEPEnglish(EP: T.EPRendered): string[] | undefined {
-    function insertEWords(e: string, { subject, predicate, APs }: { subject: string, predicate: string, APs: string }): string {
-        return e.replace("$SUBJ", subject).replace("$PRED", predicate || "") + APs;
-    }
-    const engSubj = getRenderedSubjectSelection(EP.blocks).selection.e;
-    const engPred = getEnglishFromRendered(EP.predicate);
-    const engAPs = getEnglishAPs(EP.blocks);
-    // require all English parts for making the English phrase
-    const b = (EP.englishBase && engSubj && engPred)
-        ? EP.englishBase.map(e => insertEWords(e, {
-            subject: engSubj,
-            predicate: engPred,
-            APs: engAPs,
-        }))
-        : undefined;
-    return b;
-}
-
-function getEnglishAPs(blocks: (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>)[]) {
+function getEnglishAPs(blocks: (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection> | T.RenderedVPSBlock)[]) {
     const APs = blocks.filter(x => x.type !== "subjectSelection") as T.Rendered<T.APSelection>[];
     return APs.reduce((accum, curr) => {
         const e = getEnglishFromRendered(curr);
@@ -398,23 +378,42 @@ function addSpacesBetweenSegments(segments: Segment[]): (Segment | " " | "" | T.
     return o;
 }
 
-function compileEnglish(VP: T.VPRendered): string[] | undefined {
-    function insertEWords(e: string, { subject, object }: { subject: string, object?: string }): string {
-        return e.replace("$SUBJ", subject).replace("$OBJ", object || "");
+function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
+    function insertEWords(e: string, { subject, object, APs }: { subject: string, object?: string, APs: string }): string {
+        return e.replace("$SUBJ", subject).replace("$OBJ", object || "") + APs;
     }
-    const engSubj = getEnglishFromRendered(VP.subject);
-    const engObj = typeof VP.object === "object"
-        ? getEnglishFromRendered(VP.object)
-        : undefined;
+    const engSubj = getRenderedSubjectSelection(VP.blocks).selection;
+    const obj = getRenderedObjectSelection(VP.blocks).selection;
+    const engObj = typeof obj === "object" ? obj.e : "";
+    const engAPs = getEnglishAPs(VP.blocks);
     // require all English parts for making the English phrase
-    return (VP.englishBase && engSubj && (engObj || typeof VP.object !== "object"))
+    return (VP.englishBase && engSubj && engObj !== undefined)
         ? VP.englishBase.map(e => insertEWords(e, {
-            subject: engSubj,
-            object: engObj,
+            // TODO: make sure we actually have the english
+            subject: getEnglishFromRendered(engSubj) || "",
+            object: getEnglishFromRendered(engSubj) || "",
+            APs: engAPs,
         }))
         : undefined;
 }
 
+function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
+    function insertEWords(e: string, { subject, predicate, APs }: { subject: string, predicate: string, APs: string }): string {
+        return e.replace("$SUBJ", subject).replace("$PRED", predicate || "") + APs;
+    }
+    const engSubj = getRenderedSubjectSelection(EP.blocks).selection.e;
+    const engPred = getEnglishFromRendered(EP.predicate);
+    const engAPs = getEnglishAPs(EP.blocks);
+    // require all English parts for making the English phrase
+    const b = (EP.englishBase && engSubj && engPred)
+        ? EP.englishBase.map(e => insertEWords(e, {
+            subject: engSubj,
+            predicate: engPred,
+            APs: engAPs,
+        }))
+        : undefined;
+    return b;
+}
 
 export function orderKidsSection(kids: Segment[]): Segment[] {
     const sorted = [...kids];
@@ -472,19 +471,34 @@ export function findPossesivesToShrinkInVP(VP: T.VPRendered, f: {
     shrunkServant: boolean,
     removedKing: boolean,
 }): T.Rendered<T.NPSelection>[] {
-    return findPossesives(VP.subject, VP.object).filter(x => (
-        // only give the possesive to shrink if it's not alread in a shrunken servant
-        !(f.shrunkServant && x.role === "servant")
-        && // or in a removed king
-        !(f.removedKing && x.role === "king")
-    ));
-}
-
-function findPossesives(...nps: (T.Rendered<T.NPSelection> | T.ObjectNP | undefined)[]): T.Rendered<T.NPSelection>[] {
-    return nps.reduce((accum, curr) => {
-        const res = findPossesivesInNP(curr);
-        if (res) return [...accum, ...res];
-        return accum;
+    return VP.blocks.reduce((found, block) => {
+        if (block.type === "subjectSelection") {
+            if (block.selection.role === "king" && f.removedKing) return found;
+            if (block.selection.role === "servant" && f.shrunkServant) return found;
+            return [
+                ...findPossesivesInNP(block.selection),
+                ...found,
+            ];
+        }
+        if (block.type === "objectSelection") {
+            if (typeof block.selection !== "object") return found;
+            if (block.selection.role === "king" && f.removedKing) return found;
+            if (block.selection.role === "servant" && f.shrunkServant) return found;
+            return [
+                ...findPossesivesInNP(block.selection),
+                ...found,
+            ];
+        }
+        if (block.type === "sandwich") {
+            if (block.inside.type === "pronoun") {
+                return found;
+            }
+            return [
+                ...findPossesivesInNP(block.inside),
+                ...found,
+            ];
+        }
+        return found;
     }, [] as T.Rendered<T.NPSelection>[]);
 }
 

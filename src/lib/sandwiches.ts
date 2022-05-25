@@ -98,6 +98,12 @@ export const sandwiches: T.Sandwich[] = [
         after: { p: "په حیث", f: "pu heys" },
         e: "as",
     },
+    {
+        type: "sandwich",
+        before: { p: "د", f: "du" },
+        after: { p: "په لور", f: "pu lor" },
+        e: "towards",
+    },
 ];
 
 export default sandwiches;

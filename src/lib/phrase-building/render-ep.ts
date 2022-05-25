@@ -84,10 +84,9 @@ function renderEquative(es: T.EquativeSelection, person: T.Person): T.EquativeRe
     };
 }
 
-function renderAdverbSelection(a: T.AdverbSelection): T.Rendered<T.AdverbSelection> {
+export function renderAdverbSelection(a: T.AdverbSelection): T.Rendered<T.AdverbSelection> {
     const e = getEnglishWord(a.entry);
     if (!e || typeof e !== "string") {
-        console.log(e);
         throw new Error("error getting english for compliment");
     }
     return {
@@ -104,7 +103,6 @@ function renderEqCompSelection(s: T.EqCompSelection, person: T.Person): T.Render
     }
     const e = getEnglishWord(s.entry);
     if (!e || typeof e !== "string") {
-        console.log(e);
         throw new Error("error getting english for compliment");
     }
     if (isLocativeAdverbEntry(s.entry)) {
