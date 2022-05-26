@@ -154,6 +154,7 @@ import * as grammarUnits from "./lib/grammar-units";
 import genderColors from "./lib/gender-colors";
 import * as Types from "./types";
 import * as typePredicates from "./lib/type-predicates";
+import APPicker from "./components/ap-picker/APPicker";
 
 export {
     // FUNCTIONS
@@ -245,6 +246,7 @@ export {
     Hider,
     EntrySelect,
     NPPicker,
+    APPicker,
     // OTHER
     typePredicates,
     grammarUnits,
