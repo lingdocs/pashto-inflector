@@ -23,7 +23,7 @@ import { renderEnglishVPBase } from "./english-vp-rendering";
 import { personGender } from "../../lib/misc-helpers";
 import { renderNPSelection } from "./render-np";
 import { getObjectSelection, getSubjectSelection } from "./blocks-utils";
-import { renderAP } from "./render-ap";
+import { renderAPSelection } from "./render-ap";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
 
@@ -91,7 +91,7 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
                 selection,
             };
         }
-        return renderAP(block);
+        return renderAPSelection(block);
     });
 }
 
