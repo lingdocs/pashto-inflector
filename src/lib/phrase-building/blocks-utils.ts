@@ -141,7 +141,7 @@ export function setAP<B extends T.VPSBlock[] | T.EPSBlock[]>(blocks: B, index: n
 
 export function removeAP<B extends T.VPSBlock[] | T.EPSBlock[]>(blocks: B, index: number): B {
     const nBlocks = [...blocks] as B;
-    blocks.splice(index, 1);
+    nBlocks.splice(index, 1);
     return nBlocks;
 }
 
