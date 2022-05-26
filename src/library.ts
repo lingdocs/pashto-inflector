@@ -143,6 +143,9 @@ import {
     compileEP,
     compileVP,
 } from "./lib/phrase-building/compile";
+import {
+    renderAP,
+} from "./lib/phrase-building/render-ap";
 import NPPicker from "./components/np-picker/NPPicker";
 import EPExplorer from "./components/ep-explorer/EPExplorer";
 import shuffleArray from "./lib/shuffle-array";
@@ -219,6 +222,7 @@ export {
     renderNPSelection,
     getEnglishFromRendered,
     getPashtoFromRendered,
+    renderAP,
     // protobuf helpers
     readDictionary,
     writeDictionary,

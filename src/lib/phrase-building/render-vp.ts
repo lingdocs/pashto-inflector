@@ -23,8 +23,7 @@ import { renderEnglishVPBase } from "./english-vp-rendering";
 import { personGender } from "../../lib/misc-helpers";
 import { renderNPSelection } from "./render-np";
 import { getObjectSelection, getSubjectSelection } from "./blocks-utils";
-import { renderSandwich } from "./render-sandwich";
-import { renderAdverbSelection } from "./render-ep";
+import { renderAP } from "./render-ap";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
 
@@ -78,26 +77,21 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
     king: "subject" | "object",
 }): T.RenderedVPSBlock[] {
     return blocks.map(({ block }): T.RenderedVPSBlock => {
-        if (block.type === "sandwich") {
-            return renderSandwich(block);
-        }
-        if (block.type === "adverb") {
-            return renderAdverbSelection(block);
-        }
         if (block.type === "subjectSelection") {
             return {
                 type: "subjectSelection",
                 selection: renderNPSelection(block.selection, config.inflectSubject, false, "subject", config.king === "subject" ? "king" : "servant"),
             }
         }
-        // if (block.type === "objectSelection") {
+        if (block.type === "objectSelection") {
             const object = typeof block === "object" ? block.selection : block;
             const selection = renderNPSelection(object, config.inflectObject, true, "object", config.king === "object" ? "king" : "servant");
             return {
                 type: "objectSelection",
                 selection,
             };
-        // }
+        }
+        return renderAP(block);
     });
 }
 

@@ -401,7 +401,8 @@ function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
     function insertEWords(e: string, { subject, predicate, APs }: { subject: string, predicate: string, APs: string }): string {
         return e.replace("$SUBJ", subject).replace("$PRED", predicate || "") + APs;
     }
-    const engSubj = getRenderedSubjectSelection(EP.blocks).selection.e;
+    const engSubjR = getRenderedSubjectSelection(EP.blocks).selection;
+    const engSubj = getEnglishFromRendered(engSubjR);
     const engPred = getEnglishFromRendered(EP.predicate);
     const engAPs = getEnglishAPs(EP.blocks);
     // require all English parts for making the English phrase
@@ -559,10 +560,11 @@ export function findPossesivesToShrinkInEP(EP: T.EPRendered): FoundNP[] {
         ? []
         : (EP.predicate.type === "adjective")
         ? findPossesivesInAdjective(EP.predicate)
-        : findPossesivesInNP(
-            // @ts-ignore - ts being dumb
-            EP.predicate as T.NPSelection
-        )).map(np => ({ np, from: "predicate" }));
+        : EP.predicate.type === "sandwich"
+        ? findPossesivesInNP(EP.predicate.inside)
+        : EP.predicate.type === "pronoun"
+        ? []
+        : findPossesivesInNP(EP.predicate)).map(np => ({ np, from: "predicate" }));
     return [
         ...inBlocks,
         ...inPredicate,

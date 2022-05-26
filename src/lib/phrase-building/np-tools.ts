@@ -201,12 +201,13 @@ export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSel
     if (r.type === "adjective") {
         return getEnglishFromRenderedAdjective(r);
     }
-    if (r.type !== "pronoun") {
-        // TODO: shouldn't have to do this 'as' - should be automatically narrowing
-        const np = r as T.Rendered<T.NounSelection>;
-        return addPossesors(np.possesor?.np, addArticlesAndAdjs(np), r.type);
+    if (r.type === "pronoun") {
+        return r.e;
     }
-    return r.e;
+    if (r.type === "participle") {
+        return addPossesors(r.possesor?.np, r.e, r.type);
+    }
+    return addPossesors(r.possesor?.np, addArticlesAndAdjs(r), r.type);
 }
 
 function getEnglishFromRenderedSandwich(r: T.Rendered<T.SandwichSelection<T.Sandwich>>): string | undefined {

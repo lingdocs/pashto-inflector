@@ -279,7 +279,7 @@ function App() {
                         opts={textOptions}
                     />
                 </div>}
-                <h4>🆕 Equative Phrase Builder</h4>
+                <h4>Equative Phrase Builder</h4>
                 <EPExplorer
                     opts={textOptions}
                     entryFeeder={entryFeeder}
