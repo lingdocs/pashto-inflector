@@ -104,6 +104,24 @@ export const sandwiches: T.Sandwich[] = [
         after: { p: "په لور", f: "pu lor" },
         e: "towards",
     },
+    {
+        type: "sandwich",
+        before: { p: "د", f: "du" },
+        after: { p: "په اړه", f: "pu aRa" },
+        e: "about",
+    },
+    {
+        type: "sandwich",
+        before: { p: "د", f: "du" },
+        after: { p: "په باره کې", f: "pu baara ke" },
+        e: "about",
+    },
+    {
+        type: "sandwich",
+        before: { p: "د", f: "du" },
+        after: { p: "په اړوند", f: "pu aRwand" },
+        e: "concerning",
+    },
 ];
 
 export default sandwiches;

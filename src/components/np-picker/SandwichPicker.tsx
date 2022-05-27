@@ -1,7 +1,7 @@
 import * as T from "../../types";
 import { sandwiches } from "../../lib/sandwiches";
 import { SandwichSelect } from "../../components/EntrySelect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NPPicker from "./NPPicker";
 
 function SandwichPicker(props: {
@@ -12,7 +12,10 @@ function SandwichPicker(props: {
     phraseIsComplete: boolean,
     onExit: () => void,
 }) {
-    const [sandwichBase, setSandwichBase] = useState<T.Sandwich | undefined>(undefined);
+    const [sandwichBase, setSandwichBase] = useState<T.Sandwich | undefined>(props.sandwich);
+    useEffect(() => {
+        setSandwichBase(props.sandwich);
+    }, [props.sandwich]);
     function handleNounChange(n: T.NPSelection | undefined) {
         if (!n) {
             props.onChange(undefined);
