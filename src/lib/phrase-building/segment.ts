@@ -82,11 +82,14 @@ export function combineSegments(loe: (Segment | " " | "" | T.PsString)[], spaces
     );
 }
 
-export function flattenLengths(r: T.SingleOrLengthOpts<T.PsString[]>): T.PsString[] {
+export function flattenLengths(r: T.SingleOrLengthOpts<T.PsString[] | T.PsString>): T.PsString[] {
     if ("long" in r) {
         return Object.values(r).flat();
     }
-    return r;
+    if (Array.isArray(r)) {
+        return r;
+    }
+    return [r];
 }
 
 export function putKidsInKidsSection(segments: Segment[], kids: Segment[]): Segment[] {
