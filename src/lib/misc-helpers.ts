@@ -54,11 +54,11 @@ export function pickPersInf<T>(s: T.OptionalPersonInflections<T>, persInf: T.Per
 //     return s;
 // }
 
-export function hasPersInfs(info: T.NonComboVerbInfo): boolean {
+export function hasPersInfs(info: T.NonComboVerbInfo | T.PassiveRootsStems): boolean {
     return (
         "mascSing" in info.root.perfective ||
         "mascSing" in info.stem.perfective ||
-        "mascSing" in info.participle.present ||
+        ("present" in info.participle && "mascSing" in info.participle.present) ||
         "mascSing" in info.participle.past
     );
 }

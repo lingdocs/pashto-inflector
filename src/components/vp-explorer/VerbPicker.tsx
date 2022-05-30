@@ -1,7 +1,7 @@
 import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
 import { RootsAndStems } from "../verb-info/VerbInfo";
-import { getVerbInfo } from "../../lib/verb-info";
+import { getPassiveRootsAndStems, getVerbInfo } from "../../lib/verb-info";
 import Hider from "../Hider";
 import useStickyState from "../../lib/useStickyState";
 import CompoundDisplay from "./CompoundDisplay";
@@ -50,6 +50,7 @@ function VerbPicker(props: {
             payload,
         });
     }
+    const passiveRootsAndStems = (info && props.vps.verb.voice === "passive") ? getPassiveRootsAndStems(info) : undefined;
     return <div className="mb-3">
         {info && <CompoundDisplay
             info={info}
@@ -65,7 +66,7 @@ function VerbPicker(props: {
             >
                 <RootsAndStems
                     textOptions={props.opts}
-                    info={info}
+                    info={passiveRootsAndStems ? passiveRootsAndStems : info}
                 />
             </Hider>
         </div>}

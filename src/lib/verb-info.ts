@@ -20,6 +20,7 @@ import {
     ensureShortWurShwaShift,
     choosePersInf,
     isUnisexSet,
+    getLong,
 } from "./p-text-helpers";
 import {
     makePsString,
@@ -135,7 +136,6 @@ export function getVerbInfo(
     const yulEnding = yulEndingInfinitive(infinitive);
     const participle = getParticiple(entry, stem, infinitive, transitivity, comp);
     const idiosyncraticThirdMascSing = getIdiosyncraticThirdMascSing(entry);
-
     const baseInfo: T.VerbInfoBase = {
         entry: {
             // TODO: cleanup the type safety with the DictionaryNoFVars messing things up etc
@@ -963,4 +963,71 @@ function makeDynamicPerfectiveSplit(comp: T.PsString, auxSplit: T.SplitInfo): T.
         concatPsString(comp, " ", auxSplit[0]),
         auxSplit[1],
     ];
+}
+
+export function getPassiveRootsAndStems(info: T.NonComboVerbInfo): T.PassiveRootsStems | undefined {
+    if (info.transitivity !== "transitive") return undefined;
+    return {
+        stem: getPassiveStem(info.root),
+        root: getPassiveRoot(info.root),
+        participle: {
+            past: getPassivePastParticiple(info.root.imperfective),
+        },
+    };
+}
+
+function getPassiveStem(root: T.VerbRootSet): T.VerbStemSet {
+    return {
+        perfective: getPassiveStemAspect(root.perfective, "perfective"),
+        imperfective: getPassiveStemAspect(root.imperfective, "imperfective"),
+    };
+}
+
+function getPassiveRoot(root: T.VerbRootSet): T.VerbRootSet {
+    return {
+        perfective: getPassiveRootAspect(root.perfective, "perfective"),
+        imperfective: getPassiveRootAspect(root.imperfective, "imperfective"),
+    };
+}
+
+function getPassivePastParticiple(root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
+    if ("mascSing" in root) {
+        return {
+            "mascSing": getPassivePastParticiple(root.mascSing) as T.LengthOptions<T.PsString>,
+            "mascPlur": getPassivePastParticiple(root.mascPlur) as T.LengthOptions<T.PsString>,
+            "femSing": getPassivePastParticiple(root.femPlur) as T.LengthOptions<T.PsString>,
+            "femPlur": getPassivePastParticiple(root.femPlur) as T.LengthOptions<T.PsString>,
+        };
+    }
+    // @ts-ignore
+    return concatPsString(getLong(root), " ", stativeAux.intransitive.info.participle.past) as T.PsString;
+}
+
+function getPassiveStemAspect(root: T.FullForm<T.PsString>, aspect: T.Aspect): T.FullForm<T.PsString> {
+    if ("mascSing" in root) {
+        return {
+            "mascSing": getPassiveStemAspect(root.mascSing, aspect) as T.PsString,
+            "mascPlur": getPassiveStemAspect(root.mascPlur, aspect) as T.PsString,
+            "femSing": getPassiveStemAspect(root.femPlur, aspect) as T.PsString,
+            "femPlur": getPassiveStemAspect(root.femPlur, aspect) as T.PsString,
+        };
+    }
+    return concatPsString(getLong(root), " ", stativeAux.intransitive.info.stem[aspect]);
+}
+
+function getPassiveRootAspect(root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>, aspect: T.Aspect): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
+    if ("mascSing" in root) {
+        return {
+            "mascSing": getPassiveRootAspect(root.mascSing, aspect) as T.LengthOptions<T.PsString>,
+            "mascPlur": getPassiveRootAspect(root.mascPlur, aspect) as T.LengthOptions<T.PsString>,
+            "femPlur": getPassiveRootAspect(root.femPlur, aspect) as T.LengthOptions<T.PsString>,
+            "femSing": getPassiveRootAspect(root.femPlur, aspect) as T.LengthOptions<T.PsString>,
+        };
+    }
+    return {
+        // @ts-ignore
+        long: concatPsString(root.long, " ", stativeAux.intransitive.info.root[aspect].long),
+        // @ts-ignore
+        short: concatPsString(root.long, " ", stativeAux.intransitive.info.root[aspect].short),
+    }
 }

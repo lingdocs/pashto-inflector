@@ -41,7 +41,7 @@ const title: CSSProperties = {
 
 export function RootsAndStems({ textOptions, info, hidePastParticiple, highlighted }: {
     textOptions: T.TextOptions,
-    info: T.NonComboVerbInfo,
+    info: T.NonComboVerbInfo | T.PassiveRootsStems,
     hidePastParticiple?: boolean,
     highlighted?: T.RootsOrStemsToHighlight,
 }) {
@@ -62,7 +62,7 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
             {showPersInf && <PersonInfsPicker
                 persInf={persInf}
                 handleChange={(p) => setPersInf(p)}
-                transitivity={info.transitivity}
+                transitivity={"transitivity" in info ? info.transitivity : "intransitive"}
             />}
             <div className="verb-info" style={{
                 textAlign: "center",
