@@ -20,7 +20,7 @@ import APPicker from "../ap-picker/APPicker";
 import autoAnimate from "@formkit/auto-animate";
 import { getObjectSelection, getSubjectSelection, isNoObject } from "../../lib/phrase-building/blocks-utils";
 
-const phraseURLParam = "VPPhrase";
+const phraseURLParam = "VPhrase";
 
 // TODO: Issue with dynamic compounds english making with plurals
 // TODO: Issue with "the money were taken"
@@ -55,7 +55,7 @@ function VPExplorer(props: {
         },
         "verbExplorerMode2",
     );
-    const [showShareClipped, setShowShareClipped] = useState<boolean>(false);
+    const [showClipped, setShowClipped] = useState<string>("");
     const [alert, setAlert] = useState<string | undefined>(undefined);
     const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
     const parent = useRef<HTMLDivElement>(null);
@@ -121,14 +121,22 @@ function VPExplorer(props: {
             payload: form,
         });
     }
+    function flashClippedMessage(m: string) {
+        setShowClipped(m);
+        setTimeout(() => {
+            setShowClipped("");
+        }, 1250);
+    }
     // for some crazy reason I can't get the URI share thing to encode and decode properly
     function handleCopyShareLink() {
         const shareUrl = getShareUrl(vps);
         navigator.clipboard.writeText(shareUrl);
-        setShowShareClipped(true);
-        setTimeout(() => {
-            setShowShareClipped(false);
-        }, 1250);
+        flashClippedMessage("Copied phrase URL to clipboard");
+    }
+    function handleCopyCode() {
+        const code = getCode(vps);
+        navigator.clipboard.writeText(code);
+        flashClippedMessage("Copied phrase code to clipboard");
     }
     const object = getObjectSelection(vps.blocks).selection;
     const subject = getSubjectSelection(vps.blocks).selection;
@@ -160,12 +168,21 @@ function VPExplorer(props: {
                 ]}
                 handleChange={setMode}
             />
-            <div
-                className="clickable"
-                onClick={mode === "phrases" ? handleCopyShareLink : undefined}
-                style={{ width: "1rem" }}
-            >
-                {mode === "phrases" ? <i className="fas fa-share-alt" /> : ""}
+            <div className="d-flex flex-row">
+                <div
+                    className="clickable mr-4"
+                    onClick={mode === "phrases" ? handleCopyCode : undefined}
+                    style={{ width: "1rem" }}
+                >
+                    {(mode === "phrases" && phraseIsComplete) ? <i className="fas fa-code" /> : ""}
+                </div>
+                <div
+                    className="clickable"
+                    onClick={mode === "phrases" ? handleCopyShareLink : undefined}
+                    style={{ width: "1rem" }}
+                >
+                    {mode === "phrases" ? <i className="fas fa-share-alt" /> : ""}
+                </div>
             </div>
         </div>
         {(vps.verb && (typeof object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
@@ -288,14 +305,14 @@ function VPExplorer(props: {
             showing={showingExplanation}
             setShowing={setShowingExplanation}
         />
-        {showShareClipped && <div className="alert alert-primary text-center" role="alert" style={{
+        {showClipped && <div className="alert alert-primary text-center" role="alert" style={{
             position: "fixed",
             top: "30%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             zIndex: 9999999999999,
         }}>
-            Phrase URL copied to clipboard
+            {showClipped}
         </div>}
         {alert && <div className="alert alert-warning text-center" role="alert" style={{
             position: "fixed",
@@ -312,14 +329,18 @@ function VPExplorer(props: {
 export default VPExplorer;
 
 function getShareUrl(vps: T.VPSelectionState): string {
-    const stringJSON = JSON.stringify(vps);
-    const encoded = LZString.compressToEncodedURIComponent(stringJSON);
+    const code = getCode(vps);
+    const encoded = LZString.compressToEncodedURIComponent(code);
     const url = new URL(window.location.href);
     // need to delete or else you could just get a second param written after
     // which gets ignored
     url.searchParams.delete(phraseURLParam);
     url.searchParams.append(phraseURLParam, encoded);
     return url.toString();
+}
+
+function getCode(vps: T.VPSelectionState): string {
+    return JSON.stringify(vps);
 }
 
 function getVPSFromUrl(): T.VPSelectionState | undefined {

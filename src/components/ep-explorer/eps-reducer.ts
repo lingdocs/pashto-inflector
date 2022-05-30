@@ -42,7 +42,10 @@ type EpsReducerAction = {
         index: number,
         direction: "back" | "forward",
     },
-};
+} | {
+    type: "load EPS",
+    payload: T.EPSelectionState,
+}
 
 export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAction, sendAlert?: (msg: string) => void): T.EPSelectionState {
     if (action.type === "set predicate type") {
@@ -172,6 +175,9 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
             ...eps,
             blocks: shiftBlock(eps.blocks, index, direction),
         };
+    }
+    if (action.type === "load EPS") {
+        return action.payload;
     }
     throw new Error("unknown epsReducer action");
 }
