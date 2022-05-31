@@ -968,25 +968,82 @@ function makeDynamicPerfectiveSplit(comp: T.PsString, auxSplit: T.SplitInfo): T.
 export function getPassiveRootsAndStems(info: T.NonComboVerbInfo): T.PassiveRootsStems | undefined {
     if (info.transitivity !== "transitive") return undefined;
     return {
-        stem: getPassiveStem(info.root),
-        root: getPassiveRoot(info.root),
+        stem: getPassiveStem(info.root, info.root.perfectiveSplit),
+        root: getPassiveRoot(info.root, info.root.perfectiveSplit),
         participle: {
             past: getPassivePastParticiple(info.root.imperfective),
         },
     };
 }
 
-function getPassiveStem(root: T.VerbRootSet): T.VerbStemSet {
+function getPassiveStem(root: T.VerbRootSet, splitInfo: T.SplitInfo | undefined): T.VerbStemSet {
     return {
         perfective: getPassiveStemAspect(root.perfective, "perfective"),
         imperfective: getPassiveStemAspect(root.imperfective, "imperfective"),
+        ...splitInfo ? {
+            perfectiveSplit: getPassiveStemPerfectiveSplit(root.perfective, splitInfo),
+        } : {},
     };
 }
 
-function getPassiveRoot(root: T.VerbRootSet): T.VerbRootSet {
+function getPassiveStemPerfectiveSplit(stem: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>, splitInfo: T.SplitInfo): T.SplitInfo {
+    const si = "long" in splitInfo ? splitInfo.long : splitInfo;
+    if ("mascSing" in si) {
+        if (!("mascSing" in stem)) throw new Error("persInflections doesn't match perfective split");
+        return {
+            "mascSing": getPassiveStemPerfectiveSplit(stem.mascSing, si.mascSing) as [T.PsString, T.PsString],
+            "mascPlur": getPassiveStemPerfectiveSplit(stem.mascPlur, si.mascPlur) as [T.PsString, T.PsString],
+            "femSing": getPassiveStemPerfectiveSplit(stem.femSing, si.femSing) as [T.PsString, T.PsString],
+            "femPlur": getPassiveStemPerfectiveSplit(stem.femPlur, si.femPlur) as [T.PsString, T.PsString],
+        }
+    }
+    return [
+        si[0],
+        // @ts-ignore
+        concatPsString(si[1], " ", stativeAux.intransitive.info.stem.perfective),
+    ];
+}
+
+function getPassiveRootPerfectiveSplit(root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>, splitInfo: T.SplitInfo): T.SplitInfo {
+    const si = "long" in splitInfo ? splitInfo.long : splitInfo;
+    // if ("long" in splitInfo) {
+    //     return {
+    //         // @ts-ignore
+    //         short: getPassiveRootPerfectiveSplit(root, splitInfo.long, "short"),
+    //         // @ts-ignore
+    //         long: getPassiveRootPerfectiveSplit(root, splitInfo.long, "long"),
+    //     };
+    // }
+    if ("mascSing" in si) {
+        if (!("mascSing" in root)) throw new Error("persInflections doesn't match perfective split");
+        return {
+            "mascSing": getPassiveRootPerfectiveSplit(root.mascSing, si.mascSing) as [T.PsString, T.PsString],
+            "mascPlur": getPassiveRootPerfectiveSplit(root.mascPlur, si.mascPlur) as [T.PsString, T.PsString],
+            "femSing": getPassiveRootPerfectiveSplit(root.femSing, si.femSing) as [T.PsString, T.PsString],
+            "femPlur": getPassiveRootPerfectiveSplit(root.femPlur, si.femPlur) as [T.PsString, T.PsString],
+        };
+    }
+    return {
+        short: [
+            si[0],
+            // @ts-ignore
+            concatPsString(si[1], " ", stativeAux.intransitive.info.root.perfective.short),
+        ],
+        long: [
+            si[0],
+            // @ts-ignore
+            concatPsString(si[1], " ", stativeAux.intransitive.info.root.perfective.long),
+        ],
+    };
+}
+
+function getPassiveRoot(root: T.VerbRootSet, splitInfo: T.SplitInfo | undefined): T.VerbRootSet {
     return {
         perfective: getPassiveRootAspect(root.perfective, "perfective"),
         imperfective: getPassiveRootAspect(root.imperfective, "imperfective"),
+        ...splitInfo ? {
+            perfectiveSplit: getPassiveRootPerfectiveSplit(root.perfective, splitInfo),
+        } : {},
     };
 }
 
