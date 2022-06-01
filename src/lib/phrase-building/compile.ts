@@ -379,7 +379,6 @@ function addSpacesBetweenSegments(segments: Segment[]): (Segment | " " | "" | T.
 }
 
 function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
-    console.log("will compile english VP");
     function insertEWords(e: string, { subject, object, APs }: { subject: string, object?: string, APs: string }): string {
         return e.replace("$SUBJ", subject).replace("$OBJ", object || "") + APs;
     }
@@ -391,7 +390,6 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
         ? ""
         : undefined;
     const engAPs = getEnglishAPs(VP.blocks);
-    console.log({ base: VP.englishBase, obj, engSubj, engObj })
     // require all English parts for making the English phrase
     return (VP.englishBase && engSubj && engObj !== undefined)
         ? VP.englishBase.map(e => insertEWords(e, {
