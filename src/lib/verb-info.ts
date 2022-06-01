@@ -966,7 +966,7 @@ function makeDynamicPerfectiveSplit(comp: T.PsString, auxSplit: T.SplitInfo): T.
 }
 
 export function getPassiveRootsAndStems(info: T.NonComboVerbInfo): T.PassiveRootsStems | undefined {
-    if (info.transitivity !== "transitive") return undefined;
+    if (info.transitivity === "intransitive") return undefined;
     return {
         stem: getPassiveStem(info.root, info.root.perfectiveSplit),
         root: getPassiveRoot(info.root, info.root.perfectiveSplit),
