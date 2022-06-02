@@ -15,7 +15,7 @@ import { EPSBlocksAreComplete, getSubjectSelection } from "./blocks-utils";
 
 export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
     const subject = getSubjectSelection(EP.blocks).selection;
-    const king = (subject.type === "pronoun")
+    const king = (subject.selection.type === "pronoun")
         ? "subject"
         : EP.predicate.type === "NP"
         ? "predicate"
@@ -27,8 +27,8 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
         ? getPersonFromNP(EP.predicate.selection)
         : getPersonFromNP(subject);
     const kingIsParticiple = king === "subject"
-        ? (subject.type === "participle")
-        : (EP.predicate.type === "NP" && EP.predicate.selection.type === "participle");
+        ? (subject.selection.type === "participle")
+        : (EP.predicate.type === "NP" && EP.predicate.selection.selection.type === "participle");
     return {
         type: "EPRendered",
         king: EP.predicate.type === "Complement" ? "subject" : "predicate",
@@ -60,11 +60,19 @@ export function getEquativeForm(tense: T.EquativeTense): { hasBa: boolean, form:
 
 function renderEPSBlocks(blocks: T.EPSBlockComplete[], king: "subject" | "predicate"): (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>)[] {
     return blocks.map(({ block }): (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>) => {
-        if (block.type === "adverb") {
-            return renderAdverbSelection(block);
-        }
-        if (block.type === "sandwich") {
-            return renderSandwich(block);
+        if (block.type === "AP") {
+            if (block.selection.type === "adverb") {
+                return {
+                    type: "AP",
+                    selection: renderAdverbSelection(block.selection),
+                };
+            }
+            // if (block.selection.type === "sandwich") {
+                return {
+                    type: "AP",
+                    selection: renderSandwich(block.selection),
+                };
+            // }
         }
         return {
             type: "subjectSelection",
@@ -98,26 +106,35 @@ export function renderAdverbSelection(a: T.AdverbSelection): T.Rendered<T.Adverb
 }
 
 function renderEqCompSelection(s: T.EqCompSelection, person: T.Person): T.Rendered<T.EqCompSelection> {
-    if (s.type === "sandwich") {
-        return renderSandwich(s);
+    if (s.selection.type === "sandwich") {
+        return {
+            type: "EQComp",
+            selection: renderSandwich(s.selection),
+        };
     }
-    const e = getEnglishWord(s.entry);
+    const e = getEnglishWord(s.selection.entry);
     if (!e || typeof e !== "string") {
         throw new Error("error getting english for compliment");
     }
-    if (isLocativeAdverbEntry(s.entry)) {
+    if (isLocativeAdverbEntry(s.selection.entry)) {
         return {
-            type: "loc. adv.",
-            entry: s.entry,
-            ps: [psStringFromEntry(s.entry)],
-            e,
-            inflected: false,
-            person,
-            role: "none",
+            type: "EQComp",
+            selection: {
+                type: "loc. adv.",
+                entry: s.selection.entry,
+                ps: [psStringFromEntry(s.selection.entry)],
+                e,
+                inflected: false,
+                person,
+                role: "none",
+            },
         };
     }
-    if (s.type === "adjective") {
-        return renderAdjectiveSelection(s, person, false, "none")
+    if (s.selection.type === "adjective") {
+        return {
+            type: "EQComp",
+            selection: renderAdjectiveSelection(s.selection, person, false, "none"),
+        };
     }
     throw new Error("invalid EqCompSelection");
 }

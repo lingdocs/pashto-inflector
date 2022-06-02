@@ -5,15 +5,15 @@ import {
 import * as T from "../../types";
 import { concatPsString } from "../p-text-helpers";
 
-function getBaseAndAdjectives(np: T.Rendered<T.NPSelection | T.EqCompSelection | T.APSelection>): T.PsString[] {
-    if (np.type === "sandwich") {
-        return getSandwichPsBaseAndAdjectives(np);
+function getBaseAndAdjectives({ selection }: T.Rendered<T.NPSelection | T.EqCompSelection | T.APSelection>): T.PsString[] {
+    if (selection.type === "sandwich") {
+        return getSandwichPsBaseAndAdjectives(selection);
     }
-    const adjs = "adjectives" in np && np.adjectives;
+    const adjs = "adjectives" in selection && selection.adjectives;
     if (!adjs) {
-        return np.ps;
+        return selection.ps;
     }
-    return np.ps.map(p => (
+    return selection.ps.map(p => (
         concatPsString(
             adjs.reduce((accum, curr) => (
                 // TODO: with variations of adjs?
@@ -27,10 +27,10 @@ function getBaseAndAdjectives(np: T.Rendered<T.NPSelection | T.EqCompSelection |
 
 function getSandwichPsBaseAndAdjectives(s: T.Rendered<T.SandwichSelection<T.Sandwich>>): T.PsString[] {
     const insideBase = getBaseAndAdjectives(s.inside);
-    const willContractWithPronoun = s.before && s.before.p === "د" && s.inside.type === "pronoun"
-        && (isFirstPerson(s.inside.person) || isSecondPerson(s.inside.person))
-    const contracted = (willContractWithPronoun && s.inside.type === "pronoun")
-        ? contractPronoun(s.inside)
+    const willContractWithPronoun = s.before && s.before.p === "د" && s.inside.selection.type === "pronoun"
+        && (isFirstPerson(s.inside.selection.person) || isSecondPerson(s.inside.selection.person))
+    const contracted = (willContractWithPronoun && s.inside.selection.type === "pronoun")
+        ? contractPronoun(s.inside.selection)
         : undefined
     return insideBase.map((inside) => (
         concatPsString(
@@ -52,54 +52,63 @@ function contractPronoun(n: T.Rendered<T.PronounSelection>): T.PsString | undefi
 }
 
 function trimOffShrunkenPossesive(p: T.Rendered<T.NPSelection>): T.Rendered<T.NPSelection> {
-    if (!("possesor" in p)) {
+    if (!("possesor" in p.selection)) {
         return p;
     }
-    if (!p.possesor) {
+    if (!p.selection.possesor) {
         return p;
     }
-    if (p.possesor.shrunken) {
+    if (p.selection.possesor.shrunken) {
         return {
-            ...p,
-            possesor: undefined,
+            type: "NP",
+            selection: {
+                ...p.selection,
+                possesor: undefined,
+            },
         };
     }
     return {
-        ...p,
-        possesor: {
-            ...p.possesor,
-            np: trimOffShrunkenPossesive(p.possesor.np),
-        }
-    }
+        type: "NP",
+        selection: {
+            ...p.selection,
+            possesor: {
+                ...p.selection.possesor,
+                np: trimOffShrunkenPossesive(p.selection.possesor.np),
+            },
+        },
+    };
 }
 
 export function getPashtoFromRendered(b: T.Rendered<T.NPSelection> | T.Rendered<T.EqCompSelection> | T.Rendered<T.APSelection>, subjectsPerson: false | T.Person): T.PsString[] {
     const base = getBaseAndAdjectives(b);
-    if (b.type === "loc. adv." || b.type === "adverb") {
+    if (b.selection.type === "loc. adv." || b.selection.type === "adverb") {
         return base;
     }
-    if (b.type === "adjective") {
-        if (!b.sandwich) {
+    if (b.selection.type === "adjective") {
+        if (!b.selection.sandwich) {
             return base 
         }
-        const sandwichPs = getPashtoFromRendered(b.sandwich, false);
+        const sandwichPs = getPashtoFromRendered({ type: "AP", selection: b.selection.sandwich }, false);
         return base.flatMap(p => (
             sandwichPs.flatMap(s => (
                 concatPsString(s, " ", p)
             ))
         ));
     }
-    const trimmed = b.type === "sandwich" ? {
-        ...b,
-        inside: trimOffShrunkenPossesive(b.inside),
-    } : trimOffShrunkenPossesive(b);
-    if (trimmed.type === "sandwich") {
-        return trimmed.inside.possesor
-            ? addPossesor(trimmed.inside.possesor.np, base, subjectsPerson)
+    const trimmed = b.selection.type === "sandwich" ? {
+        type: b.type,
+        selection: {
+            ...b.selection,
+            inside: trimOffShrunkenPossesive(b.selection.inside),
+        },
+    } : trimOffShrunkenPossesive({ type: "NP", selection: b.selection });
+    if (trimmed.selection.type === "sandwich") {
+        return trimmed.selection.inside.selection.possesor
+            ? addPossesor(trimmed.selection.inside.selection.possesor.np, base, subjectsPerson)
             : base;
     }
-    if (trimmed.possesor) {
-        return addPossesor(trimmed.possesor.np, base, subjectsPerson);
+    if (trimmed.selection.possesor) {
+        return addPossesor(trimmed.selection.possesor.np, base, subjectsPerson);
     }
     return base;
 }
@@ -114,19 +123,19 @@ function addPossesor(owner: T.Rendered<T.NPSelection>, existing: T.PsString[], s
     }
     const wPossesor = existing.flatMap(ps => (
         getBaseAndAdjectives(owner).map(v => (
-            (owner.type === "pronoun" && subjectsPerson !== false && willBeReflexive(subjectsPerson, owner.person))
+            (owner.selection.type === "pronoun" && subjectsPerson !== false && willBeReflexive(subjectsPerson, owner.selection.person))
                 ? concatPsString({ p: "خپل", f: "khpul" }, " ", ps)
-                : (owner.type === "pronoun" && isFirstPerson(owner.person))
+                : (owner.selection.type === "pronoun" && isFirstPerson(owner.selection.person))
                 ? concatPsString({ p: "ز", f: "z" }, v, " ", ps)
-                : (owner.type === "pronoun" && isSecondPerson(owner.person))
+                : (owner.selection.type === "pronoun" && isSecondPerson(owner.selection.person))
                 ? concatPsString({ p: "س", f: "s" }, v, " ", ps)
                 : concatPsString({ p: "د", f: "du" }, " ", v, " ", ps)
         ))
     ));
-    if (!owner.possesor) {
+    if (!owner.selection.possesor) {
         return wPossesor;
     }
-    return addPossesor(owner.possesor.np, wPossesor, subjectsPerson);
+    return addPossesor(owner.selection.possesor.np, wPossesor, subjectsPerson);
 }
 
 function addArticlesAndAdjs(np: T.Rendered<T.NounSelection>): string | undefined {
@@ -156,10 +165,10 @@ function addPossesors(possesor: T.Rendered<T.NPSelection> | undefined, base: str
     }
     if (!base) return undefined;
     if (!possesor) return base;
-    if (possesor.type === "pronoun") {
+    if (possesor.selection.type === "pronoun") {
         return type === "noun"
-            ? `${pronounPossEng(possesor.person)} ${removeArticles(base)}`
-            : `(${pronounPossEng(possesor.person)}) ${removeArticles(base)} (${possesor.e})`
+            ? `${pronounPossEng(possesor.selection.person)} ${removeArticles(base)}`
+            : `(${pronounPossEng(possesor.selection.person)}) ${removeArticles(base)} (${possesor.selection.e})`
     }
     const possesorE = getEnglishFromRendered(possesor);
     if (!possesorE) return undefined;
@@ -191,23 +200,23 @@ function pronounPossEng(p: T.Person): string {
 }
 
 export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSelection | T.APSelection>): string | undefined {
-    if (r.type === "sandwich") {
-        return getEnglishFromRenderedSandwich(r);
+    if (r.selection.type === "sandwich") {
+        return getEnglishFromRenderedSandwich(r.selection);
     }
-    if (!r.e) return undefined;
-    if (r.type === "loc. adv." || r.type === "adverb") {
-        return r.e;
+    if (!r.selection.e) return undefined;
+    if (r.selection.type === "loc. adv." || r.selection.type === "adverb") {
+        return r.selection.e;
     }
-    if (r.type === "adjective") {
-        return getEnglishFromRenderedAdjective(r);
+    if (r.selection.type === "adjective") {
+        return getEnglishFromRenderedAdjective(r.selection);
     }
-    if (r.type === "pronoun") {
-        return r.e;
+    if (r.selection.type === "pronoun") {
+        return r.selection.e;
     }
-    if (r.type === "participle") {
-        return addPossesors(r.possesor?.np, r.e, r.type);
+    if (r.selection.type === "participle") {
+        return addPossesors(r.selection.possesor?.np, r.selection.e, r.selection.type);
     }
-    return addPossesors(r.possesor?.np, addArticlesAndAdjs(r), r.type);
+    return addPossesors(r.selection.possesor?.np, addArticlesAndAdjs(r.selection), r.selection.type);
 }
 
 function getEnglishFromRenderedSandwich(r: T.Rendered<T.SandwichSelection<T.Sandwich>>): string | undefined {

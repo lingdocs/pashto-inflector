@@ -25,14 +25,23 @@ export function renderNPSelection(NP: T.NPSelection | T.ObjectNP, inflected: boo
         }
         return NP;
     }
-    if (NP.type === "noun") {
-        return renderNounSelection(NP, inflected, soRole);
+    if (NP.selection.type === "noun") {
+        return {
+            type: "NP",
+            selection: renderNounSelection(NP.selection, inflected, soRole),
+        };
     }
-    if (NP.type === "pronoun") {
-        return renderPronounSelection(NP, inflected, inflectEnglish, soRole);
+    if (NP.selection.type === "pronoun") {
+        return {
+            type: "NP",
+            selection: renderPronounSelection(NP.selection, inflected, inflectEnglish, soRole),
+        };
     }
-    if (NP.type === "participle") {
-        return renderParticipleSelection(NP, inflected, soRole)
+    if (NP.selection.type === "participle") {
+        return {
+            type: "NP",
+            selection: renderParticipleSelection(NP.selection, inflected, soRole),
+        };
     }
     throw new Error("unknown NP type");
 };
@@ -91,10 +100,10 @@ function renderParticipleSelection(p: T.ParticipleSelection, inflected: boolean,
 
 function renderPossesor(possesor: T.PossesorSelection | undefined, possesorRole: "servant" | "king" | "none" | "subj/obj"): T.RenderedPossesorSelection | undefined {
     if (!possesor) return undefined;
-    const isSingUnisexAnim5PatternNoun = (possesor.np.type === "noun"
-        && possesor.np.number === "singular"
-        && isAnimNounEntry(possesor.np.entry)
-        && isPattern5Entry(possesor.np.entry)
+    const isSingUnisexAnim5PatternNoun = (possesor.np.selection.type === "noun"
+        && possesor.np.selection.number === "singular"
+        && isAnimNounEntry(possesor.np.selection.entry)
+        && isPattern5Entry(possesor.np.selection.entry)
     );
     return {
         shrunken: possesor.shrunken,

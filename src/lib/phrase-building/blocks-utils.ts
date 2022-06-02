@@ -56,23 +56,59 @@ export function makeAPBlock(): { key: number, block: undefined } {
     };
 }
 
-export function makeSubjectSelection(selection: T.SubjectSelection | T.NPSelection | undefined): T.SubjectSelection {
-    if (selection?.type === "subjectSelection") {
+export function makeSubjectSelection(selection: T.SubjectSelection | T.NPSelection | T.NPSelection["selection"] | undefined): T.SubjectSelection {
+    if (!selection) {
+        return {
+            type: "subjectSelection",
+            selection: undefined,
+        };
+    }
+    if (selection.type === "subjectSelection") {
         return selection;
+    }
+    if (selection.type === "NP") {
+        return {
+            type: "subjectSelection",
+            selection,
+        };
     }
     return {
         type: "subjectSelection",
-        selection,
+        selection: {
+            type: "NP",
+            selection,
+        }
     };
 }
 
-export function makeObjectSelection(selection: T.ObjectSelection | T.ObjectNP | T.NPSelection | undefined): T.ObjectSelection {
-    if (selection && typeof selection === "object" && selection.type === "objectSelection") {
+export function makeObjectSelection(selection: T.ObjectSelection | T.ObjectNP | T.NPSelection | T.NPSelection["selection"] | undefined): T.ObjectSelection {
+    if (!selection) {
+        return {
+            type: "objectSelection",
+            selection: undefined,
+        }
+    }
+    if (typeof selection !== "object") {
+        return {
+            type: "objectSelection",
+            selection,
+        };
+    }
+    if (selection.type === "objectSelection") {
         return selection;
+    }
+    if (selection.type === "NP") {
+        return {
+            type: "objectSelection",
+            selection,
+        };
     }
     return {
         type: "objectSelection",
-        selection: selection,
+        selection: {
+            type: "NP",
+            selection,
+        },
     };
 }
 

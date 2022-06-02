@@ -44,7 +44,7 @@ function VPExplorer(props: {
         props.loaded
             ? props.loaded
             : savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState12",
+        "vpsState14",
         flashMessage,    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
@@ -217,7 +217,7 @@ function VPExplorer(props: {
                                 <i className="fas fa-chevron-right" />
                             </div> : <div/>}
                         </div>
-                        {(!block || block.type === "adverb" || block.type === "sandwich")
+                        {(!block || block.type === "AP")
                             ? <APPicker
                                 phraseIsComplete={phraseIsComplete}
                                 heading="AP"

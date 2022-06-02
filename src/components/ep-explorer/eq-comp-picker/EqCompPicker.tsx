@@ -15,11 +15,11 @@ function EqCompPicker(props: {
     entryFeeder: T.EntryFeeder,
 }) {
     const [compType, setCompType] = useState<T.EqCompType | undefined>(props.comp
-        ? props.comp.type
+        ? props.comp.selection.type
         : undefined);
     useEffect(() => {
         setCompType(props.comp
-            ? props.comp.type
+            ? props.comp.selection.type
             : undefined);
     }, [props.comp]);
     function handleClear() {
@@ -68,23 +68,23 @@ function EqCompPicker(props: {
             {compType === "adjective" ? 
                 <AdjectivePicker
                     entryFeeder={props.entryFeeder}
-                    adjective={props.comp?.type === "adjective" ? props.comp : undefined}
+                    adjective={props.comp?.selection.type === "adjective" ? props.comp.selection : undefined}
                     opts={props.opts}
-                    onChange={props.onChange}
+                    onChange={(a) => props.onChange(a ? { type: "EQComp", selection: a } : undefined)}
                     phraseIsComplete={props.phraseIsComplete}
                 />
             : compType === "loc. adv."
             ? <LocativeAdverbPicker
                 entryFeeder={props.entryFeeder.locativeAdverbs}
-                adjective={props.comp?.type === "loc. adv." ? props.comp : undefined}
+                adjective={props.comp?.selection.type === "loc. adv." ? props.comp.selection : undefined}
                 opts={props.opts}
-                onChange={props.onChange}
+                onChange={(a) => props.onChange(a ? { type: "EQComp", selection: a } : undefined)}
             />
             : compType === "sandwich"
             ? <SandwichPicker
-                onChange={props.onChange}
+                onChange={(a) => props.onChange(a ? { type: "EQComp", selection: a } : undefined)}
                 opts={props.opts}
-                sandwich={props.comp?.type === "sandwich" ? props.comp : undefined}
+                sandwich={props.comp?.selection.type === "sandwich" ? props.comp.selection : undefined}
                 entryFeeder={props.entryFeeder}
                 onExit={handleSandwichExit}
                 // TODO: get phraseIsComplete working here

@@ -610,9 +610,15 @@ export type VerbObject =
     // or intransitive "none"
     ObjectNP;
 
-export type NPSelection = NounSelection | PronounSelection | ParticipleSelection;
+export type NPSelection = {
+    type: "NP",
+    selection: NounSelection | PronounSelection | ParticipleSelection,
+};
 
-export type APSelection = AdverbSelection | SandwichSelection<Sandwich>;
+export type APSelection = {
+    type: "AP",
+    selection: AdverbSelection | SandwichSelection<Sandwich>,
+};
 
 export type NPType = "noun" | "pronoun" | "participle";
 
@@ -679,7 +685,35 @@ export type RenderedPossesorSelection = {
     shrunken: boolean,
 };
 
-export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelection | SandwichSelection<Sandwich> | APSelection | SubjectSelectionComplete | ObjectSelectionComplete> = T extends SandwichSelection<Sandwich> 
+export type Rendered<
+    T extends
+        | NPSelection
+        | NPSelection["selection"]
+        | APSelection
+        | APSelection["selection"]
+        | EqCompSelection
+        | EqCompSelection["selection"]
+        | SubjectSelectionComplete
+        | ObjectSelectionComplete
+        | AdjectiveSelection
+        | SandwichSelection<Sandwich> 
+> =
+    T extends NPSelection
+    ? {
+        type: "NP",
+        selection: Rendered<NPSelection["selection"]> 
+    }
+    : T extends APSelection
+    ? {
+        type: "AP",
+        selection: Rendered<APSelection["selection"]>
+    }
+    : T extends EqCompSelection
+    ? {
+        type: "EQComp",
+        selection: Rendered<EqCompSelection["selection"]>
+    }
+    : T extends SandwichSelection<Sandwich> 
     ? Omit<SandwichSelection<Sandwich>, "inside"> & {
         inside: Rendered<NPSelection>,
     }
@@ -727,7 +761,6 @@ export type Rendered<T extends NPSelection | EqCompSelection | AdjectiveSelectio
             np: Rendered<NPSelection>,
         },
     };
-// TODO: recursive changing this down into the possesor etc.
 
 export type EPSelectionState = {
     blocks: EPSBlock[],
@@ -772,7 +805,10 @@ export type EPSelectionComplete = Omit<EPSelectionState, "predicate" | "blocks">
 };
 
 export type EqCompType = "adjective" | "loc. adv." | "sandwich"
-export type EqCompSelection = AdjectiveSelection | LocativeAdverbSelection | SandwichSelection<Sandwich>;
+export type EqCompSelection = {
+    type: "EQComp",
+    selection: AdjectiveSelection | LocativeAdverbSelection | SandwichSelection<Sandwich>,
+};
 
 export type SandwichSelection<S extends Sandwich> = S & {
     inside: NPSelection,

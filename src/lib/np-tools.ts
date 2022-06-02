@@ -11,13 +11,13 @@ export function randomPerson(a?: { prev?: T.Person, counterPart?: T.VerbObject |
     if (!a) {
         return getRandPers();
     }
-    if (a.counterPart !== undefined && typeof a.counterPart === "object" && a.counterPart.type === "pronoun") {
+    if (a.counterPart !== undefined && typeof a.counterPart === "object" && a.counterPart.selection.type === "pronoun") {
         // with counterpart pronoun
         let newP = 0;
         do {
             newP = getRandPers();
         } while (
-            isInvalidSubjObjCombo(a.counterPart.person, newP)
+            isInvalidSubjObjCombo(a.counterPart.selection.person, newP)
             ||
             (newP === a.prev)
         );

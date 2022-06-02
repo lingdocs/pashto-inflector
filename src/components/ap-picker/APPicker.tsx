@@ -16,11 +16,11 @@ function APPicker(props: {
     onRemove: () => void,
 }) {
     const [type, setType] = useState<APType | undefined>(props.AP
-        ? props.AP.type
+        ? props.AP.selection.type
         : undefined);
     useEffect(() => {
         setType(props.AP
-            ? props.AP.type
+            ? props.AP.selection.type
             : undefined);
     }, [props.AP]);
     function handleClear() {
@@ -73,15 +73,15 @@ function APPicker(props: {
             {type === "adverb" ? 
                 <AdverbPicker
                     entryFeeder={props.entryFeeder.adverbs}
-                    adjective={props.AP?.type === "adverb" ? props.AP : undefined}
+                    adjective={props.AP?.selection.type === "adverb" ? props.AP.selection : undefined}
                     opts={props.opts}
-                    onChange={props.onChange}
+                    onChange={(a) => props.onChange(a ? { type: "AP", selection: a } : undefined)}
                 />
             : type === "sandwich" ?
                 <SandwichPicker
-                    onChange={props.onChange}
+                    onChange={(a) => props.onChange(a ? { type: "AP", selection: a } : undefined)}
                     opts={props.opts}
-                    sandwich={props.AP?.type === "sandwich" ? props.AP : undefined}
+                    sandwich={props.AP?.selection.type === "sandwich" ? props.AP.selection : undefined}
                     entryFeeder={props.entryFeeder}
                     phraseIsComplete={props.phraseIsComplete}
                     onExit={handleSandwichExit}

@@ -3,9 +3,9 @@ import { isPattern1Entry, isPattern5Entry, isAnimNounEntry } from "../type-predi
 import { renderNPSelection } from "./render-np";
 
 export function renderSandwich(s: T.SandwichSelection<T.Sandwich>): T.Rendered<T.SandwichSelection<T.Sandwich>> {
-    const inflectInside = (isLocationSandwich(s) && s.inside.type === "noun" && isPattern1Entry(s.inside.entry) &&  s.inside.number === "singular")
+    const inflectInside = (isLocationSandwich(s) && s.inside.selection.type === "noun" && isPattern1Entry(s.inside.selection.entry) &&  s.inside.selection.number === "singular")
         ? false
-        : (s.inside.type === "noun" && isPattern5Entry(s.inside.entry) && isAnimNounEntry(s.inside.entry))
+        : (s.inside.selection.type === "noun" && isPattern5Entry(s.inside.selection.entry) && isAnimNounEntry(s.inside.selection.entry))
         ? false
         : true;
     return {

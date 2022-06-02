@@ -261,8 +261,8 @@ export function getKingAndServant(isPast: boolean, isTransitive: boolean):
 
 function isFirstOrSecondPersPronoun(o: "none" | T.NPSelection | T.Person.ThirdPlurMale): boolean {
     if (typeof o !== "object") return false;
-    if (o.type !== "pronoun") return false;
-    return [0,1,2,3,6,7,8,9].includes(o.person);
+    if (o.selection.type !== "pronoun") return false;
+    return [0,1,2,3,6,7,8,9].includes(o.selection.person);
 }
 
 function isPerfective(t: T.Tense): boolean {
@@ -283,11 +283,11 @@ function isPerfective(t: T.Tense): boolean {
 }
 
 function isMascSingAnimatePattern4(np: T.NPSelection): boolean {
-    if (np.type !== "noun") {
+    if (np.selection.type !== "noun") {
         return false;
     }
-    return isPattern4Entry(np.entry)
-        && np.entry.c.includes("anim.")
-        && (np.number === "singular")
-        && (np.gender === "masc");
+    return isPattern4Entry(np.selection.entry)
+        && np.selection.entry.c.includes("anim.")
+        && (np.selection.number === "singular")
+        && (np.selection.gender === "masc");
 }

@@ -12,7 +12,7 @@ export function makeVPSelectionState(
     const info = getVerbInfo(verb.entry, verb.complement);
     const subject = (os?.verb.voice === "passive" && info.type === "dynamic compound")
         ? makeNounSelection(info.objComplement.entry as T.NounEntry, undefined, true)
-        : (os?.blocks ? getSubjectSelection(os.blocks) : undefined);
+        : (os?.blocks ? getSubjectSelection(os.blocks).selection : undefined);
     function getTransObjFromos() {
         const osObj = os ? getObjectSelection(os.blocks).selection : undefined;
         if (
@@ -20,7 +20,7 @@ export function makeVPSelectionState(
             osObj === "none" ||
             typeof osObj === "number" ||
             os.verb.isCompound === "dynamic" ||
-            (osObj?.type === "noun" && osObj.dynamicComplement)
+            (osObj?.selection.type === "noun" && osObj.selection.dynamicComplement)
         ) return undefined;
         return osObj;
     }
@@ -85,7 +85,7 @@ export function changeStatDyn(v: T.VPSelectionState, s: "dynamic" | "stative"): 
         blocks: adjustObjectSelection(
             v.blocks,
             s === "dynamic"
-                ? makeNounSelection(info.dynamic.objComplement.entry as T.NounEntry, undefined, true)
+                ? { type: "NP", selection: makeNounSelection(info.dynamic.objComplement.entry as T.NounEntry, undefined, true) }
                 : undefined,
         ),
         verb: {

@@ -125,15 +125,15 @@ export function getPersonFromNP(np: T.NPSelection | T.ObjectNP): T.Person | unde
         return undefined;
     }
     if (typeof np === "number") return np;
-    if (np.type === "participle") {
+    if (np.selection.type === "participle") {
         return T.Person.ThirdPlurMale;
     }
-    if (np.type === "pronoun") {
-        return np.person;
+    if (np.selection.type === "pronoun") {
+        return np.selection.person;
     }
-    return np.number === "plural"
-        ? (np.gender === "masc" ? T.Person.ThirdPlurMale : T.Person.ThirdPlurFemale)
-        : (np.gender === "masc" ? T.Person.ThirdSingMale : T.Person.ThirdSingFemale);
+    return np.selection.number === "plural"
+        ? (np.selection.gender === "masc" ? T.Person.ThirdPlurMale : T.Person.ThirdPlurFemale)
+        : (np.selection.gender === "masc" ? T.Person.ThirdSingMale : T.Person.ThirdSingFemale);
 }
 
 export function removeBa(ps: T.PsString): T.PsString {
@@ -258,14 +258,17 @@ export function isThirdPerson(p: T.Person): boolean {
 export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): T.VPSelectionState {
     const subject = getSubjectSelection(vps.blocks).selection;
     const object = getObjectSelection(vps.blocks).selection;
-    const subjIs2ndPerson = (subject?.type === "pronoun") && isSecondPerson(subject.person);
+    const subjIs2ndPerson = (subject?.selection.type === "pronoun") && isSecondPerson(subject.selection.person);
     const objIs2ndPerson = (typeof object === "object")
-        && (object.type === "pronoun")
-        && isSecondPerson(object.person);
-    const default2ndPersSubject: T.PronounSelection = {
-        type: "pronoun",
-        distance: "far",
-        person: T.Person.SecondSingMale,
+        && (object.selection.type === "pronoun")
+        && isSecondPerson(object.selection.person);
+    const default2ndPersSubject: T.NPSelection = {
+        type: "NP",
+        selection: {
+            type: "pronoun",
+            distance: "far",
+            person: T.Person.SecondSingMale,
+        },
     };
     function getNon2ndPersPronoun() {
         let newObjPerson: T.Person;
@@ -278,22 +281,25 @@ export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): 
         return vps;
     }
     if (subjIs2ndPerson && objIs2ndPerson)  {
-        if (typeof object !== "object" || object.type !== "pronoun") {
+        if (typeof object !== "object" || object.selection.type !== "pronoun") {
             return vps;
         }
         return {
             ...vps,
             blocks: adjustObjectSelection(vps.blocks, {
-                ...object,
-                person: getNon2ndPersPronoun(),
+                type: "NP",
+                selection: {
+                    ...object.selection,
+                    person: getNon2ndPersPronoun(),
+                },
             }),
         };
     }
     if (!subjIs2ndPerson && objIs2ndPerson) {
-        if (typeof object !== "object" || object.type !== "pronoun") {
+        if (typeof object !== "object" || object.selection.type !== "pronoun") {
             return {
                 ...vps,
-                blocks: adjustSubjectSelection(vps.blocks, default2ndPersSubject),
+                blocks: adjustSubjectSelection(vps.blocks, default2ndPersSubject)
             };
         }
         return {
@@ -301,8 +307,11 @@ export function ensure2ndPersSubjPronounAndNoConflict(vps: T.VPSelectionState): 
             blocks: adjustObjectSelection(
                 adjustSubjectSelection(vps.blocks, default2ndPersSubject),
                 {
-                    ...object,
-                    person: getNon2ndPersPronoun(),
+                    type: "NP",
+                    selection: {
+                        ...object.selection,
+                        person: getNon2ndPersPronoun(),
+                    },
                 },
             ),
         };

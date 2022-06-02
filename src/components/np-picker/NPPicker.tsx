@@ -25,19 +25,19 @@ function NPPicker(props: {
     phraseIsComplete: boolean,
     isShrunk?: boolean,
 }) {
-    if (props.is2ndPersonPicker && ((props.np?.type !== "pronoun") || !isSecondPerson(props.np.person))) {
+    if (props.is2ndPersonPicker && ((props.np?.selection.type !== "pronoun") || !isSecondPerson(props.np.selection.person))) {
         throw new Error("can't use 2ndPerson NPPicker without a pronoun");
     } 
     const [addingPoss, setAddingPoss] = useState<boolean>(false);
-    const [npType, setNpType] = useState<T.NPType | undefined>(props.np ? props.np.type : undefined);
+    const [npType, setNpType] = useState<T.NPType | undefined>(props.np ? props.np.selection.type : undefined);
     const onChange = (np: T.NPSelection | undefined) => {
         props.onChange(ensureSingleShrink(props.np, np))
     }
     useEffect(() => {
-        setNpType(props.np ? props.np.type : undefined);
+        setNpType(props.np ? props.np.selection.type : undefined);
     }, [props.np]);
     function handleClear() {
-        if (props.np && props.np.type === "noun" && props.np.dynamicComplement) return;
+        if (props.np && props.np.selection.type === "noun" && props.np.selection.dynamicComplement) return;
         setNpType(undefined);
         onChange(undefined);
     }
@@ -50,7 +50,7 @@ function NPPicker(props: {
                 distance: "far",
             };
             setNpType(ntp);
-            onChange(pronoun);
+            onChange({ type: "NP", selection: pronoun });
         } else {
             if (props.np) {
                 onChange(undefined);
@@ -60,39 +60,48 @@ function NPPicker(props: {
     }
     // TODO: REMOVE
     function handlePossesiveChange(p: T.NPSelection | undefined) {
-        if (!props.np || props.np.type === "pronoun") return;
+        if (!props.np || props.np.selection.type === "pronoun") return;
         if (!p) {
             onChange({
-                ...props.np,
-                possesor: undefined,
+                type: "NP",
+                selection: {
+                    ...props.np.selection,
+                    possesor: undefined,
+                },
             });
             return;
         }
-        const isNewPosesser = checkForNewPossesor(p, props.np.possesor);
+        const isNewPosesser = checkForNewPossesor(p, props.np.selection.possesor);
         const possesor: T.PossesorSelection = {
             np: p,
-            shrunken: (!isNewPosesser && props.np.possesor) ? props.np.possesor.shrunken : false,
+            shrunken: (!isNewPosesser && props.np.selection.possesor) ? props.np.selection.possesor.shrunken : false,
         };
         onChange({
-            ...props.np,
-            possesor,
-        });
-    }
-    function handleToggleShrunken() {
-        if (!props.np || props.np.type === "pronoun" || !props.np.possesor || !props.phraseIsComplete) return;
-        onChange({
-            ...props.np,
-            possesor: {
-                ...props.np.possesor,
-                shrunken: !props.np.possesor.shrunken,
+            type: "NP",
+            selection: {
+                ...props.np.selection,
+                possesor,
             },
         });
     }
-    const isDynamicComplement = props.np && props.np.type === "noun" && props.np.dynamicComplement;
+    function handleToggleShrunken() {
+        if (!props.np || props.np.selection.type === "pronoun" || !props.np.selection.possesor || !props.phraseIsComplete) return;
+        onChange({
+            type: "NP",
+            selection: {
+                ...props.np.selection,
+                possesor: {
+                    ...props.np.selection.possesor,
+                    shrunken: !props.np.selection.possesor.shrunken,
+                },
+            },
+        });
+    }
+    const isDynamicComplement = props.np && props.np.selection.type === "noun" && props.np.selection.dynamicComplement;
     const clearButton = (!props.cantClear && !props.is2ndPersonPicker && !isDynamicComplement) 
         ? <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>X</button>
         : <div></div>;
-    const possesiveLabel = props.np?.type === "participle" ? "Subj/Obj" : "Possesor";
+    const possesiveLabel = props.np?.selection.type === "participle" ? "Subj/Obj" : "Possesor";
     return <>
         <div className="d-flex flex-row justify-content-between">
             <div></div>
@@ -121,15 +130,15 @@ function NPPicker(props: {
                     </button>
             </div>)}
         </div>}
-        {(props.np && props.np.type !== "pronoun" && (props.np.possesor || addingPoss)) && <div className="mb-3" style={{
+        {(props.np && props.np.selection.type !== "pronoun" && (props.np.selection.possesor || addingPoss)) && <div className="mb-3" style={{
             paddingLeft: "0.65rem",
             borderLeft: "2px solid grey",
-            background: (props.np.possesor?.shrunken && !props.isShrunk) ? shrunkenBackground : "inherit",    
+            background: (props.np.selection.possesor?.shrunken && !props.isShrunk) ? shrunkenBackground : "inherit",    
         }}>
             <div className="d-flex flex-row text-muted mb-2">
                 <div>{possesiveLabel}:</div>
-                {(props.np.possesor && !props.isShrunk && props.phraseIsComplete) && <div className="clickable ml-3 mr-2" onClick={handleToggleShrunken}>
-                    {!props.np.possesor.shrunken ? "🪄" : "👶"}
+                {(props.np.selection.possesor && !props.isShrunk && props.phraseIsComplete) && <div className="clickable ml-3 mr-2" onClick={handleToggleShrunken}>
+                    {!props.np.selection.possesor.shrunken ? "🪄" : "👶"}
                 </div>}
                 <div className="clickable ml-2" onClick={() => {
                     setAddingPoss(false);
@@ -143,7 +152,7 @@ function NPPicker(props: {
                 onChange={handlePossesiveChange}
                 counterPart={undefined}
                 cantClear
-                np={props.np.possesor ? props.np.possesor.np : undefined}
+                np={props.np.selection.possesor ? props.np.selection.possesor.np : undefined}
                 role="possesor"
                 opts={props.opts}
                 entryFeeder={props.entryFeeder}
@@ -152,11 +161,11 @@ function NPPicker(props: {
         {(npType === "noun" || npType === "participle") && props.np && !addingPoss && <div>
             <span className="clickable text-muted" onClick={() => setAddingPoss(true)}>+ {possesiveLabel}</span>
         </div>}
-        {(npType === "pronoun" && props.np?.type === "pronoun")
+        {(npType === "pronoun" && props.np?.selection.type === "pronoun")
             ? <PronounPicker
                 role={props.role}
-                pronoun={props.np}
-                onChange={onChange}
+                pronoun={props.np.selection}
+                onChange={(p) => onChange({ type: "NP", selection: p })}
                 is2ndPersonPicker={props.is2ndPersonPicker}
                 opts={props.opts}
             />
@@ -164,15 +173,15 @@ function NPPicker(props: {
             ? <NounPicker
                 phraseIsComplete={props.phraseIsComplete}
                 entryFeeder={props.entryFeeder}
-                noun={(props.np && props.np.type === "noun") ? props.np : undefined}
-                onChange={onChange}
+                noun={(props.np && props.np.selection.type === "noun") ? props.np.selection : undefined}
+                onChange={(s) => onChange(s ? { type: "NP", selection: s } : undefined)}
                 opts={props.opts}
             />
             : npType === "participle"
             ? <ParticiplePicker
                 entryFeeder={props.entryFeeder.verbs}
-                participle={(props.np && props.np.type === "participle") ? props.np : undefined}
-                onChange={onChange}
+                participle={(props.np && props.np.selection.type === "participle") ? props.np.selection : undefined}
+                onChange={(s) => onChange(s ? { type: "NP", selection: s } : undefined)}
                 opts={props.opts}
             />
             : null
@@ -184,44 +193,53 @@ function NPPicker(props: {
 function ensureSingleShrink(old: T.NPSelection | undefined, s: T.NPSelection | undefined): T.NPSelection | undefined {
     if (!s) return s;
     function countShrinks(np: T.NPSelection): number {
-        if (np.type === "pronoun") return 0;
-        if (!np.possesor) return 0;
-        return (np.possesor.shrunken ? 1 : 0) + countShrinks(np.possesor.np);
+        if (np.selection.type === "pronoun") return 0;
+        if (!np.selection.possesor) return 0;
+        return (np.selection.possesor.shrunken ? 1 : 0) + countShrinks(np.selection.possesor.np);
     }
     function keepNewShrink(old: T.NPSelection, n: T.NPSelection): T.NPSelection {
-        if (n.type === "pronoun") return n;
-        if (old.type === "pronoun" || !n.possesor || !old.possesor) return n;
-        if (n.possesor.shrunken && !old.possesor.shrunken) {
+        if (n.selection.type === "pronoun") return n;
+        if (old.selection.type === "pronoun" || !n.selection.possesor || !old.selection.possesor) return n;
+        if (n.selection.possesor.shrunken && !old.selection.possesor.shrunken) {
             return {
-                ...n,
-                possesor: {
-                    ...n.possesor,
-                    np: removeShrinks(n.possesor.np),
+                type: "NP",
+                selection: {
+                    ...n.selection,
+                    possesor: {
+                        ...n.selection.possesor,
+                        np: removeShrinks(n.selection.possesor.np),
+                    },
                 },
             };
         }
         return {
-            ...n,
-            possesor: {
-                shrunken: false,
-                np: keepNewShrink(old.possesor.np, n.possesor.np),
+            type: "NP",
+            selection:{
+                ...n.selection,
+                possesor: {
+                    shrunken: false,
+                    np: keepNewShrink(old.selection.possesor.np, n.selection.possesor.np),
+                },
             },
-        }
+        };
     }
     function removeShrinks(n: T.NPSelection): T.NPSelection {
-        if (n.type === "pronoun") return n;
-        if (!n.possesor) return n;
+        if (n.selection.type === "pronoun") return n;
+        if (!n.selection.possesor) return n;
         return {
-            ...n,
-            possesor: {
-                shrunken: false,
-                np: removeShrinks(n.possesor.np),
+            type: "NP",
+            selection: {
+                ...n.selection,
+                possesor: {
+                    shrunken: false,
+                    np: removeShrinks(n.selection.possesor.np),
+                },
             },
         };
     }
     if (!old) return s;
-    if (s.type === "pronoun") return s;
-    if (!s.possesor) return s;
+    if (s.selection.type === "pronoun") return s;
+    if (!s.selection.possesor) return s;
     const numOfShrinks = countShrinks(s);
     if (numOfShrinks < 2) return s;
     return keepNewShrink(old, s);
@@ -234,12 +252,12 @@ function checkForNewPossesor(n: T.NPSelection | undefined, old: T.PossesorSelect
     if (n.type !== old.np.type) {
         return true;
     }
-    if (n.type === "pronoun") return false;
-    if (n.type === "noun" && old.np.type === "noun") {
-        return n.entry.ts !== old.np.entry.ts;
+    if (n.selection.type === "pronoun") return false;
+    if (n.selection.type === "noun" && old.np.selection.type === "noun") {
+        return n.selection.entry.ts !== old.np.selection.entry.ts;
     }
-    if (n.type === "participle" && old.np.type === "participle") {
-        return n.verb.entry.ts !== old.np.verb.entry.ts;
+    if (n.selection.type === "participle" && old.np.selection.type === "participle") {
+        return n.selection.verb.entry.ts !== old.np.selection.verb.entry.ts;
     }
     return false;
 }

@@ -65,15 +65,15 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
                 blocks: adjustSubjectSelection(eps.blocks, subject),
             };
         }
-        if (subject.type === "pronoun" && eps.predicate.type === "NP" && eps.predicate.NP?.type === "noun" && isUnisexNounEntry(eps.predicate.NP.entry)) {
-            const predicate = eps.predicate.NP;
+        if (subject.selection.type === "pronoun" && eps.predicate.type === "NP" && eps.predicate.NP?.selection.type === "noun" && isUnisexNounEntry(eps.predicate.NP.selection.entry)) {
+            const predicate = eps.predicate.NP.selection;
             const adjusted = {
                 ...predicate,
                 ...predicate.numberCanChange ? {
-                    number: personNumber(subject.person),
+                    number: personNumber(subject.selection.person),
                 } : {},
                 ...predicate.genderCanChange ? {
-                    gender: personGender(subject.person),
+                    gender: personGender(subject.selection.person),
                 } : {},
             }
             return {
@@ -81,7 +81,10 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
                 blocks: adjustSubjectSelection(eps.blocks, subject),
                 predicate: {
                     ...eps.predicate,
-                    NP: adjusted,
+                    NP: {
+                        type: "NP",
+                        selection: adjusted,
+                    },
                 },
             };
         }
@@ -103,15 +106,18 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
             };
         }
         const subject = getSubjectSelection(eps.blocks).selection;
-        if (subject?.type === "pronoun" && selection.type === "noun" && isUnisexNounEntry(selection.entry)) {
-            const { gender, number } = selection;
-            const pronoun = subject.person;
+        if (subject?.selection.type === "pronoun" && selection.selection.type === "noun" && isUnisexNounEntry(selection.selection.entry)) {
+            const { gender, number } = selection.selection;
+            const pronoun = subject.selection.person;
             const newPronoun = movePersonNumber(movePersonGender(pronoun, gender), number);
             return {
                 ...eps,
                 blocks: adjustSubjectSelection(eps.blocks, {
-                    ...subject,
-                    person: newPronoun,
+                    type: "NP",
+                    selection: {
+                        ...subject.selection,
+                        person: newPronoun,
+                    },
                 }),
                 predicate: {
                     ...eps.predicate,

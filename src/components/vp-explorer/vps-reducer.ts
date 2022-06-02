@@ -285,8 +285,8 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
 }
 
 function hasPronounConflict(subject: T.NPSelection | undefined, object: undefined | T.VerbObject): boolean {
-    const subjPronoun = (subject && subject.type === "pronoun") ? subject : undefined;
-    const objPronoun = (object && typeof object === "object" && object.type === "pronoun") ? object : undefined; 
+    const subjPronoun = (subject && subject.selection.type === "pronoun") ? subject.selection : undefined;
+    const objPronoun = (object && typeof object === "object" && object.selection.type === "pronoun") ? object.selection : undefined; 
     if (!subjPronoun || !objPronoun) return false;
     return isInvalidSubjObjCombo(subjPronoun.person, objPronoun.person);
 }

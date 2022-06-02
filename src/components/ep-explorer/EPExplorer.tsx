@@ -38,7 +38,7 @@ function EPExplorer(props: {
     entryFeeder: T.EntryFeeder,
 }) {
     const [mode, setMode] = useStickyState<"charts" | "phrases">("charts", "EPExplorerMode");
-    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState4", flashMessage);
+    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState5", flashMessage);
     const [alert, setAlert] = useState<string | undefined>(undefined);
     const [showClipped, setShowClipped] = useState<string>("");
     const parent = useRef<HTMLDivElement>(null);
@@ -57,7 +57,7 @@ function EPExplorer(props: {
         // eslint-disable-next-line
     }, []);
     const subject = getSubjectSelection(eps.blocks).selection;
-    const king = subject?.type === "pronoun"
+    const king = subject?.selection.type === "pronoun"
         ? "subject"
         : eps.predicate.type === "Complement"
         ? "subject"

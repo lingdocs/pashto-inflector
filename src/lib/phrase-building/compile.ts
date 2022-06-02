@@ -125,7 +125,7 @@ export function getVPSegmentsAndKids(VP: T.VPRendered, form?: T.FormVersion): { 
             if (typeof block.selection !== "object") return accum;
             return [
                 ...accum,
-                makeSegment(getPashtoFromRendered(block.selection, subject.person)),
+                makeSegment(getPashtoFromRendered(block.selection, subject.selection.person)),
             ]
         }
         return [
@@ -478,8 +478,8 @@ export function findPossesivesToShrinkInVP(VP: T.VPRendered, f: {
 }): T.Rendered<T.NPSelection>[] {
     return VP.blocks.reduce((found, block) => {
         if (block.type === "subjectSelection") {
-            if (block.selection.role === "king" && f.removedKing) return found;
-            if (block.selection.role === "servant" && f.shrunkServant) return found;
+            if (block.selection.selection.role === "king" && f.removedKing) return found;
+            if (block.selection.selection.role === "servant" && f.shrunkServant) return found;
             return [
                 ...findPossesivesInNP(block.selection),
                 ...found,
@@ -487,19 +487,19 @@ export function findPossesivesToShrinkInVP(VP: T.VPRendered, f: {
         }
         if (block.type === "objectSelection") {
             if (typeof block.selection !== "object") return found;
-            if (block.selection.role === "king" && f.removedKing) return found;
-            if (block.selection.role === "servant" && f.shrunkServant) return found;
+            if (block.selection.selection.role === "king" && f.removedKing) return found;
+            if (block.selection.selection.role === "servant" && f.shrunkServant) return found;
             return [
                 ...findPossesivesInNP(block.selection),
                 ...found,
             ];
         }
-        if (block.type === "sandwich") {
-            if (block.inside.type === "pronoun") {
+        if (block.selection.type === "sandwich") {
+            if (block.selection.inside.selection.type === "pronoun") {
                 return found;
             }
             return [
-                ...findPossesivesInNP(block.inside),
+                ...findPossesivesInNP(block.selection.inside),
                 ...found,
             ];
         }
@@ -510,18 +510,18 @@ export function findPossesivesToShrinkInVP(VP: T.VPRendered, f: {
 function findPossesivesInNP(NP: T.Rendered<T.NPSelection> | T.ObjectNP | undefined): T.Rendered<T.NPSelection>[] {
     if (NP === undefined) return [];
     if (typeof NP !== "object") return [];
-    if (!NP.possesor) return [];
-    if (NP.adjectives) {
-        const { adjectives, ...rest } = NP;
+    if (!NP.selection.possesor) return [];
+    if (NP.selection.adjectives) {
+        const { adjectives, ...rest } = NP.selection;
         return [
             ...findPossesivesInAdjectives(adjectives),
-            ...findPossesivesInNP(rest),
+            ...findPossesivesInNP({ type: "NP", selection: rest }),
         ];
     }
-    if (NP.possesor.shrunken) {
-        return [NP.possesor.np];
+    if (NP.selection.possesor.shrunken) {
+        return [NP.selection.possesor.np];
     }
-    return findPossesivesInNP(NP.possesor.np);
+    return findPossesivesInNP(NP.selection.possesor.np);
 }
 
 function findPossesivesInAdjectives(a: T.Rendered<T.AdjectiveSelection>[]): T.Rendered<T.NPSelection>[] {
@@ -551,8 +551,8 @@ export function findPossesivesToShrinkInEP(EP: T.EPRendered): FoundNP[] {
                 ...found,
             ];
         }
-        if (block.type === "sandwich") {
-            const found: FoundNP[] = findPossesivesInNP(block.inside).map(np => ({ np, from: "AP" }));
+        if (block.selection.type === "sandwich") {
+            const found: FoundNP[] = findPossesivesInNP(block.selection.inside).map(np => ({ np, from: "AP" }));
             return [
                 ...accum,
                 ...found,
@@ -560,15 +560,15 @@ export function findPossesivesToShrinkInEP(EP: T.EPRendered): FoundNP[] {
         }
         return accum;
     }, [] as FoundNP[]);
-    const inPredicate: FoundNP[] = ((EP.predicate.type === "loc. adv.")
+    const inPredicate: FoundNP[] = ((EP.predicate.selection.type === "loc. adv.")
         ? []
-        : (EP.predicate.type === "adjective")
-        ? findPossesivesInAdjective(EP.predicate)
-        : EP.predicate.type === "sandwich"
-        ? findPossesivesInNP(EP.predicate.inside)
-        : EP.predicate.type === "pronoun"
+        : (EP.predicate.selection.type === "adjective")
+        ? findPossesivesInAdjective(EP.predicate.selection)
+        : EP.predicate.selection.type === "sandwich"
+        ? findPossesivesInNP(EP.predicate.selection.inside)
+        : EP.predicate.selection.type === "pronoun"
         ? []
-        : findPossesivesInNP(EP.predicate)).map(np => ({ np, from: "predicate" }));
+        : findPossesivesInNP({ type: "NP", selection: EP.predicate.selection })).map(np => ({ np, from: "predicate" }));
     return [
         ...inBlocks,
         ...inPredicate,
@@ -587,11 +587,11 @@ export function findPossesivesToShrinkInEP(EP: T.EPRendered): FoundNP[] {
 
 export function shrinkNP(np: T.Rendered<T.NPSelection>): Segment {
     function getFirstSecThird(): 1 | 2 | 3 {
-        if ([0, 1, 6, 7].includes(np.person)) return 1;
-        if ([2, 3, 8, 9].includes(np.person)) return 2;
+        if ([0, 1, 6, 7].includes(np.selection.person)) return 1;
+        if ([2, 3, 8, 9].includes(np.selection.person)) return 2;
         return 3;
     }
-    const [row, col] = getVerbBlockPosFromPerson(np.person);
+    const [row, col] = getVerbBlockPosFromPerson(np.selection.person);
     return makeSegment(pronouns.mini[row][col], ["isKid", getFirstSecThird()]);
 }
 

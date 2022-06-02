@@ -269,9 +269,9 @@ function QuizNPDisplay({ children, stage, opts }: {
             ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
             : <div className="text-centered" style={{ fontSize: "large" }}>
                     {stage === "blanks" && <div>
-                        <InlinePs opts={opts}>{children.ps[0]}</InlinePs>
+                        <InlinePs opts={opts}>{children.selection.ps[0]}</InlinePs>
                     </div>}
-                    <div>{children.e}</div>
+                    <div>{children.selection.e}</div>
             </div>}
     </div>;
 }
@@ -377,11 +377,11 @@ function getOptionFromResult(r: {
 function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
     const vpsSubj = getSubjectSelection(vps.blocks).selection;
     const vpsObj = getObjectSelection(vps.blocks).selection;
-    const oldSubj = vpsSubj?.type === "pronoun"
-        ? vpsSubj.person
+    const oldSubj = vpsSubj?.selection.type === "pronoun"
+        ? vpsSubj.selection.person
         : undefined;
-    const oldObj = (typeof vpsObj === "object" && vpsObj.type === "pronoun")
-        ? vpsObj.person
+    const oldObj = (typeof vpsObj === "object" && vpsObj.selection.type === "pronoun")
+        ? vpsObj.selection.person
         : undefined;
     const { subj, obj } = randomSubjObj(
         oldSubj === undefined
@@ -400,19 +400,25 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
         ...vps,
         blocks: adjustObjectSelection(
             adjustSubjectSelection(vps.blocks, {
-                type: "pronoun",
-                distance: "far",
-                person: subj,
+                type: "NP",
+                selection: {
+                    type: "pronoun",
+                    distance: "far",
+                    person: subj,
+                },
             }),
             (
-                (typeof vpsObj === "object" && !(vpsObj.type === "noun" && vpsObj.dynamicComplement))
+                (typeof vpsObj === "object" && !(vpsObj.selection.type === "noun" && vpsObj.selection.dynamicComplement))
                 ||
                 vpsObj === undefined
             )
                 ? {
-                    type: "pronoun",
-                    distance: "far",
-                    person: obj,
+                    type: "NP",
+                    selection: {
+                        type: "pronoun",
+                        distance: "far",
+                        person: obj,
+                    }
                 }
                 : vpsObj,
         ),
@@ -426,30 +432,40 @@ function getRandomVPSelection(mix: MixType = "both") {
         const subject = getSubjectSelection(VPS.blocks).selection;
         const object = getObjectSelection(VPS.blocks).selection;
         const verb = VPS.verb;
-        const oldSubj = (subject.type === "pronoun")
-            ? subject.person
+        const oldSubj = (subject.selection.type === "pronoun")
+            ? subject.selection.person
             : undefined;
-        const oldObj = (typeof object === "object" && object.type === "pronoun")
-            ? object.person
+        const oldObj = (typeof object === "object" && object.selection.type === "pronoun")
+            ? object.selection.person
             : undefined;
         const { subj, obj } = randomSubjObj(
             oldSubj !== undefined ? { subj: oldSubj, obj: oldObj } : undefined
         );
-        const randSubj: T.PronounSelection = subject?.type === "pronoun" ? {
-            ...subject,
-            person: subj,
-        } : {
-            type: "pronoun",
-            distance: "far",
-            person: subj,
+        const randSubj: T.NPSelection = {
+            type: "NP",
+            selection: (
+                subject?.selection.type === "pronoun" ? {
+                    ...subject.selection,
+                    person: subj,
+                } : {
+                    type: "pronoun",
+                    distance: "far",
+                    person: subj,
+                }
+            ),
         };
-        const randObj: T.PronounSelection = typeof object === "object" && object.type === "pronoun" ? {
-            ...object,
-            person: obj,
-        } : {
-            type: "pronoun",
-            distance: "far",
-            person: obj,
+        const randObj: T.NPSelection = {
+            type: "NP",
+            selection: (
+                typeof object === "object" && object.selection.type === "pronoun" ? {
+                    ...object.selection,
+                    person: obj,
+                } : {
+                    type: "pronoun",
+                    distance: "far",
+                    person: obj,
+                }
+            ),
         };
         // ensure that the verb selection is complete
         if (mix === "tenses") {
@@ -466,7 +482,7 @@ function getRandomVPSelection(mix: MixType = "both") {
             blocks: possibleShuffleArray(adjustObjectSelection(
                 adjustSubjectSelection(VPS.blocks, randSubj),
                 (
-                    (typeof object === "object" && !(object.type === "noun" && object.dynamicComplement))
+                    (typeof object === "object" && !(object.selection.type === "noun" && object.selection.dynamicComplement))
                     ||
                     object === undefined
                 )

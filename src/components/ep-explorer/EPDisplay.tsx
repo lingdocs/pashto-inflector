@@ -49,10 +49,10 @@ function EPDisplay({ eps, opts, setOmitSubject }: {
         {result.e && <div className="text-muted mt-3">
             {result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>}
-        {EP.predicate.selection.type === "participle" && <div style={{ maxWidth: "6 00px", margin: "0 auto" }} className="alert alert-warning mt-3 pt-4">
-            <p>⚠️ NOTE: This means that the subject {renderedSubject.e ? `(${renderedSubject.e})` : ""} is <strong>the action/idea</strong> of
+        {EP.predicate.selection.selection.type === "participle" && <div style={{ maxWidth: "6 00px", margin: "0 auto" }} className="alert alert-warning mt-3 pt-4">
+            <p>⚠️ NOTE: This means that the subject {renderedSubject.selection.e ? `(${renderedSubject.selection.e})` : ""} is <strong>the action/idea</strong> of
             {` `}
-            "{rendered.predicate.e ? rendered.predicate.e : "the particple"}".</p>
+            "{rendered.predicate.selection.e ? rendered.predicate.selection.e : "the particple"}".</p>
             <p>It <strong>does not</strong> mean that the subject is doing the action, which is what the transaltion sounds like in English.</p>
         </div>}
     </div>
