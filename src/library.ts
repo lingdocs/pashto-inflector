@@ -29,6 +29,7 @@ import EntrySelect from "./components/EntrySelect";
 import VerbInfo, { RootsAndStems } from "./components/verb-info/VerbInfo";
 import VPExplorer from "./components/vp-explorer/VPExplorer";
 import useStickyState from "./lib/useStickyState";
+import Block, { NPBlock, APBlock } from "./components/blocks/Block";
 import {
     makePsString,
     removeFVarients,
@@ -247,6 +248,9 @@ export {
     EntrySelect,
     NPPicker,
     APPicker,
+    NPBlock,
+    APBlock,
+    Block,
     // OTHER
     typePredicates,
     grammarUnits,

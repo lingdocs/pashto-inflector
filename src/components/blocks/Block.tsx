@@ -13,7 +13,7 @@ function Block({ opts, block }: {
     }
     if (block.type === "AP") {
         const english = getEnglishFromRendered(block);
-        return <AP opts={opts} english={english}>{block}</AP>
+        return <APBlock opts={opts} english={english}>{block}</APBlock>
     }
     if (block.type === "subjectSelection") {
         return <SubjectBlock opts={opts} np={block.selection} />
@@ -24,7 +24,7 @@ function Block({ opts, block }: {
             <div>Pred</div>
             {block.selection.type === "EQComp"
                 ? <EqCompBlock opts={opts} comp={block.selection.selection} />
-                : <NP opts={opts} english={english}>{block.selection}</NP>}
+                : <NPBlock opts={opts} english={english}>{block.selection}</NPBlock>}
         </div>
     }
     if (block.type === "nu") {
@@ -83,7 +83,7 @@ function SubjectBlock({ opts, np }: {
     const english = getEnglishFromRendered(np);
     return <div className="text-center">
         <div>Subject</div>
-        <NP opts={opts} english={english}>{np}</NP>
+        <NPBlock opts={opts} english={english}>{np}</NPBlock>
     </div>;
 }
 
@@ -154,7 +154,7 @@ function EqCompBlock({ opts, comp }: {
     </div>;
 }
 
-function AP({ opts, children, english }: {
+export function APBlock({ opts, children, english }: {
     opts: T.TextOptions,
     children: T.Rendered<T.APSelection>,
     english?: string,
@@ -211,7 +211,7 @@ function Sandwich({ opts, sandwich }: {
                 <Possesors opts={opts}>{sandwich.inside.selection.type !== "pronoun" ? sandwich.inside.selection.possesor : undefined}</Possesors>
                 <div className="mr-2 ml-1 mb-1"><strong>{sandwich.before ? sandwich.before.f : ""}</strong></div>
                 <div>
-                    <NP opts={opts} inside>{sandwich.inside}</NP>
+                    <NPBlock opts={opts} inside>{sandwich.inside}</NPBlock>
                 </div>
                 <div className="ml-2 mr-1 mb-1"><strong>{sandwich.after ? sandwich.after.f : ""}</strong></div>
             </div>
@@ -219,7 +219,7 @@ function Sandwich({ opts, sandwich }: {
     </div>;
 }
 
-function NP({ opts, children, inside, english }: {
+export function NPBlock({ opts, children, inside, english }: {
     opts: T.TextOptions,
     children: T.Rendered<T.NPSelection>,
     inside?: boolean,
@@ -268,7 +268,7 @@ function Possesors({ opts, children }: {
             <div className={classNames("d-flex", "flex-row", "align-items-center", { "text-muted": contraction })}>
                 <div className="mr-1 pb-2">du</div>
                 <div>
-                    <NP opts={opts} inside>{children.np}</NP>
+                    <NPBlock opts={opts} inside>{children.np}</NPBlock>
                 </div>
             </div>
 
