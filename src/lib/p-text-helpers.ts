@@ -984,11 +984,22 @@ export function psStringFromEntry(entry: T.PsString): T.PsString {
     };
 }
 
+export function getLength<U>(x: T.SingleOrLengthOpts<U>, length: "long" | "short"): U {
+    return ("long" in x) ? x[length] : x;
+}
+ 
 export function getLong<U>(x: T.SingleOrLengthOpts<U>): U {
     if ("long" in x) {
         return x.long;
     }
     return x;
+}
+
+export function getShort<U>(a: T.SingleOrLengthOpts<U>): U {
+    if ("long" in a) {
+        return a.short;
+    }
+    return a;
 }
 
 export function capitalizeFirstLetter(string: string) {

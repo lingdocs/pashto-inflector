@@ -1,6 +1,6 @@
 import * as T from "../../types";
 import {
-    concatPsString,
+    concatPsString, getLong,
 } from "../p-text-helpers";
 import {
     Segment,
@@ -8,7 +8,7 @@ import {
     flattenLengths,
     combineSegments,
     splitOffLeapfrogWord,
-    putKidsInKidsSection,
+    putKidsInKidsSection as oldPutKidsInKidsSection,
 } from "./segment";
 import {
     removeAccents,
@@ -25,15 +25,17 @@ import { pronouns } from "../grammar-units";
 import { completeEPSelection, renderEP } from "./render-ep";
 import { completeVPSelection } from "./vp-tools";
 import { renderVP } from "./render-vp";
-import { getRenderedObjectSelection, getRenderedSubjectSelection } from "./blocks-utils";
+import { getAPsFromBlocks, getPredicateSelectionFromBlocks, getRenderedObjectSelection, getRenderedSubjectSelection, getSubjectSelectionFromBlocks, hasEquativeWithLengths, specifyEquativeLength } from "./blocks-utils";
 
-const blank: T.PsString = {
-    p: "______",
-    f: "______",
-};
+// TODO: GET BLANKING WORKING!
+
+// const blank: T.PsString = {
+//     p: "______",
+//     f: "______",
+// };
 type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean };
 
-const kidsBlank = makeSegment({ p: "___", f: "___" }, ["isKid"]);
+// const kidsBlank = makeSegment({ p: "___", f: "___" }, ["isKid"]);
 
 export function compileVP(VP: T.VPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
 export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths: true): { ps: T.PsString[], e?: string [] };
@@ -80,7 +82,7 @@ function compilePs({ blocks, kids, verb: { head, rest }, VP }: CompilePsInput): 
     return removeDuplicates(verbWNegativeVersions.flatMap((verbSegments) => {
         // for each permutation of the possible ordering of NPs and Verb + nu
         // 1. put in kids in the kids section
-        const segments = putKidsInKidsSection([...blocks, ...verbSegments], kids);
+        const segments = oldPutKidsInKidsSection([...blocks, ...verbSegments], kids);
         // 2. space out the words properly
         const withProperSpaces = addSpacesBetweenSegments(segments);
         // 3. throw it all together into a PsString for each permutation
@@ -142,37 +144,6 @@ export function getVPSegmentsAndKids(VP: T.VPRendered, form?: T.FormVersion): { 
             ...possToShrink.map(shrinkNP),
         ]),
         blocks: blocks,
-    };
-}
-
-export function getEPSegmentsAndKids(EP: T.EPRendered, blankOut?: BlankoutOptions): { kids: Segment[], blocks: Segment[] } {
-    const possToShrink = findPossesivesToShrinkInEP(EP);
-    const blocks = EP.blocks.reduce((accum, block) => {
-        if (block.type === "subjectSelection") {
-            if (EP.omitSubject) return accum;
-            return [
-                ...accum,
-                makeSegment(getPashtoFromRendered(block.selection, false)),
-            ];
-        }
-        return [
-            ...accum,
-            makeSegment(getPashtoFromRendered(block, false)),
-        ];
-    }, [] as Segment[]);
-    const predicate = makeSegment(getPashtoFromRendered(EP.predicate, false));
-    return {
-        kids: blankOut?.kidsSection ? [kidsBlank] : orderKidsSection([
-            ...EP.equative.hasBa
-                ? (
-                    blankOut?.ba ? [kidsBlank] : [makeSegment(grammarUnits.baParticle, ["isBa", "isKid"])])
-                : [],
-            ...possToShrink.map(a => shrinkNP(a.np)),
-        ]),
-        blocks: [
-            ...blocks,
-            predicate
-        ],
     };
 }
 
@@ -292,42 +263,67 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
 export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
-    const { kids, blocks } = getEPSegmentsAndKids(EP, blankOut);
-    const equative = EP.equative.ps;
-    const psResult = compileEPPs({
-        blocks,
-        kids,
-        equative: blankOut?.equative ? [blank] : equative,
-        negative: EP.equative.negative,
-    });
+    const psResult = compileEPPs(EP.blocks, EP.kids, blankOut);
     return {
         ps: combineLengths ? flattenLengths(psResult) : psResult,
         e: compileEnglishEP(EP),
     };
 }
 
-function compileEPPs({ blocks, kids, equative, negative }: {
-    blocks: Segment[],
-    kids: Segment[],
-    equative: T.SingleOrLengthOpts<T.PsString[]>,
-    negative: boolean,
-}): T.SingleOrLengthOpts<T.PsString[]> {
-    if ("long" in equative) {
+function compileEPPs(blocks: T.Block[], kids: T.Kid[], blankOut?: BlankoutOptions): T.SingleOrLengthOpts<T.PsString[]> {
+    if (hasEquativeWithLengths(blocks)) {
         return {
-            long: compileEPPs({ blocks, kids, equative: equative.long, negative }) as T.PsString[],
-            short: compileEPPs({ blocks, kids, equative: equative.short, negative }) as T.PsString[],
+            long: compileEPPs(specifyEquativeLength(blocks, "long"), kids, blankOut) as T.PsString[],
+            short: compileEPPs(specifyEquativeLength(blocks, "short"), kids, blankOut) as T.PsString[],
         };
     }
-    const allSegments = putKidsInKidsSection([
-        ...blocks,
-        ...negative ? [
-            makeSegment({ p: "نه", f: "nú" }),
-            makeSegment(removeAccents(equative))
-        ] : [
-            makeSegment(equative),
-        ],
-    ], kids);
-    return removeDuplicates(combineSegments(allSegments, "spaces"));
+    const subjectPerson = getSubjectSelectionFromBlocks(blocks)
+        .selection.selection.person;
+    const blocksWKids = putKidsInKidsSection(blocks, kids);
+    return removeDuplicates(combineIntoText(blocksWKids, subjectPerson));
+}
+
+function combineIntoText(pieces: (T.Block | T.Kid)[], subjectPerson: T.Person): T.PsString[] {
+    const first = pieces[0];
+    const rest = pieces.slice(1);
+    const firstPs = getPsFromPiece(first, subjectPerson);
+    if (!rest.length) {
+        return firstPs;
+    }
+    return combineIntoText(rest, subjectPerson).flatMap(r => (
+            firstPs.map(fPs => concatPsString(fPs, " ", r))
+        )
+    );
+}
+
+function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsString[] {
+    if (piece.type === "ba") {
+        return [grammarUnits.baParticle];
+    }
+    if (piece.type === "mini-pronoun") {
+        return [piece.ps];
+    }
+    if (piece.type === "nu") {
+        return [{ p: "نه", f: "nú" }];
+    }
+    if (piece.type === "equative") {
+        // length will already be specified in compileEPPs - this is just for type safety
+        return getLong(piece.equative.ps);
+    }
+    if (piece.type === "subjectSelection" || piece.type === "predicateSelection") {
+        return getPashtoFromRendered(piece.selection, subjectPerson);
+    }
+    // if (piece.type === "AP") {
+        return getPashtoFromRendered(piece, subjectPerson);
+    // }
+}
+
+function getEngAPs(blocks: T.Block[]): string {
+    return getAPsFromBlocks(blocks).reduce((accum, curr) => {
+        const e = getEnglishFromRendered(curr);
+        if (!e) return accum;
+        return `${accum} ${e}`;
+    }, "");
 }
 
 function getEnglishAPs(blocks: (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection> | T.RenderedVPSBlock)[]) {
@@ -337,6 +333,16 @@ function getEnglishAPs(blocks: (T.Rendered<T.SubjectSelectionComplete> | T.Rende
         if (!e) return accum;
         return `${accum} ${e}`;
     }, "");
+}
+
+function putKidsInKidsSection(blocks: T.Block[], kids: T.Kid[]): (T.Block | T.Kid)[] {
+    const first = blocks[0];
+    const rest = blocks.slice(1);
+    return [
+        first,
+        ...kids,
+        ...rest,
+    ];
 }
 
 
@@ -405,10 +411,11 @@ function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
     function insertEWords(e: string, { subject, predicate, APs }: { subject: string, predicate: string, APs: string }): string {
         return e.replace("$SUBJ", subject).replace("$PRED", predicate || "") + APs;
     }
-    const engSubjR = getRenderedSubjectSelection(EP.blocks).selection;
+    const engSubjR = getSubjectSelectionFromBlocks(EP.blocks).selection;
+    const engPredR = getPredicateSelectionFromBlocks(EP.blocks).selection;
     const engSubj = getEnglishFromRendered(engSubjR);
-    const engPred = getEnglishFromRendered(EP.predicate);
-    const engAPs = getEnglishAPs(EP.blocks);
+    const engPred = getEnglishFromRendered(engPredR);
+    const engAPs = getEngAPs(EP.blocks);
     // require all English parts for making the English phrase
     const b = (EP.englishBase && engSubj && engPred)
         ? EP.englishBase.map(e => insertEWords(e, {
@@ -440,7 +447,33 @@ export function orderKidsSection(kids: Segment[]): Segment[] {
     });
 }
 
-export function checkForMiniPronounsError(s: T.EPSelectionState | T.VPSelectionState): undefined | string {
+export function checkEPForMiniPronounsError(s: T.EPSelectionState): undefined | string {
+    function findDuplicateMiniP(mp: T.MiniPronoun[]): T.MiniPronoun | undefined {
+        const duplicates = mp.filter((item, index) => (
+            mp.findIndex(m => item.ps.p === m.ps.p) !== index
+        )); 
+        if (duplicates.length === 0) return undefined;
+        return duplicates[0];
+    }
+    const kids = (() => {
+        const EPS = completeEPSelection(s);
+        if (!EPS) return undefined;
+        const { kids } = renderEP(EPS);
+        return kids;
+    })();
+    if (!kids) return undefined;
+    const miniPronouns = kids.filter(x => x.type === "mini-pronoun") as T.MiniPronoun[];
+    if (miniPronouns.length > 2) {
+        return "can't add another mini-pronoun, there are alread two";
+    }
+    const duplicateMiniPronoun = findDuplicateMiniP(miniPronouns);
+    if (duplicateMiniPronoun) {
+        return `there's already a ${duplicateMiniPronoun.ps.p} - ${duplicateMiniPronoun.ps.f} mini-pronoun in use, can't have two of those`;
+    }
+    return undefined;
+}
+
+export function checkForMiniPronounsError(s: T.VPSelectionState): undefined | string {
     function findDuplicateMiniPronoun(mp: Segment[]): Segment | undefined {
         const duplicates = mp.filter((item, index) => (
             mp.findIndex(m => item.ps[0].p === m.ps[0].p) !== index
@@ -449,12 +482,6 @@ export function checkForMiniPronounsError(s: T.EPSelectionState | T.VPSelectionS
         return duplicates[0];
     }
     const kids = (() => {
-        if ("predicate" in s) {
-            const EPS = completeEPSelection(s);
-            if (!EPS) return undefined;
-            const { kids } = getEPSegmentsAndKids(renderEP(EPS));
-            return kids;
-        }
         const VPS = completeVPSelection(s);
         if (!VPS) return undefined;
         const { kids } = getVPSegmentsAndKids(renderVP(VPS));
@@ -536,44 +563,6 @@ function findPossesivesInAdjective(a: T.Rendered<T.AdjectiveSelection>): T.Rende
     return findPossesivesInNP(a.sandwich.inside);
 }
 
-type FoundNP = {
-    np: T.Rendered<T.NPSelection>,
-    from: "subject" | "predicate" | "AP",
-};
-
-export function findPossesivesToShrinkInEP(EP: T.EPRendered): FoundNP[] {
-    const inBlocks: FoundNP[] = EP.blocks.reduce((accum, block): FoundNP[] => {
-        if (block.type === "subjectSelection") {
-            if (EP.omitSubject) return accum;
-            const found: FoundNP[] = findPossesivesInNP(block.selection).map(np => ({ np, from: "subject" }));
-            return [
-                ...accum,
-                ...found,
-            ];
-        }
-        if (block.selection.type === "sandwich") {
-            const found: FoundNP[] = findPossesivesInNP(block.selection.inside).map(np => ({ np, from: "AP" }));
-            return [
-                ...accum,
-                ...found,
-            ];
-        }
-        return accum;
-    }, [] as FoundNP[]);
-    const inPredicate: FoundNP[] = ((EP.predicate.selection.type === "loc. adv.")
-        ? []
-        : (EP.predicate.selection.type === "adjective")
-        ? findPossesivesInAdjective(EP.predicate.selection)
-        : EP.predicate.selection.type === "sandwich"
-        ? findPossesivesInNP(EP.predicate.selection.inside)
-        : EP.predicate.selection.type === "pronoun"
-        ? []
-        : findPossesivesInNP({ type: "NP", selection: EP.predicate.selection })).map(np => ({ np, from: "predicate" }));
-    return [
-        ...inBlocks,
-        ...inPredicate,
-    ];
-}
 
 // export function findPossesiveToShrinkInVP(VP: T.VPRendered): T.Rendered<T.NPSelection>[] {
 //     const obj: T.Rendered<T.NPSelection> | undefined = ("object" in VP && typeof VP.object === "object")

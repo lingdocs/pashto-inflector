@@ -5,8 +5,6 @@ import {
 import {
     concatPsString,
 } from "../p-text-helpers";
-// SEGMENT TOOLS
-// TODO: PULL OUT FOR SHARING ACROSS COMPILE EP ETC?
 
 type SegmentDescriptions = {
     isVerbHead?: boolean,

@@ -38,7 +38,7 @@ function EPExplorer(props: {
     entryFeeder: T.EntryFeeder,
 }) {
     const [mode, setMode] = useStickyState<"charts" | "phrases">("charts", "EPExplorerMode");
-    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState5", flashMessage);
+    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState6", flashMessage);
     const [alert, setAlert] = useState<string | undefined>(undefined);
     const [showClipped, setShowClipped] = useState<string>("");
     const parent = useRef<HTMLDivElement>(null);

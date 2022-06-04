@@ -28,6 +28,12 @@ export function pickPersInf<T>(s: T.OptionalPersonInflections<T>, persInf: T.Per
     return s;
 }
 
+export function getFirstSecThird(p: T.Person): 1 | 2 | 3 {
+    if ([0, 1, 6, 7].includes(p)) return 1;
+    if ([2, 3, 8, 9].includes(p)) return 2;
+    return 3;
+}
+
 // export function pickPersInf(
 //     s: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
 //     persInf: T.PersonInflectionsField,

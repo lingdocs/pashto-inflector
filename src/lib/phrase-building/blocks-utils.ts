@@ -1,4 +1,5 @@
 import * as T from "../../types";
+import { getLength } from "../p-text-helpers";
 
 export function getSubjectSelection(blocks: T.EPSBlockComplete[] | T.VPSBlockComplete[]): T.SubjectSelectionComplete;
 export function getSubjectSelection(blocks: T.EPSBlock[] | T.VPSBlock[]): T.SubjectSelection;
@@ -9,6 +10,26 @@ export function getSubjectSelection(blocks: T.EPSBlock[] | T.EPSBlockComplete[] 
     }
     return b.block;
 }
+
+export function getSubjectSelectionFromBlocks(blocks: T.Block[]): T.Rendered<T.SubjectSelectionComplete> {
+    const b = blocks.find(f => f.type === "subjectSelection");
+    if (!b || b.type !== "subjectSelection") {
+        throw new Error("subjectSelection not found in blocks");
+    }
+    return b;
+}
+
+export function getPredicateSelectionFromBlocks(blocks: T.Block[]): T.Rendered<T.PredicateSelectionComplete> {
+    const b = blocks.find(f => f.type === "predicateSelection");
+    if (!b || b.type !== "predicateSelection") {
+        throw new Error("predicateSelection not found in blocks");
+    }
+    return b;
+}
+
+export function getAPsFromBlocks(blocks: T.Block[]): T.Rendered<T.APSelection>[] {
+    return blocks.filter(b => b.type === "AP") as T.Rendered<T.APSelection>[];
+} 
 
 export function getObjectSelection(blocks: T.VPSBlockComplete[]): T.ObjectSelectionComplete;
 export function getObjectSelection(blocks: T.VPSBlock[]): T.ObjectSelection;
@@ -183,6 +204,29 @@ export function removeAP<B extends T.VPSBlock[] | T.EPSBlock[]>(blocks: B, index
 
 export function isNoObject(b: T.VPSBlock["block"] | T.EPSBlock["block"]): b is { type: "objectSelection", selection: "none" } {
     return !!(b && b.type === "objectSelection" && b.selection === "none");
+}
+
+export function specifyEquativeLength(blocks: T.Block[], length: "long" | "short"): T.Block[] {
+    const i = blocks.findIndex(b => b.type === "equative");
+    if (i === -1) throw new Error("equative block not found in EPRendered");
+    const eq = blocks[i];
+    if (eq.type !== "equative") throw new Error("error searching for equative block");
+    const adjusted = [...blocks];
+    adjusted[i] = {
+        ...eq,
+        equative: {
+            ...eq.equative,
+            ps: getLength(eq.equative.ps, length),
+        },
+    };
+    return adjusted;
+}
+
+export function hasEquativeWithLengths(blocks: T.Block[]): boolean {
+    const equative = blocks.find(x => x.type === "equative");
+    if (!equative) throw new Error("equative not found in blocks");
+    if (equative.type !== "equative") throw new Error("error finding equative in blocks");
+    return "long" in equative.equative.ps;
 }
 
 function arrayMove<X>(ar: X[], old_index: number, new_index: number): X[] {

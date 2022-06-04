@@ -106,6 +106,12 @@ function VPExplorerQuiz(props: {
         setAnswerBlank("");
         setQuizState(tickQuizState(quizState.vps));
     }
+    if (1 < 3) {
+        return <div className="text-center my-4">
+            <h3>The quiz is broken 😭</h3>
+            <p>It will be fixed in like a week or two... hopefully.</p>
+        </div>
+    }
     return <div className="mt-4">
         <ProgressBar quizState={quizState} />
         <div className="d-flex flex-row justify-content-around flex-wrap">
@@ -322,6 +328,7 @@ function tickQuizState(startingWith: T.VPSelectionComplete | QuizState): QuizSta
     }
     const answer = makeRes(newVps);
     const wrongAnswers = wrongVpsS.map(makeRes);
+    console.log({ newVps, answer, wrongAnswers });
     const allAnswers = shuffleArray([...wrongAnswers, answer]);
     const options = allAnswers.map(getOptionFromResult);
     return {

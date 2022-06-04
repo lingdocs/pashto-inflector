@@ -552,6 +552,11 @@ export type SubjectSelectionComplete = {
     selection: NPSelection,
 };
 
+export type PredicateSelectionComplete = {
+    type: "predicateSelection",
+    selection: EqCompSelection | NPSelection,
+};
+
 export type ObjectSelectionComplete = {
     type: "objectSelection",
     selection: NPSelection | ObjectNP,
@@ -695,6 +700,7 @@ export type Rendered<
         | EqCompSelection["selection"]
         | SubjectSelectionComplete
         | ObjectSelectionComplete
+        | PredicateSelectionComplete
         | AdjectiveSelection
         | SandwichSelection<Sandwich> 
 > =
@@ -744,7 +750,11 @@ export type Rendered<
         type: "objectSelection",
         selection: Rendered<NPSelection> | Person.ThirdPlurMale | "none",
     }
-    : ReplaceKey<
+    : T extends PredicateSelectionComplete
+    ? {
+        type: "predicateSelection",
+        selection: Rendered<EqCompSelection> | Rendered<NPSelection>,
+    } : ReplaceKey<
         Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,
         "e",
         string
@@ -794,13 +804,7 @@ export type VPSBlockComplete = {
 
 export type EPSelectionComplete = Omit<EPSelectionState, "predicate" | "blocks"> & {
     blocks: EPSBlockComplete[],
-    predicate: {
-        type: "NP",
-        selection: NPSelection,
-    } | {
-        type: "Complement",
-        selection: EqCompSelection,
-    },
+    predicate: PredicateSelectionComplete,
     omitSubject: boolean,
 };
 
@@ -834,10 +838,8 @@ export type EquativeRendered = EquativeSelection & {
 
 export type EPRendered = {
     type: "EPRendered",
-    king: "subject" | "predicate",
-    blocks: (Rendered<SubjectSelectionComplete> | Rendered<APSelection>)[],
-    predicate: Rendered<NPSelection> | Rendered<EqCompSelection>,
-    equative: EquativeRendered,
+    blocks: Block[],
+    kids: Kid[],
     englishBase?: string[],
     omitSubject: boolean,
 }
@@ -862,4 +864,25 @@ export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
     search: (s: string) => X[],
     getByTs: (ts: number) => (X | undefined),
 }
+
+export type EquativeBlock = { type: "equative", equative: EquativeRendered };
+
+export type Block =
+    | Rendered<SubjectSelectionComplete>
+    | Rendered<APSelection>
+    | Rendered<PredicateSelectionComplete>
+    | { type: "nu" }
+    | EquativeBlock;
+
+export type Kid =
+    | { type: "ba" }
+    | MiniPronoun;
+    
+export type MiniPronoun = {
+    type: "mini-pronoun",
+    person: Person,
+    ps: PsString,
+    source: "servant" | "possesive",
+    np: NPSelection,
+};
 

@@ -108,6 +108,20 @@ function accentSyllable(s: string): string {
     });
 }
 
+export function removeAccentsWLength(s: T.SingleOrLengthOpts<T.PsString[]>): T.SingleOrLengthOpts<T.PsString[]> {
+    if ("long" in s) {
+        return {
+            long: removeAccentsWLength(s.long) as T.PsString[],
+            short: removeAccentsWLength(s.short) as T.PsString[],
+            ...s.mini ? {
+                mini: removeAccentsWLength(s.mini) as T.PsString[],
+            } : {},
+        };
+    }
+    return removeAccents(s);
+}
+
+
 export function removeAccents(s: T.PsString): T.PsString; 
 export function removeAccents(s: string): string; 
 export function removeAccents(s: T.PsString[]): T.PsString[];

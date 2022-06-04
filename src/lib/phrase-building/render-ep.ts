@@ -4,7 +4,7 @@ import {
     getPersonFromNP,
 } from "./vp-tools";
 import { renderNPSelection } from "./render-np";
-import { getPersonFromVerbForm } from "../../lib/misc-helpers";
+import { getFirstSecThird, getPersonFromVerbForm } from "../../lib/misc-helpers";
 import { getVerbBlockPosFromPerson } from "../misc-helpers";
 import { getEnglishWord } from "../get-english-word";
 import { psStringFromEntry } from "../p-text-helpers";
@@ -12,37 +12,141 @@ import { isLocativeAdverbEntry } from "../type-predicates";
 import { renderAdjectiveSelection } from "./render-adj";
 import { renderSandwich } from "./render-sandwich";
 import { EPSBlocksAreComplete, getSubjectSelection } from "./blocks-utils";
+import { removeAccentsWLength } from "../accent-helpers";
+import { pronouns } from "../grammar-units";
 
 export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
-    const subject = getSubjectSelection(EP.blocks).selection;
-    const king = (subject.selection.type === "pronoun")
-        ? "subject"
-        : EP.predicate.type === "NP"
-        ? "predicate"
-        : "subject";
-    // TODO: less repetative logic
-    const kingPerson = king === "subject"
-        ? getPersonFromNP(subject)
-        : EP.predicate.type === "NP"
-        ? getPersonFromNP(EP.predicate.selection)
-        : getPersonFromNP(subject);
-    const kingIsParticiple = king === "subject"
-        ? (subject.selection.type === "participle")
-        : (EP.predicate.type === "NP" && EP.predicate.selection.selection.type === "participle");
+    const { kids, blocks, englishEquativePerson } = getEPSBlocksAndKids(EP);
     return {
         type: "EPRendered",
-        king: EP.predicate.type === "Complement" ? "subject" : "predicate",
-        blocks: renderEPSBlocks(EP.blocks, king),
-        predicate: EP.predicate.type === "NP"
-            ? renderNPSelection(EP.predicate.selection, false, true, "subject", "king")
-            : renderEqCompSelection(EP.predicate.selection, kingPerson),
-        equative: renderEquative(EP.equative, kingPerson),
+        blocks,
+        kids,
         englishBase: equativeBuilders[EP.equative.tense](
-            kingIsParticiple ? T.Person.ThirdSingMale : kingPerson,
+            englishEquativePerson,
             EP.equative.negative,
         ),
         omitSubject: EP.omitSubject,
     };
+}
+
+function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks: T.Block[], englishEquativePerson: T.Person } {
+    const subject = getSubjectSelection(EP.blocks).selection;
+    const commandingNP: T.NPSelection = subject.selection.type === "pronoun"
+        ? subject
+        : EP.predicate.selection.type === "NP"
+        ? EP.predicate.selection
+        : subject;
+    const commandingPerson = getPersonFromNP(commandingNP);
+    const equative: T.EquativeBlock = { type: "equative", equative: renderEquative(EP.equative, commandingPerson) };
+    const blocks: T.Block[] = [
+        ...renderEPSBlocks(EP.omitSubject ? EP.blocks.filter(b => b.block.type !== "subjectSelection") : EP.blocks),
+        {
+            type: "predicateSelection",
+            selection: EP.predicate.selection.type === "NP"
+                ? renderNPSelection(EP.predicate.selection, false, false, "subject", "king")
+                : renderEqCompSelection(EP.predicate.selection, commandingPerson),
+        },
+        ...EP.equative.negative ? [{ type: "nu" } as T.Block] : [],
+        EP.equative.negative ? removeAccontsFromEq(equative) : equative,
+    ];
+    const miniPronouns = findPossesivesToShrink([...EP.blocks, EP.predicate], EP.omitSubject);
+    const kids: T.Kid[] = orderKids([
+        ...equative.equative.hasBa ? [{ type: "ba" } as T.Kid] : [], 
+        ...miniPronouns,
+    ]);
+    return {
+        blocks,
+        kids,
+        englishEquativePerson: commandingNP.selection.type === "participle" ? T.Person.ThirdSingMale : commandingPerson,
+    };
+}
+
+function orderKids(kids: T.Kid[]): T.Kid[] {
+    const sorted = [...kids].sort((a, b) => {
+        // ba first
+        if (a.type === "ba") return -1;
+        // kinds lined up 1st 2nd 3rd person
+        if (a.type === "mini-pronoun" && b.type === "mini-pronoun") {
+            const aPers = getFirstSecThird(a.person);
+            const bPers = getFirstSecThird(b.person);
+            if (aPers < bPers) {
+                return -1;
+            }
+            if (aPers > bPers) {
+                return 1;
+            }
+            // TODO: is this enough?
+            return 0;
+        }
+        return 0;
+    });
+    return sorted;
+}
+
+function findPossesivesToShrink(blocks: (T.EPSBlockComplete | T.SubjectSelectionComplete | T.PredicateSelectionComplete | T.APSelection)[], omitSubject: boolean): T.MiniPronoun[] {
+    return blocks.reduce((kids, item) => {
+        const block = "block" in item ? item.block : item;
+        if (block.type === "subjectSelection") {
+            if (omitSubject) return kids;
+            return [
+                ...kids,
+                ...findShrunkenPossInNP(block.selection),
+            ];
+        }
+        if (block.type === "AP") {
+            if (block.selection.type === "adverb") return kids;
+            return [
+                ...kids,
+                ...findShrunkenPossInNP(block.selection.inside),
+            ];
+        }
+        if (block.type === "predicateSelection") {
+            if (block.selection.type === "EQComp") {
+                if (block.selection.selection.type === "sandwich") {
+                    return [
+                        ...kids,
+                        ...findShrunkenPossInNP(block.selection.selection.inside),
+                    ];
+                }
+                return kids;
+            }
+            return [
+                ...kids,
+                ...findShrunkenPossInNP(block.selection),
+            ];
+        }
+        return kids;
+    }, [] as T.MiniPronoun[]);
+}
+
+function findShrunkenPossInNP(NP: T.NPSelection): T.MiniPronoun[] {
+    if (NP.selection.type === "pronoun") return [];
+    if (!NP.selection.possesor) return [];
+    if (NP.selection.type === "noun") {
+        if (NP.selection.adjectives) {
+            const { adjectives, ...rest } = NP.selection;
+            return [
+                // TODO: ability to find possesives shrinkage in sandwiches in adjectives
+                // ...findShrunkenPossInAdjectives(adjectives),
+                ...findShrunkenPossInNP({ type: "NP", selection: {
+                    ...rest,
+                    adjectives: [],
+                }}),
+            ];
+        }
+    }
+    if (NP.selection.possesor.shrunken) {
+        const person = getPersonFromNP(NP.selection.possesor.np);
+        const miniP: T.MiniPronoun = {
+            type: "mini-pronoun",
+            person,
+            ps: getMiniPronounPs(person),
+            source: "possesive",
+            np: NP.selection.possesor.np,
+        };
+        return [miniP];
+    }
+    return findShrunkenPossInNP(NP.selection.possesor.np);
 }
 
 export function getEquativeForm(tense: T.EquativeTense): { hasBa: boolean, form: T.SingleOrLengthOpts<T.VerbBlock> } {
@@ -58,7 +162,7 @@ export function getEquativeForm(tense: T.EquativeTense): { hasBa: boolean, form:
     }
 }
 
-function renderEPSBlocks(blocks: T.EPSBlockComplete[], king: "subject" | "predicate"): (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>)[] {
+function renderEPSBlocks(blocks: T.EPSBlockComplete[]): T.Block[] {
     return blocks.map(({ block }): (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>) => {
         if (block.type === "AP") {
             if (block.selection.type === "adverb") {
@@ -76,7 +180,7 @@ function renderEPSBlocks(blocks: T.EPSBlockComplete[], king: "subject" | "predic
         }
         return {
             type: "subjectSelection",
-            selection: renderNPSelection(block.selection, false, false, "subject", king === "subject" ? "king" : "none")
+            selection: renderNPSelection(block.selection, false, false, "subject", "none")
         };
     });
 }
@@ -218,7 +322,7 @@ export function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionCompl
             ...eps,
             blocks: eps.blocks,
             predicate: {
-                type: "Complement",
+                type: "predicateSelection",
                 selection,
             },
         };
@@ -230,8 +334,23 @@ export function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionCompl
         ...eps,
         blocks: eps.blocks,
         predicate: {
-            type: "NP",
+            type: "predicateSelection",
             selection,
+        },
+    };
+}
+
+export function getMiniPronounPs(person: T.Person): T.PsString {
+    const [row, col] = getVerbBlockPosFromPerson(person);
+    return pronouns.mini[row][col][0];
+}
+
+function removeAccontsFromEq(equ: T.EquativeBlock): T.EquativeBlock {
+    return {
+        ...equ,
+        equative: {
+            ...equ.equative,
+            ps: removeAccentsWLength(equ.equative.ps),
         },
     };
 }
