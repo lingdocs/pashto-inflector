@@ -21,7 +21,7 @@ function Block({ opts, block }: {
     if (block.type === "predicateSelection") {
         const english = getEnglishFromRendered(block.selection);
         return <div className="text-center">
-            <div>Pred</div>
+            <div><strong>Predicate</strong></div>
             {block.selection.type === "EQComp"
                 ? <EqCompBlock opts={opts} comp={block.selection.selection} />
                 : <NPBlock opts={opts} english={english}>{block.selection}</NPBlock>}
@@ -49,12 +49,8 @@ function NUBlock({ opts }: {
         >
             nu
         </div>
-        <div className="small text-muted text-center" style={{
-            // TODO: find a better way to keep this limited to the width of the div above
-            // don't let this make the div above expand
-            margin: "0 auto",
-            maxWidth: "300px",
-        }}>not</div>
+        <div>Neg.</div>
+        <EnglishBelow>not</EnglishBelow>
     </div>;
 }
 
@@ -73,6 +69,8 @@ function EquativeBlock({ opts, eq }: {
         >
             {"short" in eq.ps ? eq.ps.short[0].f : eq.ps[0].f}
         </div>
+        <div>Equative</div>
+        <EnglishBelow>{"="}</EnglishBelow>
     </div>;
 }
 
@@ -82,7 +80,7 @@ function SubjectBlock({ opts, np }: {
 }) {
     const english = getEnglishFromRendered(np);
     return <div className="text-center">
-        <div>Subject</div>
+        <div><strong>Subject</strong></div>
         <NPBlock opts={opts} english={english}>{np}</NPBlock>
     </div>;
 }
@@ -107,12 +105,7 @@ function EqCompBlock({ opts, comp }: {
                 {adj.ps[0].f}
             </div>
             <div>Adj.</div>
-            {adj.e && <div className="small text-muted text-center" style={{
-                // TODO: find a better way to keep this limited to the width of the div above
-                // don't let this make the div above expand
-                margin: "0 auto",
-                maxWidth: "300px",
-            }}>{adj.e}</div>}
+            <EnglishBelow>{adj.e}</EnglishBelow>
         </div>;
     }
 
@@ -132,16 +125,11 @@ function EqCompBlock({ opts, comp }: {
                 {adv.ps[0].f}
             </div>
             <div>Loc. Adv.</div>
-            {adv.e && <div className="small text-muted text-center" style={{
-                // TODO: find a better way to keep this limited to the width of the div above
-                // don't let this make the div above expand
-                margin: "0 auto",
-                maxWidth: "300px",
-            }}>{adv.e}</div>}
+            <EnglishBelow>{adv.e}</EnglishBelow>
         </div>;
     }
 
-    return <div className="text-center mb-2">
+    return <div className="text-center">
         <div>Comp.</div>
         {comp.type === "adjective"
             ? <AdjectiveBlock opts={opts} adj={comp} />
@@ -150,6 +138,7 @@ function EqCompBlock({ opts, comp }: {
                 : <div>
                     <Sandwich opts={opts} sandwich={comp} />
                     <div>Sandwich</div>
+                    <EnglishBelow>{comp.e}</EnglishBelow>
                 </div>}
     </div>;
 }
@@ -184,12 +173,7 @@ export function APBlock({ opts, children, english }: {
     return <div>
         <Sandwich opts={opts} sandwich={ap.selection} />
         <div>AP</div>
-        {english && <div className="small text-muted text-center" style={{
-            // TODO: find a better way to keep this limited to the width of the div above
-            // don't let this make the div above expand
-            margin: "0 auto",
-            maxWidth: "300px",
-        }}>{english}</div>}
+        <EnglishBelow>{english}</EnglishBelow>
     </div>;
 }
 
@@ -226,7 +210,7 @@ export function NPBlock({ opts, children, inside, english }: {
     english?: string,
 }) {
     const np = children;
-    const hasPossesor = !!(np.selection.type !== "pronoun" && np.selection.possesor);
+    const hasPossesor = !!(np.selection.type !== "pronoun" && np.selection.possesor && !np.selection.possesor.shrunken);
     return <div>
         <div
             className={classNames("d-flex flex-row justify-content-center align-items-center", { "pt-2": !inside && hasPossesor })}
@@ -241,12 +225,7 @@ export function NPBlock({ opts, children, inside, english }: {
             <div> {np.selection.ps[0].f}</div>
         </div>
         <div className={inside ? "small" : ""}>NP</div>
-        {english && <div className="small text-muted text-center" style={{
-            // TODO: find a better way to keep this limited to the width of the div above
-            // don't let this make the div above expand
-            margin: "0 auto",
-            maxWidth: "300px",
-        }}>{english}</div>}
+        <EnglishBelow>{english}</EnglishBelow>
     </div>
 }
 
@@ -255,6 +234,9 @@ function Possesors({ opts, children }: {
     children: { shrunken: boolean, np: T.Rendered<T.NPSelection> } | undefined,
 }) {
     if (!children) {
+        return null;
+    }
+    if (children.shrunken) {
         return null;
     }
     const contraction = checkForContraction(children.np);
@@ -303,4 +285,12 @@ function Adjectives({ opts, children }: {
     return <em className="mr-1">
         {children.map(a => a.ps[0].f).join(" ")}{` `}
     </em>
+}
+
+function EnglishBelow({ children: e }: { children: string | undefined }) {
+    return <div className="small text-muted text-center" style={{
+        margin: "0 auto",
+        maxWidth: "300px",
+        height: "1rem",
+    }}>{e ? e : ""}</div>;
 }

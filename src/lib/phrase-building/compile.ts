@@ -263,23 +263,26 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
 export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
-    const psResult = compileEPPs(EP.blocks, EP.kids, blankOut);
+    const psResult = compileEPPs(EP.blocks, EP.kids, EP.omitSubject, blankOut);
     return {
         ps: combineLengths ? flattenLengths(psResult) : psResult,
         e: compileEnglishEP(EP),
     };
 }
 
-function compileEPPs(blocks: T.Block[], kids: T.Kid[], blankOut?: BlankoutOptions): T.SingleOrLengthOpts<T.PsString[]> {
+function compileEPPs(blocks: T.Block[], kids: T.Kid[], omitSubject: boolean, blankOut?: BlankoutOptions): T.SingleOrLengthOpts<T.PsString[]> {
     if (hasEquativeWithLengths(blocks)) {
         return {
-            long: compileEPPs(specifyEquativeLength(blocks, "long"), kids, blankOut) as T.PsString[],
-            short: compileEPPs(specifyEquativeLength(blocks, "short"), kids, blankOut) as T.PsString[],
+            long: compileEPPs(specifyEquativeLength(blocks, "long"), kids, omitSubject, blankOut) as T.PsString[],
+            short: compileEPPs(specifyEquativeLength(blocks, "short"), kids, omitSubject, blankOut) as T.PsString[],
         };
     }
     const subjectPerson = getSubjectSelectionFromBlocks(blocks)
         .selection.selection.person;
-    const blocksWKids = putKidsInKidsSection(blocks, kids);
+    const blocksWKids = putKidsInKidsSection(
+        omitSubject ? blocks.filter(b => b.type !== "subjectSelection") : blocks,
+        kids,
+    );
     return removeDuplicates(combineIntoText(blocksWKids, subjectPerson));
 }
 

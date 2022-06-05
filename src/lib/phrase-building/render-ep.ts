@@ -39,7 +39,7 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks
     const commandingPerson = getPersonFromNP(commandingNP);
     const equative: T.EquativeBlock = { type: "equative", equative: renderEquative(EP.equative, commandingPerson) };
     const blocks: T.Block[] = [
-        ...renderEPSBlocks(EP.omitSubject ? EP.blocks.filter(b => b.block.type !== "subjectSelection") : EP.blocks),
+        ...renderEPSBlocks(EP.blocks),
         {
             type: "predicateSelection",
             selection: EP.predicate.selection.type === "NP"
@@ -122,19 +122,19 @@ function findPossesivesToShrink(blocks: (T.EPSBlockComplete | T.SubjectSelection
 function findShrunkenPossInNP(NP: T.NPSelection): T.MiniPronoun[] {
     if (NP.selection.type === "pronoun") return [];
     if (!NP.selection.possesor) return [];
-    if (NP.selection.type === "noun") {
-        if (NP.selection.adjectives) {
-            const { adjectives, ...rest } = NP.selection;
-            return [
-                // TODO: ability to find possesives shrinkage in sandwiches in adjectives
-                // ...findShrunkenPossInAdjectives(adjectives),
-                ...findShrunkenPossInNP({ type: "NP", selection: {
-                    ...rest,
-                    adjectives: [],
-                }}),
-            ];
-        }
-    }
+    // if (NP.selection.type === "noun") {
+    //     if (NP.selection.adjectives) {
+    //         const { adjectives, ...rest } = NP.selection;
+    //         return [
+    //             // TODO: ability to find possesives shrinkage in sandwiches in adjectives
+    //             // ...findShrunkenPossInAdjectives(adjectives),
+    //             ...findShrunkenPossInNP({ type: "NP", selection: {
+    //                 ...rest,
+    //                 adjectives: [],
+    //             }}),
+    //         ];
+    //     }
+    // }
     if (NP.selection.possesor.shrunken) {
         const person = getPersonFromNP(NP.selection.possesor.np);
         const miniP: T.MiniPronoun = {

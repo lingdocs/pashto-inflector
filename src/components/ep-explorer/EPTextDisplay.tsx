@@ -19,9 +19,6 @@ function EPTextDisplay({ compiled, opts }: { compiled: {
             </div>
             : <VariationLayer vs={compiled.ps} />
         }
-        {compiled.e && <div className="text-muted mt-3">
-            {compiled.e.map((e, i) => <div key={i}>{e}</div>)}
-        </div>}
     </div>;
 }
 
