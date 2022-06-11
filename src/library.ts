@@ -149,6 +149,7 @@ import {
     renderAPSelection,
 } from "./lib/phrase-building/render-ap";
 import NPPicker from "./components/np-picker/NPPicker";
+import EPPicker from "./components/ep-explorer/EPPicker";
 import EPExplorer from "./components/ep-explorer/EPExplorer";
 import shuffleArray from "./lib/shuffle-array";
 import defaultTextOptions from "./lib/default-text-options";
@@ -253,6 +254,7 @@ export {
     APBlock,
     Block,
     EPDisplay,
+    EPPicker,
     // OTHER
     typePredicates,
     grammarUnits,

@@ -7,7 +7,7 @@ import { isUnisexNounEntry } from "../../lib/type-predicates";
 import { checkEPForMiniPronounsError } from "../../lib/phrase-building/compile";
 import { adjustSubjectSelection, getSubjectSelection, insertNewAP, removeAP, setAP, shiftBlock } from "../../lib/phrase-building/blocks-utils";
 
-type EpsReducerAction = {
+export type EpsReducerAction = {
     type: "set predicate type",
     payload: "NP" | "Complement",
 } | {

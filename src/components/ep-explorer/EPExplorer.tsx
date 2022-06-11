@@ -1,19 +1,17 @@
 import * as T from "../../types";
 import useStickyState, { useStickyReducer } from "../../lib/useStickyState";
-import NPPicker from "../np-picker/NPPicker";
-import EquativePicker from "./EquativePicker";
 import EPDisplay from "./EPDisplay";
 import ButtonSelect from "../ButtonSelect";
-import EqCompPicker from "./eq-comp-picker/EqCompPicker";
 import EqChartsDisplay from "./EqChartsDisplay";
 import epsReducer from "./eps-reducer";
 import { useEffect, useRef, useState } from "react";
 import { completeEPSelection } from "../../lib/phrase-building/render-ep";
 import { makeEPSBlocks } from "../../lib/phrase-building/blocks-utils";
-import APPicker from "../ap-picker/APPicker";
+import EquativePicker from "./EquativePicker";
 import autoAnimate from "@formkit/auto-animate";
 // @ts-ignore
 import LZString from "lz-string";
+import EPPicker from "./EPPicker";
 const phraseURLParam = "EPhrase";
 
 const blankEps: T.EPSelectionState = {
@@ -35,14 +33,11 @@ const blankEps: T.EPSelectionState = {
 function EPExplorer(props: {
     opts: T.TextOptions,
     entryFeeder: T.EntryFeeder,
-} & ({
-    eps: T.EPSelectionState,
-    onChange: (eps: T.EPSelectionState) => void,
-} | {})) {
+}) {
     const [mode, setMode] = useStickyState<"charts" | "phrases">("charts", "EPExplorerMode");
     const [eps, adjustEps] = useStickyReducer(
         epsReducer,
-        "eps" in props ? props.eps : blankEps,
+        blankEps,
         "EPState7",
         flashMessage,
     );
@@ -63,6 +58,9 @@ function EPExplorer(props: {
         }
         // eslint-disable-next-line
     }, []);
+    function handleEpsChange(e: T.EPSelectionState) {
+        adjustEps({ type: "load EPS", payload: e });
+    }
     function flashMessage(msg: string) {
         setAlert(msg);
         setTimeout(() => {
@@ -114,86 +112,21 @@ function EPExplorer(props: {
                 </div>
             </div>}
         </div>
-        {mode === "phrases" && <div className="clickable h5" onClick={() => adjustEps({ type: "insert new AP" })}>+ AP</div>}
-        <div ref={parent} className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
-            {mode === "phrases" && <>
-                {eps.blocks.map(({ block, key }, i) => (
-                    <div className="my-2 card block-card p-1 mx-1" key={key}>
-                        <div className="d-flex flex-row justify-content-between mb-1" style={{ height: "1rem" }}>
-                            {i > 0 ? <div
-                                className="small clickable ml-1"
-                                onClick={() => adjustEps({ type: "shift block", payload: { index: i, direction: "back" }})}
-                            >
-                                <i className="fas fa-chevron-left" />
-                            </div> : <div/>}
-                            {i < eps.blocks.length - 1 ? <div
-                                className="small clickable mr-1"
-                                onClick={() => adjustEps({ type: "shift block", payload: { index: i, direction: "forward" }})}
-                            >
-                                <i className="fas fa-chevron-right" />
-                            </div> : <div/>}
-                        </div>
-                        {block && block.type === "subjectSelection"
-                            ? <NPPicker
-                                phraseIsComplete={phraseIsComplete}
-                                heading={<div className="h5 text-center">Subject</div>}
-                                entryFeeder={props.entryFeeder}
-                                np={block.selection}
-                                counterPart={undefined}
-                                role="subject"
-                                onChange={payload => adjustEps({ type: "set subject", payload })}
-                                opts={props.opts}
-                            />
-                        : <APPicker
-                            phraseIsComplete={phraseIsComplete}
-                            heading="AP"
-                            entryFeeder={props.entryFeeder}
-                            AP={block}
-                            opts={props.opts}
-                            onChange={AP => adjustEps({ type: "set AP", payload: { index: i, AP } })}
-                            onRemove={() => adjustEps({ type: "remove AP", payload: i })}
-                        />}
-                    </div>
-                ))}
-                <div className="my-2 card block-card p-1">
-                    <div className="h5 text-center">Predicate</div>
-                    <div className="mb-2 text-center">
-                        <ButtonSelect
-                            small
-                            options={[
-                                { value: "NP", label: "NP" },
-                                { value: "Complement", label: "Complement" },
-                            ]}
-                            value={eps.predicate.type}
-                            handleChange={payload => adjustEps({ type: "set predicate type", payload })}
-                        />
-                    </div>
-                    {eps.predicate.type === "NP" ? <NPPicker
-                        phraseIsComplete={phraseIsComplete}
-                        entryFeeder={props.entryFeeder}
-                        np={eps.predicate.type === "NP" ? eps.predicate.NP : undefined}
-                        counterPart={undefined}
-                        role="subject"
-                        onChange={payload => adjustEps({ type: "set predicate NP", payload })}
-                        opts={props.opts}
-                    /> : <EqCompPicker
-                        phraseIsComplete={phraseIsComplete}
-                        comp={eps.predicate.type === "Complement" ? eps.predicate.Complement : undefined}
-                        onChange={payload => adjustEps({ type: "set predicate comp", payload })}
-                        opts={props.opts}
-                        entryFeeder={props.entryFeeder}
-                    />}
-                </div>
-            </>}
-            <div className="my-2">
-                <div className="h5 text-center clickable">Equative</div>
-                <EquativePicker
-                    equative={eps.equative}
-                    onChange={payload => adjustEps({ type: "set equative", payload })}
-                    hideNegative={mode === "charts"}
-                />
-            </div>
-        </div>
+        {mode === "phrases" &&
+            <EPPicker
+                opts={props.opts}
+                entryFeeder={props.entryFeeder}
+                eps={eps}
+                onChange={handleEpsChange}
+            />}
+        {mode === "charts" && <div className="my-2">
+            <div className="h5 text-center clickable">Equative</div>
+            <EquativePicker
+                equative={eps.equative}
+                onChange={payload => adjustEps({ type: "set equative", payload })}
+                hideNegative={false}
+            />
+        </div>}
         {mode === "charts" && <EqChartsDisplay tense={eps.equative.tense} opts={props.opts} />}
         {mode === "phrases" && <EPDisplay
             opts={props.opts}
