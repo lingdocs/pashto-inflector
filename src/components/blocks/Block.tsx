@@ -38,7 +38,7 @@ export default Block;
 function NUBlock({ opts }: {
     opts: T.TextOptions,
 }) {
-    return <div>
+    return <div className="text-center">
         <div
             className={classNames("d-flex flex-row justify-content-center align-items-center")}
             style={{
@@ -58,7 +58,7 @@ function EquativeBlock({ opts, eq }: {
     opts: T.TextOptions,
     eq: T.EquativeRendered,
 }) {
-    return <div>
+    return <div className="text-center">
         <div
             className={classNames("d-flex flex-row justify-content-center align-items-center")}
             style={{
@@ -93,7 +93,7 @@ function EqCompBlock({ opts, comp }: {
         opts: T.TextOptions,
         adj: T.Rendered<T.AdjectiveSelection>,
     }) {
-        return <div>
+        return <div className="text-center">
             <div
                 className={classNames("d-flex flex-row justify-content-center align-items-center")}
                 style={{
@@ -113,7 +113,7 @@ function EqCompBlock({ opts, comp }: {
         opts: T.TextOptions,
         adv: T.Rendered<T.LocativeAdverbSelection>,
     }) {
-        return <div>
+        return <div className="text-center">
             <div
                 className={classNames("d-flex flex-row justify-content-center align-items-center")}
                 style={{
@@ -150,7 +150,7 @@ export function APBlock({ opts, children, english }: {
 }) {
     const ap = children;
     if (ap.selection.type === "adverb") {
-        return <div>
+        return <div className="text-center">
             <div
                 className={classNames("d-flex flex-row justify-content-center align-items-center")}
                 style={{
@@ -181,7 +181,7 @@ function Sandwich({ opts, sandwich }: {
     opts: T.TextOptions,
     sandwich: T.Rendered<T.SandwichSelection<T.Sandwich>>,
 }) {
-    return <div>
+    return <div className="text-center">
         <div className="text-center">Sandwich 🥪</div>
         <div
             className={classNames("d-flex flex-row justify-content-center align-items-center")}
@@ -211,7 +211,7 @@ export function NPBlock({ opts, children, inside, english }: {
 }) {
     const np = children;
     const hasPossesor = !!(np.selection.type !== "pronoun" && np.selection.possesor && !np.selection.possesor.shrunken);
-    return <div>
+    return <div className="text-center">
         <div
             className={classNames("d-flex flex-row justify-content-center align-items-center", { "pt-2": !inside && hasPossesor })}
             style={{
