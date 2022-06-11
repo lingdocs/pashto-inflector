@@ -11,7 +11,7 @@ type Mode = "text" | "blocks";
 function EPDisplay({ eps, opts, setOmitSubject }: {
     eps: T.EPSelectionState,
     opts: T.TextOptions,
-    setOmitSubject: (value: "true" | "false") => void,
+    setOmitSubject: ((value: "true" | "false") => void) | false
 }) {
     const [mode, setMode] = useState<Mode>("text");
     const EP = completeEPSelection(eps);
@@ -35,7 +35,7 @@ function EPDisplay({ eps, opts, setOmitSubject }: {
     return <div className="text-center pt-3">
         <div className="mb-2 d-flex flex-row justify-content-between align-items-center">
             <ModeSelect value={mode} onChange={setMode} />
-            <ButtonSelect
+            {setOmitSubject !== false ? <ButtonSelect
                 small
                 value={(eps.omitSubject ? "true" : "false") as "true" | "false"}
                 options={[
@@ -43,7 +43,7 @@ function EPDisplay({ eps, opts, setOmitSubject }: {
                     { value: "true", label: "No Subj."},
                 ]}
                 handleChange={setOmitSubject}
-            />
+            /> : <div />}
             <div />
         </div>
         {mode === "text"
