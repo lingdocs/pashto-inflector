@@ -8,10 +8,12 @@ import EPTextDisplay from "./EPTextDisplay";
 import EPBlocksDisplay from "./EPBlocksDisplay";
 type Mode = "text" | "blocks";
 
-function EPDisplay({ eps, opts, setOmitSubject }: {
+function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
     eps: T.EPSelectionState,
     opts: T.TextOptions,
     setOmitSubject: ((value: "true" | "false") => void) | false
+    justify?: "left" | "right" | "center",
+    onlyOne?: boolean,
 }) {
     const [mode, setMode] = useState<Mode>("text");
     const EP = completeEPSelection(eps);
@@ -47,10 +49,10 @@ function EPDisplay({ eps, opts, setOmitSubject }: {
             <div />
         </div>
         {mode === "text"
-            ? <EPTextDisplay opts={opts} compiled={result} />
-            : <EPBlocksDisplay opts={opts} rendered={rendered} />}
-        {result.e && <div className="text-muted mt-3">
-            {result.e.map((e, i) => <div key={i}>{e}</div>)}
+            ? <EPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={onlyOne} />
+            : <EPBlocksDisplay opts={opts} rendered={rendered} justify={justify} />}
+        {result.e && <div className={`text-muted mt-2 text-${justify === "left" ? "left" : justify === "right" ? "right" : "center"}`}>
+            {(onlyOne ? [result.e[0]] : result.e).map((e, i) => <div key={i}>{e}</div>)}
         </div>}
         {EP.predicate.selection.selection.type === "participle" && <div style={{ maxWidth: "6 00px", margin: "0 auto" }} className="alert alert-warning mt-3 pt-4">
             <p>⚠️ NOTE: This means that the subject {renderedSubject.selection.e ? `(${renderedSubject.selection.e})` : ""} is <strong>the action/idea</strong> of

@@ -2,15 +2,16 @@ import * as T from "../../types";
 import Block from "../blocks/Block";
 import KidDisplay from "../blocks/KidDisplay";
 
-function EPBlocksDisplay({ opts, rendered }: {
+function EPBlocksDisplay({ opts, rendered, justify }: {
     opts: T.TextOptions,
     rendered: T.EPRendered,
+    justify?: "left" | "right" | "center",
 }) {
     const blocks = rendered.omitSubject
         ? rendered.blocks.filter(b => b.type !== "subjectSelection")
         : rendered.blocks;
-    return <div>
-        <div className="d-flex flex-row justify-content-center align-items-end mt-3">
+    return <div className={`d-flex flex-row justify-content-${justify ? justify : "center"}`} style={{}}>
+        <div className="d-flex flex-row justify-content-left align-items-end mt-3 pb-2" style={{ overflowX: "auto" }}>
             <div key={Math.random()} className="mr-2">
                 <Block opts={opts} block={blocks[0]} />
             </div>
