@@ -162,12 +162,7 @@ export function APBlock({ opts, children, english }: {
                 {ap.selection.ps[0].f}
             </div>
             <div>AP</div>
-            {english && <div className="small text-muted text-center" style={{
-                // TODO: find a better way to keep this limited to the width of the div above
-                // don't let this make the div above expand
-                margin: "0 auto",
-                maxWidth: "300px",
-            }}>{english}</div>}
+            <EnglishBelow>{english}</EnglishBelow>
         </div>;
     }
     return <div>
