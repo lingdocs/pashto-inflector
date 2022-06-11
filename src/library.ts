@@ -23,6 +23,7 @@ import InlinePs from "./components/InlinePs";
 import ButtonSelect from "./components/ButtonSelect";
 import VerbFormDisplay from "./components/VerbFormDisplay";
 import VerbTable from "./components/VerbTable";
+import EPDisplay from "./components/ep-explorer/EPDisplay";
 import Examples from "./components/Examples";
 import Hider from "./components/Hider";
 import EntrySelect from "./components/EntrySelect";
@@ -251,6 +252,7 @@ export {
     NPBlock,
     APBlock,
     Block,
+    EPDisplay,
     // OTHER
     typePredicates,
     grammarUnits,

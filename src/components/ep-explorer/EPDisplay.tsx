@@ -8,8 +8,6 @@ import EPTextDisplay from "./EPTextDisplay";
 import EPBlocksDisplay from "./EPBlocksDisplay";
 type Mode = "text" | "blocks";
 
-// BIG TODO: FIGRUE OUT A WAY TO HANDLE OMITING SUBJECT
-
 function EPDisplay({ eps, opts, setOmitSubject }: {
     eps: T.EPSelectionState,
     opts: T.TextOptions,
