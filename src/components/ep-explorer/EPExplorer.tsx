@@ -5,12 +5,11 @@ import EquativePicker from "./EquativePicker";
 import EPDisplay from "./EPDisplay";
 import ButtonSelect from "../ButtonSelect";
 import EqCompPicker from "./eq-comp-picker/EqCompPicker";
-import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
 import EqChartsDisplay from "./EqChartsDisplay";
 import epsReducer from "./eps-reducer";
 import { useEffect, useRef, useState } from "react";
 import { completeEPSelection } from "../../lib/phrase-building/render-ep";
-import { makeEPSBlocks, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
+import { makeEPSBlocks } from "../../lib/phrase-building/blocks-utils";
 import APPicker from "../ap-picker/APPicker";
 import autoAnimate from "@formkit/auto-animate";
 // @ts-ignore
@@ -36,9 +35,17 @@ const blankEps: T.EPSelectionState = {
 function EPExplorer(props: {
     opts: T.TextOptions,
     entryFeeder: T.EntryFeeder,
-}) {
+} & ({
+    eps: T.EPSelectionState,
+    onChange: (eps: T.EPSelectionState) => void,
+} | {})) {
     const [mode, setMode] = useStickyState<"charts" | "phrases">("charts", "EPExplorerMode");
-    const [eps, adjustEps] = useStickyReducer(epsReducer, blankEps, "EPState7", flashMessage);
+    const [eps, adjustEps] = useStickyReducer(
+        epsReducer,
+        "eps" in props ? props.eps : blankEps,
+        "EPState7",
+        flashMessage,
+    );
     const [alert, setAlert] = useState<string | undefined>(undefined);
     const [showClipped, setShowClipped] = useState<string>("");
     const parent = useRef<HTMLDivElement>(null);
@@ -56,12 +63,6 @@ function EPExplorer(props: {
         }
         // eslint-disable-next-line
     }, []);
-    const subject = getSubjectSelection(eps.blocks).selection;
-    const king = subject?.selection.type === "pronoun"
-        ? "subject"
-        : eps.predicate.type === "Complement"
-        ? "subject"
-        : "predicate";
     function flashMessage(msg: string) {
         setAlert(msg);
         setTimeout(() => {
@@ -96,7 +97,7 @@ function EPExplorer(props: {
                 ]}
                 handleChange={setMode}
             />
-            <div className="d-flex flex-row">
+            {!("eps" in props) && <div className="d-flex flex-row">
                 <div
                     className="clickable mr-4"
                     onClick={mode === "phrases" ? handleCopyCode : undefined}
@@ -111,7 +112,7 @@ function EPExplorer(props: {
                 >
                     {mode === "phrases" ? <i className="fas fa-share-alt" /> : ""}
                 </div>
-            </div>
+            </div>}
         </div>
         {mode === "phrases" && <div className="clickable h5" onClick={() => adjustEps({ type: "insert new AP" })}>+ AP</div>}
         <div ref={parent} className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
@@ -135,7 +136,7 @@ function EPExplorer(props: {
                         {block && block.type === "subjectSelection"
                             ? <NPPicker
                                 phraseIsComplete={phraseIsComplete}
-                                heading={<div className="h5 text-center">Subject {king === "subject" ? roleIcon.king : ""}</div>}
+                                heading={<div className="h5 text-center">Subject</div>}
                                 entryFeeder={props.entryFeeder}
                                 np={block.selection}
                                 counterPart={undefined}
@@ -155,7 +156,7 @@ function EPExplorer(props: {
                     </div>
                 ))}
                 <div className="my-2 card block-card p-1">
-                    <div className="h5 text-center">Predicate {king === "predicate" ? roleIcon.king : ""}</div>
+                    <div className="h5 text-center">Predicate</div>
                     <div className="mb-2 text-center">
                         <ButtonSelect
                             small
@@ -197,7 +198,7 @@ function EPExplorer(props: {
         {mode === "phrases" && <EPDisplay
             opts={props.opts}
             eps={eps}
-            setOmitSubject={payload => adjustEps({ type: "set omitSubject", payload })}
+            setOmitSubject={"eps" in props ? false : payload => adjustEps({ type: "set omitSubject", payload })}
         />}
         {alert && <div className="alert alert-warning text-center" role="alert" style={{
             position: "fixed",

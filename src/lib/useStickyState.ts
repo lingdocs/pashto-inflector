@@ -50,12 +50,22 @@ export function useStickyReducer<T extends SaveableData, A>(
   defaultValue: T | ((old: T | undefined) => T),
   key: string,
   sendAlert?: (msg: string) => void,
-): [T, (action: A) => void, ((msg: string) => void) | undefined] {
+  onChange?: (state: T) => void,
+): [
+  T,
+  (action: A) => void,
+  ((msg: string) => void) | undefined,
+] {
   const [state, unsafeSetState] = useStickyState<T>(defaultValue, key);
   function adjustState(action: A) {
     unsafeSetState(oldState => {
-      return reducer(oldState, action, sendAlert);
+      const newState = reducer(oldState, action, sendAlert);
+      if (onChange) {
+        onChange(newState);
+      }
+      return newState;
     });
   }
+  // TODO: should this really return the sendAlert here?
   return [state, adjustState, sendAlert];
 }
