@@ -31,6 +31,7 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
 
 function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks: T.Block[], englishEquativePerson: T.Person } {
     const subject = getSubjectSelection(EP.blocks).selection;
+    const subjectPerson = getPersonFromNP(subject);
     const commandingNP: T.NPSelection = subject.selection.type === "pronoun"
         ? subject
         : EP.predicate.selection.type === "NP"
@@ -57,7 +58,9 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks
     return {
         blocks,
         kids,
-        englishEquativePerson: commandingNP.selection.type === "participle" ? T.Person.ThirdSingMale : commandingPerson,
+        englishEquativePerson: subject.selection.type === "participle"
+            ? T.Person.ThirdSingMale
+            : subjectPerson,
     };
 }
 
