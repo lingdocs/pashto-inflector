@@ -1,4 +1,4 @@
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import * as T from "../../types";
 import { randFromArray } from "../../lib/misc-helpers";
 import { baParticle } from "../../lib/grammar-units";
@@ -60,13 +60,25 @@ function VPExplorerQuiz(props: {
     opts: T.TextOptions,
     vps: T.VPSelectionState,
 }) {
-    const startingQs = tickQuizState(completeVPs(props.vps));
-    const [quizState, setQuizState] = useState<QuizState>(startingQs);
+    const [quizState, setQuizState] = useState<QuizState | "loading">("loading");
     const [showCheck, setShowCheck] = useState<boolean>(false);
     const [answerBlank, setAnswerBlank] = useState<string>("");
     const [withBa, setWithBa] = useState<boolean>(false);
     const [currentCorrectEmoji, setCurrentCorrectEmoji] = useState<string>(randFromArray(correctEmoji));
+    useEffect(() => {
+        setQuizState(tickQuizState(completeVPs(props.vps)));
+    }, [props.vps]);
+    if (quizState === "loading") {
+        return <div></div>;
+    }
+    function handleRestart() {
+        if (quizState === "loading") return;
+        setWithBa(false);
+        setAnswerBlank("");
+        setQuizState(tickQuizState(quizState.vps));
+    }
     function checkAnswer(a: T.PsString | { text: string, withBa: boolean }) {
+        if (quizState === "loading") return;
         if (!quizState) return;
         const correct = "p" in a 
             ? isInAnswer(a, quizState.answer)
@@ -79,7 +91,10 @@ function VPExplorerQuiz(props: {
             if (toPlay) playAudio(`correct-${randFromArray([1,2,3])}`);
             setShowCheck(true);
             setTimeout(() => {
-                setQuizState(tickQuizState);
+                setQuizState(o => {
+                    if (o === "loading") return o;
+                    return tickQuizState(o);
+                });
             }, checkDuration / 2);
             setTimeout(() => {
                 setShowCheck(false);
@@ -98,20 +113,9 @@ function VPExplorerQuiz(props: {
         }
     }
     const rendered = renderVP(quizState.vps);
-    const subject = getRenderedSubjectSelection(rendered.blocks).selection;
+    const subject: T.Rendered<T.NPSelection> = getRenderedSubjectSelection(rendered.blocks).selection;
     const object = getRenderedObjectSelection(rendered.blocks).selection;
     const { e } = compileVP(rendered, { removeKing: false, shrinkServant: false });
-    function handleRestart() {
-        setWithBa(false);
-        setAnswerBlank("");
-        setQuizState(tickQuizState(quizState.vps));
-    }
-    if (1 < 3) {
-        return <div className="text-center my-4">
-            <h3>The quiz is broken 😭</h3>
-            <p>It will be fixed in like a week or two... hopefully.</p>
-        </div>
-    }
     return <div className="mt-4">
         <ProgressBar quizState={quizState} />
         <div className="d-flex flex-row justify-content-around flex-wrap">
@@ -328,10 +332,9 @@ function tickQuizState(startingWith: T.VPSelectionComplete | QuizState): QuizSta
     }
     const answer = makeRes(newVps);
     const wrongAnswers = wrongVpsS.map(makeRes);
-    console.log({ newVps, answer, wrongAnswers });
     const allAnswers = shuffleArray([...wrongAnswers, answer]);
     const options = allAnswers.map(getOptionFromResult);
-    return {
+    const out: QuizState = {
         stage,
         qNumber: beatFirstStage ? 0 : qNumber,
         vps: newVps,
@@ -339,6 +342,7 @@ function tickQuizState(startingWith: T.VPSelectionComplete | QuizState): QuizSta
         options,
         result: "waiting",
     };
+    return out;
 }
 
 function getBlanksAnswer(vps: T.VPSelectionComplete): { ps: T.PsString[], withBa: boolean } {
