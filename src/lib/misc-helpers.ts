@@ -147,15 +147,20 @@ export function personIsPlural(person: T.Person): boolean {
     return person > 5;
 }
 
-export function getEnglishPersonInfo(person: T.Person): string {
-    const p = [0,1,6,7].includes(person)
-        ? "1st pers"
+export function getEnglishPersonInfo(person: T.Person, version?: "short" | "long"): string {
+    const p = ([0,1,6,7].includes(person)
+        ? "1st"
         : [2,3,8,9].includes(person)
-        ? "2nd pers"
-        : "3rd pers";
-    const a = personIsPlural(person) ? "plur" : "sing";
-    const g = personGender(person);
-    return `${p}. ${a}. ${g}.`;
+        ? "2nd"
+        : "3rd") + (version !== "short" ? " pers." : "");
+    const number = personIsPlural(person) ? "plur" : "sing";
+    const n = version === "short"
+        ? (number === "plur" ? "pl" : "sn") : number;
+    const gender = personGender(person);
+    const g = version === "short"
+        ? (gender === "masc" ? "m" : "f")
+        : gender;
+    return `${p} ${n}. ${g}.`;
 }
 
 export function randomNumber(minInclusive: number, maxExclusive: number): number {  

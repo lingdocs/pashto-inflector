@@ -3,6 +3,7 @@ import classNames from "classnames";
 import {
     getEnglishFromRendered,
 } from "../../lib/phrase-building/np-tools";
+import { getEnglishPersonInfo } from "../../library";
 
 function Block({ opts, block }: {
     opts: T.TextOptions,
@@ -219,7 +220,13 @@ export function NPBlock({ opts, children, inside, english }: {
             <Adjectives opts={opts}>{np.selection.adjectives}</Adjectives>
             <div> {np.selection.ps[0].f}</div>
         </div>
-        <div className={inside ? "small" : ""}>NP</div>
+        <div className={inside ? "small" : ""}>
+            NP
+            {!inside ? <>
+                {` `}
+                <span className="text-muted small">({getEnglishPersonInfo(np.selection.person, "short")})</span>
+            </> : <></>}
+        </div>
         <EnglishBelow>{english}</EnglishBelow>
     </div>
 }
