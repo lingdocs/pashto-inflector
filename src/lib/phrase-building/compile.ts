@@ -29,13 +29,13 @@ import { getAPsFromBlocks, getPredicateSelectionFromBlocks, getRenderedObjectSel
 
 // TODO: GET BLANKING WORKING!
 
-// const blank: T.PsString = {
-//     p: "______",
-//     f: "______",
-// };
+const blank: T.PsString = {
+    p: "______",
+    f: "______",
+};
 type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean };
 
-// const kidsBlank = makeSegment({ p: "___", f: "___" }, ["isKid"]);
+const kidsBlank: T.PsString = { p: "___", f: "___" };
 
 export function compileVP(VP: T.VPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
 export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths: true): { ps: T.PsString[], e?: string [] };
@@ -283,13 +283,18 @@ function compileEPPs(blocks: T.Block[], kids: T.Kid[], omitSubject: boolean, bla
         omitSubject ? blocks.filter(b => b.type !== "subjectSelection") : blocks,
         kids,
     );
-    return removeDuplicates(combineIntoText(blocksWKids, subjectPerson));
+    return removeDuplicates(combineIntoText(blocksWKids, subjectPerson, blankOut));
 }
 
-function combineIntoText(pieces: (T.Block | T.Kid)[], subjectPerson: T.Person): T.PsString[] {
+function combineIntoText(pieces: (T.Block | T.Kid)[], subjectPerson: T.Person, blankOut?: BlankoutOptions): T.PsString[] {
     const first = pieces[0];
     const rest = pieces.slice(1);
-    const firstPs = getPsFromPiece(first, subjectPerson);
+    const firstPs = (blankOut?.equative && first.type === "equative")
+        ? [blank]
+        : ((blankOut?.ba || blankOut?.kidsSection) && first.type === "ba")
+        // TODO: properly handle blanking out whole kids section
+        ? [kidsBlank]
+        : getPsFromPiece(first, subjectPerson);
     if (!rest.length) {
         return firstPs;
     }
