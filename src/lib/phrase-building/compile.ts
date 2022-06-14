@@ -263,6 +263,7 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
 export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
+    console.log("blankout options passed", blankOut);
     const psResult = compileEPPs(EP.blocks, EP.kids, EP.omitSubject, blankOut);
     return {
         ps: combineLengths ? flattenLengths(psResult) : psResult,
@@ -287,6 +288,7 @@ function compileEPPs(blocks: T.Block[], kids: T.Kid[], omitSubject: boolean, bla
 }
 
 function combineIntoText(pieces: (T.Block | T.Kid)[], subjectPerson: T.Person, blankOut?: BlankoutOptions): T.PsString[] {
+    console.log("in text combining blankout", blankOut);
     const first = pieces[0];
     const rest = pieces.slice(1);
     const firstPs = (blankOut?.equative && first.type === "equative")
@@ -295,6 +297,7 @@ function combineIntoText(pieces: (T.Block | T.Kid)[], subjectPerson: T.Person, b
         // TODO: properly handle blanking out whole kids section
         ? [kidsBlank]
         : getPsFromPiece(first, subjectPerson);
+    console.log({ first, firstPs });    
     if (!rest.length) {
         return firstPs;
     }
