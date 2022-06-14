@@ -301,7 +301,7 @@ function combineIntoText(pieces: (T.Block | T.Kid)[], subjectPerson: T.Person, b
     if (!rest.length) {
         return firstPs;
     }
-    return combineIntoText(rest, subjectPerson).flatMap(r => (
+    return combineIntoText(rest, subjectPerson, blankOut).flatMap(r => (
             firstPs.map(fPs => concatPsString(fPs, " ", r))
         )
     );
