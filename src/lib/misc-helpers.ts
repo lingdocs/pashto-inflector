@@ -155,7 +155,7 @@ export function getEnglishPersonInfo(person: T.Person, version?: "short" | "long
         : "3rd") + (version !== "short" ? " pers." : "");
     const number = personIsPlural(person) ? "plur" : "sing";
     const n = version === "short"
-        ? (number === "plur" ? "pl" : "sn") : number;
+        ? (number === "plur" ? "pl" : "sg") : number;
     const gender = personGender(person);
     const g = version === "short"
         ? (gender === "masc" ? "m" : "f")
