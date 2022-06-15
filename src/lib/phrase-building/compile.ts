@@ -263,7 +263,6 @@ function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[
 export function compileEP(EP: T.EPRendered): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string[] };
 export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string[] } {
-    console.log("blankout options passed", blankOut);
     const psResult = compileEPPs(EP.blocks, EP.kids, EP.omitSubject, blankOut);
     return {
         ps: combineLengths ? flattenLengths(psResult) : psResult,
@@ -283,21 +282,22 @@ function compileEPPs(blocks: T.Block[], kids: T.Kid[], omitSubject: boolean, bla
     const blocksWKids = putKidsInKidsSection(
         omitSubject ? blocks.filter(b => b.type !== "subjectSelection") : blocks,
         kids,
+        !!blankOut?.kidsSection
     );
+    // BIG TODO: If the kid's section is blank and there are no kids - add a blank for the kids section!
     return removeDuplicates(combineIntoText(blocksWKids, subjectPerson, blankOut));
 }
 
-function combineIntoText(pieces: (T.Block | T.Kid)[], subjectPerson: T.Person, blankOut?: BlankoutOptions): T.PsString[] {
-    console.log("in text combining blankout", blankOut);
+function combineIntoText(pieces: (T.Block | T.Kid | T.PsString)[], subjectPerson: T.Person, blankOut?: BlankoutOptions): T.PsString[] {
     const first = pieces[0];
     const rest = pieces.slice(1);
-    const firstPs = (blankOut?.equative && first.type === "equative")
+    const firstPs = ("p" in first)
+        ? [first]
+        : (blankOut?.equative && first.type === "equative")
         ? [blank]
-        : ((blankOut?.ba || blankOut?.kidsSection) && first.type === "ba")
-        // TODO: properly handle blanking out whole kids section
+        : ((blankOut?.ba) && first.type === "ba")
         ? [kidsBlank]
         : getPsFromPiece(first, subjectPerson);
-    console.log({ first, firstPs });    
     if (!rest.length) {
         return firstPs;
     }
@@ -346,12 +346,12 @@ function getEnglishAPs(blocks: (T.Rendered<T.SubjectSelectionComplete> | T.Rende
     }, "");
 }
 
-function putKidsInKidsSection(blocks: T.Block[], kids: T.Kid[]): (T.Block | T.Kid)[] {
+function putKidsInKidsSection(blocks: T.Block[], kids: T.Kid[], enforceKidsSectionBlankout: boolean): (T.Block | T.Kid | T.PsString)[] {
     const first = blocks[0];
     const rest = blocks.slice(1);
     return [
         first,
-        ...kids,
+        ...enforceKidsSectionBlankout ? [kidsBlank] : kids,
         ...rest,
     ];
 }
