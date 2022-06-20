@@ -687,6 +687,21 @@ export function uniquePsStringArray(arr: T.PsString[]): T.PsString[] {
     ].map((string) => JSON.parse(string)) as T.PsString[];
 }
 
+export function splitOffLeapfrogWordFull(ps: T.SingleOrLengthOpts<T.PsString[]>): [T.SingleOrLengthOpts<T.PsString[]>, T.SingleOrLengthOpts<T.PsString[]>] {
+    if ("long" in ps) {
+        const [shortA, shortB] = splitOffLeapfrogWordFull(ps.short) as [T.PsString[], T.PsString[]];
+        const [longA, longB] = splitOffLeapfrogWordFull(ps.long) as [T.PsString[], T.PsString[]];
+        return [{ long: longA, short: shortA }, { long: longB, short: shortB }];
+    }
+    return ps.reduce((accum, curr): [T.PsString[], T.PsString[]] => {
+        const [front, back] = splitOffLeapfrogWord(curr);
+        return [
+            [...accum[0], front],
+            [...accum[1], back],
+        ];
+    }, [[], []] as [T.PsString[], T.PsString[]])
+}
+
 export function splitOffLeapfrogWord(ps: T.PsString): [T.PsString, T.PsString] {
     const pWords = ps.p.split(" ");
     const fWords = ps.f.split(" ");
@@ -984,8 +999,12 @@ export function psStringFromEntry(entry: T.PsString): T.PsString {
     };
 }
 
-export function getLength<U>(x: T.SingleOrLengthOpts<U>, length: "long" | "short"): U {
-    return ("long" in x) ? x[length] : x;
+export function getLength<U>(x: T.SingleOrLengthOpts<U>, length: "long" | "short" | "mini"): U {
+    if ("long" in x) {
+        const s = x[length];
+        return s ? s : x.short;
+    }
+    return x;
 }
  
 export function getLong<U>(x: T.SingleOrLengthOpts<U>): U {

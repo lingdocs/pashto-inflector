@@ -4,9 +4,10 @@ import { compileEP } from "../../lib/phrase-building/compile";
 import ButtonSelect from "../ButtonSelect";
 import { getPredicateSelectionFromBlocks, getSubjectSelection, getSubjectSelectionFromBlocks } from "../../lib/phrase-building/blocks-utils";
 import { useState } from "react";
-import EPTextDisplay from "./EPTextDisplay";
-import EPBlocksDisplay from "./EPBlocksDisplay";
-type Mode = "text" | "blocks";
+import CompiledPTextDisplay from "../CompiledPTextDisplay";
+import EPBlocksDisplay from "../RenderedBlocksDisplay";
+import ModeSelect, { Mode, ScriptSelect } from "../DisplayModeSelect";
+import { useStickyState } from "../../library";
 
 function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
     eps: T.EPSelectionState,
@@ -16,6 +17,7 @@ function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
     onlyOne?: boolean,
 }) {
     const [mode, setMode] = useState<Mode>("text");
+    const [script, setScript] = useStickyState<"p" | "f">("f", "blockScriptChoice");
     const EP = completeEPSelection(eps);
     const subject = getSubjectSelection(eps.blocks);
 
@@ -36,7 +38,10 @@ function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
     const renderedPredicate = getPredicateSelectionFromBlocks(rendered.blocks).selection;
     return <div className="text-center pt-3">
         <div className="mb-2 d-flex flex-row justify-content-between align-items-center">
-            <ModeSelect value={mode} onChange={setMode} />
+            <div className="d-flex flex-row">
+                <ModeSelect value={mode} onChange={setMode} />
+                {mode === "blocks" && <ScriptSelect value={script} onChange={setScript} />}
+            </div>
             {setOmitSubject !== false ? <ButtonSelect
                 small
                 value={(eps.omitSubject ? "true" : "false") as "true" | "false"}
@@ -49,8 +54,8 @@ function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
             <div />
         </div>
         {mode === "text"
-            ? <EPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={onlyOne} />
-            : <EPBlocksDisplay opts={opts} rendered={rendered} justify={justify} />}
+            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={onlyOne} />
+            : <EPBlocksDisplay opts={opts} rendered={rendered} justify={justify} script={script} />}
         {result.e && <div className={`text-muted mt-2 text-${justify === "left" ? "left" : justify === "right" ? "right" : "center"}`}>
             {(onlyOne ? [result.e[0]] : result.e).map((e, i) => <div key={i}>{e}</div>)}
         </div>}
@@ -61,16 +66,6 @@ function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
             <p>It <strong>does not</strong> mean that the subject is doing the action, which is what the transaltion sounds like in English.</p>
         </div>}
     </div>
-}
-
-function ModeSelect({ value, onChange }: { value: Mode, onChange: (m: Mode) => void }) {
-    return <div style={{ fontSize: "larger" }}>
-        {value === "text" ? <div className="clickable" onClick={() => onChange("blocks")}>
-            <i className="fas fa-cubes" />
-        </div> : <div className="clickable" onClick={() => onChange("text")}>
-            <i className="fas fa-align-left" />
-        </div>}
-    </div>;
 }
 
 export default EPDisplay;

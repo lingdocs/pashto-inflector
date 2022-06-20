@@ -15,10 +15,10 @@ import playAudio from "../../lib/play-audio";
 import TensePicker from "./TensePicker";
 import Keyframes from "../Keyframes";
 import energyDrink from "./energy-drink.jpg";
-import { flattenLengths } from "../../lib/phrase-building/segment";
+import { flattenLengths } from "../../lib/phrase-building/compile";
 import { concatPsString } from "../../lib/p-text-helpers";
 import { isImperativeTense } from "../../lib/type-predicates";
-import { adjustObjectSelection, adjustSubjectSelection, getObjectSelection, getRenderedObjectSelection, getRenderedSubjectSelection, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
+import { adjustObjectSelection, adjustSubjectSelection, getObjectSelection, getObjectSelectionFromBlocks, getSubjectSelectionFromBlocks, getSubjectSelection, getVerbAndHeadFromBlocks } from "../../lib/phrase-building/blocks-utils";
 
 const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
 
@@ -113,8 +113,8 @@ function VPExplorerQuiz(props: {
         }
     }
     const rendered = renderVP(quizState.vps);
-    const subject: T.Rendered<T.NPSelection> = getRenderedSubjectSelection(rendered.blocks).selection;
-    const object = getRenderedObjectSelection(rendered.blocks).selection;
+    const subject: T.Rendered<T.NPSelection> = getSubjectSelectionFromBlocks(rendered.blocks).selection;
+    const object = getObjectSelectionFromBlocks(rendered.blocks).selection;
     const { e } = compileVP(rendered, { removeKing: false, shrinkServant: false });
     return <div className="mt-4">
         <ProgressBar quizState={quizState} />
@@ -346,18 +346,17 @@ function tickQuizState(startingWith: T.VPSelectionComplete | QuizState): QuizSta
 }
 
 function getBlanksAnswer(vps: T.VPSelectionComplete): { ps: T.PsString[], withBa: boolean } {
-    const { verb } = renderVP(vps);
-    const { head, rest } = verb.ps;
-    const ps = flattenLengths(rest).map(x => {
+    const { verb, perfectiveHead } = getVerbAndHeadFromBlocks(renderVP(vps).blocks);
+    const ps = flattenLengths(verb.block.ps).map(x => {
         const y = removeBa(x);
-        if (head) {
-            return concatPsString(head, y);
+        if (perfectiveHead) {
+            return concatPsString(perfectiveHead.ps, y);
         }
         return y;
     });
     return {
         ps,
-        withBa: verb.hasBa,
+        withBa: verb.block.hasBa,
     }
 }
 

@@ -1006,14 +1006,6 @@ function getPassiveStemPerfectiveSplit(stem: T.OptionalPersonInflections<T.Lengt
 
 function getPassiveRootPerfectiveSplit(root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>, splitInfo: T.SplitInfo): T.SplitInfo {
     const si = "long" in splitInfo ? splitInfo.long : splitInfo;
-    // if ("long" in splitInfo) {
-    //     return {
-    //         // @ts-ignore
-    //         short: getPassiveRootPerfectiveSplit(root, splitInfo.long, "short"),
-    //         // @ts-ignore
-    //         long: getPassiveRootPerfectiveSplit(root, splitInfo.long, "long"),
-    //     };
-    // }
     if ("mascSing" in si) {
         if (!("mascSing" in root)) throw new Error("persInflections doesn't match perfective split");
         return {

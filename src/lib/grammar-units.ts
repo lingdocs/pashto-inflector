@@ -9,6 +9,14 @@
 import { kawulStat } from "./irregular-conjugations";
 import * as T from "../types";
 
+export const negativeParticle: {
+    imperative: T.PsString,
+    nonImperative: T.PsString,
+} = {
+    nonImperative: { p: "نه", f: "nú" },
+    imperative: { p: "مه", f: "mú" },
+};
+
 export const presentEndings: T.VerbBlock = [
     [
         [{

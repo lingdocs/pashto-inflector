@@ -505,7 +505,6 @@ export type Pattern6FemEntry<T extends FemNounEntry> = T & { __brand3: "non anim
 export type NonInflecting<T> = T & { __brand3: "non-inflecting" };
 
 export type Entry = NounEntry | AdjectiveEntry | AdverbEntry | VerbEntry;
-export type RenderedVPSBlock =  (Rendered<SubjectSelectionComplete> | Rendered<ObjectSelectionComplete> | Rendered<APSelection>);
 // TODO: make this Rendered<VPSelectionComplete> with recursive Rendered<>
 export type VPRendered = {
     type: "VPRendered",
@@ -514,8 +513,8 @@ export type VPRendered = {
     isPast: boolean,
     isTransitive: boolean,
     isCompound: "stative" | "dynamic" | false,
-    blocks: RenderedVPSBlock[],
-    verb: VerbRendered,
+    blocks: Block[][],
+    kids: Kid[],
     englishBase?: string[],
     form: FormVersion,
     whatsAdjustable: "both" | "king" | "servant",
@@ -838,7 +837,7 @@ export type EquativeRendered = EquativeSelection & {
 
 export type EPRendered = {
     type: "EPRendered",
-    blocks: Block[],
+    blocks: Block[][],
     kids: Kid[],
     englishBase?: string[],
     omitSubject: boolean,
@@ -866,12 +865,54 @@ export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
 }
 
 export type EquativeBlock = { type: "equative", equative: EquativeRendered };
+export type VerbComplementBlock = {
+    type: "verbComplement",
+    complement: PsString,
+};
+export type PerfectParticipleBlock = {
+    type: "perfectParticipleBlock",
+    ps: SingleOrLengthOpts<PsString[]>,
+    verb: VerbRenderedBlock,
+    person: Person,
+};
+export type PerfectEquativeBlock = {
+    type: "perfectEquativeBlock",
+    ps: PsString[],
+    person: Person,
+};
+export type ModalVerbBlock = {
+    type: "modalVerbBlock",
+    ps: SingleOrLengthOpts<PsString[]>,
+    verb: VerbRenderedBlock,
+};
+export type ModalVerbKedulPart = {
+    type: "modalVerbKedulPart",
+    ps: PsString[],
+    verb: VerbRenderedBlock,
+};
+export type PerfectiveHeadBlock = { type: "perfectiveHead", ps: PsString };
+export type VerbRenderedBlock = {
+    type: "verb",
+    block: Omit<VerbSelectionComplete, "object"> & {
+        hasBa: boolean,
+        ps: SingleOrLengthOpts<PsString[]>,
+        person: Person,
+    },
+};
 
 export type Block =
     | Rendered<SubjectSelectionComplete>
+    | Rendered<ObjectSelectionComplete>
     | Rendered<APSelection>
     | Rendered<PredicateSelectionComplete>
-    | { type: "nu" }
+    | PerfectParticipleBlock
+    | PerfectEquativeBlock
+    | ModalVerbBlock
+    | ModalVerbKedulPart
+    | { type: "negative", imperative: boolean }
+    | PerfectiveHeadBlock
+    | VerbRenderedBlock
+    | VerbComplementBlock
     | EquativeBlock;
 
 export type Kid =

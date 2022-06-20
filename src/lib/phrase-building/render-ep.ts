@@ -4,7 +4,7 @@ import {
     getPersonFromNP,
 } from "./vp-tools";
 import { renderNPSelection } from "./render-np";
-import { getFirstSecThird, getPersonFromVerbForm } from "../../lib/misc-helpers";
+import { getPersonFromVerbForm } from "../../lib/misc-helpers";
 import { getVerbBlockPosFromPerson } from "../misc-helpers";
 import { getEnglishWord } from "../get-english-word";
 import { psStringFromEntry } from "../p-text-helpers";
@@ -13,7 +13,7 @@ import { renderAdjectiveSelection } from "./render-adj";
 import { renderSandwich } from "./render-sandwich";
 import { EPSBlocksAreComplete, getSubjectSelection } from "./blocks-utils";
 import { removeAccentsWLength } from "../accent-helpers";
-import { pronouns } from "../grammar-units";
+import { findPossesivesToShrink, orderKids } from "./render-common";
 
 export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
     const { kids, blocks, englishEquativePerson } = getEPSBlocksAndKids(EP);
@@ -29,7 +29,7 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
     };
 }
 
-function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks: T.Block[], englishEquativePerson: T.Person } {
+function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks: T.Block[][], englishEquativePerson: T.Person } {
     const subject = getSubjectSelection(EP.blocks).selection;
     const subjectPerson = getPersonFromNP(subject);
     const commandingNP: T.NPSelection = subject.selection.type === "pronoun"
@@ -39,7 +39,7 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks
         : subject;
     const commandingPerson = getPersonFromNP(commandingNP);
     const equative: T.EquativeBlock = { type: "equative", equative: renderEquative(EP.equative, commandingPerson) };
-    const blocks: T.Block[] = [
+    const blocks: T.Block[][] = insertNegative([
         ...renderEPSBlocks(EP.blocks),
         {
             type: "predicateSelection",
@@ -47,10 +47,9 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks
                 ? renderNPSelection(EP.predicate.selection, false, false, "subject", "king")
                 : renderEqCompSelection(EP.predicate.selection, commandingPerson),
         },
-        ...EP.equative.negative ? [{ type: "nu" } as T.Block] : [],
-        EP.equative.negative ? removeAccontsFromEq(equative) : equative,
-    ];
-    const miniPronouns = findPossesivesToShrink([...EP.blocks, EP.predicate], EP.omitSubject);
+        equative,
+    ], EP.equative.negative);
+    const miniPronouns = findPossesivesToShrink(removeOrKeepSubject([...EP.blocks, EP.predicate], EP.omitSubject));
     const kids: T.Kid[] = orderKids([
         ...equative.equative.hasBa ? [{ type: "ba" } as T.Kid] : [], 
         ...miniPronouns,
@@ -64,92 +63,27 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks
     };
 }
 
-function orderKids(kids: T.Kid[]): T.Kid[] {
-    const sorted = [...kids].sort((a, b) => {
-        // ba first
-        if (a.type === "ba") return -1;
-        // kinds lined up 1st 2nd 3rd person
-        if (a.type === "mini-pronoun" && b.type === "mini-pronoun") {
-            const aPers = getFirstSecThird(a.person);
-            const bPers = getFirstSecThird(b.person);
-            if (aPers < bPers) {
-                return -1;
-            }
-            if (aPers > bPers) {
-                return 1;
-            }
-            // TODO: is this enough?
-            return 0;
-        }
-        return 0;
-    });
-    return sorted;
+function insertNegative(blocks: T.Block[], negative: boolean): T.Block[][] {
+    if (!negative) return [blocks];
+    const blocksA = removeAccentsFromEq(blocks);
+    return [
+        [
+            ...blocksA.slice(0, blocks.length - 1),
+            { type: "negative", imperative: false },
+            ...blocksA.slice(-1), // last (equative)
+        ],
+        [
+            ...blocksA.slice(0, blocks.length - 2),
+            { type: "negative", imperative: false },
+            ...blocksA.slice(-1), // last (equative)
+            ...blocksA.slice(-2, -1), // second last (predicate)
+        ],
+    ];
 }
 
-function findPossesivesToShrink(blocks: (T.EPSBlockComplete | T.SubjectSelectionComplete | T.PredicateSelectionComplete | T.APSelection)[], omitSubject: boolean): T.MiniPronoun[] {
-    return blocks.reduce((kids, item) => {
-        const block = "block" in item ? item.block : item;
-        if (block.type === "subjectSelection") {
-            if (omitSubject) return kids;
-            return [
-                ...kids,
-                ...findShrunkenPossInNP(block.selection),
-            ];
-        }
-        if (block.type === "AP") {
-            if (block.selection.type === "adverb") return kids;
-            return [
-                ...kids,
-                ...findShrunkenPossInNP(block.selection.inside),
-            ];
-        }
-        if (block.type === "predicateSelection") {
-            if (block.selection.type === "EQComp") {
-                if (block.selection.selection.type === "sandwich") {
-                    return [
-                        ...kids,
-                        ...findShrunkenPossInNP(block.selection.selection.inside),
-                    ];
-                }
-                return kids;
-            }
-            return [
-                ...kids,
-                ...findShrunkenPossInNP(block.selection),
-            ];
-        }
-        return kids;
-    }, [] as T.MiniPronoun[]);
-}
-
-function findShrunkenPossInNP(NP: T.NPSelection): T.MiniPronoun[] {
-    if (NP.selection.type === "pronoun") return [];
-    if (!NP.selection.possesor) return [];
-    // if (NP.selection.type === "noun") {
-    //     if (NP.selection.adjectives) {
-    //         const { adjectives, ...rest } = NP.selection;
-    //         return [
-    //             // TODO: ability to find possesives shrinkage in sandwiches in adjectives
-    //             // ...findShrunkenPossInAdjectives(adjectives),
-    //             ...findShrunkenPossInNP({ type: "NP", selection: {
-    //                 ...rest,
-    //                 adjectives: [],
-    //             }}),
-    //         ];
-    //     }
-    // }
-    if (NP.selection.possesor.shrunken) {
-        const person = getPersonFromNP(NP.selection.possesor.np);
-        const miniP: T.MiniPronoun = {
-            type: "mini-pronoun",
-            person,
-            ps: getMiniPronounPs(person),
-            source: "possesive",
-            np: NP.selection.possesor.np,
-        };
-        return [miniP];
-    }
-    return findShrunkenPossInNP(NP.selection.possesor.np);
+function removeOrKeepSubject(blocks: (T.EPSBlockComplete | T.SubjectSelectionComplete | T.PredicateSelectionComplete | T.APSelection)[], omitSubject: boolean): (T.EPSBlockComplete | T.SubjectSelectionComplete | T.PredicateSelectionComplete | T.APSelection)[] {
+    if (!omitSubject) return blocks;
+    return blocks.filter(b => !("type" in b && b.type === "subjectSelection"));
 }
 
 export function getEquativeForm(tense: T.EquativeTense): { hasBa: boolean, form: T.SingleOrLengthOpts<T.VerbBlock> } {
@@ -343,17 +277,18 @@ export function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionCompl
     };
 }
 
-export function getMiniPronounPs(person: T.Person): T.PsString {
-    const [row, col] = getVerbBlockPosFromPerson(person);
-    return pronouns.mini[row][col][0];
-}
-
-function removeAccontsFromEq(equ: T.EquativeBlock): T.EquativeBlock {
-    return {
-        ...equ,
-        equative: {
-            ...equ.equative,
-            ps: removeAccentsWLength(equ.equative.ps),
-        },
-    };
+function removeAccentsFromEq(blocks: T.Block[]): T.Block[] {
+    return blocks.map((block) => {
+        if (block.type === "equative") {
+            const e: T.EquativeBlock = {
+                ...block,
+                equative: {
+                    ...block.equative,
+                    ps: removeAccentsWLength(block.equative.ps),
+                },
+            };
+            return e;
+        }
+        return block;
+    });
 }

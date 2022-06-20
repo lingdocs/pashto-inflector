@@ -155,7 +155,7 @@ export function getTenseFromVerbSelection(vs: T.VerbSelection): T.VerbTense | T.
             return "perfectiveFutureModal";
         }
         if (tn === "perfectivePast") {
-            return "perfectiveFutureModal";
+            return "perfectivePastModal";
         }
         if (tn === "imperfectivePast") {
             return "imperfectivePastModal";

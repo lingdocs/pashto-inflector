@@ -1,8 +1,8 @@
-import { getShort } from "../../lib/p-text-helpers";
-import * as T from "../../types";
-import Examples from "../Examples";
+import { getShort } from "../lib/p-text-helpers";
+import * as T from "../types";
+import Examples from "./Examples";
 
-function EPTextDisplay({ compiled, opts, justify, onlyOne }: {
+function CompiledPTextDisplay({ compiled, opts, justify, onlyOne }: {
     compiled: {
         ps: T.SingleOrLengthOpts<T.PsString[]>;
         e?: string[] | undefined;
@@ -30,4 +30,4 @@ function EPTextDisplay({ compiled, opts, justify, onlyOne }: {
     </div>;
 }
 
-export default EPTextDisplay;
+export default CompiledPTextDisplay;

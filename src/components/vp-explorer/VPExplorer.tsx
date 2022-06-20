@@ -15,7 +15,6 @@ import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationMod
 // @ts-ignore
 import LZString from "lz-string";
 import { vpsReducer } from "./vps-reducer";
-import { getShrunkenServant } from "../../lib/phrase-building/compile";
 import APPicker from "../ap-picker/APPicker";
 import autoAnimate from "@formkit/auto-animate";
 import { getObjectSelection, getSubjectSelection, isNoObject } from "../../lib/phrase-building/blocks-utils";
@@ -44,7 +43,7 @@ function VPExplorer(props: {
         props.loaded
             ? props.loaded
             : savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState14",
+        "vpsState15",
         flashMessage,    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
@@ -143,7 +142,7 @@ function VPExplorer(props: {
     const VPS = completeVPSelection(vps);
     const phraseIsComplete = !!VPS;
     const rendered = VPS ? renderVP(VPS) : undefined;
-    const servantIsShrunk = !!(rendered ? getShrunkenServant(rendered) : undefined);
+    const servantIsShrunk = includesShrunkenServant(rendered?.kids);
     function toggleServantShrink() {
         adjustVps({
             type: "toggle servant shrink",
@@ -257,7 +256,12 @@ function VPExplorer(props: {
                             : (vps.verb && block?.type === "objectSelection" && block.selection !== "none")
                             ? <div className="my-2" style={{ background: (servantIsShrunk && roles.servant === "object") ? shrunkenBackground : "inherit" }}>
                                 {(typeof block.selection === "number")
-                                    ? <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
+                                    ? <div>
+                                        {roles.king === "object" 
+                                            ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
+                                            : <div className="h5 text-center">Object</div>}
+                                        <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
+                                    </div>
                                     : <NPPicker
                                         phraseIsComplete={phraseIsComplete}
                                         heading={roles.king === "object" 
@@ -295,7 +299,7 @@ function VPExplorer(props: {
             </div>
         </div>}
         {mode === "phrases" && <VPDisplay
-            VP={rendered ? rendered : vps}
+            VPS={vps}
             opts={props.opts}
             setForm={handleSetForm}
         />}
@@ -349,5 +353,12 @@ function getVPSFromUrl(): T.VPSelectionState | undefined {
     if (!fromParams) return;
     const decoded = LZString.decompressFromEncodedURIComponent(fromParams);
     return JSON.parse(decoded) as T.VPSelectionState;
+}
+
+function includesShrunkenServant(kids?: T.Kid[]): boolean {
+    if (!kids) return false;
+    return kids.some(k => (
+        k.type === "mini-pronoun" && k.source === "servant"
+    ));
 }
 

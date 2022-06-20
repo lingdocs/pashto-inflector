@@ -15,7 +15,6 @@ import {
 import {
     getVerbInfo,
 } from "./lib/verb-info";
-import ConjugationViewer from "./components/ConjugationViewer";
 import InflectionsTable from "./components/InflectionsTable";
 import Pashto from "./components/Pashto";
 import Phonetics from "./components/Phonetics";
@@ -113,7 +112,7 @@ import {
 } from "./lib/misc-helpers";
 import {
     flattenLengths,
-} from "./lib/phrase-building/segment";
+} from "./lib/phrase-building/compile";
 import {
     simplifyPhonetics,
 } from "./lib/simplify-phonetics";
@@ -235,7 +234,6 @@ export {
     // COMPONENTS
     EPExplorer,
     VPExplorer,
-    ConjugationViewer, // TODO: Deprecated - remove
     Examples,
     VerbFormDisplay,
     VerbTable,

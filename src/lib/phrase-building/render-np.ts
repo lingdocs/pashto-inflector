@@ -17,8 +17,8 @@ import { renderAdjectiveSelection } from "./render-adj";
 import { isPattern5Entry, isAnimNounEntry } from "../type-predicates";
 
 export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection>;
-export function renderNPSelection(NP: T.NPSelection | T.ObjectNP, inflected: boolean, inflectEnglish: boolean, role: "object", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection> | T.Person.ThirdPlurMale | "none";
-export function renderNPSelection(NP: T.NPSelection | T.ObjectNP, inflected: boolean, inflectEnglish: boolean, role: "subject" | "object", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection> | T.Person.ThirdPlurMale | "none" {
+export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "object", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection>;
+export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject" | "object", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection> {
     if (typeof NP !== "object") {
         if (role !== "object") {
             throw new Error("ObjectNP only allowed for objects");

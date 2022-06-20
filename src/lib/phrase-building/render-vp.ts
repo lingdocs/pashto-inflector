@@ -7,8 +7,10 @@ import {
     hasBaParticle,
     getLong,
     isImperativeBlock,
+    splitOffLeapfrogWordFull,
+    getShort,
 } from "../p-text-helpers";
-import { removeAccents } from "../accent-helpers";
+import { removeAccents, removeAccentsWLength } from "../accent-helpers";
 import {
     getPersonFromNP,
     removeBa,
@@ -16,6 +18,8 @@ import {
     getTenseVerbForm,
 } from "./vp-tools";
 import {
+    isImperativeTense,
+    isModalTense,
     isPattern4Entry,
     isPerfectTense,
 } from "../type-predicates";
@@ -24,6 +28,7 @@ import { personGender } from "../../lib/misc-helpers";
 import { renderNPSelection } from "./render-np";
 import { getObjectSelection, getSubjectSelection } from "./blocks-utils";
 import { renderAPSelection } from "./render-ap";
+import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
 
@@ -47,6 +52,12 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const inflectSubject = isPast && isTransitive && !isMascSingAnimatePattern4(subject);
     const inflectObject = !isPast && isFirstOrSecondPersPronoun(object);
     // Render Elements
+    const firstBlocks = renderVPBlocks(VP.blocks, {
+        inflectSubject,
+        inflectObject,
+        king,
+    });
+    const { verbBlocks, hasBa } = renderVerbSelection(VP.verb, kingPerson, objectPerson);
     const b: T.VPRendered = {
         type: "VPRendered",
         king,
@@ -54,12 +65,11 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         isPast,
         isTransitive,
         isCompound: VP.verb.isCompound,
-        blocks: renderVPBlocks(VP.blocks, {
-            inflectSubject,
-            inflectObject,
-            king,
-        }),
-        verb: renderVerbSelection(VP.verb, kingPerson, objectPerson),
+        blocks: insertNegative([
+            ...firstBlocks,
+            ...verbBlocks,
+        ], VP.verb.negative, isImperativeTense(VP.verb.tense)),
+        kids: getVPKids(hasBa, VP.blocks, VP.form, king),
         englishBase: renderEnglishVPBase({
             subjectPerson,
             object: VP.verb.isCompound === "dynamic" ? "none" : object,
@@ -71,28 +81,271 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     return b;
 }
 
+// function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[], V: T.VerbRendered): Segment[][] {
+//     const hasLeapfrog = isPerfectTense(V.tense) || isModalTense(V.tense);
+//     const rest = (() => {
+//         if (hasLeapfrog) {
+//             const [restF, restLast] = splitOffLeapfrogWord(restRaw);
+//             return {
+//                 front: makeSegment(restF.map(removeBa), ["isVerbRest"]),
+//                 last: makeSegment(restLast.map(removeBa), ["isVerbRest"]),
+//             };
+//         } 
+//         return makeSegment(restRaw.map(removeBa), ["isVerbRest"]);
+//     })();
+//     const headSegment: Segment | undefined = !head
+//         ? head
+//         : makeSegment(
+//             head,
+//             (head.p === "و" || head.p === "وا")
+//                 ? ["isVerbHead", "isOoOrWaaHead"]
+//                 : ["isVerbHead"]
+//         );
+//     if (!V.negative) {
+//         if ("front" in rest) {
+//             return [
+//                 headSegment ? [headSegment, rest.front, rest.last] : [rest.front, rest.last],
+//             ]
+//         }
+//         return [
+//             headSegment ? [headSegment, rest] : [rest],
+//         ];
+//     }
+//     const nu: T.PsString = isImperativeTense(V.tense)
+//         ? { p: "مه", f: "mú" }
+//         : { p: "نه", f: "nú" };
+//     if (!headSegment) {
+//         if ("front" in rest) {
+//             return [
+//                 // pefect nu dey me leeduley and nu me dey leeduley
+//                 // actually don't think this is correct - keeping it out for now
+//                 // [
+//                 //     mergeSegments(
+//                 //         makeSegment(nu, ["isNu"]),
+//                 //         rest.last.adjust({ ps: removeAccents }),
+//                 //     ),
+//                 //     rest.front.adjust({ ps: removeAccents }),
+//                 // ],
+//                 [
+//                     makeSegment(nu, ["isNu"]),
+//                     rest.last.adjust({ ps: removeAccents }),
+//                     rest.front.adjust({ ps: removeAccents }),
+//                 ],
+//                 [
+//                     rest.front.adjust({ ps: removeAccents }),
+//                     makeSegment(nu, ["isNu"]),
+//                     rest.last.adjust({ ps: removeAccents }),
+//                 ],
+//             ];
+//         }
+//         return [[
+//             makeSegment(nu, ["isNu"]),
+//             rest.adjust({ ps: removeAccents }),
+//         ]];
+//     }
+//     if ("front" in rest) {
+//         return [
+//             [
+//                 headSegment.adjust({ ps: removeAccents }),
+//                 rest.last.adjust({
+//                     ps: r => concatPsString(nu, " ", removeAccents(r)),
+//                     desc: ["isNu"],
+//                 }),
+//                 rest.front.adjust({
+//                     ps: r => removeAccents(r),
+//                 }),
+//             ],
+//             [
+//                 headSegment.adjust({ ps: removeAccents }),
+//                 rest.front.adjust({
+//                     ps: r => concatPsString(nu, " ", removeAccents(r)),
+//                     desc: ["isNu"],
+//                 }),
+//                 rest.last.adjust({
+//                     ps: r => removeAccents(r),
+//                 }),
+//             ],
+//             ...(!headSegment.isOoOrWaaHead && !V.isCompound) ? [[
+//                 mergeSegments(headSegment, rest.front, "no space").adjust({
+//                     ps: r => concatPsString(nu, " ", removeAccents(r)),
+//                     desc: ["isNu"],
+//                 }),
+//                 rest.last.adjust({
+//                     ps: r => removeAccents(r),
+//                 }),
+//             ]] : [],
+//         ];       
+//     }
+//     return [
+//         ...(V.voice !== "passive") ? [[
+//             ...headSegment ? [headSegment.adjust({ ps: removeAccents })] : [],
+//             rest.adjust({
+//                 ps: r => concatPsString(nu, " ", removeAccents(r)),
+//                 desc: ["isNu"],
+//             }),
+//         ]] : [],
+//         // verbs that have a perfective prefix that is not و or وا can put the
+//         // nu *before* the prefix as well // TODO: also وي prefixes?
+//         ...((!headSegment.isOoOrWaaHead && !V.isCompound) || (V.voice === "passive")) ? [[
+//             makeSegment(nu, ["isNu"]),
+//             headSegment.adjust({ ps: removeAccents }),
+//             rest.adjust({ ps: removeAccents }),
+//         ]] : [],
+//     ];
+// }
+
+function getVPKids(hasBa: boolean, blocks: T.VPSBlockComplete[], form: T.FormVersion, king: "subject" | "object"): T.Kid[] {
+    const subject = getSubjectSelection(blocks).selection;
+    const objectS = getObjectSelection(blocks).selection;
+    const object = typeof objectS === "object" ? objectS : undefined;
+    const servantNP = king === "subject" ? object : subject;
+    const shrunkenServant = (form.shrinkServant && servantNP)
+        ? shrinkServant(servantNP)
+        : undefined;
+    const shrunkenPossesives = findPossesivesToShrink(removeAbbreviated(blocks, form, king));
+    return orderKids([
+        ...hasBa ? [{ type: "ba" } as T.Kid] : [],
+        ...shrunkenServant ? [shrunkenServant] : [],
+        ...shrunkenPossesives ? shrunkenPossesives : [],
+    ]); 
+}
+
+function removeAbbreviated(blocks: T.VPSBlockComplete[], form: T.FormVersion, king: "subject" | "object"): T.VPSBlockComplete[] {
+    return blocks.filter(({ block }) => {
+        if (block.type === "subjectSelection") {
+            if (form.shrinkServant && king === "object") return false;
+            if (form.removeKing && king === "subject") return false;
+        }
+        if (block.type === "objectSelection") {
+            if (form.shrinkServant && king === "subject") return false;
+            if (form.removeKing && king === "object") return false;
+        }
+        return true;
+    })
+}
+
+function insertNegative(blocks: T.Block[], negative: boolean, imperative: boolean): T.Block[][] {
+    // TODO: proper arrange verb with negative and variations
+    // ALSO removing the accent from nu
+    if (!negative) return [blocks];
+    const blocksA = removeVerbAccent(blocks);
+    const basic: T.Block[] = [
+        ...blocksA.slice(0, blocks.length - 1),
+        {
+            type: "negative",
+            imperative,
+        },
+        ...blocksA.slice(-1), 
+    ];
+    if (hasNonStandardPerfectiveSplit(blocks)) {
+        return [
+            basic,
+            [
+                ...blocksA.slice(0, blocks.length - 2),
+                { type: "negative", imperative },
+                ...blocksA.slice(-2, -1), // second last (perfective split)
+                ...blocksA.slice(-1), // last (verb)
+            ],
+        ];
+    }
+    if (hasLeapFroggable(blocks)) {
+        return [
+            [
+                ...blocksA.slice(0, blocks.length - 2),
+                { type: "negative", imperative },
+                ...blocksA.slice(-1), // last
+                ...blocksA.slice(-2, -1), // second last
+            ],
+            basic,
+        ];
+    }
+    return [basic];
+}
+
+function hasLeapFroggable(blocks: T.Block[]): boolean {
+    return blocks.some(b => b.type === "perfectEquativeBlock" || b.type === "modalVerbBlock");
+}
+
+function hasNonStandardPerfectiveSplit(blocks: T.Block[]): boolean {
+    const perfS = blocks.find(b => b.type === "perfectiveHead");
+    if (!perfS || perfS.type !== "perfectiveHead") {
+        return false;
+    }
+    return !["و", "وا"].includes(perfS.ps.p);
+}
+
+function removeVerbAccent(blocks: T.Block[]): T.Block[] {
+    return blocks.map((block) => {
+        if (block.type === "perfectiveHead") {
+            return {
+                ...block,
+                ps: removeAccents(block.ps),
+            };
+        }
+        if (block.type === "verb") {
+            return {
+                ...block,
+                block: {
+                    ...block.block,
+                    ps: removeAccentsWLength(block.block.ps),
+                },
+            };
+        }
+        return block;
+    });
+}
+
+function shrinkServant(np: T.NPSelection): T.MiniPronoun {
+    const person = getPersonFromNP(np);
+    return {
+        type: "mini-pronoun",
+        person,
+        ps: getMiniPronounPs(person),
+        source: "servant",
+        np,
+    };
+}
+
 function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
     inflectSubject: boolean,
     inflectObject: boolean,
     king: "subject" | "object",
-}): T.RenderedVPSBlock[] {
-    return blocks.map(({ block }): T.RenderedVPSBlock => {
+}): T.Block[] {
+    return blocks.reduce((blocks, { block }): T.Block[] => {
         if (block.type === "subjectSelection") {
-            return {
-                type: "subjectSelection",
-                selection: renderNPSelection(block.selection, config.inflectSubject, false, "subject", config.king === "subject" ? "king" : "servant"),
-            }
+            return [
+                ...blocks,
+                {
+                    type: "subjectSelection",
+                    selection: renderNPSelection(block.selection, config.inflectSubject, false, "subject", config.king === "subject" ? "king" : "servant"),
+                },
+            ];
         }
         if (block.type === "objectSelection") {
             const object = typeof block === "object" ? block.selection : block;
+            if (typeof object !== "object") {
+                return [
+                    ...blocks,
+                    {
+                        type: "objectSelection",
+                        selection: object,
+                    },
+                ];
+            }
             const selection = renderNPSelection(object, config.inflectObject, true, "object", config.king === "object" ? "king" : "servant");
-            return {
-                type: "objectSelection",
-                selection,
-            };
+            return [
+                ...blocks,
+                {
+                    type: "objectSelection",
+                    selection,
+                },
+            ];
         }
-        return renderAPSelection(block);
-    });
+        return [
+            ...blocks,
+            renderAPSelection(block),
+        ];
+    }, [] as T.Block[]);
 }
 
 function whatsAdjustable(VP: T.VPSelectionComplete): "both" | "king" | "servant" {
@@ -109,7 +362,15 @@ function whatsAdjustable(VP: T.VPSelectionComplete): "both" | "king" | "servant"
         : "king";
 }
 
-function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, objectPerson: T.Person | undefined): T.VerbRendered {
+type VerbBlocks = | [T.PerfectiveHeadBlock, T.VerbRenderedBlock] // verb w perfective split
+    | [T.VerbRenderedBlock] // verb w/out perfective split
+    | [T.PerfectParticipleBlock, T.PerfectEquativeBlock] // perfect verb
+    | [T.ModalVerbBlock, T.ModalVerbKedulPart] // modal verb
+
+function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, objectPerson: T.Person | undefined): {
+    verbBlocks: VerbBlocks
+    hasBa: boolean,  
+} {
     const v = vs.dynAuxVerb || vs.verb;
     const conjugations = conjugateVerb(v.entry, v.complement);
     // TODO: error handle this?
@@ -118,14 +379,73 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, obje
         // will default to transitive
         ? conjugations.transitive
         : "stative" in conjugations
-        // TODO: option to manually select stative/dynamic
         ? conjugations.stative
-        : conjugations; 
+        : conjugations;
+    const { ps: { head, rest }, hasBa } = getPsVerbConjugation(conj, vs, person, objectPerson);
+    const vrb: T.VerbRenderedBlock = {
+        type: "verb",
+        block: {
+            ...vs,
+            ps: rest,
+            person,
+            hasBa,
+        },
+    };
+    const verbBlocks = [
+        ...(head ? (
+                vs.isCompound === "stative" ? [{
+                    type: "verbComplement",
+                    complement: head,
+                } as T.VerbComplementBlock] : [{
+                    type: "perfectiveHead",
+                    ps: head,
+                } as T.PerfectiveHeadBlock]
+            ) : [] as [T.VerbComplementBlock] | [T.PerfectiveHeadBlock] | []),
+        ...splitUpIfModal(vrb),
+    ] as VerbBlocks;
+    const perfectStuff = isPerfectTense(vrb.block.tense) ? getPerfectStuff(rest, vrb) : undefined;
     return {
-        ...vs,
-        person,
-        ...getPsVerbConjugation(conj, vs, person, objectPerson),
+        verbBlocks: perfectStuff ? perfectStuff : verbBlocks,
+        hasBa,
+    };
+}
+
+function splitUpIfModal(v: T.VerbRenderedBlock): [T.VerbRenderedBlock] | [T.ModalVerbBlock, T.ModalVerbKedulPart] {
+    if (!isModalTense(v.block.tense)) {
+        return [v];
     }
+    const [vrb, k] = splitOffLeapfrogWordFull(v.block.ps);
+    return [
+        {
+            type: "modalVerbBlock",
+            ps: vrb,
+            verb: v,
+        },
+        {
+            type: "modalVerbKedulPart",
+            // sadly just for type safety - the conjugator always just gives us the short form
+            ps: getShort(k),
+            verb: v,
+        },
+    ];
+}
+
+function getPerfectStuff(v: T.SingleOrLengthOpts<T.PsString[]>, vrb: T.VerbRenderedBlock): [T.PerfectParticipleBlock, T.PerfectEquativeBlock] {
+    const [p, eq] = splitOffLeapfrogWordFull(v);
+    return [
+        {
+            type: "perfectParticipleBlock",
+            ps: p,
+            person: vrb.block.person,
+            verb: vrb,
+        },
+        {
+            type: "perfectEquativeBlock",
+            // TODO: right now the conjugator just always spits out the short form of the equative - would be nice to have both
+            ps: getShort(eq),
+            person: vrb.block.person,
+        },
+    ];
 }
 
 function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComplete, person: T.Person, objectPerson: T.Person | undefined): {
@@ -156,7 +476,20 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
             ps,
         };
     }
-    return { hasBa, ps: { head: undefined, rest: verbForm }};
+    return { hasBa, ps: { head: undefined, rest: removeBaFromForm(verbForm) }};
+}
+
+function removeBaFromForm(f: T.SingleOrLengthOpts<T.PsString[]>): T.SingleOrLengthOpts<T.PsString[]> {
+    if ("long" in f) {
+        return {
+            long: removeBaFromForm(f.long) as T.PsString[],
+            short: removeBaFromForm(f.short) as T.PsString[],
+            ...f.mini ? {
+                mini: removeBaFromForm(f.mini) as T.PsString[],
+            } : {},
+        };
+    }
+    return f.map(removeBa);
 }
 
 function getVerbFromBlock(block: T.SingleOrLengthOpts<T.VerbBlock | T.ImperativeBlock>, person: T.Person): T.SingleOrLengthOpts<T.PsString[]> {

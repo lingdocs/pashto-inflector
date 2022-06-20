@@ -4,7 +4,7 @@ import {
     personNumber,
 } from "../../lib/misc-helpers";
 import { isUnisexNounEntry } from "../../lib/type-predicates";
-import { checkEPForMiniPronounsError } from "../../lib/phrase-building/compile";
+import { checkForMiniPronounsError } from "../../lib/phrase-building/compile";
 import { adjustSubjectSelection, getSubjectSelection, insertNewAP, removeAP, setAP, shiftBlock } from "../../lib/phrase-building/blocks-utils";
 
 export type EpsReducerAction = {
@@ -189,7 +189,7 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
 }
 
 function ensureMiniPronounsOk(old: T.EPSelectionState, eps: T.EPSelectionState, sendAlert?: (msg: string) => void): T.EPSelectionState {
-    const error = checkEPForMiniPronounsError(eps);
+    const error = checkForMiniPronounsError(eps);
     if (error) {
         if (sendAlert) sendAlert(error);
         return old;

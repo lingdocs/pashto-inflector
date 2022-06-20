@@ -1,56 +1,55 @@
 import { compileVP } from "../../lib/phrase-building/compile";
 import * as T from "../../types";
 import AbbreviationFormSelector from "./AbbreviationFormSelector";
-import Examples from "../Examples";
 import { getObjectSelection, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
+import { completeVPSelection } from "../../lib/phrase-building/vp-tools";
+import { renderVP } from "../../library";
+import ModeSelect, { Mode, ScriptSelect } from "../DisplayModeSelect";
+import { useState } from "react";
+import CompiledPTextDisplay from "../CompiledPTextDisplay";
+import RenderedBlocksDisplay from "../RenderedBlocksDisplay";
 
-function VPDisplay({ VP, opts, setForm }: {
-    VP: T.VPSelectionState | T.VPRendered,
+function VPDisplay({ VPS, opts, setForm, justify, onlyOne }: {
+    VPS: T.VPSelectionState,
     opts: T.TextOptions,
     setForm: (form: T.FormVersion) => void,
+    justify?: "left" | "right" | "center",
+    onlyOne?: boolean,
 }) {
-    if (!("type" in VP)) {
+    const [mode, setMode] = useState<Mode>("text");
+    const [script, setScript] = useState<"p" | "f">("f");
+    const VP = completeVPSelection(VPS);
+    if (!VP) {
         return <div className="lead text-muted text-center mt-4">
             {(() => {
-                const subject = getSubjectSelection(VP.blocks).selection;
-                const object = getObjectSelection(VP.blocks).selection;
-                if (subject === undefined || object || undefined) {
+                const subject = getSubjectSelection(VPS.blocks).selection;
+                const object = getObjectSelection(VPS.blocks).selection;
+                if (subject === undefined || object === undefined) {
                     return `Choose NP${((subject === undefined) && (object === undefined)) ? "s " : ""} to make a phrase`;
                 }
                 return `Choose/remove AP to complete the phrase`; 
             })()}
         </div>;
     }
-    const result = compileVP(VP, { ...VP.form });
+    const rendered = renderVP(VP);
+    const result = compileVP(rendered, rendered.form);
     return <div className="text-center mt-1">
         <AbbreviationFormSelector
-            adjustable={VP.whatsAdjustable}
-            form={VP.form}
+            adjustable={rendered.whatsAdjustable}
+            form={rendered.form}
             onChange={setForm}
         />
-        {"long" in result.ps ?
-            <div>
-                {/* <div className="h6">Long Verb:</div> */}
-                <VariationLayer vs={result.ps.long} opts={opts} />
-                {/* <div className="h6">Short Verb:</div> */}
-                <VariationLayer vs={result.ps.short} opts={opts} />
-                {result.ps.mini && <>
-                    {/* <div className="h6">Mini Verb:</div> */}
-                    <VariationLayer vs={result.ps.mini} opts={opts} />
-                </>}
-            </div>
-            : <VariationLayer vs={result.ps} opts={opts} />
-        }
+        <div className="d-flex flex-row">
+            <ModeSelect value={mode} onChange={setMode} />
+            {mode === "blocks" && <ScriptSelect value={script} onChange={setScript} />}
+        </div>
+        {mode === "text"
+            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={onlyOne} />
+            : <RenderedBlocksDisplay opts={opts} rendered={rendered} justify={justify} script={script} />}
         {result.e && <div className="text-muted mt-3">
             {result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>}
     </div>
-}
-
-function VariationLayer({ vs, opts }: { vs: T.PsString[], opts: T.TextOptions }) {
-    return <div className="mb-2">
-        <Examples opts={opts} lineHeight={0}>{vs}</Examples>
-    </div>;
 }
 
 export default VPDisplay;

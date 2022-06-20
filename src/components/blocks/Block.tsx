@@ -4,89 +4,245 @@ import {
     getEnglishFromRendered,
 } from "../../lib/phrase-building/np-tools";
 import { getEnglishPersonInfo } from "../../library";
+import { useState } from "react";
+import { getLength } from "../../lib/p-text-helpers";
+import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
+import { negativeParticle } from "../../lib/grammar-units";
 
-function Block({ opts, block }: {
+function Block({ opts, block, king, script }: {
     opts: T.TextOptions,
     block: T.Block,
+    king?: "subject" | "object" | undefined,
+    script: "p" | "f";
 }) {
     if ("equative" in block) {
-        return <EquativeBlock opts={opts} eq={block.equative} />;
+        return <EquativeBlock opts={opts} eq={block.equative} script={script} />;
     }
     if (block.type === "AP") {
         const english = getEnglishFromRendered(block);
-        return <APBlock opts={opts} english={english}>{block}</APBlock>
+        return <APBlock opts={opts} english={english} script={script}>{block}</APBlock>
     }
     if (block.type === "subjectSelection") {
-        return <SubjectBlock opts={opts} np={block.selection} />
+        const role = king === "subject" ? "king" : king === "object" ? "servant" : undefined;
+        return <SubjectBlock opts={opts} np={block.selection} role={role} script={script} />
     }
     if (block.type === "predicateSelection") {
         const english = getEnglishFromRendered(block.selection);
         return <div className="text-center">
             <div><strong>Predicate</strong></div>
             {block.selection.type === "EQComp"
-                ? <EqCompBlock opts={opts} comp={block.selection.selection} />
-                : <NPBlock opts={opts} english={english}>{block.selection}</NPBlock>}
+                ? <EqCompBlock opts={opts} comp={block.selection.selection} script={script} />
+                : <NPBlock opts={opts} english={english} script={script}>{block.selection}</NPBlock>}
         </div>
     }
-    if (block.type === "nu") {
-        return <NUBlock opts={opts} />
+    if (block.type === "negative") {
+        return <NegBlock opts={opts} imperative={block.imperative} script={script} />
+    }
+    if (block.type === "perfectiveHead") {
+        return <PerfHeadBlock opts={opts} ps={block.ps} script={script} />
+    }
+    if (block.type === "verbComplement") {
+        return <VCompBlock opts={opts} comp={block.complement} script={script} />;
+    }
+    if (block.type === "verb") {
+        return <VerbSBlock opts={opts} v={block.block} script={script} />;
+    }
+    if (block.type === "objectSelection") {
+        const role = king === "object" ? "king" : king === "subject" ? "servant" : undefined;
+        return <ObjectBlock opts={opts} obj={block.selection} role={role} script={script} />;
+    }
+    if (block.type === "perfectParticipleBlock") {
+        return <VerbSBlock opts={opts} v={block} script={script} />;
+    }
+    if (block.type === "perfectEquativeBlock") {
+        return <EquativeBlock opts={opts} eq={block} script={script} />;
+    }
+    if (block.type === "modalVerbBlock") {
+        return <ModalVerbBlock opts={opts} v={block} script={script} />;
+    }
+    if (block.type === "modalVerbKedulPart") {
+        return <ModalAuxBlock opts={opts} aux={block} script={script} />
     }
     return null;
 }
 
 export default Block;
 
-function NUBlock({ opts }: {
+function Border({ children, extraClassName, padding }: { children: JSX.Element | JSX.Element[] | string, extraClassName?: string, padding?: string }) {
+    return <div
+        className={`d-flex flex-row justify-content-center align-items-center ${extraClassName ? extraClassName : ""}`}
+        style={{
+            border: "2px solid black",
+            padding: padding ? padding : "1rem",
+            textAlign: "center",
+        }}
+    >
+        <>{children}</>
+    </div>
+}
+
+function VerbSBlock({ opts, v, script }: {
     opts: T.TextOptions,
+    script: "p" | "f",
+    v: T.VerbRenderedBlock["block"] | T.PerfectParticipleBlock,
+}) {
+    const [length, setLength] = useState<T.Length>("long");
+    function changeLength() {
+        setLength(o => (
+            o === "long"
+                ? "short"
+                : o === "short" && "mini" in v.ps
+                ? "mini"
+                : "long"
+        ));
+    }
+    return <div className="text-center">
+        {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
+        <Border>
+            {getLength(v.ps, length)[0][script]}
+        </Border>
+        <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"}</div>
+        <EnglishBelow>{getEnglishPersonInfo(v.person, "short")}</EnglishBelow>
+    </div>
+}
+
+function ModalVerbBlock({ opts, v, script }: {
+    opts: T.TextOptions,
+    script: "p" | "f",
+    v: T.ModalVerbBlock,
+}) {
+    const [length, setLength] = useState<T.Length>("long");
+    function changeLength() {
+        setLength(o => (
+            o === "long"
+                ? "short"
+                : "long"
+        ));
+    }
+    return <div className="text-center">
+        {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
+        <Border>
+            {getLength(v.ps, length)[0][script]}
+        </Border>
+        <div>Verb</div>
+        <EnglishBelow>Modal</EnglishBelow>
+    </div>
+}
+
+function PerfHeadBlock({ opts, ps, script }: {
+    opts: T.TextOptions,
+    ps: T.PsString,
+    script: "p" | "f",
+
 }) {
     return <div className="text-center">
-        <div
-            className={classNames("d-flex flex-row justify-content-center align-items-center")}
-            style={{
-                border: "2px solid black",
-                padding: "1rem",
-                textAlign: "center",
-            }}
-        >
-            nu
-        </div>
+        <Border>
+            {ps[script]}
+        </Border>
+        <div>perf. head</div>
+        <EnglishBelow>{'\u00A0'}</EnglishBelow>
+    </div>;
+}
+
+function VCompBlock({ opts, comp, script }: {
+    opts: T.TextOptions,
+    comp: T.VerbComplementBlock["complement"],
+    script: "p" | "f",
+}) {
+    return <div className="text-center">
+        <Border>
+            {comp[script]}
+        </Border>
+        <div>Complement</div>
+        <EnglishBelow>{'\u00A0'}</EnglishBelow>
+    </div>;
+}
+
+function ModalAuxBlock({ opts, aux, script }: {
+    opts: T.TextOptions,
+    aux: T.ModalVerbKedulPart,
+    script: "p" | "f",
+
+}) {
+    return <div className="text-center">
+        <Border>
+            {aux.ps[0][script]}
+        </Border>
+        <div>Modal Aux</div>
+        <EnglishBelow>{getEnglishPersonInfo(aux.verb.block.person, "short")}</EnglishBelow>
+    </div>;
+}
+
+function NegBlock({ opts, imperative, script }: {
+    opts: T.TextOptions,
+    imperative: boolean,
+    script: "p" | "f",
+}) {
+    return <div className="text-center">
+        <Border>
+            {negativeParticle[imperative ? "imperative" : "nonImperative"][script]}
+        </Border>
         <div>Neg.</div>
-        <EnglishBelow>not</EnglishBelow>
+        <EnglishBelow>{imperative ? "don't" : "not"}</EnglishBelow>
     </div>;
 }
 
-function EquativeBlock({ opts, eq }: {
+function EquativeBlock({ opts, eq, script }: {
     opts: T.TextOptions,
-    eq: T.EquativeRendered,
+    eq: T.EquativeRendered | T.PerfectEquativeBlock,
+    script: "p" | "f",
 }) {
+    const [length, setLength] = useState<T.Length>("long");
+    function changeLength() {
+        setLength(o => (
+            o === "long"
+                ? "short"
+                : o === "short" && "mini" in eq.ps
+                ? "mini"
+                : "long"
+        ));
+    }
     return <div className="text-center">
-        <div
-            className={classNames("d-flex flex-row justify-content-center align-items-center")}
-            style={{
-                border: "2px solid black",
-                padding: "1rem",
-                textAlign: "center",
-            }}
-        >
-            {"short" in eq.ps ? eq.ps.short[0].f : eq.ps[0].f}
-        </div>
+        {"long" in eq.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
+        <Border>
+            {getLength(eq.ps, length)[0][script]}
+        </Border>
         <div>Equative</div>
-        <EnglishBelow>{"="}</EnglishBelow>
+        <EnglishBelow>{getEnglishPersonInfo(eq.person, "short")}</EnglishBelow>
     </div>;
 }
 
-function SubjectBlock({ opts, np }: {
+function SubjectBlock({ opts, np, role, script }: {
     opts: T.TextOptions,
     np: T.Rendered<T.NPSelection>,
+    role: "king" | "servant" | undefined,
+    script: "p" | "f",
 }) {
     const english = getEnglishFromRendered(np);
     return <div className="text-center">
-        <div><strong>Subject</strong></div>
-        <NPBlock opts={opts} english={english}>{np}</NPBlock>
+        <div><strong>Subject</strong>{role ? roleIcon[role] : ""}</div>
+        <NPBlock opts={opts} english={english} script={script}>{np}</NPBlock>
     </div>;
 }
 
-function EqCompBlock({ opts, comp }: {
+function ObjectBlock({ opts, obj, role, script }: {
+    opts: T.TextOptions,
+    obj: T.Rendered<T.ObjectSelectionComplete>["selection"],
+    role: "king" | "servant" | undefined,
+    script: "p" | "f",
+}) {
+    if (typeof obj !== "object") {
+        return null;
+    }
+    const english = getEnglishFromRendered(obj);
+    return <div className="text-center">
+        <div><strong>Object</strong>{role ? roleIcon[role] : ""}</div>
+        <NPBlock opts={opts} english={english} script={script}>{obj}</NPBlock>
+    </div>;
+}
+
+function EqCompBlock({ opts, comp, script }: {
+    script: "p" | "f",
     opts: T.TextOptions,
     comp: T.Rendered<T.EqCompSelection["selection"]>,
 }) {
@@ -95,16 +251,9 @@ function EqCompBlock({ opts, comp }: {
         adj: T.Rendered<T.AdjectiveSelection>,
     }) {
         return <div className="text-center">
-            <div
-                className={classNames("d-flex flex-row justify-content-center align-items-center")}
-                style={{
-                    border: "2px solid black",
-                    padding: "1rem",
-                    textAlign: "center",
-                }}
-            >
-                {adj.ps[0].f}
-            </div>
+            <Border>
+                {adj.ps[0][script]}
+            </Border>
             <div>Adj.</div>
             <EnglishBelow>{adj.e}</EnglishBelow>
         </div>;
@@ -115,16 +264,9 @@ function EqCompBlock({ opts, comp }: {
         adv: T.Rendered<T.LocativeAdverbSelection>,
     }) {
         return <div className="text-center">
-            <div
-                className={classNames("d-flex flex-row justify-content-center align-items-center")}
-                style={{
-                    border: "2px solid black",
-                    padding: "1rem",
-                    textAlign: "center",
-                }}
-            >
-                {adv.ps[0].f}
-            </div>
+            <Border>
+                {adv.ps[0][script]}
+            </Border>
             <div>Loc. Adv.</div>
             <EnglishBelow>{adv.e}</EnglishBelow>
         </div>;
@@ -137,89 +279,78 @@ function EqCompBlock({ opts, comp }: {
             : comp.type === "loc. adv."
                 ? <LocAdvBlock opts={opts} adv={comp} />
                 : <div>
-                    <Sandwich opts={opts} sandwich={comp} />
+                    <Sandwich opts={opts} sandwich={comp} script={script} />
                     <div>Sandwich</div>
                     <EnglishBelow>{comp.e}</EnglishBelow>
                 </div>}
     </div>;
 }
 
-export function APBlock({ opts, children, english }: {
+export function APBlock({ opts, children, english, script }: {
     opts: T.TextOptions,
     children: T.Rendered<T.APSelection>,
     english?: string,
+    script: "p" | "f",
 }) {
     const ap = children;
     if (ap.selection.type === "adverb") {
         return <div className="text-center">
-            <div
-                className={classNames("d-flex flex-row justify-content-center align-items-center")}
-                style={{
-                    border: "2px solid black",
-                    padding: "1rem",
-                    textAlign: "center",
-                }}
-            >
-                {ap.selection.ps[0].f}
-            </div>
+            <Border>
+                {ap.selection.ps[0][script]}
+            </Border>
             <div>AP</div>
             <EnglishBelow>{english}</EnglishBelow>
         </div>;
     }
     return <div>
-        <Sandwich opts={opts} sandwich={ap.selection} />
+        <Sandwich opts={opts} sandwich={ap.selection} script={script} />
         <div>AP</div>
         <EnglishBelow>{english}</EnglishBelow>
     </div>;
 }
 
-function Sandwich({ opts, sandwich }: {
+function Sandwich({ opts, sandwich, script }: {
     opts: T.TextOptions,
     sandwich: T.Rendered<T.SandwichSelection<T.Sandwich>>,
+    script: "p" | "f",
 }) {
     return <div className="text-center">
         <div className="text-center">Sandwich 🥪</div>
-        <div
-            className={classNames("d-flex flex-row justify-content-center align-items-center")}
-            style={{
-                border: "2px solid black",
-                padding: "0.75rem 0.5rem 0.25rem 0.5rem",
-                textAlign: "center",
-            }}
-        >
-            <div className="d-flex flex-row justify-content-between align-items-end">
-                <Possesors opts={opts}>{sandwich.inside.selection.type !== "pronoun" ? sandwich.inside.selection.possesor : undefined}</Possesors>
+        <Border padding="0.75rem 0.5rem 0.25rem 0.5rem">
+            <div className={`d-flex flex-row${script === "p" ? "-reverse" : ""} justify-content-between align-items-end`}>
+                <Possesors opts={opts} script={script}>{sandwich.inside.selection.type !== "pronoun" ? sandwich.inside.selection.possesor : undefined}</Possesors>
                 <div className="mr-2 ml-1 mb-1"><strong>{sandwich.before ? sandwich.before.f : ""}</strong></div>
                 <div>
-                    <NPBlock opts={opts} inside>{sandwich.inside}</NPBlock>
+                    <NPBlock opts={opts} inside script={script}>{sandwich.inside}</NPBlock>
                 </div>
                 <div className="ml-2 mr-1 mb-1"><strong>{sandwich.after ? sandwich.after.f : ""}</strong></div>
             </div>
-        </div>
+        </Border>
     </div>;
 }
 
-export function NPBlock({ opts, children, inside, english }: {
+export function NPBlock({ opts, children, inside, english, script }: {
     opts: T.TextOptions,
     children: T.Rendered<T.NPSelection>,
     inside?: boolean,
     english?: string,
+    script: "p" | "f",
 }) {
     const np = children;
     const hasPossesor = !!(np.selection.type !== "pronoun" && np.selection.possesor && !np.selection.possesor.shrunken);
+    const elements = [
+        ...!inside ? [<Possesors opts={opts} script={script}>{np.selection.type !== "pronoun" ? np.selection.possesor : undefined}</Possesors>] : [],
+        <Adjectives opts={opts} script={script}>{np.selection.adjectives}</Adjectives>,
+        <div className={np.selection.adjectives?.length ? "mx-1" : ""}> {np.selection.ps[0][script]}</div>,
+    ];
+    const el = script === "p" ? elements.reverse() : elements;
     return <div className="text-center">
-        <div
-            className={classNames("d-flex flex-row justify-content-center align-items-center", { "pt-2": !inside && hasPossesor })}
-            style={{
-                border: "2px solid black",
-                padding: inside ? "0.3rem" : hasPossesor ? "0.5rem 1rem 0.25rem 1rem" : "1rem",
-                textAlign: "center",
-            }}
+        <Border
+            extraClassName={`!inside && hasPossesor ? "pt-2" : ""`}
+            padding={inside ? "0.3rem" : hasPossesor ? "0.5rem 0.8rem 0.25rem 0.8rem" : "1rem"}
         >
-            {!inside && <Possesors opts={opts}>{np.selection.type !== "pronoun" ? np.selection.possesor : undefined}</Possesors>}
-            <Adjectives opts={opts}>{np.selection.adjectives}</Adjectives>
-            <div> {np.selection.ps[0].f}</div>
-        </div>
+            {el}
+        </Border>
         <div className={inside ? "small" : ""}>
             NP
             {!inside ? <>
@@ -227,13 +358,14 @@ export function NPBlock({ opts, children, inside, english }: {
                 <span className="text-muted small">({getEnglishPersonInfo(np.selection.person, "short")})</span>
             </> : <></>}
         </div>
-        <EnglishBelow>{english}</EnglishBelow>
+        {!inside && <EnglishBelow>{english}</EnglishBelow>}
     </div>
 }
 
-function Possesors({ opts, children }: {
+function Possesors({ opts, children, script }: {
     opts: T.TextOptions,
     children: { shrunken: boolean, np: T.Rendered<T.NPSelection> } | undefined,
+    script: "p" | "f",
 }) {
     if (!children) {
         return null;
@@ -241,18 +373,18 @@ function Possesors({ opts, children }: {
     if (children.shrunken) {
         return null;
     }
-    const contraction = checkForContraction(children.np);
-    return <div className="d-flex flex-row mr-1 align-items-end" style={{
+    const contraction = checkForContraction(children.np, script);
+    return <div className={`d-flex flex-row${script === "p" ? "-reverse" : ""} mr-1 align-items-end`} style={{
         marginBottom: "0.5rem",
         borderBottom: "1px solid grey",
     }}>
-        {children.np.selection.type !== "pronoun" && <Possesors opts={opts}>{children.np.selection.possesor}</Possesors>}
+        {children.np.selection.type !== "pronoun" && <Possesors opts={opts} script={script}>{children.np.selection.possesor}</Possesors>}
         <div>
             {contraction && <div className="mb-1">({contraction})</div>}
-            <div className={classNames("d-flex", "flex-row", "align-items-center", { "text-muted": contraction })}>
-                <div className="mr-1 pb-2">du</div>
+            <div className={classNames("d-flex", (script === "f" ? "flex-row" : "flex-row-reverse"), "align-items-center", { "text-muted": contraction })}>
+                <div className="mx-1 pb-2">{script === "p" ? "د" : "du"}</div>
                 <div>
-                    <NPBlock opts={opts} inside>{children.np}</NPBlock>
+                    <NPBlock script={script} opts={opts} inside>{children.np}</NPBlock>
                 </div>
             </div>
 
@@ -260,32 +392,19 @@ function Possesors({ opts, children }: {
     </div>
 }
 
-function checkForContraction(np: T.Rendered<T.NPSelection>): string | undefined {
-    if (np.selection.type !== "pronoun") return undefined;
-    if (np.selection.person === T.Person.FirstSingMale || np.selection.person === T.Person.FirstSingFemale) {
-        return "zmaa"
-    }
-    if (np.selection.person === T.Person.SecondSingMale || np.selection.person === T.Person.SecondSingFemale) {
-        return "staa"
-    }
-    if (np.selection.person === T.Person.FirstPlurMale || np.selection.person === T.Person.FirstPlurFemale) {
-        return "zmoonG"
-    }
-    if (np.selection.person === T.Person.SecondPlurMale || np.selection.person === T.Person.SecondPlurFemale) {
-        return "staaso"
-    }
-    return undefined;
-}
-
-function Adjectives({ opts, children }: {
+function Adjectives({ opts, children, script }: {
     opts: T.TextOptions,
     children: T.Rendered<T.AdjectiveSelection>[] | undefined,
+    script: "p" | "f",
 }) {
     if (!children) {
         return null;
     }
+    const c = script === "p"
+        ? children.reverse()
+        : children;
     return <em className="mr-1">
-        {children.map(a => a.ps[0].f).join(" ")}{` `}
+        {c.map(a => a.ps[0][script]).join(" ")}{` `}
     </em>
 }
 
@@ -296,3 +415,21 @@ function EnglishBelow({ children: e }: { children: string | undefined }) {
         height: "1rem",
     }}>{e ? e : ""}</div>;
 }
+
+function checkForContraction(np: T.Rendered<T.NPSelection>, script: "p" | "f"): string | undefined {
+    if (np.selection.type !== "pronoun") return undefined;
+    if (np.selection.person === T.Person.FirstSingMale || np.selection.person === T.Person.FirstSingFemale) {
+        return script === "f" ? "zmaa" : "زما";
+    }
+    if (np.selection.person === T.Person.SecondSingMale || np.selection.person === T.Person.SecondSingFemale) {
+        return script === "f" ? "staa" : "ستا";
+    }
+    if (np.selection.person === T.Person.FirstPlurMale || np.selection.person === T.Person.FirstPlurFemale) {
+        return script === "f" ? "zmoonG" : "زمونږ";
+    }
+    if (np.selection.person === T.Person.SecondPlurMale || np.selection.person === T.Person.SecondPlurFemale) {
+        return script === "f" ? "staaso" : "ستاسو";
+    }
+    return undefined;
+}
+
