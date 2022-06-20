@@ -31,7 +31,11 @@ function NPPicker(props: {
     const [addingPoss, setAddingPoss] = useState<boolean>(false);
     const [npType, setNpType] = useState<T.NPType | undefined>(props.np ? props.np.selection.type : undefined);
     const onChange = (np: T.NPSelection | undefined) => {
-        props.onChange(ensureSingleShrink(props.np, np))
+        props.onChange(ensureSingleShrink(props.np, np));
+        if ((np?.selection.type === "noun" || np?.selection.type === "participle") && np.selection.possesor) {
+            setAddingPoss(true);
+        }
+        setAddingPoss(false);
     }
     useEffect(() => {
         setNpType(props.np ? props.np.selection.type : undefined);
