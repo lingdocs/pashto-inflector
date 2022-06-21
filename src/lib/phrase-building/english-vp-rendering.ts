@@ -252,5 +252,5 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
             : isImperativeTense(vs.tense)
             ? imperativeBuilders[vs.tense]
             : (vs.voice === "active" ? modalBuilders : passiveModalBuilders)[vs.tense])(subjectPerson, ec, vs.negative);
-    return base.map(b => `${b}${typeof object === "object" ? " $OBJ" : ""}${ep ? ` ${ep}` : ""}`);
+    return base.map(b => `${b}${typeof object === "object" ? " $OBJ" : ""}${ep ? ` ${ep}` : ""}`.replace("  ", " ").trim());
 }
