@@ -238,10 +238,10 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
         (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => string[]
     > = {
         imperfectiveImperative: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `${n ? "don't " : ""}${ec[0]}`,
+            `$SUBJ ${n ? "don't " : ""}${ec[0]}! (command)`,
         ]),
         perfectiveImperative: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `${n ? "don't " : ""}${ec[0]}`,
+            `$SUBJ ${n ? "don't " : ""}${ec[0]}! (command)`,
         ]),
     };
     const base = (

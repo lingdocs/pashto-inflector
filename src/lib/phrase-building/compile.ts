@@ -274,7 +274,7 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
             subject: getEnglishFromRendered(engSubj) || "",
             object: engObj ? getEnglishFromRendered(engObj) : "",
             APs: engAPs,
-        }))
+        })).map(capitalizeFirstLetter)
         : undefined;
 }
 
