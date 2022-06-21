@@ -57,7 +57,7 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
         ]),
         subjunctiveVerb: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
             `that $SUBJ ${n ? " won't" : " will"} ${isToBe(ec) ? "be" : ec[0]}`,
-            `should $SUBJ ${n ? " not" : ""} ${isToBe(ec) ? "be" : ec[0]}`,
+            `$SUBJ ${n ? " not" : ""} should ${isToBe(ec) ? "be" : ec[0]}`,
         ]),
         imperfectiveFuture: futureEngBuilder,
         perfectiveFuture: futureEngBuilder,
@@ -154,6 +154,7 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
         ]),
         subjunctiveVerb: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `that $SUBJ will${n ? " not" : ""} be ${v[4]}`,
+            `$SUBJ should ${n ? " not" : ""} be ${v[4]}`,
         ]),
         imperfectiveFuture: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `$SUBJ will${n ? " not" : ""} be ${v[4]}`,
