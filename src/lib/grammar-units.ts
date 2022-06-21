@@ -675,43 +675,43 @@ export const persons = [
         person: 1,
     },
     {
-        label: { subject: "You (m.)", object: "you (m.)" },
+        label: { subject: "you (m.)", object: "you (m.)" },
         person: 2,
     },
     {
-        label: { subject: "You (f.)", object: "you (f.)" },
+        label: { subject: "you (f.)", object: "you (f.)" },
         person: 3,
     },
     {
-        label: { subject: "He/it (m.)", object: "him/it (m.)" },
+        label: { subject: "he/it (m.)", object: "him/it (m.)" },
         person: 4,
     },
     {
-        label: { subject: "She/it (f.)", object: "her/it (f.)" },
+        label: { subject: "she/it (f.)", object: "her/it (f.)" },
         person: 5,
     },
     {
-        label: { subject: "We (m. pl.)", object: "us (m. pl.)" },
+        label: { subject: "we (m. pl.)", object: "us (m. pl.)" },
         person: 6,
     },
     {
-        label: { subject: "We (f. pl.)", object: "us (f. pl.)" },
+        label: { subject: "we (f. pl.)", object: "us (f. pl.)" },
         person: 7,
     },
     {
-        label: { subject: "You (m. pl.)", object: "you (m. pl.)" },
+        label: { subject: "you (m. pl.)", object: "you (m. pl.)" },
         person: 8,
     },
     {
-        label: { subject: "You (f. pl.)", object: "you (f. pl.)" },
+        label: { subject: "you (f. pl.)", object: "you (f. pl.)" },
         person: 9,
     },
     {
-        label: { subject: "They (m. pl.)", object: "them (m. pl.)" },
+        label: { subject: "they (m. pl.)", object: "them (m. pl.)" },
         person: 10,
     },
     {
-        label: { subject: "They (f. pl.)", object: "them (f. pl.)" },
+        label: { subject: "they (f. pl.)", object: "them (f. pl.)" },
         person: 11,
     },
 ];

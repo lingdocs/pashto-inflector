@@ -63,6 +63,7 @@ import {
     randomPerson,
     isInvalidSubjObjCombo,
     randomSubjObj,
+    getEnglishVerb,
 } from "./lib/np-tools";
 import {
     getEnglishFromRendered,
@@ -226,6 +227,7 @@ export {
     getEnglishFromRendered,
     getPashtoFromRendered,
     renderAPSelection,
+    getEnglishVerb,
     // protobuf helpers
     readDictionary,
     writeDictionary,

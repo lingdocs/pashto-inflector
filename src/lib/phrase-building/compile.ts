@@ -1,5 +1,6 @@
 import * as T from "../../types";
 import {
+    capitalizeFirstLetter,
     concatPsString, getLong, getShort,
 } from "../p-text-helpers";
 import { negativeParticle } from "../../lib/grammar-units";
@@ -294,7 +295,7 @@ function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
             APs: engAPs,
         }))
         : undefined;
-    return b;
+    return b?.map(capitalizeFirstLetter);
 }
 
 export function checkForMiniPronounsError(s: T.EPSelectionState | T.VPSelectionState): undefined | string {
