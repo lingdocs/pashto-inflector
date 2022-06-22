@@ -44,16 +44,26 @@ export function getVerbFromBlocks(blocks: T.Block[][]): T.VerbRenderedBlock {
     return v;
 }
 
-export function getVerbAndHeadFromBlocks(blocks: T.Block[][]): { verb: T.VerbRenderedBlock, perfectiveHead: T.PerfectiveHeadBlock } {
+export function getVerbAndHeadFromBlocks(blocks: T.Block[][]): { verb: T.VerbRenderedBlock, perfectiveHead: T.PerfectiveHeadBlock | undefined } {
     const verb = getVerbFromBlocks(blocks);
     const perfectiveHead = blocks[0].find(f => f.type === "perfectiveHead");
     if (!perfectiveHead || perfectiveHead.type !== "perfectiveHead") {
-        throw new Error("perfectiveHead not found in blocks");
+        return {
+            verb,
+            perfectiveHead: undefined,
+        };
     }
     return {
         verb,
         perfectiveHead,
     };
+}
+
+export function includesShrunkenServant(kids?: T.Kid[]): boolean {
+    if (!kids) return false;
+    return kids.some(k => (
+        k.type === "mini-pronoun" && k.source === "servant"
+    ));
 }
 
 export function getPredicateSelectionFromBlocks(blocks: T.Block[][]): T.Rendered<T.PredicateSelectionComplete> {

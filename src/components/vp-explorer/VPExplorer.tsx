@@ -1,4 +1,3 @@
-import NPPicker, { shrunkenBackground } from "../np-picker/NPPicker";
 import VerbPicker from "./VerbPicker";
 import TensePicker from "./TensePicker";
 import VPDisplay from "./VPDisplay";
@@ -7,17 +6,14 @@ import * as T from "../../types";
 import ChartDisplay from "./VPChartDisplay";
 import useStickyState, { useStickyReducer } from "../../lib/useStickyState";
 import { makeVPSelectionState } from "./verb-selection";
-import { useEffect, useRef, useState } from "react";
-import { getKingAndServant, renderVP } from "../../lib/phrase-building/render-vp";
-import { completeVPSelection, isPastTense } from "../../lib/phrase-building/vp-tools";
+import { useEffect, useState } from "react";
+import { completeVPSelection } from "../../lib/phrase-building/vp-tools";
 import VPExplorerQuiz from "./VPExplorerQuiz";
-import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationModal";
 // @ts-ignore
 import LZString from "lz-string";
 import { vpsReducer } from "./vps-reducer";
-import APPicker from "../ap-picker/APPicker";
-import autoAnimate from "@formkit/auto-animate";
-import { getObjectSelection, getSubjectSelection, isNoObject } from "../../lib/phrase-building/blocks-utils";
+import { getObjectSelection } from "../../lib/phrase-building/blocks-utils";
+import VPPicker from "./VPPicker";
 
 const phraseURLParam = "VPhrase";
 
@@ -56,16 +52,6 @@ function VPExplorer(props: {
     );
     const [showClipped, setShowClipped] = useState<string>("");
     const [alert, setAlert] = useState<string | undefined>(undefined);
-    const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
-    const parent = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        parent.current && autoAnimate(parent.current);
-    }, [parent]);
-    const isPast = isPastTense(vps.verb.tenseCategory === "perfect" ? vps.verb.perfectTense : vps.verb.verbTense);
-    const roles = getKingAndServant(
-        isPast,
-        vps.verb.transitivity !== "intransitive",
-    );
     function flashMessage(msg: string) {
         setAlert(msg);
         setTimeout(() => {
@@ -90,18 +76,6 @@ function VPExplorer(props: {
         }
         // eslint-disable-next-line
     }, []);
-    function handleSubjectChange(subject: T.NPSelection | undefined, skipPronounConflictCheck?: boolean) {
-        adjustVps({
-            type: "set subject",
-            payload: { subject, skipPronounConflictCheck },
-        });
-    }
-    function handleObjectChange(object: T.NPSelection | undefined) {
-        adjustVps({
-            type: "set object",
-            payload: object,
-        });
-    }
     function handleSubjObjSwap() {
         adjustVps({ type: "swap subj/obj" });
     }
@@ -138,16 +112,8 @@ function VPExplorer(props: {
         flashClippedMessage("Copied phrase code to clipboard");
     }
     const object = getObjectSelection(vps.blocks).selection;
-    const subject = getSubjectSelection(vps.blocks).selection;
     const VPS = completeVPSelection(vps);
     const phraseIsComplete = !!VPS;
-    const rendered = VPS ? renderVP(VPS) : undefined;
-    const servantIsShrunk = includesShrunkenServant(rendered?.kids);
-    function toggleServantShrink() {
-        adjustVps({
-            type: "toggle servant shrink",
-        });
-    }
     return <div className="mt-3" style={{ maxWidth: "950px"}}>
         <VerbPicker
             vps={vps}
@@ -190,113 +156,18 @@ function VPExplorer(props: {
                     <i className="fas fa-exchange-alt mr-2" /> subj/obj
                 </button>
             </div>}
-        {mode === "phrases" && <div className="clickable h5" onClick={() => adjustVps({ type: "insert new AP" })}>+ AP</div>}
-        {mode !== "quiz" && <div ref={parent} className="d-flex flex-row justify-content-around flex-wrap" style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}>
-            {mode === "phrases" && <>
-                {vps.blocks.map(({ block, key }, i, blocks) => {
-                    if (isNoObject(block)) return null;
-                    return <div className="my-2 card block-card p-1 mx-1" key={key} style={{
-                        background: (servantIsShrunk && (
-                            (roles.servant === "subject" && block?.type === "subjectSelection")
-                            ||
-                            (roles.servant === "object" && block?.type === "objectSelection")
-                        )) ? shrunkenBackground : "inherit",
-                    }}>
-                        <div className="d-flex flex-row justify-content-between mb-1" style={{ height: "1rem" }}>
-                            {(i > 0 && !isNoObject(blocks[i - 1].block)) ? <div
-                                className="small clickable ml-1"
-                                onClick={() => adjustVps({ type: "shift block", payload: { index: i, direction: "back" }})}
-                            >
-                                <i className="fas fa-chevron-left" />
-                            </div> : <div/>}
-                            {(i < vps.blocks.length - 1 && !isNoObject(blocks[i + 1].block)) ? <div
-                                className="small clickable mr-1"
-                                onClick={() => adjustVps({ type: "shift block", payload: { index: i, direction: "forward" }})}
-                            >
-                                <i className="fas fa-chevron-right" />
-                            </div> : <div/>}
-                        </div>
-                        {(!block || block.type === "AP")
-                            ? <APPicker
-                                phraseIsComplete={phraseIsComplete}
-                                heading="AP"
-                                entryFeeder={props.entryFeeder}
-                                AP={block}
-                                opts={props.opts}
-                                onChange={AP => adjustVps({ type: "set AP", payload: { index: i, AP } })}
-                                onRemove={() => adjustVps({ type: "remove AP", payload: i })}
-                            />
-                            : (block?.type === "subjectSelection")
-                            ? <NPPicker
-                                phraseIsComplete={phraseIsComplete}
-                                heading={roles.king === "subject" 
-                                ? <div className="h5 text-center" onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>Subject {roleIcon.king}</div>
-                                : <div className="h5 text-center">
-                                    Subject
-                                    {` `}
-                                    <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>{roleIcon.servant}</span>
-                                    {` `}
-                                    {(rendered && rendered.whatsAdjustable !== "king") && 
-                                        <span onClick={toggleServantShrink} className="mx-2 clickable">
-                                            {!servantIsShrunk ? "🪄" : "👶"}
-                                        </span>
-                                    }
-                                </div>}
-                                entryFeeder={props.entryFeeder}
-                                np={block.selection}
-                                counterPart={vps.verb ? object : undefined}
-                                role={(isPast && vps.verb.transitivity !== "intransitive")
-                                    ? "ergative"
-                                    : "subject"
-                                }
-                                onChange={handleSubjectChange}
-                                opts={props.opts}
-                                isShrunk={(servantIsShrunk && roles.servant === "subject")}
-                            />
-                            : (vps.verb && block?.type === "objectSelection" && block.selection !== "none")
-                            ? <div className="my-2" style={{ background: (servantIsShrunk && roles.servant === "object") ? shrunkenBackground : "inherit" }}>
-                                {(typeof block.selection === "number")
-                                    ? <div>
-                                        {roles.king === "object" 
-                                            ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
-                                            : <div className="h5 text-center">Object</div>}
-                                        <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
-                                    </div>
-                                    : <NPPicker
-                                        phraseIsComplete={phraseIsComplete}
-                                        heading={roles.king === "object" 
-                                            ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
-                                            : <div className="h5 text-center">
-                                                Object
-                                                {` `}
-                                                <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>{roleIcon.servant}</span>
-                                                {` `}
-                                                {(rendered && rendered.whatsAdjustable !== "king") && 
-                                                    <span onClick={toggleServantShrink} className="mx-2 clickable">
-                                                        {!servantIsShrunk ? "🪄" : "👶"}
-                                                    </span>
-                                                }
-                                            </div>}
-                                        entryFeeder={props.entryFeeder}
-                                        role="object"
-                                        np={block.selection}
-                                        counterPart={subject}
-                                        onChange={handleObjectChange}
-                                        opts={props.opts}
-                                        isShrunk={(servantIsShrunk && roles.servant === "object")}
-                                    />}
-                            </div>
-                            : null}
-                    </div>;
-                })}
-            </>}
-            <div className="my-2">
-                <TensePicker
-                    vps={vps}
-                    onChange={quizLock(adjustVps)}
-                    mode={mode}
-                />
-            </div>
+        {mode === "phrases" && <VPPicker
+            opts={props.opts}
+            entryFeeder={props.entryFeeder}
+            onChange={(vps) => adjustVps({ type: "load vps", payload: vps })}
+            vps={vps}
+        />}
+        {mode !== "phrases" && <div className="my-2">
+            <TensePicker
+                vps={vps}
+                onChange={adjustVps}
+                mode={mode}
+            />
         </div>}
         {mode === "phrases" && <VPDisplay
             VPS={vps}
@@ -305,10 +176,6 @@ function VPExplorer(props: {
         />}
         {mode === "charts" && <ChartDisplay VS={vps.verb} opts={props.opts} />}
         {mode === "quiz" && <VPExplorerQuiz opts={props.opts} vps={vps} />}
-        <VPExplorerExplanationModal
-            showing={showingExplanation}
-            setShowing={setShowingExplanation}
-        />
         {showClipped && <div className="alert alert-primary text-center" role="alert" style={{
             position: "fixed",
             top: "30%",
@@ -353,12 +220,5 @@ function getVPSFromUrl(): T.VPSelectionState | undefined {
     if (!fromParams) return;
     const decoded = LZString.decompressFromEncodedURIComponent(fromParams);
     return JSON.parse(decoded) as T.VPSelectionState;
-}
-
-function includesShrunkenServant(kids?: T.Kid[]): boolean {
-    if (!kids) return false;
-    return kids.some(k => (
-        k.type === "mini-pronoun" && k.source === "servant"
-    ));
 }
 

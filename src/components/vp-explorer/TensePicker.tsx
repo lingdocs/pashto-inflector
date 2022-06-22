@@ -177,7 +177,7 @@ function TensePicker(props: ({
         : verbTenseOptions;
     const showImperativeOption = ("vps" in props && props.vps.verb.voice === "active")
         || ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
-    const canHaveFormula = "vps" in props;
+    const canHaveFormula = "vps" in props && props.mode !== "quiz";
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
             <div className="d-flex flex-row justify-content-between align-items-center">

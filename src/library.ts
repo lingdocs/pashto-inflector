@@ -30,6 +30,7 @@ import VerbInfo, { RootsAndStems } from "./components/verb-info/VerbInfo";
 import VPExplorer from "./components/vp-explorer/VPExplorer";
 import useStickyState from "./lib/useStickyState";
 import Block, { NPBlock, APBlock } from "./components/blocks/Block";
+import { roleIcon } from "./components/vp-explorer/VPExplorerExplanationModal";
 import {
     makePsString,
     removeFVarients,
@@ -158,6 +159,8 @@ import genderColors from "./lib/gender-colors";
 import * as Types from "./types";
 import * as typePredicates from "./lib/type-predicates";
 import APPicker from "./components/ap-picker/APPicker";
+import VPDisplay from "./components/vp-explorer/VPDisplay";
+import VPPicker from "./components/vp-explorer/VPPicker";
 
 export {
     // FUNCTIONS
@@ -228,6 +231,7 @@ export {
     getPashtoFromRendered,
     renderAPSelection,
     getEnglishVerb,
+    roleIcon,
     // protobuf helpers
     readDictionary,
     writeDictionary,
@@ -254,7 +258,9 @@ export {
     APBlock,
     Block,
     EPDisplay,
+    VPDisplay,
     EPPicker,
+    VPPicker,
     // OTHER
     typePredicates,
     grammarUnits,
