@@ -8,6 +8,7 @@ import ModeSelect, { Mode, ScriptSelect } from "../DisplayModeSelect";
 import { useState } from "react";
 import CompiledPTextDisplay from "../CompiledPTextDisplay";
 import RenderedBlocksDisplay from "../RenderedBlocksDisplay";
+import useStickyState from "../../lib/useStickyState";
 
 function VPDisplay({ VPS, opts, setForm, justify, onlyOne }: {
     VPS: T.VPSelectionState,
@@ -17,7 +18,7 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne }: {
     onlyOne?: boolean,
 }) {
     const [mode, setMode] = useState<Mode>("text");
-    const [script, setScript] = useState<"p" | "f">("f");
+    const [script, setScript] = useStickyState<"p" | "f">("f", "blockScriptChoice");
     const VP = completeVPSelection(VPS);
     if (!VP) {
         return <div className="lead text-muted text-center mt-4">

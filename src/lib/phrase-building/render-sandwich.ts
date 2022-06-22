@@ -8,15 +8,18 @@ export function renderSandwich(s: T.SandwichSelection<T.Sandwich>): T.Rendered<T
         : (s.inside.selection.type === "noun" && isPattern5Entry(s.inside.selection.entry) && isAnimNounEntry(s.inside.selection.entry))
         ? false
         : true;
+    const inside = renderNPSelection(
+        s.inside,
+        true,
+        inflectInside,
+        "subject",
+        "none",
+    );
+    const e = `${s.e} ${inside.selection.e}`;
     return {
         ...s,
-        inside: renderNPSelection(
-            s.inside,
-            true,
-            inflectInside,
-            "subject",
-            "none",
-        ),
+        e,
+        inside,
     };
 }
 
