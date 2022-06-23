@@ -268,7 +268,7 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
         : undefined;
     const engAPs = getEngAPs(VP.blocks);
     // require all English parts for making the English phrase
-    const b = (VP.englishBase && engSubj && engObj !== undefined)
+    return (VP.englishBase && engSubj && engObj !== undefined)
         ? VP.englishBase.map(e => insertEWords(e, {
             // TODO: make sure we actually have the english
             subject: getEnglishFromRendered(engSubj) || "",
@@ -276,7 +276,6 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
             APs: engAPs,
         })).map(capitalizeFirstLetter)
         : undefined;
-    return b;
 }
 
 function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
