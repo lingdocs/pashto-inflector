@@ -14,7 +14,7 @@ function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
     opts: T.TextOptions,
     setOmitSubject: ((value: "true" | "false") => void) | false
     justify?: "left" | "right" | "center",
-    onlyOne?: boolean,
+    onlyOne?: boolean | "concat",
 }) {
     const [mode, setMode] = useState<Mode>("text");
     const [script, setScript] = useStickyState<"p" | "f">("f", "blockScriptChoice");
@@ -54,10 +54,14 @@ function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
             <div />
         </div>
         {mode === "text"
-            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={onlyOne} />
+            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={!!onlyOne} />
             : <EPBlocksDisplay opts={opts} rendered={rendered} justify={justify} script={script} />}
         {result.e && <div className={`text-muted mt-2 text-${justify === "left" ? "left" : justify === "right" ? "right" : "center"}`}>
-            {(onlyOne ? [result.e[0]] : result.e).map((e, i) => <div key={i}>{e}</div>)}
+            {onlyOne === "concat"
+                ? result.e.join(" • ")
+                : onlyOne
+                ? [result.e[0]]
+                : result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>}
         {EP.predicate.selection.selection.type === "participle" && <div style={{ maxWidth: "6 00px", margin: "0 auto" }} className="alert alert-warning mt-3 pt-4">
             <p>⚠️ NOTE: This means that the subject {renderedSubject.selection.e ? `(${renderedSubject.selection.e})` : ""} is <strong>the action/idea</strong> of

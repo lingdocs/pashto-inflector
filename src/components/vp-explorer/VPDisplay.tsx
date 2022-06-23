@@ -13,9 +13,9 @@ import useStickyState from "../../lib/useStickyState";
 function VPDisplay({ VPS, opts, setForm, justify, onlyOne }: {
     VPS: T.VPSelectionState,
     opts: T.TextOptions,
-    setForm: (form: T.FormVersion) => void,
+    setForm: "disable" | ((form: T.FormVersion) => void),
     justify?: "left" | "right" | "center",
-    onlyOne?: boolean,
+    onlyOne?: boolean | "concat",
 }) {
     const [mode, setMode] = useState<Mode>("text");
     const [script, setScript] = useStickyState<"p" | "f">("f", "blockScriptChoice");
@@ -35,20 +35,24 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne }: {
     const rendered = renderVP(VP);
     const result = compileVP(rendered, rendered.form);
     return <div className="text-center mt-1">
-        <AbbreviationFormSelector
+        {typeof setForm === "function" && <AbbreviationFormSelector
             adjustable={rendered.whatsAdjustable}
             form={rendered.form}
             onChange={setForm}
-        />
+        />}
         <div className="d-flex flex-row">
             <ModeSelect value={mode} onChange={setMode} />
             {mode === "blocks" && <ScriptSelect value={script} onChange={setScript} />}
         </div>
         {mode === "text"
-            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={onlyOne} />
+            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={!!onlyOne} />
             : <RenderedBlocksDisplay opts={opts} rendered={rendered} justify={justify} script={script} />}
-        {result.e && <div className="text-muted mt-3">
-            {result.e.map((e, i) => <div key={i}>{e}</div>)}
+        {result.e && <div className={`text-muted mt-2 text-${justify === "left" ? "left" : justify === "right" ? "right" : "center"}`}>
+            {onlyOne === "concat"
+                ? result.e.join(" • ")
+                : onlyOne
+                ? [result.e[0]]
+                : result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>}
     </div>
 }
