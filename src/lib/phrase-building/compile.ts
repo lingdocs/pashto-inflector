@@ -263,12 +263,12 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
     const obj = getObjectSelectionFromBlocks(VP.blocks).selection;
     const engObj = typeof obj === "object"
         ? obj
-        : obj === "none"
+        : (obj === "none" || obj === T.Person.ThirdPlurMale)
         ? ""
         : undefined;
     const engAPs = getEngAPs(VP.blocks);
     // require all English parts for making the English phrase
-    return (VP.englishBase && engSubj && engObj !== undefined)
+    const b = (VP.englishBase && engSubj && engObj !== undefined)
         ? VP.englishBase.map(e => insertEWords(e, {
             // TODO: make sure we actually have the english
             subject: getEnglishFromRendered(engSubj) || "",
@@ -276,6 +276,7 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
             APs: engAPs,
         })).map(capitalizeFirstLetter)
         : undefined;
+    return b;
 }
 
 function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
