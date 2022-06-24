@@ -11,7 +11,7 @@ import { psStringFromEntry } from "../p-text-helpers";
 import { isLocativeAdverbEntry } from "../type-predicates";
 import { renderAdjectiveSelection } from "./render-adj";
 import { renderSandwich } from "./render-sandwich";
-import { EPSBlocksAreComplete, getSubjectSelection } from "./blocks-utils";
+import { EPSBlocksAreComplete, getSubjectSelection, makeBlock, makeKid } from "./blocks-utils";
 import { removeAccentsWLength } from "../accent-helpers";
 import { findPossesivesToShrink, orderKids } from "./render-common";
 
@@ -41,18 +41,18 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks
     const equative: T.EquativeBlock = { type: "equative", equative: renderEquative(EP.equative, commandingPerson) };
     const blocks: T.Block[][] = insertNegative([
         ...renderEPSBlocks(EP.blocks),
-        {
+        makeBlock({
             type: "predicateSelection",
-            selection: EP.predicate.selection.type === "NP"
-                ? renderNPSelection(EP.predicate.selection, false, false, "subject", "king")
-                : renderEqCompSelection(EP.predicate.selection, commandingPerson),
-        },
-        equative,
+                selection: EP.predicate.selection.type === "NP"
+                    ? renderNPSelection(EP.predicate.selection, false, false, "subject", "king")
+                    : renderEqCompSelection(EP.predicate.selection, commandingPerson),
+        }),
+        makeBlock(equative),
     ], EP.equative.negative);
     const miniPronouns = findPossesivesToShrink(removeOrKeepSubject([...EP.blocks, EP.predicate], EP.omitSubject));
     const kids: T.Kid[] = orderKids([
-        ...equative.equative.hasBa ? [{ type: "ba" } as T.Kid] : [], 
-        ...miniPronouns,
+        ...equative.equative.hasBa ? [makeKid({ type: "ba" })] : [], 
+        ...miniPronouns.map(makeKid),
     ]);
     return {
         blocks,
@@ -69,12 +69,12 @@ function insertNegative(blocks: T.Block[], negative: boolean): T.Block[][] {
     return [
         [
             ...blocksA.slice(0, blocks.length - 1),
-            { type: "negative", imperative: false },
+            makeBlock({ type: "negative", imperative: false }),
             ...blocksA.slice(-1), // last (equative)
         ],
         [
             ...blocksA.slice(0, blocks.length - 2),
-            { type: "negative", imperative: false },
+            makeBlock({ type: "negative", imperative: false }),
             ...blocksA.slice(-1), // last (equative)
             ...blocksA.slice(-2, -1), // second last (predicate)
         ],
@@ -100,25 +100,25 @@ export function getEquativeForm(tense: T.EquativeTense): { hasBa: boolean, form:
 }
 
 function renderEPSBlocks(blocks: T.EPSBlockComplete[]): T.Block[] {
-    return blocks.map(({ block }): (T.Rendered<T.SubjectSelectionComplete> | T.Rendered<T.APSelection>) => {
+    return blocks.map(({ block }): T.Block => {
         if (block.type === "AP") {
             if (block.selection.type === "adverb") {
-                return {
+                return makeBlock({
                     type: "AP",
                     selection: renderAdverbSelection(block.selection),
-                };
+                });
             }
             // if (block.selection.type === "sandwich") {
-                return {
+                return makeBlock({
                     type: "AP",
                     selection: renderSandwich(block.selection),
-                };
+                });
             // }
         }
-        return {
+        return makeBlock({
             type: "subjectSelection",
-            selection: renderNPSelection(block.selection, false, false, "subject", "none")
-        };
+            selection: renderNPSelection(block.selection, false, false, "subject", "none"),
+        });
     });
 }
 
@@ -279,15 +279,17 @@ export function completeEPSelection(eps: T.EPSelectionState): T.EPSelectionCompl
 
 function removeAccentsFromEq(blocks: T.Block[]): T.Block[] {
     return blocks.map((block) => {
-        if (block.type === "equative") {
-            const e: T.EquativeBlock = {
+        if (block.block.type === "equative") {
+            return {
                 ...block,
-                equative: {
-                    ...block.equative,
-                    ps: removeAccentsWLength(block.equative.ps),
-                },
-            };
-            return e;
+                block: {
+                    ...block.block,
+                    equative: {
+                        ...block.block.equative,
+                        ps: removeAccentsWLength(block.block.equative.ps),
+                    }
+                }
+            }
         }
         return block;
     });

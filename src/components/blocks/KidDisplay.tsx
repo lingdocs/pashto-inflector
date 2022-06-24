@@ -8,10 +8,10 @@ function KidDisplay({ opts, kid, script }: {
     kid: T.Kid,
     script: "p" | "f",
 }) {
-    const ps = kid.type === "ba"
+    const ps = kid.kid.type === "ba"
         ? baParticle
-        : kid.ps;
-    return <div className="mx-1">
+        : kid.kid.ps;
+    return <div className="mx-1" key={kid.key}>
         {script === "p"
             ? <Pashto opts={opts}>{ps}</Pashto>
             : <Phonetics opts={opts}>{ps}</Phonetics>}

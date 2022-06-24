@@ -15,53 +15,53 @@ function Block({ opts, block, king, script }: {
     king?: "subject" | "object" | undefined,
     script: "p" | "f";
 }) {
-    if ("equative" in block) {
-        return <EquativeBlock opts={opts} eq={block.equative} script={script} />;
+    if ("equative" in block.block) {
+        return <EquativeBlock opts={opts} eq={block.block.equative} script={script} />;
     }
-    if (block.type === "AP") {
-        const english = getEnglishFromRendered(block);
-        return <APBlock opts={opts} english={english} script={script}>{block}</APBlock>
+    if (block.block.type === "AP") {
+        const english = getEnglishFromRendered(block.block);
+        return <APBlock opts={opts} english={english} script={script}>{block.block}</APBlock>
     }
-    if (block.type === "subjectSelection") {
+    if (block.block.type === "subjectSelection") {
         const role = king === "subject" ? "king" : king === "object" ? "servant" : undefined;
-        return <SubjectBlock opts={opts} np={block.selection} role={role} script={script} />
+        return <SubjectBlock opts={opts} np={block.block.selection} role={role} script={script} />
     }
-    if (block.type === "predicateSelection") {
-        const english = getEnglishFromRendered(block.selection);
+    if (block.block.type === "predicateSelection") {
+        const english = getEnglishFromRendered(block.block.selection);
         return <div className="text-center">
             <div><strong>Predicate</strong></div>
-            {block.selection.type === "EQComp"
-                ? <EqCompBlock opts={opts} comp={block.selection.selection} script={script} />
-                : <NPBlock opts={opts} english={english} script={script}>{block.selection}</NPBlock>}
+            {block.block.selection.type === "EQComp"
+                ? <EqCompBlock opts={opts} comp={block.block.selection.selection} script={script} />
+                : <NPBlock opts={opts} english={english} script={script}>{block.block.selection}</NPBlock>}
         </div>
     }
-    if (block.type === "negative") {
-        return <NegBlock opts={opts} imperative={block.imperative} script={script} />
+    if (block.block.type === "negative") {
+        return <NegBlock opts={opts} imperative={block.block.imperative} script={script} />
     }
-    if (block.type === "perfectiveHead") {
-        return <PerfHeadBlock opts={opts} ps={block.ps} script={script} />
+    if (block.block.type === "perfectiveHead") {
+        return <PerfHeadBlock opts={opts} ps={block.block.ps} script={script} />
     }
-    if (block.type === "verbComplement") {
-        return <VCompBlock opts={opts} comp={block.complement} script={script} />;
+    if (block.block.type === "verbComplement") {
+        return <VCompBlock opts={opts} comp={block.block.complement} script={script} />;
     }
-    if (block.type === "verb") {
+    if (block.block.type === "verb") {
+        return <VerbSBlock opts={opts} v={block.block.block} script={script} />;
+    }
+    if (block.block.type === "objectSelection") {
+        const role = king === "object" ? "king" : king === "subject" ? "servant" : undefined;
+        return <ObjectBlock opts={opts} obj={block.block.selection} role={role} script={script} />;
+    }
+    if (block.block.type === "perfectParticipleBlock") {
         return <VerbSBlock opts={opts} v={block.block} script={script} />;
     }
-    if (block.type === "objectSelection") {
-        const role = king === "object" ? "king" : king === "subject" ? "servant" : undefined;
-        return <ObjectBlock opts={opts} obj={block.selection} role={role} script={script} />;
+    if (block.block.type === "perfectEquativeBlock") {
+        return <EquativeBlock opts={opts} eq={block.block} script={script} />;
     }
-    if (block.type === "perfectParticipleBlock") {
-        return <VerbSBlock opts={opts} v={block} script={script} />;
+    if (block.block.type === "modalVerbBlock") {
+        return <ModalVerbBlock opts={opts} v={block.block} script={script} />;
     }
-    if (block.type === "perfectEquativeBlock") {
-        return <EquativeBlock opts={opts} eq={block} script={script} />;
-    }
-    if (block.type === "modalVerbBlock") {
-        return <ModalVerbBlock opts={opts} v={block} script={script} />;
-    }
-    if (block.type === "modalVerbKedulPart") {
-        return <ModalAuxBlock opts={opts} aux={block} script={script} />
+    if (block.block.type === "modalVerbKedulPart") {
+        return <ModalAuxBlock opts={opts} aux={block.block} script={script} />
     }
     return null;
 }

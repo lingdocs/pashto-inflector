@@ -26,7 +26,7 @@ import {
 import { renderEnglishVPBase } from "./english-vp-rendering";
 import { personGender } from "../../lib/misc-helpers";
 import { renderNPSelection } from "./render-np";
-import { getObjectSelection, getSubjectSelection } from "./blocks-utils";
+import { getObjectSelection, getSubjectSelection, makeBlock, makeKid } from "./blocks-utils";
 import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 
@@ -67,7 +67,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         isCompound: VP.verb.isCompound,
         blocks: insertNegative([
             ...firstBlocks,
-            ...verbBlocks,
+            ...verbBlocks.map(makeBlock),
         ], VP.verb.negative, isImperativeTense(VP.verb.tense)),
         kids: getVPKids(hasBa, VP.blocks, VP.form, king),
         englishBase: renderEnglishVPBase({
@@ -200,11 +200,11 @@ function getVPKids(hasBa: boolean, blocks: T.VPSBlockComplete[], form: T.FormVer
     const object = typeof objectS === "object" ? objectS : undefined;
     const servantNP = king === "subject" ? object : subject;
     const shrunkenServant = (form.shrinkServant && servantNP)
-        ? shrinkServant(servantNP)
+        ? makeKid(shrinkServant(servantNP))
         : undefined;
-    const shrunkenPossesives = findPossesivesToShrink(removeAbbreviated(blocks, form, king));
+    const shrunkenPossesives = findPossesivesToShrink(removeAbbreviated(blocks, form, king)).map(makeKid);
     return orderKids([
-        ...hasBa ? [{ type: "ba" } as T.Kid] : [],
+        ...hasBa ? [makeKid({ type: "ba" })] : [],
         ...shrunkenServant ? [shrunkenServant] : [],
         ...shrunkenPossesives ? shrunkenPossesives : [],
     ]); 
@@ -231,10 +231,10 @@ function insertNegative(blocks: T.Block[], negative: boolean, imperative: boolea
     const blocksA = removeVerbAccent(blocks);
     const basic: T.Block[] = [
         ...blocksA.slice(0, blocks.length - 1),
-        {
+        makeBlock({
             type: "negative",
             imperative,
-        },
+        }),
         ...blocksA.slice(-1), 
     ];
     if (hasNonStandardPerfectiveSplit(blocks)) {
@@ -242,7 +242,7 @@ function insertNegative(blocks: T.Block[], negative: boolean, imperative: boolea
             basic,
             [
                 ...blocksA.slice(0, blocks.length - 2),
-                { type: "negative", imperative },
+                makeBlock({ type: "negative", imperative }),
                 ...blocksA.slice(-2, -1), // second last (perfective split)
                 ...blocksA.slice(-1), // last (verb)
             ],
@@ -252,7 +252,7 @@ function insertNegative(blocks: T.Block[], negative: boolean, imperative: boolea
         return [
             [
                 ...blocksA.slice(0, blocks.length - 2),
-                { type: "negative", imperative },
+                makeBlock({ type: "negative", imperative }),
                 ...blocksA.slice(-1), // last
                 ...blocksA.slice(-2, -1), // second last
             ],
@@ -263,31 +263,34 @@ function insertNegative(blocks: T.Block[], negative: boolean, imperative: boolea
 }
 
 function hasLeapFroggable(blocks: T.Block[]): boolean {
-    return blocks.some(b => b.type === "perfectEquativeBlock" || b.type === "modalVerbBlock");
+    return blocks.some(b => b.block.type === "perfectEquativeBlock" || b.block.type === "modalVerbBlock");
 }
 
 function hasNonStandardPerfectiveSplit(blocks: T.Block[]): boolean {
-    const perfS = blocks.find(b => b.type === "perfectiveHead");
-    if (!perfS || perfS.type !== "perfectiveHead") {
+    const perfS = blocks.find(b => b.block.type === "perfectiveHead");
+    if (!perfS || perfS.block.type !== "perfectiveHead") {
         return false;
     }
-    return !["و", "وا"].includes(perfS.ps.p);
+    return !["و", "وا"].includes(perfS.block.ps.p);
 }
 
 function removeVerbAccent(blocks: T.Block[]): T.Block[] {
     return blocks.map((block) => {
-        if (block.type === "perfectiveHead") {
-            return {
-                ...block,
-                ps: removeAccents(block.ps),
-            };
-        }
-        if (block.type === "verb") {
+        if (block.block.type === "perfectiveHead") {
             return {
                 ...block,
                 block: {
                     ...block.block,
-                    ps: removeAccentsWLength(block.block.ps),
+                    ps: removeAccents(block.block.ps),
+                },
+            };
+        }
+        if (block.block.type === "verb") {
+            return {
+                ...block,
+                block: {
+                    ...block.block,
+                    ps: removeAccentsWLength(block.block.block.ps),
                 },
             };
         }
@@ -315,10 +318,10 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
         if (block.type === "subjectSelection") {
             return [
                 ...blocks,
-                {
+                makeBlock({
                     type: "subjectSelection",
                     selection: renderNPSelection(block.selection, config.inflectSubject, false, "subject", config.king === "subject" ? "king" : "servant"),
-                },
+                }),
             ];
         }
         if (block.type === "objectSelection") {
@@ -326,24 +329,24 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
             if (typeof object !== "object") {
                 return [
                     ...blocks,
-                    {
+                    makeBlock({
                         type: "objectSelection",
                         selection: object,
-                    },
+                    }),
                 ];
             }
             const selection = renderNPSelection(object, config.inflectObject, true, "object", config.king === "object" ? "king" : "servant");
             return [
                 ...blocks,
-                {
+                makeBlock({
                     type: "objectSelection",
                     selection,
-                },
+                }),
             ];
         }
         return [
             ...blocks,
-            renderAPSelection(block),
+            makeBlock(renderAPSelection(block)),
         ];
     }, [] as T.Block[]);
 }
@@ -362,7 +365,8 @@ function whatsAdjustable(VP: T.VPSelectionComplete): "both" | "king" | "servant"
         : "king";
 }
 
-type VerbBlocks = | [T.PerfectiveHeadBlock, T.VerbRenderedBlock] // verb w perfective split
+type VerbBlocks =
+    | [T.PerfectiveHeadBlock, T.VerbRenderedBlock] // verb w perfective split
     | [T.VerbRenderedBlock] // verb w/out perfective split
     | [T.PerfectParticipleBlock, T.PerfectEquativeBlock] // perfect verb
     | [T.ModalVerbBlock, T.ModalVerbKedulPart] // modal verb

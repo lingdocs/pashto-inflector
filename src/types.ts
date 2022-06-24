@@ -900,24 +900,28 @@ export type VerbRenderedBlock = {
     },
 };
 
-export type Block =
-    | Rendered<SubjectSelectionComplete>
-    | Rendered<ObjectSelectionComplete>
-    | Rendered<APSelection>
-    | Rendered<PredicateSelectionComplete>
-    | PerfectParticipleBlock
-    | PerfectEquativeBlock
-    | ModalVerbBlock
-    | ModalVerbKedulPart
-    | { type: "negative", imperative: boolean }
-    | PerfectiveHeadBlock
-    | VerbRenderedBlock
-    | VerbComplementBlock
-    | EquativeBlock;
+export type Block = {
+    key: number,
+    block: | Rendered<SubjectSelectionComplete>
+        | Rendered<ObjectSelectionComplete>
+        | Rendered<APSelection>
+        | Rendered<PredicateSelectionComplete>
+        | PerfectParticipleBlock
+        | PerfectEquativeBlock
+        | ModalVerbBlock
+        | ModalVerbKedulPart
+        | { type: "negative", imperative: boolean }
+        | PerfectiveHeadBlock
+        | VerbRenderedBlock
+        | VerbComplementBlock
+        | EquativeBlock;
+}
 
-export type Kid =
-    | { type: "ba" }
-    | MiniPronoun;
+export type Kid = {
+    key: number,
+    kid: | { type: "ba" }
+        | MiniPronoun,
+}
     
 export type MiniPronoun = {
     type: "mini-pronoun",

@@ -1,4 +1,5 @@
 import { useState } from "react";
+// import autoAnimate from "@formkit/auto-animate";
 import { filterForVisibleBlocksEP, filterForVisibleBlocksVP } from "../lib/phrase-building/compile";
 import * as T from "../types";
 import Block from "./blocks/Block";
@@ -11,6 +12,11 @@ function RenderedBlocksDisplay({ opts, rendered, justify, script }: {
     justify?: "left" | "right" | "center",
 }) {
     const [variation, setVariation] = useState<number>(0);
+    // not using autoAnimate here because we need a way to persist the keys in the blocks first
+    // const parent = useRef(null);
+    // useEffect(() => {
+    //     parent.current && autoAnimate(parent.current)
+    // }, [parent]);
     const blocksWVars = ("omitSubject" in rendered)
         ? filterForVisibleBlocksEP(rendered.blocks, rendered.omitSubject)
         : filterForVisibleBlocksVP(rendered.blocks, rendered.form, rendered.king);
@@ -19,14 +25,14 @@ function RenderedBlocksDisplay({ opts, rendered, justify, script }: {
     function handleVariationChange() {
         setVariation(ov => ((ov + 1) % blocksWVars.length));
     }
-    return <div className={`d-flex flex-row justify-content-${justify ? justify : "center"}`} style={{}}>
+    return <div className={`d-flex flex-row justify-content-${justify ? justify : "center"}`}>
         <div className={`d-flex flex-row${script === "p" ? "-reverse" : ""} justify-content-left align-items-end mt-3 pb-2`} style={{ overflowX: "auto" }}>
-            <div key={Math.random()} className="mr-2">
+            <div key={blocks[0].key} className="mr-2">
                 <Block opts={opts} block={blocks[0]} king={king} script={script} />
             </div>
-            <KidsSection opts={opts} kids={rendered.kids} script={script} />
+            <KidsSection key="kidsSection" opts={opts} kids={rendered.kids} script={script} />
             {blocks.slice(1).map((block) => (
-                <div key={Math.random()} className="mr-2">
+                <div key={block.key} className="mr-2">
                     <Block opts={opts} block={block} king={king} script={script} />
                 </div>
             ))}
@@ -42,10 +48,15 @@ function KidsSection({ opts, kids, script }: {
     kids: T.Kid[],
     script: "p" | "f",
 }) {
+    // not using autoAnimate here because we need a way to persist the keys in the blocks first
+    // const parent = useRef(null);
+    // useEffect(() => {
+    //     parent.current && autoAnimate(parent.current)
+    // }, [parent]);
     return kids.length > 0 ? <div className="text-center mx-1 mr-3" style={{ paddingBottom: "1rem"}}>
         <div className={`d-flex flex-row${script === "p" ? "-reverse" : ""} mb-3 justify-content-center`}>
             {kids.map(kid => (
-                <KidDisplay key={Math.random()} opts={opts} kid={kid} script={script} />
+                <KidDisplay key={kid.key} opts={opts} kid={kid} script={script} />
             ))}
         </div>
         <div><strong>kids</strong></div>

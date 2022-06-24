@@ -107,7 +107,7 @@ function compileEPPs(blocks: T.Block[][], kids: T.Kid[], omitSubject: boolean, b
     const subjectPerson = getSubjectSelectionFromBlocks(blocks)
         .selection.selection.person;
     const blocksWKids = putKidsInKidsSection(
-        omitSubject ? blocks.map(blks => blks.filter(b => b.type !== "subjectSelection")) : blocks,
+        omitSubject ? blocks.map(blks => blks.filter(b => b.block.type !== "subjectSelection")) : blocks,
         kids,
         !!blankOut?.kidsSection
     );
@@ -119,19 +119,19 @@ export function filterForVisibleBlocksVP(blocks: T.Block[][], form: T.FormVersio
     return blocks.map(blks => blks.filter((block) => {
         if (form.removeKing) {
             if (
-                (king === "subject" && block.type === "subjectSelection")
+                (king === "subject" && block.block.type === "subjectSelection")
                 ||
-                (king === "object" && block.type === "objectSelection")
+                (king === "object" && block.block.type === "objectSelection")
             ) return false;
         }
         if (form.shrinkServant) {
             if (
-                (servant === "subject" && block.type === "subjectSelection")
+                (servant === "subject" && block.block.type === "subjectSelection")
                 ||
-                (servant === "object" && block.type === "objectSelection")
+                (servant === "object" && block.block.type === "objectSelection")
             ) return false;
         }
-        if (block.type === "objectSelection" && typeof block.selection !== "object") {
+        if (block.block.type === "objectSelection" && typeof block.block.selection !== "object") {
             return false;
         }
         return true;
@@ -140,7 +140,7 @@ export function filterForVisibleBlocksVP(blocks: T.Block[][], form: T.FormVersio
 
 export function filterForVisibleBlocksEP(blocks: T.Block[][], omitSubject: boolean): T.Block[][] {
     if (!omitSubject) return blocks;
-    return blocks.map(blks => blks.filter((block) => {
+    return blocks.map(blks => blks.filter(({ block }) => {
         if (block.type === "subjectSelection") {
             return false;
         }
@@ -155,9 +155,9 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
         const rest = pieces.slice(1);
         const firstPs = ("p" in first)
             ? [first]
-            : (blankOut?.equative && first.type === "equative")
+            : (blankOut?.equative && "block" in first && first.block.type === "equative")
             ? [blank]
-            : ((blankOut?.ba) && first.type === "ba")
+            : ((blankOut?.ba) && "kid" in first && first.kid.type === "ba")
             ? [kidsBlank]
             : getPsFromPiece(first, subjectPerson);
         if (!rest.length) {
@@ -166,8 +166,8 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
         return combine(rest).flatMap(r => (
                 firstPs.map(fPs => concatPsString(
                     fPs,
-                    (!("p" in first) && first.type === "perfectiveHead" && !("p" in next) && (next.type === "verb" || next.type === "negative" || next.type === "mini-pronoun"))
-                        ? ((next.type === "negative" || next.type === "mini-pronoun") ? { p: "", f: "-" } : "")
+                    (!("p" in first) && "block" in first && first.block.type === "perfectiveHead" && !("p" in next) && (("block" in next && (next.block.type === "verb" || next.block.type === "negative")) || ("kid" in next && next.kid.type === "mini-pronoun")))
+                        ? ((("block" in next && next.block.type === "negative") || ("kid" in next && next.kid.type === "mini-pronoun")) ? { p: "", f: "-" } : "")
                         : " ",
                     r,
                 ))
@@ -178,59 +178,64 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
 }
 
 function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsString[] {
-    if (piece.type === "ba") {
-        return [grammarUnits.baParticle];
-    }
-    if (piece.type === "mini-pronoun") {
-        return [piece.ps];
-    }
-    if (piece.type === "negative") {
-        return [
-            negativeParticle[piece.imperative ? "imperative" : "nonImperative"],
-        ];
-    }
-    if (piece.type === "equative") {
-        // length will already be specified in compileEPPs - this is just for type safety
-        return getLong(piece.equative.ps);
-    }
-    if (piece.type === "subjectSelection" || piece.type === "predicateSelection") {
-        return getPashtoFromRendered(piece.selection, subjectPerson);
-    }
-    if (piece.type === "AP") {
-        return getPashtoFromRendered(piece, subjectPerson);
-    }
-    if (piece.type === "perfectiveHead") {
-        return [piece.ps];
-    }
-    if (piece.type === "verbComplement") {
-        return [{ p: "---", f: "---"}]; //getPashtoFromRendered(piece.complement);
-    }
-    if (piece.type === "objectSelection") {
-        if (typeof piece.selection !== "object") {
-            return [{ p: "", f: "" }];
+    if ("block" in piece) {
+        if (piece.block.type === "negative") {
+            return [
+                negativeParticle[piece.block.imperative ? "imperative" : "nonImperative"],
+            ];
         }
-        return getPashtoFromRendered(piece.selection, subjectPerson);
+        if (piece.block.type === "equative") {
+            // length will already be specified in compileEPPs - this is just for type safety
+            return getLong(piece.block.equative.ps);
+        }
+        if (piece.block.type === "subjectSelection" || piece.block.type === "predicateSelection") {
+            return getPashtoFromRendered(piece.block.selection, subjectPerson);
+        }
+        if (piece.block.type === "AP") {
+            return getPashtoFromRendered(piece.block, subjectPerson);
+        }
+        if (piece.block.type === "perfectiveHead") {
+            return [piece.block.ps];
+        }
+        if (piece.block.type === "verbComplement") {
+            return [{ p: "---", f: "---"}]; //getPashtoFromRendered(piece.block.complement);
+        }
+        if (piece.block.type === "objectSelection") {
+            if (typeof piece.block.selection !== "object") {
+                return [{ p: "", f: "" }];
+            }
+            return getPashtoFromRendered(piece.block.selection, subjectPerson);
+        }
+        if (piece.block.type === "verb") {
+            // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
+            return getLong(piece.block.block.ps);
+        }
+        if (piece.block.type === "perfectParticipleBlock") {
+            // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
+            return getLong(piece.block.ps);
+        }
+        if (piece.block.type === "perfectEquativeBlock") {
+            // just using the short one for now - it will only be short anyways
+            return getShort(piece.block.ps);
+        }
+        if (piece.block.type === "modalVerbBlock") {
+            // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
+            return getLong(piece.block.ps);
+        }
+        if (piece.block.type === "modalVerbKedulPart") {
+            // just using the short one for now - it will only be short anyways
+            return getShort(piece.block.ps);
+        }
     }
-    if (piece.type === "verb") {
-        // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
-        return getLong(piece.block.ps);
+    if ("kid" in piece) {
+        if (piece.kid.type === "ba") {
+            return [grammarUnits.baParticle];
+        }
+        if (piece.kid.type === "mini-pronoun") {
+            return [piece.kid.ps];
+        }
     }
-    if (piece.type === "perfectParticipleBlock") {
-        // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
-        return getLong(piece.ps);
-    }
-    if (piece.type === "perfectEquativeBlock") {
-        // just using the short one for now - it will only be short anyways
-        return getShort(piece.ps);
-    }
-    if (piece.type === "modalVerbBlock") {
-        // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
-        return getLong(piece.ps);
-    }
-    if (piece.type === "modalVerbKedulPart") {
-        // just using the short one for now - it will only be short anyways
-        return getShort(piece.ps);
-    }
+    
     throw new Error("unrecognized piece type");
 }
 
@@ -317,7 +322,7 @@ export function checkForMiniPronounsError(s: T.EPSelectionState | T.VPSelectionS
         return renderVP(VPS).kids;
     })();
     if (!kids) return undefined;
-    const miniPronouns = kids.filter(x => x.type === "mini-pronoun") as T.MiniPronoun[];
+    const miniPronouns = kids.filter(x => x.kid.type === "mini-pronoun").map(m => m.kid) as T.MiniPronoun[];
     if (miniPronouns.length > 2) {
         return "can't add another mini-pronoun, there are alread two";
     }

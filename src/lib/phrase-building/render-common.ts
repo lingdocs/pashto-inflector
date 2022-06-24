@@ -88,11 +88,11 @@ export function getMiniPronounPs(person: T.Person): T.PsString {
 export function orderKids(kids: T.Kid[]): T.Kid[] {
     const sorted = [...kids].sort((a, b) => {
         // ba first
-        if (a.type === "ba") return -1;
+        if (a.kid.type === "ba") return -1;
         // kinds lined up 1st 2nd 3rd person
-        if (a.type === "mini-pronoun" && b.type === "mini-pronoun") {
-            const aPers = getFirstSecThird(a.person);
-            const bPers = getFirstSecThird(b.person);
+        if (a.kid.type === "mini-pronoun" && b.kid.type === "mini-pronoun") {
+            const aPers = getFirstSecThird(a.kid.person);
+            const bPers = getFirstSecThird(b.kid.person);
             if (aPers < bPers) {
                 return -1;
             }
