@@ -1,6 +1,9 @@
 export type Mode = "text" | "blocks";
 
-function ModeSelect({ value, onChange }: { value: Mode, onChange: (m: Mode) => void }) {
+function ModeSelect({ value, onChange }: {
+    value: Mode,
+    onChange: (m: Mode) => void,
+}) {
     return <div style={{ fontSize: "larger", maxWidth: "1.75rem" }}>
         {value === "text" ? <div className="clickable" onClick={() => onChange("blocks")}>
             <i className="fas fa-cubes" />
