@@ -20,15 +20,15 @@ const labels = (role: "subject" | "object" | "ergative" | "possesor") => ({
     // ],
     e: role === "object" ? [
         ["me", "us"],
-        ["you", "y'all"],
+        ["you", "you (pl.)"],
         [{ masc: "him/it", fem: "her/it"}, "them"],
     ] : role === "possesor" ? [
         ["my", "our"],
-        ["your", "y'all's"],
+        ["your", "your (pl.)"],
         [{ masc: "his/its", fem: "her/its"}, "their"],
     ] : [
         ["I", "We"],
-        ["You", "Y'all"],
+        ["You", "You (pl.)"],
         [{ masc: "He/It", fem: "She/It"}, "They"],
     ],
     p: role === "subject" ? {
