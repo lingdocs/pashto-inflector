@@ -203,7 +203,7 @@ function TensePicker(props: ({
                         label: "Perfect",
                         value: "perfect",
                     }, {
-                        label: "Modal",
+                        label: "Ability",
                         value: "modal",
                     }, {
                         label: "Imperative",
@@ -215,7 +215,7 @@ function TensePicker(props: ({
                         label: "Perfect",
                         value: "perfect",
                     }, {
-                        label: "Modal",
+                        label: "Ability",
                         value: "modal",
                     }]}
                     handleChange={props.mode !== "quiz" ? onTenseCategorySelect : () => null}
