@@ -78,6 +78,10 @@ const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense,
     label: "Past Subjunctive Perfect",
     value: "pastSubjunctivePerfect",
     formula: "past participle + past subjunctive equative",
+}, {
+    label: `"Would Have Been" Perfect`,
+    value: "wouldHaveBeenPerfect",
+    formula: `past participle + "would have been" equative`,
 }];
 
 const imperativeTenseOptions: { label: string | JSX.Element, value: T.ImperativeTense, formula: string }[] = [{

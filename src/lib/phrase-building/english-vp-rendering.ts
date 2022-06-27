@@ -143,6 +143,9 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
             `$SUBJ would${n ? " not" : ""} have ${v[4]}`,
             `$SUBJ should${n ? " not" : ""} have ${v[4]}`,
         ]),
+        wouldHaveBeenPerfect: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
+            `$SUBJ would${n ? " not" : ""} have ${v[4]}`,
+        ]),
     }
     const passiveBasicBuilders: Record<
         T.VerbTense,
@@ -199,6 +202,9 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
             `$SUBJ will${n ? " not" : ""} have been ${v[4]}`,
         ]),
         pastSubjunctivePerfect: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
+            `$SUBJ would${n ? " not" : ""} have been ${v[4]}`,
+        ]),
+        wouldHaveBeenPerfect: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `$SUBJ would${n ? " not" : ""} have been ${v[4]}`,
         ]),
     }

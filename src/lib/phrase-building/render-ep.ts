@@ -87,11 +87,13 @@ function removeOrKeepSubject(blocks: (T.EPSBlockComplete | T.SubjectSelectionCom
 }
 
 export function getEquativeForm(tense: T.EquativeTense): { hasBa: boolean, form: T.SingleOrLengthOpts<T.VerbBlock> } {
-    const hasBa = (tense === "future" || tense === "wouldBe");
+    const hasBa = (tense === "future" || tense === "wouldBe" || tense === "wouldHaveBeen");
     const baseTense = (tense === "future")
         ? "habitual"
         : tense === "wouldBe"
         ? "past"
+        : tense === "wouldHaveBeen"
+        ? "pastSubjunctive"
         : tense;
     return {
         hasBa,
@@ -224,6 +226,11 @@ const equativeBuilders: Record<T.EquativeTense, (p: T.Person, n: boolean) => str
             `(that) $SUBJ were $PRED`,
         ];
     },
+    wouldHaveBeen: () => {
+        return [
+            `$SUBJ would have been $PRED`,
+        ];
+    }
 }
 
 function isThirdPersonSing(p: T.Person): boolean {

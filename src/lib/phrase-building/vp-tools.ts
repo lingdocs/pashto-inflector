@@ -110,10 +110,13 @@ export function getTenseVerbForm(
         return conj.perfect.subjunctive;
     }
     if (tense === "wouldBePerfect") {
-        return conj.perfect.affirmational;
+        return conj.perfect.wouldBe;
     }
     if (tense === "pastSubjunctivePerfect") {
-        return conj.perfect.pastSubjunctiveHypothetical;
+        return conj.perfect.pastSubjunctive;
+    }
+    if (tense === "wouldHaveBeenPerfect") {
+        return conj.perfect.wouldHaveBeen;
     }
     throw new Error("unknown tense");
 }

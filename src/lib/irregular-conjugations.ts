@@ -299,7 +299,7 @@ const kawulPerfectPassive: T.PerfectContent = {
         [[{p: "به کړی شوی وي", f: "ba kúRey shúwey wee"}], [{p: "به کړي شوي وي", f: "ba kúRee shúwee wee"}]],
         [[{p: "به کړې شوې وي", f: "ba kúRe shúwe wee"}], [{p: "به کړې شوې وي", f: "ba kúRe shúwe wee"}]],
     ],
-    affirmational: [
+    wouldBe: [
         [[{p: "به کړی شوی وم", f: "ba kúRey shúwey wum"}], [{p: "به کړي شوي وو", f: "ba kúRee shúwee woo"}]],
         [[{p: "به کړې شوې وم", f: "ba kúRe shúwe wum"}], [{p: "به کړې شوې وو", f: "ba kúRe shúwe woo"}]],
         [[{p: "به کړی شوی وې", f: "ba kúRey shúwey we"}], [{p: "به کړي شوي وئ", f: "ba kúRee shúwee weyy"}]],
@@ -307,7 +307,15 @@ const kawulPerfectPassive: T.PerfectContent = {
         [[{p: "به کړی شوی و", f: "ba kúRey shúwey wo"}], [{p: "به کړي شوي وو", f: "ba kúRee shúwee woo"}]],
         [[{p: "به کړې شوې وه", f: "ba kúRe shúwe wa"}], [{p: "به کړې شوې وې", f: "ba kúRe shúwe we"}]],
     ],
-    pastSubjunctiveHypothetical: [
+    pastSubjunctive: [
+        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
+        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "به کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "ba kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
+        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
+        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "به کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "ba kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
+        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
+        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "به کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "ba kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
+    ],
+    wouldHaveBeen: [
         [[{p: "به کړی شوی وای", f: "ba kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "ba kúRey shúwey wey"}], [{p: "به کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "به کړي شوي وی", f: "ba kúRee shúwee wey"}]],
         [[{p: "به کړې شوې وای", f: "ba kúRe shúwe waay"}, {p: "به کړې شوې وی", f: "ba kúRe shúwe wey"}], [{p: "به کړې شوې وای", f: "ba kúRe shúwe waay"}, {p: "به کړې شوې وی", f: "ba kúRe shúwe wey"}]],
         [[{p: "به کړی شوی وای", f: "ba kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "ba kúRey shúwey wey"}], [{p: "به کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "به کړي شوي وی", f: "ba kúRee shúwee wey"}]],
@@ -555,7 +563,7 @@ export const kedulStat: T.VerbConjugation = {
             [[{p: "به شوی وي", f: "ba shuwey wee"}], [{p: "به شوي وي", f: "ba shuwee wee"}]],
             [[{p: "به شوې وي", f: "ba shuwe wee"}], [{p: "به شوې وي", f: "ba shuwe wee"}]],
         ],
-        affirmational: [
+        wouldBe: [
             [[{p: "به شوی وم", f: "ba shuwey wum"}], [{p: "به شوي وو", f: "ba shuwee woo"}]],
             [[{p: "به شوې وم", f: "ba shuwe wum"}], [{p: "به شوې وو", f: "ba shuwe woo"}]],
             [[{p: "به شوی وې", f: "ba shuwey we"}], [{p: "به شوي وئ", f: "ba shuwee weyy"}]],
@@ -563,7 +571,15 @@ export const kedulStat: T.VerbConjugation = {
             [[{p: "به شوی و", f: "ba shuwey wo"}], [{p: "به شوي وو", f: "ba shuwee woo"}]],
             [[{p: "به شوې وه", f: "ba shuwe wa"}], [{p: "به شوې وې", f: "ba shuwe we"}]],
         ],
-        pastSubjunctiveHypothetical: [
+        pastSubjunctive: [
+            [[{p: "شوی وای", f: "shuwey waay"}, {p: "شوی وی", f: "shuwey wey"}], [{p: "شوي وای", f: "shuwee waay"}, {p: "شوي وی", f: "shuwee wey"}]],
+            [[{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}], [{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}]],
+            [[{p: "شوی وای", f: "shuwey waay"}, {p: "شوی وی", f: "shuwey wey"}], [{p: "شوي وای", f: "shuwee waay"}, {p: "شوي وی", f: "shuwee wey"}]],
+            [[{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}], [{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}]],
+            [[{p: "شوی وای", f: "shuwey waay"}, {p: "شوی وی", f: "shuwey wey"}], [{p: "شوي وای", f: "shuwee waay"}, {p: "شوي وی", f: "shuwee wey"}]],
+            [[{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}], [{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}]],
+        ],
+        wouldHaveBeen: [
             [[{p: "به شوی وای", f: "ba shuwey waay"}, {p: "به شوی وی", f: "ba shuwey wey"}], [{p: "به شوي وای", f: "ba shuwee waay"}, {p: "به شوي وی", f: "ba shuwee wey"}]],
             [[{p: "به شوې وای", f: "ba shuwe waay"}, {p: "به شوې وی", f: "ba shuwe wey"}], [{p: "به شوې وای", f: "ba shuwe waay"}, {p: "به شوې وی", f: "ba shuwe wey"}]],
             [[{p: "به شوی وای", f: "ba shuwey waay"}, {p: "به شوی وی", f: "ba shuwey wey"}], [{p: "به شوي وای", f: "ba shuwee waay"}, {p: "به شوي وی", f: "ba shuwee wey"}]],
@@ -817,7 +833,7 @@ export const kedulDyn: T.VerbConjugation = {
             [[{p: "به شوی وي", f: "ba shuwey wee"}], [{p: "به شوي وي", f: "ba shuwee wee"}]],
             [[{p: "به شوې وي", f: "ba shuwe wee"}], [{p: "به شوې وي", f: "ba shuwe wee"}]],
         ],
-        affirmational: [
+        wouldBe: [
             [[{p: "به شوی وم", f: "ba shuwey wum"}], [{p: "به شوي وو", f: "ba shuwee woo"}]],
             [[{p: "به شوې وم", f: "ba shuwe wum"}], [{p: "به شوې وو", f: "ba shuwe woo"}]],
             [[{p: "به شوی وې", f: "ba shuwey we"}], [{p: "به شوي وئ", f: "ba shuwee weyy"}]],
@@ -825,7 +841,15 @@ export const kedulDyn: T.VerbConjugation = {
             [[{p: "به شوی و", f: "ba shuwey wo"}], [{p: "به شوي وو", f: "ba shuwee woo"}]],
             [[{p: "به شوې وه", f: "ba shuwe wa"}], [{p: "به شوې وې", f: "ba shuwe we"}]],
         ],
-        pastSubjunctiveHypothetical: [
+        pastSubjunctive: [
+            [[{p: "شوی وای", f: "shuwey waay"}, {p: "شوی وی", f: "shuwey wey"}], [{p: "شوي وای", f: "shuwee waay"}, {p: "شوي وی", f: "shuwee wey"}]],
+            [[{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}], [{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}]],
+            [[{p: "شوی وای", f: "shuwey waay"}, {p: "شوی وی", f: "shuwey wey"}], [{p: "شوي وای", f: "shuwee waay"}, {p: "شوي وی", f: "shuwee wey"}]],
+            [[{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}], [{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}]],
+            [[{p: "شوی وای", f: "shuwey waay"}, {p: "شوی وی", f: "shuwey wey"}], [{p: "شوي وای", f: "shuwee waay"}, {p: "شوي وی", f: "shuwee wey"}]],
+            [[{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}], [{p: "شوې وای", f: "shuwe waay"}, {p: "شوې وی", f: "shuwe wey"}]],
+        ],
+        wouldHaveBeen: [
             [[{p: "به شوی وای", f: "ba shuwey waay"}, {p: "به شوی وی", f: "ba shuwey wey"}], [{p: "به شوي وای", f: "ba shuwee waay"}, {p: "به شوي وی", f: "ba shuwee wey"}]],
             [[{p: "به شوې وای", f: "ba shuwe waay"}, {p: "به شوې وی", f: "ba shuwe wey"}], [{p: "به شوې وای", f: "ba shuwe waay"}, {p: "به شوې وی", f: "ba shuwe wey"}]],
             [[{p: "به شوی وای", f: "ba shuwey waay"}, {p: "به شوی وی", f: "ba shuwey wey"}], [{p: "به شوي وای", f: "ba shuwee waay"}, {p: "به شوي وی", f: "ba shuwee wey"}]],
@@ -978,7 +1002,7 @@ const kawulPerfect: T.PerfectContent = {
         [[{p: "به کړی وي", f: "ba kúRey wee"}], [{p: "به کړي وي", f: "ba kúRee wee"}]],
         [[{p: "به کړې وي", f: "ba kúRe wee"}], [{p: "به کړې وي", f: "ba kúRe wee"}]],
     ],
-    affirmational: [
+    wouldBe: [
         [[{p: "به کړی وم", f: "ba kúRey wum"}], [{p: "به کړي وو", f: "ba kúRee woo"}]],
         [[{p: "به کړې وم", f: "ba kúRe wum"}], [{p: "به کړې وو", f: "ba kúRe woo"}]],
         [[{p: "به کړی وې", f: "ba kúRey we"}], [{p: "به کړي وئ", f: "ba kúRee weyy"}]],
@@ -986,13 +1010,21 @@ const kawulPerfect: T.PerfectContent = {
         [[{p: "به کړی و", f: "ba kúRey wo"}], [{p: "به کړي وو", f: "ba kúRee woo"}]],
         [[{p: "به کړې وه", f: "ba kúRe wa"}], [{p: "به کړې وې", f: "ba kúRe we"}]],
     ],
-    pastSubjunctiveHypothetical: [
+    pastSubjunctive: [
         [[{p: "کړی وای", f: "kúRey waay"}, {p: "کړی وی", f: "kúRey wey"}], [{p: "کړی وای", f: "kúRey waay"}, {p: "کړی وی", f: "kúRey wey"}]], 
         [[{p: "کړې وای", f: "kúRe waay"}, {p: "کړې وی", f: "kúRe wey"}], [{p: "کړې وای", f: "kúRe waay"}, {p: "کړې وی", f: "kúRe wey"}]],
         [[{p: "کړی وای", f: "kúRey waay"}, {p: "کړی وی", f: "kúRey wey"}], [{p: "کړی وای", f: "kúRey waay"}, {p: "کړی وی", f: "kúRey wey"}]], 
         [[{p: "کړې وای", f: "kúRe waay"}, {p: "کړې وی", f: "kúRe wey"}], [{p: "کړې وای", f: "kúRe waay"}, {p: "کړې وی", f: "kúRe wey"}]],
         [[{p: "کړی وای", f: "kúRey waay"}, {p: "کړی وی", f: "kúRey wey"}], [{p: "کړی وای", f: "kúRey waay"}, {p: "کړی وی", f: "kúRey wey"}]], 
         [[{p: "کړې وای", f: "kúRe waay"}, {p: "کړې وی", f: "kúRe wey"}], [{p: "کړې وای", f: "kúRe waay"}, {p: "کړې وی", f: "kúRe wey"}]],
+    ],
+    wouldHaveBeen: [
+        [[{p: "به کړی وای", f: "ba kúRey waay"}, {p: "به کړی وی", f: "ba kúRey wey"}], [{p: "به کړی وای", f: "ba kúRey waay"}, {p: "به کړی وی", f: "ba kúRey wey"}]], 
+        [[{p: "به کړې وای", f: "ba kúRe waay"}, {p: "به کړې وی", f: "ba kúRe wey"}], [{p: "به کړې وای", f: "ba kúRe waay"}, {p: "به کړې وی", f: "ba kúRe wey"}]],
+        [[{p: "به کړی وای", f: "ba kúRey waay"}, {p: "به کړی وی", f: "ba kúRey wey"}], [{p: "به کړی وای", f: "ba kúRey waay"}, {p: "به کړی وی", f: "ba kúRey wey"}]], 
+        [[{p: "به کړې وای", f: "ba kúRe waay"}, {p: "به کړې وی", f: "ba kúRe wey"}], [{p: "به کړې وای", f: "ba kúRe waay"}, {p: "به کړې وی", f: "ba kúRe wey"}]],
+        [[{p: "به کړی وای", f: "ba kúRey waay"}, {p: "به کړی وی", f: "ba kúRey wey"}], [{p: "به کړی وای", f: "ba kúRey waay"}, {p: "به کړی وی", f: "ba kúRey wey"}]], 
+        [[{p: "به کړې وای", f: "ba kúRe waay"}, {p: "به کړې وی", f: "ba kúRe wey"}], [{p: "به کړې وای", f: "ba kúRe waay"}, {p: "به کړې وی", f: "ba kúRe wey"}]],
     ],
 };
 
@@ -2383,7 +2415,7 @@ export const tlul: T.VerbConjugation = {
                 [[{p: "به تللې وي", f: "ba tlúle wee"}], [{p: "به تللې وي", f: "ba tlúle wee"}]],
             ],
         },
-        affirmational: {
+        wouldBe: {
             short: [
                 [[{p: "به تلی وم", f: "ba túley wum"}], [{p: "به تلي وو", f: "ba túlee woo"}]],
                 [[{p: "به تلې وم", f: "ba túle wum"}], [{p: "به تلې وو", f: "ba túle woo"}]],
@@ -2401,7 +2433,25 @@ export const tlul: T.VerbConjugation = {
                 [[{p: "به تللې وه", f: "ba tlúle wa"}], [{p: "به تللې وې", f: "ba tlúle we"}]],
             ],
         },
-        pastSubjunctiveHypothetical: {
+        pastSubjunctive: {
+            short: [
+                [[{p: "تلی وای", f: "túley waay"}, {p: "تلی وی", f: "túley wey"}], [{p: "تلي وای", f: "túlee waay"}, {p: "تلي وی", f: "túlee wey"}]],
+                [[{p: "تلې وای", f: "túle waay"}, {p: "تلې وی", f: "túle wey"}], [{p: "تلې وای", f: "túle waay"}, {p: "تلې وی", f: "túle wey"}]],
+                [[{p: "تلی وای", f: "túley waay"}, {p: "تلی وی", f: "túley wey"}], [{p: "تلي وای", f: "túlee waay"}, {p: "تلي وی", f: "túlee wey"}]],
+                [[{p: "تلې وای", f: "túle waay"}, {p: "تلې وی", f: "túle wey"}], [{p: "تلې وای", f: "túle waay"}, {p: "تلې وی", f: "túle wey"}]],
+                [[{p: "تلی وای", f: "túley waay"}, {p: "تلی وی", f: "túley wey"}], [{p: "تلي وای", f: "túlee waay"}, {p: "تلي وی", f: "túlee wey"}]],
+                [[{p: "تلې وای", f: "túle waay"}, {p: "تلې وی", f: "túle wey"}], [{p: "تلې وای", f: "túle waay"}, {p: "تلې وی", f: "túle wey"}]],
+            ],
+            long: [
+                [[{p: "تللی وای", f: "tlúley waay"}, {p: "تللی وی", f: "tlúley wey"}], [{p: "تللي وای", f: "tlúlee waay"}, {p: "تللي وی", f: "tlúlee wey"}]],
+                [[{p: "تللې وای", f: "tlúle waay"}, {p: "تللې وی", f: "tlúle wey"}], [{p: "تللې وای", f: "tlúle waay"}, {p: "تللې وی", f: "tlúle wey"}]],
+                [[{p: "تللی وای", f: "tlúley waay"}, {p: "تللی وی", f: "tlúley wey"}], [{p: "تللي وای", f: "tlúlee waay"}, {p: "تللي وی", f: "tlúlee wey"}]],
+                [[{p: "تللې وای", f: "tlúle waay"}, {p: "تللې وی", f: "tlúle wey"}], [{p: "تللې وای", f: "tlúle waay"}, {p: "تللې وی", f: "tlúle wey"}]],
+                [[{p: "تللی وای", f: "tlúley waay"}, {p: "تللی وی", f: "tlúley wey"}], [{p: "تللي وای", f: "tlúlee waay"}, {p: "تللي وی", f: "tlúlee wey"}]],
+                [[{p: "تللې وای", f: "tlúle waay"}, {p: "تللې وی", f: "tlúle wey"}], [{p: "تللې وای", f: "tlúle waay"}, {p: "تللې وی", f: "tlúle wey"}]],
+            ],
+        },
+        wouldHaveBeen: {
             short: [
                 [[{p: "به تلی وای", f: "ba túley waay"}, {p: "به تلی وی", f: "ba túley wey"}], [{p: "به تلي وای", f: "ba túlee waay"}, {p: "به تلي وی", f: "ba túlee wey"}]],
                 [[{p: "به تلې وای", f: "ba túle waay"}, {p: "به تلې وی", f: "ba túle wey"}], [{p: "به تلې وای", f: "ba túle waay"}, {p: "به تلې وی", f: "ba túle wey"}]],
@@ -2907,7 +2957,7 @@ export const warkawul: T.VerbConjugation = {
             [[{p: "به ورکړی وي", f: "ba wărkúRey wee"}], [{p: "به ورکړي وي", f: "ba wărkúRee wee"}]],
             [[{p: "به ورکړې وي", f: "ba wărkúRe wee"}], [{p: "به ورکړې وي", f: "ba wărkúRe wee"}]],
         ],
-        affirmational: [
+        wouldBe: [
             [[{p: "به ورکړی وم", f: "ba wărkúRey wum"}], [{p: "به ورکړي وو", f: "ba wărkúRee woo"}]],
             [[{p: "به ورکړې وم", f: "ba wărkúRe wum"}], [{p: "به ورکړې وو", f: "ba wărkúRe woo"}]],
             [[{p: "به ورکړی وې", f: "ba wărkúRey we"}], [{p: "به ورکړي وئ", f: "ba wărkúRee weyy"}]],
@@ -2915,13 +2965,21 @@ export const warkawul: T.VerbConjugation = {
             [[{p: "به ورکړی و", f: "ba wărkúRey wo"}], [{p: "به ورکړي وو", f: "ba wărkúRee woo"}]],
             [[{p: "به ورکړې وه", f: "ba wărkúRe wa"}], [{p: "به ورکړې وې", f: "ba wărkúRe we"}]],
         ],
-        pastSubjunctiveHypothetical: [
+        pastSubjunctive: [
             [[{p: "ورکړی وای", f: "wărkúRey waay"}, {p: "ورکړی وی", f: "wărkúRey wey"}], [{p: "ورکړی وای", f: "wărkúRey waay"}, {p: "ورکړی وی", f: "wărkúRey wey"}]], 
             [[{p: "ورکړې وای", f: "wărkúRe waay"}, {p: "ورکړې وی", f: "wărkúRe wey"}], [{p: "ورکړې وای", f: "wărkúRe waay"}, {p: "ورکړې وی", f: "wărkúRe wey"}]],
             [[{p: "ورکړی وای", f: "wărkúRey waay"}, {p: "ورکړی وی", f: "wărkúRey wey"}], [{p: "ورکړی وای", f: "wărkúRey waay"}, {p: "ورکړی وی", f: "wărkúRey wey"}]], 
             [[{p: "ورکړې وای", f: "wărkúRe waay"}, {p: "ورکړې وی", f: "wărkúRe wey"}], [{p: "ورکړې وای", f: "wărkúRe waay"}, {p: "ورکړې وی", f: "wărkúRe wey"}]],
             [[{p: "ورکړی وای", f: "wărkúRey waay"}, {p: "ورکړی وی", f: "wărkúRey wey"}], [{p: "ورکړی وای", f: "wărkúRey waay"}, {p: "ورکړی وی", f: "wărkúRey wey"}]], 
             [[{p: "ورکړې وای", f: "wărkúRe waay"}, {p: "ورکړې وی", f: "wărkúRe wey"}], [{p: "ورکړې وای", f: "wărkúRe waay"}, {p: "ورکړې وی", f: "wărkúRe wey"}]],
+        ],
+        wouldHaveBeen: [
+            [[{p: "به ورکړی وای", f: "ba wărkúRey waay"}, {p: "به ورکړی وی", f: "ba wărkúRey wey"}], [{p: "به ورکړی وای", f: "ba wărkúRey waay"}, {p: "به ورکړی وی", f: "ba wărkúRey wey"}]], 
+            [[{p: "به ورکړې وای", f: "ba wărkúRe waay"}, {p: "به ورکړې وی", f: "ba wărkúRe wey"}], [{p: "به ورکړې وای", f: "ba wărkúRe waay"}, {p: "به ورکړې وی", f: "ba wărkúRe wey"}]],
+            [[{p: "به ورکړی وای", f: "ba wărkúRey waay"}, {p: "به ورکړی وی", f: "ba wărkúRey wey"}], [{p: "به ورکړی وای", f: "ba wărkúRey waay"}, {p: "به ورکړی وی", f: "ba wărkúRey wey"}]], 
+            [[{p: "به ورکړې وای", f: "ba wărkúRe waay"}, {p: "به ورکړې وی", f: "ba wărkúRe wey"}], [{p: "به ورکړې وای", f: "ba wărkúRe waay"}, {p: "به ورکړې وی", f: "ba wărkúRe wey"}]],
+            [[{p: "به ورکړی وای", f: "ba wărkúRey waay"}, {p: "به ورکړی وی", f: "ba wărkúRey wey"}], [{p: "به ورکړی وای", f: "ba wărkúRey waay"}, {p: "به ورکړی وی", f: "ba wărkúRey wey"}]], 
+            [[{p: "به ورکړې وای", f: "ba wărkúRe waay"}, {p: "به ورکړې وی", f: "ba wărkúRe wey"}], [{p: "به ورکړې وای", f: "ba wărkúRe waay"}, {p: "به ورکړې وی", f: "ba wărkúRe wey"}]],
         ],
     },
     // passive: {

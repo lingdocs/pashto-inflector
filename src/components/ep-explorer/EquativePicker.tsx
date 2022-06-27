@@ -28,6 +28,9 @@ const options: { label: string | JSX.Element, value: T.EquativeTense }[] = [{
 }, {
     label: "Past Subjunctive",
     value: "pastSubjunctive",
+}, {
+    label: `"Would Have Been"`,
+    value: "wouldHaveBeen",
 }];
 
 function EquativePicker({ equative, onChange, hideNegative }: {

@@ -38,7 +38,7 @@ function EPExplorer(props: {
     const [eps, adjustEps] = useStickyReducer(
         epsReducer,
         blankEps,
-        "EPState7",
+        "EPState8",
         flashMessage,
     );
     const [alert, setAlert] = useState<string | undefined>(undefined);

@@ -339,8 +339,9 @@ export type PerfectContent = {
     habitual: VerbForm; // PPART + equative.habit
     subjunctive: VerbForm; // PPART + equative.subj
     future: VerbForm; // ba + PPART + equative.subj
-    affirmational: VerbForm; // ba + PPART + equative.past
-    pastSubjunctiveHypothetical: VerbForm; // PPART + waay
+    wouldBe: VerbForm; // ba + PPART + equative.past
+    pastSubjunctive: VerbForm; // PPART + waay
+    wouldHaveBeen: VerbForm; // PPART + ba + waay
 }
 
 // Plain, 1st, and 2nd Inflection
@@ -530,7 +531,7 @@ export type VerbTense = "presentVerb"
     | "habitualImperfectivePast";
 export type NounNumber = "singular" | "plural";
 
-export type EquativeTense = "present" | "subjunctive" | "habitual" | "past" | "future" | "wouldBe" | "pastSubjunctive";
+export type EquativeTense = "present" | "subjunctive" | "habitual" | "past" | "future" | "wouldBe" | "pastSubjunctive" | "wouldHaveBeen";
 export type PerfectTense = `${EquativeTense}Perfect`;
 export type ModalTense = `${VerbTense}Modal`;
 export type ImperativeTense = `${Aspect}Imperative`;

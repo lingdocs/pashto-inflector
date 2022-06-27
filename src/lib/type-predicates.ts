@@ -189,7 +189,7 @@ export function isModalTense(tense: T.Tense): tense is T.ModalTense {
 }
 
 export function isEquativeTense(t: T.Tense): t is T.EquativeTense {
-    return (t === "present" || t === "future" || t === "habitual" || t === "past" || t === "wouldBe" || t === "subjunctive" || t === "pastSubjunctive");
+    return (t === "present" || t === "future" || t === "habitual" || t === "past" || t === "wouldBe" || t === "subjunctive" || t === "pastSubjunctive" || t === "wouldHaveBeen");
 }
 
 export function isImperativeTense(tense: T.Tense): tense is T.ImperativeTense {

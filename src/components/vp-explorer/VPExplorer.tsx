@@ -39,7 +39,7 @@ function VPExplorer(props: {
         props.loaded
             ? props.loaded
             : savedVps => makeVPSelectionState(props.verb, savedVps),
-        "vpsState15",
+        "vpsState16",
         flashMessage,    
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(

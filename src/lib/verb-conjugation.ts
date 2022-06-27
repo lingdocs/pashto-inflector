@@ -169,8 +169,9 @@ function conjugateDynamicCompound(info: T.DynamicCompoundVerbInfo): T.VerbConjug
         habitual: addToForm([complement, " "], pset.habitual),
         subjunctive: addToForm([complement, " "], pset.subjunctive),
         future: addToForm([complement, " "], pset.future),
-        affirmational: addToForm([complement, " "], pset.affirmational),
-        pastSubjunctiveHypothetical: addToForm([complement, " "], pset.pastSubjunctiveHypothetical),
+        wouldBe: addToForm([complement, " "], pset.wouldBe),
+        pastSubjunctive: addToForm([complement, " "], pset.pastSubjunctive),
+        wouldHaveBeen: addToForm([complement, " "], pset.wouldHaveBeen),
     });
     const makePassiveAspectContent = (aspect: T.Aspect, passive: T.PassiveContent): T.AspectContentPassive => {
         const nonImperative = addToForm([complement, " "], passive[aspect].nonImperative);
@@ -412,8 +413,9 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
     const habitual = addToForm([...pastPart, " "], equativeEndings.habitual);
     const subjunctive = addToForm([...pastPart, " "], equativeEndings.subjunctive);
     const future = addToForm([baParticle, " ", ...pastPart, " "], equativeEndings.habitual);
-    const affirmational = addToForm([baParticle, " ", ...pastPart, " "], equativeEndings.past.short);
-    const pastSubjunctiveHypothetical = addToForm([...pastPart, " "], equativeEndings.pastSubjunctive);
+    const wouldBe = addToForm([baParticle, " ", ...pastPart, " "], equativeEndings.past.short);
+    const pastSubjunctive = addToForm([...pastPart, " "], equativeEndings.pastSubjunctive);
+    const wouldHaveBeen = addToForm([baParticle, " ", ...pastPart, " "], equativeEndings.pastSubjunctive);
     return {
         halfPerfect, // Past Participle
         past, // Past Participle + Past Equative
@@ -421,8 +423,9 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
         habitual, // Past Participle + Habitual Equative
         subjunctive, // Past Participle + Subjunctive Equative
         future, // به - ba + Past Participle + Future/Subj Equative
-        affirmational, // به - ba + Past Participle + Past Equative
-        pastSubjunctiveHypothetical, // Past Participle + وای - waay
+        wouldBe, // به - ba + Past Participle + Past Equative
+        pastSubjunctive, // Past Participle + وای - waay
+        wouldHaveBeen, // Past Participle + ba + waay
     };
 }
 
@@ -531,12 +534,16 @@ function makePassivePerfectContent(info: T.StativeCompoundVerbInfo): T.PerfectCo
         [baParticle, " ", info.complement, " ", passiveStativeBridge, " ", pPart, " "],
         equativeEndings.habitual,
     );
-    const affirmational = addToForm(
+    const wouldBe = addToForm(
         [baParticle, " ", info.complement, " ", passiveStativeBridge, " ", pPart, " "],
         equativeEndings.past.short,
     );
-    const pastSubjunctiveHypothetical = addToForm(
+    const pastSubjunctive = addToForm(
         [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
+        equativeEndings.pastSubjunctive,
+    );
+    const wouldHaveBeen = addToForm(
+        [baParticle, " ", info.complement, " ", passiveStativeBridge, " ", pPart, " "],
         equativeEndings.pastSubjunctive,
     );
     return {
@@ -546,8 +553,9 @@ function makePassivePerfectContent(info: T.StativeCompoundVerbInfo): T.PerfectCo
         habitual,
         subjunctive,
         future,
-        affirmational,
-        pastSubjunctiveHypothetical,
+        wouldBe,
+        pastSubjunctive,
+        wouldHaveBeen,
     };
 }
 
@@ -575,8 +583,9 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
         habitual: allOnePersonInflection(perf.habitual, person),
         subjunctive: allOnePersonInflection(perf.subjunctive, person),
         future: allOnePersonVerbForm(perf.future, person),
-        affirmational: allOnePersonVerbForm(perf.affirmational, person),
-        pastSubjunctiveHypothetical: allOnePersonVerbForm(perf.pastSubjunctiveHypothetical, person),
+        wouldBe: allOnePersonVerbForm(perf.wouldBe, person),
+        pastSubjunctive: allOnePersonVerbForm(perf.pastSubjunctive, person),
+        wouldHaveBeen: allOnePersonVerbForm(perf.wouldHaveBeen, person),
     });
     const modifyPassiveAspect = (as: T.AspectContentPassive): T.AspectContentPassive => ({
         imperative: undefined,
