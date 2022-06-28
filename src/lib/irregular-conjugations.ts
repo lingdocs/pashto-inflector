@@ -1719,96 +1719,2636 @@ export const kawulDyn: T.VerbConjugation = {
             ],
         },
         modal: {
-            nonImperative: {
-                long: [
-                    [[{ p: "وکړلی شم", f: "óokRuley shum" }, { p: "وکړلای شم", f: "óokRulaay shum" }], [{ p: "وکړلی شو", f: "óokRuley shoo" }, { p: "وکړلای شو", f: "óokRulaay shoo" }]],
-                    [[{ p: "وکړلی شم", f: "óokRuley shum" }, { p: "وکړلای شم", f: "óokRulaay shum" }], [{ p: "وکړلی شو", f: "óokRuley shoo" }, { p: "وکړلای شو", f: "óokRulaay shoo" }]],
-                    [[{ p: "وکړلی شې", f: "óokRuley she" }, { p: "وکړلای شې", f: "óokRulaay she" }], [{ p: "وکړلی شئ", f: "óokRuley sheyy" }, { p: "وکړلای شئ", f: "óokRulaay sheyy" }]],
-                    [[{ p: "وکړلی شې", f: "óokRuley she" }, { p: "وکړلای شې", f: "óokRulaay she" }], [{ p: "وکړلی شئ", f: "óokRuley sheyy" }, { p: "وکړلای شئ", f: "óokRulaay sheyy" }]],
-                    [[{ p: "وکړلی شي", f: "óokRuley shee" }, { p: "وکړلای شي", f: "óokRulaay shee" }], [{ p: "وکړلی شي", f: "óokRuley shee" }, { p: "وکړلای شي", f: "óokRulaay shee" }]],
-                    [[{ p: "وکړلی شي", f: "óokRuley shee" }, { p: "وکړلای شي", f: "óokRulaay shee" }], [{ p: "وکړلی شي", f: "óokRuley shee" }, { p: "وکړلای شي", f: "óokRulaay shee" }]],
+            "nonImperative": {
+                "long": [
+                    [
+                        [
+                            {
+                                "p": "وکولی شم",
+                                "f": "óokawuley shum"
+                            },
+                            {
+                                "p": "وکړلی شم",
+                                "f": "óokRuley shum"
+                            },
+                            {
+                                "p": "وکولای شم",
+                                "f": "óokawulaay shum"
+                            },
+                            {
+                                "p": "وکړلای شم",
+                                "f": "óokRulaay shum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شو",
+                                "f": "óokawuley shoo"
+                            },
+                            {
+                                "p": "وکړلی شو",
+                                "f": "óokRuley shoo"
+                            },
+                            {
+                                "p": "وکولای شو",
+                                "f": "óokawulaay shoo"
+                            },
+                            {
+                                "p": "وکړلای شو",
+                                "f": "óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شم",
+                                "f": "óokawuley shum"
+                            },
+                            {
+                                "p": "وکړلی شم",
+                                "f": "óokRuley shum"
+                            },
+                            {
+                                "p": "وکولای شم",
+                                "f": "óokawulaay shum"
+                            },
+                            {
+                                "p": "وکړلای شم",
+                                "f": "óokRulaay shum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شو",
+                                "f": "óokawuley shoo"
+                            },
+                            {
+                                "p": "وکړلی شو",
+                                "f": "óokRuley shoo"
+                            },
+                            {
+                                "p": "وکولای شو",
+                                "f": "óokawulaay shoo"
+                            },
+                            {
+                                "p": "وکړلای شو",
+                                "f": "óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شې",
+                                "f": "óokawuley she"
+                            },
+                            {
+                                "p": "وکړلی شې",
+                                "f": "óokRuley she"
+                            },
+                            {
+                                "p": "وکولای شې",
+                                "f": "óokawulaay she"
+                            },
+                            {
+                                "p": "وکړلای شې",
+                                "f": "óokRulaay she"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شئ",
+                                "f": "óokawuley sheyy"
+                            },
+                            {
+                                "p": "وکړلی شئ",
+                                "f": "óokRuley sheyy"
+                            },
+                            {
+                                "p": "وکولای شئ",
+                                "f": "óokawulaay sheyy"
+                            },
+                            {
+                                "p": "وکړلای شئ",
+                                "f": "óokRulaay sheyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شې",
+                                "f": "óokawuley she"
+                            },
+                            {
+                                "p": "وکړلی شې",
+                                "f": "óokRuley she"
+                            },
+                            {
+                                "p": "وکولای شې",
+                                "f": "óokawulaay she"
+                            },
+                            {
+                                "p": "وکړلای شې",
+                                "f": "óokRulaay she"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شئ",
+                                "f": "óokawuley sheyy"
+                            },
+                            {
+                                "p": "وکړلی شئ",
+                                "f": "óokRuley sheyy"
+                            },
+                            {
+                                "p": "وکولای شئ",
+                                "f": "óokawulaay sheyy"
+                            },
+                            {
+                                "p": "وکړلای شئ",
+                                "f": "óokRulaay sheyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شي",
+                                "f": "óokawuley shee"
+                            },
+                            {
+                                "p": "وکړلی شي",
+                                "f": "óokRuley shee"
+                            },
+                            {
+                                "p": "وکولای شي",
+                                "f": "óokawulaay shee"
+                            },
+                            {
+                                "p": "وکړلای شي",
+                                "f": "óokRulaay shee"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شي",
+                                "f": "óokawuley shee"
+                            },
+                            {
+                                "p": "وکړلی شي",
+                                "f": "óokRuley shee"
+                            },
+                            {
+                                "p": "وکولای شي",
+                                "f": "óokawulaay shee"
+                            },
+                            {
+                                "p": "وکړلای شي",
+                                "f": "óokRulaay shee"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شي",
+                                "f": "óokawuley shee"
+                            },
+                            {
+                                "p": "وکړلی شي",
+                                "f": "óokRuley shee"
+                            },
+                            {
+                                "p": "وکولای شي",
+                                "f": "óokawulaay shee"
+                            },
+                            {
+                                "p": "وکړلای شي",
+                                "f": "óokRulaay shee"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شي",
+                                "f": "óokawuley shee"
+                            },
+                            {
+                                "p": "وکړلی شي",
+                                "f": "óokRuley shee"
+                            },
+                            {
+                                "p": "وکولای شي",
+                                "f": "óokawulaay shee"
+                            },
+                            {
+                                "p": "وکړلای شي",
+                                "f": "óokRulaay shee"
+                            }
+                        ]
+                    ]
                 ],
-                short: [
-                    [[{ p: "وکړی شم", f: "óokRey shum" }, { p: "وکړای شم", f: "óokRaay shum" }], [{ p: "وکړی شو", f: "óokRey shoo" }, { p: "وکړای شو", f: "óokRaay shoo" }]],
-                    [[{ p: "وکړی شم", f: "óokRey shum" }, { p: "وکړای شم", f: "óokRaay shum" }], [{ p: "وکړی شو", f: "óokRey shoo" }, { p: "وکړای شو", f: "óokRaay shoo" }]],
-                    [[{ p: "وکړی شې", f: "óokRey she" }, { p: "وکړای شې", f: "óokRaay she" }], [{ p: "وکړی شئ", f: "óokRey sheyy" }, { p: "وکړای شئ", f: "óokRaay sheyy" }]],
-                    [[{ p: "وکړی شې", f: "óokRey she" }, { p: "وکړای شې", f: "óokRaay she" }], [{ p: "وکړی شئ", f: "óokRey sheyy" }, { p: "وکړای شئ", f: "óokRaay sheyy" }]],
-                    [[{ p: "وکړی شي", f: "óokRey shee" }, { p: "وکړای شي", f: "óokRaay shee" }], [{ p: "وکړی شي", f: "óokRey shee" }, { p: "وکړای شي", f: "óokRaay shee" }]],
-                    [[{ p: "وکړی شي", f: "óokRey shee" }, { p: "وکړای شي", f: "óokRaay shee" }], [{ p: "وکړی شي", f: "óokRey shee" }, { p: "وکړای شي", f: "óokRaay shee" }]],
-                ],
+                "short": [
+                    [
+                        [
+                            {
+                                "p": "وکوی شم",
+                                "f": "óokawey shum"
+                            },
+                            {
+                                "p": "وکړی شم",
+                                "f": "óokRey shum"
+                            },
+                            {
+                                "p": "وکوای شم",
+                                "f": "óokawaay shum"
+                            },
+                            {
+                                "p": "وکړای شم",
+                                "f": "óokRaay shum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شو",
+                                "f": "óokawey shoo"
+                            },
+                            {
+                                "p": "وکړی شو",
+                                "f": "óokRey shoo"
+                            },
+                            {
+                                "p": "وکوای شو",
+                                "f": "óokawaay shoo"
+                            },
+                            {
+                                "p": "وکړای شو",
+                                "f": "óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شم",
+                                "f": "óokawey shum"
+                            },
+                            {
+                                "p": "وکړی شم",
+                                "f": "óokRey shum"
+                            },
+                            {
+                                "p": "وکوای شم",
+                                "f": "óokawaay shum"
+                            },
+                            {
+                                "p": "وکړای شم",
+                                "f": "óokRaay shum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شو",
+                                "f": "óokawey shoo"
+                            },
+                            {
+                                "p": "وکړی شو",
+                                "f": "óokRey shoo"
+                            },
+                            {
+                                "p": "وکوای شو",
+                                "f": "óokawaay shoo"
+                            },
+                            {
+                                "p": "وکړای شو",
+                                "f": "óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شې",
+                                "f": "óokawey she"
+                            },
+                            {
+                                "p": "وکړی شې",
+                                "f": "óokRey she"
+                            },
+                            {
+                                "p": "وکوای شې",
+                                "f": "óokawaay she"
+                            },
+                            {
+                                "p": "وکړای شې",
+                                "f": "óokRaay she"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شئ",
+                                "f": "óokawey sheyy"
+                            },
+                            {
+                                "p": "وکړی شئ",
+                                "f": "óokRey sheyy"
+                            },
+                            {
+                                "p": "وکوای شئ",
+                                "f": "óokawaay sheyy"
+                            },
+                            {
+                                "p": "وکړای شئ",
+                                "f": "óokRaay sheyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شې",
+                                "f": "óokawey she"
+                            },
+                            {
+                                "p": "وکړی شې",
+                                "f": "óokRey she"
+                            },
+                            {
+                                "p": "وکوای شې",
+                                "f": "óokawaay she"
+                            },
+                            {
+                                "p": "وکړای شې",
+                                "f": "óokRaay she"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شئ",
+                                "f": "óokawey sheyy"
+                            },
+                            {
+                                "p": "وکړی شئ",
+                                "f": "óokRey sheyy"
+                            },
+                            {
+                                "p": "وکوای شئ",
+                                "f": "óokawaay sheyy"
+                            },
+                            {
+                                "p": "وکړای شئ",
+                                "f": "óokRaay sheyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شي",
+                                "f": "óokawey shee"
+                            },
+                            {
+                                "p": "وکړی شي",
+                                "f": "óokRey shee"
+                            },
+                            {
+                                "p": "وکوای شي",
+                                "f": "óokawaay shee"
+                            },
+                            {
+                                "p": "وکړای شي",
+                                "f": "óokRaay shee"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شي",
+                                "f": "óokawey shee"
+                            },
+                            {
+                                "p": "وکړی شي",
+                                "f": "óokRey shee"
+                            },
+                            {
+                                "p": "وکوای شي",
+                                "f": "óokawaay shee"
+                            },
+                            {
+                                "p": "وکړای شي",
+                                "f": "óokRaay shee"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شي",
+                                "f": "óokawey shee"
+                            },
+                            {
+                                "p": "وکړی شي",
+                                "f": "óokRey shee"
+                            },
+                            {
+                                "p": "وکوای شي",
+                                "f": "óokawaay shee"
+                            },
+                            {
+                                "p": "وکړای شي",
+                                "f": "óokRaay shee"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شي",
+                                "f": "óokawey shee"
+                            },
+                            {
+                                "p": "وکړی شي",
+                                "f": "óokRey shee"
+                            },
+                            {
+                                "p": "وکوای شي",
+                                "f": "óokawaay shee"
+                            },
+                            {
+                                "p": "وکړای شي",
+                                "f": "óokRaay shee"
+                            }
+                        ]
+                    ]
+                ]
             },
-            future: {
-                long: [
-                    [[{ p: "به وکړلی شم", f: "ba óokRuley shum" }, { p: "به وکړلای شم", f: "ba óokRulaay shum" }], [{ p: "به وکړلی شو", f: "ba óokRuley shoo" }, { p: "به وکړلای شو", f: "ba óokRulaay shoo" }]],
-                    [[{ p: "به وکړلی شم", f: "ba óokRuley shum" }, { p: "به وکړلای شم", f: "ba óokRulaay shum" }], [{ p: "به وکړلی شو", f: "ba óokRuley shoo" }, { p: "به وکړلای شو", f: "ba óokRulaay shoo" }]],
-                    [[{ p: "به وکړلی شې", f: "ba óokRuley she" }, { p: "به وکړلای شې", f: "ba óokRulaay she" }], [{ p: "به وکړلی شئ", f: "ba óokRuley sheyy" }, { p: "به وکړلای شئ", f: "ba óokRulaay sheyy" }]],
-                    [[{ p: "به وکړلی شې", f: "ba óokRuley she" }, { p: "به وکړلای شې", f: "ba óokRulaay she" }], [{ p: "به وکړلی شئ", f: "ba óokRuley sheyy" }, { p: "به وکړلای شئ", f: "ba óokRulaay sheyy" }]],
-                    [[{ p: "به وکړلی شي", f: "ba óokRuley shee" }, { p: "به وکړلای شي", f: "ba óokRulaay shee" }], [{ p: "به وکړلی شي", f: "ba óokRuley shee" }, { p: "به وکړلای شي", f: "ba óokRulaay shee" }]],
-                    [[{ p: "به وکړلی شي", f: "ba óokRuley shee" }, { p: "به وکړلای شي", f: "ba óokRulaay shee" }], [{ p: "به وکړلی شي", f: "ba óokRuley shee" }, { p: "به وکړلای شي", f: "ba óokRulaay shee" }]],
+            "future": {
+                "long": [
+                    [
+                        [
+                            {
+                                "p": "به وکولی شم",
+                                "f": "ba óokawuley shum"
+                            },
+                            {
+                                "p": "به وکړلی شم",
+                                "f": "ba óokRuley shum"
+                            },
+                            {
+                                "p": "به وکولای شم",
+                                "f": "ba óokawulaay shum"
+                            },
+                            {
+                                "p": "به وکړلای شم",
+                                "f": "ba óokRulaay shum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شو",
+                                "f": "ba óokawuley shoo"
+                            },
+                            {
+                                "p": "به وکړلی شو",
+                                "f": "ba óokRuley shoo"
+                            },
+                            {
+                                "p": "به وکولای شو",
+                                "f": "ba óokawulaay shoo"
+                            },
+                            {
+                                "p": "به وکړلای شو",
+                                "f": "ba óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شم",
+                                "f": "ba óokawuley shum"
+                            },
+                            {
+                                "p": "به وکړلی شم",
+                                "f": "ba óokRuley shum"
+                            },
+                            {
+                                "p": "به وکولای شم",
+                                "f": "ba óokawulaay shum"
+                            },
+                            {
+                                "p": "به وکړلای شم",
+                                "f": "ba óokRulaay shum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شو",
+                                "f": "ba óokawuley shoo"
+                            },
+                            {
+                                "p": "به وکړلی شو",
+                                "f": "ba óokRuley shoo"
+                            },
+                            {
+                                "p": "به وکولای شو",
+                                "f": "ba óokawulaay shoo"
+                            },
+                            {
+                                "p": "به وکړلای شو",
+                                "f": "ba óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شې",
+                                "f": "ba óokawuley she"
+                            },
+                            {
+                                "p": "به وکړلی شې",
+                                "f": "ba óokRuley she"
+                            },
+                            {
+                                "p": "به وکولای شې",
+                                "f": "ba óokawulaay she"
+                            },
+                            {
+                                "p": "به وکړلای شې",
+                                "f": "ba óokRulaay she"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شئ",
+                                "f": "ba óokawuley sheyy"
+                            },
+                            {
+                                "p": "به وکړلی شئ",
+                                "f": "ba óokRuley sheyy"
+                            },
+                            {
+                                "p": "به وکولای شئ",
+                                "f": "ba óokawulaay sheyy"
+                            },
+                            {
+                                "p": "به وکړلای شئ",
+                                "f": "ba óokRulaay sheyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شې",
+                                "f": "ba óokawuley she"
+                            },
+                            {
+                                "p": "به وکړلی شې",
+                                "f": "ba óokRuley she"
+                            },
+                            {
+                                "p": "به وکولای شې",
+                                "f": "ba óokawulaay she"
+                            },
+                            {
+                                "p": "به وکړلای شې",
+                                "f": "ba óokRulaay she"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شئ",
+                                "f": "ba óokawuley sheyy"
+                            },
+                            {
+                                "p": "به وکړلی شئ",
+                                "f": "ba óokRuley sheyy"
+                            },
+                            {
+                                "p": "به وکولای شئ",
+                                "f": "ba óokawulaay sheyy"
+                            },
+                            {
+                                "p": "به وکړلای شئ",
+                                "f": "ba óokRulaay sheyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شي",
+                                "f": "ba óokawuley shee"
+                            },
+                            {
+                                "p": "به وکړلی شي",
+                                "f": "ba óokRuley shee"
+                            },
+                            {
+                                "p": "به وکولای شي",
+                                "f": "ba óokawulaay shee"
+                            },
+                            {
+                                "p": "به وکړلای شي",
+                                "f": "ba óokRulaay shee"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شي",
+                                "f": "ba óokawuley shee"
+                            },
+                            {
+                                "p": "به وکړلی شي",
+                                "f": "ba óokRuley shee"
+                            },
+                            {
+                                "p": "به وکولای شي",
+                                "f": "ba óokawulaay shee"
+                            },
+                            {
+                                "p": "به وکړلای شي",
+                                "f": "ba óokRulaay shee"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شي",
+                                "f": "ba óokawuley shee"
+                            },
+                            {
+                                "p": "به وکړلی شي",
+                                "f": "ba óokRuley shee"
+                            },
+                            {
+                                "p": "به وکولای شي",
+                                "f": "ba óokawulaay shee"
+                            },
+                            {
+                                "p": "به وکړلای شي",
+                                "f": "ba óokRulaay shee"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شي",
+                                "f": "ba óokawuley shee"
+                            },
+                            {
+                                "p": "به وکړلی شي",
+                                "f": "ba óokRuley shee"
+                            },
+                            {
+                                "p": "به وکولای شي",
+                                "f": "ba óokawulaay shee"
+                            },
+                            {
+                                "p": "به وکړلای شي",
+                                "f": "ba óokRulaay shee"
+                            }
+                        ]
+                    ]
                 ],
-                short: [
-                    [[{ p: "به وکړی شم", f: "ba óokRey shum" }, { p: "به وکړای شم", f: "ba óokRaay shum" }], [{ p: "به وکړی شو", f: "ba óokRey shoo" }, { p: "به وکړای شو", f: "ba óokRaay shoo" }]],
-                    [[{ p: "به وکړی شم", f: "ba óokRey shum" }, { p: "به وکړای شم", f: "ba óokRaay shum" }], [{ p: "به وکړی شو", f: "ba óokRey shoo" }, { p: "به وکړای شو", f: "ba óokRaay shoo" }]],
-                    [[{ p: "به وکړی شې", f: "ba óokRey she" }, { p: "به وکړای شې", f: "ba óokRaay she" }], [{ p: "به وکړی شئ", f: "ba óokRey sheyy" }, { p: "به وکړای شئ", f: "ba óokRaay sheyy" }]],
-                    [[{ p: "به وکړی شې", f: "ba óokRey she" }, { p: "به وکړای شې", f: "ba óokRaay she" }], [{ p: "به وکړی شئ", f: "ba óokRey sheyy" }, { p: "به وکړای شئ", f: "ba óokRaay sheyy" }]],
-                    [[{ p: "به وکړی شي", f: "ba óokRey shee" }, { p: "به وکړای شي", f: "ba óokRaay shee" }], [{ p: "به وکړی شي", f: "ba óokRey shee" }, { p: "به وکړای شي", f: "ba óokRaay shee" }]],
-                    [[{ p: "به وکړی شي", f: "ba óokRey shee" }, { p: "به وکړای شي", f: "ba óokRaay shee" }], [{ p: "به وکړی شي", f: "ba óokRey shee" }, { p: "به وکړای شي", f: "ba óokRaay shee" }]],
-                ],
+                "short": [
+                    [
+                        [
+                            {
+                                "p": "به وکوی شم",
+                                "f": "ba óokawey shum"
+                            },
+                            {
+                                "p": "به وکړی شم",
+                                "f": "ba óokRey shum"
+                            },
+                            {
+                                "p": "به وکوای شم",
+                                "f": "ba óokawaay shum"
+                            },
+                            {
+                                "p": "به وکړای شم",
+                                "f": "ba óokRaay shum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شو",
+                                "f": "ba óokawey shoo"
+                            },
+                            {
+                                "p": "به وکړی شو",
+                                "f": "ba óokRey shoo"
+                            },
+                            {
+                                "p": "به وکوای شو",
+                                "f": "ba óokawaay shoo"
+                            },
+                            {
+                                "p": "به وکړای شو",
+                                "f": "ba óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شم",
+                                "f": "ba óokawey shum"
+                            },
+                            {
+                                "p": "به وکړی شم",
+                                "f": "ba óokRey shum"
+                            },
+                            {
+                                "p": "به وکوای شم",
+                                "f": "ba óokawaay shum"
+                            },
+                            {
+                                "p": "به وکړای شم",
+                                "f": "ba óokRaay shum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شو",
+                                "f": "ba óokawey shoo"
+                            },
+                            {
+                                "p": "به وکړی شو",
+                                "f": "ba óokRey shoo"
+                            },
+                            {
+                                "p": "به وکوای شو",
+                                "f": "ba óokawaay shoo"
+                            },
+                            {
+                                "p": "به وکړای شو",
+                                "f": "ba óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شې",
+                                "f": "ba óokawey she"
+                            },
+                            {
+                                "p": "به وکړی شې",
+                                "f": "ba óokRey she"
+                            },
+                            {
+                                "p": "به وکوای شې",
+                                "f": "ba óokawaay she"
+                            },
+                            {
+                                "p": "به وکړای شې",
+                                "f": "ba óokRaay she"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شئ",
+                                "f": "ba óokawey sheyy"
+                            },
+                            {
+                                "p": "به وکړی شئ",
+                                "f": "ba óokRey sheyy"
+                            },
+                            {
+                                "p": "به وکوای شئ",
+                                "f": "ba óokawaay sheyy"
+                            },
+                            {
+                                "p": "به وکړای شئ",
+                                "f": "ba óokRaay sheyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شې",
+                                "f": "ba óokawey she"
+                            },
+                            {
+                                "p": "به وکړی شې",
+                                "f": "ba óokRey she"
+                            },
+                            {
+                                "p": "به وکوای شې",
+                                "f": "ba óokawaay she"
+                            },
+                            {
+                                "p": "به وکړای شې",
+                                "f": "ba óokRaay she"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شئ",
+                                "f": "ba óokawey sheyy"
+                            },
+                            {
+                                "p": "به وکړی شئ",
+                                "f": "ba óokRey sheyy"
+                            },
+                            {
+                                "p": "به وکوای شئ",
+                                "f": "ba óokawaay sheyy"
+                            },
+                            {
+                                "p": "به وکړای شئ",
+                                "f": "ba óokRaay sheyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شي",
+                                "f": "ba óokawey shee"
+                            },
+                            {
+                                "p": "به وکړی شي",
+                                "f": "ba óokRey shee"
+                            },
+                            {
+                                "p": "به وکوای شي",
+                                "f": "ba óokawaay shee"
+                            },
+                            {
+                                "p": "به وکړای شي",
+                                "f": "ba óokRaay shee"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شي",
+                                "f": "ba óokawey shee"
+                            },
+                            {
+                                "p": "به وکړی شي",
+                                "f": "ba óokRey shee"
+                            },
+                            {
+                                "p": "به وکوای شي",
+                                "f": "ba óokawaay shee"
+                            },
+                            {
+                                "p": "به وکړای شي",
+                                "f": "ba óokRaay shee"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شي",
+                                "f": "ba óokawey shee"
+                            },
+                            {
+                                "p": "به وکړی شي",
+                                "f": "ba óokRey shee"
+                            },
+                            {
+                                "p": "به وکوای شي",
+                                "f": "ba óokawaay shee"
+                            },
+                            {
+                                "p": "به وکړای شي",
+                                "f": "ba óokRaay shee"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شي",
+                                "f": "ba óokawey shee"
+                            },
+                            {
+                                "p": "به وکړی شي",
+                                "f": "ba óokRey shee"
+                            },
+                            {
+                                "p": "به وکوای شي",
+                                "f": "ba óokawaay shee"
+                            },
+                            {
+                                "p": "به وکړای شي",
+                                "f": "ba óokRaay shee"
+                            }
+                        ]
+                    ]
+                ]
             },
-            past: {
-                long: [
-                    [[{ p: "وکړلی شوم", f: "óokRuley shwum" }, { p: "وکړلای شوم", f: "óokRulaay shwum" }], [{ p: "وکړلی شو", f: "óokRuley shoo" }, { p: "وکړلای شو", f: "óokRulaay shoo" }]],
-                    [[{ p: "وکړلی شوم", f: "óokRuley shwum" }, { p: "وکړلای شوم", f: "óokRulaay shwum" }], [{ p: "وکړلی شو", f: "óokRuley shoo" }, { p: "وکړلای شو", f: "óokRulaay shoo" }]],
-                    [[{ p: "وکړلی شوې", f: "óokRuley shwe" }, { p: "وکړلای شوې", f: "óokRulaay shwe" }], [{ p: "وکړلی شوئ", f: "óokRuley shweyy" }, { p: "وکړلای شوئ", f: "óokRulaay shweyy" }]],
-                    [[{ p: "وکړلی شوې", f: "óokRuley shwe" }, { p: "وکړلای شوې", f: "óokRulaay shwe" }], [{ p: "وکړلی شوئ", f: "óokRuley shweyy" }, { p: "وکړلای شوئ", f: "óokRulaay shweyy" }]],
-                    [[{ p: "وکړلی شو", f: "óokRuley sho" }, { p: "وکړلای شو", f: "óokRulaay sho" }], [{ p: "وکړلی شول", f: "óokRuley shwul" }, { p: "وکړلای شول", f: "óokRulaay shwul" }, { p: "وکړلی شو", f: "óokRuley shoo" }, { p: "وکړلای شو", f: "óokRulaay shoo" }]],
-                    [[{ p: "وکړلی شوه", f: "óokRuley shwa" }, { p: "وکړلای شوه", f: "óokRulaay shwa" }], [{ p: "وکړلی شولې", f: "óokRuley shwule" }, { p: "وکړلای شولې", f: "óokRulaay shwule" }, { p: "وکړلی شوې", f: "óokRuley shwe" }, { p: "وکړلای شوې", f: "óokRulaay shwe" }]],
+            "past": {
+                "long": [
+                    [
+                        [
+                            {
+                                "p": "وکولی شوم",
+                                "f": "óokawuley shwum"
+                            },
+                            {
+                                "p": "وکړلی شوم",
+                                "f": "óokRuley shwum"
+                            },
+                            {
+                                "p": "وکولای شوم",
+                                "f": "óokawulaay shwum"
+                            },
+                            {
+                                "p": "وکړلای شوم",
+                                "f": "óokRulaay shwum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شو",
+                                "f": "óokawuley shoo"
+                            },
+                            {
+                                "p": "وکړلی شو",
+                                "f": "óokRuley shoo"
+                            },
+                            {
+                                "p": "وکولای شو",
+                                "f": "óokawulaay shoo"
+                            },
+                            {
+                                "p": "وکړلای شو",
+                                "f": "óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوم",
+                                "f": "óokawuley shwum"
+                            },
+                            {
+                                "p": "وکړلی شوم",
+                                "f": "óokRuley shwum"
+                            },
+                            {
+                                "p": "وکولای شوم",
+                                "f": "óokawulaay shwum"
+                            },
+                            {
+                                "p": "وکړلای شوم",
+                                "f": "óokRulaay shwum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شو",
+                                "f": "óokawuley shoo"
+                            },
+                            {
+                                "p": "وکړلی شو",
+                                "f": "óokRuley shoo"
+                            },
+                            {
+                                "p": "وکولای شو",
+                                "f": "óokawulaay shoo"
+                            },
+                            {
+                                "p": "وکړلای شو",
+                                "f": "óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوې",
+                                "f": "óokawuley shwe"
+                            },
+                            {
+                                "p": "وکړلی شوې",
+                                "f": "óokRuley shwe"
+                            },
+                            {
+                                "p": "وکولای شوې",
+                                "f": "óokawulaay shwe"
+                            },
+                            {
+                                "p": "وکړلای شوې",
+                                "f": "óokRulaay shwe"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شوئ",
+                                "f": "óokawuley shweyy"
+                            },
+                            {
+                                "p": "وکړلی شوئ",
+                                "f": "óokRuley shweyy"
+                            },
+                            {
+                                "p": "وکولای شوئ",
+                                "f": "óokawulaay shweyy"
+                            },
+                            {
+                                "p": "وکړلای شوئ",
+                                "f": "óokRulaay shweyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوې",
+                                "f": "óokawuley shwe"
+                            },
+                            {
+                                "p": "وکړلی شوې",
+                                "f": "óokRuley shwe"
+                            },
+                            {
+                                "p": "وکولای شوې",
+                                "f": "óokawulaay shwe"
+                            },
+                            {
+                                "p": "وکړلای شوې",
+                                "f": "óokRulaay shwe"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شوئ",
+                                "f": "óokawuley shweyy"
+                            },
+                            {
+                                "p": "وکړلی شوئ",
+                                "f": "óokRuley shweyy"
+                            },
+                            {
+                                "p": "وکولای شوئ",
+                                "f": "óokawulaay shweyy"
+                            },
+                            {
+                                "p": "وکړلای شوئ",
+                                "f": "óokRulaay shweyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شو",
+                                "f": "óokawuley sho"
+                            },
+                            {
+                                "p": "وکړلی شو",
+                                "f": "óokRuley sho"
+                            },
+                            {
+                                "p": "وکولای شو",
+                                "f": "óokawulaay sho"
+                            },
+                            {
+                                "p": "وکړلای شو",
+                                "f": "óokRulaay sho"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شول",
+                                "f": "óokawuley shwul"
+                            },
+                            {
+                                "p": "وکړلی شول",
+                                "f": "óokRuley shwul"
+                            },
+                            {
+                                "p": "وکولای شول",
+                                "f": "óokawulaay shwul"
+                            },
+                            {
+                                "p": "وکړلای شول",
+                                "f": "óokRulaay shwul"
+                            },
+                            {
+                                "p": "وکولی شو",
+                                "f": "óokawuley shoo"
+                            },
+                            {
+                                "p": "وکړلی شو",
+                                "f": "óokRuley shoo"
+                            },
+                            {
+                                "p": "وکولای شو",
+                                "f": "óokawulaay shoo"
+                            },
+                            {
+                                "p": "وکړلای شو",
+                                "f": "óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوه",
+                                "f": "óokawuley shwa"
+                            },
+                            {
+                                "p": "وکړلی شوه",
+                                "f": "óokRuley shwa"
+                            },
+                            {
+                                "p": "وکولای شوه",
+                                "f": "óokawulaay shwa"
+                            },
+                            {
+                                "p": "وکړلای شوه",
+                                "f": "óokRulaay shwa"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شولې",
+                                "f": "óokawuley shwule"
+                            },
+                            {
+                                "p": "وکړلی شولې",
+                                "f": "óokRuley shwule"
+                            },
+                            {
+                                "p": "وکولای شولې",
+                                "f": "óokawulaay shwule"
+                            },
+                            {
+                                "p": "وکړلای شولې",
+                                "f": "óokRulaay shwule"
+                            },
+                            {
+                                "p": "وکولی شوې",
+                                "f": "óokawuley shwe"
+                            },
+                            {
+                                "p": "وکړلی شوې",
+                                "f": "óokRuley shwe"
+                            },
+                            {
+                                "p": "وکولای شوې",
+                                "f": "óokawulaay shwe"
+                            },
+                            {
+                                "p": "وکړلای شوې",
+                                "f": "óokRulaay shwe"
+                            }
+                        ]
+                    ]
                 ],
-                short: [
-                    [[{ p: "وکړی شوم", f: "óokRey shwum" }, { p: "وکړای شوم", f: "óokRaay shwum" }], [{ p: "وکړی شو", f: "óokRey shoo" }, { p: "وکړای شو", f: "óokRaay shoo" }]],
-                    [[{ p: "وکړی شوم", f: "óokRey shwum" }, { p: "وکړای شوم", f: "óokRaay shwum" }], [{ p: "وکړی شو", f: "óokRey shoo" }, { p: "وکړای شو", f: "óokRaay shoo" }]],
-                    [[{ p: "وکړی شوې", f: "óokRey shwe" }, { p: "وکړای شوې", f: "óokRaay shwe" }], [{ p: "وکړی شوئ", f: "óokRey shweyy" }, { p: "وکړای شوئ", f: "óokRaay shweyy" }]],
-                    [[{ p: "وکړی شوې", f: "óokRey shwe" }, { p: "وکړای شوې", f: "óokRaay shwe" }], [{ p: "وکړی شوئ", f: "óokRey shweyy" }, { p: "وکړای شوئ", f: "óokRaay shweyy" }]],
-                    [[{ p: "وکړی شو", f: "óokRey sho" }, { p: "وکړای شو", f: "óokRaay sho" }], [{ p: "وکړی شول", f: "óokRey shwul" }, { p: "وکړای شول", f: "óokRaay shwul" }, { p: "وکړی شو", f: "óokRey shoo" }, { p: "وکړای شو", f: "óokRaay shoo" }]],
-                    [[{ p: "وکړی شوه", f: "óokRey shwa" }, { p: "وکړای شوه", f: "óokRaay shwa" }], [{ p: "وکړی شولې", f: "óokRey shwule" }, { p: "وکړای شولې", f: "óokRaay shwule" }, { p: "وکړی شوې", f: "óokRey shwe" }, { p: "وکړای شوې", f: "óokRaay shwe" }]],
-                ],
+                "short": [
+                    [
+                        [
+                            {
+                                "p": "وکوی شوم",
+                                "f": "óokawey shwum"
+                            },
+                            {
+                                "p": "وکړی شوم",
+                                "f": "óokRey shwum"
+                            },
+                            {
+                                "p": "وکوای شوم",
+                                "f": "óokawaay shwum"
+                            },
+                            {
+                                "p": "وکړای شوم",
+                                "f": "óokRaay shwum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شو",
+                                "f": "óokawey shoo"
+                            },
+                            {
+                                "p": "وکړی شو",
+                                "f": "óokRey shoo"
+                            },
+                            {
+                                "p": "وکوای شو",
+                                "f": "óokawaay shoo"
+                            },
+                            {
+                                "p": "وکړای شو",
+                                "f": "óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوم",
+                                "f": "óokawey shwum"
+                            },
+                            {
+                                "p": "وکړی شوم",
+                                "f": "óokRey shwum"
+                            },
+                            {
+                                "p": "وکوای شوم",
+                                "f": "óokawaay shwum"
+                            },
+                            {
+                                "p": "وکړای شوم",
+                                "f": "óokRaay shwum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شو",
+                                "f": "óokawey shoo"
+                            },
+                            {
+                                "p": "وکړی شو",
+                                "f": "óokRey shoo"
+                            },
+                            {
+                                "p": "وکوای شو",
+                                "f": "óokawaay shoo"
+                            },
+                            {
+                                "p": "وکړای شو",
+                                "f": "óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوې",
+                                "f": "óokawey shwe"
+                            },
+                            {
+                                "p": "وکړی شوې",
+                                "f": "óokRey shwe"
+                            },
+                            {
+                                "p": "وکوای شوې",
+                                "f": "óokawaay shwe"
+                            },
+                            {
+                                "p": "وکړای شوې",
+                                "f": "óokRaay shwe"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شوئ",
+                                "f": "óokawey shweyy"
+                            },
+                            {
+                                "p": "وکړی شوئ",
+                                "f": "óokRey shweyy"
+                            },
+                            {
+                                "p": "وکوای شوئ",
+                                "f": "óokawaay shweyy"
+                            },
+                            {
+                                "p": "وکړای شوئ",
+                                "f": "óokRaay shweyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوې",
+                                "f": "óokawey shwe"
+                            },
+                            {
+                                "p": "وکړی شوې",
+                                "f": "óokRey shwe"
+                            },
+                            {
+                                "p": "وکوای شوې",
+                                "f": "óokawaay shwe"
+                            },
+                            {
+                                "p": "وکړای شوې",
+                                "f": "óokRaay shwe"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شوئ",
+                                "f": "óokawey shweyy"
+                            },
+                            {
+                                "p": "وکړی شوئ",
+                                "f": "óokRey shweyy"
+                            },
+                            {
+                                "p": "وکوای شوئ",
+                                "f": "óokawaay shweyy"
+                            },
+                            {
+                                "p": "وکړای شوئ",
+                                "f": "óokRaay shweyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شو",
+                                "f": "óokawey sho"
+                            },
+                            {
+                                "p": "وکړی شو",
+                                "f": "óokRey sho"
+                            },
+                            {
+                                "p": "وکوای شو",
+                                "f": "óokawaay sho"
+                            },
+                            {
+                                "p": "وکړای شو",
+                                "f": "óokRaay sho"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شول",
+                                "f": "óokawey shwul"
+                            },
+                            {
+                                "p": "وکړی شول",
+                                "f": "óokRey shwul"
+                            },
+                            {
+                                "p": "وکوای شول",
+                                "f": "óokawaay shwul"
+                            },
+                            {
+                                "p": "وکړای شول",
+                                "f": "óokRaay shwul"
+                            },
+                            {
+                                "p": "وکوی شو",
+                                "f": "óokawey shoo"
+                            },
+                            {
+                                "p": "وکړی شو",
+                                "f": "óokRey shoo"
+                            },
+                            {
+                                "p": "وکوای شو",
+                                "f": "óokawaay shoo"
+                            },
+                            {
+                                "p": "وکړای شو",
+                                "f": "óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوه",
+                                "f": "óokawey shwa"
+                            },
+                            {
+                                "p": "وکړی شوه",
+                                "f": "óokRey shwa"
+                            },
+                            {
+                                "p": "وکوای شوه",
+                                "f": "óokawaay shwa"
+                            },
+                            {
+                                "p": "وکړای شوه",
+                                "f": "óokRaay shwa"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شولې",
+                                "f": "óokawey shwule"
+                            },
+                            {
+                                "p": "وکړی شولې",
+                                "f": "óokRey shwule"
+                            },
+                            {
+                                "p": "وکوای شولې",
+                                "f": "óokawaay shwule"
+                            },
+                            {
+                                "p": "وکړای شولې",
+                                "f": "óokRaay shwule"
+                            },
+                            {
+                                "p": "وکوی شوې",
+                                "f": "óokawey shwe"
+                            },
+                            {
+                                "p": "وکړی شوې",
+                                "f": "óokRey shwe"
+                            },
+                            {
+                                "p": "وکوای شوې",
+                                "f": "óokawaay shwe"
+                            },
+                            {
+                                "p": "وکړای شوې",
+                                "f": "óokRaay shwe"
+                            }
+                        ]
+                    ]
+                ]
             },
-            habitualPast: {
-                long: [
-                    [[{ p: "به وکړلی شوم", f: "ba óokRuley shwum" }, { p: "به وکړلای شوم", f: "ba óokRulaay shwum" }], [{ p: "به وکړلی شو", f: "ba óokRuley shoo" }, { p: "به وکړلای شو", f: "ba óokRulaay shoo" }]],
-                    [[{ p: "به وکړلی شوم", f: "ba óokRuley shwum" }, { p: "به وکړلای شوم", f: "ba óokRulaay shwum" }], [{ p: "به وکړلی شو", f: "ba óokRuley shoo" }, { p: "به وکړلای شو", f: "ba óokRulaay shoo" }]],
-                    [[{ p: "به وکړلی شوې", f: "ba óokRuley shwe" }, { p: "به وکړلای شوې", f: "ba óokRulaay shwe" }], [{ p: "به وکړلی شوئ", f: "ba óokRuley shweyy" }, { p: "به وکړلای شوئ", f: "ba óokRulaay shweyy" }]],
-                    [[{ p: "به وکړلی شوې", f: "ba óokRuley shwe" }, { p: "به وکړلای شوې", f: "ba óokRulaay shwe" }], [{ p: "به وکړلی شوئ", f: "ba óokRuley shweyy" }, { p: "به وکړلای شوئ", f: "ba óokRulaay shweyy" }]],
-                    [[{ p: "به وکړلی شو", f: "ba óokRuley sho" }, { p: "به وکړلای شو", f: "ba óokRulaay sho" }], [{ p: "به وکړلی شول", f: "ba óokRuley shwul" }, { p: "به وکړلای شول", f: "ba óokRulaay shwul" }, { p: "به وکړلی شو", f: "ba óokRuley shoo" }, { p: "به وکړلای شو", f: "ba óokRulaay shoo" }]],
-                    [[{ p: "به وکړلی شوه", f: "ba óokRuley shwa" }, { p: "به وکړلای شوه", f: "ba óokRulaay shwa" }], [{ p: "به وکړلی شولې", f: "ba óokRuley shwule" }, { p: "به وکړلای شولې", f: "ba óokRulaay shwule" }, { p: "به وکړلی شوې", f: "ba óokRuley shwe" }, { p: "به وکړلای شوې", f: "ba óokRulaay shwe" }]],
+            "habitualPast": {
+                "long": [
+                    [
+                        [
+                            {
+                                "p": "به وکولی شوم",
+                                "f": "ba óokawuley shwum"
+                            },
+                            {
+                                "p": "به وکړلی شوم",
+                                "f": "ba óokRuley shwum"
+                            },
+                            {
+                                "p": "به وکولای شوم",
+                                "f": "ba óokawulaay shwum"
+                            },
+                            {
+                                "p": "به وکړلای شوم",
+                                "f": "ba óokRulaay shwum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شو",
+                                "f": "ba óokawuley shoo"
+                            },
+                            {
+                                "p": "به وکړلی شو",
+                                "f": "ba óokRuley shoo"
+                            },
+                            {
+                                "p": "به وکولای شو",
+                                "f": "ba óokawulaay shoo"
+                            },
+                            {
+                                "p": "به وکړلای شو",
+                                "f": "ba óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شوم",
+                                "f": "ba óokawuley shwum"
+                            },
+                            {
+                                "p": "به وکړلی شوم",
+                                "f": "ba óokRuley shwum"
+                            },
+                            {
+                                "p": "به وکولای شوم",
+                                "f": "ba óokawulaay shwum"
+                            },
+                            {
+                                "p": "به وکړلای شوم",
+                                "f": "ba óokRulaay shwum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شو",
+                                "f": "ba óokawuley shoo"
+                            },
+                            {
+                                "p": "به وکړلی شو",
+                                "f": "ba óokRuley shoo"
+                            },
+                            {
+                                "p": "به وکولای شو",
+                                "f": "ba óokawulaay shoo"
+                            },
+                            {
+                                "p": "به وکړلای شو",
+                                "f": "ba óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شوې",
+                                "f": "ba óokawuley shwe"
+                            },
+                            {
+                                "p": "به وکړلی شوې",
+                                "f": "ba óokRuley shwe"
+                            },
+                            {
+                                "p": "به وکولای شوې",
+                                "f": "ba óokawulaay shwe"
+                            },
+                            {
+                                "p": "به وکړلای شوې",
+                                "f": "ba óokRulaay shwe"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شوئ",
+                                "f": "ba óokawuley shweyy"
+                            },
+                            {
+                                "p": "به وکړلی شوئ",
+                                "f": "ba óokRuley shweyy"
+                            },
+                            {
+                                "p": "به وکولای شوئ",
+                                "f": "ba óokawulaay shweyy"
+                            },
+                            {
+                                "p": "به وکړلای شوئ",
+                                "f": "ba óokRulaay shweyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شوې",
+                                "f": "ba óokawuley shwe"
+                            },
+                            {
+                                "p": "به وکړلی شوې",
+                                "f": "ba óokRuley shwe"
+                            },
+                            {
+                                "p": "به وکولای شوې",
+                                "f": "ba óokawulaay shwe"
+                            },
+                            {
+                                "p": "به وکړلای شوې",
+                                "f": "ba óokRulaay shwe"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شوئ",
+                                "f": "ba óokawuley shweyy"
+                            },
+                            {
+                                "p": "به وکړلی شوئ",
+                                "f": "ba óokRuley shweyy"
+                            },
+                            {
+                                "p": "به وکولای شوئ",
+                                "f": "ba óokawulaay shweyy"
+                            },
+                            {
+                                "p": "به وکړلای شوئ",
+                                "f": "ba óokRulaay shweyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شو",
+                                "f": "ba óokawuley sho"
+                            },
+                            {
+                                "p": "به وکړلی شو",
+                                "f": "ba óokRuley sho"
+                            },
+                            {
+                                "p": "به وکولای شو",
+                                "f": "ba óokawulaay sho"
+                            },
+                            {
+                                "p": "به وکړلای شو",
+                                "f": "ba óokRulaay sho"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شول",
+                                "f": "ba óokawuley shwul"
+                            },
+                            {
+                                "p": "به وکړلی شول",
+                                "f": "ba óokRuley shwul"
+                            },
+                            {
+                                "p": "به وکولای شول",
+                                "f": "ba óokawulaay shwul"
+                            },
+                            {
+                                "p": "به وکړلای شول",
+                                "f": "ba óokRulaay shwul"
+                            },
+                            {
+                                "p": "به وکولی شو",
+                                "f": "ba óokawuley shoo"
+                            },
+                            {
+                                "p": "به وکړلی شو",
+                                "f": "ba óokRuley shoo"
+                            },
+                            {
+                                "p": "به وکولای شو",
+                                "f": "ba óokawulaay shoo"
+                            },
+                            {
+                                "p": "به وکړلای شو",
+                                "f": "ba óokRulaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکولی شوه",
+                                "f": "ba óokawuley shwa"
+                            },
+                            {
+                                "p": "به وکړلی شوه",
+                                "f": "ba óokRuley shwa"
+                            },
+                            {
+                                "p": "به وکولای شوه",
+                                "f": "ba óokawulaay shwa"
+                            },
+                            {
+                                "p": "به وکړلای شوه",
+                                "f": "ba óokRulaay shwa"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکولی شولې",
+                                "f": "ba óokawuley shwule"
+                            },
+                            {
+                                "p": "به وکړلی شولې",
+                                "f": "ba óokRuley shwule"
+                            },
+                            {
+                                "p": "به وکولای شولې",
+                                "f": "ba óokawulaay shwule"
+                            },
+                            {
+                                "p": "به وکړلای شولې",
+                                "f": "ba óokRulaay shwule"
+                            },
+                            {
+                                "p": "به وکولی شوې",
+                                "f": "ba óokawuley shwe"
+                            },
+                            {
+                                "p": "به وکړلی شوې",
+                                "f": "ba óokRuley shwe"
+                            },
+                            {
+                                "p": "به وکولای شوې",
+                                "f": "ba óokawulaay shwe"
+                            },
+                            {
+                                "p": "به وکړلای شوې",
+                                "f": "ba óokRulaay shwe"
+                            }
+                        ]
+                    ]
                 ],
-                short: [
-                    [[{ p: "به وکړی شوم", f: "ba óokRey shwum" }, { p: "به وکړای شوم", f: "ba óokRaay shwum" }], [{ p: "به وکړی شو", f: "ba óokRey shoo" }, { p: "به وکړای شو", f: "ba óokRaay shoo" }]],
-                    [[{ p: "به وکړی شوم", f: "ba óokRey shwum" }, { p: "به وکړای شوم", f: "ba óokRaay shwum" }], [{ p: "به وکړی شو", f: "ba óokRey shoo" }, { p: "به وکړای شو", f: "ba óokRaay shoo" }]],
-                    [[{ p: "به وکړی شوې", f: "ba óokRey shwe" }, { p: "به وکړای شوې", f: "ba óokRaay shwe" }], [{ p: "به وکړی شوئ", f: "ba óokRey shweyy" }, { p: "به وکړای شوئ", f: "ba óokRaay shweyy" }]],
-                    [[{ p: "به وکړی شوې", f: "ba óokRey shwe" }, { p: "به وکړای شوې", f: "ba óokRaay shwe" }], [{ p: "به وکړی شوئ", f: "ba óokRey shweyy" }, { p: "به وکړای شوئ", f: "ba óokRaay shweyy" }]],
-                    [[{ p: "به وکړی شو", f: "ba óokRey sho" }, { p: "به وکړای شو", f: "ba óokRaay sho" }], [{ p: "به وکړی شول", f: "ba óokRey shwul" }, { p: "به وکړای شول", f: "ba óokRaay shwul" }, { p: "به وکړی شو", f: "ba óokRey shoo" }, { p: "به وکړای شو", f: "ba óokRaay shoo" }]],
-                    [[{ p: "به وکړی شوه", f: "ba óokRey shwa" }, { p: "به وکړای شوه", f: "ba óokRaay shwa" }], [{ p: "به وکړی شولې", f: "ba óokRey shwule" }, { p: "به وکړای شولې", f: "ba óokRaay shwule" }, { p: "به وکړی شوې", f: "ba óokRey shwe" }, { p: "به وکړای شوې", f: "ba óokRaay shwe" }]],
-                ],
+                "short": [
+                    [
+                        [
+                            {
+                                "p": "به وکوی شوم",
+                                "f": "ba óokawey shwum"
+                            },
+                            {
+                                "p": "به وکړی شوم",
+                                "f": "ba óokRey shwum"
+                            },
+                            {
+                                "p": "به وکوای شوم",
+                                "f": "ba óokawaay shwum"
+                            },
+                            {
+                                "p": "به وکړای شوم",
+                                "f": "ba óokRaay shwum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شو",
+                                "f": "ba óokawey shoo"
+                            },
+                            {
+                                "p": "به وکړی شو",
+                                "f": "ba óokRey shoo"
+                            },
+                            {
+                                "p": "به وکوای شو",
+                                "f": "ba óokawaay shoo"
+                            },
+                            {
+                                "p": "به وکړای شو",
+                                "f": "ba óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شوم",
+                                "f": "ba óokawey shwum"
+                            },
+                            {
+                                "p": "به وکړی شوم",
+                                "f": "ba óokRey shwum"
+                            },
+                            {
+                                "p": "به وکوای شوم",
+                                "f": "ba óokawaay shwum"
+                            },
+                            {
+                                "p": "به وکړای شوم",
+                                "f": "ba óokRaay shwum"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شو",
+                                "f": "ba óokawey shoo"
+                            },
+                            {
+                                "p": "به وکړی شو",
+                                "f": "ba óokRey shoo"
+                            },
+                            {
+                                "p": "به وکوای شو",
+                                "f": "ba óokawaay shoo"
+                            },
+                            {
+                                "p": "به وکړای شو",
+                                "f": "ba óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شوې",
+                                "f": "ba óokawey shwe"
+                            },
+                            {
+                                "p": "به وکړی شوې",
+                                "f": "ba óokRey shwe"
+                            },
+                            {
+                                "p": "به وکوای شوې",
+                                "f": "ba óokawaay shwe"
+                            },
+                            {
+                                "p": "به وکړای شوې",
+                                "f": "ba óokRaay shwe"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شوئ",
+                                "f": "ba óokawey shweyy"
+                            },
+                            {
+                                "p": "به وکړی شوئ",
+                                "f": "ba óokRey shweyy"
+                            },
+                            {
+                                "p": "به وکوای شوئ",
+                                "f": "ba óokawaay shweyy"
+                            },
+                            {
+                                "p": "به وکړای شوئ",
+                                "f": "ba óokRaay shweyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شوې",
+                                "f": "ba óokawey shwe"
+                            },
+                            {
+                                "p": "به وکړی شوې",
+                                "f": "ba óokRey shwe"
+                            },
+                            {
+                                "p": "به وکوای شوې",
+                                "f": "ba óokawaay shwe"
+                            },
+                            {
+                                "p": "به وکړای شوې",
+                                "f": "ba óokRaay shwe"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شوئ",
+                                "f": "ba óokawey shweyy"
+                            },
+                            {
+                                "p": "به وکړی شوئ",
+                                "f": "ba óokRey shweyy"
+                            },
+                            {
+                                "p": "به وکوای شوئ",
+                                "f": "ba óokawaay shweyy"
+                            },
+                            {
+                                "p": "به وکړای شوئ",
+                                "f": "ba óokRaay shweyy"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شو",
+                                "f": "ba óokawey sho"
+                            },
+                            {
+                                "p": "به وکړی شو",
+                                "f": "ba óokRey sho"
+                            },
+                            {
+                                "p": "به وکوای شو",
+                                "f": "ba óokawaay sho"
+                            },
+                            {
+                                "p": "به وکړای شو",
+                                "f": "ba óokRaay sho"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شول",
+                                "f": "ba óokawey shwul"
+                            },
+                            {
+                                "p": "به وکړی شول",
+                                "f": "ba óokRey shwul"
+                            },
+                            {
+                                "p": "به وکوای شول",
+                                "f": "ba óokawaay shwul"
+                            },
+                            {
+                                "p": "به وکړای شول",
+                                "f": "ba óokRaay shwul"
+                            },
+                            {
+                                "p": "به وکوی شو",
+                                "f": "ba óokawey shoo"
+                            },
+                            {
+                                "p": "به وکړی شو",
+                                "f": "ba óokRey shoo"
+                            },
+                            {
+                                "p": "به وکوای شو",
+                                "f": "ba óokawaay shoo"
+                            },
+                            {
+                                "p": "به وکړای شو",
+                                "f": "ba óokRaay shoo"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "به وکوی شوه",
+                                "f": "ba óokawey shwa"
+                            },
+                            {
+                                "p": "به وکړی شوه",
+                                "f": "ba óokRey shwa"
+                            },
+                            {
+                                "p": "به وکوای شوه",
+                                "f": "ba óokawaay shwa"
+                            },
+                            {
+                                "p": "به وکړای شوه",
+                                "f": "ba óokRaay shwa"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "به وکوی شولې",
+                                "f": "ba óokawey shwule"
+                            },
+                            {
+                                "p": "به وکړی شولې",
+                                "f": "ba óokRey shwule"
+                            },
+                            {
+                                "p": "به وکوای شولې",
+                                "f": "ba óokawaay shwule"
+                            },
+                            {
+                                "p": "به وکړای شولې",
+                                "f": "ba óokRaay shwule"
+                            },
+                            {
+                                "p": "به وکوی شوې",
+                                "f": "ba óokawey shwe"
+                            },
+                            {
+                                "p": "به وکړی شوې",
+                                "f": "ba óokRey shwe"
+                            },
+                            {
+                                "p": "به وکوای شوې",
+                                "f": "ba óokawaay shwe"
+                            },
+                            {
+                                "p": "به وکړای شوې",
+                                "f": "ba óokRaay shwe"
+                            }
+                        ]
+                    ]
+                ]
             },
-            hypotheticalPast: {
-                long: [
-                    [[{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }], [{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }]],
-                    [[{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }], [{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }]],
-                    [[{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }], [{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }]],
-                    [[{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }], [{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }]],
-                    [[{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }], [{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }]],
-                    [[{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }], [{ p: "وکړلی شوای", f: "óokRuley shwaay" }, { p: "وکړلی شوی", f: "óokRuley shwey" }, { p: "وکړلای شوای", f: "óokRulaay shwaay" }]],
+            "hypotheticalPast": {
+                "long": [
+                    [
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکولی شوای",
+                                "f": "óokawuley shwaay"
+                            },
+                            {
+                                "p": "وکړلی شوای",
+                                "f": "óokRuley shwaay"
+                            },
+                            {
+                                "p": "وکولی شوی",
+                                "f": "óokawuley shwey"
+                            },
+                            {
+                                "p": "وکړلی شوی",
+                                "f": "óokRuley shwey"
+                            },
+                            {
+                                "p": "وکولای شوای",
+                                "f": "óokawulaay shwaay"
+                            },
+                            {
+                                "p": "وکړلای شوای",
+                                "f": "óokRulaay shwaay"
+                            }
+                        ]
+                    ]
                 ],
-                short: [
-                    [[{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }], [{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }]],
-                    [[{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }], [{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }]],
-                    [[{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }], [{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }]],
-                    [[{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }], [{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }]],
-                    [[{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }], [{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }]],
-                    [[{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }], [{ p: "وکړی شوای", f: "óokRey shwaay" }, { p: "وکړی شوی", f: "óokRey shwey" }, { p: "وکړی شوای", f: "óokRaay shwey" }]],
-                ],
-            },
+                "short": [
+                    [
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ],
+                        [
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawey shwaay"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRey shwaay"
+                            },
+                            {
+                                "p": "وکوی شوی",
+                                "f": "óokawey shwey"
+                            },
+                            {
+                                "p": "وکړی شوی",
+                                "f": "óokRey shwey"
+                            },
+                            {
+                                "p": "وکوی شوای",
+                                "f": "óokawaay shwey"
+                            },
+                            {
+                                "p": "وکړی شوای",
+                                "f": "óokRaay shwey"
+                            }
+                        ]
+                    ]
+                ]
+            }
         },
     },
     hypothetical: kawulHypothetical,

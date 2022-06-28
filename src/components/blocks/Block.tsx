@@ -168,7 +168,7 @@ function ModalAuxBlock({ opts, aux, script }: {
         <Border>
             {aux.ps[0][script]}
         </Border>
-        <div>Modal Aux</div>
+        <div>Abil. Aux</div>
         <EnglishBelow>{getEnglishPersonInfo(aux.verb.block.person, "short")}</EnglishBelow>
     </div>;
 }
