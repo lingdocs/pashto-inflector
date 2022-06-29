@@ -26,7 +26,7 @@ import {
 import { renderEnglishVPBase } from "./english-vp-rendering";
 import { personGender } from "../../lib/misc-helpers";
 import { renderNPSelection } from "./render-np";
-import { getObjectSelection, getSubjectSelection, makeBlock, makeKid } from "./blocks-utils";
+import { findPerfectiveHead, getObjectSelection, getSubjectSelection, makeBlock, makeKid } from "./blocks-utils";
 import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 
@@ -237,7 +237,8 @@ function insertNegative(blocks: T.Block[], negative: boolean, imperative: boolea
         }),
         ...blocksA.slice(-1), 
     ];
-    if (hasNonStandardPerfectiveSplit(blocks)) {
+    const nonStandardPerfectiveSplit = hasNonStandardPerfectiveSplit(blocks);
+    if (nonStandardPerfectiveSplit) {
         return [
             basic,
             [
@@ -247,8 +248,26 @@ function insertNegative(blocks: T.Block[], negative: boolean, imperative: boolea
                 ...blocksA.slice(-1), // last (verb)
             ],
         ];
-    }
+    };
     if (hasLeapFroggable(blocks)) {
+        const perfectiveHead = findPerfectiveHead([blocks]);
+        const perfectiveHeadReg = perfectiveHead && ["و", "وا"].includes(perfectiveHead.ps.p);
+        if (perfectiveHead) {
+            return [
+                [
+                    ...blocksA.slice(0, blocks.length - 2),
+                    makeBlock({ type: "negative", imperative }),
+                    ...blocksA.slice(-1), // last
+                    ...blocksA.slice(-2, -1), // second last
+                ],
+                [
+                    ...blocksA.slice(0, blocks.length - 2),
+                    makeBlock({ type: "negative", imperative }),
+                    ...blocksA.slice(-2),
+                ],
+                ...!perfectiveHeadReg ? [basic] : [],
+            ];
+        }
         return [
             [
                 ...blocksA.slice(0, blocks.length - 2),

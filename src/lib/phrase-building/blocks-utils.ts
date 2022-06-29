@@ -25,6 +25,15 @@ export function getSubjectSelection(blocks: T.EPSBlock[] | T.EPSBlockComplete[] 
     return b.block;
 }
 
+export function findPerfectiveHead(blocks: T.Block[][]): T.PerfectiveHeadBlock | undefined {
+
+    const b = blocks[0].find(f => f.block.type === "perfectiveHead");
+    if (!b || b.block.type !== "perfectiveHead") {
+        return undefined;
+    }
+    return b.block;
+}
+
 export function getSubjectSelectionFromBlocks(blocks: T.Block[][]): T.Rendered<T.SubjectSelectionComplete> {
     const b = blocks[0].find(f => f.block.type === "subjectSelection");
     if (!b || b.block.type !== "subjectSelection") {
