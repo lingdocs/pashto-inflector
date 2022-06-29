@@ -240,7 +240,9 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
             const b = s.slice(0, -2);
             return [`${s}`, `${s}s`, `${b}ying`, `${s}d`, `${s}d`]; 
         }
-        const b = (s.slice(-1) === "e")
+        const b = s === ""
+            ? "VERB"    
+            : (s.slice(-1) === "e")
             ? s.slice(0, -1)
             : s;
         return [`${s}`, `${s}s`, `${b}ing`, `${b}ed`, `${b}ed`];
