@@ -166,7 +166,7 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
         return combine(rest).flatMap(r => (
                 firstPs.map(fPs => concatPsString(
                     fPs,
-                    (!("p" in first) && "block" in first && first.block.type === "perfectiveHead" && !("p" in next) && (("block" in next && (next.block.type === "verb" || next.block.type === "negative")) || ("kid" in next && next.kid.type === "mini-pronoun")))
+                    (!("p" in first) && "block" in first && first.block.type === "perfectiveHead" && !("p" in next) && (("block" in next && (next.block.type === "verb" || next.block.type === "negative" || next.block.type === "modalVerbBlock")) || ("kid" in next && next.kid.type === "mini-pronoun")))
                         ? ((("block" in next && next.block.type === "negative") || ("kid" in next && next.kid.type === "mini-pronoun")) ? { p: "", f: "-" } : "")
                         : " ",
                     r,

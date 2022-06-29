@@ -469,7 +469,7 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
     const hasBa = hasBaParticle(getLong(verbForm)[0]);
     if (perfective) {
         const past = isPastTense(vs.tense);
-        const splitInfo = conj.info[past ? "root" : "stem"].perfectiveSplit;
+        const splitInfo = conj.info[(past || isModalTense(vs.tense)) ? "root" : "stem"].perfectiveSplit;
         if (!splitInfo) return { ps: { head: undefined, rest: verbForm }, hasBa };
         // TODO: Either solve this in the inflector or here, it seems silly (or redundant)
         // to have a length option in the perfective split stem??
