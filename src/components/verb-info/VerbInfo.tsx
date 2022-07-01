@@ -102,7 +102,7 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
                                         className="btn btn-sm btn-outline-secondary"
                                         onClick={() => setSplit(!split)}
                                     >
-                                        split
+                                        {split ? "join" : "split"} head
                                     </button>
                                 </div>}
                             </div>
