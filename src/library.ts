@@ -31,6 +31,7 @@ import VPExplorer from "./components/vp-explorer/VPExplorer";
 import { vpsReducer } from "./components/vp-explorer/vps-reducer";
 import type { VpsReducerAction as VpsA } from "./components/vp-explorer/vps-reducer";
 import useStickyState from "./lib/useStickyState";
+import { isPastTense } from "./lib/phrase-building/vp-tools";
 import Block, { NPBlock, APBlock } from "./components/blocks/Block";
 import { roleIcon } from "./components/vp-explorer/VPExplorerExplanationModal";
 import {
@@ -227,6 +228,7 @@ export {
     isFirstPerson,
     isSecondPerson,
     isThirdPerson,
+    isPastTense,
     psJSXMap,
     renderNPSelection,
     getEnglishFromRendered,
