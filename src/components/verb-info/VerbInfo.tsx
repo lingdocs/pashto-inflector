@@ -160,7 +160,7 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
                             </div>
                         </div>
                     </div>
-                    {!hidePastParticiple && <div className="text-center" style={highlighted?.includes("imperfective stem") ? highlight : {}}>
+                    {!hidePastParticiple && <div className="text-center" style={highlighted?.includes("past participle") ? highlight : {}}>
                         <div style={title}>Past Participle</div>
                             <VerbInfoItemDisplay
                                 item={pickPersInf(info.participle.past, persInf)}
