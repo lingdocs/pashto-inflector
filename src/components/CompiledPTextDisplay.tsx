@@ -1,4 +1,4 @@
-import { getLength, getLong, getShort } from "../lib/p-text-helpers";
+import { getLength, getLong } from "../lib/p-text-helpers";
 import * as T from "../types";
 import Examples from "./Examples";
 
