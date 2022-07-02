@@ -9,12 +9,13 @@ import EPBlocksDisplay from "../RenderedBlocksDisplay";
 import ModeSelect, { Mode, ScriptSelect } from "../DisplayModeSelect";
 import { useStickyState } from "../../library";
 
-function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
+function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne, length }: {
     eps: T.EPSelectionState,
     opts: T.TextOptions,
     setOmitSubject: ((value: "true" | "false") => void) | false
     justify?: "left" | "right" | "center",
     onlyOne?: boolean | "concat",
+    length?: "long" | "short",
 }) {
     const [mode, setMode] = useState<Mode>("text");
     const [script, setScript] = useStickyState<"p" | "f">("f", "blockScriptChoice");
@@ -54,7 +55,7 @@ function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne }: {
             <div />
         </div>
         {mode === "text"
-            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={!!onlyOne} />
+            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={!!onlyOne} length={length || "short"} />
             : <EPBlocksDisplay opts={opts} rendered={rendered} justify={justify} script={script} />}
         {result.e && <div className={`text-muted mt-2 text-${justify === "left" ? "left" : justify === "right" ? "right" : "center"}`}>
             {onlyOne === "concat"

@@ -1,4 +1,4 @@
-import { getLength, getShort } from "../lib/p-text-helpers";
+import { getLength, getLong, getShort } from "../lib/p-text-helpers";
 import * as T from "../types";
 import Examples from "./Examples";
 
@@ -22,7 +22,7 @@ function CompiledPTextDisplay({ compiled, opts, justify, onlyOne, length }: {
         : compiled.ps;
     return <div className={justify === "left" ? "text-left" : justify === "right" ? "text-right" : "text-center"}>
         {onlyOne
-            ? <VariationLayer vs={[getShort(ps)[0]]} />
+            ? <VariationLayer vs={[getLong(ps)[0]]} />
             : "long" in ps ?
                 <div>
                     <VariationLayer vs={ps.long} />
