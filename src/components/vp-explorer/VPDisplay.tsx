@@ -10,12 +10,13 @@ import CompiledPTextDisplay from "../CompiledPTextDisplay";
 import RenderedBlocksDisplay from "../RenderedBlocksDisplay";
 import useStickyState from "../../lib/useStickyState";
 
-function VPDisplay({ VPS, opts, setForm, justify, onlyOne }: {
+function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length }: {
     VPS: T.VPSelectionState,
     opts: T.TextOptions,
     setForm: "disable" | ((form: T.FormVersion) => void),
     justify?: "left" | "right" | "center",
     onlyOne?: boolean | "concat",
+    length?: "long" | "short",
 }) {
     const [mode, setMode] = useState<Mode>("text");
     const [script, setScript] = useStickyState<"p" | "f">("f", "blockScriptChoice");
@@ -45,7 +46,7 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne }: {
             {mode === "blocks" && <ScriptSelect value={script} onChange={setScript} />}
         </div>
         {mode === "text"
-            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={!!onlyOne} />
+            ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={!!onlyOne} length={length} />
             : <RenderedBlocksDisplay opts={opts} rendered={rendered} justify={justify} script={script} />}
         {result.e && <div className={`text-muted mt-2 text-${justify === "left" ? "left" : justify === "right" ? "right" : "center"}`}>
             {onlyOne === "concat"
