@@ -136,10 +136,12 @@ function renderEquative(es: T.EquativeSelection, person: T.Person): T.EquativeRe
 }
 
 export function renderAdverbSelection(a: T.AdverbSelection): T.Rendered<T.AdverbSelection> {
-    const e = getEnglishWord(a.entry);
-    if (!e || typeof e !== "string") {
-        throw new Error("error getting english for compliment");
-    }
+    const ew = getEnglishWord(a.entry);
+    const e = typeof ew === "object"
+        ? (ew.singular || "")
+        : !ew
+        ? ""
+        : ew;
     return {
         type: "adverb",
         entry: a.entry,
