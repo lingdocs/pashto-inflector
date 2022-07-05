@@ -9,16 +9,18 @@ import EPBlocksDisplay from "../RenderedBlocksDisplay";
 import ModeSelect, { Mode, ScriptSelect } from "../DisplayModeSelect";
 import { useStickyState } from "../../library";
 
-function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne, length }: {
+function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne, length, mode: preferredMode, script: preferredScript }: {
     eps: T.EPSelectionState,
     opts: T.TextOptions,
     setOmitSubject: ((value: "true" | "false") => void) | false
     justify?: "left" | "right" | "center",
     onlyOne?: boolean | "concat",
     length?: "long" | "short",
+    mode?: Mode,
+    script?: "p" | "f",
 }) {
-    const [mode, setMode] = useState<Mode>("text");
-    const [script, setScript] = useStickyState<"p" | "f">("f", "blockScriptChoice");
+    const [mode, setMode] = useState<Mode>(preferredMode || "text");
+    const [script, setScript] = useStickyState<"p" | "f">(preferredScript || "f", "blockScriptChoice");
     const EP = completeEPSelection(eps);
     const subject = getSubjectSelection(eps.blocks);
 
