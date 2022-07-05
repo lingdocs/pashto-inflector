@@ -34,6 +34,8 @@ import useStickyState from "./lib/useStickyState";
 import { isPastTense } from "./lib/phrase-building/vp-tools";
 import Block, { NPBlock, APBlock } from "./components/blocks/Block";
 import { roleIcon } from "./components/vp-explorer/VPExplorerExplanationModal";
+import CompiledPTextDisplay from "./components/CompiledPTextDisplay";
+import RenderedBlocksDisplay from "./components/RenderedBlocksDisplay";
 import {
     makePsString,
     removeFVarients,
@@ -266,6 +268,8 @@ export {
     VPDisplay,
     EPPicker,
     VPPicker,
+    CompiledPTextDisplay,
+    RenderedBlocksDisplay,
     // OTHER
     typePredicates,
     grammarUnits,

@@ -10,16 +10,18 @@ import CompiledPTextDisplay from "../CompiledPTextDisplay";
 import RenderedBlocksDisplay from "../RenderedBlocksDisplay";
 import useStickyState from "../../lib/useStickyState";
 
-function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length }: {
+function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferredMode, script: preferredScript }: {
     VPS: T.VPSelectionState,
     opts: T.TextOptions,
     setForm: "disable" | ((form: T.FormVersion) => void),
     justify?: "left" | "right" | "center",
     onlyOne?: boolean | "concat",
     length?: "long" | "short",
+    mode?: Mode,
+    script?: "p" | "f"
 }) {
-    const [mode, setMode] = useState<Mode>("text");
-    const [script, setScript] = useStickyState<"p" | "f">("f", "blockScriptChoice");
+    const [mode, setMode] = useState<Mode>(preferredMode || "text");
+    const [script, setScript] = useStickyState<"p" | "f">(preferredScript || "f", "blockScriptChoice");
     const VP = completeVPSelection(VPS);
     if (!VP) {
         return <div className="lead text-muted text-center mt-4">
