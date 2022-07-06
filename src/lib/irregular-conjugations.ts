@@ -1530,9 +1530,9 @@ export const kawulDyn: T.VerbConjugation = {
                 short: { p: "کو", f: "kaw" },
             },
             perfective: {
-                long: { p: "وکړلو", f: "óokRul" },
-                short: { p: "وکړو", f: "óokR" },
-                mini: { p: "وکو", f: "óok" },
+                long: { p: "وکړل", f: "óokRul" },
+                short: { p: "وکړ", f: "óokR" },
+                mini: { p: "وک", f: "óok" },
             },
             perfectiveSplit: {
                 long: [{ p: "و", f: "óo" }, { p: "کړل", f: "kRul" }],
