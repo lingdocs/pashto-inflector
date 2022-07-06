@@ -5710,6 +5710,1383 @@ export const warkawul: T.VerbConjugation = {
     // },
 };
 
+export const raakawul: T.VerbConjugation = {
+    info: {
+        entry: {
+            entry: {"ts":1527819279,"i":6682,"p":"راکول","f":"raakawul","g":"raakawul","e":"to give (to first person - to me, us)"} as T.VerbDictionaryEntry,
+        },
+        transitivity: "transitive",
+        type: "simple",
+        yulEnding: false,
+        root: {
+            imperfective: {
+                long: { p: "راکول", f: "raakawul" },
+                short: { p: "راکو", f: "raakaw" },
+            },
+            perfective: {
+                long: { p: "راکړل", f: "raakRul" },
+                short: { p: "راکړ", f: "raakR" },
+                mini: { p: "راک", f: "raak" },
+            },
+            perfectiveSplit: {
+                long: [{ p: "را ", f: "raa "}, { p: "کړل", f: "kRul" }],
+                short: [{ p: "را ", f: "raa "}, { p: "کړ", f: "kR" }],
+                mini: [{ p: "را ", f: "raa "}, { p: "ړ", f: "k" }],
+            },
+        },
+        stem: {
+            imperfective: { p: "راکو", f: "raakaw" },
+            perfective: {
+                long: { p: "راکړ", f: "raakR" },
+                short: { p: "راک", f: "raak" },
+            },
+            perfectiveSplit: {
+                long: [{ p: "را ", f: "raa "}, { p: "کړ", f: "kR" }],
+                short: [{ p: "را ", f: "raa "}, { p: "ړ", f: "k" }],
+            },
+        },
+        participle: {
+            present: { p: "راکوونکی", f: "raakawóonkey" },
+            past: { p: "راکړی", f: "raakúRey" },
+        },
+    },
+    imperfective: {
+        nonImperative: [
+            [[{p: "راکوم", f: "raakawum"}], [{p: "راکوو", f: "raakawoo"}]],
+            [[{p: "راکوم", f: "raakawum"}], [{p: "راکوو", f: "raakawoo"}]],
+            [[{p: "راکوې", f: "raakawe"}], [{p: "راکوئ", f: "raakaweyy"}]],
+            [[{p: "راکوې", f: "raakawe"}], [{p: "راکوئ", f: "raakaweyy"}]],
+            [[{p: "راکوي", f: "raakawee"}], [{p: "راکوي", f: "raakawee"}]],
+            [[{p: "راکوي", f: "raakawee"}], [{p: "راکوي", f: "raakawee"}]],
+        ],
+        future: [
+            [[{p: "به راکوم", f: "ba raakawum"}], [{p: "به راکوو", f: "ba raakawoo"}]],
+            [[{p: "به راکوم", f: "ba raakawum"}], [{p: "به راکوو", f: "ba raakawoo"}]],
+            [[{p: "به راکوې", f: "ba raakawe"}], [{p: "به راکوئ", f: "ba raakaweyy"}]],
+            [[{p: "به راکوې", f: "ba raakawe"}], [{p: "به راکوئ", f: "ba raakaweyy"}]],
+            [[{p: "به راکوي", f: "ba raakawee"}], [{p: "به راکوي", f: "ba raakawee"}]],
+            [[{p: "به راکوي", f: "ba raakawee"}], [{p: "به راکوي", f: "ba raakawee"}]],
+        ],
+        imperative: [
+            [[{ p: "راکوه", f: "raakawá" }], [{ p: "راکوئ", f: "raakawéyy" }]],
+            [[{ p: "راکوه", f: "raakawá" }], [{ p: "راکوئ", f: "raakawéyy" }]]
+        ],
+        past: {
+            short: [
+                [[{p: "راکوم", f: "raakawum"}], [{p: "راکوو", f: "raakawoo"}]],
+                [[{p: "راکوم", f: "raakawum"}], [{p: "راکوو", f: "raakawoo"}]],
+                [[{p: "راکوې", f: "raakawe"}], [{p: "راکوئ", f: "raakaweyy"}]],
+                [[{p: "راکوې", f: "raakawe"}], [{p: "راکوئ", f: "raakaweyy"}]],
+                [[{p: "راکاوه", f: "raakaawu"}], [{p: "راکول", f: "raakawul"}]],
+                [[{p: "راکوه", f: "raakawa"}], [{p: "راکوې", f: "raakawe"}]],
+            ],
+            long: [
+                [[{p: "راکولم", f: "raakawulum"}], [{p: "راکولو", f: "raakawuloo"}]],
+                [[{p: "راکولم", f: "raakawulum"}], [{p: "راکولو", f: "raakawuloo"}]],
+                [[{p: "راکولې", f: "raakawule"}], [{p: "راکولئ", f: "raakawuleyy"}]],
+                [[{p: "راکولې", f: "raakawule"}], [{p: "راکولئ", f: "raakawuleyy"}]],
+                [[{p: "راکوله", f: "raakawulu"}, {p: "راکولو", f: "raakawulo"}], [{p: "راکول", f: "raakawul"}]],
+                [[{p: "راکوله", f: "raakawula"}], [{p: "راکولې", f: "raakawule"}]],
+            ],
+        },
+        habitualPast: {
+            short: [
+                [[{p: "به راکوم", f: "ba raakawum"}], [{p: "به راکوو", f: "ba raakawoo"}]],
+                [[{p: "به راکوم", f: "ba raakawum"}], [{p: "به راکوو", f: "ba raakawoo"}]],
+                [[{p: "به راکوې", f: "ba raakawe"}], [{p: "به راکوئ", f: "ba raakaweyy"}]],
+                [[{p: "به راکوې", f: "ba raakawe"}], [{p: "به راکوئ", f: "ba raakaweyy"}]],
+                [[{p: "به راکاوه", f: "ba raakaawu"}], [{p: "به راکول", f: "ba raakawul"}]],
+                [[{p: "به راکوه", f: "ba raakawa"}], [{p: "به راکوې", f: "ba raakawe"}]],
+            ],
+            long: [
+                [[{p: "به راکولم", f: "ba raakawulum"}], [{p: "به راکولو", f: "ba raakawuloo"}]],
+                [[{p: "به راکولم", f: "ba raakawulum"}], [{p: "به راکولو", f: "ba raakawuloo"}]],
+                [[{p: "به راکولې", f: "ba raakawule"}], [{p: "به راکولئ", f: "ba raakawuleyy"}]],
+                [[{p: "به راکولې", f: "ba raakawule"}], [{p: "به راکولئ", f: "ba raakawuleyy"}]],
+                [[{p: "به راکوله", f: "ba raakawulu"}, {p: "به راکولو", f: "ba raakawulo"}], [{p: "به راکول", f: "ba raakawul"}]],
+                [[{p: "به راکوله", f: "ba raakawula"}], [{p: "به راکولې", f: "ba raakawule"}]],
+            ],
+        },
+        modal: {
+            nonImperative: {
+                long: [
+                    [[{ p: "راکولی شم", f: "raakawúley shum" }, { p: "راکولای شم", f: "raakawúlaay shum" }], [{ p: "راکولی شو", f: "raakawúley shoo" }, { p: "راکولای شو", f: "raakawúlaay shoo" }]],
+                    [[{ p: "راکولی شم", f: "raakawúley shum" }, { p: "راکولای شم", f: "raakawúlaay shum" }], [{ p: "راکولی شو", f: "raakawúley shoo" }, { p: "راکولای شو", f: "raakawúlaay shoo" }]],
+                    [[{ p: "راکولی شې", f: "raakawúley she" }, { p: "راکولای شې", f: "raakawúlaay she" }], [{ p: "راکولی شئ", f: "raakawúley sheyy" }, { p: "راکولای شئ", f: "raakawúlaay sheyy" }]],
+                    [[{ p: "راکولی شې", f: "raakawúley she" }, { p: "راکولای شې", f: "raakawúlaay she" }], [{ p: "راکولی شئ", f: "raakawúley sheyy" }, { p: "راکولای شئ", f: "raakawúlaay sheyy" }]],
+                    [[{ p: "راکولی شي", f: "raakawúley shee" }, { p: "راکولای شي", f: "raakawúlaay shee" }], [{ p: "راکولی شي", f: "raakawúley shee" }, { p: "راکولای شي", f: "raakawúlaay shee" }]],
+                    [[{ p: "راکولی شي", f: "raakawúley shee" }, { p: "راکولای شي", f: "raakawúlaay shee" }], [{ p: "راکولی شي", f: "raakawúley shee" }, { p: "راکولای شي", f: "raakawúlaay shee" }]],
+                ],
+                short: [
+                    [[{ p: "راکوی شم", f: "raakawéy shum" }, { p: "راکوای شم", f: "raakawáay shum" }], [{ p: "راکوی شو", f: "raakawéy shoo" }, { p: "راکوای شو", f: "raakawáay shoo" }]],
+                    [[{ p: "راکوی شم", f: "raakawéy shum" }, { p: "راکوای شم", f: "raakawáay shum" }], [{ p: "راکوی شو", f: "raakawéy shoo" }, { p: "راکوای شو", f: "raakawáay shoo" }]],
+                    [[{ p: "راکوی شې", f: "raakawéy she" }, { p: "راکوای شې", f: "raakawáay she" }], [{ p: "راکوی شئ", f: "raakawéy sheyy" }, { p: "راکوای شئ", f: "raakawáay sheyy" }]],
+                    [[{ p: "راکوی شې", f: "raakawéy she" }, { p: "راکوای شې", f: "raakawáay she" }], [{ p: "راکوی شئ", f: "raakawéy sheyy" }, { p: "راکوای شئ", f: "raakawáay sheyy" }]],
+                    [[{ p: "راکوی شي", f: "raakawéy shee" }, { p: "راکوای شي", f: "raakawáay shee" }], [{ p: "راکوی شي", f: "raakawéy shee" }, { p: "راکوای شي", f: "raakawáay shee" }]],
+                    [[{ p: "راکوی شي", f: "raakawéy shee" }, { p: "راکوای شي", f: "raakawáay shee" }], [{ p: "راکوی شي", f: "raakawéy shee" }, { p: "راکوای شي", f: "raakawáay shee" }]],
+                ],
+            },
+            future: {
+                long: [
+                    [[{ p: "به راکولی شم", f: "ba raakawúley shum" }, { p: "به راکولای شم", f: "ba raakawúlaay shum" }], [{ p: "به راکولی شو", f: "ba raakawúley shoo" }, { p: "به راکولای شو", f: "ba raakawúlaay shoo" }]],
+                    [[{ p: "به راکولی شم", f: "ba raakawúley shum" }, { p: "به راکولای شم", f: "ba raakawúlaay shum" }], [{ p: "به راکولی شو", f: "ba raakawúley shoo" }, { p: "به راکولای شو", f: "ba raakawúlaay shoo" }]],
+                    [[{ p: "به راکولی شې", f: "ba raakawúley she" }, { p: "به راکولای شې", f: "ba raakawúlaay she" }], [{ p: "به راکولی شئ", f: "ba raakawúley sheyy" }, { p: "به راکولای شئ", f: "ba raakawúlaay sheyy" }]],
+                    [[{ p: "به راکولی شې", f: "ba raakawúley she" }, { p: "به راکولای شې", f: "ba raakawúlaay she" }], [{ p: "به راکولی شئ", f: "ba raakawúley sheyy" }, { p: "به راکولای شئ", f: "ba raakawúlaay sheyy" }]],
+                    [[{ p: "به راکولی شي", f: "ba raakawúley shee" }, { p: "به راکولای شي", f: "ba raakawúlaay shee" }], [{ p: "به راکولی شي", f: "ba raakawúley shee" }, { p: "به راکولای شي", f: "ba raakawúlaay shee" }]],
+                    [[{ p: "به راکولی شي", f: "ba raakawúley shee" }, { p: "به راکولای شي", f: "ba raakawúlaay shee" }], [{ p: "به راکولی شي", f: "ba raakawúley shee" }, { p: "به راکولای شي", f: "ba raakawúlaay shee" }]],
+                ],
+                short: [
+                    [[{ p: "به راکوی شم", f: "ba raakawéy shum" }, { p: "به راکوای شم", f: "ba raakawáay shum" }], [{ p: "به راکوی شو", f: "ba raakawéy shoo" }, { p: "به راکوای شو", f: "ba raakawáay shoo" }]],
+                    [[{ p: "به راکوی شم", f: "ba raakawéy shum" }, { p: "به راکوای شم", f: "ba raakawáay shum" }], [{ p: "به راکوی شو", f: "ba raakawéy shoo" }, { p: "به راکوای شو", f: "ba raakawáay shoo" }]],
+                    [[{ p: "به راکوی شې", f: "ba raakawéy she" }, { p: "به راکوای شې", f: "ba raakawáay she" }], [{ p: "به راکوی شئ", f: "ba raakawéy sheyy" }, { p: "به راکوای شئ", f: "ba raakawáay sheyy" }]],
+                    [[{ p: "به راکوی شې", f: "ba raakawéy she" }, { p: "به راکوای شې", f: "ba raakawáay she" }], [{ p: "به راکوی شئ", f: "ba raakawéy sheyy" }, { p: "به راکوای شئ", f: "ba raakawáay sheyy" }]],
+                    [[{ p: "به راکوی شي", f: "ba raakawéy shee" }, { p: "به راکوای شي", f: "ba raakawáay shee" }], [{ p: "به راکوی شي", f: "ba raakawéy shee" }, { p: "به راکوای شي", f: "ba raakawáay shee" }]],
+                    [[{ p: "به راکوی شي", f: "ba raakawéy shee" }, { p: "به راکوای شي", f: "ba raakawáay shee" }], [{ p: "به راکوی شي", f: "ba raakawéy shee" }, { p: "به راکوای شي", f: "ba raakawáay shee" }]],
+                ],
+            },
+            past: {
+                long: [
+                    [[{ p: "راکولی شوم", f: "raakawúley shwum" }, { p: "راکولای شوم", f: "raakawúlaay shwum" }], [{ p: "راکولی شو", f: "raakawúley shoo" }, { p: "راکولای شو", f: "raakawúlaay shoo" }]],
+                    [[{ p: "راکولی شوم", f: "raakawúley shwum" }, { p: "راکولای شوم", f: "raakawúlaay shwum" }], [{ p: "راکولی شو", f: "raakawúley shoo" }, { p: "راکولای شو", f: "raakawúlaay shoo" }]],
+                    [[{ p: "راکولی شوې", f: "raakawúley shwe" }, { p: "راکولای شوې", f: "raakawúlaay shwe" }], [{ p: "راکولی شوئ", f: "raakawúley shweyy" }, { p: "راکولای شوئ", f: "raakawúlaay shweyy" }]],
+                    [[{ p: "راکولی شوې", f: "raakawúley shwe" }, { p: "راکولای شوې", f: "raakawúlaay shwe" }], [{ p: "راکولی شوئ", f: "raakawúley shweyy" }, { p: "راکولای شوئ", f: "raakawúlaay shweyy" }]],
+                    [[{ p: "راکولی شو", f: "raakawúley sho" }, { p: "راکولای شو", f: "raakawúlaay sho" }], [{ p: "راکولی شول", f: "raakawúley shwul" }, { p: "راکولای شول", f: "raakawúlaay shwul" }, { p: "راکولی شو", f: "raakawúley shoo" }, { p: "راکولای شو", f: "raakawúlaay shoo" }]],
+                    [[{ p: "راکولی شوه", f: "raakawúley shwa" }, { p: "راکولای شوه", f: "raakawúlaay shwa" }], [{ p: "راکولی شولې", f: "raakawúley shwule" }, { p: "راکولای شولې", f: "raakawúlaay shwule" }, { p: "راکولی شوې", f: "raakawúley shwe" }, { p: "راکولای شوې", f: "raakawúlaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "راکوی شوم", f: "raakawéy shwum" }, { p: "راکوای شوم", f: "raakawáay shwum" }], [{ p: "راکوی شو", f: "raakawéy shoo" }, { p: "راکوای شو", f: "raakawáay shoo" }]],
+                    [[{ p: "راکوی شوم", f: "raakawéy shwum" }, { p: "راکوای شوم", f: "raakawáay shwum" }], [{ p: "راکوی شو", f: "raakawéy shoo" }, { p: "راکوای شو", f: "raakawáay shoo" }]],
+                    [[{ p: "راکوی شوې", f: "raakawéy shwe" }, { p: "راکوای شوې", f: "raakawáay shwe" }], [{ p: "راکوی شوئ", f: "raakawéy shweyy" }, { p: "راکوای شوئ", f: "raakawáay shweyy" }]],
+                    [[{ p: "راکوی شوې", f: "raakawéy shwe" }, { p: "راکوای شوې", f: "raakawáay shwe" }], [{ p: "راکوی شوئ", f: "raakawéy shweyy" }, { p: "راکوای شوئ", f: "raakawáay shweyy" }]],
+                    [[{ p: "راکوی شو", f: "raakawéy sho" }, { p: "راکوای شو", f: "raakawáay sho" }], [{ p: "راکوی شول", f: "raakawéy shwul" }, { p: "راکوای شول", f: "raakawáay shwul" }, { p: "راکوی شو", f: "raakawéy shoo" }, { p: "راکوای شو", f: "raakawáay shoo" }]],
+                    [[{ p: "راکوی شوه", f: "raakawéy shwa" }, { p: "راکوای شوه", f: "raakawáay shwa" }], [{ p: "راکوی شولې", f: "raakawéy shwule" }, { p: "راکوای شولې", f: "raakawáay shwule" }, { p: "راکوی شوې", f: "raakawéy shwe" }, { p: "راکوای شوې", f: "raakawáay shwe" }]],
+                ],
+            },
+            habitualPast: {
+                long: [
+                    [[{ p: "به راکولی شوم", f: "ba raakawúley shwum" }, { p: "به راکولای شوم", f: "ba raakawúlaay shwum" }], [{ p: "به راکولی شو", f: "ba raakawúley shoo" }, { p: "به راکولای شو", f: "ba raakawúlaay shoo" }]],
+                    [[{ p: "به راکولی شوم", f: "ba raakawúley shwum" }, { p: "به راکولای شوم", f: "ba raakawúlaay shwum" }], [{ p: "به راکولی شو", f: "ba raakawúley shoo" }, { p: "به راکولای شو", f: "ba raakawúlaay shoo" }]],
+                    [[{ p: "به راکولی شوې", f: "ba raakawúley shwe" }, { p: "به راکولای شوې", f: "ba raakawúlaay shwe" }], [{ p: "به راکولی شوئ", f: "ba raakawúley shweyy" }, { p: "به راکولای شوئ", f: "ba raakawúlaay shweyy" }]],
+                    [[{ p: "به راکولی شوې", f: "ba raakawúley shwe" }, { p: "به راکولای شوې", f: "ba raakawúlaay shwe" }], [{ p: "به راکولی شوئ", f: "ba raakawúley shweyy" }, { p: "به راکولای شوئ", f: "ba raakawúlaay shweyy" }]],
+                    [[{ p: "به راکولی شو", f: "ba raakawúley sho" }, { p: "به راکولای شو", f: "ba raakawúlaay sho" }], [{ p: "به راکولی شول", f: "ba raakawúley shwul" }, { p: "به راکولای شول", f: "ba raakawúlaay shwul" }, { p: "به راکولی شو", f: "ba raakawúley shoo" }, { p: "به راکولای شو", f: "ba raakawúlaay shoo" }]],
+                    [[{ p: "به راکولی شوه", f: "ba raakawúley shwa" }, { p: "به راکولای شوه", f: "ba raakawúlaay shwa" }], [{ p: "به راکولی شولې", f: "ba raakawúley shwule" }, { p: "به راکولای شولې", f: "ba raakawúlaay shwule" }, { p: "به راکولی شوې", f: "ba raakawúley shwe" }, { p: "به راکولای شوې", f: "ba raakawúlaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "به راکوی شوم", f: "ba raakawéy shwum" }, { p: "به راکوای شوم", f: "ba raakawáay shwum" }], [{ p: "به راکوی شو", f: "ba raakawéy shoo" }, { p: "به راکوای شو", f: "ba raakawáay shoo" }]],
+                    [[{ p: "به راکوی شوم", f: "ba raakawéy shwum" }, { p: "به راکوای شوم", f: "ba raakawáay shwum" }], [{ p: "به راکوی شو", f: "ba raakawéy shoo" }, { p: "به راکوای شو", f: "ba raakawáay shoo" }]],
+                    [[{ p: "به راکوی شوې", f: "ba raakawéy shwe" }, { p: "به راکوای شوې", f: "ba raakawáay shwe" }], [{ p: "به راکوی شوئ", f: "ba raakawéy shweyy" }, { p: "به راکوای شوئ", f: "ba raakawáay shweyy" }]],
+                    [[{ p: "به راکوی شوې", f: "ba raakawéy shwe" }, { p: "به راکوای شوې", f: "ba raakawáay shwe" }], [{ p: "به راکوی شوئ", f: "ba raakawéy shweyy" }, { p: "به راکوای شوئ", f: "ba raakawáay shweyy" }]],
+                    [[{ p: "به راکوی شو", f: "ba raakawéy sho" }, { p: "به راکوای شو", f: "ba raakawáay sho" }], [{ p: "به راکوی شول", f: "ba raakawéy shwul" }, { p: "به راکوای شول", f: "ba raakawáay shwul" }, { p: "به راکوی شو", f: "ba raakawéy shoo" }, { p: "به راکوای شو", f: "ba raakawáay shoo" }]],
+                    [[{ p: "به راکوی شوه", f: "ba raakawéy shwa" }, { p: "به راکوای شوه", f: "ba raakawáay shwa" }], [{ p: "به راکوی شولې", f: "ba raakawéy shwule" }, { p: "به راکوای شولې", f: "ba raakawáay shwule" }, { p: "به راکوی شوې", f: "ba raakawéy shwe" }, { p: "به راکوای شوې", f: "ba raakawáay shwe" }]],
+                ],
+            },
+            hypotheticalPast: {
+                long: [
+                    [[{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }], [{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }]],
+                    [[{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }], [{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }]],
+                    [[{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }], [{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }]],
+                    [[{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }], [{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }]],
+                    [[{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }], [{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }]],
+                    [[{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }], [{ p: "راکولی شوای", f: "raakawúley shwaay" }, { p: "راکولی شوی", f: "raakawúley shwey" }, { p: "راکولای شوای", f: "raakawúlaay shwaay" }]],
+                ],
+                short: [
+                    [[{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }], [{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }]],
+                    [[{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }], [{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }]],
+                    [[{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }], [{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }]],
+                    [[{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }], [{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }]],
+                    [[{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }], [{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }]],
+                    [[{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }], [{ p: "راکوی شوای", f: "raakawéy shwaay" }, { p: "راکوی شوی", f: "raakawéy shwey" }, { p: "راکوای شوای", f: "raakawáay shwaay" }]],
+                ],
+            },
+        },
+    },
+    perfective: {
+        nonImperative: {
+            long: [
+                [[{p: "راکړم", f: "raakRum"}], [{p: "راکړو", f: "raakRoo"}]],
+                [[{p: "راکړم", f: "raakRum"}], [{p: "راکړو", f: "raakRoo"}]],
+                [[{p: "راکړې", f: "raakRe"}], [{p: "راکړئ", f: "raakReyy"}]],
+                [[{p: "راکړې", f: "raakRe"}], [{p: "راکړئ", f: "raakReyy"}]],
+                [[{p: "راکړي", f: "raakRee"}], [{p: "راکړي", f: "raakRee"}]],
+                [[{p: "راکړي", f: "raakRee"}], [{p: "راکړي", f: "raakRee"}]],
+            ],
+            short: [
+                [[{p: "راکم", f: "raakum"}], [{p: "راکو", f: "raakoo"}]],
+                [[{p: "راکم", f: "raakum"}], [{p: "راکو", f: "raakoo"}]],
+                [[{p: "راکې", f: "raake"}], [{p: "راکئ", f: "raakeyy"}]],
+                [[{p: "راکې", f: "raake"}], [{p: "راکئ", f: "raakeyy"}]],
+                [[{p: "راکي", f: "raakee"}], [{p: "راکي", f: "raakee"}]],
+                [[{p: "راکي", f: "raakee"}], [{p: "راکي", f: "raakee"}]],
+            ],
+        },
+        future: {
+            long: [
+                [[{p: "به راکړم", f: "ba raakRum"}], [{p: "به راکړو", f: "ba raakRoo"}]],
+                [[{p: "به راکړم", f: "ba raakRum"}], [{p: "به راکړو", f: "ba raakRoo"}]],
+                [[{p: "به راکړې", f: "ba raakRe"}], [{p: "به راکړئ", f: "ba raakReyy"}]],
+                [[{p: "به راکړې", f: "ba raakRe"}], [{p: "به راکړئ", f: "ba raakReyy"}]],
+                [[{p: "به راکړي", f: "ba raakRee"}], [{p: "به راکړي", f: "ba raakRee"}]],
+                [[{p: "به راکړي", f: "ba raakRee"}], [{p: "به راکړي", f: "ba raakRee"}]],
+            ],
+            short: [
+                [[{p: "به راکم", f: "ba raakum"}], [{p: "به راکو", f: "ba raakoo"}]],
+                [[{p: "به راکم", f: "ba raakum"}], [{p: "به راکو", f: "ba raakoo"}]],
+                [[{p: "به راکې", f: "ba raake"}], [{p: "به راکئ", f: "ba raakeyy"}]],
+                [[{p: "به راکې", f: "ba raake"}], [{p: "به راکئ", f: "ba raakeyy"}]],
+                [[{p: "به راکي", f: "ba raakee"}], [{p: "به راکي", f: "ba raakee"}]],
+                [[{p: "به راکي", f: "ba raakee"}], [{p: "به راکي", f: "ba raakee"}]],
+            ],
+        },
+        imperative: {
+            long: [
+                [[{ p: "راکړه", f: "raakRa" }], [{ p: "راکړئ", f: "raakReyy" }]],
+                [[{ p: "راکړه", f: "raakRa" }], [{ p: "راکړئ", f: "raakReyy" }]]
+            ],
+            short: [
+                [[{ p: "راکه", f: "raaka" }], [{ p: "راکئ", f: "raakeyy" }]],
+                [[{ p: "راکه", f: "raaka" }], [{ p: "راکئ", f: "raakeyy" }]],
+            ],
+        },
+        past: {
+            mini: [
+                [[{p: "راکم", f: "raakum"}], [{p: "راکو", f: "raakoo"}]],
+                [[{p: "راکم", f: "raakum"}], [{p: "راکو", f: "raakoo"}]],
+                [[{p: "راکې", f: "raake"}], [{p: "راکئ", f: "raakeyy"}]],
+                [[{p: "راکې", f: "raake"}], [{p: "راکئ", f: "raakeyy"}]],
+                [[{p: "راکه", f: "raaku"}, {p: "راکو", f: "raako"}], [{p: "راکړل", f: "raakRul"}, { p: "راکو", f: "raakoo" }]],
+                [[{p: "راکه", f: "raaka"}], [{p: "راکې", f: "raake"}]],
+            ],
+            short: [
+                [[{p: "راکړم", f: "raakRum"}], [{p: "راکړو", f: "raakRoo"}]],
+                [[{p: "راکړم", f: "raakRum"}], [{p: "راکړو", f: "raakRoo"}]],
+                [[{p: "راکړې", f: "raakRe"}], [{p: "راکړئ", f: "raakReyy"}]],
+                [[{p: "راکړې", f: "raakRe"}], [{p: "راکړئ", f: "raakReyy"}]],
+                [[{p: "راکړه", f: "raakRu"}, {p: "راکړو", f: "raakRo"}, {p: "راکړ", f: "raakuR"}], [{p: "راکړل", f: "raakRul"}, {p: "راکړو", f: "raakRoo" }]],
+                [[{p: "راکړه", f: "raakRa"}], [{p: "راکړې", f: "raakRe"}]],
+            ],
+            long: [
+                [[{p: "راکړلم", f: "raakRulum"}], [{p: "راکړلو", f: "raakRuloo"}]],
+                [[{p: "راکړلم", f: "raakRulum"}], [{p: "راکړلو", f: "raakRuloo"}]],
+                [[{p: "راکړلې", f: "raakRule"}], [{p: "راکړلئ", f: "raakRuleyy"}]],
+                [[{p: "راکړلې", f: "raakRule"}], [{p: "راکړلئ", f: "raakRuleyy"}]],
+                [[{p: "راکړله", f: "raakRulu"}, {p: "راکړلو", f: "raakRulo"}], [{p: "راکړل", f: "raakRul"}, {p: "راکړلو", f: "raakRuloo"}]],
+                [[{p: "راکړله", f: "raakRula"}], [{p: "راکړلې", f: "raakRule"}]],
+            ],
+        },
+        habitualPast: {
+            mini: [
+                [[{p: "به راکم", f: "ba raakum"}], [{p: "به راکو", f: "ba raakoo"}]],
+                [[{p: "به راکم", f: "ba raakum"}], [{p: "به راکو", f: "ba raakoo"}]],
+                [[{p: "به راکې", f: "ba raake"}], [{p: "به راکئ", f: "ba raakeyy"}]],
+                [[{p: "به راکې", f: "ba raake"}], [{p: "به راکئ", f: "ba raakeyy"}]],
+                [[{p: "به راکه", f: "ba raaku"}, {p: "به راکو", f: "ba raako"}], [{p: "به راکړل", f: "ba raakRul"}, { p: "به راکو", f: "ba raakoo" }]],
+                [[{p: "به راکه", f: "ba raaka"}], [{p: "به راکې", f: "ba raake"}]],
+            ],
+            short: [
+                [[{p: "به راکړم", f: "ba raakRum"}], [{p: "به راکړو", f: "ba raakRoo"}]],
+                [[{p: "به راکړم", f: "ba raakRum"}], [{p: "به راکړو", f: "ba raakRoo"}]],
+                [[{p: "به راکړې", f: "ba raakRe"}], [{p: "به راکړئ", f: "ba raakReyy"}]],
+                [[{p: "به راکړې", f: "ba raakRe"}], [{p: "به راکړئ", f: "ba raakReyy"}]],
+                [[{p: "به راکړه", f: "ba raakRu"}, {p: "به راکړو", f: "ba raakRo"}, {p: "به راکړ", f: "ba raakuR"}], [{p: "به راکړل", f: "ba raakRul"}, {p: "به راکړو", f: "ba raakRoo" }]],
+                [[{p: "به راکړه", f: "ba raakRa"}], [{p: "به راکړې", f: "ba raakRe"}]],
+            ],
+            long: [
+                [[{p: "به راکړلم", f: "ba raakRulum"}], [{p: "به راکړلو", f: "ba raakRuloo"}]],
+                [[{p: "به راکړلم", f: "ba raakRulum"}], [{p: "به راکړلو", f: "ba raakRuloo"}]],
+                [[{p: "به راکړلې", f: "ba raakRule"}], [{p: "به راکړلئ", f: "ba raakRuleyy"}]],
+                [[{p: "به راکړلې", f: "ba raakRule"}], [{p: "به راکړلئ", f: "ba raakRuleyy"}]],
+                [[{p: "به راکړله", f: "ba raakRulu"}, {p: "به راکړلو", f: "ba raakRulo"}], [{p: "به راکړل", f: "ba raakRul"}, {p: "به راکړلو", f: "ba raakRuloo"}]],
+                [[{p: "به راکړله", f: "ba raakRula"}], [{p: "به راکړلې", f: "ba raakRule"}]],
+            ],
+        },
+        modal: {
+            nonImperative: {
+                long: [
+                    [[{ p: "راکړلی شم", f: "raakRuley shum" }, { p: "راکړلای شم", f: "raakRulaay shum" }], [{ p: "راکړلی شو", f: "raakRuley shoo" }, { p: "راکړلای شو", f: "raakRulaay shoo" }]],
+                    [[{ p: "راکړلی شم", f: "raakRuley shum" }, { p: "راکړلای شم", f: "raakRulaay shum" }], [{ p: "راکړلی شو", f: "raakRuley shoo" }, { p: "راکړلای شو", f: "raakRulaay shoo" }]],
+                    [[{ p: "راکړلی شې", f: "raakRuley she" }, { p: "راکړلای شې", f: "raakRulaay she" }], [{ p: "راکړلی شئ", f: "raakRuley sheyy" }, { p: "راکړلای شئ", f: "raakRulaay sheyy" }]],
+                    [[{ p: "راکړلی شې", f: "raakRuley she" }, { p: "راکړلای شې", f: "raakRulaay she" }], [{ p: "راکړلی شئ", f: "raakRuley sheyy" }, { p: "راکړلای شئ", f: "raakRulaay sheyy" }]],
+                    [[{ p: "راکړلی شي", f: "raakRuley shee" }, { p: "راکړلای شي", f: "raakRulaay shee" }], [{ p: "راکړلی شي", f: "raakRuley shee" }, { p: "راکړلای شي", f: "raakRulaay shee" }]],
+                    [[{ p: "راکړلی شي", f: "raakRuley shee" }, { p: "راکړلای شي", f: "raakRulaay shee" }], [{ p: "راکړلی شي", f: "raakRuley shee" }, { p: "راکړلای شي", f: "raakRulaay shee" }]],
+                ],
+                short: [
+                    [[{ p: "راکړی شم", f: "raakRey shum" }, { p: "راکړای شم", f: "raakRáay shum" }], [{ p: "راکړی شو", f: "raakRey shoo" }, { p: "راکړای شو", f: "raakRáay shoo" }]],
+                    [[{ p: "راکړی شم", f: "raakRey shum" }, { p: "راکړای شم", f: "raakRáay shum" }], [{ p: "راکړی شو", f: "raakRey shoo" }, { p: "راکړای شو", f: "raakRáay shoo" }]],
+                    [[{ p: "راکړی شې", f: "raakRey she" }, { p: "راکړای شې", f: "raakRáay she" }], [{ p: "راکړی شئ", f: "raakRey sheyy" }, { p: "راکړای شئ", f: "raakRáay sheyy" }]],
+                    [[{ p: "راکړی شې", f: "raakRey she" }, { p: "راکړای شې", f: "raakRáay she" }], [{ p: "راکړی شئ", f: "raakRey sheyy" }, { p: "راکړای شئ", f: "raakRáay sheyy" }]],
+                    [[{ p: "راکړی شي", f: "raakRey shee" }, { p: "راکړای شي", f: "raakRáay shee" }], [{ p: "راکړی شي", f: "raakRey shee" }, { p: "راکړای شي", f: "raakRáay shee" }]],
+                    [[{ p: "راکړی شي", f: "raakRey shee" }, { p: "راکړای شي", f: "raakRáay shee" }], [{ p: "راکړی شي", f: "raakRey shee" }, { p: "راکړای شي", f: "raakRáay shee" }]],
+                ],
+            },
+            future: {
+                long: [
+                    [[{ p: "به راکړلی شم", f: "ba raakRuley shum" }, { p: "به راکړلای شم", f: "ba raakRulaay shum" }], [{ p: "به راکړلی شو", f: "ba raakRuley shoo" }, { p: "به راکړلای شو", f: "ba raakRulaay shoo" }]],
+                    [[{ p: "به راکړلی شم", f: "ba raakRuley shum" }, { p: "به راکړلای شم", f: "ba raakRulaay shum" }], [{ p: "به راکړلی شو", f: "ba raakRuley shoo" }, { p: "به راکړلای شو", f: "ba raakRulaay shoo" }]],
+                    [[{ p: "به راکړلی شې", f: "ba raakRuley she" }, { p: "به راکړلای شې", f: "ba raakRulaay she" }], [{ p: "به راکړلی شئ", f: "ba raakRuley sheyy" }, { p: "به راکړلای شئ", f: "ba raakRulaay sheyy" }]],
+                    [[{ p: "به راکړلی شې", f: "ba raakRuley she" }, { p: "به راکړلای شې", f: "ba raakRulaay she" }], [{ p: "به راکړلی شئ", f: "ba raakRuley sheyy" }, { p: "به راکړلای شئ", f: "ba raakRulaay sheyy" }]],
+                    [[{ p: "به راکړلی شي", f: "ba raakRuley shee" }, { p: "به راکړلای شي", f: "ba raakRulaay shee" }], [{ p: "به راکړلی شي", f: "ba raakRuley shee" }, { p: "به راکړلای شي", f: "ba raakRulaay shee" }]],
+                    [[{ p: "به راکړلی شي", f: "ba raakRuley shee" }, { p: "به راکړلای شي", f: "ba raakRulaay shee" }], [{ p: "به راکړلی شي", f: "ba raakRuley shee" }, { p: "به راکړلای شي", f: "ba raakRulaay shee" }]],
+                ],
+                short: [
+                    [[{ p: "به راکړی شم", f: "ba raakRey shum" }, { p: "به راکړای شم", f: "ba raakRáay shum" }], [{ p: "به راکړی شو", f: "ba raakRey shoo" }, { p: "به راکړای شو", f: "ba raakRáay shoo" }]],
+                    [[{ p: "به راکړی شم", f: "ba raakRey shum" }, { p: "به راکړای شم", f: "ba raakRáay shum" }], [{ p: "به راکړی شو", f: "ba raakRey shoo" }, { p: "به راکړای شو", f: "ba raakRáay shoo" }]],
+                    [[{ p: "به راکړی شې", f: "ba raakRey she" }, { p: "به راکړای شې", f: "ba raakRáay she" }], [{ p: "به راکړی شئ", f: "ba raakRey sheyy" }, { p: "به راکړای شئ", f: "ba raakRáay sheyy" }]],
+                    [[{ p: "به راکړی شې", f: "ba raakRey she" }, { p: "به راکړای شې", f: "ba raakRáay she" }], [{ p: "به راکړی شئ", f: "ba raakRey sheyy" }, { p: "به راکړای شئ", f: "ba raakRáay sheyy" }]],
+                    [[{ p: "به راکړی شي", f: "ba raakRey shee" }, { p: "به راکړای شي", f: "ba raakRáay shee" }], [{ p: "به راکړی شي", f: "ba raakRey shee" }, { p: "به راکړای شي", f: "ba raakRáay shee" }]],
+                    [[{ p: "به راکړی شي", f: "ba raakRey shee" }, { p: "به راکړای شي", f: "ba raakRáay shee" }], [{ p: "به راکړی شي", f: "ba raakRey shee" }, { p: "به راکړای شي", f: "ba raakRáay shee" }]],
+                ],
+            },
+            past: {
+                long: [
+                    [[{ p: "راکړلی شوم", f: "raakRuley shwum" }, { p: "راکړلای شوم", f: "raakRulaay shwum" }], [{ p: "راکړلی شو", f: "raakRuley shoo" }, { p: "راکړلای شو", f: "raakRulaay shoo" }]],
+                    [[{ p: "راکړلی شوم", f: "raakRuley shwum" }, { p: "راکړلای شوم", f: "raakRulaay shwum" }], [{ p: "راکړلی شو", f: "raakRuley shoo" }, { p: "راکړلای شو", f: "raakRulaay shoo" }]],
+                    [[{ p: "راکړلی شوې", f: "raakRuley shwe" }, { p: "راکړلای شوې", f: "raakRulaay shwe" }], [{ p: "راکړلی شوئ", f: "raakRuley shweyy" }, { p: "راکړلای شوئ", f: "raakRulaay shweyy" }]],
+                    [[{ p: "راکړلی شوې", f: "raakRuley shwe" }, { p: "راکړلای شوې", f: "raakRulaay shwe" }], [{ p: "راکړلی شوئ", f: "raakRuley shweyy" }, { p: "راکړلای شوئ", f: "raakRulaay shweyy" }]],
+                    [[{ p: "راکړلی شو", f: "raakRuley sho" }, { p: "راکړلای شو", f: "raakRulaay sho" }], [{ p: "راکړلی شول", f: "raakRuley shwul" }, { p: "راکړلای شول", f: "raakRulaay shwul" }, { p: "راکړلی شو", f: "raakRuley shoo" }, { p: "راکړلای شو", f: "raakRulaay shoo" }]],
+                    [[{ p: "راکړلی شوه", f: "raakRuley shwa" }, { p: "راکړلای شوه", f: "raakRulaay shwa" }], [{ p: "راکړلی شولې", f: "raakRuley shwule" }, { p: "راکړلای شولې", f: "raakRulaay shwule" }, { p: "راکړلی شوې", f: "raakRuley shwe" }, { p: "راکړلای شوې", f: "raakRulaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "راکړی شوم", f: "raakRey shwum" }, { p: "راکړای شوم", f: "raakRáay shwum" }], [{ p: "راکړی شو", f: "raakRey shoo" }, { p: "راکړای شو", f: "raakRáay shoo" }]],
+                    [[{ p: "راکړی شوم", f: "raakRey shwum" }, { p: "راکړای شوم", f: "raakRáay shwum" }], [{ p: "راکړی شو", f: "raakRey shoo" }, { p: "راکړای شو", f: "raakRáay shoo" }]],
+                    [[{ p: "راکړی شوې", f: "raakRey shwe" }, { p: "راکړای شوې", f: "raakRáay shwe" }], [{ p: "راکړی شوئ", f: "raakRey shweyy" }, { p: "راکړای شوئ", f: "raakRáay shweyy" }]],
+                    [[{ p: "راکړی شوې", f: "raakRey shwe" }, { p: "راکړای شوې", f: "raakRáay shwe" }], [{ p: "راکړی شوئ", f: "raakRey shweyy" }, { p: "راکړای شوئ", f: "raakRáay shweyy" }]],
+                    [[{ p: "راکړی شو", f: "raakRey sho" }, { p: "راکړای شو", f: "raakRáay sho" }], [{ p: "راکړی شول", f: "raakRey shwul" }, { p: "راکړای شول", f: "raakRáay shwul" }, { p: "راکړی شو", f: "raakRey shoo" }, { p: "راکړای شو", f: "raakRáay shoo" }]],
+                    [[{ p: "راکړی شوه", f: "raakRey shwa" }, { p: "راکړای شوه", f: "raakRáay shwa" }], [{ p: "راکړی شولې", f: "raakRey shwule" }, { p: "راکړای شولې", f: "raakRáay shwule" }, { p: "راکړی شوې", f: "raakRey shwe" }, { p: "راکړای شوې", f: "raakRáay shwe" }]],
+                ],
+            },
+            habitualPast: {
+                long: [
+                    [[{ p: "به راکړلی شوم", f: "ba raakRuley shwum" }, { p: "به راکړلای شوم", f: "ba raakRulaay shwum" }], [{ p: "به راکړلی شو", f: "ba raakRuley shoo" }, { p: "به راکړلای شو", f: "ba raakRulaay shoo" }]],
+                    [[{ p: "به راکړلی شوم", f: "ba raakRuley shwum" }, { p: "به راکړلای شوم", f: "ba raakRulaay shwum" }], [{ p: "به راکړلی شو", f: "ba raakRuley shoo" }, { p: "به راکړلای شو", f: "ba raakRulaay shoo" }]],
+                    [[{ p: "به راکړلی شوې", f: "ba raakRuley shwe" }, { p: "به راکړلای شوې", f: "ba raakRulaay shwe" }], [{ p: "به راکړلی شوئ", f: "ba raakRuley shweyy" }, { p: "به راکړلای شوئ", f: "ba raakRulaay shweyy" }]],
+                    [[{ p: "به راکړلی شوې", f: "ba raakRuley shwe" }, { p: "به راکړلای شوې", f: "ba raakRulaay shwe" }], [{ p: "به راکړلی شوئ", f: "ba raakRuley shweyy" }, { p: "به راکړلای شوئ", f: "ba raakRulaay shweyy" }]],
+                    [[{ p: "به راکړلی شو", f: "ba raakRuley sho" }, { p: "به راکړلای شو", f: "ba raakRulaay sho" }], [{ p: "به راکړلی شول", f: "ba raakRuley shwul" }, { p: "به راکړلای شول", f: "ba raakRulaay shwul" }, { p: "به راکړلی شو", f: "ba raakRuley shoo" }, { p: "به راکړلای شو", f: "ba raakRulaay shoo" }]],
+                    [[{ p: "به راکړلی شوه", f: "ba raakRuley shwa" }, { p: "به راکړلای شوه", f: "ba raakRulaay shwa" }], [{ p: "به راکړلی شولې", f: "ba raakRuley shwule" }, { p: "به راکړلای شولې", f: "ba raakRulaay shwule" }, { p: "به راکړلی شوې", f: "ba raakRuley shwe" }, { p: "به راکړلای شوې", f: "ba raakRulaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "به راکړی شوم", f: "ba raakRey shwum" }, { p: "به راکړای شوم", f: "ba raakRáay shwum" }], [{ p: "به راکړی شو", f: "ba raakRey shoo" }, { p: "به راکړای شو", f: "ba raakRáay shoo" }]],
+                    [[{ p: "به راکړی شوم", f: "ba raakRey shwum" }, { p: "به راکړای شوم", f: "ba raakRáay shwum" }], [{ p: "به راکړی شو", f: "ba raakRey shoo" }, { p: "به راکړای شو", f: "ba raakRáay shoo" }]],
+                    [[{ p: "به راکړی شوې", f: "ba raakRey shwe" }, { p: "به راکړای شوې", f: "ba raakRáay shwe" }], [{ p: "به راکړی شوئ", f: "ba raakRey shweyy" }, { p: "به راکړای شوئ", f: "ba raakRáay shweyy" }]],
+                    [[{ p: "به راکړی شوې", f: "ba raakRey shwe" }, { p: "به راکړای شوې", f: "ba raakRáay shwe" }], [{ p: "به راکړی شوئ", f: "ba raakRey shweyy" }, { p: "به راکړای شوئ", f: "ba raakRáay shweyy" }]],
+                    [[{ p: "به راکړی شو", f: "ba raakRey sho" }, { p: "به راکړای شو", f: "ba raakRáay sho" }], [{ p: "به راکړی شول", f: "ba raakRey shwul" }, { p: "به راکړای شول", f: "ba raakRáay shwul" }, { p: "به راکړی شو", f: "ba raakRey shoo" }, { p: "به راکړای شو", f: "ba raakRáay shoo" }]],
+                    [[{ p: "به راکړی شوه", f: "ba raakRey shwa" }, { p: "به راکړای شوه", f: "ba raakRáay shwa" }], [{ p: "به راکړی شولې", f: "ba raakRey shwule" }, { p: "به راکړای شولې", f: "ba raakRáay shwule" }, { p: "به راکړی شوې", f: "ba raakRey shwe" }, { p: "به راکړای شوې", f: "ba raakRáay shwe" }]],
+                ],
+            },
+            hypotheticalPast: {
+                long: [
+                    [[{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }], [{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }]],
+                    [[{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }], [{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }]],
+                    [[{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }], [{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }]],
+                    [[{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }], [{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }]],
+                    [[{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }], [{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }]],
+                    [[{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }], [{ p: "راکړلی شوای", f: "raakRuley shwaay" }, { p: "راکړلی شوی", f: "raakRuley shwey" }, { p: "راکړلای شوای", f: "raakRulaay shwaay" }]],
+                ],
+                short: [
+                    [[{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }], [{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }]],
+                    [[{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }], [{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }]],
+                    [[{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }], [{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }]],
+                    [[{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }], [{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }]],
+                    [[{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }], [{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }]],
+                    [[{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }], [{ p: "راکړی شوای", f: "raakRey shwaay" }, { p: "راکړی شوی", f: "raakRey shwey" }, { p: "راکړای شوای", f: "raakRáay shwaay" }]],
+                ],
+            },
+        }, 
+    },
+    hypothetical: {
+        short: [
+            [[{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }], [{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }]],
+            [[{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }], [{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }]],
+            [[{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }], [{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }]],
+            [[{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }], [{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }]],
+            [[{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }], [{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }]],
+            [[{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }], [{ p: "راکوی", f: "raakawéy" }, { p: "راکوای", f: "raakawáay" }]],
+        ],
+        long: [
+            [[{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }], [{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }]],
+            [[{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }], [{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }]],
+            [[{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }], [{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }]],
+            [[{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }], [{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }]],
+            [[{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }], [{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }]],
+            [[{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }], [{ p: "راکولی", f: "raakawúley" }, { p: "راکولای", f: "raakawúlaay" }]],
+        ],
+    },
+    participle: {
+        past: {
+            masc: [
+                [{ p: "راکړی", f: "raakúRey" }],
+                [{ p: "راکړي", f: "raakúRee" }],
+                [{ p: "راکړیو", f: "raakúRiyo" }, { p: "راکړو", f: "raakúRo" }],
+            ],
+            fem: [
+                [{ p: "راکړې", f: "raakúRe" }],
+                [{ p: "راکړې", f: "raakúRe" }],
+                [{ p: "راکړو", f: "raakúRo" }],
+            ],
+        },
+        present: {
+            masc: [
+                [{ p: "راکوونکی", f: "raakawóonkey" }],
+                [{ p: "راکوونکي", f: "raakawóonkee" }],
+                [{ p: "راکوونکیو", f: "raakawóonkiyo" }, { p: "راکوونکو", f: "raakedóonko" }],
+            ],
+            fem: [
+                [{ p: "راکوونکې", f: "raakawóonke" }],
+                [{ p: "راکوونکې", f: "raakawóonke" }],
+                [{ p: "راکوونکو", f: "raakawóonko" }],
+            ],
+        },
+    },
+    perfect: {
+        halfPerfect: [
+            [[{p: "راکړی", f: "raakúRey"}], [{p: "راکړي", f: "raakúRee"}]],
+            [[{p: "راکړې", f: "raakúRe"}], [{p: "راکړې", f: "raakúRe"}]],
+            [[{p: "راکړی", f: "raakúRey"}], [{p: "راکړي", f: "raakúRee"}]],
+            [[{p: "راکړې", f: "raakúRe"}], [{p: "راکړې", f: "raakúRe"}]],
+            [[{p: "راکړی", f: "raakúRey"}], [{p: "راکړي", f: "raakúRee"}]],
+            [[{p: "راکړې", f: "raakúRe"}], [{p: "راکړې", f: "raakúRe"}]],
+        ],
+        past: [
+            [[{p: "راکړی وم", f: "raakúRey wum"}], [{p: "راکړي وو", f: "raakúRee woo"}]],
+            [[{p: "راکړې وم", f: "raakúRe wum"}], [{p: "راکړې وو", f: "raakúRe woo"}]],
+            [[{p: "راکړی وې", f: "raakúRey we"}], [{p: "راکړي وئ", f: "raakúRee weyy"}]],
+            [[{p: "راکړې وې", f: "raakúRe we"}], [{p: "راکړې وئ", f: "raakúRe weyy"}]],
+            [[{p: "راکړی و", f: "raakúRey wo"}], [{p: "راکړي وو", f: "raakúRee woo"}]],
+            [[{p: "راکړې وه", f: "raakúRe wa"}], [{p: "راکړې وې", f: "raakúRe we"}]],
+        ],
+        present: [
+            [[{p: "راکړی یم", f: "raakúRey yum"}], [{p: "راکړي یو", f: "raakúRee yoo"}]],
+            [[{p: "راکړې یم", f: "raakúRe yum"}], [{p: "راکړې یو", f: "raakúRe yoo"}]],
+            [[{p: "راکړی یې", f: "raakúRey ye"}], [{p: "راکړي یئ", f: "raakúRee yeyy"}]],
+            [[{p: "راکړې یې", f: "raakúRe ye"}], [{p: "راکړې یئ", f: "raakúRe yeyy"}]],
+            [[{p: "راکړی دی", f: "raakúRey dey"}], [{p: "راکړي دي", f: "raakúRee dee"}]],
+            [[{p: "راکړې ده", f: "raakúRe da"}], [{p: "راکړې دي", f: "raakúRe dee"}]],
+        ],
+        habitual: [
+            [[{p: "راکړی یم", f: "raakúRey yum"}], [{p: "راکړي یو", f: "raakúRee yoo"}]],
+            [[{p: "راکړې یم", f: "raakúRe yum"}], [{p: "راکړې یو", f: "raakúRe yoo"}]],
+            [[{p: "راکړی یې", f: "raakúRey ye"}], [{p: "راکړي یئ", f: "raakúRee yeyy"}]],
+            [[{p: "راکړې یې", f: "raakúRe ye"}], [{p: "راکړې یئ", f: "raakúRe yeyy"}]],
+            [[{p: "راکړی وي", f: "raakúRey wee"}], [{p: "راکړي وي", f: "raakúRee wee"}]],
+            [[{p: "راکړې وي", f: "raakúRe wee"}], [{p: "راکړې وي", f: "raakúRe wee"}]],
+        ],
+        subjunctive: [
+            [[{p: "راکړی وم", f: "raakúRey wum"}], [{p: "راکړي وو", f: "raakúRee woo"}]],
+            [[{p: "راکړې وم", f: "raakúRe wum"}], [{p: "راکړې وو", f: "raakúRe woo"}]],
+            [[{p: "راکړی وې", f: "raakúRey we"}], [{p: "راکړي وئ", f: "raakúRee weyy"}]],
+            [[{p: "راکړې وې", f: "raakúRe we"}], [{p: "راکړې وئ", f: "raakúRe weyy"}]],
+            [[{p: "راکړی وي", f: "raakúRey wee"}], [{p: "راکړي وي", f: "raakúRee wee"}]],
+            [[{p: "راکړې وي", f: "raakúRe wee"}], [{p: "راکړې وي", f: "raakúRe wee"}]],
+        ],
+        future: [
+            [[{p: "به راکړی یم", f: "ba raakúRey yum"}], [{p: "به راکړي یو", f: "ba raakúRee yoo"}]],
+            [[{p: "به راکړې یم", f: "ba raakúRe yum"}], [{p: "به راکړې یو", f: "ba raakúRe yoo"}]],
+            [[{p: "به راکړی یې", f: "ba raakúRey ye"}], [{p: "به راکړي یئ", f: "ba raakúRee yeyy"}]],
+            [[{p: "به راکړې یې", f: "ba raakúRe ye"}], [{p: "به راکړې یئ", f: "ba raakúRe yeyy"}]],
+            [[{p: "به راکړی وي", f: "ba raakúRey wee"}], [{p: "به راکړي وي", f: "ba raakúRee wee"}]],
+            [[{p: "به راکړې وي", f: "ba raakúRe wee"}], [{p: "به راکړې وي", f: "ba raakúRe wee"}]],
+        ],
+        wouldBe: [
+            [[{p: "به راکړی وم", f: "ba raakúRey wum"}], [{p: "به راکړي وو", f: "ba raakúRee woo"}]],
+            [[{p: "به راکړې وم", f: "ba raakúRe wum"}], [{p: "به راکړې وو", f: "ba raakúRe woo"}]],
+            [[{p: "به راکړی وې", f: "ba raakúRey we"}], [{p: "به راکړي وئ", f: "ba raakúRee weyy"}]],
+            [[{p: "به راکړې وې", f: "ba raakúRe we"}], [{p: "به راکړې وئ", f: "ba raakúRe weyy"}]],
+            [[{p: "به راکړی و", f: "ba raakúRey wo"}], [{p: "به راکړي وو", f: "ba raakúRee woo"}]],
+            [[{p: "به راکړې وه", f: "ba raakúRe wa"}], [{p: "به راکړې وې", f: "ba raakúRe we"}]],
+        ],
+        pastSubjunctive: [
+            [[{p: "راکړی وای", f: "raakúRey waay"}, {p: "راکړی وی", f: "raakúRey wey"}], [{p: "راکړی وای", f: "raakúRey waay"}, {p: "راکړی وی", f: "raakúRey wey"}]], 
+            [[{p: "راکړې وای", f: "raakúRe waay"}, {p: "راکړې وی", f: "raakúRe wey"}], [{p: "راکړې وای", f: "raakúRe waay"}, {p: "راکړې وی", f: "raakúRe wey"}]],
+            [[{p: "راکړی وای", f: "raakúRey waay"}, {p: "راکړی وی", f: "raakúRey wey"}], [{p: "راکړی وای", f: "raakúRey waay"}, {p: "راکړی وی", f: "raakúRey wey"}]], 
+            [[{p: "راکړې وای", f: "raakúRe waay"}, {p: "راکړې وی", f: "raakúRe wey"}], [{p: "راکړې وای", f: "raakúRe waay"}, {p: "راکړې وی", f: "raakúRe wey"}]],
+            [[{p: "راکړی وای", f: "raakúRey waay"}, {p: "راکړی وی", f: "raakúRey wey"}], [{p: "راکړی وای", f: "raakúRey waay"}, {p: "راکړی وی", f: "raakúRey wey"}]], 
+            [[{p: "راکړې وای", f: "raakúRe waay"}, {p: "راکړې وی", f: "raakúRe wey"}], [{p: "راکړې وای", f: "raakúRe waay"}, {p: "راکړې وی", f: "raakúRe wey"}]],
+        ],
+        wouldHaveBeen: [
+            [[{p: "به راکړی وای", f: "ba raakúRey waay"}, {p: "به راکړی وی", f: "ba raakúRey wey"}], [{p: "به راکړی وای", f: "ba raakúRey waay"}, {p: "به راکړی وی", f: "ba raakúRey wey"}]], 
+            [[{p: "به راکړې وای", f: "ba raakúRe waay"}, {p: "به راکړې وی", f: "ba raakúRe wey"}], [{p: "به راکړې وای", f: "ba raakúRe waay"}, {p: "به راکړې وی", f: "ba raakúRe wey"}]],
+            [[{p: "به راکړی وای", f: "ba raakúRey waay"}, {p: "به راکړی وی", f: "ba raakúRey wey"}], [{p: "به راکړی وای", f: "ba raakúRey waay"}, {p: "به راکړی وی", f: "ba raakúRey wey"}]], 
+            [[{p: "به راکړې وای", f: "ba raakúRe waay"}, {p: "به راکړې وی", f: "ba raakúRe wey"}], [{p: "به راکړې وای", f: "ba raakúRe waay"}, {p: "به راکړې وی", f: "ba raakúRe wey"}]],
+            [[{p: "به راکړی وای", f: "ba raakúRey waay"}, {p: "به راکړی وی", f: "ba raakúRey wey"}], [{p: "به راکړی وای", f: "ba raakúRey waay"}, {p: "به راکړی وی", f: "ba raakúRey wey"}]], 
+            [[{p: "به راکړې وای", f: "ba raakúRe waay"}, {p: "به راکړې وی", f: "ba raakúRe wey"}], [{p: "به راکړې وای", f: "ba raakúRe waay"}, {p: "به راکړې وی", f: "ba raakúRe wey"}]],
+        ],
+    },
+    // passive: {
+    //     imperfective: {
+    //         nonImperative: [
+    //             [{p: "راکول کېږم", f: "raakawul keGum"}, {p: "راکول کېږو", f: "raakawul keGoo"}],
+    //             [{p: "راکول کېږې", f: "raakawul keGe"}, {p: "راکول کېږئ", f: "raakawul keGeyy"}],
+    //             [{p: "راکول کېږي", f: "raakawul keGee"}, {p: "راکول کېږي", f: "raakawul keGee"}],
+    //         ],
+    //         future: [
+    //             [{p: "به راکول کېږم", f: "ba raakawul keGum"}, {p: "به راکول کېږو", f: "ba raakawul keGoo"}],
+    //             [{p: "به راکول کېږې", f: "ba raakawul keGe"}, {p: "به راکول کېږئ", f: "ba raakawul keGeyy"}],
+    //             [{p: "به راکول کېږي", f: "ba raakawul keGee"}, {p: "به راکول کېږي", f: "ba raakawul keGee"}],
+    //         ],
+    //         past: {
+    //             short: [
+    //                 [[{p: "راکول کېدم", f: "raakawul kedum"}], [{p: "راکول کېدو", f: "raakawul kedóo"}]],
+    //                 [[{p: "راکول کېدم", f: "raakawul kedum"}], [{p: "راکول کېدو", f: "raakawul kedóo"}]],
+    //                 [[{p: "راکول کېدې", f: "raakawul kedé"}], [{p: "راکول کېدئ", f: "raakawul kedéyy"}]],
+    //                 [[{p: "راکول کېدې", f: "raakawul kedé"}], [{p: "راکول کېدئ", f: "raakawul kedéyy"}]],
+    //                 [[{p: "راکول کېده", f: "raakawul kedu"}, {p: "راکول کېدو", f: "raakawul kedó"}], [{p: "راکول کېدل", f: "raakawul kedul"}]],
+    //                 [[{p: "راکول کېده", f: "raakawul kedá"}], [{p: "راکول کېدې", f: "raakawul kedé"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "راکول کېدلم", f: "raakawul kedúlum"}], [{p: "راکول کېدلو", f: "raakawul kedúloo"}]],
+    //                 [[{p: "راکول کېدلم", f: "raakawul kedúlum"}], [{p: "راکول کېدلو", f: "raakawul kedúloo"}]],
+    //                 [[{p: "راکول کېدلې", f: "raakawul kedúle"}], [{p: "راکول کېدلئ", f: "raakawul kedúleyy"}]],
+    //                 [[{p: "راکول کېدلې", f: "raakawul kedúle"}], [{p: "راکول کېدلئ", f: "raakawul kedúleyy"}]],
+    //                 [[{p: "راکول کېدله", f: "raakawul kedúlu"}, {p: "راکول کېدلو", f: "raakawul kedúlo"}], [{p: "راکول کېدل", f: "raakawul kedúl"}]],
+    //                 [[{p: "راکول کېدله", f: "raakawul kedúla"}], [{p: "راکول کېدلې", f: "raakawul kedúle"}]],
+    //             ],
+    //         },
+    //     },
+    //     perfective: {
+    //         nonImperative: {
+    //             short: [
+    //                 [{p: "راکړلی کېږم", f: "raakRuley keGum"}, {p: "راکړلی کېږو", f: "raakRuley keGoo"}],
+    //                 [{p: "راکړلی کېږې", f: "raakRuley keGe"}, {p: "راکړلی کېږئ", f: "raakRuley keGeyy"}],
+    //                 [{p: "راکړلی کېږي", f: "raakRuley keGee"}, {p: "راکړلی کېږي", f: "raakRuley keGee"}],
+    //             ],
+    //             long: [
+    //                 [{p: "راکړی کېږم", f: "raakRey keGum"}, {p: "راکړی کېږو", f: "raakRey keGoo"}],
+    //                 [{p: "راکړی کېږې", f: "raakRey keGe"}, {p: "راکړی کېږئ", f: "raakRey keGeyy"}],
+    //                 [{p: "راکړی کېږي", f: "raakRey keGee"}, {p: "راکړی کېږي", f: "raakRey keGee"}],
+    //             ],
+    //         },
+    //         future: {
+    //             short: [
+    //                 [{p: "به راکړلی کېږم", f: "ba raakRuley keGum"}, {p: "به راکړلی کېږو", f: "ba raakRuley keGoo"}],
+    //                 [{p: "به راکړلی کېږې", f: "ba raakRuley keGe"}, {p: "به راکړلی کېږئ", f: "ba raakRuley keGeyy"}],
+    //                 [{p: "به راکړلی کېږي", f: "ba raakRuley keGee"}, {p: "به راکړلی کېږي", f: "ba raakRuley keGee"}],
+    //             ],
+    //             long: [
+    //                 [{p: "به راکړی کېږم", f: "ba raakRey keGum"}, {p: "به راکړی کېږو", f: "ba raakRey keGoo"}],
+    //                 [{p: "به راکړی کېږې", f: "ba raakRey keGe"}, {p: "به راکړی کېږئ", f: "ba raakRey keGeyy"}],
+    //                 [{p: "به راکړی کېږي", f: "ba raakRey keGee"}, {p: "به راکړی کېږي", f: "ba raakRey keGee"}],
+    //             ],
+    //         },
+    //         past: {
+    //             short: [
+    //                 [[{p: "راکړی شوم", f: "raakRey shwum"}], [{p: "راکړی شو", f: "raakRey shoo"}]],
+    //                 [[{p: "راکړی شوم", f: "raakRey shwum"}], [{p: "راکړی شو", f: "raakRey shoo"}]],
+    //                 [[{p: "راکړی شوې", f: "raakRey shwe"}], [{p: "راکړی شوئ", f: "raakRey shweyy"}]],
+    //                 [[{p: "راکړی شوې", f: "raakRey shwe"}], [{p: "راکړی شوئ", f: "raakRey shweyy"}]],
+    //                 [[{p: "راکړی شو", f: "raakRey sho"}], [{p: "راکړی شو", f: "raakRey shoo"}, {p: "راکړی شول", f: "raakRey shwul"}]],
+    //                 [[{p: "راکړی شوه", f: "raakRey shwa"}], [{p: "راکړی شوې", f: "raakRey shwe"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "راکړلی شوم", f: "raakRúley shwum"}], [{p: "راکړلی شو", f: "raakRúley shoo"}]],
+    //                 [[{p: "راکړلی شوم", f: "raakRúley shwum"}], [{p: "راکړلی شو", f: "raakRúley shoo"}]],
+    //                 [[{p: "راکړلی شوې", f: "raakRúley shwe"}], [{p: "راکړلی شوئ", f: "raakRúley shweyy"}]],
+    //                 [[{p: "راکړلی شوې", f: "raakRúley shwe"}], [{p: "راکړلی شوئ", f: "raakRúley shweyy"}]],
+    //                 [[{p: "راکړلی شو", f: "raakRúley sho"}], [{p: "راکړلی شو", f: "raakRúley shoo"}, {p: "راکړلی شول", f: "raakRúley shwul"}]],
+    //                 [[{p: "راکړلی شوه", f: "raakRúley shwa"}], [{p: "راکړلی شوې", f: "raakRúley shwe"}]],
+    //             ],
+    //         },
+    //     },
+    //     perfect: {
+    //         halfPerfect: {
+    //             short: [
+    //                 [[{p: "راکړی شوی", f: "raakRéy shuwey"}], [{p: "راکړی شوي", f: "raakRéy shuwee"}]],
+    //                 [[{p: "راکړی شوې", f: "raakRéy shuwe"}], [{p: "راکړی شوې", f: "raakRéy shuwe"}]],
+    //                 [[{p: "راکړی شوی", f: "raakRéy shuwey"}], [{p: "راکړی شوي", f: "raakRéy shuwee"}]],
+    //                 [[{p: "راکړی شوې", f: "raakRéy shuwe"}], [{p: "راکړی شوې", f: "raakRéy shuwe"}]],
+    //                 [[{p: "راکړی شوی", f: "raakRéy shuwey"}], [{p: "راکړی شوي", f: "raakRéy shuwee"}]],
+    //                 [[{p: "راکړی شوې", f: "raakRéy shuwe"}], [{p: "راکړی شوې", f: "raakRéy shuwe"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "راکړلی شوی", f: "raakRúley shuwey"}], [{p: "راکړلی شوي", f: "raakRúley shuwee"}]],
+    //                 [[{p: "راکړلی شوې", f: "raakRúley shuwe"}], [{p: "راکړلی شوې", f: "raakRúley shuwe"}]],
+    //                 [[{p: "راکړلی شوی", f: "raakRúley shuwey"}], [{p: "راکړلی شوي", f: "raakRúley shuwee"}]],
+    //                 [[{p: "راکړلی شوې", f: "raakRúley shuwe"}], [{p: "راکړلی شوې", f: "raakRúley shuwe"}]],
+    //                 [[{p: "راکړلی شوی", f: "raakRúley shuwey"}], [{p: "راکړلی شوي", f: "raakRúley shuwee"}]],
+    //                 [[{p: "راکړلی شوې", f: "raakRúley shuwe"}], [{p: "راکړلی شوې", f: "raakRúley shuwe"}]],
+    //             ],
+    //         },
+    //         past: {
+    //             short: [
+    //                 [[{p: "راکړی شوی وم", f: "raakRéy shuwey wum"}], [{p: "راکړی شوي وو", f: "raakRéy shuwee woo"}]],
+    //                 [[{p: "راکړی شوې وم", f: "raakRéy shuwe wum"}], [{p: "راکړی شوې وو", f: "raakRéy shuwe woo"}]],
+    //                 [[{p: "راکړی شوی وې", f: "raakRéy shuwey we"}], [{p: "راکړی شوي وئ", f: "raakRéy shuwee weyy"}]],
+    //                 [[{p: "راکړی شوې وې", f: "raakRéy shuwe we"}], [{p: "راکړی شوې وئ", f: "raakRéy shuwe weyy"}]],
+    //                 [[{p: "راکړی شوی و", f: "raakRéy shuwey wo"}], [{p: "راکړی شوي وو", f: "raakRéy shuwee woo"}]],
+    //                 [[{p: "راکړی شوې وه", f: "raakRéy shuwe wa"}], [{p: "راکړی شوې وې", f: "raakRéy shuwe we"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "راکړلی شوی وم", f: "raakRúley shuwey wum"}], [{p: "راکړلی شوي وو", f: "raakRúley shuwee woo"}]],
+    //                 [[{p: "راکړلی شوې وم", f: "raakRúley shuwe wum"}], [{p: "راکړلی شوې وو", f: "raakRúley shuwe woo"}]],
+    //                 [[{p: "راکړلی شوی وې", f: "raakRúley shuwey we"}], [{p: "راکړلی شوي وئ", f: "raakRúley shuwee weyy"}]],
+    //                 [[{p: "راکړلی شوې وې", f: "raakRúley shuwe we"}], [{p: "راکړلی شوې وئ", f: "raakRúley shuwe weyy"}]],
+    //                 [[{p: "راکړلی شوی و", f: "raakRúley shuwey wo"}], [{p: "راکړلی شوي وو", f: "raakRúley shuwee woo"}]],
+    //                 [[{p: "راکړلی شوې وه", f: "raakRúley shuwe wa"}], [{p: "راکړلی شوې وې", f: "raakRúley shuwe we"}]],
+    //             ],
+    //         },
+    //         present: {
+    //             short: [
+    //                 [[{p: "راکړی شوی یم", f: "raakRéy shuwey yum"}], [{p: "راکړی شوي یو", f: "raakRéy shuwee yoo"}]],
+    //                 [[{p: "راکړی شوې یم", f: "raakRéy shuwe yum"}], [{p: "راکړی شوې یو", f: "raakRéy shuwe yoo"}]],
+    //                 [[{p: "راکړی شوی یې", f: "raakRéy shuwey ye"}], [{p: "راکړی شوي یئ", f: "raakRéy shuwee yeyy"}]],
+    //                 [[{p: "راکړی شوې یې", f: "raakRéy shuwe ye"}], [{p: "راکړی شوې یئ", f: "raakRéy shuwe yeyy"}]],
+    //                 [[{p: "راکړی شوی دی", f: "raakRéy shuwey dey"}], [{p: "راکړی شوي دي", f: "raakRéy shuwee dee"}]],
+    //                 [[{p: "راکړی شوې ده", f: "raakRéy shuwe da"}], [{p: "راکړی شوې دي", f: "raakRéy shuwe dee"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "راکړلی شوی یم", f: "raakRúley shuwey yum"}], [{p: "راکړلی شوي یو", f: "raakRúley shuwee yoo"}]],
+    //                 [[{p: "راکړلی شوې یم", f: "raakRúley shuwe yum"}], [{p: "راکړلی شوې یو", f: "raakRúley shuwe yoo"}]],
+    //                 [[{p: "راکړلی شوی یې", f: "raakRúley shuwey ye"}], [{p: "راکړلی شوي یئ", f: "raakRúley shuwee yeyy"}]],
+    //                 [[{p: "راکړلی شوې یې", f: "raakRúley shuwe ye"}], [{p: "راکړلی شوې یئ", f: "raakRúley shuwe yeyy"}]],
+    //                 [[{p: "راکړلی شوی دی", f: "raakRúley shuwey dey"}], [{p: "راکړلی شوي دي", f: "raakRúley shuwee dee"}]],
+    //                 [[{p: "راکړلی شوې ده", f: "raakRúley shuwe da"}], [{p: "راکړلی شوې دي", f: "raakRúley shuwe dee"}]],
+    //             ],
+    //         },
+    //         future: {
+    //             short: [
+    //                 [[{p: "به راکړی شوی یم", f: "ba raakRéy shuwey yum"}], [{p: "به راکړی شوي یو", f: "ba raakRéy shuwee yoo"}]],
+    //                 [[{p: "به راکړی شوې یم", f: "ba raakRéy shuwe yum"}], [{p: "به راکړی شوې یو", f: "ba raakRéy shuwe yoo"}]],
+    //                 [[{p: "به راکړی شوی یې", f: "ba raakRéy shuwey ye"}], [{p: "به راکړی شوي یئ", f: "ba raakRéy shuwee yeyy"}]],
+    //                 [[{p: "به راکړی شوې یې", f: "ba raakRéy shuwe ye"}], [{p: "به راکړی شوې یئ", f: "ba raakRéy shuwe yeyy"}]],
+    //                 [[{p: "به راکړی شوی وي", f: "ba raakRéy shuwey wee"}], [{p: "به راکړی شوي وي", f: "ba raakRéy shuwee wee"}]],
+    //                 [[{p: "به راکړی شوې وي", f: "ba raakRéy shuwe wee"}], [{p: "به راکړی شوې وي", f: "ba raakRéy shuwe wee"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "به راکړلی شوی یم", f: "ba raakRúley shuwey yum"}], [{p: "به راکړلی شوي یو", f: "ba raakRúley shuwee yoo"}]],
+    //                 [[{p: "به راکړلی شوې یم", f: "ba raakRúley shuwe yum"}], [{p: "به راکړلی شوې یو", f: "ba raakRúley shuwe yoo"}]],
+    //                 [[{p: "به راکړلی شوی یې", f: "ba raakRúley shuwey ye"}], [{p: "به راکړلی شوي یئ", f: "ba raakRúley shuwee yeyy"}]],
+    //                 [[{p: "به راکړلی شوې یې", f: "ba raakRúley shuwe ye"}], [{p: "به راکړلی شوې یئ", f: "ba raakRúley shuwe yeyy"}]],
+    //                 [[{p: "به راکړلی شوی وي", f: "ba raakRúley shuwey wee"}], [{p: "به راکړلی شوي وي", f: "ba raakRúley shuwee wee"}]],
+    //                 [[{p: "به راکړلی شوې وي", f: "ba raakRúley shuwe wee"}], [{p: "به راکړلی شوې وي", f: "ba raakRúley shuwe wee"}]],
+    //             ],
+    //         },
+    //         affirmational: {
+    //             short: [
+    //                 [[{p: "به راکړی شوی وم", f: "ba raakRéy shuwey wum"}], [{p: "به راکړی شوي وو", f: "ba raakRéy shuwee woo"}]],
+    //                 [[{p: "به راکړی شوې وم", f: "ba raakRéy shuwe wum"}], [{p: "به راکړی شوې وو", f: "ba raakRéy shuwe woo"}]],
+    //                 [[{p: "به راکړی شوی وې", f: "ba raakRéy shuwey we"}], [{p: "به راکړی شوي وئ", f: "ba raakRéy shuwee weyy"}]],
+    //                 [[{p: "به راکړی شوې وې", f: "ba raakRéy shuwe we"}], [{p: "به راکړی شوې وئ", f: "ba raakRéy shuwe weyy"}]],
+    //                 [[{p: "به راکړی شوی و", f: "ba raakRéy shuwey wo"}], [{p: "به راکړی شوي وو", f: "ba raakRéy shuwee woo"}]],
+    //                 [[{p: "به راکړی شوې وه", f: "ba raakRéy shuwe wa"}], [{p: "به راکړی شوې وې", f: "ba raakRéy shuwe we"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "به راکړلی شوی وم", f: "ba raakRúley shuwey wum"}], [{p: "به راکړلی شوي وو", f: "ba raakRúley shuwee woo"}]],
+    //                 [[{p: "به راکړلی شوې وم", f: "ba raakRúley shuwe wum"}], [{p: "به راکړلی شوې وو", f: "ba raakRúley shuwe woo"}]],
+    //                 [[{p: "به راکړلی شوی وې", f: "ba raakRúley shuwey we"}], [{p: "به راکړلی شوي وئ", f: "ba raakRúley shuwee weyy"}]],
+    //                 [[{p: "به راکړلی شوې وې", f: "ba raakRúley shuwe we"}], [{p: "به راکړلی شوې وئ", f: "ba raakRúley shuwe weyy"}]],
+    //                 [[{p: "به راکړلی شوی و", f: "ba raakRúley shuwey wo"}], [{p: "به راکړلی شوي وو", f: "ba raakRúley shuwee woo"}]],
+    //                 [[{p: "به راکړلی شوې وه", f: "ba raakRúley shuwe wa"}], [{p: "به راکړلی شوې وې", f: "ba raakRúley shuwe we"}]],
+    //             ],
+    //         },
+    //         pastSubjunctiveHypothetical: {
+    //             short: [
+    //                 [[{p: "راکړی شوی وای", f: "ba raakRéy shuwey"}], [{p: "به راکړی شوي", f: "ba raakRéy shuwee"}]],
+    //                 [[{p: "راکړی شوې وای", f: "ba raakRéy shuwe"}], [{p: "به راکړی شوې", f: "ba raakRéy shuwe"}]],
+    //                 [[{p: "راکړی شوی وای", f: "ba raakRéy shuwey"}], [{p: "به راکړی شوي", f: "ba raakRéy shuwee"}]],
+    //                 [[{p: "راکړی شوې وای", f: "ba raakRéy shuwe"}], [{p: "به راکړی شوې", f: "ba raakRéy shuwe"}]],
+    //                 [[{p: "راکړی شوی وای", f: "ba raakRéy shuwey"}], [{p: "به راکړی شوي", f: "ba raakRéy shuwee"}]],
+    //                 [[{p: "راکړی شوې وای", f: "ba raakRéy shuwe"}], [{p: "به راکړی شوې", f: "ba raakRéy shuwe"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "راکړلی شوی وای", f: "ba raakRúley shuwey"}], [{p: "به راکړلی شوي", f: "ba raakRúley shuwee"}]],
+    //                 [[{p: "راکړلی شوې وای", f: "ba raakRúley shuwe"}], [{p: "به راکړلی شوې", f: "ba raakRúley shuwe"}]],
+    //                 [[{p: "راکړلی شوی وای", f: "ba raakRúley shuwey"}], [{p: "به راکړلی شوي", f: "ba raakRúley shuwee"}]],
+    //                 [[{p: "راکړلی شوې وای", f: "ba raakRúley shuwe"}], [{p: "به راکړلی شوې", f: "ba raakRúley shuwe"}]],
+    //                 [[{p: "راکړلی شوی وای", f: "ba raakRúley shuwey"}], [{p: "به راکړلی شوي", f: "ba raakRúley shuwee"}]],
+    //                 [[{p: "راکړلی شوې وای", f: "ba raakRúley shuwe"}], [{p: "به راکړلی شوې", f: "ba raakRúley shuwe"}]],
+    //             ],
+    //         },
+    //     },
+    // },
+};
+
+export const darkawul: T.VerbConjugation = {
+    info: {
+        entry: {
+            entry: {"ts":1527817457,"i":6085,"p":"درکول","f":"dărkawul","g":"darkawul","e":"to give (to you, you pl.)","c":"v. trans. irreg."} as T.VerbDictionaryEntry,
+        },
+        transitivity: "transitive",
+        type: "simple",
+        yulEnding: false,
+        root: {
+            imperfective: {
+                long: { p: "درکول", f: "dărkawul" },
+                short: { p: "درکو", f: "dărkaw" },
+            },
+            perfective: {
+                long: { p: "درکړل", f: "dărkRul" },
+                short: { p: "درکړ", f: "dărkR" },
+                mini: { p: "درک", f: "dărk" },
+            },
+            perfectiveSplit: {
+                long: [{ p: "در ", f: "dăr "}, { p: "کړل", f: "kRul" }],
+                short: [{ p: "در ", f: "dăr "}, { p: "کړ", f: "kR" }],
+                mini: [{ p: "در ", f: "dăr "}, { p: "ړ", f: "k" }],
+            },
+        },
+        stem: {
+            imperfective: { p: "درکو", f: "dărkaw" },
+            perfective: {
+                long: { p: "درکړ", f: "dărkR" },
+                short: { p: "درک", f: "dărk" },
+            },
+            perfectiveSplit: {
+                long: [{ p: "در ", f: "dăr "}, { p: "کړ", f: "kR" }],
+                short: [{ p: "در ", f: "dăr "}, { p: "ړ", f: "k" }],
+            },
+        },
+        participle: {
+            present: { p: "درکوونکی", f: "dărkawóonkey" },
+            past: { p: "درکړی", f: "dărkúRey" },
+        },
+    },
+    imperfective: {
+        nonImperative: [
+            [[{p: "درکوم", f: "dărkawum"}], [{p: "درکوو", f: "dărkawoo"}]],
+            [[{p: "درکوم", f: "dărkawum"}], [{p: "درکوو", f: "dărkawoo"}]],
+            [[{p: "درکوې", f: "dărkawe"}], [{p: "درکوئ", f: "dărkaweyy"}]],
+            [[{p: "درکوې", f: "dărkawe"}], [{p: "درکوئ", f: "dărkaweyy"}]],
+            [[{p: "درکوي", f: "dărkawee"}], [{p: "درکوي", f: "dărkawee"}]],
+            [[{p: "درکوي", f: "dărkawee"}], [{p: "درکوي", f: "dărkawee"}]],
+        ],
+        future: [
+            [[{p: "به درکوم", f: "ba dărkawum"}], [{p: "به درکوو", f: "ba dărkawoo"}]],
+            [[{p: "به درکوم", f: "ba dărkawum"}], [{p: "به درکوو", f: "ba dărkawoo"}]],
+            [[{p: "به درکوې", f: "ba dărkawe"}], [{p: "به درکوئ", f: "ba dărkaweyy"}]],
+            [[{p: "به درکوې", f: "ba dărkawe"}], [{p: "به درکوئ", f: "ba dărkaweyy"}]],
+            [[{p: "به درکوي", f: "ba dărkawee"}], [{p: "به درکوي", f: "ba dărkawee"}]],
+            [[{p: "به درکوي", f: "ba dărkawee"}], [{p: "به درکوي", f: "ba dărkawee"}]],
+        ],
+        imperative: [
+            [[{ p: "درکوه", f: "dărkawá" }], [{ p: "درکوئ", f: "dărkawéyy" }]],
+            [[{ p: "درکوه", f: "dărkawá" }], [{ p: "درکوئ", f: "dărkawéyy" }]]
+        ],
+        past: {
+            short: [
+                [[{p: "درکوم", f: "dărkawum"}], [{p: "درکوو", f: "dărkawoo"}]],
+                [[{p: "درکوم", f: "dărkawum"}], [{p: "درکوو", f: "dărkawoo"}]],
+                [[{p: "درکوې", f: "dărkawe"}], [{p: "درکوئ", f: "dărkaweyy"}]],
+                [[{p: "درکوې", f: "dărkawe"}], [{p: "درکوئ", f: "dărkaweyy"}]],
+                [[{p: "درکاوه", f: "dărkaawu"}], [{p: "درکول", f: "dărkawul"}]],
+                [[{p: "درکوه", f: "dărkawa"}], [{p: "درکوې", f: "dărkawe"}]],
+            ],
+            long: [
+                [[{p: "درکولم", f: "dărkawulum"}], [{p: "درکولو", f: "dărkawuloo"}]],
+                [[{p: "درکولم", f: "dărkawulum"}], [{p: "درکولو", f: "dărkawuloo"}]],
+                [[{p: "درکولې", f: "dărkawule"}], [{p: "درکولئ", f: "dărkawuleyy"}]],
+                [[{p: "درکولې", f: "dărkawule"}], [{p: "درکولئ", f: "dărkawuleyy"}]],
+                [[{p: "درکوله", f: "dărkawulu"}, {p: "درکولو", f: "dărkawulo"}], [{p: "درکول", f: "dărkawul"}]],
+                [[{p: "درکوله", f: "dărkawula"}], [{p: "درکولې", f: "dărkawule"}]],
+            ],
+        },
+        habitualPast: {
+            short: [
+                [[{p: "به درکوم", f: "ba dărkawum"}], [{p: "به درکوو", f: "ba dărkawoo"}]],
+                [[{p: "به درکوم", f: "ba dărkawum"}], [{p: "به درکوو", f: "ba dărkawoo"}]],
+                [[{p: "به درکوې", f: "ba dărkawe"}], [{p: "به درکوئ", f: "ba dărkaweyy"}]],
+                [[{p: "به درکوې", f: "ba dărkawe"}], [{p: "به درکوئ", f: "ba dărkaweyy"}]],
+                [[{p: "به درکاوه", f: "ba dărkaawu"}], [{p: "به درکول", f: "ba dărkawul"}]],
+                [[{p: "به درکوه", f: "ba dărkawa"}], [{p: "به درکوې", f: "ba dărkawe"}]],
+            ],
+            long: [
+                [[{p: "به درکولم", f: "ba dărkawulum"}], [{p: "به درکولو", f: "ba dărkawuloo"}]],
+                [[{p: "به درکولم", f: "ba dărkawulum"}], [{p: "به درکولو", f: "ba dărkawuloo"}]],
+                [[{p: "به درکولې", f: "ba dărkawule"}], [{p: "به درکولئ", f: "ba dărkawuleyy"}]],
+                [[{p: "به درکولې", f: "ba dărkawule"}], [{p: "به درکولئ", f: "ba dărkawuleyy"}]],
+                [[{p: "به درکوله", f: "ba dărkawulu"}, {p: "به درکولو", f: "ba dărkawulo"}], [{p: "به درکول", f: "ba dărkawul"}]],
+                [[{p: "به درکوله", f: "ba dărkawula"}], [{p: "به درکولې", f: "ba dărkawule"}]],
+            ],
+        },
+        modal: {
+            nonImperative: {
+                long: [
+                    [[{ p: "درکولی شم", f: "dărkawúley shum" }, { p: "درکولای شم", f: "dărkawúlaay shum" }], [{ p: "درکولی شو", f: "dărkawúley shoo" }, { p: "درکولای شو", f: "dărkawúlaay shoo" }]],
+                    [[{ p: "درکولی شم", f: "dărkawúley shum" }, { p: "درکولای شم", f: "dărkawúlaay shum" }], [{ p: "درکولی شو", f: "dărkawúley shoo" }, { p: "درکولای شو", f: "dărkawúlaay shoo" }]],
+                    [[{ p: "درکولی شې", f: "dărkawúley she" }, { p: "درکولای شې", f: "dărkawúlaay she" }], [{ p: "درکولی شئ", f: "dărkawúley sheyy" }, { p: "درکولای شئ", f: "dărkawúlaay sheyy" }]],
+                    [[{ p: "درکولی شې", f: "dărkawúley she" }, { p: "درکولای شې", f: "dărkawúlaay she" }], [{ p: "درکولی شئ", f: "dărkawúley sheyy" }, { p: "درکولای شئ", f: "dărkawúlaay sheyy" }]],
+                    [[{ p: "درکولی شي", f: "dărkawúley shee" }, { p: "درکولای شي", f: "dărkawúlaay shee" }], [{ p: "درکولی شي", f: "dărkawúley shee" }, { p: "درکولای شي", f: "dărkawúlaay shee" }]],
+                    [[{ p: "درکولی شي", f: "dărkawúley shee" }, { p: "درکولای شي", f: "dărkawúlaay shee" }], [{ p: "درکولی شي", f: "dărkawúley shee" }, { p: "درکولای شي", f: "dărkawúlaay shee" }]],
+                ],
+                short: [
+                    [[{ p: "درکوی شم", f: "dărkawéy shum" }, { p: "درکوای شم", f: "dărkawáay shum" }], [{ p: "درکوی شو", f: "dărkawéy shoo" }, { p: "درکوای شو", f: "dărkawáay shoo" }]],
+                    [[{ p: "درکوی شم", f: "dărkawéy shum" }, { p: "درکوای شم", f: "dărkawáay shum" }], [{ p: "درکوی شو", f: "dărkawéy shoo" }, { p: "درکوای شو", f: "dărkawáay shoo" }]],
+                    [[{ p: "درکوی شې", f: "dărkawéy she" }, { p: "درکوای شې", f: "dărkawáay she" }], [{ p: "درکوی شئ", f: "dărkawéy sheyy" }, { p: "درکوای شئ", f: "dărkawáay sheyy" }]],
+                    [[{ p: "درکوی شې", f: "dărkawéy she" }, { p: "درکوای شې", f: "dărkawáay she" }], [{ p: "درکوی شئ", f: "dărkawéy sheyy" }, { p: "درکوای شئ", f: "dărkawáay sheyy" }]],
+                    [[{ p: "درکوی شي", f: "dărkawéy shee" }, { p: "درکوای شي", f: "dărkawáay shee" }], [{ p: "درکوی شي", f: "dărkawéy shee" }, { p: "درکوای شي", f: "dărkawáay shee" }]],
+                    [[{ p: "درکوی شي", f: "dărkawéy shee" }, { p: "درکوای شي", f: "dărkawáay shee" }], [{ p: "درکوی شي", f: "dărkawéy shee" }, { p: "درکوای شي", f: "dărkawáay shee" }]],
+                ],
+            },
+            future: {
+                long: [
+                    [[{ p: "به درکولی شم", f: "ba dărkawúley shum" }, { p: "به درکولای شم", f: "ba dărkawúlaay shum" }], [{ p: "به درکولی شو", f: "ba dărkawúley shoo" }, { p: "به درکولای شو", f: "ba dărkawúlaay shoo" }]],
+                    [[{ p: "به درکولی شم", f: "ba dărkawúley shum" }, { p: "به درکولای شم", f: "ba dărkawúlaay shum" }], [{ p: "به درکولی شو", f: "ba dărkawúley shoo" }, { p: "به درکولای شو", f: "ba dărkawúlaay shoo" }]],
+                    [[{ p: "به درکولی شې", f: "ba dărkawúley she" }, { p: "به درکولای شې", f: "ba dărkawúlaay she" }], [{ p: "به درکولی شئ", f: "ba dărkawúley sheyy" }, { p: "به درکولای شئ", f: "ba dărkawúlaay sheyy" }]],
+                    [[{ p: "به درکولی شې", f: "ba dărkawúley she" }, { p: "به درکولای شې", f: "ba dărkawúlaay she" }], [{ p: "به درکولی شئ", f: "ba dărkawúley sheyy" }, { p: "به درکولای شئ", f: "ba dărkawúlaay sheyy" }]],
+                    [[{ p: "به درکولی شي", f: "ba dărkawúley shee" }, { p: "به درکولای شي", f: "ba dărkawúlaay shee" }], [{ p: "به درکولی شي", f: "ba dărkawúley shee" }, { p: "به درکولای شي", f: "ba dărkawúlaay shee" }]],
+                    [[{ p: "به درکولی شي", f: "ba dărkawúley shee" }, { p: "به درکولای شي", f: "ba dărkawúlaay shee" }], [{ p: "به درکولی شي", f: "ba dărkawúley shee" }, { p: "به درکولای شي", f: "ba dărkawúlaay shee" }]],
+                ],
+                short: [
+                    [[{ p: "به درکوی شم", f: "ba dărkawéy shum" }, { p: "به درکوای شم", f: "ba dărkawáay shum" }], [{ p: "به درکوی شو", f: "ba dărkawéy shoo" }, { p: "به درکوای شو", f: "ba dărkawáay shoo" }]],
+                    [[{ p: "به درکوی شم", f: "ba dărkawéy shum" }, { p: "به درکوای شم", f: "ba dărkawáay shum" }], [{ p: "به درکوی شو", f: "ba dărkawéy shoo" }, { p: "به درکوای شو", f: "ba dărkawáay shoo" }]],
+                    [[{ p: "به درکوی شې", f: "ba dărkawéy she" }, { p: "به درکوای شې", f: "ba dărkawáay she" }], [{ p: "به درکوی شئ", f: "ba dărkawéy sheyy" }, { p: "به درکوای شئ", f: "ba dărkawáay sheyy" }]],
+                    [[{ p: "به درکوی شې", f: "ba dărkawéy she" }, { p: "به درکوای شې", f: "ba dărkawáay she" }], [{ p: "به درکوی شئ", f: "ba dărkawéy sheyy" }, { p: "به درکوای شئ", f: "ba dărkawáay sheyy" }]],
+                    [[{ p: "به درکوی شي", f: "ba dărkawéy shee" }, { p: "به درکوای شي", f: "ba dărkawáay shee" }], [{ p: "به درکوی شي", f: "ba dărkawéy shee" }, { p: "به درکوای شي", f: "ba dărkawáay shee" }]],
+                    [[{ p: "به درکوی شي", f: "ba dărkawéy shee" }, { p: "به درکوای شي", f: "ba dărkawáay shee" }], [{ p: "به درکوی شي", f: "ba dărkawéy shee" }, { p: "به درکوای شي", f: "ba dărkawáay shee" }]],
+                ],
+            },
+            past: {
+                long: [
+                    [[{ p: "درکولی شوم", f: "dărkawúley shwum" }, { p: "درکولای شوم", f: "dărkawúlaay shwum" }], [{ p: "درکولی شو", f: "dărkawúley shoo" }, { p: "درکولای شو", f: "dărkawúlaay shoo" }]],
+                    [[{ p: "درکولی شوم", f: "dărkawúley shwum" }, { p: "درکولای شوم", f: "dărkawúlaay shwum" }], [{ p: "درکولی شو", f: "dărkawúley shoo" }, { p: "درکولای شو", f: "dărkawúlaay shoo" }]],
+                    [[{ p: "درکولی شوې", f: "dărkawúley shwe" }, { p: "درکولای شوې", f: "dărkawúlaay shwe" }], [{ p: "درکولی شوئ", f: "dărkawúley shweyy" }, { p: "درکولای شوئ", f: "dărkawúlaay shweyy" }]],
+                    [[{ p: "درکولی شوې", f: "dărkawúley shwe" }, { p: "درکولای شوې", f: "dărkawúlaay shwe" }], [{ p: "درکولی شوئ", f: "dărkawúley shweyy" }, { p: "درکولای شوئ", f: "dărkawúlaay shweyy" }]],
+                    [[{ p: "درکولی شو", f: "dărkawúley sho" }, { p: "درکولای شو", f: "dărkawúlaay sho" }], [{ p: "درکولی شول", f: "dărkawúley shwul" }, { p: "درکولای شول", f: "dărkawúlaay shwul" }, { p: "درکولی شو", f: "dărkawúley shoo" }, { p: "درکولای شو", f: "dărkawúlaay shoo" }]],
+                    [[{ p: "درکولی شوه", f: "dărkawúley shwa" }, { p: "درکولای شوه", f: "dărkawúlaay shwa" }], [{ p: "درکولی شولې", f: "dărkawúley shwule" }, { p: "درکولای شولې", f: "dărkawúlaay shwule" }, { p: "درکولی شوې", f: "dărkawúley shwe" }, { p: "درکولای شوې", f: "dărkawúlaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "درکوی شوم", f: "dărkawéy shwum" }, { p: "درکوای شوم", f: "dărkawáay shwum" }], [{ p: "درکوی شو", f: "dărkawéy shoo" }, { p: "درکوای شو", f: "dărkawáay shoo" }]],
+                    [[{ p: "درکوی شوم", f: "dărkawéy shwum" }, { p: "درکوای شوم", f: "dărkawáay shwum" }], [{ p: "درکوی شو", f: "dărkawéy shoo" }, { p: "درکوای شو", f: "dărkawáay shoo" }]],
+                    [[{ p: "درکوی شوې", f: "dărkawéy shwe" }, { p: "درکوای شوې", f: "dărkawáay shwe" }], [{ p: "درکوی شوئ", f: "dărkawéy shweyy" }, { p: "درکوای شوئ", f: "dărkawáay shweyy" }]],
+                    [[{ p: "درکوی شوې", f: "dărkawéy shwe" }, { p: "درکوای شوې", f: "dărkawáay shwe" }], [{ p: "درکوی شوئ", f: "dărkawéy shweyy" }, { p: "درکوای شوئ", f: "dărkawáay shweyy" }]],
+                    [[{ p: "درکوی شو", f: "dărkawéy sho" }, { p: "درکوای شو", f: "dărkawáay sho" }], [{ p: "درکوی شول", f: "dărkawéy shwul" }, { p: "درکوای شول", f: "dărkawáay shwul" }, { p: "درکوی شو", f: "dărkawéy shoo" }, { p: "درکوای شو", f: "dărkawáay shoo" }]],
+                    [[{ p: "درکوی شوه", f: "dărkawéy shwa" }, { p: "درکوای شوه", f: "dărkawáay shwa" }], [{ p: "درکوی شولې", f: "dărkawéy shwule" }, { p: "درکوای شولې", f: "dărkawáay shwule" }, { p: "درکوی شوې", f: "dărkawéy shwe" }, { p: "درکوای شوې", f: "dărkawáay shwe" }]],
+                ],
+            },
+            habitualPast: {
+                long: [
+                    [[{ p: "به درکولی شوم", f: "ba dărkawúley shwum" }, { p: "به درکولای شوم", f: "ba dărkawúlaay shwum" }], [{ p: "به درکولی شو", f: "ba dărkawúley shoo" }, { p: "به درکولای شو", f: "ba dărkawúlaay shoo" }]],
+                    [[{ p: "به درکولی شوم", f: "ba dărkawúley shwum" }, { p: "به درکولای شوم", f: "ba dărkawúlaay shwum" }], [{ p: "به درکولی شو", f: "ba dărkawúley shoo" }, { p: "به درکولای شو", f: "ba dărkawúlaay shoo" }]],
+                    [[{ p: "به درکولی شوې", f: "ba dărkawúley shwe" }, { p: "به درکولای شوې", f: "ba dărkawúlaay shwe" }], [{ p: "به درکولی شوئ", f: "ba dărkawúley shweyy" }, { p: "به درکولای شوئ", f: "ba dărkawúlaay shweyy" }]],
+                    [[{ p: "به درکولی شوې", f: "ba dărkawúley shwe" }, { p: "به درکولای شوې", f: "ba dărkawúlaay shwe" }], [{ p: "به درکولی شوئ", f: "ba dărkawúley shweyy" }, { p: "به درکولای شوئ", f: "ba dărkawúlaay shweyy" }]],
+                    [[{ p: "به درکولی شو", f: "ba dărkawúley sho" }, { p: "به درکولای شو", f: "ba dărkawúlaay sho" }], [{ p: "به درکولی شول", f: "ba dărkawúley shwul" }, { p: "به درکولای شول", f: "ba dărkawúlaay shwul" }, { p: "به درکولی شو", f: "ba dărkawúley shoo" }, { p: "به درکولای شو", f: "ba dărkawúlaay shoo" }]],
+                    [[{ p: "به درکولی شوه", f: "ba dărkawúley shwa" }, { p: "به درکولای شوه", f: "ba dărkawúlaay shwa" }], [{ p: "به درکولی شولې", f: "ba dărkawúley shwule" }, { p: "به درکولای شولې", f: "ba dărkawúlaay shwule" }, { p: "به درکولی شوې", f: "ba dărkawúley shwe" }, { p: "به درکولای شوې", f: "ba dărkawúlaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "به درکوی شوم", f: "ba dărkawéy shwum" }, { p: "به درکوای شوم", f: "ba dărkawáay shwum" }], [{ p: "به درکوی شو", f: "ba dărkawéy shoo" }, { p: "به درکوای شو", f: "ba dărkawáay shoo" }]],
+                    [[{ p: "به درکوی شوم", f: "ba dărkawéy shwum" }, { p: "به درکوای شوم", f: "ba dărkawáay shwum" }], [{ p: "به درکوی شو", f: "ba dărkawéy shoo" }, { p: "به درکوای شو", f: "ba dărkawáay shoo" }]],
+                    [[{ p: "به درکوی شوې", f: "ba dărkawéy shwe" }, { p: "به درکوای شوې", f: "ba dărkawáay shwe" }], [{ p: "به درکوی شوئ", f: "ba dărkawéy shweyy" }, { p: "به درکوای شوئ", f: "ba dărkawáay shweyy" }]],
+                    [[{ p: "به درکوی شوې", f: "ba dărkawéy shwe" }, { p: "به درکوای شوې", f: "ba dărkawáay shwe" }], [{ p: "به درکوی شوئ", f: "ba dărkawéy shweyy" }, { p: "به درکوای شوئ", f: "ba dărkawáay shweyy" }]],
+                    [[{ p: "به درکوی شو", f: "ba dărkawéy sho" }, { p: "به درکوای شو", f: "ba dărkawáay sho" }], [{ p: "به درکوی شول", f: "ba dărkawéy shwul" }, { p: "به درکوای شول", f: "ba dărkawáay shwul" }, { p: "به درکوی شو", f: "ba dărkawéy shoo" }, { p: "به درکوای شو", f: "ba dărkawáay shoo" }]],
+                    [[{ p: "به درکوی شوه", f: "ba dărkawéy shwa" }, { p: "به درکوای شوه", f: "ba dărkawáay shwa" }], [{ p: "به درکوی شولې", f: "ba dărkawéy shwule" }, { p: "به درکوای شولې", f: "ba dărkawáay shwule" }, { p: "به درکوی شوې", f: "ba dărkawéy shwe" }, { p: "به درکوای شوې", f: "ba dărkawáay shwe" }]],
+                ],
+            },
+            hypotheticalPast: {
+                long: [
+                    [[{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }], [{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }]],
+                    [[{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }], [{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }]],
+                    [[{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }], [{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }]],
+                    [[{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }], [{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }]],
+                    [[{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }], [{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }]],
+                    [[{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }], [{ p: "درکولی شوای", f: "dărkawúley shwaay" }, { p: "درکولی شوی", f: "dărkawúley shwey" }, { p: "درکولای شوای", f: "dărkawúlaay shwaay" }]],
+                ],
+                short: [
+                    [[{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }], [{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }]],
+                    [[{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }], [{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }]],
+                    [[{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }], [{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }]],
+                    [[{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }], [{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }]],
+                    [[{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }], [{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }]],
+                    [[{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }], [{ p: "درکوی شوای", f: "dărkawéy shwaay" }, { p: "درکوی شوی", f: "dărkawéy shwey" }, { p: "درکوای شوای", f: "dărkawáay shwaay" }]],
+                ],
+            },
+        },
+    },
+    perfective: {
+        nonImperative: {
+            long: [
+                [[{p: "درکړم", f: "dărkRum"}], [{p: "درکړو", f: "dărkRoo"}]],
+                [[{p: "درکړم", f: "dărkRum"}], [{p: "درکړو", f: "dărkRoo"}]],
+                [[{p: "درکړې", f: "dărkRe"}], [{p: "درکړئ", f: "dărkReyy"}]],
+                [[{p: "درکړې", f: "dărkRe"}], [{p: "درکړئ", f: "dărkReyy"}]],
+                [[{p: "درکړي", f: "dărkRee"}], [{p: "درکړي", f: "dărkRee"}]],
+                [[{p: "درکړي", f: "dărkRee"}], [{p: "درکړي", f: "dărkRee"}]],
+            ],
+            short: [
+                [[{p: "درکم", f: "dărkum"}], [{p: "درکو", f: "dărkoo"}]],
+                [[{p: "درکم", f: "dărkum"}], [{p: "درکو", f: "dărkoo"}]],
+                [[{p: "درکې", f: "dărke"}], [{p: "درکئ", f: "dărkeyy"}]],
+                [[{p: "درکې", f: "dărke"}], [{p: "درکئ", f: "dărkeyy"}]],
+                [[{p: "درکي", f: "dărkee"}], [{p: "درکي", f: "dărkee"}]],
+                [[{p: "درکي", f: "dărkee"}], [{p: "درکي", f: "dărkee"}]],
+            ],
+        },
+        future: {
+            long: [
+                [[{p: "به درکړم", f: "ba dărkRum"}], [{p: "به درکړو", f: "ba dărkRoo"}]],
+                [[{p: "به درکړم", f: "ba dărkRum"}], [{p: "به درکړو", f: "ba dărkRoo"}]],
+                [[{p: "به درکړې", f: "ba dărkRe"}], [{p: "به درکړئ", f: "ba dărkReyy"}]],
+                [[{p: "به درکړې", f: "ba dărkRe"}], [{p: "به درکړئ", f: "ba dărkReyy"}]],
+                [[{p: "به درکړي", f: "ba dărkRee"}], [{p: "به درکړي", f: "ba dărkRee"}]],
+                [[{p: "به درکړي", f: "ba dărkRee"}], [{p: "به درکړي", f: "ba dărkRee"}]],
+            ],
+            short: [
+                [[{p: "به درکم", f: "ba dărkum"}], [{p: "به درکو", f: "ba dărkoo"}]],
+                [[{p: "به درکم", f: "ba dărkum"}], [{p: "به درکو", f: "ba dărkoo"}]],
+                [[{p: "به درکې", f: "ba dărke"}], [{p: "به درکئ", f: "ba dărkeyy"}]],
+                [[{p: "به درکې", f: "ba dărke"}], [{p: "به درکئ", f: "ba dărkeyy"}]],
+                [[{p: "به درکي", f: "ba dărkee"}], [{p: "به درکي", f: "ba dărkee"}]],
+                [[{p: "به درکي", f: "ba dărkee"}], [{p: "به درکي", f: "ba dărkee"}]],
+            ],
+        },
+        imperative: {
+            long: [
+                [[{ p: "درکړه", f: "dărkRa" }], [{ p: "درکړئ", f: "dărkReyy" }]],
+                [[{ p: "درکړه", f: "dărkRa" }], [{ p: "درکړئ", f: "dărkReyy" }]]
+            ],
+            short: [
+                [[{ p: "درکه", f: "dărka" }], [{ p: "درکئ", f: "dărkeyy" }]],
+                [[{ p: "درکه", f: "dărka" }], [{ p: "درکئ", f: "dărkeyy" }]],
+            ],
+        },
+        past: {
+            mini: [
+                [[{p: "درکم", f: "dărkum"}], [{p: "درکو", f: "dărkoo"}]],
+                [[{p: "درکم", f: "dărkum"}], [{p: "درکو", f: "dărkoo"}]],
+                [[{p: "درکې", f: "dărke"}], [{p: "درکئ", f: "dărkeyy"}]],
+                [[{p: "درکې", f: "dărke"}], [{p: "درکئ", f: "dărkeyy"}]],
+                [[{p: "درکه", f: "dărku"}, {p: "درکو", f: "dărko"}], [{p: "درکړل", f: "dărkRul"}, { p: "درکو", f: "dărkoo" }]],
+                [[{p: "درکه", f: "dărka"}], [{p: "درکې", f: "dărke"}]],
+            ],
+            short: [
+                [[{p: "درکړم", f: "dărkRum"}], [{p: "درکړو", f: "dărkRoo"}]],
+                [[{p: "درکړم", f: "dărkRum"}], [{p: "درکړو", f: "dărkRoo"}]],
+                [[{p: "درکړې", f: "dărkRe"}], [{p: "درکړئ", f: "dărkReyy"}]],
+                [[{p: "درکړې", f: "dărkRe"}], [{p: "درکړئ", f: "dărkReyy"}]],
+                [[{p: "درکړه", f: "dărkRu"}, {p: "درکړو", f: "dărkRo"}, {p: "درکړ", f: "dărkuR"}], [{p: "درکړل", f: "dărkRul"}, {p: "درکړو", f: "dărkRoo" }]],
+                [[{p: "درکړه", f: "dărkRa"}], [{p: "درکړې", f: "dărkRe"}]],
+            ],
+            long: [
+                [[{p: "درکړلم", f: "dărkRulum"}], [{p: "درکړلو", f: "dărkRuloo"}]],
+                [[{p: "درکړلم", f: "dărkRulum"}], [{p: "درکړلو", f: "dărkRuloo"}]],
+                [[{p: "درکړلې", f: "dărkRule"}], [{p: "درکړلئ", f: "dărkRuleyy"}]],
+                [[{p: "درکړلې", f: "dărkRule"}], [{p: "درکړلئ", f: "dărkRuleyy"}]],
+                [[{p: "درکړله", f: "dărkRulu"}, {p: "درکړلو", f: "dărkRulo"}], [{p: "درکړل", f: "dărkRul"}, {p: "درکړلو", f: "dărkRuloo"}]],
+                [[{p: "درکړله", f: "dărkRula"}], [{p: "درکړلې", f: "dărkRule"}]],
+            ],
+        },
+        habitualPast: {
+            mini: [
+                [[{p: "به درکم", f: "ba dărkum"}], [{p: "به درکو", f: "ba dărkoo"}]],
+                [[{p: "به درکم", f: "ba dărkum"}], [{p: "به درکو", f: "ba dărkoo"}]],
+                [[{p: "به درکې", f: "ba dărke"}], [{p: "به درکئ", f: "ba dărkeyy"}]],
+                [[{p: "به درکې", f: "ba dărke"}], [{p: "به درکئ", f: "ba dărkeyy"}]],
+                [[{p: "به درکه", f: "ba dărku"}, {p: "به درکو", f: "ba dărko"}], [{p: "به درکړل", f: "ba dărkRul"}, { p: "به درکو", f: "ba dărkoo" }]],
+                [[{p: "به درکه", f: "ba dărka"}], [{p: "به درکې", f: "ba dărke"}]],
+            ],
+            short: [
+                [[{p: "به درکړم", f: "ba dărkRum"}], [{p: "به درکړو", f: "ba dărkRoo"}]],
+                [[{p: "به درکړم", f: "ba dărkRum"}], [{p: "به درکړو", f: "ba dărkRoo"}]],
+                [[{p: "به درکړې", f: "ba dărkRe"}], [{p: "به درکړئ", f: "ba dărkReyy"}]],
+                [[{p: "به درکړې", f: "ba dărkRe"}], [{p: "به درکړئ", f: "ba dărkReyy"}]],
+                [[{p: "به درکړه", f: "ba dărkRu"}, {p: "به درکړو", f: "ba dărkRo"}, {p: "به درکړ", f: "ba dărkuR"}], [{p: "به درکړل", f: "ba dărkRul"}, {p: "به درکړو", f: "ba dărkRoo" }]],
+                [[{p: "به درکړه", f: "ba dărkRa"}], [{p: "به درکړې", f: "ba dărkRe"}]],
+            ],
+            long: [
+                [[{p: "به درکړلم", f: "ba dărkRulum"}], [{p: "به درکړلو", f: "ba dărkRuloo"}]],
+                [[{p: "به درکړلم", f: "ba dărkRulum"}], [{p: "به درکړلو", f: "ba dărkRuloo"}]],
+                [[{p: "به درکړلې", f: "ba dărkRule"}], [{p: "به درکړلئ", f: "ba dărkRuleyy"}]],
+                [[{p: "به درکړلې", f: "ba dărkRule"}], [{p: "به درکړلئ", f: "ba dărkRuleyy"}]],
+                [[{p: "به درکړله", f: "ba dărkRulu"}, {p: "به درکړلو", f: "ba dărkRulo"}], [{p: "به درکړل", f: "ba dărkRul"}, {p: "به درکړلو", f: "ba dărkRuloo"}]],
+                [[{p: "به درکړله", f: "ba dărkRula"}], [{p: "به درکړلې", f: "ba dărkRule"}]],
+            ],
+        },
+        modal: {
+            nonImperative: {
+                long: [
+                    [[{ p: "درکړلی شم", f: "dărkRuley shum" }, { p: "درکړلای شم", f: "dărkRulaay shum" }], [{ p: "درکړلی شو", f: "dărkRuley shoo" }, { p: "درکړلای شو", f: "dărkRulaay shoo" }]],
+                    [[{ p: "درکړلی شم", f: "dărkRuley shum" }, { p: "درکړلای شم", f: "dărkRulaay shum" }], [{ p: "درکړلی شو", f: "dărkRuley shoo" }, { p: "درکړلای شو", f: "dărkRulaay shoo" }]],
+                    [[{ p: "درکړلی شې", f: "dărkRuley she" }, { p: "درکړلای شې", f: "dărkRulaay she" }], [{ p: "درکړلی شئ", f: "dărkRuley sheyy" }, { p: "درکړلای شئ", f: "dărkRulaay sheyy" }]],
+                    [[{ p: "درکړلی شې", f: "dărkRuley she" }, { p: "درکړلای شې", f: "dărkRulaay she" }], [{ p: "درکړلی شئ", f: "dărkRuley sheyy" }, { p: "درکړلای شئ", f: "dărkRulaay sheyy" }]],
+                    [[{ p: "درکړلی شي", f: "dărkRuley shee" }, { p: "درکړلای شي", f: "dărkRulaay shee" }], [{ p: "درکړلی شي", f: "dărkRuley shee" }, { p: "درکړلای شي", f: "dărkRulaay shee" }]],
+                    [[{ p: "درکړلی شي", f: "dărkRuley shee" }, { p: "درکړلای شي", f: "dărkRulaay shee" }], [{ p: "درکړلی شي", f: "dărkRuley shee" }, { p: "درکړلای شي", f: "dărkRulaay shee" }]],
+                ],
+                short: [
+                    [[{ p: "درکړی شم", f: "dărkRey shum" }, { p: "درکړای شم", f: "dărkRáay shum" }], [{ p: "درکړی شو", f: "dărkRey shoo" }, { p: "درکړای شو", f: "dărkRáay shoo" }]],
+                    [[{ p: "درکړی شم", f: "dărkRey shum" }, { p: "درکړای شم", f: "dărkRáay shum" }], [{ p: "درکړی شو", f: "dărkRey shoo" }, { p: "درکړای شو", f: "dărkRáay shoo" }]],
+                    [[{ p: "درکړی شې", f: "dărkRey she" }, { p: "درکړای شې", f: "dărkRáay she" }], [{ p: "درکړی شئ", f: "dărkRey sheyy" }, { p: "درکړای شئ", f: "dărkRáay sheyy" }]],
+                    [[{ p: "درکړی شې", f: "dărkRey she" }, { p: "درکړای شې", f: "dărkRáay she" }], [{ p: "درکړی شئ", f: "dărkRey sheyy" }, { p: "درکړای شئ", f: "dărkRáay sheyy" }]],
+                    [[{ p: "درکړی شي", f: "dărkRey shee" }, { p: "درکړای شي", f: "dărkRáay shee" }], [{ p: "درکړی شي", f: "dărkRey shee" }, { p: "درکړای شي", f: "dărkRáay shee" }]],
+                    [[{ p: "درکړی شي", f: "dărkRey shee" }, { p: "درکړای شي", f: "dărkRáay shee" }], [{ p: "درکړی شي", f: "dărkRey shee" }, { p: "درکړای شي", f: "dărkRáay shee" }]],
+                ],
+            },
+            future: {
+                long: [
+                    [[{ p: "به درکړلی شم", f: "ba dărkRuley shum" }, { p: "به درکړلای شم", f: "ba dărkRulaay shum" }], [{ p: "به درکړلی شو", f: "ba dărkRuley shoo" }, { p: "به درکړلای شو", f: "ba dărkRulaay shoo" }]],
+                    [[{ p: "به درکړلی شم", f: "ba dărkRuley shum" }, { p: "به درکړلای شم", f: "ba dărkRulaay shum" }], [{ p: "به درکړلی شو", f: "ba dărkRuley shoo" }, { p: "به درکړلای شو", f: "ba dărkRulaay shoo" }]],
+                    [[{ p: "به درکړلی شې", f: "ba dărkRuley she" }, { p: "به درکړلای شې", f: "ba dărkRulaay she" }], [{ p: "به درکړلی شئ", f: "ba dărkRuley sheyy" }, { p: "به درکړلای شئ", f: "ba dărkRulaay sheyy" }]],
+                    [[{ p: "به درکړلی شې", f: "ba dărkRuley she" }, { p: "به درکړلای شې", f: "ba dărkRulaay she" }], [{ p: "به درکړلی شئ", f: "ba dărkRuley sheyy" }, { p: "به درکړلای شئ", f: "ba dărkRulaay sheyy" }]],
+                    [[{ p: "به درکړلی شي", f: "ba dărkRuley shee" }, { p: "به درکړلای شي", f: "ba dărkRulaay shee" }], [{ p: "به درکړلی شي", f: "ba dărkRuley shee" }, { p: "به درکړلای شي", f: "ba dărkRulaay shee" }]],
+                    [[{ p: "به درکړلی شي", f: "ba dărkRuley shee" }, { p: "به درکړلای شي", f: "ba dărkRulaay shee" }], [{ p: "به درکړلی شي", f: "ba dărkRuley shee" }, { p: "به درکړلای شي", f: "ba dărkRulaay shee" }]],
+                ],
+                short: [
+                    [[{ p: "به درکړی شم", f: "ba dărkRey shum" }, { p: "به درکړای شم", f: "ba dărkRáay shum" }], [{ p: "به درکړی شو", f: "ba dărkRey shoo" }, { p: "به درکړای شو", f: "ba dărkRáay shoo" }]],
+                    [[{ p: "به درکړی شم", f: "ba dărkRey shum" }, { p: "به درکړای شم", f: "ba dărkRáay shum" }], [{ p: "به درکړی شو", f: "ba dărkRey shoo" }, { p: "به درکړای شو", f: "ba dărkRáay shoo" }]],
+                    [[{ p: "به درکړی شې", f: "ba dărkRey she" }, { p: "به درکړای شې", f: "ba dărkRáay she" }], [{ p: "به درکړی شئ", f: "ba dărkRey sheyy" }, { p: "به درکړای شئ", f: "ba dărkRáay sheyy" }]],
+                    [[{ p: "به درکړی شې", f: "ba dărkRey she" }, { p: "به درکړای شې", f: "ba dărkRáay she" }], [{ p: "به درکړی شئ", f: "ba dărkRey sheyy" }, { p: "به درکړای شئ", f: "ba dărkRáay sheyy" }]],
+                    [[{ p: "به درکړی شي", f: "ba dărkRey shee" }, { p: "به درکړای شي", f: "ba dărkRáay shee" }], [{ p: "به درکړی شي", f: "ba dărkRey shee" }, { p: "به درکړای شي", f: "ba dărkRáay shee" }]],
+                    [[{ p: "به درکړی شي", f: "ba dărkRey shee" }, { p: "به درکړای شي", f: "ba dărkRáay shee" }], [{ p: "به درکړی شي", f: "ba dărkRey shee" }, { p: "به درکړای شي", f: "ba dărkRáay shee" }]],
+                ],
+            },
+            past: {
+                long: [
+                    [[{ p: "درکړلی شوم", f: "dărkRuley shwum" }, { p: "درکړلای شوم", f: "dărkRulaay shwum" }], [{ p: "درکړلی شو", f: "dărkRuley shoo" }, { p: "درکړلای شو", f: "dărkRulaay shoo" }]],
+                    [[{ p: "درکړلی شوم", f: "dărkRuley shwum" }, { p: "درکړلای شوم", f: "dărkRulaay shwum" }], [{ p: "درکړلی شو", f: "dărkRuley shoo" }, { p: "درکړلای شو", f: "dărkRulaay shoo" }]],
+                    [[{ p: "درکړلی شوې", f: "dărkRuley shwe" }, { p: "درکړلای شوې", f: "dărkRulaay shwe" }], [{ p: "درکړلی شوئ", f: "dărkRuley shweyy" }, { p: "درکړلای شوئ", f: "dărkRulaay shweyy" }]],
+                    [[{ p: "درکړلی شوې", f: "dărkRuley shwe" }, { p: "درکړلای شوې", f: "dărkRulaay shwe" }], [{ p: "درکړلی شوئ", f: "dărkRuley shweyy" }, { p: "درکړلای شوئ", f: "dărkRulaay shweyy" }]],
+                    [[{ p: "درکړلی شو", f: "dărkRuley sho" }, { p: "درکړلای شو", f: "dărkRulaay sho" }], [{ p: "درکړلی شول", f: "dărkRuley shwul" }, { p: "درکړلای شول", f: "dărkRulaay shwul" }, { p: "درکړلی شو", f: "dărkRuley shoo" }, { p: "درکړلای شو", f: "dărkRulaay shoo" }]],
+                    [[{ p: "درکړلی شوه", f: "dărkRuley shwa" }, { p: "درکړلای شوه", f: "dărkRulaay shwa" }], [{ p: "درکړلی شولې", f: "dărkRuley shwule" }, { p: "درکړلای شولې", f: "dărkRulaay shwule" }, { p: "درکړلی شوې", f: "dărkRuley shwe" }, { p: "درکړلای شوې", f: "dărkRulaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "درکړی شوم", f: "dărkRey shwum" }, { p: "درکړای شوم", f: "dărkRáay shwum" }], [{ p: "درکړی شو", f: "dărkRey shoo" }, { p: "درکړای شو", f: "dărkRáay shoo" }]],
+                    [[{ p: "درکړی شوم", f: "dărkRey shwum" }, { p: "درکړای شوم", f: "dărkRáay shwum" }], [{ p: "درکړی شو", f: "dărkRey shoo" }, { p: "درکړای شو", f: "dărkRáay shoo" }]],
+                    [[{ p: "درکړی شوې", f: "dărkRey shwe" }, { p: "درکړای شوې", f: "dărkRáay shwe" }], [{ p: "درکړی شوئ", f: "dărkRey shweyy" }, { p: "درکړای شوئ", f: "dărkRáay shweyy" }]],
+                    [[{ p: "درکړی شوې", f: "dărkRey shwe" }, { p: "درکړای شوې", f: "dărkRáay shwe" }], [{ p: "درکړی شوئ", f: "dărkRey shweyy" }, { p: "درکړای شوئ", f: "dărkRáay shweyy" }]],
+                    [[{ p: "درکړی شو", f: "dărkRey sho" }, { p: "درکړای شو", f: "dărkRáay sho" }], [{ p: "درکړی شول", f: "dărkRey shwul" }, { p: "درکړای شول", f: "dărkRáay shwul" }, { p: "درکړی شو", f: "dărkRey shoo" }, { p: "درکړای شو", f: "dărkRáay shoo" }]],
+                    [[{ p: "درکړی شوه", f: "dărkRey shwa" }, { p: "درکړای شوه", f: "dărkRáay shwa" }], [{ p: "درکړی شولې", f: "dărkRey shwule" }, { p: "درکړای شولې", f: "dărkRáay shwule" }, { p: "درکړی شوې", f: "dărkRey shwe" }, { p: "درکړای شوې", f: "dărkRáay shwe" }]],
+                ],
+            },
+            habitualPast: {
+                long: [
+                    [[{ p: "به درکړلی شوم", f: "ba dărkRuley shwum" }, { p: "به درکړلای شوم", f: "ba dărkRulaay shwum" }], [{ p: "به درکړلی شو", f: "ba dărkRuley shoo" }, { p: "به درکړلای شو", f: "ba dărkRulaay shoo" }]],
+                    [[{ p: "به درکړلی شوم", f: "ba dărkRuley shwum" }, { p: "به درکړلای شوم", f: "ba dărkRulaay shwum" }], [{ p: "به درکړلی شو", f: "ba dărkRuley shoo" }, { p: "به درکړلای شو", f: "ba dărkRulaay shoo" }]],
+                    [[{ p: "به درکړلی شوې", f: "ba dărkRuley shwe" }, { p: "به درکړلای شوې", f: "ba dărkRulaay shwe" }], [{ p: "به درکړلی شوئ", f: "ba dărkRuley shweyy" }, { p: "به درکړلای شوئ", f: "ba dărkRulaay shweyy" }]],
+                    [[{ p: "به درکړلی شوې", f: "ba dărkRuley shwe" }, { p: "به درکړلای شوې", f: "ba dărkRulaay shwe" }], [{ p: "به درکړلی شوئ", f: "ba dărkRuley shweyy" }, { p: "به درکړلای شوئ", f: "ba dărkRulaay shweyy" }]],
+                    [[{ p: "به درکړلی شو", f: "ba dărkRuley sho" }, { p: "به درکړلای شو", f: "ba dărkRulaay sho" }], [{ p: "به درکړلی شول", f: "ba dărkRuley shwul" }, { p: "به درکړلای شول", f: "ba dărkRulaay shwul" }, { p: "به درکړلی شو", f: "ba dărkRuley shoo" }, { p: "به درکړلای شو", f: "ba dărkRulaay shoo" }]],
+                    [[{ p: "به درکړلی شوه", f: "ba dărkRuley shwa" }, { p: "به درکړلای شوه", f: "ba dărkRulaay shwa" }], [{ p: "به درکړلی شولې", f: "ba dărkRuley shwule" }, { p: "به درکړلای شولې", f: "ba dărkRulaay shwule" }, { p: "به درکړلی شوې", f: "ba dărkRuley shwe" }, { p: "به درکړلای شوې", f: "ba dărkRulaay shwe" }]],
+                ],
+                short: [
+                    [[{ p: "به درکړی شوم", f: "ba dărkRey shwum" }, { p: "به درکړای شوم", f: "ba dărkRáay shwum" }], [{ p: "به درکړی شو", f: "ba dărkRey shoo" }, { p: "به درکړای شو", f: "ba dărkRáay shoo" }]],
+                    [[{ p: "به درکړی شوم", f: "ba dărkRey shwum" }, { p: "به درکړای شوم", f: "ba dărkRáay shwum" }], [{ p: "به درکړی شو", f: "ba dărkRey shoo" }, { p: "به درکړای شو", f: "ba dărkRáay shoo" }]],
+                    [[{ p: "به درکړی شوې", f: "ba dărkRey shwe" }, { p: "به درکړای شوې", f: "ba dărkRáay shwe" }], [{ p: "به درکړی شوئ", f: "ba dărkRey shweyy" }, { p: "به درکړای شوئ", f: "ba dărkRáay shweyy" }]],
+                    [[{ p: "به درکړی شوې", f: "ba dărkRey shwe" }, { p: "به درکړای شوې", f: "ba dărkRáay shwe" }], [{ p: "به درکړی شوئ", f: "ba dărkRey shweyy" }, { p: "به درکړای شوئ", f: "ba dărkRáay shweyy" }]],
+                    [[{ p: "به درکړی شو", f: "ba dărkRey sho" }, { p: "به درکړای شو", f: "ba dărkRáay sho" }], [{ p: "به درکړی شول", f: "ba dărkRey shwul" }, { p: "به درکړای شول", f: "ba dărkRáay shwul" }, { p: "به درکړی شو", f: "ba dărkRey shoo" }, { p: "به درکړای شو", f: "ba dărkRáay shoo" }]],
+                    [[{ p: "به درکړی شوه", f: "ba dărkRey shwa" }, { p: "به درکړای شوه", f: "ba dărkRáay shwa" }], [{ p: "به درکړی شولې", f: "ba dărkRey shwule" }, { p: "به درکړای شولې", f: "ba dărkRáay shwule" }, { p: "به درکړی شوې", f: "ba dărkRey shwe" }, { p: "به درکړای شوې", f: "ba dărkRáay shwe" }]],
+                ],
+            },
+            hypotheticalPast: {
+                long: [
+                    [[{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }], [{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }]],
+                    [[{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }], [{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }]],
+                    [[{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }], [{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }]],
+                    [[{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }], [{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }]],
+                    [[{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }], [{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }]],
+                    [[{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }], [{ p: "درکړلی شوای", f: "dărkRuley shwaay" }, { p: "درکړلی شوی", f: "dărkRuley shwey" }, { p: "درکړلای شوای", f: "dărkRulaay shwaay" }]],
+                ],
+                short: [
+                    [[{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }], [{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }]],
+                    [[{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }], [{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }]],
+                    [[{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }], [{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }]],
+                    [[{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }], [{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }]],
+                    [[{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }], [{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }]],
+                    [[{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }], [{ p: "درکړی شوای", f: "dărkRey shwaay" }, { p: "درکړی شوی", f: "dărkRey shwey" }, { p: "درکړای شوای", f: "dărkRáay shwaay" }]],
+                ],
+            },
+        }, 
+    },
+    hypothetical: {
+        short: [
+            [[{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }], [{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }]],
+            [[{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }], [{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }]],
+            [[{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }], [{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }]],
+            [[{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }], [{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }]],
+            [[{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }], [{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }]],
+            [[{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }], [{ p: "درکوی", f: "dărkawéy" }, { p: "درکوای", f: "dărkawáay" }]],
+        ],
+        long: [
+            [[{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }], [{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }]],
+            [[{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }], [{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }]],
+            [[{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }], [{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }]],
+            [[{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }], [{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }]],
+            [[{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }], [{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }]],
+            [[{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }], [{ p: "درکولی", f: "dărkawúley" }, { p: "درکولای", f: "dărkawúlaay" }]],
+        ],
+    },
+    participle: {
+        past: {
+            masc: [
+                [{ p: "درکړی", f: "dărkúRey" }],
+                [{ p: "درکړي", f: "dărkúRee" }],
+                [{ p: "درکړیو", f: "dărkúRiyo" }, { p: "درکړو", f: "dărkúRo" }],
+            ],
+            fem: [
+                [{ p: "درکړې", f: "dărkúRe" }],
+                [{ p: "درکړې", f: "dărkúRe" }],
+                [{ p: "درکړو", f: "dărkúRo" }],
+            ],
+        },
+        present: {
+            masc: [
+                [{ p: "درکوونکی", f: "dărkawóonkey" }],
+                [{ p: "درکوونکي", f: "dărkawóonkee" }],
+                [{ p: "درکوونکیو", f: "dărkawóonkiyo" }, { p: "درکوونکو", f: "dărkedóonko" }],
+            ],
+            fem: [
+                [{ p: "درکوونکې", f: "dărkawóonke" }],
+                [{ p: "درکوونکې", f: "dărkawóonke" }],
+                [{ p: "درکوونکو", f: "dărkawóonko" }],
+            ],
+        },
+    },
+    perfect: {
+        halfPerfect: [
+            [[{p: "درکړی", f: "dărkúRey"}], [{p: "درکړي", f: "dărkúRee"}]],
+            [[{p: "درکړې", f: "dărkúRe"}], [{p: "درکړې", f: "dărkúRe"}]],
+            [[{p: "درکړی", f: "dărkúRey"}], [{p: "درکړي", f: "dărkúRee"}]],
+            [[{p: "درکړې", f: "dărkúRe"}], [{p: "درکړې", f: "dărkúRe"}]],
+            [[{p: "درکړی", f: "dărkúRey"}], [{p: "درکړي", f: "dărkúRee"}]],
+            [[{p: "درکړې", f: "dărkúRe"}], [{p: "درکړې", f: "dărkúRe"}]],
+        ],
+        past: [
+            [[{p: "درکړی وم", f: "dărkúRey wum"}], [{p: "درکړي وو", f: "dărkúRee woo"}]],
+            [[{p: "درکړې وم", f: "dărkúRe wum"}], [{p: "درکړې وو", f: "dărkúRe woo"}]],
+            [[{p: "درکړی وې", f: "dărkúRey we"}], [{p: "درکړي وئ", f: "dărkúRee weyy"}]],
+            [[{p: "درکړې وې", f: "dărkúRe we"}], [{p: "درکړې وئ", f: "dărkúRe weyy"}]],
+            [[{p: "درکړی و", f: "dărkúRey wo"}], [{p: "درکړي وو", f: "dărkúRee woo"}]],
+            [[{p: "درکړې وه", f: "dărkúRe wa"}], [{p: "درکړې وې", f: "dărkúRe we"}]],
+        ],
+        present: [
+            [[{p: "درکړی یم", f: "dărkúRey yum"}], [{p: "درکړي یو", f: "dărkúRee yoo"}]],
+            [[{p: "درکړې یم", f: "dărkúRe yum"}], [{p: "درکړې یو", f: "dărkúRe yoo"}]],
+            [[{p: "درکړی یې", f: "dărkúRey ye"}], [{p: "درکړي یئ", f: "dărkúRee yeyy"}]],
+            [[{p: "درکړې یې", f: "dărkúRe ye"}], [{p: "درکړې یئ", f: "dărkúRe yeyy"}]],
+            [[{p: "درکړی دی", f: "dărkúRey dey"}], [{p: "درکړي دي", f: "dărkúRee dee"}]],
+            [[{p: "درکړې ده", f: "dărkúRe da"}], [{p: "درکړې دي", f: "dărkúRe dee"}]],
+        ],
+        habitual: [
+            [[{p: "درکړی یم", f: "dărkúRey yum"}], [{p: "درکړي یو", f: "dărkúRee yoo"}]],
+            [[{p: "درکړې یم", f: "dărkúRe yum"}], [{p: "درکړې یو", f: "dărkúRe yoo"}]],
+            [[{p: "درکړی یې", f: "dărkúRey ye"}], [{p: "درکړي یئ", f: "dărkúRee yeyy"}]],
+            [[{p: "درکړې یې", f: "dărkúRe ye"}], [{p: "درکړې یئ", f: "dărkúRe yeyy"}]],
+            [[{p: "درکړی وي", f: "dărkúRey wee"}], [{p: "درکړي وي", f: "dărkúRee wee"}]],
+            [[{p: "درکړې وي", f: "dărkúRe wee"}], [{p: "درکړې وي", f: "dărkúRe wee"}]],
+        ],
+        subjunctive: [
+            [[{p: "درکړی وم", f: "dărkúRey wum"}], [{p: "درکړي وو", f: "dărkúRee woo"}]],
+            [[{p: "درکړې وم", f: "dărkúRe wum"}], [{p: "درکړې وو", f: "dărkúRe woo"}]],
+            [[{p: "درکړی وې", f: "dărkúRey we"}], [{p: "درکړي وئ", f: "dărkúRee weyy"}]],
+            [[{p: "درکړې وې", f: "dărkúRe we"}], [{p: "درکړې وئ", f: "dărkúRe weyy"}]],
+            [[{p: "درکړی وي", f: "dărkúRey wee"}], [{p: "درکړي وي", f: "dărkúRee wee"}]],
+            [[{p: "درکړې وي", f: "dărkúRe wee"}], [{p: "درکړې وي", f: "dărkúRe wee"}]],
+        ],
+        future: [
+            [[{p: "به درکړی یم", f: "ba dărkúRey yum"}], [{p: "به درکړي یو", f: "ba dărkúRee yoo"}]],
+            [[{p: "به درکړې یم", f: "ba dărkúRe yum"}], [{p: "به درکړې یو", f: "ba dărkúRe yoo"}]],
+            [[{p: "به درکړی یې", f: "ba dărkúRey ye"}], [{p: "به درکړي یئ", f: "ba dărkúRee yeyy"}]],
+            [[{p: "به درکړې یې", f: "ba dărkúRe ye"}], [{p: "به درکړې یئ", f: "ba dărkúRe yeyy"}]],
+            [[{p: "به درکړی وي", f: "ba dărkúRey wee"}], [{p: "به درکړي وي", f: "ba dărkúRee wee"}]],
+            [[{p: "به درکړې وي", f: "ba dărkúRe wee"}], [{p: "به درکړې وي", f: "ba dărkúRe wee"}]],
+        ],
+        wouldBe: [
+            [[{p: "به درکړی وم", f: "ba dărkúRey wum"}], [{p: "به درکړي وو", f: "ba dărkúRee woo"}]],
+            [[{p: "به درکړې وم", f: "ba dărkúRe wum"}], [{p: "به درکړې وو", f: "ba dărkúRe woo"}]],
+            [[{p: "به درکړی وې", f: "ba dărkúRey we"}], [{p: "به درکړي وئ", f: "ba dărkúRee weyy"}]],
+            [[{p: "به درکړې وې", f: "ba dărkúRe we"}], [{p: "به درکړې وئ", f: "ba dărkúRe weyy"}]],
+            [[{p: "به درکړی و", f: "ba dărkúRey wo"}], [{p: "به درکړي وو", f: "ba dărkúRee woo"}]],
+            [[{p: "به درکړې وه", f: "ba dărkúRe wa"}], [{p: "به درکړې وې", f: "ba dărkúRe we"}]],
+        ],
+        pastSubjunctive: [
+            [[{p: "درکړی وای", f: "dărkúRey waay"}, {p: "درکړی وی", f: "dărkúRey wey"}], [{p: "درکړی وای", f: "dărkúRey waay"}, {p: "درکړی وی", f: "dărkúRey wey"}]], 
+            [[{p: "درکړې وای", f: "dărkúRe waay"}, {p: "درکړې وی", f: "dărkúRe wey"}], [{p: "درکړې وای", f: "dărkúRe waay"}, {p: "درکړې وی", f: "dărkúRe wey"}]],
+            [[{p: "درکړی وای", f: "dărkúRey waay"}, {p: "درکړی وی", f: "dărkúRey wey"}], [{p: "درکړی وای", f: "dărkúRey waay"}, {p: "درکړی وی", f: "dărkúRey wey"}]], 
+            [[{p: "درکړې وای", f: "dărkúRe waay"}, {p: "درکړې وی", f: "dărkúRe wey"}], [{p: "درکړې وای", f: "dărkúRe waay"}, {p: "درکړې وی", f: "dărkúRe wey"}]],
+            [[{p: "درکړی وای", f: "dărkúRey waay"}, {p: "درکړی وی", f: "dărkúRey wey"}], [{p: "درکړی وای", f: "dărkúRey waay"}, {p: "درکړی وی", f: "dărkúRey wey"}]], 
+            [[{p: "درکړې وای", f: "dărkúRe waay"}, {p: "درکړې وی", f: "dărkúRe wey"}], [{p: "درکړې وای", f: "dărkúRe waay"}, {p: "درکړې وی", f: "dărkúRe wey"}]],
+        ],
+        wouldHaveBeen: [
+            [[{p: "به درکړی وای", f: "ba dărkúRey waay"}, {p: "به درکړی وی", f: "ba dărkúRey wey"}], [{p: "به درکړی وای", f: "ba dărkúRey waay"}, {p: "به درکړی وی", f: "ba dărkúRey wey"}]], 
+            [[{p: "به درکړې وای", f: "ba dărkúRe waay"}, {p: "به درکړې وی", f: "ba dărkúRe wey"}], [{p: "به درکړې وای", f: "ba dărkúRe waay"}, {p: "به درکړې وی", f: "ba dărkúRe wey"}]],
+            [[{p: "به درکړی وای", f: "ba dărkúRey waay"}, {p: "به درکړی وی", f: "ba dărkúRey wey"}], [{p: "به درکړی وای", f: "ba dărkúRey waay"}, {p: "به درکړی وی", f: "ba dărkúRey wey"}]], 
+            [[{p: "به درکړې وای", f: "ba dărkúRe waay"}, {p: "به درکړې وی", f: "ba dărkúRe wey"}], [{p: "به درکړې وای", f: "ba dărkúRe waay"}, {p: "به درکړې وی", f: "ba dărkúRe wey"}]],
+            [[{p: "به درکړی وای", f: "ba dărkúRey waay"}, {p: "به درکړی وی", f: "ba dărkúRey wey"}], [{p: "به درکړی وای", f: "ba dărkúRey waay"}, {p: "به درکړی وی", f: "ba dărkúRey wey"}]], 
+            [[{p: "به درکړې وای", f: "ba dărkúRe waay"}, {p: "به درکړې وی", f: "ba dărkúRe wey"}], [{p: "به درکړې وای", f: "ba dărkúRe waay"}, {p: "به درکړې وی", f: "ba dărkúRe wey"}]],
+        ],
+    },
+    // passive: {
+    //     imperfective: {
+    //         nonImperative: [
+    //             [{p: "درکول کېږم", f: "dărkawul keGum"}, {p: "درکول کېږو", f: "dărkawul keGoo"}],
+    //             [{p: "درکول کېږې", f: "dărkawul keGe"}, {p: "درکول کېږئ", f: "dărkawul keGeyy"}],
+    //             [{p: "درکول کېږي", f: "dărkawul keGee"}, {p: "درکول کېږي", f: "dărkawul keGee"}],
+    //         ],
+    //         future: [
+    //             [{p: "به درکول کېږم", f: "ba dărkawul keGum"}, {p: "به درکول کېږو", f: "ba dărkawul keGoo"}],
+    //             [{p: "به درکول کېږې", f: "ba dărkawul keGe"}, {p: "به درکول کېږئ", f: "ba dărkawul keGeyy"}],
+    //             [{p: "به درکول کېږي", f: "ba dărkawul keGee"}, {p: "به درکول کېږي", f: "ba dărkawul keGee"}],
+    //         ],
+    //         past: {
+    //             short: [
+    //                 [[{p: "درکول کېدم", f: "dărkawul kedum"}], [{p: "درکول کېدو", f: "dărkawul kedóo"}]],
+    //                 [[{p: "درکول کېدم", f: "dărkawul kedum"}], [{p: "درکول کېدو", f: "dărkawul kedóo"}]],
+    //                 [[{p: "درکول کېدې", f: "dărkawul kedé"}], [{p: "درکول کېدئ", f: "dărkawul kedéyy"}]],
+    //                 [[{p: "درکول کېدې", f: "dărkawul kedé"}], [{p: "درکول کېدئ", f: "dărkawul kedéyy"}]],
+    //                 [[{p: "درکول کېده", f: "dărkawul kedu"}, {p: "درکول کېدو", f: "dărkawul kedó"}], [{p: "درکول کېدل", f: "dărkawul kedul"}]],
+    //                 [[{p: "درکول کېده", f: "dărkawul kedá"}], [{p: "درکول کېدې", f: "dărkawul kedé"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "درکول کېدلم", f: "dărkawul kedúlum"}], [{p: "درکول کېدلو", f: "dărkawul kedúloo"}]],
+    //                 [[{p: "درکول کېدلم", f: "dărkawul kedúlum"}], [{p: "درکول کېدلو", f: "dărkawul kedúloo"}]],
+    //                 [[{p: "درکول کېدلې", f: "dărkawul kedúle"}], [{p: "درکول کېدلئ", f: "dărkawul kedúleyy"}]],
+    //                 [[{p: "درکول کېدلې", f: "dărkawul kedúle"}], [{p: "درکول کېدلئ", f: "dărkawul kedúleyy"}]],
+    //                 [[{p: "درکول کېدله", f: "dărkawul kedúlu"}, {p: "درکول کېدلو", f: "dărkawul kedúlo"}], [{p: "درکول کېدل", f: "dărkawul kedúl"}]],
+    //                 [[{p: "درکول کېدله", f: "dărkawul kedúla"}], [{p: "درکول کېدلې", f: "dărkawul kedúle"}]],
+    //             ],
+    //         },
+    //     },
+    //     perfective: {
+    //         nonImperative: {
+    //             short: [
+    //                 [{p: "درکړلی کېږم", f: "dărkRuley keGum"}, {p: "درکړلی کېږو", f: "dărkRuley keGoo"}],
+    //                 [{p: "درکړلی کېږې", f: "dărkRuley keGe"}, {p: "درکړلی کېږئ", f: "dărkRuley keGeyy"}],
+    //                 [{p: "درکړلی کېږي", f: "dărkRuley keGee"}, {p: "درکړلی کېږي", f: "dărkRuley keGee"}],
+    //             ],
+    //             long: [
+    //                 [{p: "درکړی کېږم", f: "dărkRey keGum"}, {p: "درکړی کېږو", f: "dărkRey keGoo"}],
+    //                 [{p: "درکړی کېږې", f: "dărkRey keGe"}, {p: "درکړی کېږئ", f: "dărkRey keGeyy"}],
+    //                 [{p: "درکړی کېږي", f: "dărkRey keGee"}, {p: "درکړی کېږي", f: "dărkRey keGee"}],
+    //             ],
+    //         },
+    //         future: {
+    //             short: [
+    //                 [{p: "به درکړلی کېږم", f: "ba dărkRuley keGum"}, {p: "به درکړلی کېږو", f: "ba dărkRuley keGoo"}],
+    //                 [{p: "به درکړلی کېږې", f: "ba dărkRuley keGe"}, {p: "به درکړلی کېږئ", f: "ba dărkRuley keGeyy"}],
+    //                 [{p: "به درکړلی کېږي", f: "ba dărkRuley keGee"}, {p: "به درکړلی کېږي", f: "ba dărkRuley keGee"}],
+    //             ],
+    //             long: [
+    //                 [{p: "به درکړی کېږم", f: "ba dărkRey keGum"}, {p: "به درکړی کېږو", f: "ba dărkRey keGoo"}],
+    //                 [{p: "به درکړی کېږې", f: "ba dărkRey keGe"}, {p: "به درکړی کېږئ", f: "ba dărkRey keGeyy"}],
+    //                 [{p: "به درکړی کېږي", f: "ba dărkRey keGee"}, {p: "به درکړی کېږي", f: "ba dărkRey keGee"}],
+    //             ],
+    //         },
+    //         past: {
+    //             short: [
+    //                 [[{p: "درکړی شوم", f: "dărkRey shwum"}], [{p: "درکړی شو", f: "dărkRey shoo"}]],
+    //                 [[{p: "درکړی شوم", f: "dărkRey shwum"}], [{p: "درکړی شو", f: "dărkRey shoo"}]],
+    //                 [[{p: "درکړی شوې", f: "dărkRey shwe"}], [{p: "درکړی شوئ", f: "dărkRey shweyy"}]],
+    //                 [[{p: "درکړی شوې", f: "dărkRey shwe"}], [{p: "درکړی شوئ", f: "dărkRey shweyy"}]],
+    //                 [[{p: "درکړی شو", f: "dărkRey sho"}], [{p: "درکړی شو", f: "dărkRey shoo"}, {p: "درکړی شول", f: "dărkRey shwul"}]],
+    //                 [[{p: "درکړی شوه", f: "dărkRey shwa"}], [{p: "درکړی شوې", f: "dărkRey shwe"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "درکړلی شوم", f: "dărkRúley shwum"}], [{p: "درکړلی شو", f: "dărkRúley shoo"}]],
+    //                 [[{p: "درکړلی شوم", f: "dărkRúley shwum"}], [{p: "درکړلی شو", f: "dărkRúley shoo"}]],
+    //                 [[{p: "درکړلی شوې", f: "dărkRúley shwe"}], [{p: "درکړلی شوئ", f: "dărkRúley shweyy"}]],
+    //                 [[{p: "درکړلی شوې", f: "dărkRúley shwe"}], [{p: "درکړلی شوئ", f: "dărkRúley shweyy"}]],
+    //                 [[{p: "درکړلی شو", f: "dărkRúley sho"}], [{p: "درکړلی شو", f: "dărkRúley shoo"}, {p: "درکړلی شول", f: "dărkRúley shwul"}]],
+    //                 [[{p: "درکړلی شوه", f: "dărkRúley shwa"}], [{p: "درکړلی شوې", f: "dărkRúley shwe"}]],
+    //             ],
+    //         },
+    //     },
+    //     perfect: {
+    //         halfPerfect: {
+    //             short: [
+    //                 [[{p: "درکړی شوی", f: "dărkRéy shuwey"}], [{p: "درکړی شوي", f: "dărkRéy shuwee"}]],
+    //                 [[{p: "درکړی شوې", f: "dărkRéy shuwe"}], [{p: "درکړی شوې", f: "dărkRéy shuwe"}]],
+    //                 [[{p: "درکړی شوی", f: "dărkRéy shuwey"}], [{p: "درکړی شوي", f: "dărkRéy shuwee"}]],
+    //                 [[{p: "درکړی شوې", f: "dărkRéy shuwe"}], [{p: "درکړی شوې", f: "dărkRéy shuwe"}]],
+    //                 [[{p: "درکړی شوی", f: "dărkRéy shuwey"}], [{p: "درکړی شوي", f: "dărkRéy shuwee"}]],
+    //                 [[{p: "درکړی شوې", f: "dărkRéy shuwe"}], [{p: "درکړی شوې", f: "dărkRéy shuwe"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "درکړلی شوی", f: "dărkRúley shuwey"}], [{p: "درکړلی شوي", f: "dărkRúley shuwee"}]],
+    //                 [[{p: "درکړلی شوې", f: "dărkRúley shuwe"}], [{p: "درکړلی شوې", f: "dărkRúley shuwe"}]],
+    //                 [[{p: "درکړلی شوی", f: "dărkRúley shuwey"}], [{p: "درکړلی شوي", f: "dărkRúley shuwee"}]],
+    //                 [[{p: "درکړلی شوې", f: "dărkRúley shuwe"}], [{p: "درکړلی شوې", f: "dărkRúley shuwe"}]],
+    //                 [[{p: "درکړلی شوی", f: "dărkRúley shuwey"}], [{p: "درکړلی شوي", f: "dărkRúley shuwee"}]],
+    //                 [[{p: "درکړلی شوې", f: "dărkRúley shuwe"}], [{p: "درکړلی شوې", f: "dărkRúley shuwe"}]],
+    //             ],
+    //         },
+    //         past: {
+    //             short: [
+    //                 [[{p: "درکړی شوی وم", f: "dărkRéy shuwey wum"}], [{p: "درکړی شوي وو", f: "dărkRéy shuwee woo"}]],
+    //                 [[{p: "درکړی شوې وم", f: "dărkRéy shuwe wum"}], [{p: "درکړی شوې وو", f: "dărkRéy shuwe woo"}]],
+    //                 [[{p: "درکړی شوی وې", f: "dărkRéy shuwey we"}], [{p: "درکړی شوي وئ", f: "dărkRéy shuwee weyy"}]],
+    //                 [[{p: "درکړی شوې وې", f: "dărkRéy shuwe we"}], [{p: "درکړی شوې وئ", f: "dărkRéy shuwe weyy"}]],
+    //                 [[{p: "درکړی شوی و", f: "dărkRéy shuwey wo"}], [{p: "درکړی شوي وو", f: "dărkRéy shuwee woo"}]],
+    //                 [[{p: "درکړی شوې وه", f: "dărkRéy shuwe wa"}], [{p: "درکړی شوې وې", f: "dărkRéy shuwe we"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "درکړلی شوی وم", f: "dărkRúley shuwey wum"}], [{p: "درکړلی شوي وو", f: "dărkRúley shuwee woo"}]],
+    //                 [[{p: "درکړلی شوې وم", f: "dărkRúley shuwe wum"}], [{p: "درکړلی شوې وو", f: "dărkRúley shuwe woo"}]],
+    //                 [[{p: "درکړلی شوی وې", f: "dărkRúley shuwey we"}], [{p: "درکړلی شوي وئ", f: "dărkRúley shuwee weyy"}]],
+    //                 [[{p: "درکړلی شوې وې", f: "dărkRúley shuwe we"}], [{p: "درکړلی شوې وئ", f: "dărkRúley shuwe weyy"}]],
+    //                 [[{p: "درکړلی شوی و", f: "dărkRúley shuwey wo"}], [{p: "درکړلی شوي وو", f: "dărkRúley shuwee woo"}]],
+    //                 [[{p: "درکړلی شوې وه", f: "dărkRúley shuwe wa"}], [{p: "درکړلی شوې وې", f: "dărkRúley shuwe we"}]],
+    //             ],
+    //         },
+    //         present: {
+    //             short: [
+    //                 [[{p: "درکړی شوی یم", f: "dărkRéy shuwey yum"}], [{p: "درکړی شوي یو", f: "dărkRéy shuwee yoo"}]],
+    //                 [[{p: "درکړی شوې یم", f: "dărkRéy shuwe yum"}], [{p: "درکړی شوې یو", f: "dărkRéy shuwe yoo"}]],
+    //                 [[{p: "درکړی شوی یې", f: "dărkRéy shuwey ye"}], [{p: "درکړی شوي یئ", f: "dărkRéy shuwee yeyy"}]],
+    //                 [[{p: "درکړی شوې یې", f: "dărkRéy shuwe ye"}], [{p: "درکړی شوې یئ", f: "dărkRéy shuwe yeyy"}]],
+    //                 [[{p: "درکړی شوی دی", f: "dărkRéy shuwey dey"}], [{p: "درکړی شوي دي", f: "dărkRéy shuwee dee"}]],
+    //                 [[{p: "درکړی شوې ده", f: "dărkRéy shuwe da"}], [{p: "درکړی شوې دي", f: "dărkRéy shuwe dee"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "درکړلی شوی یم", f: "dărkRúley shuwey yum"}], [{p: "درکړلی شوي یو", f: "dărkRúley shuwee yoo"}]],
+    //                 [[{p: "درکړلی شوې یم", f: "dărkRúley shuwe yum"}], [{p: "درکړلی شوې یو", f: "dărkRúley shuwe yoo"}]],
+    //                 [[{p: "درکړلی شوی یې", f: "dărkRúley shuwey ye"}], [{p: "درکړلی شوي یئ", f: "dărkRúley shuwee yeyy"}]],
+    //                 [[{p: "درکړلی شوې یې", f: "dărkRúley shuwe ye"}], [{p: "درکړلی شوې یئ", f: "dărkRúley shuwe yeyy"}]],
+    //                 [[{p: "درکړلی شوی دی", f: "dărkRúley shuwey dey"}], [{p: "درکړلی شوي دي", f: "dărkRúley shuwee dee"}]],
+    //                 [[{p: "درکړلی شوې ده", f: "dărkRúley shuwe da"}], [{p: "درکړلی شوې دي", f: "dărkRúley shuwe dee"}]],
+    //             ],
+    //         },
+    //         future: {
+    //             short: [
+    //                 [[{p: "به درکړی شوی یم", f: "ba dărkRéy shuwey yum"}], [{p: "به درکړی شوي یو", f: "ba dărkRéy shuwee yoo"}]],
+    //                 [[{p: "به درکړی شوې یم", f: "ba dărkRéy shuwe yum"}], [{p: "به درکړی شوې یو", f: "ba dărkRéy shuwe yoo"}]],
+    //                 [[{p: "به درکړی شوی یې", f: "ba dărkRéy shuwey ye"}], [{p: "به درکړی شوي یئ", f: "ba dărkRéy shuwee yeyy"}]],
+    //                 [[{p: "به درکړی شوې یې", f: "ba dărkRéy shuwe ye"}], [{p: "به درکړی شوې یئ", f: "ba dărkRéy shuwe yeyy"}]],
+    //                 [[{p: "به درکړی شوی وي", f: "ba dărkRéy shuwey wee"}], [{p: "به درکړی شوي وي", f: "ba dărkRéy shuwee wee"}]],
+    //                 [[{p: "به درکړی شوې وي", f: "ba dărkRéy shuwe wee"}], [{p: "به درکړی شوې وي", f: "ba dărkRéy shuwe wee"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "به درکړلی شوی یم", f: "ba dărkRúley shuwey yum"}], [{p: "به درکړلی شوي یو", f: "ba dărkRúley shuwee yoo"}]],
+    //                 [[{p: "به درکړلی شوې یم", f: "ba dărkRúley shuwe yum"}], [{p: "به درکړلی شوې یو", f: "ba dărkRúley shuwe yoo"}]],
+    //                 [[{p: "به درکړلی شوی یې", f: "ba dărkRúley shuwey ye"}], [{p: "به درکړلی شوي یئ", f: "ba dărkRúley shuwee yeyy"}]],
+    //                 [[{p: "به درکړلی شوې یې", f: "ba dărkRúley shuwe ye"}], [{p: "به درکړلی شوې یئ", f: "ba dărkRúley shuwe yeyy"}]],
+    //                 [[{p: "به درکړلی شوی وي", f: "ba dărkRúley shuwey wee"}], [{p: "به درکړلی شوي وي", f: "ba dărkRúley shuwee wee"}]],
+    //                 [[{p: "به درکړلی شوې وي", f: "ba dărkRúley shuwe wee"}], [{p: "به درکړلی شوې وي", f: "ba dărkRúley shuwe wee"}]],
+    //             ],
+    //         },
+    //         affirmational: {
+    //             short: [
+    //                 [[{p: "به درکړی شوی وم", f: "ba dărkRéy shuwey wum"}], [{p: "به درکړی شوي وو", f: "ba dărkRéy shuwee woo"}]],
+    //                 [[{p: "به درکړی شوې وم", f: "ba dărkRéy shuwe wum"}], [{p: "به درکړی شوې وو", f: "ba dărkRéy shuwe woo"}]],
+    //                 [[{p: "به درکړی شوی وې", f: "ba dărkRéy shuwey we"}], [{p: "به درکړی شوي وئ", f: "ba dărkRéy shuwee weyy"}]],
+    //                 [[{p: "به درکړی شوې وې", f: "ba dărkRéy shuwe we"}], [{p: "به درکړی شوې وئ", f: "ba dărkRéy shuwe weyy"}]],
+    //                 [[{p: "به درکړی شوی و", f: "ba dărkRéy shuwey wo"}], [{p: "به درکړی شوي وو", f: "ba dărkRéy shuwee woo"}]],
+    //                 [[{p: "به درکړی شوې وه", f: "ba dărkRéy shuwe wa"}], [{p: "به درکړی شوې وې", f: "ba dărkRéy shuwe we"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "به درکړلی شوی وم", f: "ba dărkRúley shuwey wum"}], [{p: "به درکړلی شوي وو", f: "ba dărkRúley shuwee woo"}]],
+    //                 [[{p: "به درکړلی شوې وم", f: "ba dărkRúley shuwe wum"}], [{p: "به درکړلی شوې وو", f: "ba dărkRúley shuwe woo"}]],
+    //                 [[{p: "به درکړلی شوی وې", f: "ba dărkRúley shuwey we"}], [{p: "به درکړلی شوي وئ", f: "ba dărkRúley shuwee weyy"}]],
+    //                 [[{p: "به درکړلی شوې وې", f: "ba dărkRúley shuwe we"}], [{p: "به درکړلی شوې وئ", f: "ba dărkRúley shuwe weyy"}]],
+    //                 [[{p: "به درکړلی شوی و", f: "ba dărkRúley shuwey wo"}], [{p: "به درکړلی شوي وو", f: "ba dărkRúley shuwee woo"}]],
+    //                 [[{p: "به درکړلی شوې وه", f: "ba dărkRúley shuwe wa"}], [{p: "به درکړلی شوې وې", f: "ba dărkRúley shuwe we"}]],
+    //             ],
+    //         },
+    //         pastSubjunctiveHypothetical: {
+    //             short: [
+    //                 [[{p: "درکړی شوی وای", f: "ba dărkRéy shuwey"}], [{p: "به درکړی شوي", f: "ba dărkRéy shuwee"}]],
+    //                 [[{p: "درکړی شوې وای", f: "ba dărkRéy shuwe"}], [{p: "به درکړی شوې", f: "ba dărkRéy shuwe"}]],
+    //                 [[{p: "درکړی شوی وای", f: "ba dărkRéy shuwey"}], [{p: "به درکړی شوي", f: "ba dărkRéy shuwee"}]],
+    //                 [[{p: "درکړی شوې وای", f: "ba dărkRéy shuwe"}], [{p: "به درکړی شوې", f: "ba dărkRéy shuwe"}]],
+    //                 [[{p: "درکړی شوی وای", f: "ba dărkRéy shuwey"}], [{p: "به درکړی شوي", f: "ba dărkRéy shuwee"}]],
+    //                 [[{p: "درکړی شوې وای", f: "ba dărkRéy shuwe"}], [{p: "به درکړی شوې", f: "ba dărkRéy shuwe"}]],
+    //             ],
+    //             long: [
+    //                 [[{p: "درکړلی شوی وای", f: "ba dărkRúley shuwey"}], [{p: "به درکړلی شوي", f: "ba dărkRúley shuwee"}]],
+    //                 [[{p: "درکړلی شوې وای", f: "ba dărkRúley shuwe"}], [{p: "به درکړلی شوې", f: "ba dărkRúley shuwe"}]],
+    //                 [[{p: "درکړلی شوی وای", f: "ba dărkRúley shuwey"}], [{p: "به درکړلی شوي", f: "ba dărkRúley shuwee"}]],
+    //                 [[{p: "درکړلی شوې وای", f: "ba dărkRúley shuwe"}], [{p: "به درکړلی شوې", f: "ba dărkRúley shuwe"}]],
+    //                 [[{p: "درکړلی شوی وای", f: "ba dărkRúley shuwey"}], [{p: "به درکړلی شوي", f: "ba dărkRúley shuwee"}]],
+    //                 [[{p: "درکړلی شوې وای", f: "ba dărkRúley shuwe"}], [{p: "به درکړلی شوې", f: "ba dărkRúley shuwe"}]],
+    //             ],
+    //         },
+    //     },
+    // },
+};
+
+
 export function checkForIrregularConjugation(entry: T.DictionaryEntry): T.VerbConjugation | null {
     if (entry.p === "تلل" && entry.f === "tlul") {
         return tlul;
@@ -5731,6 +7108,12 @@ export function checkForIrregularConjugation(entry: T.DictionaryEntry): T.VerbCo
     }
     if (entry.p === "ورکول") {
         return warkawul;
+    }
+    if (entry.p === "درکول") {
+        return darkawul;
+    }
+    if (entry.p === "راکول") {
+        return raakawul;
     }
     return null;
 }
