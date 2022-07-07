@@ -101,7 +101,7 @@ function VerbSBlock({ opts, v, script }: {
         <Border>
             {getLength(v.ps, length)[0][script]}
         </Border>
-        <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"} aa</div>
+        <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"}</div>
         <EnglishBelow>{((v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb")
             ? getEnglishParticipleInflection
             : getEnglishPersonInfo
