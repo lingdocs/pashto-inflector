@@ -53,6 +53,8 @@ export type VpsReducerAction = {
 } | {
     type: "toggle servant shrink",
 } | {
+    type: "toggle king remove",
+} |{
     type: "set verb",
     payload: T.VerbEntry,
 } | {
@@ -248,6 +250,15 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                 form: {
                     ...vps.form,
                     shrinkServant: !vps.form.shrinkServant,
+                },
+            };
+        }
+        if (action.type === "toggle king remove") {
+            return {
+                ...vps,
+                form: {
+                    ...vps.form,
+                    removeKing: !vps.form.removeKing,
                 },
             };
         }

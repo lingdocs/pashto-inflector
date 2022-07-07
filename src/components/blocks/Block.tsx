@@ -3,7 +3,7 @@ import classNames from "classnames";
 import {
     getEnglishFromRendered,
 } from "../../lib/phrase-building/np-tools";
-import { getEnglishPersonInfo } from "../../library";
+import { getEnglishPersonInfo, getEnglishParticipleInflection } from "../../lib/misc-helpers";
 import { useState } from "react";
 import { getLength } from "../../lib/p-text-helpers";
 import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
@@ -101,8 +101,11 @@ function VerbSBlock({ opts, v, script }: {
         <Border>
             {getLength(v.ps, length)[0][script]}
         </Border>
-        <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"}</div>
-        <EnglishBelow>{getEnglishPersonInfo(v.person, "short")}</EnglishBelow>
+        <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"} aa</div>
+        <EnglishBelow>{((v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb")
+            ? getEnglishParticipleInflection
+            : getEnglishPersonInfo
+        )(v.person, "short")}</EnglishBelow>
     </div>
 }
 

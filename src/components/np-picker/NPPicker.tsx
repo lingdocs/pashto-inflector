@@ -24,6 +24,7 @@ function NPPicker(props: {
     entryFeeder: T.EntryFeeder,
     phraseIsComplete: boolean,
     isShrunk?: boolean,
+    isRemoved?: boolean,
 }) {
     if (props.is2ndPersonPicker && ((props.np?.selection.type !== "pronoun") || !isSecondPerson(props.np.selection.person))) {
         throw new Error("can't use 2ndPerson NPPicker without a pronoun");
@@ -106,7 +107,9 @@ function NPPicker(props: {
         ? <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>X</button>
         : <div></div>;
     const possesiveLabel = props.np?.selection.type === "participle" ? "Subj/Obj" : "Possesor";
-    return <>
+    return <div style={{
+        opacity: props.isRemoved ? 0.6 : 1,
+    }}>
         <div className="d-flex flex-row justify-content-between">
             <div></div>
             <div>
@@ -119,79 +122,79 @@ function NPPicker(props: {
             </div>
         </div>
         <div style={{ minWidth: "9rem" }}>
-            {!npType && <div className="text-center">
-                <div className="h6 mr-3">
-                    Choose NP
+                {!npType && <div className="text-center">
+                    <div className="h6 mr-3">
+                        Choose NP
+                    </div>
+                    {npTypes.map((npt) => <div key={npt} className="mb-2">
+                        <button
+                            key={npt}
+                            type="button"
+                            className="mr-2 btn btn-sm btn-outline-secondary"
+                            onClick={() => handleNPTypeChange(npt)}
+                        >
+                            {npt}
+                        </button>
+                </div>)}
+            </div>}
+            {(props.np && props.np.selection.type !== "pronoun" && (props.np.selection.possesor || addingPoss)) && <div className="mb-3" style={{
+                paddingLeft: "0.65rem",
+                borderLeft: "2px solid grey",
+                background: (props.np.selection.possesor?.shrunken && !props.isShrunk) ? shrunkenBackground : "inherit",
+            }}>
+                <div className="d-flex flex-row text-muted mb-2">
+                    <div>{possesiveLabel}:</div>
+                    {(props.np.selection.possesor && !props.isShrunk && props.phraseIsComplete) && <div className="clickable ml-3 mr-2" onClick={handleToggleShrunken}>
+                        {!props.np.selection.possesor.shrunken ? "🪄" : "👶"}
+                    </div>}
+                    <div className="clickable ml-2" onClick={() => {
+                        setAddingPoss(false);
+                        handlePossesiveChange(undefined);
+                    }}>
+                        <i className="fas fa-trash" />  
+                    </div>
                 </div>
-                {npTypes.map((npt) => <div key={npt} className="mb-2">
-                    <button
-                        key={npt}
-                        type="button"
-                        className="mr-2 btn btn-sm btn-outline-secondary"
-                        onClick={() => handleNPTypeChange(npt)}
-                    >
-                        {npt}
-                    </button>
-            </div>)}
-        </div>}
-        {(props.np && props.np.selection.type !== "pronoun" && (props.np.selection.possesor || addingPoss)) && <div className="mb-3" style={{
-            paddingLeft: "0.65rem",
-            borderLeft: "2px solid grey",
-            background: (props.np.selection.possesor?.shrunken && !props.isShrunk) ? shrunkenBackground : "inherit",    
-        }}>
-            <div className="d-flex flex-row text-muted mb-2">
-                <div>{possesiveLabel}:</div>
-                {(props.np.selection.possesor && !props.isShrunk && props.phraseIsComplete) && <div className="clickable ml-3 mr-2" onClick={handleToggleShrunken}>
-                    {!props.np.selection.possesor.shrunken ? "🪄" : "👶"}
-                </div>}
-                <div className="clickable ml-2" onClick={() => {
-                    setAddingPoss(false);
-                    handlePossesiveChange(undefined);
-                }}>
-                    <i className="fas fa-trash" />  
-                </div>
-            </div>
-            <NPPicker
-                phraseIsComplete={props.phraseIsComplete}
-                onChange={handlePossesiveChange}
-                counterPart={undefined}
-                cantClear
-                np={props.np.selection.possesor ? props.np.selection.possesor.np : undefined}
-                role="possesor"
-                opts={props.opts}
-                entryFeeder={props.entryFeeder}
-            />
-        </div>}
-        {(npType === "noun" || npType === "participle") && props.np && !addingPoss && <div>
-            <span className="clickable text-muted" onClick={() => setAddingPoss(true)}>+ {possesiveLabel}</span>
-        </div>}
-        {(npType === "pronoun" && props.np?.selection.type === "pronoun")
-            ? <PronounPicker
-                role={props.role}
-                pronoun={props.np.selection}
-                onChange={(p) => onChange({ type: "NP", selection: p })}
-                is2ndPersonPicker={props.is2ndPersonPicker}
-                opts={props.opts}
-            />
-            : npType === "noun"
-            ? <NounPicker
-                phraseIsComplete={props.phraseIsComplete}
-                entryFeeder={props.entryFeeder}
-                noun={(props.np && props.np.selection.type === "noun") ? props.np.selection : undefined}
-                onChange={(s) => onChange(s ? { type: "NP", selection: s } : undefined)}
-                opts={props.opts}
-            />
-            : npType === "participle"
-            ? <ParticiplePicker
-                entryFeeder={props.entryFeeder.verbs}
-                participle={(props.np && props.np.selection.type === "participle") ? props.np.selection : undefined}
-                onChange={(s) => onChange(s ? { type: "NP", selection: s } : undefined)}
-                opts={props.opts}
-            />
-            : null
-        }
-    </div>
-    </>;
+                <NPPicker
+                    phraseIsComplete={props.phraseIsComplete}
+                    onChange={handlePossesiveChange}
+                    counterPart={undefined}
+                    cantClear
+                    np={props.np.selection.possesor ? props.np.selection.possesor.np : undefined}
+                    role="possesor"
+                    opts={props.opts}
+                    entryFeeder={props.entryFeeder}
+                />
+            </div>}
+            {(npType === "noun" || npType === "participle") && props.np && !addingPoss && <div>
+                <span className="clickable text-muted" onClick={() => setAddingPoss(true)}>+ {possesiveLabel}</span>
+            </div>}
+            {(npType === "pronoun" && props.np?.selection.type === "pronoun")
+                ? <PronounPicker
+                    role={props.role}
+                    pronoun={props.np.selection}
+                    onChange={(p) => onChange({ type: "NP", selection: p })}
+                    is2ndPersonPicker={props.is2ndPersonPicker}
+                    opts={props.opts}
+                />
+                : npType === "noun"
+                ? <NounPicker
+                    phraseIsComplete={props.phraseIsComplete}
+                    entryFeeder={props.entryFeeder}
+                    noun={(props.np && props.np.selection.type === "noun") ? props.np.selection : undefined}
+                    onChange={(s) => onChange(s ? { type: "NP", selection: s } : undefined)}
+                    opts={props.opts}
+                />
+                : npType === "participle"
+                ? <ParticiplePicker
+                    entryFeeder={props.entryFeeder.verbs}
+                    participle={(props.np && props.np.selection.type === "participle") ? props.np.selection : undefined}
+                    onChange={(s) => onChange(s ? { type: "NP", selection: s } : undefined)}
+                    opts={props.opts}
+                />
+                : null
+            }
+        </div>
+    </div>;
 }
 
 function ensureSingleShrink(old: T.NPSelection | undefined, s: T.NPSelection | undefined): T.NPSelection | undefined {

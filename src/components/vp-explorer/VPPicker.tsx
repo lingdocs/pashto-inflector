@@ -95,9 +95,16 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                         ? <NPPicker
                             phraseIsComplete={phraseIsComplete}
                             heading={roles.king === "subject" 
-                            ? <div className="h5 text-center" onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>Subject {roleIcon.king}</div>
+                            ? <div className="h5 text-center">
+                                Subj. <span onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>{roleIcon.king}</span>
+                                {(rendered && rendered.whatsAdjustable !== "servant") && 
+                                    <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
+                                        {!VPS?.form.removeKing ? "🚫" : "🙈"}
+                                    </span>
+                                }
+                            </div>
                             : <div className="h5 text-center">
-                                Subject
+                                Subj.
                                 {` `}
                                 <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>{roleIcon.servant}</span>
                                 {` `}
@@ -117,6 +124,7 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                             onChange={handleSubjectChange}
                             opts={opts}
                             isShrunk={(servantIsShrunk && roles.servant === "subject")}
+                            isRemoved={roles.king === "subject" && VPS?.form.removeKing}
                         />
                         : (vps.verb && block?.type === "objectSelection" && block.selection !== "none")
                         ? <div className="my-2" style={{ background: (servantIsShrunk && roles.servant === "object") ? shrunkenBackground : "inherit" }}>
@@ -130,15 +138,27 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                 : <NPPicker
                                     phraseIsComplete={phraseIsComplete}
                                     heading={roles.king === "object" 
-                                        ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
+                                        ? <div className="h5 text-center">
+                                        Obj. <span onClick={() => setShowingExplanation({ role: "king", item: "object" })}>{roleIcon.king}</span>
+                                            {(rendered && rendered.whatsAdjustable !== "servant") && 
+                                                <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
+                                                    {!VPS?.form.removeKing ? "🚫" : "🙈"}
+                                                </span>
+                                            }
+                                        </div>
                                         : <div className="h5 text-center">
-                                            Object
+                                            Obj.
                                             {` `}
                                             <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>{roleIcon.servant}</span>
                                             {` `}
                                             {(rendered && rendered.whatsAdjustable !== "king") && 
                                                 <span onClick={() => adjustVps({ type: "toggle servant shrink" })} className="mx-2 clickable">
                                                     {!servantIsShrunk ? "🪄" : "👶"}
+                                                </span>
+                                            }
+                                            {(rendered && rendered.whatsAdjustable !== "servant") && 
+                                                <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
+                                                    {!VPS?.form.removeKing ? "🚫" : "🙈"}
                                                 </span>
                                             }
                                         </div>}
@@ -149,6 +169,7 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                     onChange={handleObjectChange}
                                     opts={opts}
                                     isShrunk={(servantIsShrunk && roles.servant === "object")}
+                                    isRemoved={roles.king === "object" && VPS?.form.removeKing}
                                 />}
                         </div>
                         : null}

@@ -163,6 +163,15 @@ export function getEnglishPersonInfo(person: T.Person, version?: "short" | "long
     return `${p} ${n}. ${g}.`;
 }
 
+export function getEnglishParticipleInflection(person: T.Person, version?: "short" | "long"): string {
+    const number = personIsPlural(person) ? "plural" : "singular";
+    const n = version === "short"
+        ? (number === "plural" ? "plur." : "sing.") : number;
+    const gender = personGender(person);
+    const g = gender;
+    return `${g}. ${n}`;
+}
+
 export function randomNumber(minInclusive: number, maxExclusive: number): number {  
     return Math.floor(Math.random() * (maxExclusive - minInclusive) + minInclusive); 
 }
