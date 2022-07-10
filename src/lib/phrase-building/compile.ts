@@ -26,8 +26,8 @@ import {
 } from "./blocks-utils";
 
 const blank: T.PsString = {
-    p: "______",
-    f: "______",
+    p: "_____",
+    f: "_____",
 };
 type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean };
 
@@ -174,8 +174,9 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
         return combine(rest).flatMap(r => (
                 firstPs.map(fPs => concatPsString(
                     fPs,
+                    // TODO: this spacing is a mess and not accurate
                     (!("p" in first) && "block" in first && first.block.type === "perfectiveHead" && !("p" in next) && (("block" in next && (next.block.type === "verb" || next.block.type === "negative" || next.block.type === "modalVerbBlock")) || ("kid" in next && next.kid.type === "mini-pronoun")))
-                        ? ((("block" in next && next.block.type === "negative") || ("kid" in next && next.kid.type === "mini-pronoun")) ? { p: "", f: "-" } : "")
+                        ? ((("block" in next && next.block.type === "negative") || ("kid" in next && next.kid.type === "mini-pronoun")) ? { p: "", f: " " } : "")
                         : " ",
                     r,
                 ))
@@ -206,6 +207,7 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
             return [piece.block.ps];
         }
         if (piece.block.type === "verbComplement") {
+            // TODO: WHAAAAT
             return [{ p: "____", f: "____"}]; //getPashtoFromRendered(piece.block.complement);
         }
         if (piece.block.type === "objectSelection") {
@@ -277,12 +279,13 @@ function getEngAPs(blocks: T.Block[][]): string {
 function getEngComplement(blocks: T.Block[][]): string | undefined {
     const comp = getComplementFromBlocks(blocks);
     if (!comp) return undefined;
-    if (comp.selection === undefined) {
+    if (comp.selection.type === "unselected") {
         return "____";
     }
     if (comp.selection.type === "sandwich") {
         return getEnglishFromRendered({ type: "AP", selection: comp.selection });
     }
+    return comp.selection.e;
 }
 
 function putKidsInKidsSection(blocksWVars: T.Block[][], kids: T.Kid[], enforceKidsSectionBlankout: boolean): (T.Block | T.Kid | T.PsString)[][] {

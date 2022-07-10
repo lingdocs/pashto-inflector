@@ -24,7 +24,8 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
     vs: T.VerbSelectionComplete,
 }): string[] {
     const ec = parseEc(vs.verb.entry.ec || "");
-    const ep = vs.verb.entry.ep;
+    // in case there's something left with the deprecated ep as _____
+    const ep = vs.verb.entry.ep?.includes("__") ? undefined : vs.verb.entry.ep;
     function engEquative(tense: "past" | "present", s: T.Person): string {
         const [row, col] = getVerbBlockPosFromPerson(s);
         return grammarUnits.englishEquative[tense][row][col];
@@ -53,8 +54,8 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
             `$SUBJ ${engEquative("present", s)}${n ? " not" : ""} ${ec[2]}`,
         ]),
         subjunctiveVerb: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `that $SUBJ ${n ? " won't" : " will"} ${isToBe(ec) ? "be" : ec[0]}`,
             `$SUBJ ${n ? " not" : ""} should ${isToBe(ec) ? "be" : ec[0]}`,
+            `that $SUBJ ${n ? " won't" : " will"} ${isToBe(ec) ? "be" : ec[0]}`,
         ]),
         imperfectiveFuture: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
             `$SUBJ will${n ? " not" : ""} ${isToBe(ec) ? "be" : ec[0]}`,

@@ -113,14 +113,16 @@ export function getAPsFromBlocks(blocks: T.Block[][]): T.Rendered<T.APSelection>
 }
 
 export function getComplementFromBlocks(blocks: T.Block[][]): T.Rendered<T.ComplementSelection> | T.Rendered<T.UnselectedComplementSelection> | undefined {
-    const complement = blocks[0].find(b => b.block.type === "complement");
-    if (!complement) {
-        return undefined;
+    const complement = blocks[0].find(b => b.block.type === "complement")?.block as T.Rendered<T.ComplementSelection> | T.Rendered<T.UnselectedComplementSelection> | undefined;
+    if (complement) {
+        return complement;
     }
-    if (complement.block.type !== "complement") {
-        throw new Error("error finding complement - other kind of block retrieved");
+    // maybe there's a complement in the verb block
+    const verb = blocks[0].find(b => b.block.type === "verb" && b.block)?.block as T.VerbRenderedBlock | undefined;
+    if (verb?.block.complement) {
+        return verb.block.complement;
     }
-    return complement.block;
+    return undefined;
 }
 
 export function getObjectSelection(blocks: T.VPSBlockComplete[]): T.ObjectSelectionComplete;

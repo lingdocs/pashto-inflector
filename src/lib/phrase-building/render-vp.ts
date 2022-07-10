@@ -60,7 +60,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         king,
         complementPerson,
     });
-    const { verbBlocks, hasBa } = renderVerbSelection(VP.verb, kingPerson, objectPerson, VP.externalComplement);
+    const { verbBlocks, hasBa } = renderVerbSelection(VP.verb, kingPerson, objectPerson === undefined ? subjectPerson : objectPerson, VP.externalComplement);
     const b: T.VPRendered = {
         type: "VPRendered",
         king,
@@ -436,7 +436,7 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, comp
     };
     const verbBlocks = [
         ...(head ? (
-                (vs.isCompound === "stative" && !vrb.block.complement) ? [{
+                (!!(vs.isCompound === "stative" && vrb.block.complement)) ? [{
                     type: "verbComplement",
                     complement: head,
                 } as T.VerbComplementBlock] : [{
