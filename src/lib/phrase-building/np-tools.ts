@@ -5,7 +5,7 @@ import {
 import * as T from "../../types";
 import { concatPsString } from "../p-text-helpers";
 
-function getBaseAndAdjectives({ selection }: T.Rendered<T.NPSelection | T.EqCompSelection | T.APSelection>): T.PsString[] {
+function getBaseAndAdjectives({ selection }: T.Rendered<T.NPSelection | T.ComplementSelection | T.APSelection>): T.PsString[] {
     if (selection.type === "sandwich") {
         return getSandwichPsBaseAndAdjectives(selection);
     }
@@ -79,7 +79,7 @@ function trimOffShrunkenPossesive(p: T.Rendered<T.NPSelection>): T.Rendered<T.NP
     };
 }
 
-export function getPashtoFromRendered(b: T.Rendered<T.NPSelection> | T.Rendered<T.EqCompSelection> | T.Rendered<T.APSelection>, subjectsPerson: false | T.Person): T.PsString[] {
+export function getPashtoFromRendered(b: T.Rendered<T.NPSelection> | T.Rendered<T.ComplementSelection> | T.Rendered<T.APSelection>, subjectsPerson: false | T.Person): T.PsString[] {
     const base = getBaseAndAdjectives(b);
     if (b.selection.type === "loc. adv." || b.selection.type === "adverb") {
         return base;
@@ -88,6 +88,7 @@ export function getPashtoFromRendered(b: T.Rendered<T.NPSelection> | T.Rendered<
         if (!b.selection.sandwich) {
             return base 
         }
+        // TODO: Kinda cheating
         const sandwichPs = getPashtoFromRendered({ type: "AP", selection: b.selection.sandwich }, false);
         return base.flatMap(p => (
             sandwichPs.flatMap(s => (
@@ -199,7 +200,10 @@ function pronounPossEng(p: T.Person): string {
     return "their";
 }
 
-export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.EqCompSelection | T.APSelection>): string | undefined {
+export function getEnglishFromRendered(r: T.Rendered<T.NPSelection | T.ComplementSelection | T.APSelection | T.SandwichSelection<T.Sandwich>>): string | undefined {
+    if (r.type === "sandwich") {
+        return getEnglishFromRenderedSandwich(r);
+    }
     if (r.selection.type === "sandwich") {
         return getEnglishFromRenderedSandwich(r.selection);
     }

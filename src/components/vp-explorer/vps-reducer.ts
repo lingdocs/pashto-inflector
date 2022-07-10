@@ -74,7 +74,10 @@ export type VpsReducerAction = {
         index: number,
         direction: "back" | "forward",
     },
-};
+} | {
+    type: "set externalComplement",
+    payload: T.ComplementSelection | undefined,
+}
 
 export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, sendAlert?: (msg: string) => void): T.VPSelectionState {
     return ensureMiniPronounsOk(vps, doReduce());
@@ -290,6 +293,18 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                 ...vps,
                 blocks: shiftBlock(vps.blocks, index, direction),
             };
+        }
+        if (action.type === "set externalComplement") {
+            const selection = action.payload;
+            return {
+                ...vps,
+                externalComplement: selection === undefined
+                    // TODO: this is a bit messy
+                    // when using the ComplementPicker with an EP - undefined means it hasn't been selected
+                    // when using the ComplementPicker with a VP - undefined means there can be no complement
+                    ? { type: "complement", selection: { type: "unselected" }}
+                    : selection,
+            }
         }
         throw new Error("unknown vpsReducer state");
     }

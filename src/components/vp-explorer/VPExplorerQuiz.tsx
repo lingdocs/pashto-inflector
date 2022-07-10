@@ -486,6 +486,7 @@ function getRandomVPSelection(mix: MixType = "both") {
                 )),
                 verb: randomizeTense(verb, true),
                 form: { removeKing: false, shrinkServant: false },
+                externalComplement: undefined,
             }
         }
         return {
@@ -501,6 +502,7 @@ function getRandomVPSelection(mix: MixType = "both") {
             )),
             verb: randomizeTense(verb, true),
             form: { removeKing: false, shrinkServant: false },
+            externalComplement: undefined,
         };
     };
 };

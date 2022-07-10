@@ -30,8 +30,8 @@ function Block({ opts, block, king, script }: {
         const english = getEnglishFromRendered(block.block.selection);
         return <div className="text-center">
             <div><strong>Predicate</strong></div>
-            {block.block.selection.type === "EQComp"
-                ? <EqCompBlock opts={opts} comp={block.block.selection.selection} script={script} />
+            {block.block.selection.type === "complement"
+                ? <ComplementBlock opts={opts} comp={block.block.selection.selection} script={script} />
                 : <NPBlock opts={opts} english={english} script={script}>{block.block.selection}</NPBlock>}
         </div>
     }
@@ -62,6 +62,9 @@ function Block({ opts, block, king, script }: {
     }
     if (block.block.type === "modalVerbKedulPart") {
         return <ModalAuxBlock opts={opts} aux={block.block} script={script} />
+    }
+    if (block.block.type === "complement") {
+        return <ComplementBlock opts={opts} comp={block.block.selection} script={script} />;
     }
     return null;
 }
@@ -99,7 +102,12 @@ function VerbSBlock({ opts, v, script }: {
     return <div className="text-center">
         {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
         <Border>
+            <>
+            {v.type === "verb" && v.complement && <span className="mx-2">
+                <ComplementBlock opts={opts} comp={v.complement.selection} script={script} inside />
+            </span>}
             {getLength(v.ps, length)[0][script]}
+            </>
         </Border>
         <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"}</div>
         <EnglishBelow>{((v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb")
@@ -244,10 +252,11 @@ function ObjectBlock({ opts, obj, role, script }: {
     </div>;
 }
 
-function EqCompBlock({ opts, comp, script }: {
+function ComplementBlock({ opts, comp, script, inside }: {
     script: "p" | "f",
     opts: T.TextOptions,
-    comp: T.Rendered<T.EqCompSelection["selection"]>,
+    comp: T.Rendered<T.ComplementSelection["selection"]> | T.Rendered<T.UnselectedComplementSelection>["selection"],
+    inside?: boolean,
 }) {
     function AdjectiveBlock({ opts, adj }: {
         opts: T.TextOptions,
@@ -274,18 +283,31 @@ function EqCompBlock({ opts, comp, script }: {
             <EnglishBelow>{adv.e}</EnglishBelow>
         </div>;
     }
-
     return <div className="text-center">
         <div>Comp.</div>
         {comp.type === "adjective"
             ? <AdjectiveBlock opts={opts} adj={comp} />
             : comp.type === "loc. adv."
-                ? <LocAdvBlock opts={opts} adv={comp} />
-                : <div>
-                    <Sandwich opts={opts} sandwich={comp} script={script} />
-                    <div>Sandwich</div>
+            ? <LocAdvBlock opts={opts} adv={comp} />
+            : comp.type === "noun"
+            ? <Border>
+                NOT DONE YET
+            </Border>
+            : comp.type === "unselected"
+            ? <div>
+                <Border>
+                    ____
+                </Border>
+                {!inside && <>
+                    <div>&nbsp;</div>
                     <EnglishBelow>{comp.e}</EnglishBelow>
-                </div>}
+                </>}
+            </div>
+            : <div>
+                <Sandwich opts={opts} sandwich={comp} script={script} />
+                <div>Sandwich</div>
+                <EnglishBelow>{comp.e}</EnglishBelow>
+            </div>}
     </div>;
 }
 

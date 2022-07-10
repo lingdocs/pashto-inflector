@@ -1,32 +1,37 @@
 import { useState, useEffect } from "react";
-import * as T from "../../../types";
-import AdjectivePicker from "../../np-picker/AdjectivePicker";
-import LocativeAdverbPicker from "./LocativeAdverbPicker";
-import SandwichPicker from "../../np-picker/SandwichPicker";
-const compTypes: T.EqCompType[] = ["adjective", "loc. adv.", "sandwich"];
+import * as T from "../types";
+import AdjectivePicker from "./np-picker/AdjectivePicker";
+import LocativeAdverbPicker from "./ep-explorer/eq-comp-picker/LocativeAdverbPicker";
+import SandwichPicker from "./np-picker/SandwichPicker";
+const compTypes: T.ComplementType[] = ["adjective", "loc. adv.", "sandwich", "comp. noun"];
 
-function EqCompPicker(props: {
+function selectionTypeToCompType(s: Exclude<T.ComplementType, "comp. noun"> | "noun"): T.ComplementType {
+    if (s === "noun") return "comp. noun";
+    return s;
+}
+
+function ComplementPicker(props: {
     phraseIsComplete: boolean,
-    onChange: (comp: T.EqCompSelection | undefined) => void,
-    comp: T.EqCompSelection | undefined,
+    onChange: (comp: T.ComplementSelection | undefined) => void,
+    comp: T.ComplementSelection | undefined,
     opts: T.TextOptions,
     cantClear?: boolean,
     heading?: JSX.Element | string,
     entryFeeder: T.EntryFeeder,
 }) {
-    const [compType, setCompType] = useState<T.EqCompType | undefined>(props.comp
-        ? props.comp.selection.type
+    const [compType, setCompType] = useState<T.ComplementType | undefined>(props.comp
+        ? selectionTypeToCompType(props.comp.selection.type)
         : undefined);
     useEffect(() => {
         setCompType(props.comp
-            ? props.comp.selection.type
+            ? selectionTypeToCompType(props.comp.selection.type)
             : undefined);
     }, [props.comp]);
     function handleClear() {
         setCompType(undefined);
         props.onChange(undefined);
     }
-    function handleCompTypeChange(ctp: T.EqCompType) {
+    function handleCompTypeChange(ctp: T.ComplementType) {
         props.onChange(undefined);
         setCompType(ctp);
     }
@@ -70,7 +75,7 @@ function EqCompPicker(props: {
                     entryFeeder={props.entryFeeder}
                     adjective={props.comp?.selection.type === "adjective" ? props.comp.selection : undefined}
                     opts={props.opts}
-                    onChange={(a) => props.onChange(a ? { type: "EQComp", selection: a } : undefined)}
+                    onChange={(a) => props.onChange(a ? { type: "complement", selection: a } : undefined)}
                     phraseIsComplete={props.phraseIsComplete}
                 />
             : compType === "loc. adv."
@@ -78,11 +83,11 @@ function EqCompPicker(props: {
                 entryFeeder={props.entryFeeder.locativeAdverbs}
                 adjective={props.comp?.selection.type === "loc. adv." ? props.comp.selection : undefined}
                 opts={props.opts}
-                onChange={(a) => props.onChange(a ? { type: "EQComp", selection: a } : undefined)}
+                onChange={(a) => props.onChange(a ? { type: "complement", selection: a } : undefined)}
             />
             : compType === "sandwich"
             ? <SandwichPicker
-                onChange={(a) => props.onChange(a ? { type: "EQComp", selection: a } : undefined)}
+                onChange={(a) => props.onChange(a ? { type: "complement", selection: a } : undefined)}
                 opts={props.opts}
                 sandwich={props.comp?.selection.type === "sandwich" ? props.comp.selection : undefined}
                 entryFeeder={props.entryFeeder}
@@ -90,9 +95,13 @@ function EqCompPicker(props: {
                 // TODO: get phraseIsComplete working here
                 phraseIsComplete={props.phraseIsComplete}
             />
+            : compType === "comp. noun"
+            ? <div style={{ maxWidth: "9rem" }}>
+                Sorry, can't choose complement nouns yet 🚧
+            </div>
             : null}
         </div>
     </>;
 }
 
-export default EqCompPicker;
+export default ComplementPicker;

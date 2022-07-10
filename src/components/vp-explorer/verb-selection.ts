@@ -71,8 +71,21 @@ export function makeVPSelectionState(
             canChangeVoice: transitivity === "transitive",
             canChangeStatDyn: "stative" in info,
         },
+        externalComplement: takesExternalComplement(verb)
+            ? { type: "complement", selection: { type: "unselected" }}
+            : undefined,
         form: os ? os.form : { removeKing: false, shrinkServant: false },
     };
+}
+
+function takesExternalComplement(v: T.VerbEntry): boolean {
+    if (v.entry.p === "کول" && v.entry.e.includes("to make")) {
+        return true;
+    }
+    if (v.entry.p === "کېدل" && v.entry.e.includes("to become")) {
+        return true;
+    }
+    return false;
 }
 
 export function changeStatDyn(v: T.VPSelectionState, s: "dynamic" | "stative"): T.VPSelectionState {

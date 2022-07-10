@@ -46,7 +46,7 @@ export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflect
     throw new Error("unknown NP type");
 };
 
-function renderNounSelection(n: T.NounSelection, inflected: boolean, role: "servant" | "king" | "none"): T.Rendered<T.NounSelection> {
+export function renderNounSelection(n: T.NounSelection, inflected: boolean, role: "servant" | "king" | "none"): T.Rendered<T.NounSelection> {
     const english = getEnglishFromNoun(n.entry, n.number);
     const pashto = ((): T.PsString[] => {
         const infs = inflectWord(n.entry);
@@ -64,7 +64,7 @@ function renderNounSelection(n: T.NounSelection, inflected: boolean, role: "serv
     const person = getPersonNumber(n.gender, n.number);
     return {
         ...n,
-        adjectives: n.adjectives.map(a => renderAdjectiveSelection(a, person, inflected, role)),
+        adjectives: n.adjectives.map(a => renderAdjectiveSelection(a, person, inflected)),
         person,
         inflected,
         role,

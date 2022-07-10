@@ -8,7 +8,13 @@ import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationMod
 import { vpsReducer, VpsReducerAction } from "./vps-reducer";
 import APPicker from "../ap-picker/APPicker";
 import autoAnimate from "@formkit/auto-animate";
-import { getObjectSelection, getSubjectSelection, includesShrunkenServant, isNoObject } from "../../lib/phrase-building/blocks-utils";
+import {
+    getObjectSelection,
+    getSubjectSelection, 
+    includesShrunkenServant,
+    isNoObject,
+} from "../../lib/phrase-building/blocks-utils";
+import ComplementPicker from "../ComplementPicker";
 
 function VPPicker({ opts, vps, onChange, entryFeeder }: {
     opts: T.TextOptions,
@@ -156,11 +162,6 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                                     {!servantIsShrunk ? "🪄" : "👶"}
                                                 </span>
                                             }
-                                            {(rendered && rendered.whatsAdjustable !== "servant") && 
-                                                <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
-                                                    {!VPS?.form.removeKing ? "🚫" : "🙈"}
-                                                </span>
-                                            }
                                         </div>}
                                     entryFeeder={entryFeeder}
                                     role="object"
@@ -175,6 +176,19 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                         : null}
                 </div>;
             })}
+            {vps.externalComplement && <div className="my-2 card block-card p-1 mr-1" key="complementPicker">
+                <div className="h5 text-center">Complement</div>
+                <ComplementPicker
+                    phraseIsComplete={phraseIsComplete}
+                    comp={vps.externalComplement.selection.type === "unselected"
+                        ? undefined
+                        : vps.externalComplement as T.ComplementSelection // TODO: just typescript being dumb? - looks like it
+                    }
+                    onChange={payload => adjustVps({ type: "set externalComplement", payload })}
+                    opts={opts}
+                    entryFeeder={entryFeeder}
+                />
+            </div>}
             <div className="my-2">
                 <TensePicker
                     vps={vps}

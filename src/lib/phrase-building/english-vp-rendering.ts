@@ -41,9 +41,6 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
     function isToBe(v: T.EnglishVerbConjugationEc): boolean {
         return (v[2] === "being");
     }
-    const futureEngBuilder: T.EnglishBuilder = (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
-        `$SUBJ will${n ? " not" : ""} ${isToBe(ec) ? "be" : ec[0]}`,
-    ]);
     // TODO: Pull these out to a seperate entity and import it
     const basicBuilders: Record<
         T.VerbTense,
@@ -59,8 +56,13 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
             `that $SUBJ ${n ? " won't" : " will"} ${isToBe(ec) ? "be" : ec[0]}`,
             `$SUBJ ${n ? " not" : ""} should ${isToBe(ec) ? "be" : ec[0]}`,
         ]),
-        imperfectiveFuture: futureEngBuilder,
-        perfectiveFuture: futureEngBuilder,
+        imperfectiveFuture: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
+            `$SUBJ will${n ? " not" : ""} ${isToBe(ec) ? "be" : ec[0]}`,
+            `$SUBJ will${n ? " not" : ""} be ${isToBe(ec) ? "be" : ec[2]}`,
+        ]),
+        perfectiveFuture: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
+            `$SUBJ will${n ? " not" : ""} ${isToBe(ec) ? "be" : ec[0]}`,
+        ]),
         imperfectivePast: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
             //  - subj pastEquative (N && "not") ec.2 obj
             `$SUBJ ${engEquative("past", s)}${n ? " not" : ""} ${ec[2]}`,

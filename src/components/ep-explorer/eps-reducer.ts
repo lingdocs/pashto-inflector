@@ -17,8 +17,8 @@ export type EpsReducerAction = {
     type: "set predicate NP",
     payload: T.NPSelection | undefined,
 } | {
-    type: "set predicate comp",
-    payload: T.EqCompSelection | undefined,
+    type: "set predicate complement",
+    payload: T.ComplementSelection | undefined,
 } | {
     type: "set omitSubject",
     payload: "true" | "false",
@@ -134,7 +134,7 @@ export default function epsReducer(eps: T.EPSelectionState, action: EpsReducerAc
         };
         return selection ? ensureMiniPronounsOk(eps, n, sendAlert) : n;
     }
-    if (action.type === "set predicate comp") {
+    if (action.type === "set predicate complement") {
         return {
             ...eps,
             predicate: {

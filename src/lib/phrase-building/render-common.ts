@@ -32,7 +32,7 @@ export function findPossesivesToShrink(
             ];
         }
         if (block.type === "predicateSelection") {
-            if (block.selection.type === "EQComp") {
+            if (block.selection.type === "complement") {
                 if (block.selection.selection.type === "sandwich") {
                     return [
                         ...kids,

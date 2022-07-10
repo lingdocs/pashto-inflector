@@ -18,30 +18,29 @@ function chooseInflection(inflections: T.UnisexSet<T.InflectionSet>, pers: T.Per
     return inflections[gender][infNumber];
 }
 
-export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Person, inflected: boolean, role: "king" | "servant" | "none"): T.Rendered<T.AdjectiveSelection> {
+export function inflectAdjective(a: T.AdjectiveSelection, person: T.Person, inflected: boolean): T.ArrayOneOrMore<T.PsString> {
     const infs = inflectWord(a.entry);
+    if (!infs) {
+        return [psStringFromEntry(a.entry)];
+    }
+    if (!infs.inflections || !isUnisexSet(infs.inflections)) {
+        throw new Error("error getting inflections for adjective, looks like a noun's inflections");
+    }
+    return chooseInflection(infs.inflections, person, inflected);
+}
+
+export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Person, inflected: boolean): T.Rendered<T.AdjectiveSelection> {
     const eWord = getEnglishWord(a.entry);
     const e = !eWord
         ? undefined
         : typeof eWord === "string"
         ? eWord
         : (eWord.singular || undefined);
-    if (!infs) return {
-        type: "adjective",
-        entry: a.entry,
-        ps: [psStringFromEntry(a.entry)],
-        e,
-        inflected,
-        sandwich: a.sandwich ? renderSandwich(a.sandwich) : undefined,
-        person,
-    }
-    if (!infs.inflections || !isUnisexSet(infs.inflections)) {
-        throw new Error("error getting inflections for adjective, looks like a noun's inflections");
-    }
+    const ps = inflectAdjective(a, person, inflected);
     return {
         type: "adjective",
         entry: a.entry,
-        ps: chooseInflection(infs.inflections, person, inflected),
+        ps,
         e,
         inflected,
         person,

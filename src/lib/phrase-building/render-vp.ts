@@ -29,6 +29,7 @@ import { renderNPSelection } from "./render-np";
 import { findPerfectiveHead, getObjectSelection, getSubjectSelection, makeBlock, makeKid } from "./blocks-utils";
 import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
+import { renderComplementSelection } from "./render-complement";
 
 // TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
 
@@ -42,6 +43,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const kingPerson = getPersonFromNP(
         king === "subject" ? subject : object,
     );
+    const complementPerson = getPersonFromNP(object ? object : subject)
     // TODO: more elegant way of handling this type safety
     if (kingPerson === undefined) {
         throw new Error("king of sentance does not exist");
@@ -56,8 +58,9 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         inflectSubject,
         inflectObject,
         king,
+        complementPerson,
     });
-    const { verbBlocks, hasBa } = renderVerbSelection(VP.verb, kingPerson, objectPerson);
+    const { verbBlocks, hasBa } = renderVerbSelection(VP.verb, kingPerson, objectPerson, VP.externalComplement);
     const b: T.VPRendered = {
         type: "VPRendered",
         king,
@@ -332,6 +335,7 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
     inflectSubject: boolean,
     inflectObject: boolean,
     king: "subject" | "object",
+    complementPerson: T.Person | undefined,
 }): T.Block[] {
     return blocks.reduce((blocks, { block }): T.Block[] => {
         if (block.type === "subjectSelection") {
@@ -363,9 +367,20 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
                 }),
             ];
         }
+        if (block.type === "AP") {
+            return [
+                ...blocks,
+                makeBlock(renderAPSelection(block)),
+            ];
+        }
         return [
             ...blocks,
-            makeBlock(renderAPSelection(block)),
+            makeBlock(
+                renderComplementSelection(
+                    block,
+                    // just for typesafety // TODO: only include the person if we're doing an adjective
+                    config.complementPerson || T.Person.FirstSingMale,
+                )),
         ];
     }, [] as T.Block[]);
 }
@@ -390,7 +405,7 @@ type VerbBlocks =
     | [T.PerfectParticipleBlock, T.PerfectEquativeBlock] // perfect verb
     | [T.ModalVerbBlock, T.ModalVerbKedulPart] // modal verb
 
-function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, objectPerson: T.Person | undefined): {
+function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, complementPerson: T.Person | undefined, externalComplement: T.ComplementSelection | T.UnselectedComplementSelection | undefined): {
     verbBlocks: VerbBlocks
     hasBa: boolean,  
 } {
@@ -404,7 +419,9 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, obje
         : "stative" in conjugations
         ? conjugations.stative
         : conjugations;
-    const { ps: { head, rest }, hasBa } = getPsVerbConjugation(conj, vs, person, objectPerson);
+    const { ps: { head, rest }, hasBa } = getPsVerbConjugation(conj, vs, person, complementPerson);
+    const perfective = isPerfective(vs.tense);
+    const stativeHelper = isStativeHelper(vs.verb)
     const vrb: T.VerbRenderedBlock = {
         type: "verb",
         block: {
@@ -412,11 +429,14 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, obje
             ps: rest,
             person,
             hasBa,
+            complement: (!perfective && stativeHelper && externalComplement)
+                ? renderComplementSelection(externalComplement, complementPerson || T.Person.FirstSingMale)
+                : undefined,
         },
     };
     const verbBlocks = [
         ...(head ? (
-                vs.isCompound === "stative" ? [{
+                (vs.isCompound === "stative" && !vrb.block.complement) ? [{
                     type: "verbComplement",
                     complement: head,
                 } as T.VerbComplementBlock] : [{
@@ -424,6 +444,9 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, obje
                     ps: head,
                 } as T.PerfectiveHeadBlock]
             ) : [] as [T.VerbComplementBlock] | [T.PerfectiveHeadBlock] | []),
+        ...(externalComplement && perfective && stativeHelper)
+            ? [renderComplementSelection(externalComplement, complementPerson || T.Person.FirstSingMale)]
+            : [],
         ...splitUpIfModal(vrb),
     ] as VerbBlocks;
     const perfectStuff = isPerfectTense(vrb.block.tense) ? getPerfectStuff(rest, vrb) : undefined;
@@ -431,6 +454,12 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, obje
         verbBlocks: perfectStuff ? perfectStuff : verbBlocks,
         hasBa,
     };
+}
+
+function isStativeHelper(v: T.VerbEntry): boolean {
+    if (v.entry.p === "کول" && v.entry.e.includes("make")) return true;
+    if (v.entry.p === "کېدل" && v.entry.e.includes("become")) return true;
+    return false;
 }
 
 function splitUpIfModal(v: T.VerbRenderedBlock): [T.VerbRenderedBlock] | [T.ModalVerbBlock, T.ModalVerbKedulPart] {
@@ -489,7 +518,7 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
     if (perfective) {
         const past = isPastTense(vs.tense);
         const splitInfo = conj.info[(past || isModalTense(vs.tense)) ? "root" : "stem"].perfectiveSplit;
-        if (!splitInfo) return { ps: { head: undefined, rest: verbForm }, hasBa };
+        if (!splitInfo) return { ps: { head: undefined, rest: removeBaFromForm(verbForm) }, hasBa };
         // TODO: Either solve this in the inflector or here, it seems silly (or redundant)
         // to have a length option in the perfective split stem??
         const [splitHead] = getLong(getMatrixBlock(splitInfo, objectPerson, person));

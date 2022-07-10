@@ -554,7 +554,7 @@ export type SubjectSelectionComplete = {
 
 export type PredicateSelectionComplete = {
     type: "predicateSelection",
-    selection: EqCompSelection | NPSelection,
+    selection: ComplementSelection | NPSelection,
 };
 
 export type ObjectSelectionComplete = {
@@ -565,12 +565,14 @@ export type ObjectSelectionComplete = {
 export type VPSelectionState = {
     blocks: VPSBlock[]
     verb: VerbSelection,
+    externalComplement: undefined | UnselectedComplementSelection | ComplementSelection,
     form: FormVersion,
 };
 
 export type VPSelectionComplete = {
     blocks: VPSBlockComplete[]
     verb: VerbSelectionComplete,
+    externalComplement: VPSelectionState["externalComplement"],
     form: FormVersion,
 };
 
@@ -690,19 +692,23 @@ export type RenderedPossesorSelection = {
     shrunken: boolean,
 };
 
+export type UnselectedComplementSelection = { type: "complement", selection: { type: "unselected" }};
+
 export type Rendered<
     T extends
         | NPSelection
         | NPSelection["selection"]
         | APSelection
         | APSelection["selection"]
-        | EqCompSelection
-        | EqCompSelection["selection"]
         | SubjectSelectionComplete
         | ObjectSelectionComplete
         | PredicateSelectionComplete
         | AdjectiveSelection
-        | SandwichSelection<Sandwich> 
+        | SandwichSelection<Sandwich>
+        | ComplementSelection
+        | ComplementSelection["selection"]
+        | UnselectedComplementSelection
+        | undefined
 > =
     T extends NPSelection
     ? {
@@ -714,10 +720,19 @@ export type Rendered<
         type: "AP",
         selection: Rendered<APSelection["selection"]>
     }
-    : T extends EqCompSelection
+    : T extends ComplementSelection
     ? {
-        type: "EQComp",
-        selection: Rendered<EqCompSelection["selection"]>
+        type: "complement",
+        selection: Rendered<ComplementSelection["selection"]>
+    }
+    : T extends UnselectedComplementSelection
+    ? {
+        type: "complement",
+        selection: {
+            type: "unselected",
+            ps: PsString[],
+            e: string,
+        },
     }
     : T extends SandwichSelection<Sandwich> 
     ? Omit<SandwichSelection<Sandwich>, "inside"> & {
@@ -740,6 +755,11 @@ export type Rendered<
         inflected: boolean,
         person: Person,
     }
+    : T extends ComplementSelection
+    ? {
+        type: "complement",
+        selection: Rendered<ComplementSelection["selection"]>,
+    }
     : T extends SubjectSelectionComplete
     ? {
         type: "subjectSelection",
@@ -753,8 +773,13 @@ export type Rendered<
     : T extends PredicateSelectionComplete
     ? {
         type: "predicateSelection",
-        selection: Rendered<EqCompSelection> | Rendered<NPSelection>,
-    } : ReplaceKey<
+        selection: Rendered<ComplementSelection> | Rendered<NPSelection>,
+    } : T extends undefined
+    ? {
+        type: "undefined",
+        ps: PsString,
+    }
+    : ReplaceKey<
         Omit<T, "changeGender" | "changeNumber" | "changeDistance" | "adjectives" | "possesor">,
         "e",
         string
@@ -777,7 +802,7 @@ export type EPSelectionState = {
     predicate: {
         type: "NP" | "Complement",
         NP: NPSelection | undefined,
-        Complement: EqCompSelection | undefined,
+        Complement: ComplementSelection | undefined,
     },
     equative: EquativeSelection,
     omitSubject: boolean,
@@ -795,11 +820,11 @@ export type EPSBlockComplete = {
 export type VPSBlock = {
     key: number,
     // TODO: confusing use of APSelection / should be like APSelection s APSelection complete like the others
-    block: SubjectSelection | ObjectSelection | (APSelection | undefined),
+    block: SubjectSelection | ObjectSelection | (APSelection | undefined) | ComplementSelection,
 };
 export type VPSBlockComplete = {
     key: number,
-    block: SubjectSelectionComplete | ObjectSelectionComplete | APSelection,
+    block: SubjectSelectionComplete | ObjectSelectionComplete | APSelection | ComplementSelection,
 };
 
 export type EPSelectionComplete = Omit<EPSelectionState, "predicate" | "blocks"> & {
@@ -808,14 +833,18 @@ export type EPSelectionComplete = Omit<EPSelectionState, "predicate" | "blocks">
     omitSubject: boolean,
 };
 
-export type EqCompType = "adjective" | "loc. adv." | "sandwich"
-export type EqCompSelection = {
-    type: "EQComp",
-    selection: AdjectiveSelection | LocativeAdverbSelection | SandwichSelection<Sandwich>,
-};
+export type ComplementType = "adjective" | "loc. adv." | "sandwich" | "comp. noun";
 
 export type SandwichSelection<S extends Sandwich> = S & {
     inside: NPSelection,
+};
+
+export type ComplementSelection = {
+    type: "complement",
+    selection: AdjectiveSelection
+        | LocativeAdverbSelection
+        | SandwichSelection<Sandwich>
+        | NounSelection,
 };
 
 export type Sandwich = {
@@ -898,6 +927,7 @@ export type VerbRenderedBlock = {
         hasBa: boolean,
         ps: SingleOrLengthOpts<PsString[]>,
         person: Person,
+        complement: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
     },
 };
 
@@ -907,6 +937,8 @@ export type Block = {
         | Rendered<ObjectSelectionComplete>
         | Rendered<APSelection>
         | Rendered<PredicateSelectionComplete>
+        | Rendered<ComplementSelection>
+        | Rendered<UnselectedComplementSelection>
         | PerfectParticipleBlock
         | PerfectEquativeBlock
         | ModalVerbBlock

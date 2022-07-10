@@ -99,7 +99,18 @@ export function getPredicateSelectionFromBlocks(blocks: T.Block[][]): T.Rendered
 
 export function getAPsFromBlocks(blocks: T.Block[][]): T.Rendered<T.APSelection>[] {
     return blocks[0].filter(b => b.block.type === "AP").map(b => b.block) as T.Rendered<T.APSelection>[];
-} 
+}
+
+export function getComplementFromBlocks(blocks: T.Block[][]): T.Rendered<T.ComplementSelection> | T.Rendered<T.UnselectedComplementSelection> | undefined {
+    const complement = blocks[0].find(b => b.block.type === "complement");
+    if (!complement) {
+        return undefined;
+    }
+    if (complement.block.type !== "complement") {
+        throw new Error("error finding complement - other kind of block retrieved");
+    }
+    return complement.block;
+}
 
 export function getObjectSelection(blocks: T.VPSBlockComplete[]): T.ObjectSelectionComplete;
 export function getObjectSelection(blocks: T.VPSBlock[]): T.ObjectSelection;
@@ -256,7 +267,11 @@ export function removeAP<B extends T.VPSBlock[] | T.EPSBlock[]>(blocks: B, index
 }
 
 export function isNoObject(b: T.VPSBlock["block"] | T.EPSBlock["block"]): b is { type: "objectSelection", selection: "none" } {
-    return !!(b && b.type === "objectSelection" && b.selection === "none");
+    return !!(
+        b
+        &&
+        (b.type === "objectSelection" && b.selection === "none")
+    );
 }
 
 export function specifyEquativeLength(blocksWVars: T.Block[][], length: "long" | "short"): T.Block[][] {

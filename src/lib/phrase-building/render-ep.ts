@@ -8,12 +8,11 @@ import { getPersonFromVerbForm } from "../../lib/misc-helpers";
 import { getVerbBlockPosFromPerson } from "../misc-helpers";
 import { getEnglishWord } from "../get-english-word";
 import { psStringFromEntry } from "../p-text-helpers";
-import { isLocativeAdverbEntry } from "../type-predicates";
-import { renderAdjectiveSelection } from "./render-adj";
 import { renderSandwich } from "./render-sandwich";
 import { EPSBlocksAreComplete, getSubjectSelection, makeBlock, makeKid } from "./blocks-utils";
 import { removeAccentsWLength } from "../accent-helpers";
 import { findPossesivesToShrink, orderKids } from "./render-common";
+import { renderComplementSelection } from "./render-complement";
 
 export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
     const { kids, blocks, englishEquativePerson } = getEPSBlocksAndKids(EP);
@@ -45,7 +44,8 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks
             type: "predicateSelection",
                 selection: EP.predicate.selection.type === "NP"
                     ? renderNPSelection(EP.predicate.selection, false, false, "subject", "king")
-                    : renderEqCompSelection(EP.predicate.selection, commandingPerson),
+                    // we won't have an unselected complement in the EP - TODO: make safer?
+                    : renderComplementSelection(EP.predicate.selection, commandingPerson) as T.Rendered<T.ComplementSelection>,
         }),
         makeBlock(equative),
     ], EP.equative.negative);
@@ -148,40 +148,6 @@ export function renderAdverbSelection(a: T.AdverbSelection): T.Rendered<T.Adverb
         ps: [psStringFromEntry(a.entry)],
         e,
     };
-}
-
-function renderEqCompSelection(s: T.EqCompSelection, person: T.Person): T.Rendered<T.EqCompSelection> {
-    if (s.selection.type === "sandwich") {
-        return {
-            type: "EQComp",
-            selection: renderSandwich(s.selection),
-        };
-    }
-    const e = getEnglishWord(s.selection.entry);
-    if (!e || typeof e !== "string") {
-        throw new Error("error getting english for compliment");
-    }
-    if (isLocativeAdverbEntry(s.selection.entry)) {
-        return {
-            type: "EQComp",
-            selection: {
-                type: "loc. adv.",
-                entry: s.selection.entry,
-                ps: [psStringFromEntry(s.selection.entry)],
-                e,
-                inflected: false,
-                person,
-                role: "none",
-            },
-        };
-    }
-    if (s.selection.type === "adjective") {
-        return {
-            type: "EQComp",
-            selection: renderAdjectiveSelection(s.selection, person, false, "none"),
-        };
-    }
-    throw new Error("invalid EqCompSelection");
 }
 
 const equativeBuilders: Record<T.EquativeTense, (p: T.Person, n: boolean) => string[]> = {

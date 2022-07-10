@@ -2,7 +2,7 @@ import * as T from "../../types";
 import NPPicker from "../np-picker/NPPicker";
 import EquativePicker from "./EquativePicker";
 import ButtonSelect from "../ButtonSelect";
-import EqCompPicker from "./eq-comp-picker/EqCompPicker";
+import ComplementPicker from "../ComplementPicker";
 import epsReducer, { EpsReducerAction } from "./eps-reducer";
 import { useEffect, useRef, useState } from "react";
 import { completeEPSelection } from "../../lib/phrase-building/render-ep";
@@ -92,10 +92,10 @@ function EPPicker({ opts, eps, onChange, entryFeeder }: {
                     role="subject"
                     onChange={payload => adjustEps({ type: "set predicate NP", payload })}
                     opts={opts}
-                /> : <EqCompPicker
+                /> : <ComplementPicker
                     phraseIsComplete={phraseIsComplete}
                     comp={eps.predicate.type === "Complement" ? eps.predicate.Complement : undefined}
-                    onChange={payload => adjustEps({ type: "set predicate comp", payload })}
+                    onChange={payload => adjustEps({ type: "set predicate complement", payload })}
                     opts={opts}
                     entryFeeder={entryFeeder}
                 />}

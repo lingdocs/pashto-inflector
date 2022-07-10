@@ -14,12 +14,12 @@ import { completeVPSelection } from "./vp-tools";
 import { renderVP } from "./render-vp";
 import {
     getAPsFromBlocks,
+    getComplementFromBlocks,
     getObjectSelectionFromBlocks,
     getPredicateSelectionFromBlocks,
     getSubjectSelectionFromBlocks,
     getVerbFromBlocks,
     hasEquativeWithLengths,
-    hasVerbWithLengths,
     specifyEquativeLength,
     specifyVerbLength,
 } from "./blocks-utils";
@@ -81,10 +81,14 @@ export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?
 }
 
 function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, king: "subject" | "object"): T.SingleOrLengthOpts<T.PsString[]> {
-    if (hasVerbWithLengths(blocks)) {
+    const verbBlock = getVerbFromBlocks(blocks);
+    if ("long" in verbBlock.block.ps) {
         return {
             long: compileVPPs(specifyVerbLength(blocks, "long"), kids, form, king) as T.PsString[],
             short: compileVPPs(specifyVerbLength(blocks, "short"), kids, form, king) as T.PsString[],
+            ..."mini" in verbBlock.block.ps ? {
+                mini: compileVPPs(specifyVerbLength(blocks, "mini"), kids, form, king) as T.PsString[],
+            } : {},
         };
     }
     const subjectPerson = getSubjectSelectionFromBlocks(blocks)
@@ -94,6 +98,7 @@ function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, ki
         kids,
         false,
     );
+    console.log({ blocksWKids });
     return removeDuplicates(combineIntoText(blocksWKids, subjectPerson, {}));
 }
 
@@ -198,7 +203,7 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
             return [piece.block.ps];
         }
         if (piece.block.type === "verbComplement") {
-            return [{ p: "---", f: "---"}]; //getPashtoFromRendered(piece.block.complement);
+            return [{ p: "____", f: "____"}]; //getPashtoFromRendered(piece.block.complement);
         }
         if (piece.block.type === "objectSelection") {
             if (typeof piece.block.selection !== "object") {
@@ -208,7 +213,11 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
         }
         if (piece.block.type === "verb") {
             // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
-            return getLong(piece.block.block.ps);
+            const verbPs = getLong(piece.block.block.ps);
+            if (piece.block.block.complement) {
+                return combineComplementWVerbPs(piece.block.block.complement, verbPs);
+            }
+            return verbPs;
         }
         if (piece.block.type === "perfectParticipleBlock") {
             // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
@@ -226,6 +235,13 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
             // just using the short one for now - it will only be short anyways
             return getShort(piece.block.ps);
         }
+        if (piece.block.type === "complement") {
+            if (piece.block.selection.type === "sandwich") {
+                // TODO: Kinda cheating
+                return getPashtoFromRendered({ type: "AP", selection: piece.block.selection }, false);
+            }
+            return piece.block.selection.ps;
+        }
     }
     if ("kid" in piece) {
         if (piece.kid.type === "ba") {
@@ -235,8 +251,16 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
             return [piece.kid.ps];
         }
     }
-    
     throw new Error("unrecognized piece type");
+}
+
+function combineComplementWVerbPs(comp: T.Rendered<T.ComplementSelection | T.UnselectedComplementSelection>, v: T.PsString[]): T.PsString[] {
+    const compPs = comp.selection.type === "sandwich" 
+        ? getPashtoFromRendered({ type: "AP", selection: comp.selection }, false)
+        : comp.selection.ps;
+    return compPs.flatMap((c) => (
+        v.map((p) => concatPsString(c, " ", p))
+    ));
 }
 
 function getEngAPs(blocks: T.Block[][]): string {
@@ -245,6 +269,17 @@ function getEngAPs(blocks: T.Block[][]): string {
         if (!e) return accum;
         return `${accum} ${e}`;
     }, "");
+}
+
+function getEngComplement(blocks: T.Block[][]): string | undefined {
+    const comp = getComplementFromBlocks(blocks);
+    if (!comp) return undefined;
+    if (comp.selection === undefined) {
+        return "____";
+    }
+    if (comp.selection.type === "sandwich") {
+        return getEnglishFromRendered({ type: "AP", selection: comp.selection });
+    }
 }
 
 function putKidsInKidsSection(blocksWVars: T.Block[][], kids: T.Kid[], enforceKidsSectionBlankout: boolean): (T.Block | T.Kid | T.PsString)[][] {
@@ -261,8 +296,13 @@ function putKidsInKidsSection(blocksWVars: T.Block[][], kids: T.Kid[], enforceKi
 }
 
 function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
-    function insertEWords(e: string, { subject, object, APs }: { subject: string, object?: string, APs: string }): string {
-        return e.replace("$SUBJ", subject).replace("$OBJ", object || "") + APs;
+    function insertEWords(e: string, { subject, object, APs, complement }: { subject: string, object?: string, APs: string, complement: string | undefined }): string {
+        return e
+            .replace("$SUBJ", subject)
+            .replace("$OBJ", object || "")
+            // TODO: check if this always works
+            + (complement ? ` ${complement}` : "")
+            + APs;
     }
     const engSubj = getSubjectSelectionFromBlocks(VP.blocks).selection;
     const obj = getObjectSelectionFromBlocks(VP.blocks).selection;
@@ -272,6 +312,7 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
         ? ""
         : undefined;
     const engAPs = getEngAPs(VP.blocks);
+    const engComplement = getEngComplement(VP.blocks);
     // require all English parts for making the English phrase
     return (VP.englishBase && engSubj && engObj !== undefined)
         ? VP.englishBase.map(e => insertEWords(e, {
@@ -279,6 +320,7 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
             subject: getEnglishFromRendered(engSubj) || "",
             object: engObj ? getEnglishFromRendered(engObj) : "",
             APs: engAPs,
+            complement: engComplement,
         })).map(capitalizeFirstLetter)
         : undefined;
 }
