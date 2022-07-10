@@ -15,13 +15,14 @@ import { renderVP } from "./render-vp";
 import {
     getAPsFromBlocks,
     getComplementFromBlocks,
+    getLengthyFromBlocks,
     getObjectSelectionFromBlocks,
     getPredicateSelectionFromBlocks,
     getSubjectSelectionFromBlocks,
     getVerbFromBlocks,
     hasEquativeWithLengths,
+    specifyBlockLength,
     specifyEquativeLength,
-    specifyVerbLength,
 } from "./blocks-utils";
 
 const blank: T.PsString = {
@@ -81,13 +82,16 @@ export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?
 }
 
 function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, king: "subject" | "object"): T.SingleOrLengthOpts<T.PsString[]> {
-    const verbBlock = getVerbFromBlocks(blocks);
-    if ("long" in verbBlock.block.ps) {
+    const lengthyBlock = getLengthyFromBlocks(blocks);
+    const potentialLengthy = lengthyBlock?.type === "verb"
+        ? lengthyBlock.block.ps
+        : lengthyBlock?.ps;
+    if (potentialLengthy && "long" in potentialLengthy) {
         return {
-            long: compileVPPs(specifyVerbLength(blocks, "long"), kids, form, king) as T.PsString[],
-            short: compileVPPs(specifyVerbLength(blocks, "short"), kids, form, king) as T.PsString[],
-            ..."mini" in verbBlock.block.ps ? {
-                mini: compileVPPs(specifyVerbLength(blocks, "mini"), kids, form, king) as T.PsString[],
+            long: compileVPPs(specifyBlockLength(blocks, "long"), kids, form, king) as T.PsString[],
+            short: compileVPPs(specifyBlockLength(blocks, "short"), kids, form, king) as T.PsString[],
+            ..."mini" in potentialLengthy ? {
+                mini: compileVPPs(specifyBlockLength(blocks, "mini"), kids, form, king) as T.PsString[],
             } : {},
         };
     }
@@ -98,7 +102,6 @@ function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, ki
         kids,
         false,
     );
-    console.log({ blocksWKids });
     return removeDuplicates(combineIntoText(blocksWKids, subjectPerson, {}));
 }
 

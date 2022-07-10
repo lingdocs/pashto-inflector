@@ -67,6 +67,17 @@ export function getVerbFromBlocks(blocks: T.Block[][]): T.VerbRenderedBlock {
     return v;
 }
 
+export function getLengthyFromBlocks(blocks: T.Block[][]): T.VerbRenderedBlock | T.PerfectParticipleBlock | T.ModalVerbBlock | T.PerfectEquativeBlock | undefined {
+    return blocks[0].find(f => f.block.type === "verb"
+        ||
+        f.block.type === "perfectParticipleBlock"
+        || 
+        f.block.type === "modalVerbBlock"
+        ||
+        f.block.type === "perfectEquativeBlock"
+    )?.block as T.VerbRenderedBlock | T.PerfectParticipleBlock | T.ModalVerbBlock | T.PerfectEquativeBlock | undefined;
+}
+
 export function getVerbAndHeadFromBlocks(blocks: T.Block[][]): { verb: T.VerbRenderedBlock, perfectiveHead: T.PerfectiveHeadBlock | undefined } {
     const verb = getVerbFromBlocks(blocks);
     const perfectiveHead = blocks[0].find(f => f.block.type === "perfectiveHead");
@@ -296,7 +307,7 @@ export function specifyEquativeLength(blocksWVars: T.Block[][], length: "long" |
     return blocksWVars.map(specify);
 }
 
-export function specifyVerbLength(blocksWVars: T.Block[][], length: "long" | "short" | "mini"): T.Block[][] {
+export function specifyBlockLength(blocksWVars: T.Block[][], length: "long" | "short" | "mini"): T.Block[][] {
     function specify(blocks: T.Block[]): T.Block[] {
         return blocks.map((block): T.Block => {
             if (block.block.type === "verb") {
@@ -308,6 +319,16 @@ export function specifyVerbLength(blocksWVars: T.Block[][], length: "long" | "sh
                             ...block.block.block,
                             ps: getLength(block.block.block.ps, length),
                         },
+                    },
+                };
+                return v;
+            }
+            if (block.block.type === "perfectEquativeBlock") {
+                const v: T.Block = {
+                    ...block,
+                    block: {
+                        ...block.block,
+                        ps: getLength(block.block.ps, length),
                     },
                 };
                 return v;
