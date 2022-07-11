@@ -11,7 +11,7 @@ export function isNounEntry(e: T.Entry | T.DictionaryEntry): e is T.NounEntry {
 
 export function isAdjectiveEntry(e: T.Entry | T.DictionaryEntry): e is T.AdjectiveEntry {
     if ("entry" in e) return false;
-    return !!e.c?.includes("adj.") && !isNounEntry(e);
+    return !!e.c?.includes("adj.");
 }
 
 export function isAdverbEntry(e: T.Entry | T.DictionaryEntry): e is T.AdverbEntry {

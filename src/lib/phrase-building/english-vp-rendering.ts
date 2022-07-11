@@ -59,7 +59,7 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
         ]),
         imperfectiveFuture: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
             `$SUBJ will${n ? " not" : ""} ${isToBe(ec) ? "be" : ec[0]}`,
-            `$SUBJ will${n ? " not" : ""} be ${isToBe(ec) ? "be" : ec[2]}`,
+            // `$SUBJ will${n ? " not" : ""} be ${isToBe(ec) ? "be" : ec[2]}`, \\ doesn't seem fully correct
         ]),
         perfectiveFuture: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
             `$SUBJ will${n ? " not" : ""} ${isToBe(ec) ? "be" : ec[0]}`,
