@@ -904,6 +904,7 @@ export type PerfectParticipleBlock = {
     ps: SingleOrLengthOpts<PsString[]>,
     verb: VerbRenderedBlock,
     person: Person,
+    complement: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
 };
 export type PerfectEquativeBlock = {
     type: "perfectEquativeBlock",
@@ -914,6 +915,7 @@ export type ModalVerbBlock = {
     type: "modalVerbBlock",
     ps: SingleOrLengthOpts<PsString[]>,
     verb: VerbRenderedBlock,
+    complement: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
 };
 export type ModalVerbKedulPart = {
     type: "modalVerbKedulPart",

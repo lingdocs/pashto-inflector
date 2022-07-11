@@ -103,10 +103,10 @@ function VerbSBlock({ opts, v, script }: {
         {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
         <Border>
             <>
-            {v.type === "verb" && v.complement && <span className="mx-2">
-                <ComplementBlock opts={opts} comp={v.complement.selection} script={script} inside />
-            </span>}
-            {getLength(v.ps, length)[0][script]}
+                {(v.type === "verb" || v.type === "perfectParticipleBlock") && v.complement && <span className="mx-2">
+                    <ComplementBlock opts={opts} comp={v.complement.selection} script={script} inside />
+                </span>}
+                {getLength(v.ps, length)[0][script]}
             </>
         </Border>
         <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"}</div>
@@ -133,7 +133,12 @@ function ModalVerbBlock({ opts, v, script }: {
     return <div className="text-center">
         {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
         <Border>
-            {getLength(v.ps, length)[0][script]}
+            <>
+                {v.complement && <span className="mx-2">
+                    <ComplementBlock opts={opts} comp={v.complement.selection} script={script} inside />
+                </span>}
+                {getLength(v.ps, length)[0][script]}
+            </>
         </Border>
         <div>Verb</div>
         <EnglishBelow>Modal</EnglishBelow>

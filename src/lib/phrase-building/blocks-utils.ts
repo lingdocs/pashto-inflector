@@ -118,7 +118,7 @@ export function getComplementFromBlocks(blocks: T.Block[][]): T.Rendered<T.Compl
         return complement;
     }
     // maybe there's a complement in the verb block
-    const verb = blocks[0].find(b => b.block.type === "verb" && b.block)?.block as T.VerbRenderedBlock | undefined;
+    const verb = getVerbFromBlocks(blocks);
     if (verb?.block.complement) {
         return verb.block.complement;
     }

@@ -472,6 +472,7 @@ function splitUpIfModal(v: T.VerbRenderedBlock): [T.VerbRenderedBlock] | [T.Moda
             type: "modalVerbBlock",
             ps: vrb,
             verb: v,
+            complement: v.block.complement,
         },
         {
             type: "modalVerbKedulPart",
@@ -490,6 +491,7 @@ function getPerfectStuff(v: T.SingleOrLengthOpts<T.PsString[]>, vrb: T.VerbRende
             ps: p,
             person: vrb.block.person,
             verb: vrb,
+            complement: vrb.block.complement,
         },
         {
             type: "perfectEquativeBlock",
