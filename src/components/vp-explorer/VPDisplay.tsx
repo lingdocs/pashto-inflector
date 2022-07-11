@@ -4,13 +4,13 @@ import AbbreviationFormSelector from "./AbbreviationFormSelector";
 import { getObjectSelection, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
 import { completeVPSelection } from "../../lib/phrase-building/vp-tools";
 import { renderVP } from "../../library";
-import ModeSelect, { Mode, ScriptSelect } from "../DisplayModeSelect";
+import ModeSelect, { LengthSelect, Mode, ScriptSelect } from "../DisplayModeSelect";
 import { useState } from "react";
 import CompiledPTextDisplay from "../CompiledPTextDisplay";
 import RenderedBlocksDisplay from "../RenderedBlocksDisplay";
 import useStickyState from "../../lib/useStickyState";
 
-function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferredMode, script: preferredScript }: {
+function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferredMode, script: preferredScript, onLengthChange }: {
     VPS: T.VPSelectionState,
     opts: T.TextOptions,
     setForm: "disable" | ((form: T.FormVersion) => void),
@@ -18,7 +18,8 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferr
     onlyOne?: boolean | "concat",
     length?: "long" | "short",
     mode?: Mode,
-    script?: "p" | "f"
+    script?: "p" | "f",
+    onLengthChange?: (length: "long" | "short") => void,
 }) {
     const [mode, setMode] = useState<Mode>(preferredMode || "text");
     const [script, setScript] = useStickyState<"p" | "f">(preferredScript || "f", "blockScriptChoice");
@@ -46,6 +47,7 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferr
         <div className="d-flex flex-row">
             <ModeSelect value={mode} onChange={setMode} />
             {mode === "blocks" && <ScriptSelect value={script} onChange={setScript} />}
+            {mode === "text" && length && onLengthChange && <LengthSelect value={length} onChange={onLengthChange} />}
         </div>
         {mode === "text"
             ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={!!onlyOne} length={length} />

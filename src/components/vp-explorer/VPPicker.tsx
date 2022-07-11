@@ -105,7 +105,7 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                 Subj. <span onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>{roleIcon.king}</span>
                                 {(rendered && rendered.whatsAdjustable !== "servant") && 
                                     <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
-                                        {!VPS?.form.removeKing ? "🚫" : "🙈"}
+                                        {!VPS?.form.removeKing ? "🙈" : "🚫" }
                                     </span>
                                 }
                             </div>
@@ -148,7 +148,7 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                         Obj. <span onClick={() => setShowingExplanation({ role: "king", item: "object" })}>{roleIcon.king}</span>
                                             {(rendered && rendered.whatsAdjustable !== "servant") && 
                                                 <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
-                                                    {!VPS?.form.removeKing ? "🚫" : "🙈"}
+                                                    {!VPS?.form.removeKing ? "🙈" : "🚫"}
                                                 </span>
                                             }
                                         </div>
