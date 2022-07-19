@@ -511,7 +511,7 @@ test(`addToForm should work`, () => {
             [[{ p: "لیکم", f: "leekum" }], [{ p: "لیکو", f: "leekoo" }]],
             [[{ p: "لیکې", f: "leeke" }], [{ p: "لیکئ", f: "leekeyy" }]],
             [[{ p: "لیکې", f: "leeke" }], [{ p: "لیکئ", f: "leekeyy" }]],
-            [[{ p: "لیکه", f: "leeku" }, { p: "لیکو", f: "leeko"}], [{ p: "لیکل", f: "leekul" }]],
+            [[{ p: "لیکۀ", f: "leeku" }, { p: "لیکو", f: "leeko"}], [{ p: "لیکل", f: "leekul" }]],
             [[{ p: "لیکه", f: "leeka"}], [{ p: "لیکې", f: "leeke" }]], 
         ],
         long: [
@@ -519,7 +519,7 @@ test(`addToForm should work`, () => {
             [[{ p: "لیکلم", f: "leekulum" }], [{ p: "لیکلو", f: "leekuloo" }]],
             [[{ p: "لیکلې", f: "leekule" }], [{ p: "لیکلئ", f: "leekuleyy" }]],
             [[{ p: "لیکلې", f: "leekule" }], [{ p: "لیکلئ", f: "leekuleyy" }]],
-            [[{ p: "لیکله", f: "leekulu" }, { p: "لیکلو", f: "leekulo"}], [{ p: "لیکل", f: "leekul"}]],
+            [[{ p: "لیکلو", f: "leekulo"}], [{ p: "لیکل", f: "leekul"}]],
             [[{ p: "لیکله", f: "leekula"}], [{ p: "لیکلې", f: "leekule" }]], 
         ],
     });
