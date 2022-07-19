@@ -192,7 +192,8 @@ const equativeBuilders: Record<T.EquativeTense, (p: T.Person, n: boolean) => str
         return [
             `$SUBJ should ${n ? "not " : ""}have been $PRED`,
             `$SUBJ had to ${n ? "not " : ""}be $PRED`,
-            `(that) $SUBJ were ${n ? "not " : ""}$PRED`,
+            `(if) $SUBJ had ${n ? "not " : ""}been $PRED`,
+            `(if/that) $SUBJ were ${n ? "not " : ""}$PRED`,
         ];
     },
     wouldHaveBeen: (p, n) => {
