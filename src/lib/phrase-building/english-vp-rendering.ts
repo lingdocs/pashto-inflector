@@ -141,10 +141,13 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
         ]),
         wouldBePerfect: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `$SUBJ would${n ? " not" : ""} have ${v[4]}`,
+            `$SUBJ had probably ${n ? " not" : ""} ${v[4]}`,
         ]),
         pastSubjunctivePerfect: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `$SUBJ would${n ? " not" : ""} have ${v[4]}`,
             `$SUBJ should${n ? " not" : ""} have ${v[4]}`,
+            `$SUBJ ${n ? "didn't have" : "had"} to ${v[0]}`,
+            `$SUBJ had${n ? " not" : ""} to have ${v[4]}`,
+            `$SUBJ would${n ? " not" : ""} have ${v[4]}`,
         ]),
         wouldHaveBeenPerfect: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
             `$SUBJ would${n ? " not" : ""} have ${v[4]}`,

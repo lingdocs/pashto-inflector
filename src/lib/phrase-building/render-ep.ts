@@ -188,18 +188,19 @@ const equativeBuilders: Record<T.EquativeTense, (p: T.Person, n: boolean) => str
             `$SUBJ ${getEnglishConj(p, g.englishEquative.past)} probably${not(n)} $PRED`,
         ]; 
     },
-    pastSubjunctive: () => {
+    pastSubjunctive: (p, n) => {
         return [
-            `$SUBJ should have been $PRED`,
-            `(that) $SUBJ were $PRED`,
+            `$SUBJ should ${n ? "not " : ""}have been $PRED`,
+            `$SUBJ had to ${n ? "not " : ""}be $PRED`,
+            `(that) $SUBJ were ${n ? "not " : ""}$PRED`,
         ];
     },
-    wouldHaveBeen: () => {
+    wouldHaveBeen: (p, n) => {
         return [
-            `$SUBJ would have been $PRED`,
+            `$SUBJ would ${n ? "not " : ""}have been $PRED`,
         ];
-    }
-}
+    },
+};
 
 function isThirdPersonSing(p: T.Person): boolean {
     return p === T.Person.ThirdSingMale || p === T.Person.ThirdPlurFemale;
