@@ -35,6 +35,24 @@ export const sandwiches: T.Sandwich[] = [
     {
         type: "sandwich",
         before: { p: "د", f: "du" },
+        after: { p: "لپاره", f: "lapaara" },
+        e: "for",
+    },
+    {
+        type: "sandwich",
+        before: { p: "د", f: "du" },
+        after: { p: "دپاره", f: "dupáara" },
+        e: "for",
+    },
+    {
+        type: "sandwich",
+        before: { p: "د", f: "du" },
+        after: { p: "دمخې", f: "dumúkhe" },
+        e: "before/in front of",
+    },
+    {
+        type: "sandwich",
+        before: { p: "د", f: "du" },
         after: { p: "په څانګ", f: "pu tsaang" },
         e: "beside",
     },

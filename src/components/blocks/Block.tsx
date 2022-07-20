@@ -272,7 +272,7 @@ function ComplementBlock({ opts, comp, script, inside }: {
         </div>;
     }
     return <div className="text-center">
-        <div>Comp.</div>
+        <div>Complement</div>
         {comp.type === "adjective"
             ? <AdjectiveBlock opts={opts} adj={comp} />
             : comp.type === "loc. adv."
