@@ -34,7 +34,7 @@ function Examples(props: ({
     const examples = "children" in props ? props.children : props.ex;
     const Example = ({ children: text }: { children: PsStringWSub }) => (
         <div className={props.lineHeight !== undefined ? `mb-${props.lineHeight}` : `mt-1 mb-3`}>
-            <div>
+            <div dir="rtl">
                 <Pashto opts={props.opts}>{text}</Pashto>
             </div>
             <div>
