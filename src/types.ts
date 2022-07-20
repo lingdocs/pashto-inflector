@@ -895,16 +895,13 @@ export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
 }
 
 export type EquativeBlock = { type: "equative", equative: EquativeRendered };
-export type VerbComplementBlock = {
-    type: "verbComplement",
-    complement: PsString,
-};
+
 export type PerfectParticipleBlock = {
     type: "perfectParticipleBlock",
     ps: SingleOrLengthOpts<PsString[]>,
     verb: VerbRenderedBlock,
     person: Person,
-    complement: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
+    complementWelded: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
 };
 export type PerfectEquativeBlock = {
     type: "perfectEquativeBlock",
@@ -915,7 +912,7 @@ export type ModalVerbBlock = {
     type: "modalVerbBlock",
     ps: SingleOrLengthOpts<PsString[]>,
     verb: VerbRenderedBlock,
-    complement: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
+    complementWelded: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
 };
 export type ModalVerbKedulPart = {
     type: "modalVerbKedulPart",
@@ -929,7 +926,7 @@ export type VerbRenderedBlock = {
         hasBa: boolean,
         ps: SingleOrLengthOpts<PsString[]>,
         person: Person,
-        complement: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
+        complementWelded: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
     },
 };
 
@@ -948,7 +945,6 @@ export type Block = {
         | { type: "negative", imperative: boolean }
         | PerfectiveHeadBlock
         | VerbRenderedBlock
-        | VerbComplementBlock
         | EquativeBlock;
 }
 

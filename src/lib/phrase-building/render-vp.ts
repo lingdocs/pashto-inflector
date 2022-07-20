@@ -18,8 +18,11 @@ import {
     getTenseVerbForm,
 } from "./vp-tools";
 import {
+    isAdjectiveEntry,
     isImperativeTense,
+    isLocativeAdverbEntry,
     isModalTense,
+    isNounEntry,
     isPattern4Entry,
     isPerfectTense,
 } from "../type-predicates";
@@ -30,8 +33,7 @@ import { findPerfectiveHead, getObjectSelection, getSubjectSelection, makeBlock,
 import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
-
-// TODO: ISSUE GETTING SPLIT HEAD NOT MATCHING WITH FUTURE VERBS
+import { makeNounSelection } from "../../library";
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const subject = getSubjectSelection(VP.blocks).selection;
@@ -421,7 +423,15 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, comp
         : conjugations;
     const { ps: { head, rest }, hasBa } = getPsVerbConjugation(conj, vs, person, complementPerson);
     const perfective = isPerfective(vs.tense);
-    const stativeHelper = isStativeHelper(vs.verb)
+    const stativeHelper = isStativeHelper(vs.verb);
+    const complement: T.ComplementSelection | T.UnselectedComplementSelection | undefined = externalComplement
+        ? externalComplement
+        : vs.isCompound === "stative"
+        ? createComplementRetroactively(vs.verb.complement, complementPerson)
+        : undefined;
+    const renderedComplement = complement
+        ? renderComplementSelection(complement, complementPerson || T.Person.FirstSingMale)
+        : undefined;
     const vrb: T.VerbRenderedBlock = {
         type: "verb",
         block: {
@@ -429,21 +439,26 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, comp
             ps: rest,
             person,
             hasBa,
-            complement: (!perfective && stativeHelper && externalComplement)
-                ? renderComplementSelection(externalComplement, complementPerson || T.Person.FirstSingMale)
+            complementWelded: ((!perfective && renderedComplement) && (
+                // it's a stative helper (kawul/kedul) with an external complement
+                (stativeHelper && externalComplement)
+                ||
+                // it's a stative compound with a space
+                (vs.verb.entry.p.includes(" "))
+            ))
+                ? renderedComplement
                 : undefined,
         },
     };
     const verbBlocks = [
         ...(head ? (
-                (!!(vs.isCompound === "stative" && vrb.block.complement)) ? [{
-                    type: "verbComplement",
-                    complement: head,
-                } as T.VerbComplementBlock] : [{
+                (!!(vs.isCompound === "stative" && renderedComplement)) ? [
+                    renderedComplement,
+                ] : [{
                     type: "perfectiveHead",
                     ps: head,
                 } as T.PerfectiveHeadBlock]
-            ) : [] as [T.VerbComplementBlock] | [T.PerfectiveHeadBlock] | []),
+            ) : [] as [T.Rendered<T.ComplementSelection>] | [T.PerfectiveHeadBlock] | []),
         ...(externalComplement && perfective && stativeHelper)
             ? [renderComplementSelection(externalComplement, complementPerson || T.Person.FirstSingMale)]
             : [],
@@ -456,7 +471,43 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, comp
     };
 }
 
-function isStativeHelper(v: T.VerbEntry): boolean {
+function createComplementRetroactively(complement: T.DictionaryEntry | undefined, person: T.Person | undefined): T.ComplementSelection {
+    // This is a bit of a hack to work with the current verb conjugation system.
+    if (!complement) {
+        throw new Error("error creating complement from head - no complement in verb entry");
+    }
+    if (isNounEntry(complement)) {
+        return {
+            type: "complement",
+            selection: makeNounSelection(complement, undefined, undefined),
+        };
+    }
+    if (isAdjectiveEntry(complement)) {
+        if (person === undefined) {
+            throw new Error("there needs to be a complement person for rendering an adjective complement");
+        }
+        return {
+            type: "complement",
+            selection: {
+                type: "adjective",
+                entry: complement,
+                sandwich: undefined,
+            },
+        };
+    }
+    if (isLocativeAdverbEntry(complement)) {
+        return {
+            type: "complement",
+            selection: {
+                type: "loc. adv.",
+                entry: complement,
+            },
+        };
+    }
+    throw new Error("unsupported complement type");
+}
+
+export function isStativeHelper(v: T.VerbEntry): boolean {
     if (v.entry.p === "کول" && v.entry.e.includes("make")) return true;
     if (v.entry.p === "کېدل" && v.entry.e.includes("become")) return true;
     return false;
@@ -472,7 +523,7 @@ function splitUpIfModal(v: T.VerbRenderedBlock): [T.VerbRenderedBlock] | [T.Moda
             type: "modalVerbBlock",
             ps: vrb,
             verb: v,
-            complement: v.block.complement,
+            complementWelded: v.block.complementWelded,
         },
         {
             type: "modalVerbKedulPart",
@@ -491,7 +542,7 @@ function getPerfectStuff(v: T.SingleOrLengthOpts<T.PsString[]>, vrb: T.VerbRende
             ps: p,
             person: vrb.block.person,
             verb: vrb,
-            complement: vrb.block.complement,
+            complementWelded: vrb.block.complementWelded,
         },
         {
             type: "perfectEquativeBlock",

@@ -1,9 +1,8 @@
 import * as T from "../../types";
 import { renderNounSelection } from "./render-np";
-import { getEnglishWord } from "../get-english-word";
-import { psStringFromEntry } from "../p-text-helpers";
 import { renderAdjectiveSelection } from "./render-adj";
 import { renderSandwich } from "./render-sandwich";
+import { renderLocativeAdverbSelection } from "./render-ap";
 
 export function renderComplementSelection(s: T.ComplementSelection | T.UnselectedComplementSelection, person: T.Person): T.Rendered<T.ComplementSelection | T.UnselectedComplementSelection> {
     if (s.selection.type === "unselected") {
@@ -22,23 +21,10 @@ export function renderComplementSelection(s: T.ComplementSelection | T.Unselecte
             selection: renderSandwich(s.selection),
         };
     }
-    const e = getEnglishWord(s.selection.entry);
-    if (!e || typeof e !== "string") {
-        throw new Error("error getting english for compliment");
-    }
     if (s.selection.type === "loc. adv.") {
         return {
             type: "complement",
-            selection: {
-                type: "loc. adv.",
-                entry: s.selection.entry,
-                ps: [psStringFromEntry(s.selection.entry)],
-                e,
-                inflected: false,
-                // TODO: don't use persons for these
-                person,
-                role: "none",
-            },
+            selection: renderLocativeAdverbSelection(s.selection),
         };
     }
     if (s.selection.type === "adjective") {
@@ -50,6 +36,6 @@ export function renderComplementSelection(s: T.ComplementSelection | T.Unselecte
     // if (s.selection.type === "noun") {
     return {
         type: "complement",
-        selection: renderNounSelection(s.selection, false, "none"),
+        selection: renderNounSelection(s.selection, false, "none", "noArticles"),
     };
 }

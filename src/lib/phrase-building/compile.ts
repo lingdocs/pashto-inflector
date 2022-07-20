@@ -11,7 +11,7 @@ import {
 import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
 import { completeEPSelection, renderEP } from "./render-ep";
 import { completeVPSelection } from "./vp-tools";
-import { renderVP } from "./render-vp";
+import { isStativeHelper, renderVP } from "./render-vp";
 import {
     getAPsFromBlocks,
     getComplementFromBlocks,
@@ -206,10 +206,6 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
         if (piece.block.type === "perfectiveHead") {
             return [piece.block.ps];
         }
-        if (piece.block.type === "verbComplement") {
-            // TODO: WHAAAAT
-            return [{ p: "____", f: "____"}]; //getPashtoFromRendered(piece.block.complement);
-        }
         if (piece.block.type === "objectSelection") {
             if (typeof piece.block.selection !== "object") {
                 return [{ p: "", f: "" }];
@@ -219,16 +215,16 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
         if (piece.block.type === "verb") {
             // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
             const verbPs = getLong(piece.block.block.ps);
-            if (piece.block.block.complement) {
-                return combineComplementWVerbPs(piece.block.block.complement, verbPs);
+            if (piece.block.block.complementWelded) {
+                return combineComplementWVerbPs(piece.block.block.complementWelded, verbPs);
             }
             return verbPs;
         }
         if (piece.block.type === "perfectParticipleBlock") {
             // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
             const verbPs = getLong(piece.block.ps);
-            if (piece.block.complement) {
-                return combineComplementWVerbPs(piece.block.complement, verbPs);
+            if (piece.block.complementWelded) {
+                return combineComplementWVerbPs(piece.block.complementWelded, verbPs);
             }
             return verbPs;
         }
@@ -310,8 +306,10 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
         return e
             .replace("$SUBJ", subject)
             .replace("$OBJ", object || "")
-            // TODO: check if this always works
-            + (complement ? ` ${complement}` : "")
+            // add the complement in English if it's an external complement from a helper verb (kawul/kedul)
+            + ((complement && isStativeHelper(getVerbFromBlocks(VP.blocks).block.verb))
+                ? ` ${complement}`
+                : "")
             + APs;
     }
     const engSubj = getSubjectSelectionFromBlocks(VP.blocks).selection;

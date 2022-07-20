@@ -41,9 +41,6 @@ function Block({ opts, block, king, script }: {
     if (block.block.type === "perfectiveHead") {
         return <PerfHeadBlock opts={opts} ps={block.block.ps} script={script} />
     }
-    if (block.block.type === "verbComplement") {
-        return <VCompBlock opts={opts} comp={block.block.complement} script={script} />;
-    }
     if (block.block.type === "verb") {
         return <VerbSBlock opts={opts} v={block.block.block} script={script} />;
     }
@@ -103,8 +100,8 @@ function VerbSBlock({ opts, v, script }: {
         {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
         <Border>
             <>
-                {(v.type === "verb" || v.type === "perfectParticipleBlock") && v.complement && <span className="mx-2">
-                    <ComplementBlock opts={opts} comp={v.complement.selection} script={script} inside />
+                {(v.type === "verb" || v.type === "perfectParticipleBlock") && v.complementWelded && <span className="mx-2">
+                    <ComplementBlock opts={opts} comp={v.complementWelded.selection} script={script} inside />
                 </span>}
                 {getLength(v.ps, length)[0][script]}
             </>
@@ -134,8 +131,8 @@ function ModalVerbBlock({ opts, v, script }: {
         {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
         <Border>
             <>
-                {v.complement && <span className="mx-2">
-                    <ComplementBlock opts={opts} comp={v.complement.selection} script={script} inside />
+                {v.complementWelded && <span className="mx-2">
+                    <ComplementBlock opts={opts} comp={v.complementWelded.selection} script={script} inside />
                 </span>}
                 {getLength(v.ps, length)[0][script]}
             </>
@@ -156,20 +153,6 @@ function PerfHeadBlock({ opts, ps, script }: {
             {ps[script]}
         </Border>
         <div>perf. head</div>
-        <EnglishBelow>{'\u00A0'}</EnglishBelow>
-    </div>;
-}
-
-function VCompBlock({ opts, comp, script }: {
-    opts: T.TextOptions,
-    comp: T.VerbComplementBlock["complement"],
-    script: "p" | "f",
-}) {
-    return <div className="text-center">
-        <Border>
-            {comp[script]}
-        </Border>
-        <div>Complement</div>
         <EnglishBelow>{'\u00A0'}</EnglishBelow>
     </div>;
 }
@@ -271,7 +254,7 @@ function ComplementBlock({ opts, comp, script, inside }: {
             <Border>
                 {adj.ps[0][script]}
             </Border>
-            <div>Adj.</div>
+            <div>Adj. <span className="text-muted small">({getEnglishParticipleInflection(adj.person, "short")})</span></div>
             <EnglishBelow>{adj.e}</EnglishBelow>
         </div>;
     }
@@ -295,9 +278,7 @@ function ComplementBlock({ opts, comp, script, inside }: {
             : comp.type === "loc. adv."
             ? <LocAdvBlock opts={opts} adv={comp} />
             : comp.type === "noun"
-            ? <Border>
-                NOT DONE YET
-            </Border>
+            ? <CompNounBlock opts={opts} noun={comp} script={script} />
             : comp.type === "unselected"
             ? <div>
                 <Border>
@@ -357,6 +338,25 @@ function Sandwich({ opts, sandwich, script }: {
             </div>
         </Border>
     </div>;
+}
+
+function CompNounBlock({ opts, noun, script }: {
+    opts: T.TextOptions,
+    noun: T.Rendered<T.NounSelection>,
+    script: "p" | "f",
+}) {
+    return <div className="text-center">
+        <Border
+            extraClassName={`!inside && hasPossesor ? "pt-2" : ""`}
+            padding={"1rem"}
+        >
+            {noun.ps[0][script]}
+        </Border>
+        <div>
+            Comp. Noun
+        </div>
+        <EnglishBelow>{noun.e}</EnglishBelow>
+    </div>
 }
 
 export function NPBlock({ opts, children, inside, english, script }: {

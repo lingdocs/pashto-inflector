@@ -46,8 +46,8 @@ export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflect
     throw new Error("unknown NP type");
 };
 
-export function renderNounSelection(n: T.NounSelection, inflected: boolean, role: "servant" | "king" | "none"): T.Rendered<T.NounSelection> {
-    const english = getEnglishFromNoun(n.entry, n.number);
+export function renderNounSelection(n: T.NounSelection, inflected: boolean, role: "servant" | "king" | "none", noArticles?: true | "noArticles"): T.Rendered<T.NounSelection> {
+    const english = getEnglishFromNoun(n.entry, n.number, noArticles);
     const pashto = ((): T.PsString[] => {
         const infs = inflectWord(n.entry);
         const ps = n.number === "singular"
@@ -129,13 +129,14 @@ function getInf(infs: T.InflectorOutput, t: "plural" | "arabicPlural" | "inflect
     return [];
 }
 
-function getEnglishFromNoun(entry: T.DictionaryEntry, number: T.NounNumber): string {
+function getEnglishFromNoun(entry: T.DictionaryEntry, number: T.NounNumber, noArticles?: true | "noArticles"): string {
     const articles = {
         singular: "(a/the)",
         plural: "(the)",
     };
     const article = articles[number];
     function addArticle(s: string) {
+        if (noArticles) return s;
         return `${article} ${s}`;
     }
     const e = getEnglishWord(entry);
