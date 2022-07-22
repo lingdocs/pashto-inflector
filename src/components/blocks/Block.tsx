@@ -138,7 +138,7 @@ function ModalVerbBlock({ opts, v, script }: {
             </>
         </Border>
         <div>Verb</div>
-        <EnglishBelow>Modal</EnglishBelow>
+        <EnglishBelow>Ability</EnglishBelow>
     </div>
 }
 

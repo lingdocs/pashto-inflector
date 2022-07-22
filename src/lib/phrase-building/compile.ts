@@ -234,7 +234,11 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
         }
         if (piece.block.type === "modalVerbBlock") {
             // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
-            return getLong(piece.block.ps);
+            const verbPs = getLong(piece.block.ps);
+            if (piece.block.complementWelded) {
+                return combineComplementWVerbPs(piece.block.complementWelded, verbPs);
+            }
+            return verbPs;
         }
         if (piece.block.type === "modalVerbKedulPart") {
             // just using the short one for now - it will only be short anyways

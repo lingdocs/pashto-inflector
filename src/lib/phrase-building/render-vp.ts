@@ -436,7 +436,9 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, comp
         type: "verb",
         block: {
             ...vs,
-            ps: rest,
+            ps: (!perfective && renderedComplement && vs.verb.entry.p.includes(" "))
+                ? removeComplement(rest, renderedComplement)
+                : rest,
             person,
             hasBa,
             complementWelded: ((!perfective && renderedComplement) && (
@@ -464,11 +466,40 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, comp
             : [],
         ...splitUpIfModal(vrb),
     ] as VerbBlocks;
-    const perfectStuff = isPerfectTense(vrb.block.tense) ? getPerfectStuff(rest, vrb) : undefined;
+    const perfectStuff = isPerfectTense(vrb.block.tense) ? getPerfectStuff(vrb) : undefined;
     return {
         verbBlocks: perfectStuff ? perfectStuff : verbBlocks,
         hasBa,
     };
+}
+
+function removeComplement(ps: T.SingleOrLengthOpts<T.PsString[]>, complement: T.Rendered<T.ComplementSelection | T.UnselectedComplementSelection>): T.SingleOrLengthOpts<T.PsString[]> {
+    if ("long" in ps) {
+        return {
+            long: removeComplement(ps.long, complement) as T.PsString[],
+            short: removeComplement(ps.short, complement) as T.PsString[],
+            ...ps.mini ? {
+                mini: removeComplement(ps.mini, complement) as T.PsString[],
+            } : {},
+        };
+    }
+    const c = complement.selection.type === "adjective"
+        ? complement.selection.ps
+        : complement.selection.type === "loc. adv."
+        ? complement.selection.ps
+        : complement.selection.type === "sandwich"
+        ? complement.selection.inside.selection.ps
+        : complement.selection.type === "noun"
+        ? complement.selection.ps
+        : complement.selection.ps;
+    // TODO: this is brutal
+    const removed = ps.map(p => (
+        c.reduce((acc, v) => ({
+            p: acc.p.replace(`${v.p} `, ""),
+            f: acc.f.replace(`${v.f} `, ""),
+        }), p)
+    ));
+    return removed;
 }
 
 function createComplementRetroactively(complement: T.DictionaryEntry | undefined, person: T.Person | undefined): T.ComplementSelection {
@@ -534,8 +565,8 @@ function splitUpIfModal(v: T.VerbRenderedBlock): [T.VerbRenderedBlock] | [T.Moda
     ];
 }
 
-function getPerfectStuff(v: T.SingleOrLengthOpts<T.PsString[]>, vrb: T.VerbRenderedBlock): [T.PerfectParticipleBlock, T.PerfectEquativeBlock] {
-    const [p, eq] = splitOffLeapfrogWordFull(v);
+function getPerfectStuff(vrb: T.VerbRenderedBlock): [T.PerfectParticipleBlock, T.PerfectEquativeBlock] {
+    const [p, eq] = splitOffLeapfrogWordFull(vrb.block.ps);
     return [
         {
             type: "perfectParticipleBlock",
