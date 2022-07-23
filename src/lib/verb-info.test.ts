@@ -966,9 +966,9 @@ const toTest = [
                 present: { p: "پخوونکی", f: "pakhawóonkey" },
                 past: {
                     mascSing: { p: "پوخ کړی", f: "pokh kúRey" },
-                    mascPlur: { p: "پاخه کړي", f: "paakhú kúRee" },
-                    femSing: { p: "پخه کړې", f: "pakhá kúRe" },
-                    femPlur: { p: "پخې کړې", f: "pakhé kúRe" },
+                    mascPlur: { p: "پاخه کړي", f: "paakhu kúRee" },
+                    femSing: { p: "پخه کړې", f: "pakha kúRe" },
+                    femPlur: { p: "پخې کړې", f: "pakhe kúRe" },
                 },
             },
             complement: {
@@ -999,20 +999,20 @@ const toTest = [
             root: {
                 imperfective: {
                     mascSing: {
-                        long: { p: "ستړی کېدل", f: "stúRey kedúl" },
-                        short: { p: "ستړی کېد", f: "stúRey ked" },
+                        long: { p: "ستړی کېدل", f: "stuRey kedúl" },
+                        short: { p: "ستړی کېد", f: "stuRey ked" },
                     },
                     mascPlur: {
-                        long: { p: "ستړي کېدل", f: "stúRee kedúl" },
-                        short: { p: "ستړي کېد", f: "stúRee ked" },
+                        long: { p: "ستړي کېدل", f: "stuRee kedúl" },
+                        short: { p: "ستړي کېد", f: "stuRee ked" },
                     },
                     femSing: {
-                        long: { p: "ستړې کېدل", f: "stúRe kedúl" },
-                        short: { p: "ستړې کېد", f: "stúRe ked" },
+                        long: { p: "ستړې کېدل", f: "stuRe kedúl" },
+                        short: { p: "ستړې کېد", f: "stuRe ked" },
                     },
                     femPlur: {
-                        long: { p: "ستړې کېدل", f: "stúRe kedúl" },
-                        short: { p: "ستړې کېد", f: "stúRe ked" },
+                        long: { p: "ستړې کېدل", f: "stuRe kedúl" },
+                        short: { p: "ستړې کېد", f: "stuRe ked" },
                     },
                 },
                 perfective: {
@@ -1054,10 +1054,10 @@ const toTest = [
             },
             stem: {
                 imperfective: {
-                    mascSing: { p: "ستړی کېږ", f: "stúRey kéG" },
-                    mascPlur: { p: "ستړي کېږ", f: "stúRee kéG" },
-                    femSing: { p: "ستړې کېږ", f: "stúRe kéG" },
-                    femPlur: { p: "ستړې کېږ", f: "stúRe kéG" },
+                    mascSing: { p: "ستړی کېږ", f: "stuRey kéG" },
+                    mascPlur: { p: "ستړي کېږ", f: "stuRee kéG" },
+                    femSing: { p: "ستړې کېږ", f: "stuRe kéG" },
+                    femPlur: { p: "ستړې کېږ", f: "stuRe kéG" },
                 },
                 perfective: {
                     mascSing: { p: "ستړی ش", f: "stúRey sh" },
@@ -1074,16 +1074,16 @@ const toTest = [
             },
             participle: {
                 present: {
-                    mascSing: { p: "ستړی کېدونکی", f: "stúRey kedóonkey" },
-                    mascPlur: { p: "ستړي کېدونکي", f: "stúRee kedóonkee" },
-                    femSing: { p: "ستړې کېدونکې", f: "stúRe kedóonke" },
-                    femPlur: { p: "ستړې کېدونکې", f: "stúRe kedóonke" },
+                    mascSing: { p: "ستړی کېدونکی", f: "stuRey kedóonkey" },
+                    mascPlur: { p: "ستړي کېدونکي", f: "stuRee kedóonkee" },
+                    femSing: { p: "ستړې کېدونکې", f: "stuRe kedóonke" },
+                    femPlur: { p: "ستړې کېدونکې", f: "stuRe kedóonke" },
                 },
                 past: {
-                    mascSing: { p: "ستړی شوی", f: "stúRey shúwey" },
-                    mascPlur: { p: "ستړي شوي", f: "stúRee shúwee" },
-                    femSing: { p: "ستړې شوې", f: "stúRe shúwe" },
-                    femPlur: { p: "ستړې شوې", f: "stúRe shúwe" },
+                    mascSing: { p: "ستړی شوی", f: "stuRey shúwey" },
+                    mascPlur: { p: "ستړي شوي", f: "stuRee shúwee" },
+                    femSing: { p: "ستړې شوې", f: "stuRe shúwe" },
+                    femPlur: { p: "ستړې شوې", f: "stuRe shúwe" },
                 },
             },
             complement: {
@@ -1476,7 +1476,7 @@ const toTest = [
                 },
             },
             participle: {
-                past: { p: "لاړې تېرې کړې", f: "laaRe tére kúRe" },
+                past: { p: "لاړې تېرې کړې", f: "laaRe tere kúRe" },
                 present: { p: "لاړې تېروونکی", f: "laaRe terawóonkey" },
             },
             objComplement: {
@@ -1586,8 +1586,8 @@ const toTest = [
                 yulEnding: false,
                 root: {
                     imperfective: {
-                        long: { p: "شروع کول", f: "shUróo' kawúl" },
-                        short: { p: "شروع کو", f: "shUróo' kaw" },
+                        long: { p: "شروع کول", f: "shUroo' kawúl" },
+                        short: { p: "شروع کو", f: "shUroo' kaw" },
                     },
                     perfective: {
                         long: { p: "شروع کړل", f: "shUróo' kRul" },
@@ -1601,7 +1601,7 @@ const toTest = [
                     },
                 },
                 stem: {
-                    imperfective: { p: "شروع کو", f: "shUróo' kaw" },
+                    imperfective: { p: "شروع کو", f: "shUroo' kaw" },
                     perfective: {
                         long: { p: "شروع کړ", f: "shUróo' kR" },
                         short: { p: "شروع ک", f: "shUróo' k" },
@@ -1612,8 +1612,8 @@ const toTest = [
                     },
                 },
                 participle: {
-                    past: { p: "شروع کړی", f: "shUróo' kúRey" },
-                    present: { p: "شروع کوونکی", f: "shUróo' kawóonkey" },
+                    past: { p: "شروع کړی", f: "shUroo' kúRey" },
+                    present: { p: "شروع کوونکی", f: "shUroo' kawóonkey" },
                 },
                 complement: {
                     masc: [
