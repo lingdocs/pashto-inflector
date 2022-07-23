@@ -7,6 +7,7 @@
  */
 
 module.exports = [
+	1658537998960, // لېونی کول
 	1527812403, // بچ کول - to save, protect, guard, spare, rescue, economize
 	1577299232429, // بدلول - to change, to adapt, exchange, replace
 	1527815728, // بلدول - to familiarize with, to acquaint, orient, to train

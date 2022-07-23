@@ -7,6 +7,7 @@
  */
 
 module.exports = [
+	1658537932357, // لېونی کېدل
 	1588760879818, // احساسېدل - to feel, be sensed
 	1577223176187, // ادا کېدل - to be set forth, given, rendered (service), performed, fulfilled, expressed, said, done
 	1527814793, // اړېدل - to need, to be forced, to have to, to experience a need

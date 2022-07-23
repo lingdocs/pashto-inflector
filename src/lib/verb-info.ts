@@ -499,7 +499,7 @@ function getVerbRoots(entry: T.DictionaryEntryNoFVars, transitivity: T.Transitiv
             const comp = complementInflects(complement) ? unisexInfToObjectMatrix(complement) : complement.masc[0][0];
             const t = getAuxTransitivity(transitivity);
             const aux = stativeAux[t].info.root.imperfective
-            return concatPsString(comp, " ", aux) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>;
+            return concatPsString(removeAccentsFull(comp), " ", aux) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>;
         }
         return shortAndLong(entry);
     })();
@@ -546,7 +546,19 @@ function getVerbRoots(entry: T.DictionaryEntryNoFVars, transitivity: T.Transitiv
         perfective,
         perfectiveSplit,
     };
-} 
+}
+
+function removeAccentsFull(p: T.OptionalPersonInflections<T.PsString>): T.OptionalPersonInflections<T.PsString> {
+    if ("mascPlur" in p) {
+        return {
+            "mascSing": removeAccents(p.mascSing),
+            "mascPlur": removeAccents(p.mascPlur),
+            "femSing": removeAccents(p.femSing),
+            "femPlur": removeAccents(p.femPlur),
+        }
+    };
+    return removeAccents(p);
+}
 
 /**
  * Returns the stems (imperfective and perfective) of a given verb
@@ -588,7 +600,7 @@ function getVerbStems(entry: T.DictionaryEntryNoFVars, root: T.VerbRootSet, tran
         if (complement && spaceInForm(root.imperfective)) {
             const comp = complementInflects(complement) ? unisexInfToObjectMatrix(complement) : complement.masc[0][0];
             return concatPsString(
-                comp,
+                removeAccentsFull(comp),
                 " ",
                 stativeAux[auxTransitivity].info.stem.imperfective as T.PsString,
             );
@@ -734,7 +746,7 @@ function getParticiple(entry: T.DictionaryEntryNoFVars, stem: T.VerbStemSet, inf
         const comp = compInflects ? unisexInfToObjectMatrix(complement) : complement.masc[0][0];
         const aux = stativeAux[auxTransitivity].info.participle[tense] as T.PsString;
         return concatPsString(
-            comp,
+            removeAccentsFull(comp),
             " ",
             compInflects
                 ? unisexInfToObjectMatrix(inflectYey(aux) as T.UnisexInflections)

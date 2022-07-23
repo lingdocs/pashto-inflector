@@ -459,12 +459,7 @@ function createComplementRetroactively(complement: T.DictionaryEntry | undefined
     if (!complement) {
         throw new Error("error creating complement from head - no complement in verb entry");
     }
-    if (isNounEntry(complement)) {
-        return {
-            type: "complement",
-            selection: makeNounSelection(complement, undefined, undefined),
-        };
-    }
+    // very important to have this before isNounEntry! (ie لېونی - n. m. anim unisex / adj. needs to be recognized as an adjective first!)
     if (isAdjectiveEntry(complement)) {
         if (person === undefined) {
             throw new Error("there needs to be a complement person for rendering an adjective complement");
@@ -476,6 +471,12 @@ function createComplementRetroactively(complement: T.DictionaryEntry | undefined
                 entry: complement,
                 sandwich: undefined,
             },
+        };
+    }
+    if (isNounEntry(complement)) {
+        return {
+            type: "complement",
+            selection: makeNounSelection(complement, undefined, undefined),
         };
     }
     if (isLocativeAdverbEntry(complement)) {
