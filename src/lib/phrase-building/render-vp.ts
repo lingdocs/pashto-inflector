@@ -86,119 +86,6 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     return b;
 }
 
-// function arrangeVerbWNegative(head: T.PsString | undefined, restRaw: T.PsString[], V: T.VerbRendered): Segment[][] {
-//     const hasLeapfrog = isPerfectTense(V.tense) || isModalTense(V.tense);
-//     const rest = (() => {
-//         if (hasLeapfrog) {
-//             const [restF, restLast] = splitOffLeapfrogWord(restRaw);
-//             return {
-//                 front: makeSegment(restF.map(removeBa), ["isVerbRest"]),
-//                 last: makeSegment(restLast.map(removeBa), ["isVerbRest"]),
-//             };
-//         } 
-//         return makeSegment(restRaw.map(removeBa), ["isVerbRest"]);
-//     })();
-//     const headSegment: Segment | undefined = !head
-//         ? head
-//         : makeSegment(
-//             head,
-//             (head.p === "و" || head.p === "وا")
-//                 ? ["isVerbHead", "isOoOrWaaHead"]
-//                 : ["isVerbHead"]
-//         );
-//     if (!V.negative) {
-//         if ("front" in rest) {
-//             return [
-//                 headSegment ? [headSegment, rest.front, rest.last] : [rest.front, rest.last],
-//             ]
-//         }
-//         return [
-//             headSegment ? [headSegment, rest] : [rest],
-//         ];
-//     }
-//     const nu: T.PsString = isImperativeTense(V.tense)
-//         ? { p: "مه", f: "mú" }
-//         : { p: "نه", f: "nú" };
-//     if (!headSegment) {
-//         if ("front" in rest) {
-//             return [
-//                 // pefect nu dey me leeduley and nu me dey leeduley
-//                 // actually don't think this is correct - keeping it out for now
-//                 // [
-//                 //     mergeSegments(
-//                 //         makeSegment(nu, ["isNu"]),
-//                 //         rest.last.adjust({ ps: removeAccents }),
-//                 //     ),
-//                 //     rest.front.adjust({ ps: removeAccents }),
-//                 // ],
-//                 [
-//                     makeSegment(nu, ["isNu"]),
-//                     rest.last.adjust({ ps: removeAccents }),
-//                     rest.front.adjust({ ps: removeAccents }),
-//                 ],
-//                 [
-//                     rest.front.adjust({ ps: removeAccents }),
-//                     makeSegment(nu, ["isNu"]),
-//                     rest.last.adjust({ ps: removeAccents }),
-//                 ],
-//             ];
-//         }
-//         return [[
-//             makeSegment(nu, ["isNu"]),
-//             rest.adjust({ ps: removeAccents }),
-//         ]];
-//     }
-//     if ("front" in rest) {
-//         return [
-//             [
-//                 headSegment.adjust({ ps: removeAccents }),
-//                 rest.last.adjust({
-//                     ps: r => concatPsString(nu, " ", removeAccents(r)),
-//                     desc: ["isNu"],
-//                 }),
-//                 rest.front.adjust({
-//                     ps: r => removeAccents(r),
-//                 }),
-//             ],
-//             [
-//                 headSegment.adjust({ ps: removeAccents }),
-//                 rest.front.adjust({
-//                     ps: r => concatPsString(nu, " ", removeAccents(r)),
-//                     desc: ["isNu"],
-//                 }),
-//                 rest.last.adjust({
-//                     ps: r => removeAccents(r),
-//                 }),
-//             ],
-//             ...(!headSegment.isOoOrWaaHead && !V.isCompound) ? [[
-//                 mergeSegments(headSegment, rest.front, "no space").adjust({
-//                     ps: r => concatPsString(nu, " ", removeAccents(r)),
-//                     desc: ["isNu"],
-//                 }),
-//                 rest.last.adjust({
-//                     ps: r => removeAccents(r),
-//                 }),
-//             ]] : [],
-//         ];       
-//     }
-//     return [
-//         ...(V.voice !== "passive") ? [[
-//             ...headSegment ? [headSegment.adjust({ ps: removeAccents })] : [],
-//             rest.adjust({
-//                 ps: r => concatPsString(nu, " ", removeAccents(r)),
-//                 desc: ["isNu"],
-//             }),
-//         ]] : [],
-//         // verbs that have a perfective prefix that is not و or وا can put the
-//         // nu *before* the prefix as well // TODO: also وي prefixes?
-//         ...((!headSegment.isOoOrWaaHead && !V.isCompound) || (V.voice === "passive")) ? [[
-//             makeSegment(nu, ["isNu"]),
-//             headSegment.adjust({ ps: removeAccents }),
-//             rest.adjust({ ps: removeAccents }),
-//         ]] : [],
-//     ];
-// }
-
 function getVPKids(hasBa: boolean, blocks: T.VPSBlockComplete[], form: T.FormVersion, king: "subject" | "object"): T.Kid[] {
     const subject = getSubjectSelection(blocks).selection;
     const objectS = getObjectSelection(blocks).selection;
@@ -314,12 +201,71 @@ function removeVerbAccent(blocks: T.Block[]): T.Block[] {
                 ...block,
                 block: {
                     ...block.block,
-                    ps: removeAccentsWLength(block.block.block.ps),
+                    block: {
+                        ...block.block.block,
+                        ps: removeAccentsWLength(block.block.block.ps),
+                        // The accent should ALREADY BE REMOVED FROM THE WELDED COMPLEMENT - BUT JUST TO BE SURE
+                        ...block.block.block.complementWelded ? {
+                            complementWelded: removeAccentFromWeldedComplement(block.block.block.complementWelded),
+                        } : {},
+                    },
                 },
             };
         }
         return block;
     });
+}
+
+function removeAccentFromWeldedComplement(complement: T.Rendered<T.ComplementSelection> | T.Rendered<T.UnselectedComplementSelection>): T.Rendered<T.ComplementSelection> | T.Rendered<T.UnselectedComplementSelection> {
+    if (
+        complement.selection.type === "adjective"
+        || complement.selection.type === "loc. adv."
+        || complement.selection.type === "noun"
+    ) {
+        return {
+            ...complement,
+            selection: {
+                ...complement.selection,
+                ps: removeAccents(complement.selection.ps),
+            },
+        };
+    }
+    if (complement.selection.type === "sandwich") {
+        return {
+            ...complement,
+            selection: {
+                ...complement.selection,
+                inside: removeAccentsFromNP(complement.selection.inside),
+            },
+        };
+    }
+    if (complement.selection.type === "unselected") {
+        return complement;
+    }
+    throw new Error("unexpected complement type");
+}
+
+function removeAccentsFromNP(np: T.Rendered<T.NPSelection>): T.Rendered<T.NPSelection> {
+    if (np.selection.type === "noun" || np.selection.type === "participle") {
+        return {
+            ...np,
+            selection: {
+                ...np.selection,
+                ps: removeAccents(np.selection.ps),
+                possesor: np.selection.possesor ? {
+                    ...np.selection.possesor,
+                    np: removeAccentsFromNP(np.selection.possesor.np),
+                } : undefined,
+            },
+        };
+    }
+    return {
+        ...np,
+        selection: {
+            ...np.selection,
+            ps: removeAccents(np.selection.ps),
+        },
+    };
 }
 
 function shrinkServant(np: T.NPSelection): T.MiniPronoun {
@@ -448,7 +394,7 @@ function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, comp
                 // it's a stative compound with a space
                 (vs.verb.entry.p.includes(" "))
             ))
-                ? renderedComplement
+                ? removeAccentFromWeldedComplement(renderedComplement)
                 : undefined,
         },
     };
@@ -483,7 +429,7 @@ function removeComplement(ps: T.SingleOrLengthOpts<T.PsString[]>, complement: T.
             } : {},
         };
     }
-    const c = complement.selection.type === "adjective"
+    const c = (complement.selection.type === "adjective"
         ? complement.selection.ps
         : complement.selection.type === "loc. adv."
         ? complement.selection.ps
@@ -491,13 +437,19 @@ function removeComplement(ps: T.SingleOrLengthOpts<T.PsString[]>, complement: T.
         ? complement.selection.inside.selection.ps
         : complement.selection.type === "noun"
         ? complement.selection.ps
-        : complement.selection.ps;
-    // TODO: this is brutal
+        : complement.selection.ps);
+    // TODO: this is brutal - we could avoid this mess by redoing the verb conjugation engine
+    // to produce individual RenderedVerb objects instead of these tables with the complements in a string etc
     const removed = ps.map(p => (
-        c.reduce((acc, v) => ({
-            p: acc.p.replace(`${v.p} `, ""),
-            f: acc.f.replace(`${v.f} `, ""),
-        }), p)
+        c.reduce((acc, v) => {
+            return {
+                p: acc.p.replace(`${v.p} `, ""),
+                // without accent sensitivity in the matching
+                // because the complement may or may not have had the accent removed
+                f: acc.f.replace(`${v.f} `, "")
+                    .replace(`${removeAccents(v.f)} `, ""),
+            }
+        }, p)
     ));
     return removed;
 }
