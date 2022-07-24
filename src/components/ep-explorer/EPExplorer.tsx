@@ -12,7 +12,7 @@ import autoAnimate from "@formkit/auto-animate";
 // @ts-ignore
 import LZString from "lz-string";
 import EPPicker from "./EPPicker";
-const phraseURLParam = "EPhrase";
+const epPhraseURLParam = "ep";
 
 const blankEps: T.EPSelectionState = {
     blocks: makeEPSBlocks(),
@@ -162,8 +162,8 @@ function getShareUrl(eps: T.EPSelectionState): string {
     const url = new URL(window.location.href);
     // need to delete or else you could just get a second param written after
     // which gets ignored
-    url.searchParams.delete(phraseURLParam);
-    url.searchParams.append(phraseURLParam, encoded);
+    url.searchParams.delete(epPhraseURLParam);
+    url.searchParams.append(epPhraseURLParam, encoded);
     return url.toString();
 }
 
@@ -173,7 +173,7 @@ function getCode(eps: T.EPSelectionState): string {
 
 function getEPSFromUrl(): T.EPSelectionState | undefined {
     const params = new URLSearchParams(window.location.search);
-    const fromParams = params.get(phraseURLParam);
+    const fromParams = params.get(epPhraseURLParam);
     if (!fromParams) return;
     const decoded = LZString.decompressFromEncodedURIComponent(fromParams);
     return JSON.parse(decoded) as T.EPSelectionState;

@@ -15,7 +15,7 @@ import { vpsReducer } from "./vps-reducer";
 import { getObjectSelection } from "../../lib/phrase-building/blocks-utils";
 import VPPicker from "./VPPicker";
 
-const phraseURLParam = "VPhrase";
+export const vpPhraseURLParam = "vp";
 
 // TODO: Issue with dynamic compounds english making with plurals
 // TODO: Issue with "the money were taken"
@@ -205,8 +205,8 @@ function getShareUrl(vps: T.VPSelectionState): string {
     const url = new URL(window.location.href);
     // need to delete or else you could just get a second param written after
     // which gets ignored
-    url.searchParams.delete(phraseURLParam);
-    url.searchParams.append(phraseURLParam, encoded);
+    url.searchParams.delete(vpPhraseURLParam);
+    url.searchParams.append(vpPhraseURLParam, encoded);
     return url.toString();
 }
 
@@ -216,7 +216,7 @@ function getCode(vps: T.VPSelectionState): string {
 
 function getVPSFromUrl(): T.VPSelectionState | undefined {
     const params = new URLSearchParams(window.location.search);
-    const fromParams = params.get(phraseURLParam);
+    const fromParams = params.get(vpPhraseURLParam);
     if (!fromParams) return;
     const decoded = LZString.decompressFromEncodedURIComponent(fromParams);
     return JSON.parse(decoded) as T.VPSelectionState;
