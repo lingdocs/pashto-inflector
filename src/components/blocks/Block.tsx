@@ -70,9 +70,8 @@ export default Block;
 
 function Border({ children, extraClassName, padding }: { children: JSX.Element | JSX.Element[] | string, extraClassName?: string, padding?: string }) {
     return <div
-        className={`d-flex flex-row justify-content-center align-items-center ${extraClassName ? extraClassName : ""}`}
+        className={`block-border d-flex flex-row justify-content-center align-items-center ${extraClassName ? extraClassName : ""}`}
         style={{
-            border: "2px solid black",
             padding: padding ? padding : "1rem",
             textAlign: "center",
         }}

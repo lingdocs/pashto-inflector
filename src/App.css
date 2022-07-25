@@ -52,6 +52,10 @@ body {
     color: var(--high-contrast);
 }
 
+.block-border {
+    border: 2px solid var(--farthest);
+}
+
 .p-text {
     font-size: var(--p-text-size);
 }
