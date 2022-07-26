@@ -1086,7 +1086,7 @@ function getPassiveStemAspect(root: T.FullForm<T.PsString>, aspect: T.Aspect): T
         };
     }
     return concatPsString(
-        aspect === "perfective" ? removeAccents(getLong(root)) : getLong(root),
+        aspect === "imperfective" ? removeAccents(getLong(root)) : getLong(root),
         " ",
         stativeAux.intransitive.info.stem[aspect],
     );
@@ -1101,19 +1101,20 @@ function getPassiveRootAspect(root: T.OptionalPersonInflections<T.LengthOptions<
             "femSing": getPassiveRootAspect(root.femPlur, aspect) as T.LengthOptions<T.PsString>,
         };
     }
+    const rootR = aspect === "imperfective" ? removeAccents(root.long) : root.long
     return {
         long: concatPsString(
-            root.long,
+            rootR,
             " ",
             // @ts-ignore
-            aspect === "perfective" ? removeAccents(stativeAux.intransitive.info.root[aspect].long) : removeAccents(stativeAux.intransitive.info.root[aspect].long),
+            stativeAux.intransitive.info.root[aspect].long,
         ),
         // @ts-ignore
         short: concatPsString(
-            root.long,
+            rootR,
             " ",
             // @ts-ignore
-            aspect === "perfective" ? removeAccents(stativeAux.intransitive.info.root[aspect].short) : removeAccents(stativeAux.intransitive.info.root[aspect].short),
+            stativeAux.intransitive.info.root[aspect].short,
         ),
     }
 }
