@@ -14,6 +14,7 @@ import {
 } from "./lib/pashto-inflector";
 import {
     getVerbInfo,
+    getPassiveRootsAndStems,
 } from "./lib/verb-info";
 import InflectionsTable from "./components/InflectionsTable";
 import Pashto from "./components/Pashto";
@@ -171,6 +172,7 @@ export {
     // FUNCTIONS
     conjugateVerb,
     getVerbInfo,
+    getPassiveRootsAndStems,
     inflectWord,
     addToForm,
     concatPsString,
