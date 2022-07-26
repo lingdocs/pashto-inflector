@@ -983,7 +983,6 @@ function makeDynamicPerfectiveSplit(comp: T.PsString, auxSplit: T.SplitInfo): T.
 }
 
 export function getPassiveRootsAndStems(info: T.NonComboVerbInfo, withTails?: boolean): T.PassiveRootsStems | undefined {
-    console.log({ withTails });
     if (info.transitivity === "intransitive") return undefined;
     return {
         stem: getPassiveStem(info.root, info.root.perfectiveSplit, withTails),
@@ -1074,7 +1073,7 @@ function getPassivePastParticiple(root: T.OptionalPersonInflections<T.LengthOpti
     }
     const r = withTails ? concatPsString(root, passiveRootTail) : root;
     // @ts-ignore
-    return concatPsString(getLong(r), " ", stativeAux.intransitive.info.participle.past) as T.PsString;
+    return concatPsString(removeAccents(getLong(r)), " ", stativeAux.intransitive.info.participle.past) as T.PsString;
 }
 
 function getPassiveStemAspect(root: T.FullForm<T.PsString>, aspect: T.Aspect): T.FullForm<T.PsString> {
@@ -1086,7 +1085,11 @@ function getPassiveStemAspect(root: T.FullForm<T.PsString>, aspect: T.Aspect): T
             "femPlur": getPassiveStemAspect(root.femPlur, aspect) as T.PsString,
         };
     }
-    return concatPsString(getLong(root), " ", stativeAux.intransitive.info.stem[aspect]);
+    return concatPsString(
+        aspect === "perfective" ? removeAccents(getLong(root)) : getLong(root),
+        " ",
+        stativeAux.intransitive.info.stem[aspect],
+    );
 }
 
 function getPassiveRootAspect(root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>, aspect: T.Aspect): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
@@ -1099,9 +1102,18 @@ function getPassiveRootAspect(root: T.OptionalPersonInflections<T.LengthOptions<
         };
     }
     return {
+        long: concatPsString(
+            root.long,
+            " ",
+            // @ts-ignore
+            aspect === "perfective" ? removeAccents(stativeAux.intransitive.info.root[aspect].long) : removeAccents(stativeAux.intransitive.info.root[aspect].long),
+        ),
         // @ts-ignore
-        long: concatPsString(root.long, " ", stativeAux.intransitive.info.root[aspect].long),
-        // @ts-ignore
-        short: concatPsString(root.long, " ", stativeAux.intransitive.info.root[aspect].short),
+        short: concatPsString(
+            root.long,
+            " ",
+            // @ts-ignore
+            aspect === "perfective" ? removeAccents(stativeAux.intransitive.info.root[aspect].short) : removeAccents(stativeAux.intransitive.info.root[aspect].short),
+        ),
     }
 }
