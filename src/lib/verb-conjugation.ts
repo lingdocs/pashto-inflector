@@ -32,7 +32,7 @@ import {
     inflectYey,
 } from "./pashto-inflector";
 import {
-    accentOnNFromEnd,
+    accentOnNFromEnd, removeAccents,
 } from "./accent-helpers";
 import { pashtoConsonants } from "./pashto-consonants";
 import {
@@ -462,7 +462,9 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
                 modal,
             };
         }
-        const root = noPersInfs(info.root[aspect]).long;
+        const root = (aspect === "imperfective")
+            ? removeAccents(noPersInfs(info.root[aspect]).long)
+            : noPersInfs(info.root[aspect]).long;
         const aux = stativeAux.intransitive[aspect];
         const nonImperative = addToForm([root, " "], aux.nonImperative);
         const future = addToForm([baParticle, " "], nonImperative);
@@ -481,7 +483,7 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
     }
     const simpleVerbParticiple = {
         past: concatPsString(
-            noPersInfs(info.root.imperfective).long,
+            removeAccents(noPersInfs(info.root.imperfective).long),
             " ",
             stativeAux.intransitive.info.participle.past as T.PsString,
         ),
