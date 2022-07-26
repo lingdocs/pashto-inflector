@@ -982,23 +982,28 @@ function makeDynamicPerfectiveSplit(comp: T.PsString, auxSplit: T.SplitInfo): T.
     ];
 }
 
-export function getPassiveRootsAndStems(info: T.NonComboVerbInfo): T.PassiveRootsStems | undefined {
+export function getPassiveRootsAndStems(info: T.NonComboVerbInfo, withTails?: boolean): T.PassiveRootsStems | undefined {
+    console.log({ withTails });
     if (info.transitivity === "intransitive") return undefined;
     return {
-        stem: getPassiveStem(info.root, info.root.perfectiveSplit),
-        root: getPassiveRoot(info.root, info.root.perfectiveSplit),
+        stem: getPassiveStem(info.root, info.root.perfectiveSplit, withTails),
+        root: getPassiveRoot(info.root, info.root.perfectiveSplit, withTails),
         participle: {
-            past: getPassivePastParticiple(info.root.imperfective),
+            past: getPassivePastParticiple(info.root.imperfective, withTails),
         },
     };
 }
 
-function getPassiveStem(root: T.VerbRootSet, splitInfo: T.SplitInfo | undefined): T.VerbStemSet {
+const passiveRootTail: T.PsString = { p: "ی", f: "ey" };
+
+function getPassiveStem(root: T.VerbRootSet, splitInfo: T.SplitInfo | undefined, withTails?: boolean): T.VerbStemSet {
+    const perfectiveRoot = withTails ? concatPsString(root.perfective, passiveRootTail) : root.perfective;
+    const imperfectiveRoot = withTails ? concatPsString(root.imperfective, passiveRootTail) : root.imperfective;
     return {
-        perfective: getPassiveStemAspect(root.perfective, "perfective"),
-        imperfective: getPassiveStemAspect(root.imperfective, "imperfective"),
+        perfective: getPassiveStemAspect(perfectiveRoot, "perfective"),
+        imperfective: getPassiveStemAspect(imperfectiveRoot, "imperfective"),
         ...splitInfo ? {
-            perfectiveSplit: getPassiveStemPerfectiveSplit(root.perfective, splitInfo),
+            perfectiveSplit: getPassiveStemPerfectiveSplit(perfectiveRoot, splitInfo),
         } : {},
     };
 }
@@ -1046,17 +1051,19 @@ function getPassiveRootPerfectiveSplit(root: T.OptionalPersonInflections<T.Lengt
     };
 }
 
-function getPassiveRoot(root: T.VerbRootSet, splitInfo: T.SplitInfo | undefined): T.VerbRootSet {
+function getPassiveRoot(root: T.VerbRootSet, splitInfo: T.SplitInfo | undefined, withTails?: boolean): T.VerbRootSet {
+    const perfectiveRoot = withTails ? concatPsString(root.perfective, passiveRootTail) : root.perfective;
+    const imperfectiveRoot = withTails ? concatPsString(root.imperfective, passiveRootTail) : root.imperfective;
     return {
-        perfective: getPassiveRootAspect(root.perfective, "perfective"),
-        imperfective: getPassiveRootAspect(root.imperfective, "imperfective"),
+        perfective: getPassiveRootAspect(perfectiveRoot, "perfective"),
+        imperfective: getPassiveRootAspect(imperfectiveRoot, "imperfective"),
         ...splitInfo ? {
-            perfectiveSplit: getPassiveRootPerfectiveSplit(root.perfective, splitInfo),
+            perfectiveSplit: getPassiveRootPerfectiveSplit(perfectiveRoot, splitInfo),
         } : {},
     };
 }
 
-function getPassivePastParticiple(root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
+function getPassivePastParticiple(root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>, withTails?: boolean): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
     if ("mascSing" in root) {
         return {
             "mascSing": getPassivePastParticiple(root.mascSing) as T.LengthOptions<T.PsString>,
@@ -1065,8 +1072,9 @@ function getPassivePastParticiple(root: T.OptionalPersonInflections<T.LengthOpti
             "femPlur": getPassivePastParticiple(root.femPlur) as T.LengthOptions<T.PsString>,
         };
     }
+    const r = withTails ? concatPsString(root, passiveRootTail) : root;
     // @ts-ignore
-    return concatPsString(getLong(root), " ", stativeAux.intransitive.info.participle.past) as T.PsString;
+    return concatPsString(getLong(r), " ", stativeAux.intransitive.info.participle.past) as T.PsString;
 }
 
 function getPassiveStemAspect(root: T.FullForm<T.PsString>, aspect: T.Aspect): T.FullForm<T.PsString> {
