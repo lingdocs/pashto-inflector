@@ -1,7 +1,7 @@
 import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
 import { RootsAndStems } from "../verb-info/VerbInfo";
-import { getPassiveRootsAndStems, getVerbInfo } from "../../lib/verb-info";
+import { getAbilityRootsAndStems, getPassiveRootsAndStems, getVerbInfo } from "../../lib/verb-info";
 import Hider from "../Hider";
 import useStickyState from "../../lib/useStickyState";
 import CompoundDisplay from "./CompoundDisplay";
@@ -51,6 +51,14 @@ function VerbPicker(props: {
         });
     }
     const passiveRootsAndStems = (info && props.vps.verb.voice === "passive") ? getPassiveRootsAndStems(info) : undefined;
+    const abilityRootsAndStems = (() => {
+        try {
+            return (info && props.vps.verb.tenseCategory === "modal") ? getAbilityRootsAndStems(info) : undefined;
+        } catch (e) {
+            console.log("error making ability roots and stems", e);
+            return undefined;
+        }
+    })();
     return <div className="mb-3">
         {info && <CompoundDisplay
             info={info}
@@ -60,13 +68,17 @@ function VerbPicker(props: {
         {info && <div className="mt-3 mb-1 text-center">
             <Hider
                 showing={showRootsAndStems}
-                label="🌳 Roots and Stems"      
+                label={`🌳 ${passiveRootsAndStems ? "Passive" : abilityRootsAndStems ? "Ability" : ""} Roots and Stems`}     
                 handleChange={() => setShowRootsAndStems(p => !p)}
                 hLevel={5}
             >
                 <RootsAndStems
                     textOptions={props.opts}
-                    info={passiveRootsAndStems ? passiveRootsAndStems : info}
+                    info={passiveRootsAndStems
+                        ? passiveRootsAndStems
+                        : abilityRootsAndStems
+                        ? abilityRootsAndStems
+                        : info}
                 />
             </Hider>
         </div>}
@@ -89,7 +101,7 @@ function VerbPicker(props: {
                 <ButtonSelect
                     small
                     value={props.vps.verb.voice}
-                    options={props.vps.verb.tenseCategory === "imperative"  
+                    options={(props.vps.verb.tenseCategory === "imperative" || props.vps.verb.tenseCategory === "modal")  
                     ? [{
                         label: "Active",
                         value: "active",

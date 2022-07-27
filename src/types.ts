@@ -169,13 +169,15 @@ export type VerbInfoBase = {
     idiosyncraticThirdMascSing?: ShortThirdPersFormSet;
 }
 
-export type PassiveRootsStems = {
+export type PassiveRootsAndStems = {
     stem: VerbStemSet,
     root: VerbRootSet,
     participle: {
         past: FullForm<PsString>,
     },
 }
+
+export type AbilityRootsAndStems = Omit<PassiveRootsAndStems, "participle">;
 
 export type SimpleVerbInfo = VerbInfoBase & {
     type: "simple";

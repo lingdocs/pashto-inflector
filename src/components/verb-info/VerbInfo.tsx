@@ -41,12 +41,13 @@ const title: CSSProperties = {
 
 export function RootsAndStems({ textOptions, info, hidePastParticiple, highlighted, noTails }: {
     textOptions: T.TextOptions,
-    info: T.NonComboVerbInfo | T.PassiveRootsStems,
+    info: T.NonComboVerbInfo | T.PassiveRootsAndStems | T.AbilityRootsAndStems,
     hidePastParticiple?: boolean,
     highlighted?: T.RootsOrStemsToHighlight,
     noTails?: boolean,
 }) {
-    const hasPerfectiveSplit = !!(info.root.perfectiveSplit || info.stem.perfectiveSplit);
+    const hasPerfectiveSplit = ("perfectiveSplit" in info.root && "perfectiveSplit" in info.stem)
+        && !!(info.root.perfectiveSplit || info.stem.perfectiveSplit);
     const showPersInf = hasPersInfs(info);
     const [persInf, setPersInf] = useState<T.PersonInflectionsField>("mascSing");
     const [split, setSplit] = useState<boolean>(false);
@@ -161,7 +162,7 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
                             </div>
                         </div>
                     </div>
-                    {!hidePastParticiple && <div className="text-center" style={highlighted?.includes("past participle") ? highlight : {}}>
+                    {!hidePastParticiple && "participle" in info &&<div className="text-center" style={highlighted?.includes("past participle") ? highlight : {}}>
                         <div style={title}>Past Participle</div>
                             <VerbInfoItemDisplay
                                 item={pickPersInf(info.participle.past, persInf)}

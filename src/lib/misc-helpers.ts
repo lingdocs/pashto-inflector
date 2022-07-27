@@ -60,12 +60,18 @@ export function getFirstSecThird(p: T.Person): 1 | 2 | 3 {
 //     return s;
 // }
 
-export function hasPersInfs(info: T.NonComboVerbInfo | T.PassiveRootsStems): boolean {
+export function hasPersInfs(info: T.NonComboVerbInfo | T.PassiveRootsAndStems | T.AbilityRootsAndStems): boolean {
+    if ("participle" in info) {
+        return (
+            "mascSing" in info.root.perfective ||
+            "mascSing" in info.stem.perfective ||
+            ("present" in info.participle && "mascSing" in info.participle.present) ||
+            "mascSing" in info.participle.past
+        );
+    }
     return (
         "mascSing" in info.root.perfective ||
-        "mascSing" in info.stem.perfective ||
-        ("present" in info.participle && "mascSing" in info.participle.present) ||
-        "mascSing" in info.participle.past
+        "mascSing" in info.stem.perfective
     );
 }
 

@@ -21,6 +21,7 @@ import {
     choosePersInf,
     isUnisexSet,
     getLong,
+    getShort,
 } from "./p-text-helpers";
 import {
     makePsString,
@@ -39,6 +40,7 @@ import {
 } from "./pashto-inflector";
 import {
     checkForIrregularConjugation,
+    kedulStat,
     stativeAux,
 } from "./irregular-conjugations";
 import {
@@ -53,6 +55,7 @@ import {
     spaceInForm,
     getAuxTransitivity,
     chooseParticipleInflection,
+    noPersInfs,
 } from "./misc-helpers";
 import * as T from "../types";
 
@@ -982,7 +985,72 @@ function makeDynamicPerfectiveSplit(comp: T.PsString, auxSplit: T.SplitInfo): T.
     ];
 }
 
-export function getPassiveRootsAndStems(info: T.NonComboVerbInfo, withTails?: boolean): T.PassiveRootsStems | undefined {
+export function getAbilityRootsAndStems(info: T.NonComboVerbInfo): T.AbilityRootsAndStems {
+    const isIntransitiveStativeCompound = info.type === "stative compound" && info.transitivity === "intransitive"
+    const roots = getAbilityRoots(info.root, isIntransitiveStativeCompound);
+    return addAbilityHelperRootsAndStems(roots, isIntransitiveStativeCompound);
+}
+
+function addAbilityHelperRootsAndStems(roots: T.VerbRootSet, isIntransitiveStativeCompound: boolean): T.AbilityRootsAndStems {
+    function addAbilityHelperToRoot(
+        r: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
+        helper: T.PsString,
+    ): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
+        if ("mascSing" in r) {
+            return {
+                mascSing: addAbilityHelperToRoot(r.mascSing, helper) as T.LengthOptions<T.PsString>,
+                mascPlur: addAbilityHelperToRoot(r.mascPlur, helper) as T.LengthOptions<T.PsString>,
+                femSing: addAbilityHelperToRoot(r.femSing, helper) as T.LengthOptions<T.PsString>,
+                femPlur: addAbilityHelperToRoot(r.femPlur, helper) as T.LengthOptions<T.PsString>,
+            }
+        }
+        return {
+            long: concatPsString(r.long, " ", helper),
+            short: concatPsString(r.short, " ", helper),
+        };
+    }
+    const stemHelper = getLong(noPersInfs(kedulStat.info.stem.perfective));
+    const rootHelper = noPersInfs(kedulStat.info.root.perfective).long;
+    return {
+        stem: {
+            perfective: addAbilityHelperToRoot(roots.perfective, stemHelper),
+            imperfective: addAbilityHelperToRoot(roots.imperfective, stemHelper),
+            ...roots.perfectiveSplit ? {
+                perfectiveSplit: addAbilityHelperToPerfectiveSplit(roots.perfectiveSplit, stemHelper),
+            } : {},
+        },
+        root: {
+            perfective: addAbilityHelperToRoot(roots.perfective, rootHelper),
+            imperfective: addAbilityHelperToRoot(roots.imperfective, rootHelper),
+            ...roots.perfectiveSplit ? {
+                perfectiveSplit: addAbilityHelperToPerfectiveSplit(roots.perfectiveSplit, rootHelper),
+            } : {},
+        },
+    };
+}
+
+function addAbilityHelperToPerfectiveSplit(s: T.SplitInfo, helper: T.PsString): T.SplitInfo {
+    if ("mascSing" in s) {
+        return {
+            mascSing: addAbilityHelperToPerfectiveSplit(s.mascSing, helper) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
+            mascPlur: addAbilityHelperToPerfectiveSplit(s.mascPlur, helper) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
+            femSing: addAbilityHelperToPerfectiveSplit(s.femSing, helper) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
+            femPlur: addAbilityHelperToPerfectiveSplit(s.femPlur, helper) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
+        };
+    }
+    return {
+        long: [
+            getLong(s)[0],
+            concatPsString(getLong(s)[1], " ", helper),
+        ],
+        short: [
+            getShort(s)[0],
+            concatPsString(getShort(s)[1], " ", helper),
+        ],
+    };
+}
+
+export function getPassiveRootsAndStems(info: T.NonComboVerbInfo, withTails?: boolean): T.PassiveRootsAndStems | undefined {
     if (info.transitivity === "intransitive") return undefined;
     return {
         stem: getPassiveStem(info.root, info.root.perfectiveSplit, withTails),
@@ -1047,6 +1115,50 @@ function getPassiveRootPerfectiveSplit(root: T.OptionalPersonInflections<T.Lengt
             // @ts-ignore
             concatPsString(si[1], " ", stativeAux.intransitive.info.root.perfective.long),
         ],
+    };
+}
+
+const abilityTail = { p: "ی", f: "ey" };
+const abilityTailAccented = { p: "ی", f: "éy" };
+
+function getAbilityRoots(root: T.VerbRootSet, isIntransitiveStativeCompound: boolean): T.VerbRootSet {
+    function getAspectAbilityRoot(root: T.VerbRootSet[T.Aspect], aspect: T.Aspect): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
+        if ("mascSing" in root) {
+            return {
+                mascSing: getAspectAbilityRoot(root.mascSing, aspect) as T.LengthOptions<T.PsString>,
+                mascPlur: getAspectAbilityRoot(root.mascPlur, aspect) as T.LengthOptions<T.PsString>,
+                femSing: getAspectAbilityRoot(root.femSing, aspect) as T.LengthOptions<T.PsString>,
+                femPlur: getAspectAbilityRoot(root.femPlur, aspect) as T.LengthOptions<T.PsString>,
+            };
+        }
+        return {
+            long: concatPsString(root.long, abilityTail) as T.PsString,
+            short: concatPsString(root.short, aspect === "imperfective" ? abilityTailAccented : abilityTail) as T.PsString,
+        }
+    }
+    function getAbilityRootPerfectiveSplit(s: T.SplitInfo): T.SplitInfo {
+        if ("mascSing" in s) {
+            return {
+                mascSing: getAbilityRootPerfectiveSplit(s.mascSing) as [T.PsString, T.PsString],
+                mascPlur: getAbilityRootPerfectiveSplit(s.mascPlur) as [T.PsString, T.PsString],
+                femSing: getAbilityRootPerfectiveSplit(s.femSing) as [T.PsString, T.PsString],
+                femPlur: getAbilityRootPerfectiveSplit(s.femPlur) as [T.PsString, T.PsString],
+            };
+        }
+        return {
+            long: [getLong(s)[0], concatPsString(getLong(s)[1], abilityTail)],
+            short: [getShort(s)[0], concatPsString(getShort(s)[1], abilityTail)],
+        }
+    }
+    return {
+        perfective: getAspectAbilityRoot(
+            !isIntransitiveStativeCompound ? root.perfective : root.imperfective,
+            !isIntransitiveStativeCompound ? "perfective" : "imperfective",
+        ),
+        imperfective: getAspectAbilityRoot(root.imperfective, "imperfective"),
+        ...(root.perfectiveSplit && !isIntransitiveStativeCompound) ? {
+            perfectiveSplit: getAbilityRootPerfectiveSplit(root.perfectiveSplit),
+        } : {},
     };
 }
 

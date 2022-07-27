@@ -8,47 +8,49 @@ import {
     VpsReducerAction
 } from "./vps-reducer";
 
-const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense, formula: string, modalFormula: string, }[] = [{
+const verbTenseOptions: { label: string | JSX.Element, value: T.VerbTense, formula: string }[] = [{
     label: <div><i className="fas fa-video mr-2" />present</div>,
     value: "presentVerb",
     formula: "imperfective stem + present verb ending",
-    modalFormula: `imperfective root + tail + kedul "to become" subjunctive`,
 }, {
     label: <div><i className="fas fa-camera mr-2" />subjunctive</div>,
     value: "subjunctiveVerb",
     formula: "perfective stem + present verb ending",
-    modalFormula: `perfective root + tail + kedul "to become" subjunctive`,
 }, {
     label: <div><i className="fas fa-video mr-2" />imperfective future</div>,
     value: "imperfectiveFuture",
     formula: "ba + present",
-    modalFormula: `ba + present modal`,
 }, {
     label: <div><i className="fas fa-camera mr-2" />perfective future</div>,
     value: "perfectiveFuture",
     formula: "ba + subjunctive",
-    modalFormula: `ba + subjunctive modal`,
 }, {
     label: <div><i className="fas fa-video mr-2" />continuous past</div>,
     value: "imperfectivePast",
     formula: "imperfective root + past verb ending",
-    modalFormula: `imperfective root + tail + kedul "to become" simple past`,
 }, {
     label: <div><i className="fas fa-camera mr-2" />simple past</div>,
     value: "perfectivePast",
     formula: "perfective root + past verb ending",
-    modalFormula: `perfective root + tail + kedul "to become" simple past`,
 }, {
     label: <div><i className="fas fa-video mr-2" />habitual continual past</div>,
     value: "habitualImperfectivePast",
-    formula: "ba + contiunous past",
-    modalFormula: `ba + simple past modal`,
+    formula: "ba + continuous past",
 }, {
     label: <div><i className="fas fa-camera mr-2" />habitual simple past</div>,
     value: "habitualPerfectivePast",
     formula: "ba + simple past",
-    modalFormula: `ba + continuous past modal`,
 }];
+
+function composeFormula(formula: string, prefix: "passive" | "ability"): string {
+    return formula.replace(/^perfective/, `${prefix} perfective`)
+        .replace(/^imperfective/, `${prefix} imperfective`)
+        .replace("continuous", `${prefix} continuous`)
+        .replace("simple", `${prefix} simple`)
+        .replace(/present$/, `${prefix} present`)
+        .replace(/subjunctive$/, `${prefix} subjunctive`)
+        .replace("past participle", `${prefix} past participle`);
+}
 
 const perfectTenseOptions: { label: string | JSX.Element, value: T.PerfectTense, formula: string }[] = [{
     label: "Present Perfect",
@@ -181,6 +183,7 @@ function TensePicker(props: ({
         : verbTenseOptions;
     const showImperativeOption = ("vps" in props && props.vps.verb.voice === "active")
         || ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
+    const inPassiveVoice = ("vps" in props && props.vps.verb.voice === "passive") || ("vpsComplete" in props && props.vpsComplete.verb.voice === "passive");;
     const canHaveFormula = "vps" in props && props.mode !== "quiz";
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
@@ -196,6 +199,7 @@ function TensePicker(props: ({
                     value={"vpsComplete" in props 
                         ? getTenseCategory(props.vpsComplete.verb.tense)
                         : props.vps.verb.tenseCategory}
+                    // @ts-ignore
                     options={showImperativeOption ? [{
                         label: "Basic",
                         value: "basic",
@@ -217,7 +221,7 @@ function TensePicker(props: ({
                     }, {
                         label: "Ability",
                         value: "modal",
-                    }]}
+                    }].filter(x => !(inPassiveVoice && x.value === "modal"))}
                     handleChange={props.mode !== "quiz" ? onTenseCategorySelect : () => null}
                 />
             </div>}
@@ -276,8 +280,10 @@ function TensePicker(props: ({
                     ]);
                 const formula = !curr
                     ? ""
-                    : ("modalFormula" in curr && props.vps.verb.tenseCategory === "modal")
-                    ? curr.modalFormula
+                    : (props.vps.verb.tenseCategory === "modal")
+                    ? composeFormula(curr.formula, "ability")
+                    : (props.vps.verb.voice === "passive")
+                    ? composeFormula(curr.formula, "passive")
                     : curr.formula;
                 if (curr && "formula" in curr) {
                     return <div className="mb-2" style={{ width: "250px", overflowY: "auto" }}>
