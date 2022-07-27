@@ -39,11 +39,12 @@ const title: CSSProperties = {
     marginTop: "0.5rem",
 };
 
-export function RootsAndStems({ textOptions, info, hidePastParticiple, highlighted }: {
+export function RootsAndStems({ textOptions, info, hidePastParticiple, highlighted, noTails }: {
     textOptions: T.TextOptions,
     info: T.NonComboVerbInfo | T.PassiveRootsStems,
     hidePastParticiple?: boolean,
     highlighted?: T.RootsOrStemsToHighlight,
+    noTails?: boolean,
 }) {
     const hasPerfectiveSplit = !!(info.root.perfectiveSplit || info.stem.perfectiveSplit);
     const showPersInf = hasPersInfs(info);
@@ -117,7 +118,7 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
                                 <VerbInfoItemDisplay
                                     item={pickPersInf(info.stem.imperfective, persInf)}
                                     textOptions={textOptions}
-                                    tails
+                                    tails={!noTails}
                                 />
                             </div>
                         </div>
@@ -129,7 +130,7 @@ export function RootsAndStems({ textOptions, info, hidePastParticiple, highlight
                                 <VerbInfoItemDisplay
                                     item={pickPersInf(perfectiveStem, persInf)}
                                     textOptions={textOptions}
-                                    tails
+                                    tails={!noTails}
                                 />
                             </div>
                         </div>
