@@ -499,7 +499,6 @@ export function isStativeHelper(v: T.VerbEntry): boolean {
 }
 
 function splitUpIfModal(v: T.VerbRenderedBlock): [T.VerbRenderedBlock] | [T.ModalVerbBlock, T.ModalVerbKedulPart] {
-    console.log("in split up", v);
     if (!isModalTense(v.block.tense)) {
         return [v];
     }
