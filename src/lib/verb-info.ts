@@ -58,6 +58,7 @@ import {
     noPersInfs,
 } from "./misc-helpers";
 import * as T from "../types";
+import { isTlulVerb } from "./type-predicates";
 
 const eyEndingUnaccented: T.PsString = { p: "ی", f: "ey" };
 
@@ -986,7 +987,9 @@ function makeDynamicPerfectiveSplit(comp: T.PsString, auxSplit: T.SplitInfo): T.
 }
 
 export function getAbilityRootsAndStems(info: T.NonComboVerbInfo): T.AbilityRootsAndStems {
-    const isIntransitiveStativeCompound = info.type === "stative compound" && info.transitivity === "intransitive"
+    const isIntransitiveStativeCompound =
+        (info.type === "stative compound" && info.transitivity === "intransitive")
+        || isTlulVerb(info.entry);
     const roots = getAbilityRoots(info.root, isIntransitiveStativeCompound);
     return addAbilityHelperRootsAndStems(roots, isIntransitiveStativeCompound);
 }

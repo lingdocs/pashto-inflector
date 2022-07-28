@@ -25,6 +25,7 @@ import {
     isNounEntry,
     isPattern4Entry,
     isPerfectTense,
+    isTlulVerb,
 } from "../type-predicates";
 import { renderEnglishVPBase } from "./english-vp-rendering";
 import { personGender } from "../../lib/misc-helpers";
@@ -498,6 +499,7 @@ export function isStativeHelper(v: T.VerbEntry): boolean {
 }
 
 function splitUpIfModal(v: T.VerbRenderedBlock): [T.VerbRenderedBlock] | [T.ModalVerbBlock, T.ModalVerbKedulPart] {
+    console.log("in split up", v);
     if (!isModalTense(v.block.tense)) {
         return [v];
     }
@@ -555,7 +557,9 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
     if (perfective) {
         const past = isPastTense(vs.tense);
         const splitInfo = conj.info[(past || isModalTense(vs.tense)) ? "root" : "stem"].perfectiveSplit;
-        if (!splitInfo) return { ps: { head: undefined, rest: removeBaFromForm(verbForm) }, hasBa };
+        if (!splitInfo || (isTlulVerb(vs.verb.entry) && isModalTense(vs.tense))) {
+            return { ps: { head: undefined, rest: removeBaFromForm(verbForm) }, hasBa };
+        }
         // TODO: Either solve this in the inflector or here, it seems silly (or redundant)
         // to have a length option in the perfective split stem??
         const [splitHead] = getLong(getMatrixBlock(splitInfo, objectPerson, person));

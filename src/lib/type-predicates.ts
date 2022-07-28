@@ -3,6 +3,10 @@ import { pashtoConsonants } from "./pashto-consonants";
 import { endsWith } from "../lib/p-text-helpers";
 import { countSyllables } from "../lib/accent-helpers";
 
+export function isTlulVerb(e: T.VerbEntry | T.VerbDictionaryEntry): boolean {
+    const entry = "entry" in e ? e.entry : e; 
+    return entry.f === "tlul" || entry.p === "راتلل" || entry.p === "درتلل" || entry.p === "ورتلل";
+}
 
 export function isNounEntry(e: T.Entry | T.DictionaryEntry): e is T.NounEntry {
     if ("entry" in e) return false;
