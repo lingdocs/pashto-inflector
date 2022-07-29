@@ -14,6 +14,7 @@ type PickerProps<T extends string> = {
     handleChange: (payload: T) => void,
     small?: boolean,
     xSmall?: boolean,
+    faded?: boolean,
 }
 
 function ButtonSelect<L extends string>(props: PickerProps<L>) {
@@ -24,7 +25,7 @@ function ButtonSelect<L extends string>(props: PickerProps<L>) {
                 type="button"
                 className={classNames(
                     "btn",
-                    "btn-outline-secondary",
+                    props.faded ? "btn-light" : "btn-outline-secondary",
                     { active: props.value === option.value },
                     { "btn-sm": props.small || props.xSmall },
                 )}

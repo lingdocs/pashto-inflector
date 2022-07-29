@@ -68,10 +68,11 @@ function limitValue(value: string, adjustable: "both" | "king" | "servant") {
     throw new Error("unrecognized adjustable value");
 }
 
-function AbbreviationFormSelector({ form, onChange, adjustable }: {
+function AbbreviationFormSelector({ form, onChange, adjustable, inline }: {
     form: T.FormVersion,
     onChange: (f: T.FormVersion) => void,
     adjustable: "both" | "king" | "servant",
+    inline?: boolean,
 }) {
     function handleChange(f: "full" | "noKing" | "shrinkServant" | "shortest") {
         if (f === "full") {
@@ -85,9 +86,10 @@ function AbbreviationFormSelector({ form, onChange, adjustable }: {
         }
     }
     // TODO: limit display of shrinking options based on the verb type
-    return <div className="mb-3">
+    return <div className="mb-3 mx-3">
         {/* <div className="text-center text-small mb-2">Abbreviation Options</div> */}
         <ButtonSelect
+            faded
             small
             // @ts-ignore
             value={limitValue(formToValue(form), adjustable)}

@@ -10,7 +10,7 @@ import CompiledPTextDisplay from "../CompiledPTextDisplay";
 import RenderedBlocksDisplay from "../RenderedBlocksDisplay";
 import useStickyState from "../../lib/useStickyState";
 
-function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferredMode, script: preferredScript, onLengthChange }: {
+function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferredMode, script: preferredScript, onLengthChange, inlineFormChoice }: {
     VPS: T.VPSelectionState,
     opts: T.TextOptions,
     setForm: "disable" | ((form: T.FormVersion) => void),
@@ -20,6 +20,7 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferr
     mode?: Mode,
     script?: "p" | "f",
     onLengthChange?: (length: "long" | "short") => void,
+    inlineFormChoice?: boolean,
 }) {
     const [mode, setMode] = useState<Mode>(preferredMode || "text");
     const [script, setScript] = useStickyState<"p" | "f">(preferredScript || "f", "blockScriptChoice");
@@ -39,7 +40,7 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferr
     const rendered = renderVP(VP);
     const result = compileVP(rendered, rendered.form);
     return <div className={`text-${justify ? justify : "center"} mt-1`}>
-        {typeof setForm === "function" && <AbbreviationFormSelector
+        {typeof setForm === "function" && !inlineFormChoice && <AbbreviationFormSelector
             adjustable={rendered.whatsAdjustable}
             form={rendered.form}
             onChange={setForm}
@@ -48,6 +49,12 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferr
             <ModeSelect value={mode} onChange={setMode} />
             {mode === "blocks" && <ScriptSelect value={script} onChange={setScript} />}
             {mode === "text" && length && "long" in result.ps && onLengthChange && <LengthSelect value={length} onChange={onLengthChange} />}
+            {typeof setForm === "function" && inlineFormChoice && <AbbreviationFormSelector
+                adjustable={rendered.whatsAdjustable}
+                form={rendered.form}
+                onChange={setForm}
+                inline
+            />}
         </div>
         {mode === "text"
             ? <CompiledPTextDisplay opts={opts} compiled={result} justify={justify} onlyOne={!!onlyOne} length={length} />
