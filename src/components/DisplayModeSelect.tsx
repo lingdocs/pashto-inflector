@@ -20,12 +20,8 @@ export function ScriptSelect({ value, onChange }: { value: "p" | "f", onChange: 
 }
 
 export function LengthSelect({ value, onChange }: { value: "long" | "short", onChange: (l: "long" | "short") => void }) {
-    return <button style={{ marginLeft: "1.5rem" }} className="btn btn-sm btn-light">
-        {value === "long" ? <div className="clickable" onClick={() => onChange("short")}>
-            long
-        </div> : <div className="clickable" onClick={() => onChange("long")}>
-            short
-        </div>}
+    return <button style={{ marginLeft: "1.5rem" }} className="btn btn-sm btn-light" onClick={() => onChange(value === "long" ? "short" : "long")}>
+        {value}
     </button>;
 }
 
