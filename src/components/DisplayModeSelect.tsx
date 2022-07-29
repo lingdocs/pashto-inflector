@@ -14,12 +14,8 @@ function ModeSelect({ value, onChange }: {
 }
 
 export function ScriptSelect({ value, onChange }: { value: "p" | "f", onChange: (m: "p" | "f") => void }) {
-    return <button style={{ marginLeft: "1.5rem" }} className="btn btn-sm btn-light">
-        {value === "p" ? <div className="clickable" onClick={() => onChange("f")}>
-            Ps
-        </div> : <div className="clickable" onClick={() => onChange("p")}>
-            Phon.
-        </div>}
+    return <button style={{ marginLeft: "1.5rem" }} className="btn btn-sm btn-light" onClick={() => onChange(value === "p" ? "f" : "p")}>
+        {value === "p" ? "Ps" : "Phon."}
     </button>;
 }
 
