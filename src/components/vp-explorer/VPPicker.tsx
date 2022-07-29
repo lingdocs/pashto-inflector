@@ -103,11 +103,11 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                             heading={roles.king === "subject" 
                             ? <div className="h5 text-center">
                                 Subj. <span onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>{roleIcon.king}</span>
-                                {(rendered && rendered.whatsAdjustable !== "servant") && 
+                                {/* {(rendered && rendered.whatsAdjustable !== "servant") && 
                                     <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
-                                        {!VPS?.form.removeKing ? "🙈" : "🚫" }
+                                        {!VPS?.form.removeKing ? "🫣" : "🚫" }
                                     </span>
-                                }
+                                } */}
                             </div>
                             : <div className="h5 text-center">
                                 Subj.
@@ -146,11 +146,11 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                     heading={roles.king === "object" 
                                         ? <div className="h5 text-center">
                                         Obj. <span onClick={() => setShowingExplanation({ role: "king", item: "object" })}>{roleIcon.king}</span>
-                                            {(rendered && rendered.whatsAdjustable !== "servant") && 
+                                            {/* {(rendered && rendered.whatsAdjustable !== "servant") && 
                                                 <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
                                                     {!VPS?.form.removeKing ? "🙈" : "🚫"}
                                                 </span>
-                                            }
+                                            } */}
                                         </div>
                                         : <div className="h5 text-center">
                                             Obj.

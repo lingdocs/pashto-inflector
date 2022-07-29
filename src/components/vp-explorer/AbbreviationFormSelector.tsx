@@ -89,7 +89,7 @@ function AbbreviationFormSelector({ form, onChange, adjustable, inline }: {
     return <div className="mb-3 mx-3">
         {/* <div className="text-center text-small mb-2">Abbreviation Options</div> */}
         <ButtonSelect
-            faded
+            faded={inline}
             small
             // @ts-ignore
             value={limitValue(formToValue(form), adjustable)}
