@@ -18,7 +18,9 @@ export function standardizePashto(input: string): string {
     // Replace ي in the middle of words with ی
     .replace(/ي(?=[\u0621-\u065f\u0670-\u06d3\u06d5])/g, "ی")
     // Replace آ two character version with combined آ character
-    .replace(/آ/g, "آ");
+    .replace(/آ/g, "آ")
+    // Replace narrow no-break space with space
+    .replace(/\u202F/g, " ");
 }
 
 export function standardizePhonetics(input: string): string {
