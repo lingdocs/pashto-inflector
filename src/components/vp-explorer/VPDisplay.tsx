@@ -45,7 +45,7 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferr
             form={rendered.form}
             onChange={setForm}
         />}
-        <div className="d-flex flex-row">
+        <div className="d-flex flex-row mb-2">
             <ModeSelect value={mode} onChange={setMode} />
             {mode === "blocks" && <ScriptSelect value={script} onChange={setScript} />}
             {mode === "text" && length && "long" in result.ps && onLengthChange && <LengthSelect value={length} onChange={onLengthChange} />}

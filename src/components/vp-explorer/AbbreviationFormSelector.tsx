@@ -1,6 +1,7 @@
 import ButtonSelect from "../ButtonSelect";
 import * as T from "../../types";
 import { roleIcon } from "./VPExplorerExplanationModal";
+import classNames from "classnames";
 
 const options = [
     {
@@ -86,7 +87,7 @@ function AbbreviationFormSelector({ form, onChange, adjustable, inline }: {
         }
     }
     // TODO: limit display of shrinking options based on the verb type
-    return <div className="mb-3 mx-3">
+    return <div className={classNames("mx-3", { "mb-3": !inline })}>
         {/* <div className="text-center text-small mb-2">Abbreviation Options</div> */}
         <ButtonSelect
             faded={inline}
