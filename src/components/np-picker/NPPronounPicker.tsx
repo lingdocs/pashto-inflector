@@ -149,7 +149,7 @@ function NPPronounPicker({ onChange, pronoun, role, opts, is2ndPersonPicker }: {
                 handleChange={(g) => handlePronounTypeChange(g as "far" | "near")}
             />
             <button className="btn btn-sm btn-outline-secondary" onClick={handleDisplayChange}>
-                {display === "p" ? "PS" : display === "e" ? "PS" : "EN"}
+                {display === "p" ? "PS" : "EN"}
             </button>
         </div>
         <table className="table table-bordered table-sm" style={{ textAlign: "center", minWidth: "100px", tableLayout: "fixed" }}>

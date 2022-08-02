@@ -94,12 +94,12 @@ function AdjectiveManager(props: {
                 onChange={handleChange(i)}
             />
         </div>)}
-        {/* {!adding && !props.adjectives.length && <h6 className="clickable" style={{ float: "right" }}>
+        {!adding && !props.adjectives.length && <h6 className="clickable" style={{ float: "right" }}>
             <div className="clickable" onClick={() => setAdding(true)}>+ Adj.</div>
-        </h6>} */}
-        {!addingDemonstrative && !props.demonstrative && <h6 className="clickable mr-2" style={{ float: "right" }}>
-            <div className="clickable" onClick={() => setAddingDemonstrative(true)}>+ Demons.</div>
         </h6>}
+        {/* {!addingDemonstrative && !props.demonstrative && <h6 className="clickable mr-2" style={{ float: "right" }}>
+            <div className="clickable" onClick={() => setAddingDemonstrative(true)}>+ Demons.</div>
+        </h6>} */}
     </div>;
 }
 
