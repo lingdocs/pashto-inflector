@@ -103,21 +103,23 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                             heading={roles.king === "subject" 
                             ? <div className="h5 text-center">
                                 Subj. <span onClick={() => setShowingExplanation({ role: "king", item: "subject" })}>{roleIcon.king}</span>
-                                {/* {(rendered && rendered.whatsAdjustable !== "servant") && 
-                                    <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
-                                        {!VPS?.form.removeKing ? "🫣" : "🚫" }
-                                    </span>
-                                } */}
+                                {(rendered && rendered.whatsAdjustable !== "servant") && 
+                                    <KingRemover
+                                        onChange={() => adjustVps({ type: "toggle king remove" })}
+                                        showKing={!VPS?.form.removeKing}
+                                    />
+                                }
                             </div>
                             : <div className="h5 text-center">
                                 Subj.
                                 {` `}
                                 <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "subject" })}>{roleIcon.servant}</span>
                                 {` `}
-                                {(rendered && rendered.whatsAdjustable !== "king") && 
-                                    <span onClick={() => adjustVps({ type: "toggle servant shrink" })} className="mx-2 clickable">
-                                        {!servantIsShrunk ? "🪄" : "👶"}
-                                    </span>
+                                {(rendered && rendered.whatsAdjustable !== "king") &&
+                                    <ServantShrinker
+                                        shrunk={servantIsShrunk}
+                                        onClick={() => adjustVps({ type: "toggle servant shrink" })}
+                                    />
                                 }
                             </div>}
                             entryFeeder={entryFeeder}
@@ -146,11 +148,12 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                     heading={roles.king === "object" 
                                         ? <div className="h5 text-center">
                                         Obj. <span onClick={() => setShowingExplanation({ role: "king", item: "object" })}>{roleIcon.king}</span>
-                                            {/* {(rendered && rendered.whatsAdjustable !== "servant") && 
-                                                <span onClick={() => adjustVps({ type: "toggle king remove" })} className="mx-2 clickable">
-                                                    {!VPS?.form.removeKing ? "🙈" : "🚫"}
-                                                </span>
-                                            } */}
+                                            {(rendered && rendered.whatsAdjustable !== "servant") && 
+                                                <KingRemover
+                                                    onChange={() => adjustVps({ type: "toggle king remove" })}
+                                                    showKing={!VPS?.form.removeKing}  
+                                                />
+                                            }
                                         </div>
                                         : <div className="h5 text-center">
                                             Obj.
@@ -158,9 +161,7 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                             <span className="clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>{roleIcon.servant}</span>
                                             {` `}
                                             {(rendered && rendered.whatsAdjustable !== "king") && 
-                                                <span onClick={() => adjustVps({ type: "toggle servant shrink" })} className="mx-2 clickable">
-                                                    {!servantIsShrunk ? "🪄" : "👶"}
-                                                </span>
+                                                <ServantShrinker shrunk={servantIsShrunk} onClick={() => adjustVps({ type: "toggle servant shrink" })} />
                                             }
                                         </div>}
                                     entryFeeder={entryFeeder}
@@ -211,6 +212,30 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
             {alert}
         </div>}
     </div>;
+}
+
+function ServantShrinker({ shrunk, onClick }: {
+    shrunk: boolean;
+    onClick: () => void;
+}) {
+    return <span className="mx-2 clickable" onClick={onClick}>
+        {!shrunk ? "🪄" : "👶"}
+    </span>;
+}
+
+function KingRemover({ showKing, onChange }: {
+    showKing: boolean;
+    onChange: () => void;
+}) {
+    return <span className="form-check form-check-inline ml-3">
+        <input
+            checked={showKing}
+            onChange={onChange}
+            className="form-check-input"
+            type="checkbox"
+            id="showKingCheck"
+        />
+    </span>;
 }
 
 export default VPPicker;

@@ -114,5 +114,6 @@ export function makeNounSelection(entry: T.NounEntry, old: T.NounSelection | und
         adjectives: (!dynamicComplement && old) ? old.adjectives : [],
         possesor: !dynamicComplement ? old?.possesor : undefined,
         dynamicComplement,
+        demonstrative: undefined,
     };
 }

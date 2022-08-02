@@ -71,7 +71,22 @@ export function renderNounSelection(n: T.NounSelection, inflected: boolean, role
         ps: pashto,
         e: english,
         possesor: renderPossesor(n.possesor, role),
+        demonstrative: renderDemonstrative(n.demonstrative, inflected && n.number === "plural"),
     };
+}
+
+function renderDemonstrative(demonstrative: T.DemonstrativeSelection | undefined, plurInflected: boolean): T.Rendered<T.DemonstrativeSelection> | undefined {
+    if (!demonstrative) {
+        return undefined;
+    }
+    return {
+        ...demonstrative,
+        ps: demonstrative.demonstrative === "daa"
+            ? (plurInflected ? { p: "دې", f: "de" } : { p: "دا", f: "daa" })
+            : demonstrative.demonstrative === "dagha"
+            ? (plurInflected ? { p: "دغه", f: "dágha" } : { p: "دغو", f: "dágho" })
+            : (plurInflected ? { p: "هغه", f: "hágha" } : { p: "هغو", f: "hágho" })
+    }
 }
 
 function renderPronounSelection(p: T.PronounSelection, inflected: boolean, englishInflected: boolean, role: "servant" | "king" | "none"): T.Rendered<T.PronounSelection> {

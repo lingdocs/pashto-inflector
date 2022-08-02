@@ -649,6 +649,13 @@ export type NounSelection = {
     dynamicComplement?: boolean,
     adjectives: AdjectiveSelection[],
     possesor: undefined | PossesorSelection,
+    demonstrative: undefined | DemonstrativeSelection,
+};
+
+export type DemonstrativeSelection = {
+    type: "demonstrative",
+    demonstrative: "daa" | "hagha" | "dagha",
+    hideNoun: boolean,
 };
 
 export type AdverbSelection = {
@@ -708,6 +715,7 @@ export type Rendered<
         | AdjectiveSelection
         | SandwichSelection<Sandwich>
         | ComplementSelection
+        | DemonstrativeSelection
         | ComplementSelection["selection"]
         | UnselectedComplementSelection
         | undefined
@@ -757,6 +765,13 @@ export type Rendered<
         inflected: boolean,
         person: Person,
     }
+    : T extends DemonstrativeSelection
+    ? {
+        type: "demonstrative",
+        demonstrative: DemonstrativeSelection["demonstrative"],
+        hideNoun: boolean,
+        ps: PsString,
+    }
     : T extends ComplementSelection
     ? {
         type: "complement",
@@ -797,6 +812,7 @@ export type Rendered<
             shrunken: boolean,
             np: Rendered<NPSelection>,
         },
+        demonstrative?: Rendered<DemonstrativeSelection>,
     };
 
 export type EPSelectionState = {

@@ -108,7 +108,7 @@ function NPPicker(props: {
         : <div></div>;
     const possesiveLabel = props.np?.selection.type === "participle" ? "Subj/Obj" : "Possesor";
     return <div style={{
-        opacity: props.isRemoved ? 0.6 : 1,
+        opacity: props.isRemoved ? 0.5 : 1,
     }}>
         <div className="d-flex flex-row justify-content-between">
             <div></div>

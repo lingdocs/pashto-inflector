@@ -85,6 +85,14 @@ function NPNounPicker(props: {
             });
         }
     }
+    function handleDemonstrativeUpdate(demonstrative: undefined | T.NounSelection["demonstrative"]) {
+        if (props.noun) {
+            props.onChange({
+                ...props.noun,
+                demonstrative,
+            });
+        }
+    }
     return <div style={{ maxWidth: "225px", minWidth: "125px" }}>
         {/* {showFilter && <div className="mb-2 text-center">
             <div className="d-flex flex-row justify-content-between">
@@ -102,9 +110,11 @@ function NPNounPicker(props: {
         {props.noun && <AdjectiveManager
             phraseIsComplete={props.phraseIsComplete}
             adjectives={props.noun?.adjectives}
+            demonstrative={props.noun.demonstrative}
             entryFeeder={props.entryFeeder}
             opts={props.opts}
             onChange={handelAdjectivesUpdate}
+            onDemonstrativeChange={handleDemonstrativeUpdate}
         />}
         <h6>Noun</h6>
         {!(props.noun && props.noun.dynamicComplement) ? <div>
