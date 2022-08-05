@@ -143,7 +143,10 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                         : roles.servant === "object"
                                         ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>Object {roleIcon.servant}</div>
                                         : <div className="h5 text-center">Object</div>}
-                                    <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
+                                    <div className="text-muted text-center">
+                                        <div className="mt-3 mb-1">Unspoken</div>
+                                        <div>3rd Pers. Masc. Plur.</div>
+                                    </div>
                                 </div>
                                 : <NPPicker
                                     phraseIsComplete={phraseIsComplete}
