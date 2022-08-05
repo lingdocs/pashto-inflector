@@ -140,6 +140,8 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
                                 ? <div>
                                     {roles.king === "object" 
                                         ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "king", item: "object" })}>Object {roleIcon.king}</div>
+                                        : roles.servant === "object"
+                                        ? <div className="h5 text-center clickable" onClick={() => setShowingExplanation({ role: "servant", item: "object" })}>Object {roleIcon.servant}</div>
                                         : <div className="h5 text-center">Object</div>}
                                     <div className="text-muted">Unspoken 3rd Pers. Masc. Plur.</div>
                                 </div>
