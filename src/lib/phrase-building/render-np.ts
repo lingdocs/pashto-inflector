@@ -52,11 +52,14 @@ export function renderNounSelection(n: T.NounSelection, inflected: boolean, role
         const infs = inflectWord(n.entry);
         const ps = n.number === "singular"
             ? getInf(infs, "inflections", n.gender, false, inflected)
-            : [
-                ...getInf(infs, "plural", n.gender, true, inflected),
-                ...getInf(infs, "arabicPlural", n.gender, true, inflected),
-                ...getInf(infs, "inflections", n.gender, true, inflected),
-            ];
+            : (() => {
+                const plural = getInf(infs, "plural", n.gender, true, inflected);
+                return [
+                    ...plural,
+                    ...getInf(infs, "arabicPlural", n.gender, true, inflected),
+                    ...!plural.length ? getInf(infs, "inflections", n.gender, true, inflected) : [],
+                ];
+            })();
         return ps.length > 0
             ? ps
             : [psStringFromEntry(n.entry)];
