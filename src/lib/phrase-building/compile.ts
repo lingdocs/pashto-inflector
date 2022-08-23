@@ -1,7 +1,7 @@
 import * as T from "../../types";
 import {
     capitalizeFirstLetter,
-    concatPsString, getLong, getShort, isVerbBlock,
+    concatPsString, getLong, getShort,
 } from "../p-text-helpers";
 import { negativeParticle } from "../../lib/grammar-units";
 import * as grammarUnits from "../grammar-units";
