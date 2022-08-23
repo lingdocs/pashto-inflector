@@ -1,7 +1,7 @@
 import * as T from "../../types";
 import {
     capitalizeFirstLetter,
-    concatPsString, getLong, getShort,
+    concatPsString, getLong, getShort, isVerbBlock,
 } from "../p-text-helpers";
 import { negativeParticle } from "../../lib/grammar-units";
 import * as grammarUnits from "../grammar-units";
@@ -21,6 +21,7 @@ import {
     getSubjectSelectionFromBlocks,
     getVerbFromBlocks,
     hasEquativeWithLengths,
+    isRenderedVerbB,
     specifyBlockLength,
     specifyEquativeLength,
 } from "./blocks-utils";
@@ -166,7 +167,10 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
         const rest = pieces.slice(1);
         const firstPs = ("p" in first)
             ? [first]
-            : (blankOut?.equative && "block" in first && first.block.type === "equative")
+            : (
+                (blankOut?.equative && "block" in first && first.block.type === "equative") ||
+                (blankOut?.verb && "block" in first && isRenderedVerbB(first.block))
+            )
             ? [blank]
             : ((blankOut?.ba) && "kid" in first && first.kid.type === "ba")
             ? [kidsBlank]
