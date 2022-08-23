@@ -30,6 +30,7 @@ import Hider from "./components/Hider";
 import EntrySelect from "./components/EntrySelect";
 import VerbInfo, { RootsAndStems } from "./components/verb-info/VerbInfo";
 import VPExplorer from "./components/vp-explorer/VPExplorer";
+import { makeVPSelectionState } from "./components/vp-explorer/verb-selection";
 import { vpsReducer } from "./components/vp-explorer/vps-reducer";
 import type { VpsReducerAction as VpsA } from "./components/vp-explorer/vps-reducer";
 import useStickyState from "./lib/useStickyState";
@@ -243,6 +244,7 @@ export {
     getEnglishVerb,
     roleIcon,
     vpsReducer,
+    makeVPSelectionState,
     // protobuf helpers
     readDictionary,
     writeDictionary,

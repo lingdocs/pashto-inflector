@@ -28,7 +28,9 @@ export type Dictionary = {
 	entries: DictionaryEntry[];
 }
 
-// TODO: BETTER TYPING OF THIS WITH RECORD TO MAKE SURE THAT THE FIELDS LINE UP
+// TODO: MAKE THIS A RECORD TYPE
+// Record<RequiredNumberFields, number> && Record<RequiredStringFields, string> && 
+// Partial<Record<StringFields, string>> && Partial<Record<NumberFields, number>>
 export type DictionaryEntry = {
     // BASE REQUIRED INFO
     /** timestamp - used for word id */
@@ -122,6 +124,8 @@ export type DictionaryEntryTextField = "p" | "f" | "e" | "c" | "infap" | "infaf"
 export type DictionaryEntryBooleanField = "noInf" | "shortIntrans" | "noOo" | "sepOo" | "diacExcept";
 export type DictionaryEntryNumberField = "ts" | "i" | "l" | "separationAtP" | "separationAtF";
 export type DictionaryEntryField = DictionaryEntryTextField | DictionaryEntryBooleanField | DictionaryEntryNumberField;
+
+// TODO: make 
 
 export type DictionaryEntryError = {
     errors: string[],

@@ -57,6 +57,7 @@ export function renderNounSelection(n: T.NounSelection, inflected: boolean, role
                 return [
                     ...plural,
                     ...getInf(infs, "arabicPlural", n.gender, true, inflected),
+                    // TODO: if it's an INANIMATE NOUN and it inflects allow the inflected form too?
                     ...!plural.length ? getInf(infs, "inflections", n.gender, true, inflected) : [],
                 ];
             })();
