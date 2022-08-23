@@ -89,10 +89,10 @@ function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, ki
         : lengthyBlock?.ps;
     if (potentialLengthy && "long" in potentialLengthy) {
         return {
-            long: compileVPPs(specifyBlockLength(blocks, "long"), kids, form, king) as T.PsString[],
-            short: compileVPPs(specifyBlockLength(blocks, "short"), kids, form, king) as T.PsString[],
+            long: compileVPPs(specifyBlockLength(blocks, "long"), kids, form, king, blankOut) as T.PsString[],
+            short: compileVPPs(specifyBlockLength(blocks, "short"), kids, form, king, blankOut) as T.PsString[],
             ..."mini" in potentialLengthy ? {
-                mini: compileVPPs(specifyBlockLength(blocks, "mini"), kids, form, king) as T.PsString[],
+                mini: compileVPPs(specifyBlockLength(blocks, "mini"), kids, form, king, blankOut) as T.PsString[],
             } : {},
         };
     }
