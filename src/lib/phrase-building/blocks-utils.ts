@@ -1,6 +1,34 @@
 import * as T from "../../types";
 import { getLength } from "../p-text-helpers";
 
+export function isRenderedVerbB(block: T.Block["block"]): block is T.RenderedVerbB {
+    if (block.type === "modalVerbBlock") {
+        return true;
+    }
+    if (block.type === "modalVerbKedulPart") {
+        return true;
+    }
+    if (block.type === "perfectEquativeBlock") {
+        return true;
+    }
+    if (block.type === "perfectParticipleBlock") {
+        return true;
+    }
+    if (block.type === "perfectiveHead") {
+        return true;
+    }
+    if (block.type === "verb") {
+        return true;
+    }
+    return false;
+}
+
+export function getVerbBlocks(blocks: T.Block[][]): T.RenderedVerbB[] {
+    return blocks[0]
+        .filter(b => isRenderedVerbB(b.block))
+        .map(b => b.block) as T.RenderedVerbB[];
+}
+
 export function makeBlock(block: T.Block["block"], key?: number): T.Block {
     return {
         key: key === undefined ? Math.random() : key,

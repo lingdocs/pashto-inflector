@@ -970,6 +970,13 @@ export type Block = {
         | EquativeBlock;
 }
 
+export type RenderedVerbB = VerbRenderedBlock
+    | PerfectiveHeadBlock
+    | ModalVerbBlock
+    | ModalVerbKedulPart
+    | PerfectEquativeBlock
+    | PerfectParticipleBlock;
+    
 export type Kid = {
     key: number,
     kid: | { type: "ba" }

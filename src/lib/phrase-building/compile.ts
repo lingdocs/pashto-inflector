@@ -29,7 +29,7 @@ const blank: T.PsString = {
     p: "_____",
     f: "_____",
 };
-type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean };
+type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean, verb?: boolean };
 
 const kidsBlank: T.PsString = { p: "___", f: "___" };
 
@@ -70,10 +70,10 @@ export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?:
 }
 
 export function compileVP(VP: T.VPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
-export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths: true): { ps: T.PsString[], e?: string [] };
-export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?: true): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] } {
+export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths: true, blankOut?: "verb"): { ps: T.PsString[], e?: string [] };
+export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?: true, blankOut?: "verb"): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] } {
     const verb = getVerbFromBlocks(VP.blocks).block;
-    const psResult = compileVPPs(VP.blocks, VP.kids, form, VP.king);
+    const psResult = compileVPPs(VP.blocks, VP.kids, form, VP.king, blankOut);
     return {
         ps: combineLengths ? flattenLengths(psResult) : psResult,
         // TODO: English doesn't quite work for dynamic compounds in passive voice
@@ -81,7 +81,7 @@ export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?
     };
 }
 
-function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, king: "subject" | "object"): T.SingleOrLengthOpts<T.PsString[]> {
+function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, king: "subject" | "object", blankOut?: "verb"): T.SingleOrLengthOpts<T.PsString[]> {
     const lengthyBlock = getLengthyFromBlocks(blocks);
     const potentialLengthy = lengthyBlock?.type === "verb"
         ? lengthyBlock.block.ps
@@ -102,7 +102,10 @@ function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, ki
         kids,
         false,
     );
-    return removeDuplicates(combineIntoText(blocksWKids, subjectPerson, {}));
+    return removeDuplicates(combineIntoText(blocksWKids, subjectPerson, {
+        ba: blankOut === "verb",
+        verb: blankOut === "verb",
+    }));
 }
 
 function compileEPPs(blocks: T.Block[][], kids: T.Kid[], omitSubject: boolean, blankOut?: BlankoutOptions): T.SingleOrLengthOpts<T.PsString[]> {
