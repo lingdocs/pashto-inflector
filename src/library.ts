@@ -169,6 +169,7 @@ import * as typePredicates from "./lib/type-predicates";
 import APPicker from "./components/ap-picker/APPicker";
 import VPDisplay from "./components/vp-explorer/VPDisplay";
 import VPPicker from "./components/vp-explorer/VPPicker";
+import * as blockUtils from "./lib/phrase-building/blocks-utils";
 
 export {
     // FUNCTIONS
@@ -245,6 +246,7 @@ export {
     roleIcon,
     vpsReducer,
     makeVPSelectionState,
+    blockUtils,
     // protobuf helpers
     readDictionary,
     writeDictionary,
