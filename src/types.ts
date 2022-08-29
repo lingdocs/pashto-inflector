@@ -582,8 +582,10 @@ export type VPSelectionComplete = {
     form: FormVersion,
 };
 
+export type VerbFormName = VerbTense | PerfectTense | ModalTense | ImperativeTense;
+
 export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "imperativeTense" | "tenseCategory"> & {
-    tense: VerbTense | PerfectTense | ModalTense | ImperativeTense,
+    tense: VerbFormName,
 }
 
 export type VerbSelection = {

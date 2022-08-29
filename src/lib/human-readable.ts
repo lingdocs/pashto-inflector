@@ -54,12 +54,22 @@ function humanReadableImperativeTense(tense: T.ImperativeTense): string {
         : "perfective imperative";
 }
 
-export function humanReadableTense(tense: T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense): string {
-    return isModalTense(tense)
-        ? humanReadableModalTense(tense)
-        : isPerfectTense(tense)
-        ? humanReadablePerfectTense(tense)
-        : isImperativeTense(tense)
-        ? humanReadableImperativeTense(tense as T.ImperativeTense)
-        : humanReadableVerbTense(tense);
+export function humanReadableVerbForm(f: T.VerbFormName): string {
+    return isModalTense(f)
+        ? humanReadableModalTense(f)
+        : isPerfectTense(f)
+        ? humanReadablePerfectTense(f)
+        : isImperativeTense(f)
+        ? humanReadableImperativeTense(f as T.ImperativeTense)
+        : humanReadableVerbTense(f);
+}
+
+export function humanReadableEquativeTense(f: T.EquativeTense): string {
+    return (f === "pastSubjunctive"
+        ? "past subjunctive"
+        : f === "wouldBe"
+        ? `"would be"`
+        : f === "wouldHaveBeen"
+        ? `"would have been"`
+        : f) + " equative";
 }
