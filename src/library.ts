@@ -157,6 +157,7 @@ import {
 import {
     renderAPSelection,
 } from "./lib/phrase-building/render-ap";
+import { humanReadableTense } from "./lib/human-readable";
 import NPPicker from "./components/np-picker/NPPicker";
 import EPPicker from "./components/ep-explorer/EPPicker";
 import EPExplorer from "./components/ep-explorer/EPExplorer";
@@ -243,6 +244,7 @@ export {
     getPashtoFromRendered,
     renderAPSelection,
     getEnglishVerb,
+    humanReadableTense,
     roleIcon,
     vpsReducer,
     makeVPSelectionState,
