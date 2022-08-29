@@ -10,6 +10,7 @@ import {
     personIsPlural,
 } from "../../lib/misc-helpers";
 import { renderSandwich } from "./render-sandwich";
+import { isPattern1Entry } from "../type-predicates";
 
 function chooseInflection(inflections: T.UnisexSet<T.InflectionSet>, pers: T.Person, inflected?: boolean): T.ArrayOneOrMore<T.PsString> {
     const gender = personGender(pers);
@@ -29,14 +30,20 @@ export function inflectAdjective(a: T.AdjectiveSelection, person: T.Person, infl
     return chooseInflection(infs.inflections, person, inflected);
 }
 
-export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Person, inflected: boolean): T.Rendered<T.AdjectiveSelection> {
+export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Person, inflected: boolean, isLocationSingSandwich?: boolean): T.Rendered<T.AdjectiveSelection> {
     const eWord = getEnglishWord(a.entry);
     const e = !eWord
         ? undefined
         : typeof eWord === "string"
         ? eWord
         : (eWord.singular || undefined);
-    const ps = inflectAdjective(a, person, inflected);
+    const ps = inflectAdjective(
+        a,
+        person,
+        isLocationSingSandwich && isPattern1Entry(a.entry)
+            ? false
+            : inflected,
+    );
     return {
         type: "adjective",
         entry: a.entry,

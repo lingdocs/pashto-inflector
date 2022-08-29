@@ -43,7 +43,7 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): { kids: T.Kid[], blocks
         makeBlock({
             type: "predicateSelection",
                 selection: EP.predicate.selection.type === "NP"
-                    ? renderNPSelection(EP.predicate.selection, false, false, "subject", "king")
+                    ? renderNPSelection(EP.predicate.selection, false, false, "subject", "king", false)
                     // we won't have an unselected complement in the EP - TODO: make safer?
                     : renderComplementSelection(EP.predicate.selection, commandingPerson) as T.Rendered<T.ComplementSelection>,
         }),
@@ -119,7 +119,7 @@ function renderEPSBlocks(blocks: T.EPSBlockComplete[]): T.Block[] {
         }
         return makeBlock({
             type: "subjectSelection",
-            selection: renderNPSelection(block.selection, false, false, "subject", "none"),
+            selection: renderNPSelection(block.selection, false, false, "subject", "none", false),
         });
     });
 }

@@ -292,7 +292,7 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
                 ...blocks,
                 makeBlock({
                     type: "subjectSelection",
-                    selection: renderNPSelection(block.selection, config.inflectSubject, false, "subject", config.king === "subject" ? "king" : "servant"),
+                    selection: renderNPSelection(block.selection, config.inflectSubject, false, "subject", config.king === "subject" ? "king" : "servant", false),
                 }),
             ];
         }
@@ -307,7 +307,7 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
                     }),
                 ];
             }
-            const selection = renderNPSelection(object, config.inflectObject, true, "object", config.king === "object" ? "king" : "servant");
+            const selection = renderNPSelection(object, config.inflectObject, true, "object", config.king === "object" ? "king" : "servant", false);
             return [
                 ...blocks,
                 makeBlock({

@@ -14,11 +14,11 @@ import {
 } from "../../lib/np-tools";
 import { getEnglishWord } from "../get-english-word";
 import { renderAdjectiveSelection } from "./render-adj";
-import { isPattern5Entry, isAnimNounEntry } from "../type-predicates";
+import { isPattern5Entry, isAnimNounEntry, isPattern1Entry } from "../type-predicates";
 
-export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection>;
-export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "object", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection>;
-export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject" | "object", soRole: "servant" | "king" | "none"): T.Rendered<T.NPSelection> {
+export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject", soRole: "servant" | "king" | "none", isLocationSandwich: boolean): T.Rendered<T.NPSelection>;
+export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "object", soRole: "servant" | "king" | "none", isLocationSandwich: boolean): T.Rendered<T.NPSelection>;
+export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflectEnglish: boolean, role: "subject" | "object", soRole: "servant" | "king" | "none", isLocationSandwich: boolean): T.Rendered<T.NPSelection> {
     if (typeof NP !== "object") {
         if (role !== "object") {
             throw new Error("ObjectNP only allowed for objects");
@@ -28,7 +28,7 @@ export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflect
     if (NP.selection.type === "noun") {
         return {
             type: "NP",
-            selection: renderNounSelection(NP.selection, inflected, soRole),
+            selection: renderNounSelection(NP.selection, inflected, soRole, undefined, isLocationSandwich),
         };
     }
     if (NP.selection.type === "pronoun") {
@@ -46,12 +46,13 @@ export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflect
     throw new Error("unknown NP type");
 };
 
-export function renderNounSelection(n: T.NounSelection, inflected: boolean, role: "servant" | "king" | "none", noArticles?: true | "noArticles"): T.Rendered<T.NounSelection> {
+export function renderNounSelection(n: T.NounSelection, inflected: boolean, role: "servant" | "king" | "none", noArticles?: true | "noArticles", isLocationSandwich?: boolean): T.Rendered<T.NounSelection> {
     const english = getEnglishFromNoun(n.entry, n.number, noArticles);
+    const nounInflects = !(isLocationSandwich && isPattern1Entry(n.entry) && n.number === "singular")
     const pashto = ((): T.PsString[] => {
         const infs = inflectWord(n.entry);
         const ps = n.number === "singular"
-            ? getInf(infs, "inflections", n.gender, false, inflected)
+            ? getInf(infs, "inflections", n.gender, false, nounInflects)
             : (() => {
                 const plural = getInf(infs, "plural", n.gender, true, inflected);
                 return [
@@ -68,7 +69,7 @@ export function renderNounSelection(n: T.NounSelection, inflected: boolean, role
     const person = getPersonNumber(n.gender, n.number);
     return {
         ...n,
-        adjectives: n.adjectives.map(a => renderAdjectiveSelection(a, person, inflected)),
+        adjectives: n.adjectives.map(a => renderAdjectiveSelection(a, person, inflected, isLocationSandwich && n.number === "singular")),
         person,
         inflected,
         role,
@@ -132,6 +133,7 @@ function renderPossesor(possesor: T.PossesorSelection | undefined, possesorRole:
             possesorRole === "subj/obj" ? true : false,
             "subject",
             possesorRole === "subj/obj" ? "none" : possesorRole,
+            false,
         ),
     };
 }
