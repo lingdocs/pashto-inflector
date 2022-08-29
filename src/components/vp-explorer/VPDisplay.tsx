@@ -38,7 +38,7 @@ function VPDisplay({ VPS, opts, setForm, justify, onlyOne, length, mode: preferr
         </div>;
     }
     const rendered = renderVP(VP);
-    const result = compileVP(rendered, rendered.form);
+    const result = compileVP(rendered, rendered.form, true);
     return <div className={`text-${justify ? justify : "center"} mt-1`}>
         {typeof setForm === "function" && !inlineFormChoice && <AbbreviationFormSelector
             adjustable={rendered.whatsAdjustable}

@@ -71,8 +71,8 @@ export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?:
 }
 
 export function compileVP(VP: T.VPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
-export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths: true, blankOut?: "verb"): { ps: T.PsString[], e?: string [] };
-export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?: true, blankOut?: "verb"): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] } {
+export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string [] };
+export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?: true, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] } {
     const verb = getVerbFromBlocks(VP.blocks).block;
     const psResult = compileVPPs(VP.blocks, VP.kids, form, VP.king, blankOut);
     return {
@@ -82,7 +82,7 @@ export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?
     };
 }
 
-function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, king: "subject" | "object", blankOut?: "verb"): T.SingleOrLengthOpts<T.PsString[]> {
+function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, king: "subject" | "object", blankOut?: BlankoutOptions): T.SingleOrLengthOpts<T.PsString[]> {
     const lengthyBlock = getLengthyFromBlocks(blocks);
     const potentialLengthy = lengthyBlock?.type === "verb"
         ? lengthyBlock.block.ps
@@ -101,12 +101,9 @@ function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, ki
     const blocksWKids = putKidsInKidsSection(
         filterForVisibleBlocksVP(blocks, form, king),
         kids,
-        false,
+        !!blankOut?.ba
     );
-    return removeDuplicates(combineIntoText(blocksWKids, subjectPerson, {
-        ba: blankOut === "verb",
-        verb: blankOut === "verb",
-    }));
+    return removeDuplicates(combineIntoText(blocksWKids, subjectPerson, blankOut));
 }
 
 function compileEPPs(blocks: T.Block[][], kids: T.Kid[], omitSubject: boolean, blankOut?: BlankoutOptions): T.SingleOrLengthOpts<T.PsString[]> {
@@ -161,6 +158,12 @@ export function filterForVisibleBlocksEP(blocks: T.Block[][], omitSubject: boole
 }
 
 function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjectPerson: T.Person, blankOut?: BlankoutOptions): T.PsString[] {
+    function removeDoubleBlanks(x: T.PsString): T.PsString {
+        return {
+            p: x.p.replace(blank.p+blank.p, blank.p),
+            f: x.f.replace(blank.f+blank.f, blank.f),
+        };
+    }
     function combine(pieces: (T.Block | T.Kid | T.PsString)[]): T.PsString[] {
         const first = pieces[0];
         const next = pieces[1];
@@ -188,7 +191,7 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
                     r,
                 ))
             )
-        );
+        ).map(removeDoubleBlanks);
     }
     return piecesWVars.flatMap(combine);
 }
