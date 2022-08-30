@@ -40,6 +40,9 @@ import { roleIcon } from "./components/vp-explorer/VPExplorerExplanationModal";
 import CompiledPTextDisplay from "./components/CompiledPTextDisplay";
 import RenderedBlocksDisplay from "./components/RenderedBlocksDisplay";
 import {
+    isPashtoScript,
+} from "./lib/is-pashto";
+import {
     makePsString,
     removeFVarients,
 } from "./lib/accent-and-ps-utils";
@@ -121,9 +124,6 @@ import {
     isThirdPerson,
 } from "./lib/misc-helpers";
 import {
-    flattenLengths,
-} from "./lib/phrase-building/compile";
-import {
     simplifyPhonetics,
 } from "./lib/simplify-phonetics";
 import {
@@ -153,6 +153,9 @@ import {
 import {
     compileEP,
     compileVP,
+    flattenLengths,
+    blank,
+    kidsBlank,
 } from "./lib/phrase-building/compile";
 import {
     renderAPSelection,
@@ -253,6 +256,9 @@ export {
     vpsReducer,
     makeVPSelectionState,
     blockUtils,
+    blank,
+    kidsBlank,
+    isPashtoScript,
     // protobuf helpers
     readDictionary,
     writeDictionary,

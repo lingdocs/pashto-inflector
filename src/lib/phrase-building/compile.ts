@@ -26,13 +26,13 @@ import {
     specifyEquativeLength,
 } from "./blocks-utils";
 
-const blank: T.PsString = {
+export const blank: T.PsString = {
     p: "_____",
     f: "_____",
 };
 type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean, verb?: boolean };
 
-const kidsBlank: T.PsString = { p: "___", f: "___" };
+export const kidsBlank: T.PsString = { p: "___", f: "___" };
 
 
 // function compilePs({ blocks, kids, verb: { head, rest }, VP }: CompilePsInput): T.SingleOrLengthOpts<T.PsString[]> {
