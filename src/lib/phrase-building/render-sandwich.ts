@@ -14,12 +14,11 @@ export function renderSandwich(s: T.SandwichSelection<T.Sandwich>): T.Rendered<T
             inflectInside,
             "subject",
             "none",
-            isLocationSandwich(s),
+            isPuSandwich(s),
         ),
     };
 }
 
-function isLocationSandwich(s: T.SandwichSelection<T.Sandwich>): boolean {
-    // TODO: more nuanced version of this? or just په ?
-    return (s.before?.p === "په") && (s.after?.p === "کې");
+function isPuSandwich(s: T.SandwichSelection<T.Sandwich>): boolean {
+    return s.before?.p === "په";
 }

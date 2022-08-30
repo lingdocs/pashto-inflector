@@ -40,9 +40,6 @@ import { roleIcon } from "./components/vp-explorer/VPExplorerExplanationModal";
 import CompiledPTextDisplay from "./components/CompiledPTextDisplay";
 import RenderedBlocksDisplay from "./components/RenderedBlocksDisplay";
 import {
-    isPashtoScript,
-} from "./lib/is-pashto";
-import {
     makePsString,
     removeFVarients,
 } from "./lib/accent-and-ps-utils";
@@ -122,6 +119,8 @@ import {
     isFirstPerson,
     isSecondPerson,
     isThirdPerson,
+    blank,
+    kidsBlank,
 } from "./lib/misc-helpers";
 import {
     simplifyPhonetics,
@@ -154,9 +153,10 @@ import {
     compileEP,
     compileVP,
     flattenLengths,
-    blank,
-    kidsBlank,
 } from "./lib/phrase-building/compile";
+import {
+    isPashtoScript,
+} from "./lib/is-pashto";
 import {
     renderAPSelection,
 } from "./lib/phrase-building/render-ap";

@@ -251,10 +251,10 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
         (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => string[]
     > = {
         imperfectiveImperative: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `$SUBJ ${n ? "don't " : ""}${ec[0]}! (command)`,
+            `$SUBJ ${n ? "don't " : ""}${ec[0]}!`,
         ]),
         perfectiveImperative: (s: T.Person, ec: T.EnglishVerbConjugationEc, n: boolean) => ([
-            `$SUBJ ${n ? "don't " : ""}${ec[0]}! (command)`,
+            `$SUBJ ${n ? "don't " : ""}${ec[0]}!`,
         ]),
     };
     const base = (
@@ -265,5 +265,6 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
             : isImperativeTense(vs.tense)
             ? imperativeBuilders[vs.tense]
             : (vs.voice === "active" ? modalBuilders : passiveModalBuilders)[vs.tense])(subjectPerson, ec, vs.negative);
-    return base.map(b => `${b}${typeof object === "object" ? " $OBJ" : ""}${ep ? ` ${ep}` : ""}`.replace("  ", " ").trim());
+    return base
+        .map(b => `${b}${typeof object === "object" ? " $OBJ" : ""}${ep ? ` ${ep}` : ""}${isImperativeTense(vs.tense) ? " (command)" : ""}`.replace("  ", " ").trim());
 }

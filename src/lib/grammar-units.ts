@@ -189,7 +189,7 @@ export const pastEndings: {
         ],
         [
             [{
-                    p: "ۀ",
+                    p: "ه",
                     f: "u"
                 },
                 {

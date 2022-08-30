@@ -8,6 +8,12 @@
 
 import * as T from "../types";
 
+export const blank: T.PsString = {
+    p: "_____",
+    f: "_____",
+};
+export const kidsBlank: T.PsString = { p: "___", f: "___" };
+
 // just for type safety
 export function noPersInfs(s: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>): T.LengthOptions<T.PsString>;
 export function noPersInfs(s: T.FullForm<T.PsString>): T.SingleOrLengthOpts<T.PsString>;

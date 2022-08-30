@@ -25,15 +25,13 @@ import {
     specifyBlockLength,
     specifyEquativeLength,
 } from "./blocks-utils";
+import {
+    blank,
+    kidsBlank,
+} from "../../lib/misc-helpers";
 
-export const blank: T.PsString = {
-    p: "_____",
-    f: "_____",
-};
+
 type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean, verb?: boolean };
-
-export const kidsBlank: T.PsString = { p: "___", f: "___" };
-
 
 // function compilePs({ blocks, kids, verb: { head, rest }, VP }: CompilePsInput): T.SingleOrLengthOpts<T.PsString[]> {
 //     if ("long" in rest) {
@@ -435,4 +433,5 @@ export function flattenLengths(r: T.SingleOrLengthOpts<T.PsString[] | T.PsString
     }
     return [r];
 }
+
 
