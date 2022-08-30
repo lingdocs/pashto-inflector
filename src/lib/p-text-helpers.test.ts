@@ -511,7 +511,7 @@ test(`addToForm should work`, () => {
             [[{ p: "لیکم", f: "leekum" }], [{ p: "لیکو", f: "leekoo" }]],
             [[{ p: "لیکې", f: "leeke" }], [{ p: "لیکئ", f: "leekeyy" }]],
             [[{ p: "لیکې", f: "leeke" }], [{ p: "لیکئ", f: "leekeyy" }]],
-            [[{ p: "لیکۀ", f: "leeku" }, { p: "لیکو", f: "leeko"}], [{ p: "لیکل", f: "leekul" }]],
+            [[{ p: "لیکه", f: "leeku" }, { p: "لیکو", f: "leeko"}], [{ p: "لیکل", f: "leekul" }]],
             [[{ p: "لیکه", f: "leeka"}], [{ p: "لیکې", f: "leeke" }]], 
         ],
         long: [
