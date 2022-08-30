@@ -48,7 +48,7 @@ export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflect
 
 export function renderNounSelection(n: T.NounSelection, inflected: boolean, role: "servant" | "king" | "none", noArticles?: true | "noArticles", isPuSandwich?: boolean): T.Rendered<T.NounSelection> {
     const english = getEnglishFromNoun(n.entry, n.number, noArticles);
-    const nounInflects = !(isPuSandwich && isPattern1Entry(n.entry) && n.number === "singular")
+    const nounInflects = inflected && !(isPuSandwich && isPattern1Entry(n.entry) && n.number === "singular");
     const pashto = ((): T.PsString[] => {
         const infs = inflectWord(n.entry);
         const ps = n.number === "singular"

@@ -53,7 +53,6 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     }
     const subjectPerson = getPersonFromNP(subject);
     const objectPerson = getPersonFromNP(object);
-    // TODO: also don't inflect if it's a pattern one animate noun
     const inflectSubject = isPast && isTransitive && !isMascSingAnimatePattern4(subject);
     const inflectObject = !isPast && isFirstOrSecondPersPronoun(object);
     // Render Elements
