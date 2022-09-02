@@ -121,6 +121,7 @@ import {
     isThirdPerson,
     blank,
     kidsBlank,
+    ensureNonComboVerbInfo,
 } from "./lib/misc-helpers";
 import {
     simplifyPhonetics,
@@ -252,6 +253,7 @@ export {
     getEnglishVerb,
     humanReadableVerbForm,
     humanReadableEquativeTense,
+    ensureNonComboVerbInfo,
     roleIcon,
     vpsReducer,
     makeVPSelectionState,

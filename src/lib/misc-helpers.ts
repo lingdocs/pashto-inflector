@@ -27,6 +27,14 @@ export function noPersInfs(s:
     return s;
 }
 
+export function ensureNonComboVerbInfo(i: T.VerbInfo): T.NonComboVerbInfo {
+    return "stative" in i
+        ? i.stative
+        : "transitive" in i
+        ? i.transitive
+        : i;
+}
+
 export function pickPersInf<T>(s: T.OptionalPersonInflections<T>, persInf: T.PersonInflectionsField): T {
     if ("mascSing" in s) {
         return s[persInf];

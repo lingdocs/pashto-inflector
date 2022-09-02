@@ -8,6 +8,7 @@ import CompoundDisplay from "./CompoundDisplay";
 import {
     VpsReducerAction
 } from "./vps-reducer";
+import { ensureNonComboVerbInfo } from "../../lib/misc-helpers";
 
 // TODO: dark on past tense selecitons
 
@@ -68,7 +69,7 @@ function VerbPicker(props: {
         {info && <div className="mt-3 mb-1 text-center">
             <Hider
                 showing={showRootsAndStems}
-                label={`🌳 ${passiveRootsAndStems ? "Passive" : abilityRootsAndStems ? "Ability" : ""} Roots and Stems`}     
+                label={`🌳 ${passiveRootsAndStems ? "Passive" : abilityRootsAndStems ? "Ability" : ""} Roots and Stems${info.type === "dynamic compound" ? " for Aux. Verb" : ""}`}     
                 handleChange={() => setShowRootsAndStems(p => !p)}
                 hLevel={5}
             >
@@ -78,6 +79,8 @@ function VerbPicker(props: {
                         ? passiveRootsAndStems
                         : abilityRootsAndStems
                         ? abilityRootsAndStems
+                        : info.type === "dynamic compound"
+                        ? ensureNonComboVerbInfo(getVerbInfo(info.auxVerb))
                         : info}
                 />
             </Hider>
