@@ -18,9 +18,9 @@ function humanReadableVerbTense(tense: T.VerbTense): string {
         ? "simple past"
         : tense === "imperfectivePast"
         ? "continuous past"
-        : tense === "habitualImperfectivePast"
+        : tense === "habitualPerfectivePast"
         ? "habitual simple past"
-        // : tense === "habitualPerfectivePast"
+        // : tense === "habitualImperfectivePast"
         : "habitual continuous past";
 }
 
