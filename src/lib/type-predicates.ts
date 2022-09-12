@@ -148,7 +148,7 @@ export function isPattern5Entry<T extends (T.NounEntry | T.AdjectiveEntry)>(e: T
     return (
         !!(e.infap && e.infaf && e.infbp && e.infbf)
         &&
-        e.infap.slice(-1) === "ه" && e.infap.charAt(e.infap.length - 3) === "ا"
+        (!e.infap.slice(1).includes("ا") && e.infap.slice(-1) === "ه")
     );
 }
 
