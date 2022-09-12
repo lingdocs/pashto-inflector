@@ -500,6 +500,16 @@ export type VerbEntry = {
     complement?: DictionaryEntry,
 };
 
+export enum InflectionCategory {
+    None = 0,
+    Basic = 1,
+    UnstressedEy = 2,
+    StressedEy = 3,
+    Pashtun = 4,
+    Squish = 5,
+    FemInanEe = 6,
+};
+
 export type SingularEntry<T extends NounEntry> = T & { __brand7: "a singular noun - as opposed to an always plural noun" };
 export type PluralNounEntry<T extends NounEntry> = T & { __brand7: "a noun that is always plural" };
 
