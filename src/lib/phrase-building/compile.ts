@@ -31,7 +31,13 @@ import {
 } from "../../lib/misc-helpers";
 
 
-type BlankoutOptions = { equative?: boolean, ba?: boolean, kidsSection?: boolean, verb?: boolean };
+type BlankoutOptions = {
+    equative?: boolean,
+    ba?: boolean,
+    kidsSection?: boolean,
+    verb?: boolean,
+    negative?: boolean,
+};
 
 // function compilePs({ blocks, kids, verb: { head, rest }, VP }: CompilePsInput): T.SingleOrLengthOpts<T.PsString[]> {
 //     if ("long" in rest) {
@@ -175,6 +181,8 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
             ? [blank]
             : ((blankOut?.ba) && "kid" in first && first.kid.type === "ba")
             ? [kidsBlank]
+            : (blankOut?.negative && "block" in first && first.block.type === "negative")
+            ? [{ p: "", f: "" }]
             : getPsFromPiece(first, subjectPerson);
         if (!rest.length) {
             return firstPs;
