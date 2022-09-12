@@ -39,7 +39,7 @@ import Block, { NPBlock, APBlock } from "./components/blocks/Block";
 import { roleIcon } from "./components/vp-explorer/VPExplorerExplanationModal";
 import CompiledPTextDisplay from "./components/CompiledPTextDisplay";
 import RenderedBlocksDisplay from "./components/RenderedBlocksDisplay";
-import { getInflectionCategory } from "./lib/inflection-category";
+import { getInflectionPattern } from "./lib/inflection-category";
 import {
     makePsString,
     removeFVarients,
@@ -262,7 +262,7 @@ export {
     blank,
     kidsBlank,
     isPashtoScript,
-    getInflectionCategory,
+    getInflectionPattern,
     // protobuf helpers
     readDictionary,
     writeDictionary,

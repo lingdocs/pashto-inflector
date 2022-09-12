@@ -1,4 +1,4 @@
-import { AdjectiveEntry, InflectionCategory, NounEntry } from "../types";
+import { AdjectiveEntry, InflectionPattern, NounEntry } from "../types";
 import {
     isFemNounEntry,
     isNounEntry,
@@ -10,18 +10,18 @@ import {
     isPattern6FemEntry,
 } from "./type-predicates";
 
-export function getInflectionCategory(e: NounEntry | AdjectiveEntry): InflectionCategory {
+export function getInflectionPattern(e: NounEntry | AdjectiveEntry): InflectionPattern {
     return isPattern1Entry(e)
-        ? InflectionCategory.Basic
+        ? InflectionPattern.Basic
         : isPattern2Entry(e)
-        ? InflectionCategory.UnstressedEy
+        ? InflectionPattern.UnstressedEy
         : isPattern3Entry(e)
-        ? InflectionCategory.StressedEy
+        ? InflectionPattern.StressedEy
         : isPattern4Entry(e)
-        ? InflectionCategory.Pashtun
+        ? InflectionPattern.Pashtun
         : isPattern5Entry(e)
-        ? InflectionCategory.Squish
+        ? InflectionPattern.Squish
         : isNounEntry(e) && isFemNounEntry(e) && isPattern6FemEntry(e)
-        ? InflectionCategory.FemInanEe
-        : InflectionCategory.None;
+        ? InflectionPattern.FemInanEe
+        : InflectionPattern.None;
 }

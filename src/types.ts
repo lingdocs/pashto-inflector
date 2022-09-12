@@ -500,7 +500,7 @@ export type VerbEntry = {
     complement?: DictionaryEntry,
 };
 
-export enum InflectionCategory {
+export enum InflectionPattern {
     None = 0,
     Basic = 1,
     UnstressedEy = 2,
