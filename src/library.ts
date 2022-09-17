@@ -39,7 +39,10 @@ import Block, { NPBlock, APBlock } from "./components/blocks/Block";
 import { roleIcon } from "./components/vp-explorer/VPExplorerExplanationModal";
 import CompiledPTextDisplay from "./components/CompiledPTextDisplay";
 import RenderedBlocksDisplay from "./components/RenderedBlocksDisplay";
-import { getInflectionPattern } from "./lib/inflection-pattern";
+import {
+    getInflectionPattern,
+    humanReadableInflectionPattern,
+} from "./lib/inflection-pattern";
 import {
     makePsString,
     removeFVarients,
@@ -254,6 +257,7 @@ export {
     getEnglishVerb,
     humanReadableVerbForm,
     humanReadableEquativeTense,
+    humanReadableInflectionPattern,
     ensureNonComboVerbInfo,
     roleIcon,
     vpsReducer,

@@ -1,9 +1,19 @@
 {
   "name": "@lingdocs/pashto-inflector",
-  "version": "3.9.4",
+  "version": "3.9.5",
   "author": "lingdocs.com",
   "description": "A Pashto inflection and verb conjugation engine, inculding React components for displaying Pashto text, inflections, and conjugations",
   "homepage": "https://verbs.lingdocs.com",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "build-website": "node get-words.js && npm run build",
+    "build-library": "node get-words.js && rimraf dist && rimraf dist-cjs && tsc --project library-tsconfig.json && node library-post-build.js && rollup -c",
+    "test-ci": "npm run test -- --watchAll=false",
+    "get-words": "node get-words.js"
+  },
   "license": "MIT",
   "main": "dist-cjs/library.js",
   "module": "dist/library.js",
@@ -62,16 +72,6 @@
     "react": "^17.0.1",
     "react-bootstrap": "^1.5.1",
     "react-dom": "^17.0.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "build-website": "node get-words.js && npm run build",
-    "build-library": "node get-words.js && rimraf dist && rimraf dist-cjs && tsc --project library-tsconfig.json && node library-post-build.js && rollup -c",
-    "test-ci": "npm run test -- --watchAll=false",
-    "get-words": "node get-words.js"
   },
   "eslintConfig": {
     "extends": [
