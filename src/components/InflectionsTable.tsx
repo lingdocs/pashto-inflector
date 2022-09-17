@@ -36,9 +36,10 @@ const explanation = (inf: T.Inflections | T.PluralInflections, textOptions: T.Te
     </>;
 }
 
-const InflectionTable = ({ inf, textOptions }: {
+const InflectionTable = ({ inf, textOptions, hideTitle }: {
     inf: T.Inflections | T.PluralInflections,
     textOptions: T.TextOptions,
+    hideTitle?: boolean,
 }) => {
     const [showingExplanation, setShowingExplanation] = useState(false);
     /* istanbul ignore next */ // Insanely can't see the modal to close it
@@ -46,13 +47,13 @@ const InflectionTable = ({ inf, textOptions }: {
     const handleShowExplanation = () => setShowingExplanation(true);
     const isPluralInfs = isPluralInflections(inf);
     return (
-        <div className="mt-4">
-            <div style={{ display: "flex", justifyContent: !isPluralInfs ? "space-between" : "left" }}>
+        <div className={!hideTitle ? "" : "mt-4"}>
+            {!hideTitle && <div style={{ display: "flex", justifyContent: !isPluralInfs ? "space-between" : "left" }}>
                 {!isPluralInfs && <h5>Inflections</h5>}
                 {!isPluralInfs && <div className="clickable mr-2" onClick={handleShowExplanation} data-testid="help-button">
                     <i className={`fa fa-question-circle`}></i>
                 </div>}
-            </div>
+            </div>}
             <table className="table" style={{ tableLayout: "fixed" }}>
                 <thead>
                     <tr>
@@ -71,7 +72,7 @@ const InflectionTable = ({ inf, textOptions }: {
                     ))}
                 </tbody>
             </table>
-            {!isPluralInfs && <Modal show={showingExplanation} onHide={handleCloseExplanation}>
+            {(!hideTitle && !isPluralInfs) && <Modal show={showingExplanation} onHide={handleCloseExplanation}>
                 <Modal.Header closeButton>
                 <Modal.Title>About {isPluralInfs ? "Inflections" : "Arabic Plural"}</Modal.Title>
                 </Modal.Header>
