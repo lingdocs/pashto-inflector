@@ -26,13 +26,16 @@ export function psJSXMap(ps: T.PsJSX, target: "p" | "f", dealWithString: (ps: T.
         return {
             ...base,
             props: {
+              // TODO: could make this a lot cleaner/less repetitive by following a better recursive formula
+              // see https://adueck.github.io/blog/recursively-modify-text-jsx-react/
                 ...base.props,
                 children: typeof base.props.children === "string"
                     ? dealWithString({
                         p: (target === "p" ? base : sec).props.children,
                         f: (target === "p" ? sec : base).props.children,
                     }) 
-                    : base.props.children.map((x: string | JSX.Element, i: number) => (
+                    : base.props.children.map
+                    ? base.props.children.map((x: string | JSX.Element, i: number) => (
                         (typeof x === "string") 
                             ? dealWithString({
                                 p: (target === "p" ? x : sec.props.children[i]),
@@ -42,7 +45,15 @@ export function psJSXMap(ps: T.PsJSX, target: "p" | "f", dealWithString: (ps: T.
                                 p: (target === "p" ? x : sec.props.children[i]),
                                 f: (target === "p" ? sec.props.children[i] : x),
                             }, target, dealWithString)
-                    )),
+                    )) : (typeof base.props.children === "string") 
+                      ? dealWithString({
+                          p: (target === "p" ? base.props.children : sec.props.children),
+                          f: (target === "p" ? sec.props.children : base.props.children),
+                      })
+                      : psJSXMap({
+                          p: (target === "p" ? base.props.children : sec.props.children),
+                          f: (target === "p" ? sec.props.children : base.props.children),
+                      }, target, dealWithString)
             },
         };
     } catch (e) {
@@ -50,35 +61,3 @@ export function psJSXMap(ps: T.PsJSX, target: "p" | "f", dealWithString: (ps: T.
         throw new Error("error mapping out PsJSX - unbalanced trees");
     }
 }
-
-// UNUSED POC OF THE BASIC JSXMAP - COULD BE PUBLISHED SEPERATELY 
-
-/**
- * Allows a text transform function to be run over all the text in a JSX element
- *
- * @param e a JSX Element
- * @param f a function to transform the text
- * @returns the JSX Element with all the text transformed
- */
- export function JSXTextTransform(
-    e: JSX.Element | string,
-    f: (s: string) => string
-  ): JSX.Element | string {
-    if (typeof e === "string") {
-      return f(e);
-    }
-    return {
-      ...e,
-      props: {
-        ...e.props,
-        children:
-          typeof e.props.children === "string"
-            ? f(e.props.children)
-            : Array.isArray(e.props.children)
-            ? e.props.children.map((x: string | JSX.Element) => (
-                JSXTextTransform(x, f)
-              ))
-            : JSXTextTransform(e.props.children, f)
-      }
-    };
-  }
