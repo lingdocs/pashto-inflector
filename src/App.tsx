@@ -64,7 +64,6 @@ const allVerbs = verbs.map((v: { entry: T.DictionaryEntry, complement?: T.Dictio
 function App() {
     const [verbTs, setVerbTs] = useStickyState<number>(0, "verbTs1");
     const [verbTypeShowing, setVerbTypeShowing] = useStickyState<VerbType>("simple", "vTypeShowing");
-    const [regularIrregular, setRegularIrregular] = useStickyState<"regular" | "irregular">("regular", "regIrreg");
     const [transitivityShowing, setTransitivityShowing] = useStickyState<T.Transitivity>("intransitive", "transitivityShowing1");
     const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(false, "showTextOpts1");
     const [textOptions, setTextOptions] = useStickyState<T.TextOptions>(defualtTextOptions, "textOpts1");
@@ -106,9 +105,6 @@ function App() {
         }
         setTransitivityShowing(e.target.value as T.Transitivity);
     }
-    const isRegularVerb = (entry: T.DictionaryEntry): boolean => (
-        !entry.l && !entry.psp && !entry.ssp && !entry.prp && !entry.pprtp && !entry.noOo && !entry.sepOo
-    );
     const verbsAvailable = allVerbs.filter((verb) => (
         (
             (verb.info.type === "transitive or grammatically transitive simple" && verbTypeShowing === "simple") && (transitivityShowing === "transitive" || transitivityShowing === "grammatically transitive")
@@ -123,14 +119,7 @@ function App() {
         && (
             transitivityShowing === verb.info.transitivity
         ))
-    )).filter((verb) => {
-        if (verbTypeShowing !== "simple") {
-            return true;
-        }
-        return regularIrregular === "regular"
-            ? isRegularVerb(verb.verb.entry)
-            : !isRegularVerb(verb.verb.entry);
-    }).sort((a, b) => a.verb.entry.p.localeCompare(b.verb.entry.p, "ps"));
+    )).sort((a, b) => a.verb.entry.p.localeCompare(b.verb.entry.p, "ps"));
 
     const v = (() => {
         const vFound = verbsAvailable.find(v => v.verb.entry.ts === verbTs);
@@ -237,19 +226,6 @@ function App() {
                                         </div>
                                     ))}
                                 </div>
-                                {verbTypeShowing === "simple" &&
-                                    <div className="mt-2">
-                                        <ButtonSelect
-                                            small
-                                            options={[
-                                                { label: "regular", value: "regular" },
-                                                { label: "irregular", value: "irregular" },
-                                            ]}
-                                            value={regularIrregular}
-                                            handleChange={setRegularIrregular}
-                                        />
-                                    </div>
-                                }
                                 <h6 className="mt-2">Transitivity:</h6>
                                 <div onChange={handleTransitivitySelection}>
                                     {transitivities.map((transitivity) => (
