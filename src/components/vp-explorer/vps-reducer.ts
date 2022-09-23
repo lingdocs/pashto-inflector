@@ -80,15 +80,6 @@ export type VpsReducerAction = {
 }
 
 export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, sendAlert?: (msg: string) => void): T.VPSelectionState {
-    return ensureMiniPronounsOk(vps, doReduce());
-    function ensureMiniPronounsOk(old: T.VPSelectionState, vps: T.VPSelectionState): T.VPSelectionState {
-        const error = checkForMiniPronounsError(vps);
-        if (error) {
-            if (sendAlert) sendAlert(error);
-            return old;
-        }
-        return vps;
-    }
     function doReduce(): T.VPSelectionState {
         if (action.type === "load vps") {
             return action.payload;
@@ -319,6 +310,14 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
         }
         throw new Error("unknown vpsReducer state");
     }
+    const modified = doReduce();
+    console.log("called once");
+    const err = checkForMiniPronounsError(modified);
+    if (err) {
+        if (sendAlert) sendAlert(err);
+        return vps;
+    }
+    return modified;
 }
 
 function hasPronounConflict(subject: T.NPSelection | undefined, object: undefined | T.VerbObject): boolean {

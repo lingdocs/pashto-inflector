@@ -4,7 +4,7 @@ import EquativePicker from "./EquativePicker";
 import ButtonSelect from "../ButtonSelect";
 import ComplementPicker from "../ComplementPicker";
 import epsReducer, { EpsReducerAction } from "./eps-reducer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { completeEPSelection } from "../../lib/phrase-building/render-ep";
 import APPicker from "../ap-picker/APPicker";
 import autoAnimate from "@formkit/auto-animate";
@@ -16,18 +16,11 @@ function EPPicker({ opts, eps, onChange, entryFeeder }: {
     entryFeeder: T.EntryFeeder,
 }) {
     const parent = useRef<HTMLDivElement>(null);
-    const [alert, setAlert] = useState<string | undefined>("");
     useEffect(() => {
         parent.current && autoAnimate(parent.current);
     }, [parent]);
     function adjustEps(action: EpsReducerAction) {
-        onChange(epsReducer(eps, action, handleAlert));
-    }
-    function handleAlert(msg: string) {
-        setAlert(msg);
-        setTimeout(() => {
-            setAlert(undefined);
-        }, 1500);
+        onChange(epsReducer(eps, action));
     }
     const phraseIsComplete = !!completeEPSelection(eps);
     return <div>
@@ -109,15 +102,6 @@ function EPPicker({ opts, eps, onChange, entryFeeder }: {
                 />
             </div>
         </div>
-        {alert && <div className="alert alert-warning text-center" role="alert" style={{
-            position: "fixed",
-            top: "30%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 9999999999999,
-        }}>
-            {alert}
-        </div>}
     </div>;
 }
 

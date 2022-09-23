@@ -41,7 +41,10 @@ function EPExplorer(props: {
         "EPState8",
         flashMessage,
     );
-    const [alert, setAlert] = useState<string | undefined>(undefined);
+    // const [
+    //     // alertMsg,
+    //     // setAlertMsg,
+    // ] = useState<string | undefined>(undefined);
     const [showClipped, setShowClipped] = useState<string>("");
     const parent = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -62,10 +65,13 @@ function EPExplorer(props: {
         adjustEps({ type: "load EPS", payload: e });
     }
     function flashMessage(msg: string) {
-        setAlert(msg);
-        setTimeout(() => {
-            setAlert(undefined);
-        }, 1500);
+        console.log(msg);
+        alert(msg);
+        // for some crazy reason using this alert functionality breaks the flow!
+        // setAlertMsg(msg);
+        // setTimeout(() => {
+        //     setAlertMsg(undefined);
+        // }, 1500);
     }
     function flashClippedMessage(m: string) {
         setShowClipped(m);
@@ -133,15 +139,15 @@ function EPExplorer(props: {
             eps={eps}
             setOmitSubject={"eps" in props ? false : payload => adjustEps({ type: "set omitSubject", payload })}
         />}
-        {alert && <div className="alert alert-warning text-center" role="alert" style={{
+        {/* {alertMsg && <div className="alert alert-warning text-center" role="alert" style={{
             position: "fixed",
             top: "30%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             zIndex: 9999999999999,
         }}>
-            {alert}
-        </div>}
+            {alertMsg}
+        </div>} */}
         {showClipped && <div className="alert alert-primary text-center" role="alert" style={{
             position: "fixed",
             top: "30%",

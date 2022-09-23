@@ -269,9 +269,9 @@ export function adjustSubjectSelection(blocks: T.VPSBlock[] | T.EPSBlock[], subj
     return nb;
 }
 
-export function adjustObjectSelection(blocks: T.VPSBlock[], object: T.ObjectSelectionComplete | T.NPSelection | T.VerbObject | T.ObjectSelectionComplete): T.VPSBlockComplete[];
-export function adjustObjectSelection(blocks: T.VPSBlock[], object: T.ObjectSelection | T.NPSelection | T.VerbObject | T.ObjectSelection | undefined): T.EPSBlock[];
-export function adjustObjectSelection(blocks: T.VPSBlock[], object: T.ObjectSelection | T.ObjectSelectionComplete | T.VerbObject | T.NPSelection | undefined): T.VPSBlock[] | T.VPSBlockComplete[] {
+export function adjustObjectSelection(blocks: Readonly<T.VPSBlock[]>, object: T.ObjectSelectionComplete | T.NPSelection | T.VerbObject | T.ObjectSelectionComplete): T.VPSBlockComplete[];
+export function adjustObjectSelection(blocks: Readonly<T.VPSBlock[]>, object: T.ObjectSelection | T.NPSelection | T.VerbObject | T.ObjectSelection | undefined): T.EPSBlock[];
+export function adjustObjectSelection(blocks: Readonly<T.VPSBlock[]>, object: T.ObjectSelection | T.ObjectSelectionComplete | T.VerbObject | T.NPSelection | undefined): T.VPSBlock[] | T.VPSBlockComplete[] {
     const nb = [...blocks];
     const i = nb.findIndex(b => b.block && b.block.type === "objectSelection");
     if (i === -1) {

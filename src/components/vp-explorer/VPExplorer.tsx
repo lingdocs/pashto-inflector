@@ -51,12 +51,18 @@ function VPExplorer(props: {
         "verbExplorerMode2",
     );
     const [showClipped, setShowClipped] = useState<string>("");
-    const [alert, setAlert] = useState<string | undefined>(undefined);
+    const [
+        alertMsg,
+        // setAlertMsg,
+    ] = useState<string | undefined>(undefined);
     function flashMessage(msg: string) {
-        setAlert(msg);
-        setTimeout(() => {
-            setAlert(undefined);
-        }, 1500);
+        console.log(msg);
+        // for some crazy reason this causes it to go through with the state change 
+        // we're trying to avoid when there's a potential errored state
+        // setAlertMsg(msg);
+        // setTimeout(() => {
+        //     setAlertMsg(undefined);
+        // }, 2000);
     }
     useEffect(() => {
         adjustVps({
@@ -159,7 +165,7 @@ function VPExplorer(props: {
         {mode === "phrases" && <VPPicker
             opts={props.opts}
             entryFeeder={props.entryFeeder}
-            onChange={(vps) => adjustVps({ type: "load vps", payload: vps })}
+            onChange={(payload) => adjustVps({ type: "load vps", payload })}
             vps={vps}
         />}
         {mode !== "phrases" && <div className="my-2">
@@ -185,14 +191,14 @@ function VPExplorer(props: {
         }}>
             {showClipped}
         </div>}
-        {alert && <div className="alert alert-warning text-center" role="alert" style={{
+        {alertMsg && <div className="alert alert-warning text-center" role="alert" style={{
             position: "fixed",
             top: "30%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             zIndex: 9999999999999,
         }}>
-            {alert}
+            {alertMsg}
         </div>}
     </div>
 }

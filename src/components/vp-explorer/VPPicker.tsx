@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { getKingAndServant, renderVP } from "../../lib/phrase-building/render-vp";
 import { completeVPSelection, isPastTense } from "../../lib/phrase-building/vp-tools";
 import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationModal";
-import { vpsReducer, VpsReducerAction } from "./vps-reducer";
 import APPicker from "../ap-picker/APPicker";
 import autoAnimate from "@formkit/auto-animate";
 import {
@@ -15,11 +14,12 @@ import {
     isNoObject,
 } from "../../lib/phrase-building/blocks-utils";
 import ComplementPicker from "../ComplementPicker";
+import { vpsReducer, VpsReducerAction } from "../../library";
 
 function VPPicker({ opts, vps, onChange, entryFeeder }: {
     opts: T.TextOptions,
     vps: T.VPSelectionState,
-    onChange: (eps: T.VPSelectionState) => void,
+    onChange: (vps: T.VPSelectionState) => void,
     entryFeeder: T.EntryFeeder,
 }) {
     const parent = useRef<HTMLDivElement>(null);
@@ -27,16 +27,8 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
         parent.current && autoAnimate(parent.current);
     }, [parent]);
     const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
-    const [alert, setAlert] = useState<string | undefined>(undefined);
-    function flashMessage(msg: string) {
-        setAlert(msg);
-        setTimeout(() => {
-            setAlert(undefined);
-        }, 1500);
-    }
     function adjustVps(action: VpsReducerAction) {
-        const newVps = vpsReducer(vps, action, flashMessage);
-        onChange(newVps);
+        onChange(vpsReducer(vps, action));
     }
     function handleSubjectChange(subject: T.NPSelection | undefined, skipPronounConflictCheck?: boolean) {
         adjustVps({
@@ -207,15 +199,6 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
             showing={showingExplanation}
             setShowing={setShowingExplanation}
         />
-        {alert && <div className="alert alert-warning text-center" role="alert" style={{
-            position: "fixed",
-            top: "30%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 9999999999999,
-        }}>
-            {alert}
-        </div>}
     </div>;
 }
 
