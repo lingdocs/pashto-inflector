@@ -311,7 +311,6 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
         throw new Error("unknown vpsReducer state");
     }
     const modified = doReduce();
-    console.log("called once");
     const err = checkForMiniPronounsError(modified);
     if (err) {
         if (sendAlert) sendAlert(err);
