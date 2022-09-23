@@ -55,21 +55,30 @@ export function psJSXMap(ps: T.PsJSX, target: "p" | "f", dealWithString: (ps: T.
 
 /**
  * Allows a text transform function to be run over all the text in a JSX element
- * 
+ *
  * @param e a JSX Element
  * @param f a function to transform the text
  * @returns the JSX Element with all the text transformed
  */
-export function JSXMap(e: JSX.Element, f: (s: string) => string): JSX.Element {
+ export function JSXTextTransform(
+    e: JSX.Element | string,
+    f: (s: string) => string
+  ): JSX.Element | string {
+    if (typeof e === "string") {
+      return f(e);
+    }
     return {
-        ...e,
-        props: {
-            ...e.props,
-            children: typeof e.props.children === "string"
-                ? f(e.props.children) 
-                : e.props.children.map((x: string | JSX.Element) => (
-                    (typeof x === "string") ? f(x) : JSXMap(x, f)
-                )),
-        },
+      ...e,
+      props: {
+        ...e.props,
+        children:
+          typeof e.props.children === "string"
+            ? f(e.props.children)
+            : Array.isArray(e.props.children)
+            ? e.props.children.map((x: string | JSX.Element) => (
+                JSXTextTransform(x, f)
+              ))
+            : JSXTextTransform(e.props.children, f)
+      }
     };
-}
+  }

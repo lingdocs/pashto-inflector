@@ -28,6 +28,7 @@ import defualtTextOptions from "./lib/default-text-options";
 import PhraseBuilder from "./components/vp-explorer/VPExplorer";
 import useStickyState from "./lib/useStickyState";
 import { EPExplorer } from "./library";
+
 type VerbType = "simple" | "stative compound" | "dynamic compound";
 const verbTypes: VerbType[] = [
     "simple",

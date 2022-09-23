@@ -74,7 +74,9 @@ export function makeVPSelectionState(
         externalComplement: takesExternalComplement(verb)
             ? { type: "complement", selection: { type: "unselected" }}
             : undefined,
-        form: os ? os.form : { removeKing: false, shrinkServant: false },
+        form: (os && info.type !== "dynamic compound")
+            ? os.form
+            : { removeKing: false, shrinkServant: false },
     };
 }
 
