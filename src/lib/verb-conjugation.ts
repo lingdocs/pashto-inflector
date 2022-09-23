@@ -680,7 +680,11 @@ function ensureShort3rdPersMascSing(
         // variation ending with a ه - u
         const endsInAConsonant = (pashtoConsonants.includes(form.p.slice(-1)) || form.f.slice(-1) === "w");
         const replacement: T.ArrayOneOrMore<T.PsString> = endsInAConsonant
-            ? [form, concatPsString(form, { p: "ه", f: "u" })]
+            ? [
+                form,
+                concatPsString(form, { p: "ه", f: "u" }),
+                concatPsString(form, { p: "و", f: "o" }),
+            ]
             : [form];
         return replace3rdPersMascSing(replacement, block);
     }
