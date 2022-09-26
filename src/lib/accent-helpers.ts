@@ -142,6 +142,16 @@ export function removeAccents(s: T.PsString | string | T.PsString[]): T.PsString
     });
 }
 
+export function removeAccentsFromInflections(inf: T.UnisexInflections): T.UnisexInflections {
+    function removeFromSide(inf: T.InflectionSet): T.InflectionSet {
+        return inf.map(removeAccents) as T.ArrayFixed<T.ArrayOneOrMore<T.PsString>, 3>;
+    }
+    return {
+        masc: removeFromSide(inf.masc),
+        fem: removeFromSide(inf.fem),
+    };
+}
+
 /**
  * Determines if a string has any accents on it
  * 

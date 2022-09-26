@@ -32,7 +32,7 @@ import {
     inflectYey,
 } from "./pashto-inflector";
 import {
-    accentOnNFromEnd, removeAccents,
+    accentOnNFromEnd, removeAccents, removeAccentsFromInflections,
 } from "./accent-helpers";
 import { pashtoConsonants } from "./pashto-consonants";
 import {
@@ -288,17 +288,20 @@ function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect): T
 
 function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbInfo, aspect: T.Aspect): T.AspectContent {
     const transitivity = getTransitivity(info);
-    const presentComplement = (transitivity === "transitive" && complementInflects(info.complement))
-        ? unisexInfToObjectMatrix(info.complement)  // transitive verb requires an object matrix for the complex
-        : info.complement;  // intransitive verb doesn't require that because the complement matches the subject
+    const complement: T.UnisexInflections = aspect === "imperfective"
+        ? removeAccentsFromInflections(info.complement)
+        : info.complement;
+    const presentComplement = (transitivity === "transitive" && complementInflects(complement))
+        ? unisexInfToObjectMatrix(complement)  // transitive verb requires an object matrix for the complex
+        : complement;  // intransitive verb doesn't require that because the complement matches the subject
 
     function makeTransitiveStativeModalContent() {
         const aux = stativeAux[transitivity][aspect].modal;
         const nonImperative = addToForm([presentComplement, " "], aux.nonImperative);
         const future = addToForm([baParticle, " "], nonImperative);
-        const past = addToForm([info.complement, " "], aux.past);
+        const past = addToForm([complement, " "], aux.past);
         const habitualPast = addToForm([baParticle, " "], past);
-        const hypotheticalPast = addToForm([info.complement, " "], aux.hypotheticalPast);
+        const hypotheticalPast = addToForm([complement, " "], aux.hypotheticalPast);
         return {
             nonImperative,
             future,
@@ -316,7 +319,7 @@ function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbIn
     );
     const future = addToForm([baParticle, " "], nonImperative);
     const imperative = addToForm([presentComplement, " "], aux.imperative);
-    const past = addToForm([info.complement, " "], aux.past);
+    const past = addToForm([complement, " "], aux.past);
     const habitualPast = addToForm([baParticle, " "], past);
     return {
         nonImperative,
@@ -403,7 +406,7 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
     const pastPart: (" " | T.SingleOrLengthOpts<T.UnisexInflections> | T.SingleOrLengthOpts<T.PsString>)[] =
         (info.type === "stative compound")
             // for stative compounds 
-            ? [info.complement, " ", stativeAux[transitivity].participle.past]
+            ? [removeAccentsFromInflections(info.complement), " ", stativeAux[transitivity].participle.past]
             // for regular compounds
             : [inflectYey(noPersInfs(info.participle.past))]
 
