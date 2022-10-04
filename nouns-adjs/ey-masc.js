@@ -1,4 +1,4 @@
-module.exports = [
+export default[
 { ts: 1527818948, e: `sneezing, sneeze` }, // اټسکی - aTúskey
 { ts: 1573681135691, e: `tribal constable, tribal offical with police powers` }, // اربکی - arbakéy
 { ts: 1573659054031, e: `width, spaciousness` }, // ارتوالی - artwaaley, aratwaaley

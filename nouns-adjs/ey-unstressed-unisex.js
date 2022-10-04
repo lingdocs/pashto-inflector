@@ -6,7 +6,7 @@
  *
  */
 
-module.exports = [
+export default[
     { ts: 1582853867682, e: "resident" }, // اوسېدونکی
     { ts: 1527813469, e: "forgiving" }, // بخښونکی
     { ts: 1527817829, e: "debtor" }, // پوروړی

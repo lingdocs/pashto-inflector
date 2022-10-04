@@ -1,4 +1,4 @@
-module.exports = [
+export default[
     { ts: 1527819345, e: `sheep, ram` }, // پسه - psu
     { ts: 1527822173, e: `bush, shrub` }, // جاړه - jaaRú
     { ts: 1527813508, e: `heart` }, // زړه - zRu

@@ -6,7 +6,7 @@
  *
  */
 
-module.exports = [
+export default[
     { ts: 1527822004, e: "last, final" }, // آخرینی - aakhireenéy
     { ts: 1591872915426, e: "Afghan (person)" }, // افغانی - afghaanéy
     { ts: 1612616237182, e: "Pakistani (person)"}, // پاکستانی - paakistaanéy

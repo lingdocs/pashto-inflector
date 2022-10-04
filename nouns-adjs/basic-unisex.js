@@ -6,7 +6,7 @@
  *
  */
 
-module.exports = [
+export default[
     { ts: 1527815408, e: "asleep" }, // ویده - weedú
     { ts: 1527812796, e: "good" }, // ښه - xu
     { ts: 1527821744, e: "cook, chef" }, // آشپز - aashpáz

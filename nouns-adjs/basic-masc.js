@@ -1,4 +1,4 @@
-module.exports = [
+export default[
     { ts: 1527812828, e: "house" }, // kor
     { ts: 1527812432, e: `sky, heaven` }, // آسمان - aasmaan
     { ts: 1527812431, e: `mango` }, // آم - aam

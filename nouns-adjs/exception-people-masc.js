@@ -1,4 +1,4 @@
-module.exports = [
+export default[
     { ts: 1527821817, e: `uncle (paternal)` }, // اکا - akáa
     { ts: 1527816411, e: `father, grandfather (vocative or in child's speech)` }, // بابا - baabaa
     { ts: 1527819439, e: `king, ruler, president, padishah` }, // باچا - baacháa

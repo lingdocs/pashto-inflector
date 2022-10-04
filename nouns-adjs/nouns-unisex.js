@@ -1,4 +1,4 @@
-module.exports = [
+export default[
     { ts: 1527821744, e: `cook, chef` }, // آشپز - aashpáz
     { ts: 1527812156, e: `officer` }, // افسر - afsar
     { ts: 1591872915426, e: `Afghan (person)` }, // افغانی - afghaanéy

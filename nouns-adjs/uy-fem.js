@@ -6,7 +6,7 @@
  *
  */
 
-module.exports = [
+export default[
     { ts: 1527818017, e: "store, shop" }, // اټۍ - aTuy
     { ts: 1527812694, e: "girl" }, // انجنۍ - injUnuy
     { ts: 1527815140, e: "week" }, // اونۍ - onuy, ownuy, owunuy

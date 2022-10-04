@@ -1,4 +1,4 @@
-module.exports = [
+export default[
     { ts: 1527821971, e: `second wife of own husband` }, // بن - bun
     { ts: 1527816397, e: `aunt` }, // ترور - tror
     { ts: 1578704593901, e: `aunt (paternal uncle's wife)` }, // تندار - tandaar

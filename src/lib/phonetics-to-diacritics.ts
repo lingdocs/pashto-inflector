@@ -323,7 +323,11 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       return;
     }
 
-    const prevLetterWasBeginningAyn = (p[pIndex - 1] === "ع" && isEndSpace && phoneme === "'");
+    const prevLetterWasBeginningAyn = (
+      p[pIndex - 1] === "ع" &&
+      // isEndSpace(p[pIndex]) && // This breaks it
+      phoneme === "'" 
+    );
     // check if the phoneme lines up in the Pashto word
     if (isBeginning && !isUofDu && phonemeInfo.addAlefOnBeginning) {
       // TODO: Maybe a little bad because it doesn't loop through possibilities

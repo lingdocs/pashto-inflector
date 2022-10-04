@@ -1,4 +1,4 @@
-module.exports = [
+export default[
     { ts: 1568926976497, e: `x-ray` }, // اکسرې - iksre
     { ts: 1602179757779, e: `alphabet` }, // الف بې - alif be
     { ts: 1527813840, e: `ashes` }, // ایرې - eere

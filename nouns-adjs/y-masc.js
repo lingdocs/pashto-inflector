@@ -1,4 +1,4 @@
-module.exports = [
+export default[
     { ts: 1527815154, e: `end, finish, close, conclusion` }, // پای - paay
 { ts: 1527812594, e: `place, space` }, // ځای - dzaay
 { ts: 1527812525, e: `tea` }, // چای - chaay

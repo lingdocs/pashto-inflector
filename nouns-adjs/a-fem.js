@@ -1,4 +1,4 @@
-module.exports = [
+export default[
     { ts: 1527812797, e: "woman" }, // xudza
     { ts: 1527816466, e: `peace` }, // صلح - sUlha
     { ts: 1527816589, e: `plan` }, // طرح - tarha
