@@ -1,6 +1,6 @@
 {
   "name": "@lingdocs/pashto-inflector",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "author": "lingdocs.com",
   "description": "A Pashto inflection and verb conjugation engine, inculding React components for displaying Pashto text, inflections, and conjugations",
   "homepage": "https://verbs.lingdocs.com",
@@ -10,13 +10,13 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build-website": "node get-words.js && npm run build",
-    "build-library": "node get-words.js && rimraf dist && rimraf dist-cjs && tsc --project library-tsconfig.json && node library-post-build.js && rollup -c",
+    "build-library": "node get-words.js && rimraf dist && tsc --project library-tsconfig.json && node library-post-build.js",
     "test-ci": "npm run test -- --watchAll=false",
     "get-words": "node get-words.js"
   },
   "license": "MIT",
-  "main": "dist-cjs/library.js",
-  "module": "dist/library.js",
+  "type": "module",
+  "main": "dist/library.js",
   "types": "dist/library.d.ts",
   "private": false,
   "files": [
@@ -43,9 +43,6 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
-    "@rollup/plugin-commonjs": "^17.1.0",
-    "@rollup/plugin-image": "^2.0.6",
-    "@rollup/plugin-node-resolve": "^11.2.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -64,7 +61,6 @@
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.3",
     "rimraf": "^3.0.2",
-    "rollup": "^2.41.0",
     "typescript": "^4.2.3",
     "web-vitals": "^1.0.1"
   },
