@@ -23,6 +23,8 @@
     "outDir": "dist"
   },
   "files": [
+    "src/functions.ts",
+    "src/components.ts",
     "src/library.ts",
     "src/images.d.ts"
   ]

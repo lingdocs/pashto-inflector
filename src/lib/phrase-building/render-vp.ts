@@ -34,7 +34,7 @@ import { findPerfectiveHead, getObjectSelection, getSubjectSelection, makeBlock,
 import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
-import { makeNounSelection } from "../../library";
+import { makeNounSelection } from "../../components/np-picker/picker-tools";
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const subject = getSubjectSelection(VP.blocks).selection;

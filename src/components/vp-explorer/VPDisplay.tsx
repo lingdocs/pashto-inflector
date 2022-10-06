@@ -3,7 +3,7 @@ import * as T from "../../types";
 import AbbreviationFormSelector from "./AbbreviationFormSelector";
 import { getObjectSelection, getSubjectSelection } from "../../lib/phrase-building/blocks-utils";
 import { completeVPSelection } from "../../lib/phrase-building/vp-tools";
-import { renderVP } from "../../library";
+import { renderVP } from "../../lib/phrase-building/render-vp";
 import ModeSelect, { LengthSelect, Mode, ScriptSelect } from "../DisplayModeSelect";
 import { useState } from "react";
 import CompiledPTextDisplay from "../CompiledPTextDisplay";

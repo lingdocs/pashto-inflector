@@ -18,7 +18,7 @@ import {
     isNoObject,
 } from "../../lib/phrase-building/blocks-utils";
 import ComplementPicker from "../ComplementPicker";
-import { vpsReducer, VpsReducerAction } from "../../library";
+import { vpsReducer, VpsReducerAction } from "../../components/vp-explorer/vps-reducer";
 
 function VPPicker({ opts, vps, onChange, entryFeeder }: {
     opts: T.TextOptions,

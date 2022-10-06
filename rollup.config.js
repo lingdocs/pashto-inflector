@@ -2,6 +2,7 @@ import image from '@rollup/plugin-image';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import pkg from './package.json';
+import multiInput from 'rollup-plugin-multi-input';
 
 const banner = `
 /**
@@ -14,16 +15,17 @@ const banner = `
 `;
 
 export default {
-  input: 'dist/library.js',
+  input: ['dist/functions.js', 'dist/components.js'],
   external: ["react", "react-dom", "react-bootstrap"],
   output: [{
-    file: pkg.main,
+    dir: "dist-cjs",
     format: 'cjs',
     sourcemap: true,
     banner,
   }],
   plugins: [
     // peerDepsExternal(),
+    multiInput(),
     commonjs(),
     nodeResolve({
       resolveOnly: Object.keys(pkg.dependencies),

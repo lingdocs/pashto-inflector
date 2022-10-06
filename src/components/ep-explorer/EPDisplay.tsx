@@ -7,7 +7,7 @@ import { useState } from "react";
 import CompiledPTextDisplay from "../CompiledPTextDisplay";
 import EPBlocksDisplay from "../RenderedBlocksDisplay";
 import ModeSelect, { Mode, ScriptSelect } from "../DisplayModeSelect";
-import { useStickyState } from "../../library";
+import useStickyState from "../../lib/useStickyState";
 
 function EPDisplay({ eps, opts, setOmitSubject, justify, onlyOne, length, mode: preferredMode, script: preferredScript }: {
     eps: T.EPSelectionState,
