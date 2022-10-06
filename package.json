@@ -1,14 +1,11 @@
 {
   "name": "@lingdocs/pashto-inflector",
-  "version": "4.9.13",
+  "version": "4.9.14",
   "author": "lingdocs.com",
   "description": "A Pashto inflection and verb conjugation engine, inculding React components for displaying Pashto text, inflections, and conjugations",
   "homepage": "https://verbs.lingdocs.com",
   "license": "MIT",
-  "exports": {
-    "./functions": "./dist-cjs/dist/functions.js",
-    "./components": "./dist-cjs/dist/components.js"
-  },
+  "main": "dist-cjs/library.js",
   "module": "dist/library.js",
   "types": "dist/library.d.ts",
   "private": false,
@@ -30,8 +27,7 @@
     "jsurl2": "^2.1.0",
     "lz-string": "^1.4.4",
     "pbf": "^3.2.1",
-    "rambda": "^6.7.0",
-    "react-select": "^4.3.1"
+    "rambda": "^6.7.0"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
@@ -73,7 +69,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build-website": "node get-words.js && npm run build",
-    "build-library": "node get-words.js && rimraf dist && rimraf dist-cjs && tsc --project library-tsconfig.json && node library-post-build.js && rollup -c",
+    "build-library": "node get-words.js && rimraf dist && tsc --project library-tsconfig.json && node library-post-build.js",
     "test-ci": "npm run test -- --watchAll=false",
     "get-words": "node get-words.js"
   },
