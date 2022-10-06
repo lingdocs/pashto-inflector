@@ -6,7 +6,7 @@
  *
  */
 
-export default[
+module.exports = [
     { ts: 1527820771, e: "population, number of settlers; prosperity, well-being; organization of public services and amenities; construction" }, // آباداني - aabaadaanee
     { ts: 1527813939, e: "freedom, independence" }, // آزادي - aazaadee
     { ts: 1527818402, e: "championship; courage" }, // اتلولي - atalwalée

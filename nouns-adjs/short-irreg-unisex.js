@@ -6,7 +6,7 @@
  *
  */
 
-export default[
+module.exports = [
     { ts: 1527816778, e: "long" }, // اوږد - ooGd, ooGud
     { ts: 1527822706, e: "raw, unripe, immature" }, // اوم - oom
     { ts: 1527812802, e: "donkey" }, // خر - khur

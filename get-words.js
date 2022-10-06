@@ -5,57 +5,25 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import fs from "fs";
-import fetch from "node-fetch";
-import allVerbTsS from "./verbs/verbs.js";
-import aFem from "./nouns-adjs/a-fem.js";
-import aaFem from "./nouns-adjs/aa-fem.js";
-import aanuUnisex from "./nouns-adjs/aanu-unisex.js";
-import adverbs from "./nouns-adjs/adverbs.js";
-import basicFem from "./nouns-adjs/basic-fem.js";
-import basicUnisex from "./nouns-adjs/basic-unisex.js";
-import eFem from "./nouns-adjs/e-fem.js";
-import eeFem from "./nouns-adjs/ee-fem.js";
-import exceptionPeopleFem from "./nouns-adjs/exception-people-fem.js";
-import exceptionPeopleMasc from "./nouns-adjs/exception-people-masc.js";
-import eyMasc from "./nouns-adjs/ey-masc.js";
-import eyStressedUnisex from "./nouns-adjs/ey-stressed-unisex.js";
-import eyUnstressedUnisex from "./nouns-adjs/ey-unstressed-unisex.js";
-import locAdverbs from "./nouns-adjs/loc-adverbs.js";
-import nonInflecting from "./nouns-adjs/non-inflecting.js";
-import nounsUnisex from "./nouns-adjs/nouns-unisex.js";
-import oFem from "./nouns-adjs/o-fem.js";
-import shortIrregUnisex from "./nouns-adjs/short-irreg-unisex.js";
-import uMasc from "./nouns-adjs/u-masc.js";
-import uyFem from "./nouns-adjs/uy-fem.js";
-import yMasc from "./nouns-adjs/y-masc.js";
+const fs = require("fs");
+const fetch = require("node-fetch");
+const path = require("path");
+const verbCollectionPath = path.join(".", "verbs");
+const nounAdjCollectionPath = path.join(".", "nouns-adjs");
+const verbTsFiles = fs.readdirSync(verbCollectionPath);
+const nounAdjTsFiles = fs.readdirSync(nounAdjCollectionPath);
+const protoModels = require("./src/lib/dictionary-models.js");
+const Pbf = require("pbf");
 
-import * as protoModels from "./src/lib/dictionary-models.js";
-import Pbf from "pbf";
+const allVerbTsS = [...new Set(verbTsFiles.reduce((arr, fileName) => {
+    const TsS = require("./verbs/"+fileName);
+    return [...arr, ...TsS];
+}, []))];
 
-const allNounAdjTsS = [
-    ...aFem,
-    ...aaFem,
-    ...aanuUnisex,
-    ...adverbs,
-    ...basicFem,
-    ...basicUnisex,
-    ...eFem,
-    ...eeFem,
-    ...exceptionPeopleFem,
-    ...exceptionPeopleMasc,
-    ...eyMasc,
-    ...eyStressedUnisex,
-    ...eyUnstressedUnisex,
-    ...locAdverbs,
-    ...nonInflecting,
-    ...nounsUnisex,
-    ...oFem,
-    ...shortIrregUnisex,
-    ...uMasc,
-    ...uyFem,
-    ...yMasc,
-].map(x => x.ts);
+const allNounAdjTsS = [...new Set(nounAdjTsFiles.reduce((arr, fileName) => {
+    const TsS = require("./nouns-adjs/"+fileName).map(x => x.ts);
+    return [...arr, ...TsS];
+}, []))];
 
 fetch(process.env.LINGDOCS_DICTIONARY_URL).then(res => res.arrayBuffer()).then(buffer => {
   const pbf = new Pbf(buffer);

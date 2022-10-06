@@ -1,4 +1,4 @@
-export default[
+module.exports = [
     { ts: 1527822780, e: `forward, towards` }, // ورمخته - wărmukhta
     { ts: 1527820292, e: `behind` }, // شاته - shaata
     { ts: 1527814912, e: `near, close to` }, // رانږدې - raanaGde

@@ -1,4 +1,4 @@
-export default[
+module.exports = [
     { ts: 1527812449, e: `there` }, // هلته - hálta, álta
 { ts: 1527823758, e: `only, just` }, // ایکي - eekee
 { ts: 1527813043, e: `without delay, immediately` }, // بې له ټاله - be la Taala

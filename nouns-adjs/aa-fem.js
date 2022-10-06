@@ -6,7 +6,7 @@
  *
  */
 
-export default[
+module.exports = [
     { ts: 1527813115, e: "claim" }, // ادعا - idaa
     { ts: 1527818119, e: "stick, walking staff, walking stick, crutch" }, // امسا - amsaa
     { ts: 1527815043, e: "punishment, retribution" }, // جزا - jazaa

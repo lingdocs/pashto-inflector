@@ -1,4 +1,4 @@
-export default[
+module.exports = [
     { ts: 1527814150, e: `road, way, path` }, // لار - laar
     { ts: 1527815417, e: `day` }, // ورځ - wradz
     { ts: 1527812922, e: `month` }, // میاشت - miyaasht

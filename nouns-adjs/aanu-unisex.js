@@ -6,7 +6,7 @@
  *
  */
 
-export default[
+module.exports = [
     { ts: 1527815197, e: "Pashtun" }, // پښتون
     { ts: 1527813148, e: "lying" }, // پروت
     { ts: 1574867531681, e: "mature, ripe, cooked" }, // پوخ
