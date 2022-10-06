@@ -1,9 +1,9 @@
-// import Select from "react-select";
+import Select from "react-select";
 import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
 import { isImperativeTense, isModalTense, isPerfectTense, isVerbTense } from "../../lib/type-predicates";
 import useStickyState from "../../lib/useStickyState";
-// import { customStyles } from "../EntrySelect";
+import { customStyles } from "../EntrySelect";
 import {
     VpsReducerAction
 } from "./vps-reducer";
@@ -176,11 +176,11 @@ function TensePicker(props: ({
             payload,
         });
     }
-    // const tOptions = ("vps" in props && (props.vps.verb?.tenseCategory === "perfect"))
-    //     ? perfectTenseOptions
-    //     : ("vps" in props && (props.vps.verb?.tenseCategory === "imperative"))
-    //     ? imperativeTenseOptions
-    //     : verbTenseOptions;
+    const tOptions = ("vps" in props && (props.vps.verb?.tenseCategory === "perfect"))
+        ? perfectTenseOptions
+        : ("vps" in props && (props.vps.verb?.tenseCategory === "imperative"))
+        ? imperativeTenseOptions
+        : verbTenseOptions;
     const showImperativeOption = ("vps" in props && props.vps.verb.voice === "active")
         || ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
     const inPassiveVoice = ("vps" in props && props.vps.verb.voice === "passive") || ("vpsComplete" in props && props.vpsComplete.verb.voice === "passive");;
@@ -230,7 +230,7 @@ function TensePicker(props: ({
                     {[...verbTenseOptions, ...perfectTenseOptions, ...imperativeTenseOptions].find(o => o.value === props.vpsComplete.verb.tense)?.label}
                 </div>
             : <>
-                {/* <Select
+                <Select
                     isSearchable={false}
                     // for some reason can't use tOptions with find here;
                     value={props.vps.verb && ([...verbTenseOptions, ...perfectTenseOptions, ...imperativeTenseOptions].find(o => o.value === props.vps.verb[
@@ -245,7 +245,7 @@ function TensePicker(props: ({
                     className="mb-2"
                     options={tOptions}
                     styles={customStyles}
-                /> */}
+                />
             </>}
             {"vps" in props && props.vps.verb && (props.mode !== "quiz") && <div className="d-flex flex-row justify-content-between align-items-center mt-2 mb-1" style={{ width: "100%" }}>
                 <div className="btn btn-light clickable" onClick={moveTense("back")}>
