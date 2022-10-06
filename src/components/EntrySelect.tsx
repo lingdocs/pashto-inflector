@@ -1,6 +1,8 @@
 import * as T from "../types";
 import { StyleHTMLAttributes } from "react";
+// @ts-ignore
 import Select, { StylesConfig } from "react-select";
+// @ts-ignore
 import AsyncSelect from "react-select/async";
 import {
     makeSelectOption,
@@ -8,20 +10,20 @@ import {
 } from "./np-picker/picker-tools";
 
 export const customStyles: StylesConfig = {
-    menuPortal: (base) => ({
+    menuPortal: (base: any) => ({
         ...base,
         zIndex: 99999,
     }),
-    menu: (base) => ({
+    menu: (base: any) => ({
         ...base,
         zIndex: 999999,
     }),
-    option: (provided, state) => ({
+    option: (provided: any, state: any) => ({
         ...provided,
         padding: "10px 5px",
         color: "#121418",
     }),
-    input: (base) => ({
+    input: (base: any) => ({
         ...base,
         padding: 0,
     }),

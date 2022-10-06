@@ -1,3 +1,4 @@
+// @ts-ignore
 import Select from "react-select";
 import * as T from "../../types";
 import ButtonSelect from "../ButtonSelect";
