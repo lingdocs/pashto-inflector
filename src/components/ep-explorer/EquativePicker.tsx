@@ -1,11 +1,11 @@
 import * as T from "../../types"
-import Select from "react-select";
+// import Select from "react-select";
 import ButtonSelect from "../ButtonSelect";
 
-const zIndexProps = {
-    menuPortalTarget: document.body, 
-    styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
-};
+// const zIndexProps = {
+//     menuPortalTarget: document.body, 
+//     styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
+// };
 
 const options: { label: string | JSX.Element, value: T.EquativeTense }[] = [{
     label: "Present",
@@ -38,16 +38,16 @@ function EquativePicker({ equative, onChange, hideNegative }: {
     onChange: (e: { tense: T.EquativeTense, negative: boolean }) => void,
     hideNegative?: boolean,
 }) {
-    function onTenseSelect(o: { value: T.EquativeTense } | null) {
-        const value = o?.value ? o.value : undefined;
-        if (!value) {
-            return;
-        }
-        onChange({
-            ...equative,
-            tense: value,
-        });
-    }
+    // function onTenseSelect(o: { value: T.EquativeTense } | null) {
+    //     const value = o?.value ? o.value : undefined;
+    //     if (!value) {
+    //         return;
+    //     }
+    //     onChange({
+    //         ...equative,
+    //         tense: value,
+    //     });
+    // }
     function moveTense(dir: "forward" | "back") {
         return () => {
             const currIndex = options.findIndex(tn => tn.value === equative.tense)
@@ -74,7 +74,7 @@ function EquativePicker({ equative, onChange, hideNegative }: {
     return <div>
         <div style={{ maxWidth: "300px", minWidth: "250px", margin: "0 auto" }}>
             <div className="h5">Tense:</div>
-            <Select
+            {/* <Select
                 isSearchable={false}
                 // for some reason can't use tOptions with find here;
                 value={options.find(o => o.value === equative.tense)}
@@ -82,7 +82,7 @@ function EquativePicker({ equative, onChange, hideNegative }: {
                 className="mb-2"
                 options={options}
                 {...zIndexProps}
-            />
+            /> */}
             {<div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
                 <div className="btn btn-light clickable" onClick={moveTense("back")}>
                     <i className="fas fa-chevron-left" />
