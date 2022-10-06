@@ -1,5 +1,4 @@
 import { useState } from "react";
-// import autoAnimate from "@formkit/auto-animate";
 import { filterForVisibleBlocksEP, filterForVisibleBlocksVP } from "../lib/phrase-building/compile";
 import * as T from "../types";
 import Block from "./blocks/Block";

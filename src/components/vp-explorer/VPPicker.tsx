@@ -1,12 +1,16 @@
 import NPPicker, { shrunkenBackground } from "../np-picker/NPPicker";
 import TensePicker from "./TensePicker";
 import * as T from "../../types";
-import { useEffect, useRef, useState } from "react";
+import {
+    // useEffect,
+    useRef,
+    useState,
+} from "react";
 import { getKingAndServant, renderVP } from "../../lib/phrase-building/render-vp";
 import { completeVPSelection, isPastTense } from "../../lib/phrase-building/vp-tools";
 import VPExplorerExplanationModal, { roleIcon } from "./VPExplorerExplanationModal";
 import APPicker from "../ap-picker/APPicker";
-import autoAnimate from "@formkit/auto-animate";
+// import autoAnimate from "@formkit/auto-animate";
 import {
     getObjectSelection,
     getSubjectSelection, 
@@ -23,9 +27,9 @@ function VPPicker({ opts, vps, onChange, entryFeeder }: {
     entryFeeder: T.EntryFeeder,
 }) {
     const parent = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        parent.current && autoAnimate(parent.current);
-    }, [parent]);
+    // useEffect(() => {
+    //     parent.current && autoAnimate(parent.current);
+    // }, [parent]);
     const [showingExplanation, setShowingExplanation] = useState<{ role: "servant" | "king", item: "subject" | "object" } | false>(false);
     function adjustVps(action: VpsReducerAction) {
         onChange(vpsReducer(vps, action));

@@ -4,10 +4,13 @@ import EquativePicker from "./EquativePicker";
 import ButtonSelect from "../ButtonSelect";
 import ComplementPicker from "../ComplementPicker";
 import epsReducer, { EpsReducerAction } from "./eps-reducer";
-import { useEffect, useRef } from "react";
+import {
+    // useEffect,
+    useRef,
+} from "react";
 import { completeEPSelection } from "../../lib/phrase-building/render-ep";
 import APPicker from "../ap-picker/APPicker";
-import autoAnimate from "@formkit/auto-animate";
+// import autoAnimate from "@formkit/auto-animate";
 
 function EPPicker({ opts, eps, onChange, entryFeeder }: {
     opts: T.TextOptions,
@@ -16,9 +19,9 @@ function EPPicker({ opts, eps, onChange, entryFeeder }: {
     entryFeeder: T.EntryFeeder,
 }) {
     const parent = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        parent.current && autoAnimate(parent.current);
-    }, [parent]);
+    // useEffect(() => {
+    //     parent.current && autoAnimate(parent.current);
+    // }, [parent]);
     function adjustEps(action: EpsReducerAction) {
         onChange(epsReducer(eps, action));
     }
