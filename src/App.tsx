@@ -9,25 +9,25 @@
 import { useEffect } from "react";
 import verbs from "./verbs";
 import nounsAdjs from "./nouns-adjs";
-import Pashto from "./components/Pashto";
-import Phonetics from "./components/Phonetics";
-import { getVerbInfo } from "./lib/verb-info";
-import ButtonSelect from "./components/ButtonSelect";
+import Pashto from "./components/src/Pashto";
+import Phonetics from "./components/src/Phonetics";
+import { getVerbInfo } from "./lib/src/verb-info";
+import ButtonSelect from "./components/src/ButtonSelect";
 import {
     clamp
-} from "./lib/p-text-helpers";
+} from "./lib/src/p-text-helpers";
 import {
     randomNumber,
-} from "./lib/misc-helpers";
+} from "./lib/src/misc-helpers";
 import {
     Modal
 } from "react-bootstrap";
 import * as T from "./types";
-import { isAdjectiveEntry, isAdverbEntry, isLocativeAdverbEntry, isNounEntry } from "./lib/type-predicates";
-import defualtTextOptions from "./lib/default-text-options";
-import PhraseBuilder from "./components/vp-explorer/VPExplorer";
-import useStickyState from "./lib/useStickyState";
-import EPExplorer from "./components/ep-explorer/EPExplorer";
+import { isAdjectiveEntry, isAdverbEntry, isLocativeAdverbEntry, isNounEntry } from "./lib/src/type-predicates";
+import defualtTextOptions from "./lib/src/default-text-options";
+import PhraseBuilder from "./components/src/vp-explorer/VPExplorer";
+import useStickyState from "./components/src/useStickyState";
+import EPExplorer from "./components/src/ep-explorer/EPExplorer";
 
 type VerbType = "simple" | "stative compound" | "dynamic compound";
 const verbTypes: VerbType[] = [

@@ -8,20 +8,20 @@
 const fs = require("fs");
 const fetch = require("node-fetch");
 const path = require("path");
-const verbCollectionPath = path.join(".", "verbs");
-const nounAdjCollectionPath = path.join(".", "nouns-adjs");
+const verbCollectionPath = path.join(".", "vocab", "verbs");
+const nounAdjCollectionPath = path.join(".", "vocab", "nouns-adjs");
 const verbTsFiles = fs.readdirSync(verbCollectionPath);
 const nounAdjTsFiles = fs.readdirSync(nounAdjCollectionPath);
-const protoModels = require("./src/lib/dictionary-models.js");
+const protoModels = require("./src/lib/src/dictionary-models.js");
 const Pbf = require("pbf");
 
 const allVerbTsS = [...new Set(verbTsFiles.reduce((arr, fileName) => {
-    const TsS = require("./verbs/"+fileName);
+    const TsS = require("./vocab/verbs/"+fileName);
     return [...arr, ...TsS];
 }, []))];
 
 const allNounAdjTsS = [...new Set(nounAdjTsFiles.reduce((arr, fileName) => {
-    const TsS = require("./nouns-adjs/"+fileName).map(x => x.ts);
+    const TsS = require("./vocab/nouns-adjs/"+fileName).map(x => x.ts);
     return [...arr, ...TsS];
 }, []))];
 

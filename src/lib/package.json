@@ -1,0 +1,26 @@
+{
+  "name": "@lingdocs/inflect",
+  "version": "0.0.7",
+  "description": "Pashto inflector library",
+  "main": "dist/index.js",
+  "types": "dist/lib/library.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lingdocs/pashto-inflector.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.lingdocs.com"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "echo \"build from repo root\""
+  },
+  "author": "lingdocs.com",
+  "license": "MIT",
+  "dependencies": {
+    "rambda": "^7.3.0",
+    "pbf": "^3.2.1"
+  }
+}

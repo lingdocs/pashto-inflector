@@ -29,4 +29,9 @@ jobs:
           yarn install
           yarn build-library
           yarn test
+          cd lib
+          npm install
+          npm publish
+          cd ../components
+          npm install
           npm publish

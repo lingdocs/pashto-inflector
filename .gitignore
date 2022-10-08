@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# compiled library files
+dist
+
 # dependencies
 /node_modules
 /.pnp
@@ -28,4 +31,4 @@ yarn-debug.log*
 yarn-error.log*
 
 /src/verbs.ts
-/src/noun-adjs.ts
+/src/nouns-adjs.ts
