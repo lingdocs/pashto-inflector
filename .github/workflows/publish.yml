@@ -31,6 +31,7 @@ jobs:
           yarn install
           cd ../components
           yarn install
+          cd ../..
           yarn build-library
           yarn test
           cd lib
