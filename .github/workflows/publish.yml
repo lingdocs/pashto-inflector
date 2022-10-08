@@ -26,12 +26,7 @@ jobs:
       - name: Publish when version changed
         if: steps.check.outputs.changed == 'true'
         run: |
-          yarn install
-          cd src/lib
-          yarn install
-          cd ../components
-          yarn install
-          cd ../..
+          yarn install-r
           yarn build-library
           yarn test
           cd lib

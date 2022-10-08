@@ -20,11 +20,6 @@ jobs:
         with:
           node-version: 12
         run: |
-          yarn install
-          cd src/lib
-          yarn install
-          cd ../components
-          yarn install
-          cd ../..
+          yarn install-r
           yarn build-library
           yarn test

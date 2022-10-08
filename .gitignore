@@ -4,7 +4,7 @@
 dist
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
 
@@ -15,9 +15,8 @@ dict
 diac.ts
 
 # production
-/build
-/dist
-/dist-cjs
+build
+dist
 
 # misc
 .DS_Store
