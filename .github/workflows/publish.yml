@@ -36,4 +36,5 @@ jobs:
           yarn test
           cd lib
           npm publish
+          cd ../components
           npm publish
