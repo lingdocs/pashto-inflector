@@ -1,29 +1,14 @@
 {
-  "name": "@lingdocs/pashto-inflector",
-  "version": "4.9.16",
+  "name": "pashto-inflector",
+  "version": "4.9.17",
   "author": "lingdocs.com",
   "description": "A Pashto inflection and verb conjugation engine, inculding React components for displaying Pashto text, inflections, and conjugations",
   "homepage": "https://verbs.lingdocs.com",
   "license": "MIT",
-  "exports": {
-    "./functions": "./dist-cjs/dist/functions.js",
-    "./components": "./dist-cjs/dist/components.js"
-  },
-  "module": "dist/library.js",
-  "types": "dist/library.d.ts",
   "private": false,
-  "files": [
-    "dist",
-    "dist-cjs",
-    "README.md",
-    "LICENSE"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/lingdocs/pashto-inflector.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.lingdocs.com"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
