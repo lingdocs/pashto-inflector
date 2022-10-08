@@ -19,6 +19,12 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: yarn install
-      - run: yarn build-library
-      - run: yarn test
+        run: |
+          yarn install
+          cd src/lib
+          yarn install
+          cd ../components
+          yarn install
+          cd ../..
+          yarn build-library
+          yarn test
