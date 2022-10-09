@@ -8,6 +8,13 @@ A pashto inflection and verb conjugation engine, as well as functions and compon
 
 Also includes the [Pashto Verb Explorer](https://verbs.lingdocs.com) website.
 
+This library is **published as two libraries**:
+
+- @lingdocs/inflect  
+    - The core inflection engine with grammatical information and tools for processing LingDocs dictionary entries and Pashto text.
+- @lingdocs/ps-react
+    - @lingdocs/inflect plus react components for displaying Pashto text, phrase engine UI etc.
+
 ## Development
 
 The Pashto Verb Explorer website can be used to view and play with the verb conjugations and various components. 
@@ -31,9 +38,9 @@ yarn build-website
 
 This outputs a site at `/build`
 
-### Library
+### Libraries
 
-To build the `pashto-inflector` library ready for publishing to NPM:
+To build the `@lingdocs/inflet` and `@lingdocs/ps-react` libraries ready for publishing to NPM:
 
 ```
 yarn build-library

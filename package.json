@@ -1,6 +1,6 @@
 {
   "name": "pashto-inflector",
-  "version": "4.9.18",
+  "version": "5.0.0",
   "author": "lingdocs.com",
   "description": "A Pashto inflection and verb conjugation engine, inculding React components for displaying Pashto text, inflections, and conjugations",
   "homepage": "https://verbs.lingdocs.com",
@@ -31,6 +31,9 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
+    "patch": "npm version patch --no-git-tag-version && cd src/lib && npm version patch --no-git-tag-version && cd ../components && npm version patch --no-git-tag-version",
+    "minor": "npm version minor --no-git-tag-version && cd src/lib && npm version minor --no-git-tag-version && cd ../components && npm version minor --no-git-tag-version",
+    "major": "npm version major --no-git-tag-version && cd src/lib && npm version major --no-git-tag-version && cd ../components && npm version major --no-git-tag-version",
     "preinstall": "echo '*** Be sure to use yarn install-r not yarn install ***!'",
     "start": "react-scripts start",
     "build": "react-scripts build",
