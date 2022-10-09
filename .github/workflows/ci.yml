@@ -23,4 +23,4 @@ jobs:
         run: |
           yarn install-r
           yarn build-library
-          yarn test
+          yarn test -- --silent

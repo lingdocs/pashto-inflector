@@ -28,7 +28,7 @@ jobs:
         run: |
           yarn install-r
           yarn build-library
-          yarn test
+          yarn test -- --silent
           cd lib
           npm publish
           cd ../components
