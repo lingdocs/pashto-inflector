@@ -29,7 +29,7 @@ jobs:
           yarn install-r
           yarn build-library
           yarn test --silent
-          cd lib
+          cd src/lib
           npm publish
           cd ../components
           npm publish

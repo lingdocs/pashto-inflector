@@ -12,8 +12,12 @@ This library is **published as two libraries**:
 
 - @lingdocs/inflect  
     - The core inflection engine with grammatical information and tools for processing LingDocs dictionary entries and Pashto text.
+    - Can be used with Node 16, as CommonJS
 - @lingdocs/ps-react
     - @lingdocs/inflect plus react components for displaying Pashto text, phrase engine UI etc.
+    - Only available as an ES6 Module
+
+`@lingdocs/pashto-inflector` 
 
 ## Development
 
