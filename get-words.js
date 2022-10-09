@@ -6,7 +6,7 @@
  *
  */
 const fs = require("fs");
-const fetch = require("node-fetch");
+const fetch = require("node-fetch-commonjs");
 const path = require("path");
 const verbCollectionPath = path.join(".", "vocab", "verbs");
 const nounAdjCollectionPath = path.join(".", "vocab", "nouns-adjs");

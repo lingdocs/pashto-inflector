@@ -29,5 +29,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/src/verbs.ts
-/src/nouns-adjs.ts
+src/verbs.ts
+src/nouns-adjs.ts
