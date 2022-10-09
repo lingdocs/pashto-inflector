@@ -18,7 +18,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 16
+      - name: Install, build, test
         run: |
           yarn install-r
           yarn build-library
