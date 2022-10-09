@@ -29,6 +29,8 @@ jobs:
           yarn install-r
           yarn build-library
           yarn test --silent
+          cp .npmrc src/lib
+          cp .npmrc src/components
           cd src/lib
           npm publish
           cd ../components
