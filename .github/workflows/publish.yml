@@ -26,6 +26,7 @@ jobs:
       - name: Publish when version changed
         if: steps.check.outputs.changed == 'true'
         run: |
+          echo $LINGDOCS_NPM_TOKEN
           yarn install-r
           yarn build-library
           yarn test --silent
