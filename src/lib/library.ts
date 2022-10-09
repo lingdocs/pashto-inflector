@@ -43,6 +43,8 @@ import {
     psStringFromEntry,
     getLong,
     capitalizeFirstLetter,
+    getLength,
+    psStringEquals,
 } from "./src/p-text-helpers";
 import {
     getEnglishWord,
@@ -228,6 +230,8 @@ export {
     ensureNonComboVerbInfo,
     vpsReducer,
     makeVPSelectionState,
+    getLength,
+    psStringEquals,
     blockUtils,
     blank,
     kidsBlank,
