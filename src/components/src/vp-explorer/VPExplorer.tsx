@@ -3,7 +3,6 @@ import TensePicker from "./TensePicker";
 import VPDisplay from "./VPDisplay";
 import ButtonSelect from "../ButtonSelect";
 import * as T from "../../../types";
-import ChartDisplay from "./VPChartDisplay";
 import useStickyState, { useStickyReducer } from "../useStickyState";
 import { makeVPSelectionState } from "../../../lib/src/phrase-building/verb-selection";
 import { useEffect, useState } from "react";
@@ -14,6 +13,7 @@ import LZString from "lz-string";
 import { vpsReducer } from "../../../lib/src/phrase-building/vps-reducer";
 import { getObjectSelection } from "../../../lib/src/phrase-building/blocks-utils";
 import VPPicker from "./VPPicker";
+import AllTensesDisplay from "./AllTensesDisplay";
 
 export const vpPhraseURLParam = "vp";
 
@@ -180,7 +180,7 @@ function VPExplorer(props: {
             opts={props.opts}
             setForm={handleSetForm}
         />}
-        {mode === "charts" && <ChartDisplay VS={vps.verb} opts={props.opts} />}
+        {mode === "charts" && <AllTensesDisplay VS={vps.verb} opts={props.opts} />}
         {mode === "quiz" && <VPExplorerQuiz opts={props.opts} vps={vps} />}
         {showClipped && <div className="alert alert-primary text-center" role="alert" style={{
             position: "fixed",

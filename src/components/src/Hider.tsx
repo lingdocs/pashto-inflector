@@ -21,7 +21,7 @@ const defaultLevel = 4;
 const indentAfterLevel = 5;
 
 function Hider(props: {
-    label: string,
+    label: string | JSX.Element,
     showing: boolean,
     aspect?: T.Aspect,
     handleChange: () => void,
@@ -48,14 +48,16 @@ function Hider(props: {
                     extraMargin,
                 ),
             },
-            <>
+            <div className="d-flex flex-row align-items-center">
                 {props.showing ? caretDown : caretRight}
                 {` `}
                 {props.aspect
-                    ? <i className={`fas fa-${props.aspect === "imperfective" ? "video" : "camera"} mr-2`} />
+                    ? <i className={`fas fa-${props.aspect === "imperfective" ? "video" : "camera"}`} />
                     : ""}
-                {props.label}
-            </>,
+                <div className="ml-2">
+                    {props.label}
+                </div>
+            </div>,
         )}
         {props.showing && props.children}
     </div>
