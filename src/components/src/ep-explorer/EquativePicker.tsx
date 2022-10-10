@@ -1,37 +1,12 @@
 import * as T from "../../../types"
 import Select from "react-select";
 import ButtonSelect from "../ButtonSelect";
+import { epTenseOptions as options } from "./epTenseOptions";
 
 const zIndexProps = {
     menuPortalTarget: document.body, 
     styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
 };
-
-const options: { label: string | JSX.Element, value: T.EquativeTense }[] = [{
-    label: "Present",
-    value: "present",
-}, {
-    label: "Habitual",
-    value: "habitual",
-}, {
-    label: "Subjunctive",
-    value: "subjunctive",
-}, {
-    label: "Future",
-    value: "future",
-}, {
-    label: "Past",
-    value: "past",
-}, {
-    label: `"Would Be"`,
-    value: "wouldBe",
-}, {
-    label: "Past Subjunctive",
-    value: "pastSubjunctive",
-}, {
-    label: `"Would Have Been"`,
-    value: "wouldHaveBeen",
-}];
 
 function EquativePicker({ equative, onChange, hideNegative }: {
     equative: { tense: T.EquativeTense, negative: boolean },

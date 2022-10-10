@@ -6,7 +6,7 @@ import useStickyState from "../useStickyState";
 import { isModalTense, isPerfectTense, isVerbTense } from "../../../lib/src/type-predicates";
 
 function AllTensesDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptions }) {
-    const [showing, setShowing] = useStickyState<string[]>([], "tensesShowing");
+    const [showing, setShowing] = useStickyState<string[]>([], "VPTensesShowing");
     const [showFormulas, setShowFormulas] = useStickyState<boolean>(false, "showFormulasWithCharts");
     const adjustShowing = (v: string) => {
         if (showing.includes(v)) {
@@ -24,7 +24,7 @@ function AllTensesDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptio
         : imperativeTenseOptions;
     return <div>
         <div className="clickable mb-2 small text-center" onClick={() => setShowFormulas(x => !x)}>
-            {!showFormulas ? "Show" : "Hide"} Formulas
+            🧪 {!showFormulas ? "Show" : "Hide"} Formulas
         </div>
         {options.map((tense) => <div key={Math.random()}>
             <Hider
@@ -34,7 +34,7 @@ function AllTensesDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptio
                 hLevel={5}
             >
                 {showFormulas && <div className="mb-1">
-                    <samp>🧪 {tense.formula}</samp>
+                    <samp>{tense.formula}</samp>
                 </div>}
                 <ChartDisplay
                     VS={{

@@ -11,7 +11,6 @@ import {
 } from "react";
 import { completeEPSelection } from "../../../lib/src/phrase-building/render-ep";
 import { makeEPSBlocks } from "../../../lib/src/phrase-building/blocks-utils";
-import EquativePicker from "./EquativePicker";
 import autoAnimate from "@formkit/auto-animate";
 // @ts-ignore
 import LZString from "lz-string";
@@ -128,16 +127,9 @@ function EPExplorer(props: {
                 entryFeeder={props.entryFeeder}
                 eps={eps}
                 onChange={handleEpsChange}
-            />}
-        {mode === "charts" && <div className="my-2">
-            <div className="h5 text-center clickable">Equative</div>
-            <EquativePicker
-                equative={eps.equative}
-                onChange={payload => adjustEps({ type: "set equative", payload })}
-                hideNegative={false}
             />
-        </div>}
-        {mode === "charts" && <EqChartsDisplay tense={eps.equative.tense} opts={props.opts} />}
+        }
+        {mode === "charts" && <EqChartsDisplay opts={props.opts} />}
         {mode === "phrases" && <EPDisplay
             opts={props.opts}
             eps={eps}
