@@ -566,14 +566,19 @@ function makePassivePerfectContent(info: T.StativeCompoundVerbInfo): T.PerfectCo
 
 function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjugation {
     const modifyPastInAspect = (as: T.AspectContent): T.AspectContent => ({
+        // WATCH OUT FOR DIFFERENCES WITH allOnePersonInflection (for the object w/ present tense)
+        // AND allOnePersonVerbForm (for the object w/ past tense object)
         nonImperative: allOnePersonInflection(as.nonImperative, person),
         future: allOnePersonInflection(as.future, person),
         imperative: allOnePersonInflection(as.imperative, person),
         past: allOnePersonVerbForm(as.past, person),
-        habitualPast: allOnePersonInflection(as.habitualPast, person),
+        habitualPast: allOnePersonVerbForm(as.habitualPast, person),
         modal: {
-            ...as.modal,
+            nonImperative: allOnePersonInflection(as.modal.nonImperative, person),
+            future:  allOnePersonInflection(as.modal.future, person),
             past: allOnePersonVerbForm(as.modal.past, person),
+            habitualPast: allOnePersonVerbForm(as.modal.habitualPast, person),
+            hypotheticalPast: allOnePersonVerbForm(as.modal.hypotheticalPast, person),
         },
     });
     const modifyParticiple = (part: T.ParticipleContent): T.ParticipleContent => ({
@@ -585,8 +590,8 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
         halfPerfect: allOnePersonVerbForm(perf.halfPerfect, person),
         past: allOnePersonVerbForm(perf.past, person),
         present: allOnePersonVerbForm(perf.present, person),
-        habitual: allOnePersonInflection(perf.habitual, person),
-        subjunctive: allOnePersonInflection(perf.subjunctive, person),
+        habitual: allOnePersonVerbForm(perf.habitual, person),
+        subjunctive: allOnePersonVerbForm(perf.subjunctive, person),
         future: allOnePersonVerbForm(perf.future, person),
         wouldBe: allOnePersonVerbForm(perf.wouldBe, person),
         pastSubjunctive: allOnePersonVerbForm(perf.pastSubjunctive, person),
@@ -597,9 +602,14 @@ function enforceObject(conj: T.VerbConjugation, person: T.Person): T.VerbConjuga
         nonImperative: allOnePersonVerbForm(as.nonImperative, person),
         future: allOnePersonVerbForm(as.future, person),
         past: allOnePersonVerbForm(as.past, person),
-        habitualPast: allOnePersonInflection(as.past, person),
-        // TODO: check if this is ok
-        modal: as.modal,
+        habitualPast: allOnePersonVerbForm(as.past, person),
+        modal: {
+            nonImperative: allOnePersonInflection(as.modal.nonImperative, person),
+            future:  allOnePersonInflection(as.modal.future, person),
+            past: allOnePersonVerbForm(as.modal.past, person),
+            habitualPast: allOnePersonVerbForm(as.modal.habitualPast, person),
+            hypotheticalPast: allOnePersonVerbForm(as.modal.hypotheticalPast, person),
+        },
     });
     return {
         ...conj,
