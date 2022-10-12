@@ -150,6 +150,28 @@ const toTest: {
         },
     },
     {
+        input: {"ts":1591033069786,"i":7717,"p":"ستړی کول","f":"stuRey kawul","g":"stuReykedul","e":"to get tired, fatigued","c":"v. stat. comp. intrans.","l":1527815306,"ec":"get","ep":"tired"},
+        output: {
+            errors: ["wrong ending for intrans. stat. comp"],
+            p: "ستړی کول",
+            f: "stuRey kawul",
+            e: "to get tired, fatigued",
+            ts: 1591033069786,
+            erroneousFields: ["p", "f"],
+        },
+    },
+    {
+        input: {"ts":1591033078746,"i":7716,"p":"ستړی کېدل","f":"stuRey kedul","g":"stuReykawul","e":"to make tired, wear out","c":"v. stat. comp. trans.","l":1527815306,"ec":"make","ep":"tired"},
+        output: {
+            errors: ["wrong ending for trans. stat. comp"],
+            p: "ستړی کېدل",
+            f: "stuRey kedul",
+            e: "to make tired, wear out",
+            ts: 1591033078746,
+            erroneousFields: ["p", "f"],
+        },
+    },
+    {
         input: {"i":12,"ts":1575058859661,"p":"آبدار","f":"aawdáar","e":"watery, damp, humid, juicy","c":"adj.","diacExcept":true},
         output: { ok: true },
     },

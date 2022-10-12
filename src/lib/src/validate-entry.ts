@@ -98,6 +98,16 @@ export function validateEntry(entry: T.DictionaryEntry): T.DictionaryEntryError 
         errors.push("missing complement for compound verb");
         erroneousFields.add("l");
     }
+    if (entry.c && entry.c.includes("stat. comp. intrans.") && !entry.p.endsWith("ېدل")) {
+        errors.push("wrong ending for intrans. stat. comp");
+        erroneousFields.add("p");
+        erroneousFields.add("f");
+    }
+    if (entry.c && entry.c.includes("stat. comp. trans.") && !entry.p.endsWith("ول")) {
+        errors.push("wrong ending for trans. stat. comp");
+        erroneousFields.add("p");
+        erroneousFields.add("f");
+    }
     if (errors.length) {
         return {
             errors,
@@ -108,6 +118,7 @@ export function validateEntry(entry: T.DictionaryEntry): T.DictionaryEntryError 
             erroneousFields: Array.from(erroneousFields),
         };
     }
+
     if (entry.c && entry.c.slice(0, 2) === "v." && entry.c.includes("comp.") &&  entry.l) {
         return { checkComplement: true };
     }
