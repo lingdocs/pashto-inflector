@@ -41,12 +41,12 @@ function SpellingDemo({ opts, onChange }: {
     opts: T.TextOptions,
     onChange: (opts: T.TextOptions) => void,
 }) {
-    return <div>
+    return <div style={{ marginBottom: "100px" }}>
         <ul>
             <li>Converts text between Afghan and Pakistani spelling conventions</li>
             <li>Generates diacritics for Pashto script when given phonetic script along with Pashto script</li>   
         </ul>
-        <div className="d-block mx-auto card mb-3" style={{ maxWidth: "700px", background: "var(--closer)"}}>
+        <div className="d-block mx-auto card mb-3" style={{ maxWidth: "500px", background: "var(--closer)"}}>
             <div className="card-body">
                 <div className="row">
                     <div className="col-sm-6 mb-2">
@@ -141,17 +141,22 @@ function SpellingDemo({ opts, onChange }: {
                 </div>
             </div>
         </div>
-
-        <Examples opts={opts}>{[
-            {
-                p: "زما زوی مکتب ته ځي",
-                f: "zmaa zooy maktab ta dzee",
-            },
-            {
-                p: "دا ښه سړی دی",
-                f: "daa xu saRey dey",
-            },
-        ]}</Examples>
+        <div className="mt-4 text-center">
+            <Examples opts={opts}>{[
+                {
+                    p: "زما زوی مکتب ته ځي",
+                    f: "zmaa zooy maktab ta dzee",
+                },
+                {
+                    p: "دا ښه سړی دی",
+                    f: "daa xu saRey dey",
+                },
+                {
+                    p: "په دکان کې مې ډېر خلک لیدلي دي",
+                    f: "pu dUkaan ke me Der khalk leedulee dee",
+                },
+            ]}</Examples>
+        </div>
     </div>;
 }
 

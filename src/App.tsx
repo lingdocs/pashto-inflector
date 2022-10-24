@@ -76,10 +76,12 @@ function App() {
                     showing={showing === "equatives"}
                     handleChange={() => handleHiderClick("equatives")}
                 >
-                    <EPExplorer
-                        opts={textOptions}
-                        entryFeeder={entryFeeder}
-                    />
+                    <div className="mt-4" style={{ paddingBottom: "20px" }}>
+                        <EPExplorer
+                            opts={textOptions}
+                            entryFeeder={entryFeeder}
+                        />
+                    </div>
                 </Hider>
                 <Hider
                     label="Inflection Engine"

@@ -105,7 +105,7 @@ function VPBuilderDemo({ opts }: {
     const makeVerbLabel = (entry: T.DictionaryEntry): string => (
         `${entry.p} - ${clamp(entry.e, 20)}`
     );
-    return <>
+    return <div className="mt-4">
         <div className="d-block mx-auto card" style={{ maxWidth: "700px", background: "var(--closer)"}}>
             <div className="card-body">
                 <div className="row">
@@ -189,7 +189,7 @@ function VPBuilderDemo({ opts }: {
                 </div>
             </div>
         </div>
-        {v?.verb.entry && <div style={{ paddingBottom: "100px" }}>
+        {v?.verb.entry && <div style={{ paddingBottom: "20px" }}>
             <PhraseBuilder
                 handleLinkClick="none"
                 verb={v.verb as T.VerbEntry}
@@ -197,7 +197,7 @@ function VPBuilderDemo({ opts }: {
                 opts={opts}
             />
         </div>}
-    </>;
+    </div>;
 }
 
 export default VPBuilderDemo;

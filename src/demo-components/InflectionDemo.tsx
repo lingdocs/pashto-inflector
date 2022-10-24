@@ -94,7 +94,7 @@ function InflectionDemo({ opts }: {
             return false;
         }
     })();
-    return <div>
+    return <div style={{ paddingBottom: "20px" }}>
         <p>
             Produces the inflections and plural forms (Pashto and Arabic plurals where applicable) for words
         </p>
