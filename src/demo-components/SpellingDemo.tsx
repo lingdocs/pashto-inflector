@@ -1,5 +1,4 @@
 import Examples from "../components/src/Examples";
-import ButtonSelect from "../components/src/ButtonSelect";
 import * as T from "../types";
 
 const spellingOptions: {
@@ -58,7 +57,7 @@ function SpellingDemo({ opts, onChange }: {
                                     <input 
                                         className="form-check-input" 
                                         type="radio"
-                                        name="verb-type"
+                                        name="spelling-type"
                                         checked={opts.spelling === value}
                                         value={value}
                                         onChange={() => {
@@ -83,7 +82,7 @@ function SpellingDemo({ opts, onChange }: {
                                     <input 
                                         className="form-check-input" 
                                         type="radio"
-                                        name="verb-type"
+                                        name="phonetics-type"
                                         checked={opts.phonetics === value}
                                         value={value}
                                         onChange={() => {
@@ -100,16 +99,44 @@ function SpellingDemo({ opts, onChange }: {
                             ))}
                         </div>
                     </div>
-                    <div className="col-sm-6">
-                        <h6>Diacritics</h6>
-                        <ButtonSelect
-                            options={[
-                                { label: "On", value: "true" },
-                                { label: "Off", value: "false" },
-                            ]}
-                            value={opts.diacritics.toString()}
-                            handleChange={(p) => onChange({ ...opts, diacritics: p === "true" })}
-                        />
+                    <div className="col-sm-6 mb-2">
+                        <h6>Diacritics Engine:</h6>
+                        <div>
+                            <div className="form-check">
+                                <input 
+                                    className="form-check-input" 
+                                    type="radio"
+                                    name="diacritics-engine"
+                                    checked={opts.diacritics}
+                                    onChange={() => {
+                                        onChange({
+                                            ...opts,
+                                            diacritics: true,
+                                        });
+                                    }}
+                                />
+                                <label className="form-check-label">
+                                    On
+                                </label>
+                            </div>
+                            <div className="form-check">
+                                <input 
+                                    className="form-check-input" 
+                                    type="radio"
+                                    name="diacritics-engine"
+                                    checked={!opts.diacritics}
+                                    onChange={() => {
+                                        onChange({
+                                            ...opts,
+                                            diacritics: false,
+                                        });
+                                    }}
+                                />
+                                <label className="form-check-label">
+                                    Off
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
