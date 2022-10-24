@@ -54,7 +54,9 @@ function Hider(props: {
                 ),
             },
             <div className="d-flex flex-row align-items-center">
-                {props.showing ? caretDown : caretRight}
+                <div style={{ width: "1rem" }}>
+                    {props.showing ? caretDown : caretRight}
+                </div>
                 {` `}
                 {props.aspect
                     ? <i className={`fas fa-${props.aspect === "imperfective" ? "video" : "camera"}`} />

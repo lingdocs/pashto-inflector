@@ -41,7 +41,7 @@ function SpellingDemo({ opts, onChange }: {
     opts: T.TextOptions,
     onChange: (opts: T.TextOptions) => void,
 }) {
-    return <div style={{ marginBottom: "100px" }}>
+    return <div className="mt-3" style={{ marginBottom: "100px" }}>
         <ul>
             <li>Converts text between Afghan and Pakistani spelling conventions</li>
             <li>Generates diacritics for Pashto script when given phonetic script along with Pashto script</li>   
