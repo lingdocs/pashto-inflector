@@ -68,6 +68,34 @@ export function isAdjOrUnisexNounEntry(e: T.Entry): e is (T.AdjectiveEntry | T.U
     );
 }
 
+export function isPattern(p: T.InflectionPattern | "all"): (entry: T.NounEntry | T.AdjectiveEntry) => boolean {
+    if (p === 0) {
+        return (e: T.NounEntry | T.AdjectiveEntry) => (
+            !isPattern1Entry(e) && !isPattern2Entry(e) && !isPattern3Entry(e)
+            && !isPattern4Entry(e) && !isPattern5Entry(e) && !isPattern6FemEntry(e)
+        )
+    }
+    if (p === 1) {
+        return isPattern1Entry;
+    }
+    if (p === 2) {
+        return isPattern2Entry;
+    }
+    if (p === 3) {
+        return isPattern3Entry;
+    }
+    if (p === 4) {
+        return isPattern4Entry;
+    }
+    if (p === 5) {
+        return isPattern5Entry;
+    }
+    if (p === 6) {
+        return isPattern6FemEntry;
+    }
+    return () => true;
+}
+
 /**
  * shows if a noun/adjective has the basic (consonant / ه) inflection pattern
  * 
@@ -153,7 +181,7 @@ export function isPattern5Entry<T extends (T.NounEntry | T.AdjectiveEntry)>(e: T
     );
 }
 
-export function isPattern6FemEntry(e: T.FemNounEntry): e is T.Pattern6FemEntry<T.FemNounEntry> {
+export function isPattern6FemEntry(e: T.NounEntry | T.AdjectiveEntry): e is T.Pattern6FemEntry<T.FemNounEntry> {
     if (!isFemNounEntry(e)) return false;
     if (e.c.includes("anim.")) return false;
     return e.p.slice(-1) === "ي";

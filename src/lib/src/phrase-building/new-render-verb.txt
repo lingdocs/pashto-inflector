@@ -1,0 +1,31 @@
+import * as T from "../../../types";
+
+function renderVerb(vs: T.VerbSelectionComplete): {
+    verbBlocks: VerbBlocks,
+    hasBa: boolean,
+} {
+    const base = chooseRootOrStem(vs.tense, vs.verb);
+    const b = concatPsString(base, grammarUnits.presentEndings[0][0][0]);
+    return {
+        verbBlocks: [{
+            type: "verb",
+            block: {
+                ...vs,
+                hasBa: false,
+                ps: [],
+                person: 0,
+                complementWelded: undefined,
+            }
+        }],
+        hasBa: false,
+    }
+}
+
+function chooseRootOrStem(tense: T.VerbFormName, entry: T.VerbEntry): T.FullForm<T.PsString> {
+    const info = getVerbInfo(entry.entry, entry.complement)
+    if ("stative" in info || "transitive" in info) {
+        throw new Error("multiple verb types not supported yet");
+    }
+    return info.stem.imperfective
+
+}

@@ -6,9 +6,10 @@
  *
  */
 
-import { createElement } from "react";
+import { createElement, useEffect, useRef } from "react";
 import classNames from "classnames";
 import * as T from "../../types";
+import autoAnimate from "@formkit/auto-animate";
 
 const caretRight = <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-caret-right-fill" viewBox="0 0 16 16">
 <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
@@ -29,6 +30,10 @@ function Hider(props: {
     hLevel?: number,
     ignore?: boolean,
 }) {
+    const parent = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        parent.current && autoAnimate(parent.current);
+    }, [parent]);
     const hLev = Math.min((props.hLevel ? props.hLevel : defaultLevel), 6);
     const extraMargin = (props.hLevel && (props.hLevel > indentAfterLevel))
         ? `ml-${(props.hLevel - indentAfterLevel) + 1}`
@@ -38,7 +43,7 @@ function Hider(props: {
             {props.children}
         </>;
     }
-    return <div className="mb-3">
+    return <div className="mb-3" ref={parent}>
         {createElement(
             `h${hLev}`,
             {

@@ -35,6 +35,8 @@ import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
 import { makeNounSelection } from "./make-selections";
+// import { getVerbInfo } from "../verb-info";
+// import { grammarUnits } from "../../library";
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const subject = getSubjectSelection(VP.blocks).selection;
@@ -352,6 +354,7 @@ type VerbBlocks =
     | [T.VerbRenderedBlock] // verb w/out perfective split
     | [T.PerfectParticipleBlock, T.PerfectEquativeBlock] // perfect verb
     | [T.ModalVerbBlock, T.ModalVerbKedulPart] // modal verb
+
 
 function renderVerbSelection(vs: T.VerbSelectionComplete, person: T.Person, complementPerson: T.Person | undefined, externalComplement: T.ComplementSelection | T.UnselectedComplementSelection | undefined): {
     verbBlocks: VerbBlocks

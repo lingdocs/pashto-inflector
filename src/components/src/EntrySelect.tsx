@@ -101,7 +101,7 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: {
         <Select
             styles={customStyles}
             isSearchable={true}
-            value={value}
+            value={value || null}
             // @ts-ignore - gets messed up when using customStyles
             onChange={onChange}
             className="mb-2"
