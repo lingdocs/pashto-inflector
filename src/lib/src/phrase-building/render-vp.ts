@@ -281,12 +281,18 @@ function shrinkServant(np: T.NPSelection): T.MiniPronoun {
     };
 }
 
+
 function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
     inflectSubject: boolean,
     inflectObject: boolean,
     king: "subject" | "object",
     complementPerson: T.Person | undefined,
 }): T.Block[] {
+    const object = getObjectSelection(blocks);
+    const subject = getSubjectSelection(blocks);
+    const adverbPerson = typeof object.selection === "object"
+        ? getPersonFromNP(object.selection)
+        : getPersonFromNP(subject.selection);
     return blocks.reduce((blocks, { block }): T.Block[] => {
         if (block.type === "subjectSelection") {
             return [
@@ -320,7 +326,7 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
         if (block.type === "AP") {
             return [
                 ...blocks,
-                makeBlock(renderAPSelection(block)),
+                makeBlock(renderAPSelection(block, adverbPerson ?? 0)),
             ];
         }
         return [

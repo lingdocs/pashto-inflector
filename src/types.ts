@@ -744,7 +744,7 @@ export type Rendered<
     : T extends APSelection
     ? {
         type: "AP",
-        selection: Rendered<APSelection["selection"]>
+        selection: Rendered<APSelection["selection"]>,
     }
     : T extends ComplementSelection
     ? {
@@ -768,6 +768,7 @@ export type Rendered<
     ? {
         type: "adverb",
         entry: AdverbEntry,
+        person: Person,
         ps: PsString[],
         e?: string,
     }

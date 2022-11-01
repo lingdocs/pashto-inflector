@@ -19,7 +19,7 @@ function chooseInflection(inflections: T.UnisexSet<T.InflectionSet>, pers: T.Per
     return inflections[gender][infNumber];
 }
 
-export function inflectAdjective(a: T.AdjectiveSelection, person: T.Person, inflected: boolean): T.ArrayOneOrMore<T.PsString> {
+export function inflectAdvAdj(a: T.AdjectiveSelection | T.AdverbSelection, person: T.Person, inflected: boolean): T.ArrayOneOrMore<T.PsString> {
     const infs = inflectWord(a.entry);
     if (!infs) {
         return [psStringFromEntry(a.entry)];
@@ -28,6 +28,10 @@ export function inflectAdjective(a: T.AdjectiveSelection, person: T.Person, infl
         throw new Error("error getting inflections for adjective, looks like a noun's inflections");
     }
     return chooseInflection(infs.inflections, person, inflected);
+}
+
+export function inflectAdjective(a: T.AdjectiveSelection, person: T.Person, inflected: boolean): T.ArrayOneOrMore<T.PsString> {
+    return inflectAdvAdj(a, person, inflected)
 }
 
 export function renderAdjectiveSelection(a: T.AdjectiveSelection, person: T.Person, inflected: boolean, isLocationSingSandwich?: boolean): T.Rendered<T.AdjectiveSelection> {

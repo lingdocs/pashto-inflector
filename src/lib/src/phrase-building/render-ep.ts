@@ -6,8 +6,7 @@ import {
 import { renderNPSelection } from "./render-np";
 import { getPersonFromVerbForm } from "../misc-helpers";
 import { getVerbBlockPosFromPerson } from "../misc-helpers";
-import { getEnglishWord } from "../get-english-word";
-import { psStringFromEntry } from "../p-text-helpers";
+import { renderAdverbSelection } from "./render-ap";
 import { renderSandwich } from "./render-sandwich";
 import { EPSBlocksAreComplete, getSubjectSelection, makeBlock, makeKid } from "./blocks-utils";
 import { removeAccentsWLength } from "../accent-helpers";
@@ -102,12 +101,14 @@ export function getEquativeForm(tense: T.EquativeTense): { hasBa: boolean, form:
 }
 
 function renderEPSBlocks(blocks: T.EPSBlockComplete[]): T.Block[] {
+    const subject = getSubjectSelection(blocks).selection;
+    const subjectPerson = getPersonFromNP(subject);
     return blocks.map(({ block }): T.Block => {
         if (block.type === "AP") {
             if (block.selection.type === "adverb") {
                 return makeBlock({
                     type: "AP",
-                    selection: renderAdverbSelection(block.selection),
+                    selection: renderAdverbSelection(block.selection, subjectPerson),
                 });
             }
             // if (block.selection.type === "sandwich") {
@@ -132,21 +133,6 @@ function renderEquative(es: T.EquativeSelection, person: T.Person): T.EquativeRe
         person,
         hasBa,
         ps,
-    };
-}
-
-export function renderAdverbSelection(a: T.AdverbSelection): T.Rendered<T.AdverbSelection> {
-    const ew = getEnglishWord(a.entry);
-    const e = typeof ew === "object"
-        ? (ew.singular || "")
-        : !ew
-        ? ""
-        : ew;
-    return {
-        type: "adverb",
-        entry: a.entry,
-        ps: [psStringFromEntry(a.entry)],
-        e,
     };
 }
 
