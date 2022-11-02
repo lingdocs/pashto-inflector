@@ -31,10 +31,6 @@ fetch("https://account.lingdocs.com/dictionary/entry", {
     body: JSON.stringify({ ids: [...allNounAdjTsS, ...allVerbTsS] }),
 }).then(res => res.json()).then(res => {
   const verbs = res.results.filter(x => "entry" in x);
-  const missingEc = [];
-  verbs.forEach(v => {
-    if (!v.entry.ec) missingEc.push(v);
-  });
   const verbsContent = `
 /**
  * Copyright (c) 2021 lingdocs.com
@@ -68,9 +64,14 @@ const nounsAdjs: DictionaryEntry[] = ${JSON.stringify(nounsAdjs)};
 export default nounsAdjs;`;
   fs.writeFileSync("./src/nouns-adjs.ts", nounsAdjsContent);
   console.log("fetched words from dictionary");
-  if (missingEc.length > 0) {
-    console.log("Missing ec's in verbs:");
+  const missingEc = res.results.filter(x => "entry" in x && !x.entry.ec);
+  if (missingEc.length) {
+    console.log("verbs missing ec");
     console.log(missingEc);
+  }
+  if (res.notFound.length) {
+    console.log("entries not found:");
+    console.log(res.notFound);
   }
 });
 
