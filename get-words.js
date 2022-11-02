@@ -23,7 +23,7 @@ const allNounAdjTsS = [...new Set(nounAdjTsFiles.reduce((arr, fileName) => {
     return [...arr, ...TsS];
 }, []))];
 
-fetch("https://account.lingdocs.com/dictionary/entry", {
+fetch("https://account.lingdocs.com/dictionary/entries", {
     method: "POST",
     headers: {
         "Content-Type": "application/json",
