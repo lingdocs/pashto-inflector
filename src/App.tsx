@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2021 lingdocs.com
  *
- * This source code is licensed under the MIT license found in the
+ * This source code is licensed under the GPL3 license found in the
  * LICENSE file in the root directory of this source tree.
  *
  */
@@ -58,7 +58,7 @@ function App() {
                         An open source TypeScript/React library for Pashto inflection, verb conjugation, phrase generation, text conversion, and more
                     </p>
                     <p>Used in the <a href="https://dictionary.lingdocs.com">LingDocs Pashto Dictionary</a> and <a href="https://grammar.lingdocs.com">LingDocs Pashto Grammar</a></p>
-                    <p>by <a href="https://adueck.github.io">Adam Dueck</a> - <a href="https://github.com/lingdocs/pashto-inflector">Source Code</a> on GitHub</p>
+                    <p>by <a href="https://adueck.github.io">Adam Dueck</a> - GPLv3 licensed <a href="https://github.com/lingdocs/pashto-inflector">Source Code</a> on GitHub</p>
                     
                 </div>
                 <h2 className="mb-3">Demos:</h2>
