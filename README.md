@@ -1,5 +1,6 @@
 # pashto-inflector
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ca3a7720-876f-4375-a77e-2e7bfdcee48a/deploy-status)](https://app.netlify.com/sites/pashto-verbs/deploys)
 ![build](https://github.com/lingdocs/pashto-inflector/actions/workflows/ci.yml/badge.svg)
 ![build](https://github.com/lingdocs/pashto-inflector/actions/workflows/publish.yml/badge.svg)
