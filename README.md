@@ -7,9 +7,9 @@
 
 A pashto inflection and verb conjugation engine, as well as functions and components for modifying and displaying Pashto text.
 
-Also includes the [Pashto Verb Explorer](https://verbs.lingdocs.com) website.
+[Pashto Inflector Website/Demo](https://pashto-inflector.lingdocs.com).
 
-This library is **published as two libraries**:
+This is **published as two libraries**:
 
 - @lingdocs/inflect
     - `/src/components`
