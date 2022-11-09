@@ -105,6 +105,7 @@ import {
     blank,
     kidsBlank,
     ensureNonComboVerbInfo,
+    entryOfFull,
 } from "./src/misc-helpers";
 import {
     simplifyPhonetics,
@@ -237,6 +238,7 @@ export {
     kidsBlank,
     isPashtoScript,
     getInflectionPattern,
+    entryOfFull,
     // protobuf helpers
     readDictionary,
     writeDictionary,

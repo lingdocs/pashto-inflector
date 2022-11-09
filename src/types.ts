@@ -500,6 +500,9 @@ export type VerbEntry = {
     complement?: DictionaryEntry,
 };
 
+/** A dictionary entry that will include the complement / verb entry structure if it's a verb */
+export type FullEntry = VerbEntry | DictionaryEntry;
+
 export enum InflectionPattern {
     None = 0,
     Basic = 1,

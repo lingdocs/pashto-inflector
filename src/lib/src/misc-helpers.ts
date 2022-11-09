@@ -14,6 +14,10 @@ export const blank: T.PsString = {
 };
 export const kidsBlank: T.PsString = { p: "___", f: "___" };
 
+export function entryOfFull(e: T.FullEntry): T.DictionaryEntry {
+    return "entry" in e ? e.entry : e;
+}
+
 // just for type safety
 export function noPersInfs(s: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>): T.LengthOptions<T.PsString>;
 export function noPersInfs(s: T.FullForm<T.PsString>): T.SingleOrLengthOpts<T.PsString>;
