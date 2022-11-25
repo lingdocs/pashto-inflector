@@ -14,6 +14,12 @@ export const blank: T.PsString = {
 };
 export const kidsBlank: T.PsString = { p: "___", f: "___" };
 
+/**
+ * returns the main entry of a VerbEntry or just the entry of a DictionaryEntry
+ * 
+ * @param e FullEntry
+ * @returns DictionaryEntry
+ */
 export function entryOfFull(e: T.FullEntry): T.DictionaryEntry {
     return "entry" in e ? e.entry : e;
 }

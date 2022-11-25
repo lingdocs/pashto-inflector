@@ -37,6 +37,15 @@ export type DictionaryEntry = {
     ts: number; 
     /** Pashto alphabetical index */
     i: number;
+    /**
+     * commonality rank
+     * 0 - wrong
+     * 1 - historical/not in use
+     * 2 - rarely used
+     * 3 - used but there are more common alternatives
+     * 4 - common
+     */
+    r?: number;
     /** entry in Pashto */
     p: string;
     /** entry in Phonetics */
@@ -122,7 +131,7 @@ export type FStringNoFVars = string & { __brand: "name for a phonetics string wi
 
 export type DictionaryEntryTextField = "p" | "f" | "e" | "c" | "infap" | "infaf" | "infbp" | "infbf" | "app" | "apf" | "ppp" | "ppf" | "psp" | "psf" | "ssp" | "ssf" | "prp" | "prf" | "pprtp" | "pprtf" | "tppp" | "tppf" | "ec" | "ep";
 export type DictionaryEntryBooleanField = "noInf" | "shortIntrans" | "noOo" | "sepOo" | "diacExcept";
-export type DictionaryEntryNumberField = "ts" | "i" | "l" | "separationAtP" | "separationAtF";
+export type DictionaryEntryNumberField = "ts" | "r" | "i" | "l" | "separationAtP" | "separationAtF";
 export type DictionaryEntryField = DictionaryEntryTextField | DictionaryEntryBooleanField | DictionaryEntryNumberField;
 
 // TODO: make 
