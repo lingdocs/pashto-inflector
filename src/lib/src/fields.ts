@@ -31,5 +31,5 @@ export const dictionaryEntryBooleanFields: T.DictionaryEntryBooleanField[] = [
     "noInf", "shortIntrans", "noOo", "sepOo", "diacExcept",
 ];
 export const dictionaryEntryNumberFields: T.DictionaryEntryNumberField[] = [
-    "ts", "i", "l", "separationAtP", "separationAtF",
+    "ts", "r", "i", "l", "separationAtP", "separationAtF",
 ];
