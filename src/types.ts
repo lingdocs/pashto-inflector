@@ -378,10 +378,12 @@ export type PluralInflections = GenderedSet<PluralInflectionSet>;
 export type InflectorOutput = {
     arabicPlural: PluralInflections,
     plural?: PluralInflections,
+    bundledPlural?: PluralInflections,
     inflections?: Inflections,
 } | {
     plural: PluralInflections,
     arabicPlural?: PluralInflections,
+    bundledPlural?: PluralInflections,
     inflections?: Inflections,
 } | {
     inflections: Inflections,
@@ -436,7 +438,7 @@ export type Wrapper<T> = T & { __brand: "wrapped" };
 
 export type ArrayOneOrMore<T> = {
     0: T
-} & Array<T>
+} & T[];
 
 export type RootsOrStemsToHighlight = ("imperfective root" | "perfective root" | "imperfective stem" | "perfective stem" | "past participle")[];
 

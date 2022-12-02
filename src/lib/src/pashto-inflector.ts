@@ -23,12 +23,15 @@ import {
 import { makePsString, removeFVarients } from "./accent-and-ps-utils";
 import {
   accentFSylsOnNFromEnd,
+  accentOnNFromEnd,
+  countSyllables,
   hasAccents,
   removeAccents,
   splitUpSyllables,
 } from "./accent-helpers";
 import * as T from "../../types";
 import { splitFIntoPhonemes } from "./phonetics-to-diacritics";
+import { isNounEntry } from "./type-predicates";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
 const endingInHeyOrAynRegex = /[^ا][هع]$/;
@@ -420,6 +423,22 @@ function makePashtoPlural(word: T.DictionaryEntryNoFVars): T.PluralInflections |
   return undefined;
 }
 
+function makeBundledPlural(word: T.DictionaryEntryNoFVars): T.PluralInflections | undefined {
+  if (!endsInConsonant(word) || !word.c?.includes("n.")) {
+    return undefined;
+  }
+  const w = makePsString(word.p, word.f);
+  const base = countSyllables(w) === 1
+    ? accentOnNFromEnd(w, 0)
+    : w;
+  return {
+    masc: [
+      [concatPsString(base, { p: "ه", f: "a" })],
+      [concatPsString(base, { p: "و", f: "o" })],
+    ],
+  };
+}
+
 function makeArabicPlural(word: T.DictionaryEntryNoFVars): T.PluralInflections | undefined {
   if (!(word.apf && word.app)) return undefined;
   const w = makePsString(word.app, word.apf);
@@ -438,7 +457,7 @@ function makeArabicPlural(word: T.DictionaryEntryNoFVars): T.PluralInflections |
   return { masc: value };
 }
 
-function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections } | { arabicPlural: T.PluralInflections } | undefined {
+function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections, bundledPlural?: T.PluralInflections } | { arabicPlural: T.PluralInflections, bundledPlural?: T.PluralInflections } | undefined {
   function addSecondInf(plur: T.ArrayOneOrMore<T.PsString> | T.PsString): T.PluralInflectionSet {
     if (!Array.isArray(plur)) {
       return addSecondInf([plur]);
@@ -457,6 +476,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
   }
   const arabicPlural = makeArabicPlural(w);
   const pashtoPlural = makePashtoPlural(w);
+  const bundledPlural = makeBundledPlural(w);
   function addMascPluralSuffix(animate?: boolean, shortSquish?: boolean): T.PluralInflectionSet {
     if (shortSquish && (w.infap === undefined || w.infaf === undefined)) {
       throw new Error(`no irregular inflection info for ${w.p} - ${w.ts}`);
@@ -559,7 +579,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
   if (type === "unisex noun") {
     // doesn't need to be labelled anim - because it's only with animate nouns that you get the unisex - I THINK
     if (endsInConsonant(w) && (!w.infap)) {
-      return { arabicPlural, plural: addAnimUnisexPluralSuffix() };
+      return { arabicPlural, bundledPlural, plural: addAnimUnisexPluralSuffix() };
     }
     if (shortSquish && !anim) {
       return { arabicPlural, plural: { masc: addMascPluralSuffix(anim, shortSquish) }};
@@ -577,6 +597,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     ) {
     return {
       arabicPlural,
+      bundledPlural,
       plural: {
         masc: addMascPluralSuffix(anim, shortSquish),
       },
@@ -620,7 +641,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections 
     };
   }
   if (arabicPlural) {
-    return { arabicPlural, plural: pashtoPlural };
+    return { arabicPlural, plural: pashtoPlural, bundledPlural };
   }
   return undefined;
 }

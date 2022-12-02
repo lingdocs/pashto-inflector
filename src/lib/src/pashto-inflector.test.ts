@@ -14,10 +14,10 @@ import {
 } from "./pashto-inflector";
 import * as T from "../../types";
 
-const adjectives: Array<{
+const adjectives: {
     in: T.DictionaryEntry,
     out: T.InflectorOutput,
-}> = [
+}[] = [
     // irregular adj.
     {
         in: {
@@ -334,10 +334,10 @@ const adjectives: Array<{
     },
 ];
 
-const nouns: Array<{
+const nouns: {
     in: T.DictionaryEntry,
     out: T.InflectorOutput,
-}> = [
+}[] = [
     // ## UNISEX
     // Unisex noun irregular
     {
@@ -451,6 +451,12 @@ const nouns: Array<{
                 fem: [
                     [{p: "چرګانې", f: "churgáane"}],
                     [{p: "چرګانو", f: "churgáano"}],
+                ],
+            },
+            bundledPlural: {
+                masc: [
+                    [{ p: "چرګه", f: "chúrga" }],
+                    [{ p: "چرګو", f: "chúrgo" }],
                 ],
             },
         },
@@ -603,6 +609,12 @@ const nouns: Array<{
                     [{ p: "غرونو", f: "ghróono" }],
                 ],
             },
+            bundledPlural: {
+                masc: [
+                    [{ p: "غره", f: "ghára" }],
+                    [{ p: "غرو", f: "gháro" }],
+                ],
+            }
         },
     },
     // should NOT do the oona plural with the squish nouns, when they're animate
@@ -726,6 +738,12 @@ const nouns: Array<{
                     [{ p: "کتابونو", f: "kitaabóono" }],
                 ],
             },
+            bundledPlural: {
+                masc: [
+                    [{ p: "کتابه", f: "kitaaba" }],
+                    [{ p: "کتابو", f: "kitaabo" }],              
+                ],
+            },
         },
     },
     {
@@ -735,6 +753,12 @@ const nouns: Array<{
                 masc: [
                     [{ p: "غاښونه", f: "ghaaxóona" }],
                     [{ p: "غاښونو", f: "ghaaxóono" }],
+                ],
+            },
+            bundledPlural: {
+                masc: [
+                    [{ p: "غاښه", f: "gháaxa" }],
+                    [{ p: "غاښو", f: "gháaxo" }],
                 ],
             },
         },
@@ -770,6 +794,12 @@ const nouns: Array<{
                     [{ p: "لوونو", f: "lawóono" }],
                 ],
             },
+            bundledPlural: {
+                masc: [
+                    [{ p: "لوه", f: "láwa" }],
+                    [{ p: "لوو", f: "láwo" }],
+                ],
+            }
         },
     },
     // ## FEMININE
@@ -908,6 +938,12 @@ const nouns: Array<{
                     [{ p: "تبلیغونو", f: "tableeghóono" }],
                 ],
             },
+            bundledPlural: {
+                masc: [
+                    [{ p: "تبلیغه", f: "tableegha" }],
+                    [{ p: "تبلیغو", f: "tableegho" }],
+                ],
+            },
             arabicPlural: {
                 masc: [
                     [{ p: "تبلیغات", f: "tableegháat" }],
@@ -970,6 +1006,12 @@ const nouns: Array<{
                 masc: [
                     [{ p: "حالونه", f: "haalóona" }],
                     [{ p: "حالونو", f: "haalóono" }],
+                ],
+            },
+            bundledPlural: {
+                masc: [
+                    [{ p: "حاله", f: "háala" }],
+                    [{ p: "حالو", f: "háalo" }],
                 ],
             },
             arabicPlural: {
