@@ -124,6 +124,10 @@ import {
 } from "./src/accent-helpers";
 import {
     makeNounSelection,
+    makeAdjectiveSelection,
+    makeAdverbSelection,
+    makeLocativeAdverbSelection,
+    makeParticipleSelection,
 } from "./src/phrase-building/make-selections";
 import {
     renderEP,
@@ -210,6 +214,10 @@ export {
     shuffleArray,
     personNumber,
     makeNounSelection,
+    makeAdjectiveSelection,
+    makeAdverbSelection,
+    makeLocativeAdverbSelection,
+    makeParticipleSelection,
     randFromArray,
     renderEP,
     renderVP,
