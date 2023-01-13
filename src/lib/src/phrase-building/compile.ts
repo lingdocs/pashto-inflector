@@ -37,6 +37,7 @@ type BlankoutOptions = {
     kidsSection?: boolean,
     verb?: boolean,
     negative?: boolean,
+    predicate?: boolean,
 };
 
 // function compilePs({ blocks, kids, verb: { head, rest }, VP }: CompilePsInput): T.SingleOrLengthOpts<T.PsString[]> {
@@ -176,7 +177,8 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
             ? [first]
             : (
                 (blankOut?.equative && "block" in first && first.block.type === "equative") ||
-                (blankOut?.verb && "block" in first && isRenderedVerbB(first.block))
+                (blankOut?.verb && "block" in first && isRenderedVerbB(first.block)) ||
+                (blankOut?.predicate && "block" in first && first.block.type === "predicateSelection")
             )
             ? [blank]
             : ((blankOut?.ba) && "kid" in first && first.kid.type === "ba")
