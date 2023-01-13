@@ -1,6 +1,6 @@
 {
   "name": "@lingdocs/ps-react",
-  "version": "5.3.1",
+  "version": "5.3.2",
   "description": "Pashto inflector library module with React components",
   "main": "dist/components/library.js",
   "module": "dist/components/library.js",

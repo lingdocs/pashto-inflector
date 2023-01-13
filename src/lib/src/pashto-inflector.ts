@@ -31,7 +31,6 @@ import {
 } from "./accent-helpers";
 import * as T from "../../types";
 import { splitFIntoPhonemes } from "./phonetics-to-diacritics";
-import { isNounEntry } from "./type-predicates";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
 const endingInHeyOrAynRegex = /[^ا][هع]$/;

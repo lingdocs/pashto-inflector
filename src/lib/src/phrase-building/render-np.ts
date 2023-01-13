@@ -27,7 +27,7 @@ export function renderNPSelection(NP: T.NPSelection, inflected: boolean, inflect
     }
     if (NP.selection.type === "noun") {
         return {
-            type: "NP",
+            type: "NP", 
             selection: renderNounSelection(NP.selection, inflected, soRole, undefined, isPuSandwich),
         };
     }
@@ -58,8 +58,10 @@ export function renderNounSelection(n: T.NounSelection, inflected: boolean, role
                 return [
                     ...plural,
                     ...getInf(infs, "arabicPlural", n.gender, true, inflected),
-                    // TODO: if it's an INANIMATE NOUN and it inflects allow the inflected form too?
-                    ...!plural.length ? getInf(infs, "inflections", n.gender, true, inflected) : [],
+                    ...(!plural.length || n.gender === "fem")
+                        // allow for plurals like ډاکټرې as well as ډاکټرانې
+                        ? getInf(infs, "inflections", n.gender, true, inflected)
+                        : [],
                 ];
             })();
         return ps.length > 0
