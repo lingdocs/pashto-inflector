@@ -30,18 +30,18 @@ import { makePsString, removeFVarients } from "./accent-and-ps-utils";
  * 
  * @param items
  */
-export function concatPsString(...items: Array<T.PsString | " " | "">): T.PsString;
-export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.PsString> | " " | "">): T.LengthOptions<T.PsString>;
-export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.PsString> | T.OptionalPersonInflections<T.LengthOptions<T.PsString>> | " " | "">): T.OptionalPersonInflections<T.LengthOptions<T.PsString>>;
-export function concatPsString(...items: Array<T.PsString | T.FullForm<T.PsString> | " " | "">): T.FullForm<T.PsString>;
-export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.PsString> | T.FullForm<T.PsString> | " " | "">): T.FullForm<T.PsString> {
-    const hasPersonInflections = items.some((x) => ((typeof x !== "string") && ("mascSing" in x)));
+export function concatPsString(...items: Array<T.PsString | string | undefined>): T.PsString;
+export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.PsString> | string | undefined>): T.LengthOptions<T.PsString>;
+export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.PsString> | T.OptionalPersonInflections<T.LengthOptions<T.PsString>> | string | undefined>): T.OptionalPersonInflections<T.LengthOptions<T.PsString>>;
+export function concatPsString(...items: Array<T.PsString | T.FullForm<T.PsString> | string | undefined>): T.FullForm<T.PsString>;
+export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.PsString> | T.FullForm<T.PsString> | string | undefined>): T.FullForm<T.PsString> {
+    const hasPersonInflections = items.some((x) => (x && (typeof x !== "string") && ("mascSing" in x)));
     if (hasPersonInflections) {
         const forceInflection = (
-            arr: Array<T.FullForm<T.PsString> | " " | "">,
+            arr: Array<T.FullForm<T.PsString> | string | undefined>,
             inflection: T.PersonInflectionsField,
-        ): Array<T.SingleOrLengthOpts<T.PsString> | " " | ""> => (
-            arr.map((element) => (typeof element !== "string" && "mascSing" in element)
+        ): Array<T.SingleOrLengthOpts<T.PsString> | string | undefined> => (
+            arr.map((element) => (element && typeof element !== "string" && "mascSing" in element)
                 ? element[inflection]
                 : element
             )
@@ -53,14 +53,14 @@ export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.Ps
             femPlur: concatPsString(...forceInflection(items, "femPlur")),
         };
     }
-    const itemsWOutPersInfs = items as ("" | " " | T.SingleOrLengthOpts<T.PsString>)[];
+    const itemsWOutPersInfs = items as (string | T.SingleOrLengthOpts<T.PsString>)[];
     const hasLengthOptions = itemsWOutPersInfs.some((x) => (typeof x !== "string") && ("long" in x));
     if (hasLengthOptions) {
         const forceLength = (
-            arr: Array<T.SingleOrLengthOpts<T.PsString> | " ">,
+            arr: Array<T.SingleOrLengthOpts<T.PsString> | string | undefined>,
             length: "long" | "short" | "mini",
-        ): Array<T.PsString | " "> => (
-            arr.map((element) => (element !== " " && "long" in element)
+        ): Array<T.PsString | string | undefined> => (
+            arr.map((element) => (element && typeof element !== "string" && "long" in element)
                 ? element[length] || element.short
                 : element
             )
@@ -68,17 +68,17 @@ export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.Ps
         const hasMini = itemsWOutPersInfs.some((x) => typeof x !== "string" && ("mini" in x));
         return {
             ...hasMini ? {
-                mini: concatPsString(...forceLength(items as Array<T.SingleOrLengthOpts<T.PsString> | " ">, "mini")),
+                mini: concatPsString(...forceLength(items as Array<T.SingleOrLengthOpts<T.PsString> | string | undefined>, "mini")),
             } : {},
-            short: concatPsString(...forceLength(items as Array<T.SingleOrLengthOpts<T.PsString> | " ">, "short")),
-            long: concatPsString(...forceLength(items as Array<T.SingleOrLengthOpts<T.PsString> | " ">, "long")),
+            short: concatPsString(...forceLength(items as Array<T.SingleOrLengthOpts<T.PsString> | string | undefined>, "short")),
+            long: concatPsString(...forceLength(items as Array<T.SingleOrLengthOpts<T.PsString> | string | undefined>, "long")),
         };
     }
-    const itemsWOutLengthOptions = itemsWOutPersInfs as ("" | " " | T.PsString)[];
+    const itemsWOutLengthOptions = itemsWOutPersInfs as (string | undefined | T.PsString)[];
     const concatField = (k: T.PsStringField): string => (
         itemsWOutLengthOptions.map((item): string => {
-            if (item === " ") return " ";
-            if (item === "") return "";
+            if (item === undefined) return "";
+            if (typeof item === "string") return item;
             return item[k];
         }).join("")
     );
