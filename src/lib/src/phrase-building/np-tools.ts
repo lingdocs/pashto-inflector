@@ -17,7 +17,7 @@ function getBaseAndAdjectives({ selection }: T.Rendered<T.NPSelection | T.Comple
         concatPsString(
             adjs.reduce((accum, curr) => (
                 // TODO: with variations of adjs?
-                concatPsString(accum, " ", curr.ps[0])
+                concatPsString(accum, (accum.p === "" && accum.f === "") ? "" : " ", curr.ps[0])
             ), { p: "", f: "" }),
             " ",
             p,
@@ -104,9 +104,11 @@ export function getPashtoFromRendered(b: T.Rendered<T.NPSelection> | T.Rendered<
         },
     } : trimOffShrunkenPossesive({ type: "NP", selection: b.selection });
     if (trimmed.selection.type === "sandwich") {
-        return trimmed.selection.inside.selection.possesor
+        const c = trimmed.selection.inside.selection.possesor
             ? addPossesor(trimmed.selection.inside.selection.possesor.np, base, subjectsPerson)
             : base;
+        console.log({ c });
+        return c;
     }
     if (trimmed.selection.possesor) {
         return addPossesor(trimmed.selection.possesor.np, base, subjectsPerson);
