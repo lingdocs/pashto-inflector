@@ -54,7 +54,7 @@ export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.Ps
         };
     }
     const itemsWOutPersInfs = items as (string | T.SingleOrLengthOpts<T.PsString>)[];
-    const hasLengthOptions = itemsWOutPersInfs.some((x) => (typeof x !== "string") && ("long" in x));
+    const hasLengthOptions = itemsWOutPersInfs.some((x) => x && (typeof x !== "string") && ("long" in x));
     if (hasLengthOptions) {
         const forceLength = (
             arr: Array<T.SingleOrLengthOpts<T.PsString> | string | undefined>,

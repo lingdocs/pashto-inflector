@@ -33,6 +33,7 @@ import {
 test(`concatPsString should work`, () => {
     const input = concatPsString(
         { p: "لیکل", f: "leekul" },
+        undefined,
         { p: "ی", f: "ey" },
         " ",
         { p: "دی", f: "dey" },
