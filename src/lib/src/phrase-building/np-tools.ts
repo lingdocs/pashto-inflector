@@ -104,11 +104,9 @@ export function getPashtoFromRendered(b: T.Rendered<T.NPSelection> | T.Rendered<
         },
     } : trimOffShrunkenPossesive({ type: "NP", selection: b.selection });
     if (trimmed.selection.type === "sandwich") {
-        const c = trimmed.selection.inside.selection.possesor
+        return trimmed.selection.inside.selection.possesor
             ? addPossesor(trimmed.selection.inside.selection.possesor.np, base, subjectsPerson)
             : base;
-        console.log({ c });
-        return c;
     }
     if (trimmed.selection.possesor) {
         return addPossesor(trimmed.selection.possesor.np, base, subjectsPerson);
