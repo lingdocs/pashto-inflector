@@ -30,7 +30,6 @@ import {
     kidsBlank,
 } from "../misc-helpers";
 
-
 type BlankoutOptions = {
     equative?: boolean,
     ba?: boolean,

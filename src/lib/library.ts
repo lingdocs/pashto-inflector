@@ -150,6 +150,9 @@ import {
     renderAPSelection,
 } from "./src/phrase-building/render-ap";
 import {
+    renderSandwich,
+} from "./src/phrase-building/render-sandwich";
+import {
     humanReadableVerbForm,
     humanReadableEquativeTense,
 } from "./src/human-readable";
@@ -219,6 +222,7 @@ export {
     makeLocativeAdverbSelection,
     makeParticipleSelection,
     randFromArray,
+    renderSandwich,
     renderEP,
     renderVP,
     compileEP,
