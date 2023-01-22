@@ -28,6 +28,11 @@ export type Dictionary = {
 	entries: DictionaryEntry[];
 }
 
+export type WordlistWithInflections = {
+    info: DictionaryInfo,
+    words: PsString[],
+};
+
 // TODO: MAKE THIS A RECORD TYPE
 // Record<RequiredNumberFields, number> && Record<RequiredStringFields, string> && 
 // Partial<Record<StringFields, string>> && Partial<Record<NumberFields, number>>
