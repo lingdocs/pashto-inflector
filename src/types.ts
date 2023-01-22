@@ -28,7 +28,7 @@ export type Dictionary = {
 	entries: DictionaryEntry[];
 }
 
-export type WordlistWithInflections = {
+export type AllWordsWithInflections = {
     info: DictionaryInfo,
     words: PsString[],
 };
