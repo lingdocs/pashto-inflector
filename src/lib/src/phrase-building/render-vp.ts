@@ -554,7 +554,7 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
     hasBa: boolean,
 } { 
     // TODO: handle the imperative form here
-    const f = getTenseVerbForm(conj, vs.tense, vs.voice, vs.negative);
+    const f = getTenseVerbForm(conj, vs.tense, vs.voice, "phrase-building", vs.negative);
     const block = getMatrixBlock(f, objectPerson, person);
     const perfective = (vs.tense === "perfectiveImperative" && vs.negative)
         ? false

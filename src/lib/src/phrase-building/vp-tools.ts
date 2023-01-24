@@ -29,10 +29,18 @@ export function isInvalidSubjObjCombo(subj: T.Person, obj: T.Person): boolean {
     );
 }
 
+/**
+ * @param conjR 
+ * @param tense 
+ * @param voice 
+ * @param negative 
+ * @returns 
+ */
 export function getTenseVerbForm(
     conjR: T.VerbConjugation,
     tense: T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense,
     voice: "active" | "passive",
+    mode: "charts" | "phrase-building",
     negative: boolean,
 ): T.VerbForm | T.ImperativeForm {
     const conj = (voice === "passive" && conjR.passive) ? conjR.passive : conjR;
@@ -42,7 +50,8 @@ export function getTenseVerbForm(
             throw impPassError;
         }
         if (!conj.imperfective.imperative || !conj.perfective.imperative) throw impPassError;
-        return (tense === "perfectiveImperative" && !negative)
+        // charts can't display negative form
+        return (tense === "perfectiveImperative" && (!negative || mode === "charts"))
             ? conj.perfective.imperative
             : conj.imperfective.imperative;
     }

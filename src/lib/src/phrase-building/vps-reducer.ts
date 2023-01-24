@@ -152,7 +152,7 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                         verb: {
                             ...vps.verb,
                             voice,
-                            tenseCategory: vps.verb.tenseCategory === "modal" ? "basic" : vps.verb.tenseCategory,
+                            // tenseCategory: vps.verb.tenseCategory === "modal" ? "basic" : vps.verb.tenseCategory,
                         },
                     };
                 } else {
@@ -243,7 +243,6 @@ export function vpsReducer(vps: T.VPSelectionState, action: VpsReducerAction, se
                     verb: {
                         ...vps.verb,
                         tenseCategory: category,
-                        voice: "active",
                     },
                 }
             }

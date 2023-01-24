@@ -5,7 +5,7 @@ import { isImperativeTense, isModalTense, isPerfectTense, isVerbTense } from "..
 import useStickyState from "../useStickyState";
 import { customStyles } from "../EntrySelect";
 import {
-    VpsReducerAction
+    VpsReducerAction,
 } from "../../../lib/src/phrase-building/vps-reducer";
 import { imperativeTenseOptions, perfectTenseOptions, verbTenseOptions } from "./verbTenseOptions";
 
@@ -106,7 +106,6 @@ function TensePicker(props: ({
         : verbTenseOptions;
     const showImperativeOption = ("vps" in props && props.vps.verb.voice === "active")
         || ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
-    const inPassiveVoice = ("vps" in props && props.vps.verb.voice === "passive") || ("vpsComplete" in props && props.vpsComplete.verb.voice === "passive");;
     const inAllTensesMode = props.mode === "charts";
     const canHaveFormula = "vps" in props
         && props.mode !== "quiz"
@@ -151,7 +150,7 @@ function TensePicker(props: ({
                     }, {
                         label: "Ability",
                         value: "modal",
-                    }].filter(x => !(inPassiveVoice && x.value === "modal"))}
+                    }]}
                     handleChange={props.mode !== "quiz" ? onTenseCategorySelect : () => null}
                 />
             </div>}

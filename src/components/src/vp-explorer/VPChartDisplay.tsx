@@ -1,22 +1,16 @@
 import {
     getTenseVerbForm,
-    getTenseFromVerbSelection,
 } from "../../../lib/src/phrase-building/vp-tools";
 import VerbFormDisplay from "../VerbFormDisplay";
-import { conjugateVerb } from "../../../lib/src/verb-conjugation";
 import * as T from "../../../types";
 
-function ChartDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptions }) {
-    const rawConjugations = conjugateVerb(VS.verb.entry, VS.verb.complement);
-    if (!rawConjugations) {
-        return <div>Error conjugating verb</div>;
-    }
-    const conjugations = ("stative" in rawConjugations)
-        ? rawConjugations[VS.isCompound === "stative" ? "stative" : "dynamic"]
-        : ("transitive" in rawConjugations)
-        ? rawConjugations[VS.transitivity === "grammatically transitive" ? "grammaticallyTransitive" : "transitive"]
-        : rawConjugations;
-    const form = getTenseVerbForm(conjugations, getTenseFromVerbSelection(VS), VS.voice, VS.negative);
+function ChartDisplay({ conjugations, tense, opts, voice }: {
+    conjugations: T.VerbConjugation,
+    tense: T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense,
+    opts: T.TextOptions,
+    voice: T.VerbSelection["voice"],
+}) {
+    const form = getTenseVerbForm(conjugations, tense, voice, "charts", false);
     return <div className="mb-4">
         <VerbFormDisplay
             displayForm={form}

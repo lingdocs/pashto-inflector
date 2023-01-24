@@ -3,7 +3,7 @@ import ChartDisplay from "./VPChartDisplay";
 import Hider from "../Hider";
 import * as T from "../../../types";
 import useStickyState from "../useStickyState";
-import { isModalTense, isPerfectTense, isVerbTense } from "../../../lib/src/type-predicates";
+import { conjugateVerb } from "../../dist/lib/src/verb-conjugation";
 
 function AllTensesDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptions }) {
     const [showing, setShowing] = useStickyState<string[]>([], "VPTensesShowing");
@@ -22,6 +22,15 @@ function AllTensesDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptio
         : VS.tenseCategory === "modal"
         ? abilityTenseOptions
         : imperativeTenseOptions;
+    const rawConjugations = conjugateVerb(VS.verb.entry, VS.verb.complement);
+    const conjugations = ("stative" in rawConjugations)
+        ? rawConjugations[VS.isCompound === "stative" ? "stative" : "dynamic"]
+        : ("transitive" in rawConjugations)
+        ? rawConjugations[VS.transitivity === "grammatically transitive" ? "grammaticallyTransitive" : "transitive"]
+        : rawConjugations;
+    function getTense(baseTense: T.VerbTense | T.PerfectTense | T.ImperativeTense): T.VerbTense | T.PerfectTense | T.ImperativeTense | T.ModalTense {
+        return VS.tenseCategory === "modal" ? `${baseTense}Modal` as T.ModalTense : baseTense;
+    }
     return <div>
         <div className="clickable mb-2 small text-center" onClick={() => setShowFormulas(x => !x)}>
             🧪 {!showFormulas ? "Show" : "Hide"} Formulas
@@ -37,17 +46,9 @@ function AllTensesDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptio
                     <samp>{tense.formula}</samp>
                 </div>}
                 <ChartDisplay
-                    VS={{
-                        ...VS,
-                        [isVerbTense(tense.value)
-                            ? "verbTense"
-                            : isPerfectTense(tense.value)
-                            ? "perfectTense"
-                            : isModalTense(tense.value)
-                            ? "modalTense"
-                            : "imperativeTense"
-                        ]: tense.value,
-                    }}
+                    conjugations={conjugations}
+                    tense={getTense(tense.value)}
+                    voice={VS.voice}
                     opts={opts}
                 />
             </Hider>

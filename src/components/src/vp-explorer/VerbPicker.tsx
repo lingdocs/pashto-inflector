@@ -104,18 +104,18 @@ function VerbPicker(props: {
                 <ButtonSelect
                     small
                     value={props.vps.verb.voice}
-                    options={(props.vps.verb.tenseCategory === "imperative" || props.vps.verb.tenseCategory === "modal")  
-                    ? [{
-                        label: "Active",
-                        value: "active",
-                    }]
-                    : [{
-                        label: "Active",
-                        value: "active",
-                    }, {
-                        label: "Passive",
-                        value: "passive",
-                    }]}
+                    options={(props.vps.verb.tenseCategory === "imperative") // || props.vps.verb.tenseCategory === "modal")  
+                        ? [{
+                            label: "Active",
+                            value: "active",
+                        }]
+                        : [{
+                            label: "Active",
+                            value: "active",
+                        }, {
+                            label: "Passive",
+                            value: "passive",
+                        }]}
                     handleChange={onVoiceSelect}
                 />
             </div>}
