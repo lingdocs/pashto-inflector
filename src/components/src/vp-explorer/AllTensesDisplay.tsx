@@ -3,7 +3,7 @@ import ChartDisplay from "./VPChartDisplay";
 import Hider from "../Hider";
 import * as T from "../../../types";
 import useStickyState from "../useStickyState";
-import { conjugateVerb } from "../../dist/lib/src/verb-conjugation";
+import { conjugateVerb } from "../../../lib/src/verb-conjugation";
 
 function AllTensesDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptions }) {
     const [showing, setShowing] = useStickyState<string[]>([], "VPTensesShowing");
