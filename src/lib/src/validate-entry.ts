@@ -7,6 +7,7 @@
  */
 
 import * as T from "../../types";
+import { removeFVarients } from "./accent-and-ps-utils";
 import {
     phoneticsToDiacritics,
 } from "./phonetics-to-diacritics";
@@ -48,15 +49,15 @@ export function validateEntry(entry: T.DictionaryEntry): T.DictionaryEntryError 
 } | {
     checkComplement: true,
 } {
-    let errors: string[] = [];
+    const errors = new Set<string>();
     const erroneousFields = new Set<T.DictionaryEntryField>();
     requiredFields.forEach((field) => {
         if (field !== "i" && !entry[field]) {
-            errors.push(`missing ${field}`);
+            errors.add(`missing ${field}`);
             erroneousFields.add(field);
         }
         if (field === "i" && typeof entry[field] !== "number") {
-            errors.push(`missing ${field}`);
+            errors.add(`missing ${field}`);
             erroneousFields.add(field);
         }
     });
@@ -65,52 +66,77 @@ export function validateEntry(entry: T.DictionaryEntry): T.DictionaryEntryError 
         const fField = pair[1];
         const p = entry[pField];
         const f = entry[fField];
-        if (!requiredFields.includes(pair[0])) {
-            if (!p && !f) {
-                return;
-            }
-            if (!p && f) {
-                errors.push(`missing ${pField}`);
-                erroneousFields.add(pField);
-                return;
-            }
-            if (p && !f) {
-                errors.push(`missing ${fField}`);
-                erroneousFields.add(fField);
-                return;
-            }
+        const isRequired = requiredFields.includes(pair[0]);
+        if (!isRequired && !p && !f) {
+            return;
         }
-        if (p && f && (!phoneticsToDiacritics(p, f) && !entry.diacExcept)) {
-            errors.push(`script and phonetics do not match for ${pField} and ${fField}`);
+        if (!p && !f) {
+            errors.add(`missing ${pField}`);
+            errors.add(`missing ${fField}`);
+            erroneousFields.add(pField);
+            erroneousFields.add(fField);
+            return;
+        }
+        if (!f || !p) {
+            const errField = !p ? pField : fField;
+            errors.add(`missing ${errField}`);
+            erroneousFields.add(errField);
+            return;
+        }
+        if (!phoneticsToDiacritics(p, f) && !entry.diacExcept) {
+            errors.add(`script and phonetics do not match for ${pField} and ${fField}`);
             erroneousFields.add(pField)
             erroneousFields.add(fField);
         }
+        const firstF = removeFVarients(f);
+        if (firstF.includes("-")) {
+            if (firstF.includes(" ")) {
+                errors.add(`presence of both hyphen and space in ${fField}`);
+                erroneousFields.add(fField);
+            }
+            const fWords = firstF.split("-");
+            const pWords = p.split(" ");
+            if (fWords.length !== pWords.length) {
+                errors.add(`hyphen/spacing discrepency between ${pField} and ${fField}`);
+                erroneousFields.add(pField);
+                erroneousFields.add(fField);
+            }
+        } else {
+            // check spacing
+            const fWords = firstF.split(" ");
+            const pWords = p.split(" ");
+            if (fWords.length !== pWords.length) {
+                errors.add(`spacing discrepency between ${pField} and ${fField}`);
+                erroneousFields.add(pField);
+                erroneousFields.add(fField);
+            }
+        }
     });
     if ((entry.separationAtP && !entry.separationAtF)) {
-        errors.push("missing separationAtF");
+        errors.add("missing separationAtF");
         erroneousFields.add("separationAtF");
     }
     if ((!entry.separationAtP && entry.separationAtF)) {
-        errors.push("missing separationAtP");
+        errors.add("missing separationAtP");
         erroneousFields.add("separationAtP");
     }
     if (entry.c && entry.c.slice(0, 2) === "v." && entry.c.includes("comp.") && !entry.l) {
-        errors.push("missing complement for compound verb");
+        errors.add("missing complement for compound verb");
         erroneousFields.add("l");
     }
     if (entry.c && entry.c.includes("stat. comp. intrans.") && !entry.p.endsWith("ېدل")) {
-        errors.push("wrong ending for intrans. stat. comp");
+        errors.add("wrong ending for intrans. stat. comp");
         erroneousFields.add("p");
         erroneousFields.add("f");
     }
     if (entry.c && entry.c.includes("stat. comp. trans.") && !entry.p.endsWith("ول")) {
-        errors.push("wrong ending for trans. stat. comp");
+        errors.add("wrong ending for trans. stat. comp");
         erroneousFields.add("p");
         erroneousFields.add("f");
     }
-    if (errors.length) {
+    if (errors.size) {
         return {
-            errors,
+            errors: Array.from(errors),
             p: entry.p || "",
             f: entry.f || "",
             e: entry.e || "",

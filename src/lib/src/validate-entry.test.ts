@@ -175,6 +175,84 @@ const toTest: {
         input: {"i":12,"ts":1575058859661,"p":"آبدار","f":"aawdáar","e":"watery, damp, humid, juicy","c":"adj.","diacExcept":true},
         output: { ok: true },
     },
+    {
+        input: {"i":12,"ts":1575058859661,"p":"آبدار","f":"aawdáar","e":"watery, damp, humid, juicy","c":"adj.","diacExcept":true},
+        output: { ok: true },
+    },
+    {
+        input: {"ts":1527812488,"i":1934,"p":"بې چاره","f":"bechaara","g":"bechaara","e":"poor thing, pitiful","r":3,"c":"adj."},
+        output: {
+            errors: ["spacing discrepency between p and f"],
+            p: "بې چاره",
+            f: "bechaara",
+            e: "poor thing, pitiful",
+            ts: 1527812488,
+            erroneousFields: ["p", "f"],
+        },
+    },
+    {
+        input: {"ts":1527812488,"i":1934,"p":"بېچاره","f":"be chaara","g":"bechaara","e":"poor thing, pitiful","r":3,"c":"adj."},
+        output: {
+            errors: ["spacing discrepency between p and f"],
+            p: "بېچاره",
+            f: "be chaara",
+            e: "poor thing, pitiful",
+            ts: 1527812488,
+            erroneousFields: ["p", "f"],
+        },
+    },
+    {
+        input: {"ts":1527812488,"i":1934,"p":"بې چاره","f":"be chaara","g":"bechaara","e":"poor thing, pitiful","r":3,"c":"adj."},
+        output: { ok: true }
+    },
+    {
+        input: {"ts":1527814265,"i":12969,"p":"مکتب","f":"maktab","g":"maktab","e":"school","r":4,"c":"n. m.","app":"مکاتب","apf":"ma kaatib"},
+        output: {
+            errors: ["spacing discrepency between app and apf"],
+            p: "مکتب",
+            f: "maktab",
+            e: "school",
+            ts: 1527814265,
+            erroneousFields: ["app", "apf"],
+        },
+    },
+    {
+        input: {"ts":1594909066356,"i":5839,"p":"خوا و شا","f":"khwaa-U-shaa","g":"khwaaUshaa","e":"around, in the area","r":4,"c":"adj. / loc. adv."},
+        output: { ok: true },
+    },
+    {
+        input: {"diacExcept": true,"ts":1594909066356,"i":5839,"p":"خوا و شا","f":"khwaaU-shaa","g":"khwaaUshaa","e":"around, in the area","r":4,"c":"adj. / loc. adv."},
+        output: {
+            errors: ["hyphen/spacing discrepency between p and f"],
+            p: "خوا و شا",
+            f: "khwaaU-shaa",
+            e: "around, in the area",
+            ts: 1594909066356,
+            erroneousFields: ["p", "f"],
+        },
+    },
+    {
+        input: {"diacExcept": true,"ts":1594909066356,"i":5839,"p":"خواو شا","f":"khwaa-U-shaa","g":"khwaaUshaa","e":"around, in the area","r":4,"c":"adj. / loc. adv."},
+        output: {
+            errors: ["hyphen/spacing discrepency between p and f"],
+            p: "خواو شا",
+            f: "khwaa-U-shaa",
+            e: "around, in the area",
+            ts: 1594909066356,
+            erroneousFields: ["p", "f"],
+        },
+    },
+    {
+        input: {"diacExcept": true,"ts":1594909066356,"i":5839,"p":"خواو شا","f":"khwaa U-shaa","g":"khwaaUshaa","e":"around, in the area","r":4,"c":"adj. / loc. adv."},
+        output: {
+            errors: ["presence of both hyphen and space in f"],
+            p: "خواو شا",
+            f: "khwaa U-shaa",
+            e: "around, in the area",
+            ts: 1594909066356,
+            erroneousFields: ["f"],
+        },
+    },
 ];
 
 test("validateEntry should work", () => {
