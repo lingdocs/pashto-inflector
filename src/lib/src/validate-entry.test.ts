@@ -253,6 +253,32 @@ const toTest: {
             erroneousFields: ["f"],
         },
     },
+    {
+        input: {"ts":1527815870,"i":183,"p":"اثر","f":"asar","g":"asar","e":"influence, impression, tracks, affect","r":4,"c":"n. m.","app":"اثرات, آثار","apf":"asráat, aasáar"},
+        output: { ok: true },
+    },
+    {
+        input: {"ts":1527815870,"i":183,"p":"اثر","f":"asar","g":"asar","e":"influence, impression, tracks, affect","r":4,"c":"n. m.","app":"اثرات, آثار","apf":"asráat, aa sáar"},
+        output: {
+            errors: ["spacing discrepency between app and apf"],
+            p: "اثر",
+            f: "asar",
+            e: "influence, impression, tracks, affect",
+            ts: 1527815870,
+            erroneousFields: ["app", "apf"],
+        },
+    },
+    {
+        input: {"ts":1527815870,"i":183,"p":"اثر","f":"asar","g":"asar","e":"influence, impression, tracks, affect","r":4,"c":"n. m.","app":"اثرات, آثار","apf":"asráat"},
+        output: {
+            errors: ["difference in variation length between app and apf", "script and phonetics do not match for app and apf"],
+            p: "اثر",
+            f: "asar",
+            e: "influence, impression, tracks, affect",
+            ts: 1527815870,
+            erroneousFields: ["app", "apf"],
+        },
+    },
 ];
 
 test("validateEntry should work", () => {
