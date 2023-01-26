@@ -28,7 +28,7 @@ export function isLocativeAdverbEntry(e: T.Entry | T.DictionaryEntry): e is T.Lo
     return !!e.c?.includes("loc. adv.");
 }
 
-export function isNounOrAdjEntry(e: T.Entry): e is (T.NounEntry | T.AdjectiveEntry) {
+export function isNounOrAdjEntry(e: T.Entry | T.DictionaryEntry): e is (T.NounEntry | T.AdjectiveEntry) {
     return isNounEntry(e) || isAdjectiveEntry(e);
 }
 
