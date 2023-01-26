@@ -34,16 +34,21 @@ export function splitPsString(ps: T.PsStringNoFVars): T.PsWord[] {
         fIndex++;
     }
     while (pIndex < pWords.length && fIndex < fWords.length) {
-        if (fWords[fIndex].includes("-")) {
-            processHyphen();
-        } else {
-            psWords.push({
-                p: pWords[pIndex],
-                f: fWords[fIndex],
-            });
+        if (fWords[fIndex] === "..." && pWords[pIndex] === "...") {
             pIndex++;
             fIndex++;
+            continue;
         }
+        if (fWords[fIndex].includes("-")) {
+            processHyphen();
+            continue;
+        }
+        psWords.push({
+            p: pWords[pIndex],
+            f: fWords[fIndex],
+        });
+        pIndex++;
+        fIndex++;
     }
     // should have processed all the p an f words
     if (pIndex !== pWords.length || fIndex !== fWords.length) {
