@@ -11,6 +11,7 @@ import { removeFVarients } from "./accent-and-ps-utils";
 import {
     phoneticsToDiacritics,
 } from "./phonetics-to-diacritics";
+import { splitPsString } from "./splitPsString";
 import { standardizePashto, standardizePhonetics } from "./standardize-pashto";
 
 const textFieldPairs: [T.DictionaryEntryTextField, T.DictionaryEntryTextField][] = [
@@ -98,34 +99,24 @@ export function validateEntry(entry: T.DictionaryEntry): T.DictionaryEntryError 
             checkPhoneticsAndSpacing(p, f);
         }
         function checkPhoneticsAndSpacing(p: string, f: string) {
-            if (!phoneticsToDiacritics(p, f) && !entry.diacExcept) {
-                errors.add(`script and phonetics do not match for ${pField} and ${fField}`);
+            try {
+                const psWords = splitPsString(removeFVarients({ p, f }));
+                for (let w of psWords) {
+                    if (entry.diacExcept || "hyphen" in w) {
+                        break;
+                    }
+                    if (!phoneticsToDiacritics(w.p, w.f)) {
+                        errors.add(`script and phonetics do not match for ${pField} and ${fField}`);
+                        erroneousFields.add(pField);
+                        erroneousFields.add(fField);
+                        break;
+                    }
+                }
+            } catch (e) {
+                errors.add(`${e} between ${pField} and ${fField}`.slice(7));
                 erroneousFields.add(pField);
                 erroneousFields.add(fField);
             }
-            const firstF = removeFVarients(f);
-            if (firstF.includes("-")) {
-                if (firstF.includes(" ")) {
-                    errors.add(`presence of both hyphen and space in ${fField}`);
-                    erroneousFields.add(fField);
-                }
-                const fWords = firstF.split("-");
-                const pWords = p.split(" ");
-                if (fWords.length !== pWords.length) {
-                    errors.add(`hyphen/spacing discrepency between ${pField} and ${fField}`);
-                    erroneousFields.add(pField);
-                    erroneousFields.add(fField);
-                }
-            } else {
-                // check spacing
-                const fWords = firstF.split(" ");
-                const pWords = p.split(" ");
-                if (fWords.length !== pWords.length) {
-                    errors.add(`spacing discrepency between ${pField} and ${fField}`);
-                    erroneousFields.add(pField);
-                    erroneousFields.add(fField);
-                }
-            }        
         }
     });
     if ((entry.separationAtP && !entry.separationAtF)) {

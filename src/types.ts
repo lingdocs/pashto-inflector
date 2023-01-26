@@ -14,6 +14,17 @@ export type PsString = {
 };
 export type PsJSX = { p: JSX.Element, f: JSX.Element, e?: JSX.Element | string };
 
+export type PsWord = PsString & {
+    hyphen?: HyphenPsContent[], 
+};
+
+export type HyphenPsContent = {
+    type: "unwritten",
+    f: string,
+} & Omit<PsString, "p"> | ({
+    type: "written",
+} & PsString);
+
 export type DictionaryInfo = {
 	title: string;
 	license: string;

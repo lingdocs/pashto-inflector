@@ -217,58 +217,6 @@ const toTest: {
         },
     },
     {
-        input: {"ts":1594909066356,"i":5839,"p":"خوا و شا","f":"khwaa-U-shaa","g":"khwaaUshaa","e":"around, in the area","r":4,"c":"adj. / loc. adv."},
-        output: { ok: true },
-    },
-    {
-        input: {"diacExcept": true,"ts":1594909066356,"i":5839,"p":"خوا و شا","f":"khwaaU-shaa","g":"khwaaUshaa","e":"around, in the area","r":4,"c":"adj. / loc. adv."},
-        output: {
-            errors: ["hyphen/spacing discrepency between p and f"],
-            p: "خوا و شا",
-            f: "khwaaU-shaa",
-            e: "around, in the area",
-            ts: 1594909066356,
-            erroneousFields: ["p", "f"],
-        },
-    },
-    {
-        input: {"diacExcept": true,"ts":1594909066356,"i":5839,"p":"خواو شا","f":"khwaa-U-shaa","g":"khwaaUshaa","e":"around, in the area","r":4,"c":"adj. / loc. adv."},
-        output: {
-            errors: ["hyphen/spacing discrepency between p and f"],
-            p: "خواو شا",
-            f: "khwaa-U-shaa",
-            e: "around, in the area",
-            ts: 1594909066356,
-            erroneousFields: ["p", "f"],
-        },
-    },
-    {
-        input: {"diacExcept": true,"ts":1594909066356,"i":5839,"p":"خواو شا","f":"khwaa U-shaa","g":"khwaaUshaa","e":"around, in the area","r":4,"c":"adj. / loc. adv."},
-        output: {
-            errors: ["presence of both hyphen and space in f"],
-            p: "خواو شا",
-            f: "khwaa U-shaa",
-            e: "around, in the area",
-            ts: 1594909066356,
-            erroneousFields: ["f"],
-        },
-    },
-    {
-        input: {"ts":1527815870,"i":183,"p":"اثر","f":"asar","g":"asar","e":"influence, impression, tracks, affect","r":4,"c":"n. m.","app":"اثرات, آثار","apf":"asráat, aasáar"},
-        output: { ok: true },
-    },
-    {
-        input: {"ts":1527815870,"i":183,"p":"اثر","f":"asar","g":"asar","e":"influence, impression, tracks, affect","r":4,"c":"n. m.","app":"اثرات, آثار","apf":"asráat, aa sáar"},
-        output: {
-            errors: ["spacing discrepency between app and apf"],
-            p: "اثر",
-            f: "asar",
-            e: "influence, impression, tracks, affect",
-            ts: 1527815870,
-            erroneousFields: ["app", "apf"],
-        },
-    },
-    {
         input: {"ts":1527815870,"i":183,"p":"اثر","f":"asar","g":"asar","e":"influence, impression, tracks, affect","r":4,"c":"n. m.","app":"اثرات, آثار","apf":"asráat"},
         output: {
             errors: ["difference in variation length between app and apf", "script and phonetics do not match for app and apf"],

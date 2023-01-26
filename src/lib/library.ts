@@ -156,6 +156,9 @@ import {
     humanReadableVerbForm,
     humanReadableEquativeTense,
 } from "./src/human-readable";
+import {
+    splitPsString,
+} from "./src/splitPsString";
 import shuffleArray from "./src/shuffle-array";
 import defaultTextOptions from "./src/default-text-options";
 import * as grammarUnits from "./src/grammar-units";
@@ -200,6 +203,7 @@ export {
     getVerbBlockPosFromPerson,
     personIsPlural,
     personGender,
+    splitPsString,
     addEnglish,
     parseEc,
     endsWith,
