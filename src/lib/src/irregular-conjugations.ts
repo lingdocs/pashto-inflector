@@ -1346,12 +1346,12 @@ export const kawulStat: T.VerbConjugation = {
                 [[{p: "وکړل شي", f: "óokRul shee"}], [{p: "وکړل شي", f: "óokRul shee"}]],
             ],
             future: [
-                [[{p: "به وکړل شم", f: "ba óokRul shum"}], [{p: "به وکړل شو", f: "ba óokRulshoo"}]],
-                [[{p: "به وکړل شم", f: "ba óokRul shum"}], [{p: "به وکړل شو", f: "ba óokRulshoo"}]],
-                [[{p: "به وکړل شې", f: "ba óokRul she"}], [{p: "به وکړل شئ", f: "ba óokRulsheyy"}]],
-                [[{p: "به وکړل شې", f: "ba óokRul she"}], [{p: "به وکړل شئ", f: "ba óokRulsheyy"}]],
-                [[{p: "به وکړل شي", f: "ba óokRul shee"}], [{p: "به وکړل شي", f: "ba óokRulshee"}]],
-                [[{p: "به وکړل شي", f: "ba óokRul shee"}], [{p: "به وکړل شي", f: "ba óokRulshee"}]],
+                [[{p: "به وکړل شم", f: "ba óokRul shum"}], [{p: "به وکړل شو", f: "ba óokRul shoo"}]],
+                [[{p: "به وکړل شم", f: "ba óokRul shum"}], [{p: "به وکړل شو", f: "ba óokRul shoo"}]],
+                [[{p: "به وکړل شې", f: "ba óokRul she"}], [{p: "به وکړل شئ", f: "ba óokRul sheyy"}]],
+                [[{p: "به وکړل شې", f: "ba óokRul she"}], [{p: "به وکړل شئ", f: "ba óokRul sheyy"}]],
+                [[{p: "به وکړل شي", f: "ba óokRul shee"}], [{p: "به وکړل شي", f: "ba óokRul shee"}]],
+                [[{p: "به وکړل شي", f: "ba óokRul shee"}], [{p: "به وکړل شي", f: "ba óokRul shee"}]],
             ],
             past: {
                 short: [
@@ -4392,12 +4392,12 @@ export const kawulDyn: T.VerbConjugation = {
                 [[{p: "کړل شي", f: "kRul shee"}], [{p: "کړل شي", f: "kRul shee"}]],
             ],
             future: [
-                [[{p: "به کړل شم", f: "ba kRul shum"}], [{p: "به کړل شو", f: "ba kRulshoo"}]],
-                [[{p: "به کړل شم", f: "ba kRul shum"}], [{p: "به کړل شو", f: "ba kRulshoo"}]],
-                [[{p: "به کړل شې", f: "ba kRul she"}], [{p: "به کړل شئ", f: "ba kRulsheyy"}]],
-                [[{p: "به کړل شې", f: "ba kRul she"}], [{p: "به کړل شئ", f: "ba kRulsheyy"}]],
-                [[{p: "به کړل شي", f: "ba kRul shee"}], [{p: "به کړل شي", f: "ba kRulshee"}]],
-                [[{p: "به کړل شي", f: "ba kRul shee"}], [{p: "به کړل شي", f: "ba kRulshee"}]],
+                [[{p: "به کړل شم", f: "ba kRul shum"}], [{p: "به کړل شو", f: "ba kRul shoo"}]],
+                [[{p: "به کړل شم", f: "ba kRul shum"}], [{p: "به کړل شو", f: "ba kRul shoo"}]],
+                [[{p: "به کړل شې", f: "ba kRul she"}], [{p: "به کړل شئ", f: "ba kRul sheyy"}]],
+                [[{p: "به کړل شې", f: "ba kRul she"}], [{p: "به کړل شئ", f: "ba kRul sheyy"}]],
+                [[{p: "به کړل شي", f: "ba kRul shee"}], [{p: "به کړل شي", f: "ba kRul shee"}]],
+                [[{p: "به کړل شي", f: "ba kRul shee"}], [{p: "به کړل شي", f: "ba kRul shee"}]],
             ],
             past: {
                 short: [
