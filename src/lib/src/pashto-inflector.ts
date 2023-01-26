@@ -537,7 +537,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections,
   function addFemLongVowelSuffix(): T.PluralInflectionSet {
     const base = removeEndTick(makePsString(w.p, w.f));
     const baseWOutAccents = removeAccents(base);
-    const space = (w.p.slice(-1) === "ع" || w.p.slice(-1) === "ه") ? { p: " ", f: "" } : "";
+    const space = (w.p.slice(-1) === "ع" || w.p.slice(-1) === "ه") ? { p: " ", f: " " } : "";
     return addSecondInf([
       concatPsString(base, space, { p: "وې", f: "we" }),
       concatPsString(baseWOutAccents, space, { p: "ګانې", f: "gáane" })

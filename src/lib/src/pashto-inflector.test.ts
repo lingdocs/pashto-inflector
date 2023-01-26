@@ -1192,8 +1192,8 @@ const nouns: {
         out: {
             plural: {
                 fem: [
-                    [{p: "وداع وې", f: "widáawe"}, {p: "وداع ګانې", f: "widaagáane"}],
-                    [{p: "وداع وو", f: "widáawo"}, {p: "وداع ګانو", f: "widaagáano"}],
+                    [{p: "وداع وې", f: "widáa we"}, {p: "وداع ګانې", f: "widaa gáane"}],
+                    [{p: "وداع وو", f: "widáa wo"}, {p: "وداع ګانو", f: "widaa gáano"}],
                 ],
             },
         },
