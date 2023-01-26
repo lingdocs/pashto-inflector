@@ -308,12 +308,12 @@ const kawulPerfectPassive: T.PerfectContent = {
         [[{p: "به کړې شوې وه", f: "ba kúRe shúwe wa"}], [{p: "به کړې شوې وې", f: "ba kúRe shúwe we"}]],
     ],
     pastSubjunctive: [
-        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
-        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "به کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "ba kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
-        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
-        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "به کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "ba kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
-        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
-        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "به کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "ba kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
+        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
+        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
+        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
+        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
+        [[{p: "کړی شوی وای", f: "kúRey shúwey waay"}, {p: "کړی شوی وی", f: "kúRey shúwey wey"}], [{p: "کړي شوي وای", f: "kúRee shúwee waay"}, {p: "کړي شوي وی", f: "kúRee shúwee wey"}]],
+        [[{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}], [{p: "کړې شوې وای", f: "kúRe shúwe waay"}, {p: "کړې شوې وی", f: "kúRe shúwe wey"}]],
     ],
     wouldHaveBeen: [
         [[{p: "به کړی شوی وای", f: "ba kúRey shúwey waay"}, {p: "به کړی شوی وی", f: "ba kúRey shúwey wey"}], [{p: "به کړي شوي وای", f: "ba kúRee shúwee waay"}, {p: "به کړي شوي وی", f: "ba kúRee shúwee wey"}]],
