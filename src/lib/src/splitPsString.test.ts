@@ -90,6 +90,17 @@ const toTest: {
         input: { p: "د ... په شان", f: "du ... pu shaan" },
         result: [{ p: "د", f: "du" }, { p: "په", f: "pu" }, { p: "شان", f: "shaan" }],
     },
+    {
+        input: { p: "و ارزي", f: "óo`arzee" },
+        result: [{ p: "و ارزي", f: "óo`arzee" }],
+    },
+    {
+        input: { p: "هغه و ارزي", f: "hagha óo`arzee" },
+        result: [
+            { p: "هغه", f: "hagha" },
+            { p: "و ارزي", f: "óo`arzee" },
+        ],
+    },
 ];
 
 test("splitPsString should work", () => {

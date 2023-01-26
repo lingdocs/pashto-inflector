@@ -34,6 +34,15 @@ export function splitPsString(ps: T.PsStringNoFVars): T.PsWord[] {
         fIndex++;
     }
     while (pIndex < pWords.length && fIndex < fWords.length) {
+        if (pWords[pIndex] === "و" && pWords[pIndex+1] && fWords[fIndex].startsWith("óo`")) {
+            psWords.push({
+                p: `${pWords[pIndex]} ${pWords[pIndex+1]}`,
+                f: fWords[fIndex],
+            });
+            pIndex += 2;
+            fIndex++;
+            continue;
+        }
         if (fWords[fIndex] === "..." && pWords[pIndex] === "...") {
             pIndex++;
             fIndex++;
