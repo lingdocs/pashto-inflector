@@ -20,7 +20,7 @@ This is **published as two libraries**:
     - @lingdocs/inflect plus react components for displaying Pashto text, phrase engine UI etc.
     - Only available as an ES6 Module
 
-`@lingdocs/pashto-inflector` **is deprecated**. Use `@lingdoc/inflect` or `@lingdocs/ps-react` instead.
+`@lingdocs/pashto-inflector` **is deprecated**. Use `@lingdocs/inflect` or `@lingdocs/ps-react` instead.
 
 ## Development
 
