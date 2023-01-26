@@ -31,6 +31,7 @@ import {
 } from "./accent-helpers";
 import * as T from "../../types";
 import { splitFIntoPhonemes } from "./phonetics-to-diacritics";
+import { splitPsString } from "./splitPsString";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
 const endingInHeyOrAynRegex = /[^ا][هع]$/;
@@ -184,18 +185,18 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
 // LEVEL 3 FUNCTIONS
 function inflectIrregularUnisex(p: string, f: string, inflections: Array<{p: string, f: string}>): T.Inflections {
   const inf1 = removeAccents(inflections[1]);
-  const inf0syls = splitFIntoPhonemes(inflections[0].f);
-  const inf0f = accentFSylsOnNFromEnd(inf0syls, 0);
+  const inf0 = removeAccents(inflections[0]);
+  const inf0fSyls = splitUpSyllables(inf0.f).length;
   return {
     masc: [
       [{p, f}],
-      [{p: inflections[0].p, f: inf0f, }],
-      [{p: `${inf1.p}و`, f: `${inf1.f}ó`}],
+      [{p: inflections[0].p, f: `${inf0.f.slice(0, -1)}${inf0fSyls === 1 ? "u" : "ú"}` }],
+      [{p: `${inf1.p}و`, f: `${inf1.f}${inf0fSyls === 1 ? "o" : "ó"}`}],
     ],
     fem: [
-      [{p: `${inf1.p}ه`, f: `${inf1.f}á`}],
-      [{p: `${inf1.p}ې`, f: `${inf1.f}é`}],
-      [{p: `${inf1.p}و`, f: `${inf1.f}ó`}],
+      [{p: `${inf1.p}ه`, f: `${inf1.f}${inf0fSyls === 1 ? "a" : "á"}`}],
+      [{p: `${inf1.p}ې`, f: `${inf1.f}${inf0fSyls === 1 ? "e" : "é"}`}],
+      [{p: `${inf1.p}و`, f: `${inf1.f}${inf0fSyls === 1 ? "o" : "ó"}`}],
     ],
   };
 }
@@ -324,14 +325,14 @@ function inflectRegularEmphasizedYeyMasc(p: string, f: string): T.Inflections {
 }
 
 function inflectIrregularMasc(p: string, f: string, inflections: Array<{p: string, f: string}>): T.Inflections {
-  const inf0f = splitUpSyllables(inflections[0].f).length > 1
-    ? accentFSylsOnNFromEnd(inflections[0].f, 0)
-    : inflections[0].f
+  let inf0f = removeAccents(inflections[0].f);
+  const inf0syls = splitUpSyllables(f).length;
+  const inf1f = removeAccents(inflections[1].f);
   return {
     masc: [
       [{p, f}],
-      [{p: inflections[0].p, f: inf0f}],
-      [{p: `${inflections[1].p}و`, f: `${removeAccents(inflections[1].f)}ó`}],
+      [{p: inflections[0].p, f: `${inf0f.slice(0, -1)}${inf0syls === 1 ? "u" : "ú"}`}],
+      [{p: `${inflections[1].p}و`, f: `${inf1f}${inf0syls === 1 ? "o" : "ó"}`}],
     ],
   };
 }

@@ -600,7 +600,7 @@ const nouns: {
                 masc: [
                     [{ p: "غر", f: "ghar" }],
                     [{ p: "غره", f: "ghru" }],
-                    [{ p: "غرو", f: "ghró" }],
+                    [{ p: "غرو", f: "ghro" }],
                 ],
             },
             plural: {
@@ -625,13 +625,13 @@ const nouns: {
                 // TODO: use smarter system using new isType5Entry predicates, to allow for not using the redundant one syllable accents with these
                 masc: [
                     [{ p: "خر", f: "khur" }],
-                    [{ p: "خره", f: "khrú" }],
-                    [{ p: "خرو", f: "khró" }],
+                    [{ p: "خره", f: "khru" }],
+                    [{ p: "خرو", f: "khro" }],
                 ],
                 fem: [
-                    [{ p: "خره", f: "khrá" }],
-                    [{ p: "خرې", f: "khré" }],
-                    [{ p: "خرو", f: "khró" }],
+                    [{ p: "خره", f: "khra" }],
+                    [{ p: "خرې", f: "khre" }],
+                    [{ p: "خرو", f: "khro" }],
                 ],
             },
         },
@@ -1231,6 +1231,23 @@ const nouns: {
             noInf: true,
         },
         out: false,
+    },
+    {
+        in: {"ts":1610795367898,"i":6978,"p":"رشوت خور","f":"rishwat khór","g":"rishwatkhor","e":"bribe-taker, corrupt","r":4,"c":"n. m. anim. unisex / adj.","infap":"رشوت خواره","infaf":"rishwat khwaaru","infbp":"رشوت خور","infbf":"rishwat khwar"},
+        out: {
+            inflections: {
+                masc: [
+                    [{p: "رشوت خور", f: "rishwat khór"}],
+                    [{p: "رشوت خواره", f: "rishwat khwaarú"}],
+                    [{p: "رشوت خورو", f: "rishwat khwaró"}],
+                ],
+                fem: [
+                    [{p: "رشوت خوره", f: "rishwat khwará"}],
+                    [{p: "رشوت خورې", f: "rishwat khwaré"}],
+                    [{p: "رشوت خورو", f: "rishwat khwaró"}],
+                ],
+            },
+        },
     },
 ];
 
