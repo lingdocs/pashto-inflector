@@ -244,7 +244,7 @@ const kawulStatOrDynImperfectivePassive: T.AspectContentPassive = {
                 [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],   
                 [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],   
                 [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],   
-                [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کول کېدای شوی", f: "kawul kedáay shwey" }]],
+                [[{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }], [{ p: "کول کېدی شوای", f: "kawul kedéy shwaay" }, { p: "کول کېدی شوی", f: "kawul kedéy shwey" }, { p: "کول کېدای شوی", f: "kawul kedáay shwey" }]],
             ],   
         },
     },
