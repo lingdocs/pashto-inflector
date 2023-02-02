@@ -50,12 +50,10 @@ function Examples(props: ({
     );
     return Array.isArray(examples) ?
         <div>
-            {/* @ts-ignore */}
-            {examples.map((example, i) => <Example key={i}>{example}</Example>)}
+            {examples.map((example, i) => <Example key={i}>{example as PsStringWSub}</Example>)}
         </div>
         :
-        // @ts-ignore
-        <Example>{examples}</Example>;
+        <Example>{examples as PsStringWSub}</Example>;
 }
 
 export default Examples;
