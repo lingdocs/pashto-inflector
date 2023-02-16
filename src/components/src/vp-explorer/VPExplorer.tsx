@@ -33,6 +33,7 @@ function VPExplorer(props: {
     opts: T.TextOptions,
     handleLinkClick: ((ts: number) => void) | "none",
     entryFeeder: T.EntryFeeder,
+    onlyPhrases?: boolean,
 }) {
     const [vps, adjustVps] = useStickyReducer(
         vpsReducer,
@@ -44,7 +45,7 @@ function VPExplorer(props: {
     );
     const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
         savedMode => {
-            if (!savedMode) return "charts";
+            if (!savedMode) return props.onlyPhrases ? "phrases" : "charts";
             if (savedMode === "quiz") return "phrases";
             return savedMode;
         },
@@ -127,7 +128,7 @@ function VPExplorer(props: {
             opts={props.opts}
             handleLinkClick={props.handleLinkClick}
         />
-        <div className="mt-2 mb-3 d-flex flex-row justify-content-between align-items-center">
+        {!props.onlyPhrases && <div className="mt-2 mb-3 d-flex flex-row justify-content-between align-items-center">
             <div style={{ width: "1rem" }}>
             </div>
             <ButtonSelect
@@ -155,7 +156,7 @@ function VPExplorer(props: {
                     {mode === "phrases" ? <i className="fas fa-share-alt" /> : ""}
                 </div>
             </div>
-        </div>
+        </div>}
         {(vps.verb && (typeof object === "object") && (vps.verb.isCompound !== "dynamic") && (vps.verb.tenseCategory !== "imperative") &&(mode === "phrases")) &&
             <div className="text-center my-2">
                 <button onClick={handleSubjObjSwap} className="btn btn-sm btn-light">
