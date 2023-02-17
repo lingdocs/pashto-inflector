@@ -15,7 +15,9 @@ export default function useStickyState<T extends SaveableData>(defaultValue: T |
   setValue: React.Dispatch<React.SetStateAction<T>>,
 ] {
   const [value, setValue] = useState<T>(() => {
-    const v = window.localStorage.getItem(key);
+    const v = typeof window === "undefined"
+      ? null
+      : window.localStorage.getItem(key);
     // nothing saved
     if (v === null) {
       if (typeof defaultValue === "function") {
@@ -39,7 +41,9 @@ export default function useStickyState<T extends SaveableData>(defaultValue: T |
   });
 
   useEffect(() => {
-    window.localStorage.setItem(key, JSON.stringify(value));
+    if (typeof window !== undefined) {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    }
   }, [key, value]);
 
   return [value, setValue];
