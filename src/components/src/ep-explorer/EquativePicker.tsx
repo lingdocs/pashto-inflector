@@ -2,11 +2,7 @@ import * as T from "../../../types"
 import Select from "react-select";
 import ButtonSelect from "../ButtonSelect";
 import { epTenseOptions as options } from "./epTenseOptions";
-
-const zIndexProps = {
-    menuPortalTarget: document.body, 
-    styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
-};
+import { customStyles } from "../EntrySelect";
 
 function EquativePicker({ equative, onChange, hideNegative }: {
     equative: { tense: T.EquativeTense, negative: boolean },
@@ -53,10 +49,11 @@ function EquativePicker({ equative, onChange, hideNegative }: {
                 isSearchable={false}
                 // for some reason can't use tOptions with find here;
                 value={options.find(o => o.value === equative.tense)}
+                // @ts-ignore
                 onChange={onTenseSelect}
                 className="mb-2"
                 options={options}
-                {...zIndexProps}
+                styles={customStyles}
             />
             {<div className="d-flex flex-row justify-content-between align-items-center mt-3 mb-1" style={{ width: "100%" }}>
                 <div className="btn btn-light clickable" onClick={moveTense("back")}>

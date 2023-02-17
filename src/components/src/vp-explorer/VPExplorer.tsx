@@ -73,6 +73,15 @@ function VPExplorer(props: {
         // eslint-disable-next-line
     }, [props.verb]);
     useEffect(() => {
+        if (props.loaded) {
+            adjustVps({
+                type: "load vps",
+                payload: props.loaded,
+            });
+        }
+        // eslint-disable-next-line
+    }, [props.loaded]);
+    useEffect(() => {
         const VPSFromUrl = getVPSFromUrl();
         if (VPSFromUrl) {
             setMode("phrases");

@@ -30,8 +30,6 @@ import {
   splitUpSyllables,
 } from "./accent-helpers";
 import * as T from "../../types";
-import { splitFIntoPhonemes } from "./phonetics-to-diacritics";
-import { splitPsString } from "./splitPsString";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
 const endingInHeyOrAynRegex = /[^ا][هع]$/;
