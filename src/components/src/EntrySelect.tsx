@@ -42,7 +42,7 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: {
         ? props.placeholder
         : "search" in props.entryFeeder
         ? "Search Pashto"
-        : "Select…";
+        : "Search…";
     function makeOption(e: E | T.DictionaryEntry) {
         if ("entry" in e) {
             return (props.isVerbSelect ? makeVerbSelectOption : makeSelectOption)(e, props.opts);
