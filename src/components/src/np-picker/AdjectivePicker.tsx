@@ -45,7 +45,7 @@ function AdjectivePicker(props: {
         />}
         <div className="d-flex flex-row justify-content-between align-items-baseline">
             {!props.noTitle && <div>
-                <h6>Adjective</h6>
+                <div className="h6">Adjective</div>
             </div>}
             {/* not ready for sandwiches on adjectives */}
             {/* {(!addingSandwich && props.adjective && !props.adjective?.sandwich)

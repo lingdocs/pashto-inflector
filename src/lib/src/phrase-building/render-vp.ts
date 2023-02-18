@@ -656,6 +656,7 @@ function getMatrixBlock<U>(f: {
     femSing: T.SingleOrLengthOpts<U>;
     femPlur: T.SingleOrLengthOpts<U>;
 } | T.SingleOrLengthOpts<U>, objectPerson: T.Person | undefined, kingPerson: T.Person): T.SingleOrLengthOpts<U> {
+    // @ts-ignore
     if (!("mascSing" in f)) {
         return f;
     }

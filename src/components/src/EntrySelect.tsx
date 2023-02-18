@@ -35,9 +35,14 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: {
     isVerbSelect?: boolean,
     opts: T.TextOptions,
     style?: StyleHTMLAttributes<HTMLDivElement>,
+    placeholder?: string,
 }) {
     const divStyle = props.style || { width: "13rem" };
-    const placeholder = "entries" in props ? "Select…" : "Search Pashto";
+    const placeholder = "placeholder" in props
+        ? props.placeholder
+        : "search" in props.entryFeeder
+        ? "Search Pashto"
+        : "Select…";
     function makeOption(e: E | T.DictionaryEntry) {
         if ("entry" in e) {
             return (props.isVerbSelect ? makeVerbSelectOption : makeSelectOption)(e, props.opts);

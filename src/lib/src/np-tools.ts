@@ -70,6 +70,9 @@ export function getEnglishParticiple(entry: T.DictionaryEntry): string {
         throw new Error("no english information for participle");
     }
     const ec = parseEc(entry.ec);
+    if (entry.ep && ec[0] === "am") {
+        return `to be/being ${entry.ep}`;
+    }
     const participle = `${ec[2]} / to ${ec[0]}`;
     return (entry.ep)
         ? `${participle} ${entry.ep}`

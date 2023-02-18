@@ -15,7 +15,7 @@ function AdverbPicker(props: {
         props.onChange(makeAdverbSelection(entry));
     }
     return <div style={{ maxWidth: "225px", minWidth: "125px" }}>
-        <h6>Adverb</h6>
+        <div className="h6">Adverb</div>
         <div>
             <EntrySelect
                 value={props.adjective?.entry}

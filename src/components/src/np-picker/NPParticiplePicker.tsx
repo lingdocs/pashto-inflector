@@ -16,7 +16,7 @@ function NPParticiplePicker(props: {
         props.onChange(makeParticipleSelection(entry));
     }
     return <div style={{ maxWidth: "225px" }}>
-        <h6>Participle</h6>
+        <div className="h6">Participle</div>
         <EntrySelect
             value={props.participle?.verb}
             entryFeeder={props.entryFeeder}

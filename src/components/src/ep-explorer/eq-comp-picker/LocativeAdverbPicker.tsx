@@ -15,7 +15,7 @@ function LocativeAdverbPicker(props: {
         props.onChange(makeLocativeAdverbSelection(entry));
     }
     return <div style={{ maxWidth: "225px", minWidth: "125px" }}>
-        <h6>Locative Adverb</h6>
+        <div className="h6">Locative Adverb</div>
         <div>
             <EntrySelect
                 value={props.adjective?.entry}

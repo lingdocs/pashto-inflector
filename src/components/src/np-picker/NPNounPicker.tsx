@@ -117,7 +117,7 @@ function NPNounPicker(props: {
             onChange={handelAdjectivesUpdate}
             onDemonstrativeChange={handleDemonstrativeUpdate}
         />}
-        <h6>Noun</h6>
+        <div className="h6">Noun</div>
         {!(props.noun && props.noun.dynamicComplement) ? <div>
             <EntrySelect
                 value={props.noun?.entry}
