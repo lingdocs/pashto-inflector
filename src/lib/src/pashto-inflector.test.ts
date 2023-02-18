@@ -704,6 +704,24 @@ const nouns: {
             }
         }
     },
+    // masculine ending in a vowel
+    {
+        in: {"ts":1527815484,"i":13069,"p":"ملا","f":"mUllaa","g":"mUllaa","e":"mullah, priest","r":4,"c":"n. m."},
+        out: {
+            plural: {
+                masc: [
+                    [
+                        { p: "ملایان", f: "mUllaayáan" },
+                        { p: "ملاګان", f: "mUllaagáan" },
+                    ],
+                    [
+                        { p: "ملایانو", f: "mUllaayáano" },
+                        { p: "ملاګانو", f: "mUllaagáano" },
+                    ],
+                ],
+            },
+        },
+    },
     // TODO: uncomment this
     // {
     //     in: {"ts":1527812591,"i":6286,"p":"دواړه","f":"dwáaRu","g":"dwaaRu","e":"both","c":"n. m. pl. unisex / adj."},

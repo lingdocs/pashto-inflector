@@ -489,7 +489,7 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections,
     return addSecondInf(
       concatPsString(base, (animate && !shortSquish) ? { p: "ان", f: "áan" } : { p: "ونه", f: "óona" }),
     );
-  } 
+  }
   function addAnimUnisexPluralSuffix(): T.UnisexSet<T.PluralInflectionSet> {
     const base = removeAccents(w);
     return {
@@ -533,14 +533,21 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections,
       ],
     };
   }
-  function addFemLongVowelSuffix(): T.PluralInflectionSet {
+  function addLongVowelSuffix(gender: "masc" | "fem"): T.PluralInflectionSet {
     const base = removeEndTick(makePsString(w.p, w.f));
     const baseWOutAccents = removeAccents(base);
     const space = (w.p.slice(-1) === "ع" || w.p.slice(-1) === "ه") ? { p: " ", f: " " } : "";
-    return addSecondInf([
-      concatPsString(base, space, { p: "وې", f: "we" }),
-      concatPsString(baseWOutAccents, space, { p: "ګانې", f: "gáane" })
-    ]);
+    if (gender === "fem") {
+      return addSecondInf([
+        concatPsString(base, space, { p: "وې", f: "we" }),
+        concatPsString(baseWOutAccents, space, { p: "ګانې", f: "gáane" })
+      ]);
+    } else {
+      return addSecondInf([
+        concatPsString(baseWOutAccents, space, { p: "یان", f: "yáan" }),
+        concatPsString(baseWOutAccents, space, { p: "ګان", f: "gáan" }),
+      ]);
+    }
   }
   // TODO: This should be possible for words like پلویان but not for words like ترورزامن 🤔
   // function addFemToPashtoPlural(i: T.PluralInflections): T.UnisexSet<T.PluralInflectionSet> {
@@ -622,11 +629,20 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections,
     };
   }
   // TODO: What about endings in long ee / animate at inanimate
+  if (type === "masc noun" && endsInAaOrOo(w) && (!w.infap)) {
+    return {
+      arabicPlural,
+      plural: {
+        masc: addLongVowelSuffix("masc"),
+      },
+    };
+  }
+  // TODO: What about endings in long ee / animate at inanimate
   if (type === "fem noun" && endsInAaOrOo(w) && (!w.infap)) {
     return {
       arabicPlural,
       plural: {
-        fem: addFemLongVowelSuffix(),
+        fem: addLongVowelSuffix("fem"),
       },
     };
   }
