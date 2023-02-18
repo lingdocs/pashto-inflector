@@ -173,9 +173,10 @@ function addPossesors(possesor: T.Rendered<T.NPSelection> | undefined, base: str
     }
     const possesorE = getEnglishFromRendered(possesor);
     if (!possesorE) return undefined;
+    const withApostrophe = `${possesorE}'${possesorE.endsWith("s") ? "" : "s"}`;
     return type === "noun"
-        ? `${possesorE}'s ${removeArticles(base)}`
-        : `(${possesorE}'s) ${removeArticles(base)} (${possesorE})`;
+        ? `${withApostrophe} ${removeArticles(base)}`
+        : `(${withApostrophe}) ${removeArticles(base)} (${possesorE})`;
 }
 
 function pronounPossEng(p: T.Person): string {
