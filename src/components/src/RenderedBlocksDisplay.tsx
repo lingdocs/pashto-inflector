@@ -16,7 +16,9 @@ function RenderedBlocksDisplay({ opts, rendered, justify, script }: {
     // useEffect(() => {
     //     parent.current && autoAnimate(parent.current)
     // }, [parent]);
-    const blocksWVars = ("omitSubject" in rendered)
+    const blocksWVars: T.Block[][] = Array.isArray(rendered)
+        ? rendered
+        : ("omitSubject" in rendered)
         ? filterForVisibleBlocksEP(rendered.blocks, rendered.omitSubject)
         : filterForVisibleBlocksVP(rendered.blocks, rendered.form, rendered.king);
     const king = "king" in rendered ? rendered.king : undefined;

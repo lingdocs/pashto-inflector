@@ -35,8 +35,6 @@ import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
 import { makeNounSelection } from "./make-selections";
-// import { getVerbInfo } from "../verb-info";
-// import { grammarUnits } from "../../library";
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const subject = getSubjectSelection(VP.blocks).selection;

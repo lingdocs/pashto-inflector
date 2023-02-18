@@ -46,6 +46,7 @@ export function ensureNonComboVerbInfo(i: T.VerbInfo): T.NonComboVerbInfo {
 }
 
 export function pickPersInf<T>(s: T.OptionalPersonInflections<T>, persInf: T.PersonInflectionsField): T {
+    // @ts-ignore
     if ("mascSing" in s) {
         return s[persInf];
     }
@@ -295,6 +296,7 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
 }
 
 export function chooseLength<N>(x: T.SingleOrLengthOpts<N>, length: "long" | "short"): N {
+    // @ts-ignore
     if ("long" in x) {
         return x[length]; 
     }

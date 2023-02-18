@@ -33,6 +33,7 @@ import EPExplorer from "./src/ep-explorer/EPExplorer";
 import APPicker from "./src/ap-picker/APPicker";
 import VPDisplay from "./src/vp-explorer/VPDisplay";
 import VPPicker from "./src/vp-explorer/VPPicker";
+import NPDisplay from "./src/vp-explorer/NPDisplay";
 import HumanReadableInflectionPattern from "./src/HumanReadableInflectionPattern";
 import { psJSXMap } from "./src/jsx-map";
 import genderColors from "./src/gender-colors";
@@ -66,6 +67,7 @@ export {
     Block,
     EPDisplay,
     VPDisplay,
+    NPDisplay,
     EPPicker,
     VPPicker,
     CompiledPTextDisplay,
