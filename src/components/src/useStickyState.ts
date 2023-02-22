@@ -5,9 +5,9 @@ type SaveableData = string | number | object | boolean | undefined | null
 /**
  * replacement from the React useState hook that will persist the state in local storage
  * 
- * @param defaultValue The default value to use if there was nothing saved previously OR
+ * @param  defaultValue The default value to use if there was nothing saved previously OR
  * a function that will take the saved value and return a modified new value to start with
- * @param key a key for saving the state in locolStorage
+ * @param key a key for saving the state in localStorage
  * @returns 
  */
 export default function useStickyState<T extends SaveableData>(defaultValue: T | ((old: T | undefined) => T), key: string): [

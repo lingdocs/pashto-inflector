@@ -5,7 +5,7 @@
 ![build](https://github.com/lingdocs/pashto-inflector/actions/workflows/ci.yml/badge.svg)
 ![build](https://github.com/lingdocs/pashto-inflector/actions/workflows/publish.yml/badge.svg)
 
-A pashto inflection and verb conjugation engine, as well as functions and components for modifying and displaying Pashto text.
+A pashto inflection, verb conjugation, and phrase-generation engine, as well as functions and components for modifying and displaying Pashto text.
 
 #### [Pashto Inflector Website/Demo](https://pashto-inflector.lingdocs.com)
 
