@@ -43,7 +43,7 @@ jobs:
         id: pages
         uses: actions/configure-pages@v2
       - name: Install dependencies
-        run: yarn r-install
+        run: yarn install-r
       - name: Build storybook
         run: cd src/components yarn build-storybook
       - name: Upload artifact
