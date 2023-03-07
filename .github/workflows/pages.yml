@@ -28,6 +28,8 @@ defaults:
 jobs:
   # Build job
   build:
+    env:
+      LINGDOCS_NPM_TOKEN: ${{ secrets.LINGDOCS_NPM_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,6 +53,8 @@ jobs:
 
   # Deployment job
   deploy:
+    env:
+      LINGDOCS_NPM_TOKEN: ${{ secrets.LINGDOCS_NPM_TOKEN }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
