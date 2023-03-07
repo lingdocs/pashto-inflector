@@ -33,7 +33,7 @@ module.exports = [
 	1527821498, // ټکول - to knock, pound, crush, grind, hammer
 	1527818537, // ځړول - to hang, to suspend, to lower down, to let down
 	1527813046, // ځنډول - to delay, to postpone, to hold back, to detain
-	1527813755, // ځورول - to bother, irritate, torture, distress, vex, grind on
+	1527820418, // ځورول - to bother, irritate, torture, distress, vex, grind on
 	1527814586, // چلول - to drive, operate, handle, put forward, circulate
 	1527816564, // چیچل - to bite, chew, grind (teeth), clench (teeth), sting
 	1527812790, // خوړل - to eat, to bite

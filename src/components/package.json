@@ -18,7 +18,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "echo \"build from repo root\""
+    "build": "echo \"build from repo root\"",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "author": "lingdocs.com",
   "license": "MIT",
@@ -32,7 +34,17 @@
     "react-select": "^5.4.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.21.0",
+    "@storybook/addon-actions": "^6.5.16",
+    "@storybook/addon-essentials": "^6.5.16",
+    "@storybook/addon-interactions": "^6.5.16",
+    "@storybook/addon-links": "^6.5.16",
+    "@storybook/builder-webpack4": "^6.5.16",
+    "@storybook/manager-webpack4": "^6.5.16",
+    "@storybook/react": "^6.5.16",
+    "@storybook/testing-library": "^0.0.13",
     "@types/pbf": "^3.0.2",
+    "babel-loader": "^8.3.0",
     "fs-extra": "^10.1.0"
   }
 }

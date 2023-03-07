@@ -81,7 +81,6 @@ module.exports = [
     { ts: 1609780006604, e: "fruitful" }, // زرخېز - zarkhéz
     { ts: 1527817116, e: "green, flourishing" }, // زرغون - zarghoon
     { ts: 1527814026, e: "golden" }, // زرین - zareen
-    { ts: 1567594312839, e: "brave" }, // زړه ور - zuRawár
     { ts: 1527815848, e: "committed" }, // ژمن - jzman
     { ts: 1527813498, e: "light" }, // سپک - spuk
     { ts: 1578329248464, e: "white" }, // سپین - speen

@@ -31,6 +31,7 @@ function Examples(props: ({
     opts: T.TextOptions,
     lineHeight?: 0 | 1 | 2 | 3 | 4,
 }) {
+    console.log({ props });
     const examples = "children" in props ? props.children : props.ex;
     const Example = ({ children: text }: { children: PsStringWSub }) => (
         <div className={props.lineHeight !== undefined ? `mb-${props.lineHeight}` : `mt-1 mb-3`}>

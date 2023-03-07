@@ -11,7 +11,6 @@ module.exports = [
 { ts: 1527822788, e: `tonight, this evening` }, // بېګاته - begáata
 { ts: 1527812183, e: `aware of, thinking of` }, // ورپام - wărpaam
 { ts: 1527814711, e: `soon, very soon, shortly` }, // لنډ پر لنډه - lanD par lanDa
-{ ts: 1527821930, e: `impromptu, without preparation` }, // بالبدیهه - bilbadeehá
 { ts: 1527814164, e: `this side, on this side` }, // دېخوا - dekhwaa
 { ts: 1527815160, e: `yesterday` }, // پرون - paroon
 { ts: 1623688539364, e: `nasal (speaking through the nose)` }, // ګانګوړ - gaangóR, gaangwÚR

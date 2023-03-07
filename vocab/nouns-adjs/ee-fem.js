@@ -12,7 +12,6 @@ module.exports = [
     { ts: 1527818402, e: "championship; courage" }, // اتلولي - atalwalée
     { ts: 1527814060, e: "ease" }, // اساني - asaanee
     { ts: 1527821293, e: "preparation, readiness, planning" }, // امادګي - amaadagee
-    { ts: 1527819502, e: "kingship, kingdom, rule, throne, authority" }, // باچهي - baachahee
     { ts: 1527820035, e: "dominion, holding sway over someone" }, // باداري - baadaaree
     { ts: 1527817732, e: "misfortune, difficulty" }, // بدبختي - badbakhtee
     { ts: 1588786872582, e: "shame, disrepute, dishonour" }, // بدنامي - badnaamee
