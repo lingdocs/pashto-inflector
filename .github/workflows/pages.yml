@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: yarn install-r
       - name: Build storybook
-        run: cd src/components && yarn build-storybook
+        run: export NODE_OPTIONS=--openssl-legacy-provider && cd src/components && yarn build-storybook
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
