@@ -72,7 +72,7 @@ import {
     dictionaryEntryBooleanFields,
     dictionaryEntryNumberFields,
     dictionaryEntryTextFields,
-} from "./src/fields";
+} from "../types";
 import {
     validateEntry,
     standardizeEntry,
@@ -162,7 +162,7 @@ import {
 import shuffleArray from "./src/shuffle-array";
 import defaultTextOptions from "./src/default-text-options";
 import * as grammarUnits from "./src/grammar-units";
-import * as Types from "../types";
+import type * as Types from "../types";
 import * as typePredicates from "./src/type-predicates";
 import * as blockUtils from "./src/phrase-building/blocks-utils";
 

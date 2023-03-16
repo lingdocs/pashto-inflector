@@ -145,9 +145,42 @@ export type DictionaryEntryNoFVars = DictionaryEntry & { __brand: "name for a di
 export type PsStringNoFVars = PsString & { __brand: "name for a ps string with all the phonetics variations removed" };
 export type FStringNoFVars = string & { __brand: "name for a phonetics string with all the phonetics variations removed" };
 
-export type DictionaryEntryTextField = "p" | "f" | "e" | "c" | "infap" | "infaf" | "infbp" | "infbf" | "app" | "apf" | "ppp" | "ppf" | "psp" | "psf" | "ssp" | "ssf" | "prp" | "prf" | "pprtp" | "pprtf" | "tppp" | "tppf" | "ec" | "ep";
-export type DictionaryEntryBooleanField = "noInf" | "shortIntrans" | "noOo" | "sepOo" | "diacExcept";
-export type DictionaryEntryNumberField = "ts" | "r" | "i" | "l" | "separationAtP" | "separationAtF";
+
+export const dictionaryEntryTextFields = [
+    "p",
+    "f",
+    "e",
+    "c",
+    "infap",
+    "infaf",
+    "infbp",
+    "infbf",
+    "app",
+    "apf",
+    "ppp",
+    "ppf",
+    "psp",
+    "psf",
+    "ssp",
+    "ssf",
+    "prp",
+    "prf",
+    "pprtp",
+    "pprtf",
+    "tppp",
+    "tppf",
+    "ec",
+    "ep",
+] as const;
+export type DictionaryEntryTextField = typeof dictionaryEntryTextFields[number];
+export const dictionaryEntryBooleanFields = [
+    "noInf", "shortIntrans", "noOo", "sepOo", "diacExcept",
+] as const;
+export const dictionaryEntryNumberFields = [
+    "ts", "r", "i", "l", "separationAtP", "separationAtF",
+] as const;
+export type DictionaryEntryBooleanField = typeof dictionaryEntryBooleanFields[number];
+export type DictionaryEntryNumberField = typeof dictionaryEntryNumberFields[number];
 export type DictionaryEntryField = DictionaryEntryTextField | DictionaryEntryBooleanField | DictionaryEntryNumberField;
 
 // TODO: make 
