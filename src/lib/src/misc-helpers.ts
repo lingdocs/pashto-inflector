@@ -25,11 +25,7 @@ export function entryOfFull(e: T.FullEntry): T.DictionaryEntry {
 }
 
 // just for type safety
-export function noPersInfs(s: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>): T.LengthOptions<T.PsString>;
-export function noPersInfs(s: T.FullForm<T.PsString>): T.SingleOrLengthOpts<T.PsString>;
-export function noPersInfs(s: 
-    T.OptionalPersonInflections<T.LengthOptions<T.PsString>> | T.FullForm<T.PsString>
-): T.SingleOrLengthOpts<T.PsString> | T.LengthOptions<T.PsString> {
+export function noPersInfs<S extends object>(s: T.OptionalPersonInflections<S>): S {
     if ("mascSing" in s) {
         // this path shouldn't be used, just for type safety
         return s.mascSing;

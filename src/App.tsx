@@ -21,6 +21,7 @@ import { entryFeeder } from "./demo-components/entryFeeder";
 import { Hider } from "./components/library";
 import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
+import { renderVerb } from "./lib/src/render-verb";
 
 function App() {
     const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(false, "showTextOpts1");
@@ -35,8 +36,17 @@ function App() {
     useEffect(() => {
         document.documentElement.setAttribute("data-theme", theme);
     }, [theme]);
+    const rv = renderVerb({
+        verb: { entry: {"ts":1527815399,"i":15035,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"} as T.VerbDictionaryEntry},
+        aspect: "imperfective",
+        tense: "habitualPast",
+        person: 9,
+    });
     return <>
         <main className="flex-shrink-0 mb-4">
+            <pre>
+                {JSON.stringify(rv, null, "  ")}
+            </pre>
             <div className="container" style={{ maxWidth: "800px" }}>
             <div style={{ position: "absolute", top: "1.5rem", right: "1.5rem", display: "flex", flexDirection: "row" }}>
                 <div
