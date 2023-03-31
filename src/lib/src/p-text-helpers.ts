@@ -451,7 +451,7 @@ export function concatInflections(
     comp: T.PsString | T.SingleOrLengthOpts<T.UnisexInflections>, infs: T.SingleOrLengthOpts<T.UnisexInflections>
 ): T.SingleOrLengthOpts<T.UnisexInflections> {
     const containsLengthOptions = "long" in infs || "long" in comp;
-    const ensureL = <T>(x: T.SingleOrLengthOpts<T>, length: "short" | "long"): T => (
+    const ensureL = <T extends object>(x: T.SingleOrLengthOpts<T>, length: "short" | "long"): T => (
         ("long" in x) ? x[length] : x
     );
     if (containsLengthOptions) {
@@ -509,7 +509,7 @@ export function allOnePersonInflection(
     return block;
 }
 
-export function choosePersInf<T>(x: T.FullForm<T>, persInf: T.PersonInflectionsField): T.SingleOrLengthOpts<T> {
+export function choosePersInf<T extends object>(x: T.FullForm<T>, persInf: T.PersonInflectionsField): T.SingleOrLengthOpts<T> {
     if ("mascSing" in x) {
         return x[persInf];
     }
@@ -999,7 +999,7 @@ export function psStringFromEntry(entry: T.PsString): T.PsString {
     };
 }
 
-export function getLength<U>(x: T.SingleOrLengthOpts<U>, length: "long" | "short" | "mini"): U {
+export function getLength<U extends object>(x: T.SingleOrLengthOpts<U>, length: "long" | "short" | "mini"): U {
     if ("long" in x) {
         const s = x[length];
         return s ? s : x.short;
@@ -1007,14 +1007,14 @@ export function getLength<U>(x: T.SingleOrLengthOpts<U>, length: "long" | "short
     return x;
 }
  
-export function getLong<U>(x: T.SingleOrLengthOpts<U>): U {
+export function getLong<U extends object>(x: T.SingleOrLengthOpts<U>): U {
     if ("long" in x) {
         return x.long;
     }
     return x;
 }
 
-export function getShort<U>(a: T.SingleOrLengthOpts<U>): U {
+export function getShort<U extends object>(a: T.SingleOrLengthOpts<U>): U {
     if ("long" in a) {
         return a.short;
     }

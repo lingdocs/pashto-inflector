@@ -12,6 +12,8 @@ import {
     randomNumber,
 } from "../lib/src/misc-helpers";
 import { entryFeeder } from "./entryFeeder";
+import { renderVerb } from "../lib/src/render-verb";
+import NPPronounPicker from "../components/src/np-picker/NPPronounPicker";
 
 
 const transitivities: T.Transitivity[] = [
@@ -32,12 +34,46 @@ const verbTypes: VerbType[] = [
     "dynamic compound",
 ];
 
+const testVerbTenses: T.VerbTense[] = [
+    "presentVerb",
+    "subjunctiveVerb",
+    "imperfectiveFuture",
+    "perfectiveFuture",
+    "imperfectivePast",
+    "perfectivePast",
+    "habitualImperfectivePast",
+    "habitualPerfectivePast",
+];
+
+const testPerfectTenses: T.PerfectTense[] = [
+    "presentPerfect",
+    "pastPerfect",
+    "subjunctivePerfect",
+    "wouldBePerfect",
+    "wouldHaveBeenPerfect",
+];
+
+const testAbilityTenses: T.ModalTense[] = testVerbTenses.map<T.ModalTense>(t => `${t}Modal`);
+
+const testTenses = [
+    ...testVerbTenses,
+    ...testPerfectTenses,
+    ...testAbilityTenses,
+];
+
 function VPBuilderDemo({ opts }: {
     opts: T.TextOptions,
 }) {
     const [verbTs, setVerbTs] = useStickyState<number>(0, "verbTs1");
     const [verbTypeShowing, setVerbTypeShowing] = useStickyState<VerbType>("simple", "vTypeShowing");
     const [transitivityShowing, setTransitivityShowing] = useStickyState<T.Transitivity>("intransitive", "transitivityShowing1");
+    const [testPerson, setTestPerson] = useStickyState<T.PronounSelection>({
+        type: "pronoun",
+        distance: "far",
+        person: 0,
+    }, "testPronoun");
+    const [testVoice, setTestVoice] = useStickyState<T.Voice>("active", "testVoice");
+    const [testTense, setTestTense] = useStickyState<T.VerbTense | T.PerfectTense | T.ModalTense>("presentVerb", "testTense");
     // const onlyGrammTrans = (arr: Transitivity[]) => (
     //     arr.length === 1 && arr[0] === "grammatically transitive"
     // );
@@ -105,6 +141,14 @@ function VPBuilderDemo({ opts }: {
     const makeVerbLabel = (entry: T.DictionaryEntry): string => (
         `${entry.p} - ${clamp(entry.e, 20)}`
     );
+    const rv = v ? renderVerb({
+        // verb: { entry: {"ts":1527815399,"i":15035,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"} as T.VerbDictionaryEntry},
+        // verb: { entry: {"ts":1527814596,"i":8648,"p":"شرمول","f":"shărmawul","g":"sharmawul","e":"to shame, to disgrace, to dishonor, to embarrass","r":4,"c":"v. trans.","ec":"embarrass"} as T.VerbDictionaryEntry },
+        verb: v.verb as T.VerbEntry,
+        tense: testTense,
+        person: testPerson.person,
+        voice: testVoice,
+    }) : undefined;
     return <div className="mt-4">
         <div className="d-block mx-auto card" style={{ maxWidth: "700px", background: "var(--closer)"}}>
             <div className="card-body">
@@ -189,6 +233,23 @@ function VPBuilderDemo({ opts }: {
                 </div>
             </div>
         </div>
+        <button onClick={() => setTestVoice(v => v === "active" ? "passive" : "active")}>
+            {testVoice}
+        </button>
+        <select value={testTense} onChange={e => setTestTense(e.target.value as any)}>
+            {testTenses.map(t => (
+                <option key={t} value={t}>{t}</option>
+            ))}
+        </select>
+        <NPPronounPicker
+            onChange={setTestPerson}
+            pronoun={testPerson}
+            role="subject"
+            opts={opts}
+        />                
+        <pre>
+            {JSON.stringify(rv, null, "  ")}
+        </pre>
         {v?.verb.entry && <div style={{ paddingBottom: "20px" }}>
             <PhraseBuilder
                 handleLinkClick="none"

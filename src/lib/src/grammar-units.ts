@@ -679,26 +679,26 @@ const baseInflectedPronouns = [
   
   const plainPronounsFar = [
     ...basePlainPronouns,
-    [[{ p: "هغه", f: "haghá" }], [{ p: "هغوي", f: "haghwée" }]],
-    [[{ p: "هغه", f: "haghá" }], [{ p: "هغوي", f: "haghwée" }]],
+    [[{ p: "هغه", f: "haghá" }], [{ p: "هغوی", f: "haghwée" }]],
+    [[{ p: "هغه", f: "haghá" }], [{ p: "هغوی", f: "haghwée" }]],
 ] as T.VerbBlock;
   
 const plainPronounsNear = [
     ...basePlainPronouns,
-    [[{ p: "دی", f: "dey" }], [{ p: "دوي", f: "dwee" }]],
-    [[{ p: "دا", f: "daa" }], [{ p: "دوي", f: "dwee" }]],
+    [[{ p: "دی", f: "dey" }], [{ p: "دوی", f: "dwee" }]],
+    [[{ p: "دا", f: "daa" }], [{ p: "دوی", f: "dwee" }]],
 ] as T.VerbBlock;
   
 const inflectedPronounsFar = [
     ...baseInflectedPronouns,
-    [[{ p: "هغهٔ", f: "haghú" }], [{ p: "هغوي", f: "haghwée" }]],
-    [[{ p: "هغې", f: "haghé" }], [{ p: "هغوي", f: "haghwée" }]],
+    [[{ p: "هغهٔ", f: "haghú" }], [{ p: "هغوی", f: "haghwée" }]],
+    [[{ p: "هغې", f: "haghé" }], [{ p: "هغوی", f: "haghwée" }]],
 ] as T.VerbBlock;
   
 const inflectedPronounsNear = [
     ...baseInflectedPronouns,
-    [[{ p: "دهٔ", f: "du" }], [{ p: "دوي", f: "dwee" }]],
-    [[{ p: "دې", f: "de" }], [{ p: "دوي", f: "dwee" }]],
+    [[{ p: "دهٔ", f: "du" }], [{ p: "دوی", f: "dwee" }]],
+    [[{ p: "دې", f: "de" }], [{ p: "دوی", f: "dwee" }]],
 ] as T.VerbBlock;
   
 const miniPronouns: T.VerbBlock = [

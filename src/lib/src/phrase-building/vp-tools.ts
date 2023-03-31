@@ -198,6 +198,22 @@ export function isPastTense(tense: T.Tense): boolean {
     return tense.toLowerCase().includes("past");
 }
 
+export function tenseHasBa(tense: T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense): boolean {
+    return [
+        "imperfectiveFuture",
+        "perfectiveFuture",
+        "habitualPerfectivePast",
+        "habitualImperfectivePast",
+        "imperfectiveFutureModal",
+        "perfectiveFutureModal",
+        "habitualPerfectivePastModal",
+        "habitualImperfectivePastModal",
+        "futurePerfect",
+        "wouldBePerfect",
+        "wouldBeHaveBeenPerfect",
+    ].includes(tense);
+}
+
 export function removeDuplicates(psv: T.PsString[]): T.PsString[] {
     return psv.filter((ps, i, arr) => (
         i === arr.findIndex(t => (

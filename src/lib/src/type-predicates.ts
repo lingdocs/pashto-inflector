@@ -8,6 +8,11 @@ export function isTlulVerb(e: T.VerbEntry | T.VerbDictionaryEntry): boolean {
     return entry.f === "tlul" || entry.p === "راتلل" || entry.p === "درتلل" || entry.p === "ورتلل";
 }
 
+export function isKawulVerb(e: T.VerbEntry | T.VerbDictionaryEntry): boolean {
+    const entry = "entry" in e ? e.entry : e;
+    return ["کول", "راکول", "درکول", "ورکول"].includes(entry.p);
+}
+
 export function isNounEntry(e: T.Entry | T.DictionaryEntry): e is T.NounEntry {
     if ("entry" in e) return false;
     return !!(e.c && (e.c.includes("n. m.") || e.c.includes("n. f.")));

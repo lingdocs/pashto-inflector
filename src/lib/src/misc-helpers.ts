@@ -96,6 +96,20 @@ export function hasPersInfs(info: T.NonComboVerbInfo | T.PassiveRootsAndStems | 
     );
 }
 
+export function functionOnOptLengths<U extends object, F extends object>(x: T.SingleOrLengthOpts<U>, f: (y: U) => F): T.SingleOrLengthOpts<F> {
+    if ("long" in x) {
+        return {
+            long: f(x.long),
+            short: f(x.short),
+            ...("mini" in x && x.mini) ? {
+                mini: f(x.mini),
+            } : {},
+        };
+    }
+    return f(x);
+}
+
+// TODO: deprecated using new verb rendering thing
 export function chooseParticipleInflection(
     pPartInfs: T.SingleOrLengthOpts<T.UnisexInflections> | T.SingleOrLengthOpts<T.PsString>,
     person: T.Person,

@@ -661,6 +661,8 @@ export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" |
     tense: VerbFormName,
 }
 
+export type Voice = "active" | "passive";
+
 export type VerbSelection = {
     type: "verb",
     verb: VerbEntry,
@@ -669,7 +671,7 @@ export type VerbSelection = {
     canChangeTransitivity: boolean,
     canChangeStatDyn: boolean,
     isCompound: "stative" | "dynamic" | false,
-    voice: "active" | "passive",
+    voice: Voice,
     canChangeVoice: boolean,
     negative: boolean,
     verbTense: VerbTense,

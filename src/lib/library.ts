@@ -47,6 +47,9 @@ import {
     psStringEquals,
 } from "./src/p-text-helpers";
 import {
+    joiningTails,
+} from "./src/misc-text";
+import {
     getEnglishWord,
 } from "./src/get-english-word";
 import {
@@ -249,6 +252,7 @@ export {
     makeVPSelectionState,
     getLength,
     psStringEquals,
+    joiningTails,
     blockUtils,
     blank,
     kidsBlank,
