@@ -49,99 +49,91 @@ export function renderVerb({ verb, tense, person, voice }: {
     verbBlocks: T.VB[],
 } {
     // TODO: check for transitivity with passive voice ??
-
-    // WARNING: this only works with simple verbs
-    const hasBa = tenseHasBa(tense);
     if (isPerfectTense(tense)) {
-        return {
-            hasBa,
-            verbBlocks: getPerfectBlocks({ verb, tense, person, voice }),
-        };
+        return getPerfectVBs({ verb, tense, person, voice });
     }
+    const hasBa = tenseHasBa(tense);
     const isPast = isPastTense(tense);
     const aspect = getAspect(tense);
     const isAbility = isModalTense(tense);
+    const noPerfective = isAbility && (voice === "passive" || isTlulVerb(verb) || isKedul(verb));
     const { perfectiveHead, rootStem } = getRootStem({
-        verb, aspect, isPast, isAbility, person, voice
+        verb, aspect, isPast, isAbility, person, voice, noPerfective,
     });
-    const perfectiveHeadBlock: T.PH | undefined = perfectiveHead ? {
-        type: "PH",
-        // should only need this for tlul and Daaredul? 
-        ps: fromPersInfls(perfectiveHead, person),
-    } : undefined;
+    const verbBlocks: T.VB[] = isAbility
+        ? getAbilityVerbBlocks({ isPast, person, root: rootStem, aspect, voice, noPerfective })
+        : voice === "passive"
+        ? getPassiveVerbBlocks({ root: rootStem, tense, person })
+        : getBasicVerbBlock({
+            rootStem, person, isPast, verb, aspect,
+        });
+    return {
+        hasBa,
+        verbBlocks: [
+            ...!noPerfective && perfectiveHead ? [perfectiveHead] : [],
+            ...verbBlocks, 
+        ],
+    };
+}
+
+function getBasicVerbBlock({ rootStem, person, isPast, aspect, verb }: {
+    rootStem: T.SingleOrLengthOpts<T.PsString>,
+    person: T.Person,
+    isPast: boolean,
+    aspect: T.Aspect,
+    verb: T.VerbEntry,
+}): [T.VA] {
     const ending = getEnding(person, isPast);
-    if (isAbility) {
-        const [vb, shPart] = getAbilityVerbBlocks({ verb, isPast, person, root: rootStem, aspect, voice });
-        return {
-            hasBa,
-            verbBlocks: (perfectiveHeadBlock && voice === "active")
-                ? [perfectiveHeadBlock, vb, shPart]
-                : [vb, shPart],
-        };
-    }
-    if (voice === "passive") {
-        const vbs = getPassiveVerbBlocks({ root: rootStem, tense, person });
-        return {
-            hasBa,
-            verbBlocks: [
-               ...perfectiveHeadBlock ? [perfectiveHeadBlock] : [],
-               vbs, 
-            ],
-        };
-    }
-    const verbBlock: T.VA = {
+    return [{
         type: "VA",
         ps: addEnding({
             rootStem, ending, person, isPast, verb, aspect,
         }),
         person,
-    };
-    return {
-        hasBa,
-        verbBlocks: perfectiveHeadBlock ? [
-            perfectiveHeadBlock, verbBlock,
-        ] : [verbBlock],
-    }
+    }];
 }
 
 function getPassiveVerbBlocks({ root, tense, person }: {
     root: T.SingleOrLengthOpts<T.PsString>,
     tense: T.VerbTense,
     person: T.Person,
-}): T.Welded {
-    /* istanbul ignore next */
-    if (!("long" in root)) {
-        throw new Error("should have length versions in roots for passive");
-    }
-    const { verbBlocks: [auxVerb] } = renderVerb({
-        verb: kedulStatVerb,
-        tense,
-        person,
-        voice: "active",
-    }) as { hasBa: boolean, verbBlocks: [T.VA] };
-    return weld(
-        {
-            type: "VI",
-            ps: [root.long],
-        },
-        auxVerb,
-    );
-}
-
-function getAbilityVerbBlocks({ verb, isPast, person, root, aspect, voice }: {
-    verb: T.VerbEntry,
-    isPast: boolean,
-    person: T.Person,
-    root: T.SingleOrLengthOpts<T.PsString>,
-    aspect: T.Aspect,
-    voice: T.Voice,
 }): T.VB[] {
     /* istanbul ignore next */
     if (!("long" in root)) {
         throw new Error("should have length versions in roots for passive");
     }
-    const noPerfective = isTlulVerb(verb) || isKedul(verb);
+    const { verbBlocks: [auxVerb] } = renderVerb({
+        // TODO: "kedulStat" verb argument with overload that removes the "as" usage
+        verb: kedulStatVerb,
+        tense,
+        person,
+        voice: "active",
+    }) as { hasBa: boolean, verbBlocks: [T.VA] };
+    return [
+        weld(
+            {
+                type: "VI",
+                ps: [root.long],
+            },
+            auxVerb,
+        ),
+    ];
+}
+
+function getAbilityVerbBlocks({ isPast, person, root, aspect, voice, noPerfective }: {
+    isPast: boolean,
+    person: T.Person,
+    root: T.SingleOrLengthOpts<T.PsString>,
+    aspect: T.Aspect,
+    voice: T.Voice,
+    noPerfective: boolean,
+}): T.VB[] {
+    /* istanbul ignore next */
+    if (!("long" in root)) {
+        throw new Error("should have length versions in roots for passive");
+    }
     const shBlock = getAbilityShPart(isPast, person);
+    const adjustedAspect = noPerfective ? "imperfective" : aspect;
     if (voice === "passive") {
         return [
             weld(
@@ -154,7 +146,7 @@ function getAbilityVerbBlocks({ verb, isPast, person, root, aspect, voice }: {
                     ps: addAbilityTailsToRs({
                         long: { p: "کېدل", f: "kedúl" },
                         short: { p: "کېد", f: "ked" },
-                    }, aspect, true),
+                    }, adjustedAspect),
                 },
             ),
             shBlock,
@@ -163,38 +155,38 @@ function getAbilityVerbBlocks({ verb, isPast, person, root, aspect, voice }: {
     // TODO: this is redundant, we did it in another part of the program?
     const verbBlock: T.VI = {
         type: "VI",
-        ps: addAbilityTailsToRs(root, aspect, noPerfective),
+        ps: addAbilityTailsToRs(root, adjustedAspect),
     };
     return [verbBlock, shBlock];
-    function getAbilityShPart(isPast: boolean, person: T.Person): T.VA {
-        // TODO: optimized shortcut version of this
-        const { verbBlocks: [shBlock] } = renderVerb({
-            verb: kedulStatVerb,
-            tense: isPast ? "perfectivePast" : "subjunctiveVerb",
-            person,
-            voice: "active",
-        }) as {
-            hasBa: boolean,
-            verbBlocks: [T.VA],
-        };
-        return {
-            type: "VA",
-            ps: shBlock.ps,
-            person,
-        }; 
-    }
 }
 
-function getPerfectBlocks({ verb, tense, person, voice }: {
+function getAbilityShPart(isPast: boolean, person: T.Person): T.VA {
+    // TODO: optimized shortcut version of this
+    const { verbBlocks: [shBlock] } = renderVerb({
+        verb: kedulStatVerb,
+        tense: isPast ? "perfectivePast" : "subjunctiveVerb",
+        person,
+        voice: "active",
+    }) as {
+        hasBa: boolean,
+        verbBlocks: [T.VA],
+    };
+    return {
+        type: "VA",
+        ps: shBlock.ps,
+        person,
+    }; 
+}
+
+function getPerfectVBs({ verb, tense, person, voice }: {
     verb: T.VerbEntry,
     tense: T.PerfectTense,
     person: T.Person,
     voice: T.Voice,
-}): T.VB[] {
+}): { hasBa: boolean, verbBlocks: T.VB[] } {
+    const hasBa = tenseHasBa(tense);
     const vInfo = getVerbInfo(verb.entry) as T.SimpleVerbInfo;
 
-    // TODO: put this in a seperate function?
-    
     if (voice === "passive") {
         const [pt, eq] = getKedulStatPerfect(person, tense);
         const passiveRoot: T.VI = {
@@ -202,7 +194,10 @@ function getPerfectBlocks({ verb, tense, person, voice }: {
             ps: [noPersInfs(vInfo.root.imperfective).long],
         };
         const welded: T.Welded = weld(passiveRoot, pt);
-        return [welded, eq];
+        return {
+            hasBa,
+            verbBlocks: [welded, eq],
+        }
     }
 
     const equative = equativeEndings[perfectTenseToEquative(tense)];
@@ -222,7 +217,10 @@ function getPerfectBlocks({ verb, tense, person, voice }: {
         number: personNumber(person),
         ps: chooseParticipleInflection(inflectYey(noPersInfs(vInfo.participle.past)), person)
     }
-    return [participleBlock, equativeBlock];
+    return {
+        hasBa,
+        verbBlocks: [participleBlock, equativeBlock],
+    };
 }
 
 function weld(left: T.VI, right: T.VA | T.PT | T.VI): T.Welded {
@@ -236,21 +234,21 @@ function weld(left: T.VI, right: T.VA | T.PT | T.VI): T.Welded {
     };
 }
 
-function getRootStem({ verb, aspect, isPast, isAbility, voice, person }: {
+function getRootStem({ verb, aspect, isPast, isAbility, voice, person, noPerfective }: {
     verb: T.VerbEntry,
     aspect: T.Aspect,
     isPast: boolean,
     isAbility: boolean,
     person: T.Person,
     voice: T.Voice,
+    noPerfective: boolean,
 }): {
-    perfectiveHead: undefined | T.OptionalPersonInflections<T.PsString>,
+    perfectiveHead: undefined | T.PH,
     rootStem: T.SingleOrLengthOpts<T.PsString>,
 } {
     const vInfo = getVerbInfo(verb.entry) as T.SimpleVerbInfo;
-    const noPerfective = isTlulVerb(verb) || isKedul(verb);
     const rs = vInfo[(isPast || isAbility || voice === "passive") ? "root" : "stem"];
-    if (noPerfective && isAbility) {
+    if (noPerfective) {
         // exception with tlul verbs for ability stems
         return {
             perfectiveHead: undefined,
@@ -272,7 +270,10 @@ function getRootStem({ verb, aspect, isPast, isAbility, voice, person }: {
         const si = fromPersInfls(splitInfo, person);
         if ("long" in si) {
             return {
-                perfectiveHead: si.long[0],
+                perfectiveHead: {
+                    type: "PH",
+                    ps: fromPersInfls(si.long[0], person),
+                },
                 rootStem: {
                     long: si.long[1],
                     short: si.short[1],
@@ -280,9 +281,13 @@ function getRootStem({ verb, aspect, isPast, isAbility, voice, person }: {
             }
         } else {
             return {
-                perfectiveHead: si[0],
+                perfectiveHead: {
+                    type: "PH",
+                        // should only need this for tlul and Daaredul? 
+                    ps: fromPersInfls(si[0], person),
+                },
                 rootStem: si[1],
-            }
+            };
         }
     }
 }
@@ -336,22 +341,6 @@ function getEnding(person: T.Person, isPast: boolean) {
     } : presentEndings[row][col];
 }
 
-function perfectTenseToEquative(t: T.PerfectTense): keyof typeof equativeEndings {
-    return t === "presentPerfect"
-        ? "present"
-        : t === "futurePerfect"
-        ? "habitual"
-        : t === "habitualPerfect"
-        ? "habitual"
-        : t === "pastPerfect"
-        ? "past"
-        : t === "pastSubjunctivePerfect"
-        ? "pastSubjunctive"
-        : t === "wouldBePerfect"
-        ? "past"
-        : "subjunctive"
-}
-
 function chooseParticipleInflection(pinf: T.SingleOrLengthOpts<T.UnisexInflections>, p: T.Person): T.SingleOrLengthOpts<T.PsString[]> {
     if ("long" in pinf) {
         return {
@@ -364,7 +353,7 @@ function chooseParticipleInflection(pinf: T.SingleOrLengthOpts<T.UnisexInflectio
     return pinf[gender][infNum];
 }
 
-function addAbilityTailsToRs(rs: T.LengthOptions<T.PsString>, aspect: T.Aspect, noPerfective: boolean): T.SingleOrLengthOpts<T.PsString[]> {
+function addAbilityTailsToRs(rs: T.LengthOptions<T.PsString>, aspect: T.Aspect): T.SingleOrLengthOpts<T.PsString[]> {
     const tails: T.PsString[] = [
         { p: "ی", f: "ey" },
         { p: "ای", f: "aay" },
@@ -374,12 +363,12 @@ function addAbilityTailsToRs(rs: T.LengthOptions<T.PsString>, aspect: T.Aspect, 
         { p: "ای", f: "áay" },
     ];
     // for single syllable long verb stems like tlul - ensure the accent
-    const psLong = (aspect === "perfective" && !noPerfective)
+    const psLong = (aspect === "perfective")
         ? removeAccents(rs.long)
         : ensureAccentLongStem(rs.long);
     return {
         long: tails.map(t => concatPsString(psLong, t)),
-        short: (aspect === "perfective" && !noPerfective ? tails : accentedTails)
+        short: (aspect === "perfective" ? tails : accentedTails)
             .map(t => concatPsString(rs.short, t)),
     };
 }
@@ -488,4 +477,20 @@ function getKedulStatPerfect(person: T.Person, tense: T.PerfectTense): [T.PT, T.
         voice: "active",
     }) as { hasBa: true, verbBlocks: [T.PT, T.EQ] };
     return [pt, eq];
+}
+
+function perfectTenseToEquative(t: T.PerfectTense): keyof typeof equativeEndings {
+    return t === "presentPerfect"
+        ? "present"
+        : t === "futurePerfect"
+        ? "habitual"
+        : t === "habitualPerfect"
+        ? "habitual"
+        : t === "pastPerfect"
+        ? "past"
+        : t === "pastSubjunctivePerfect"
+        ? "pastSubjunctive"
+        : t === "wouldBePerfect"
+        ? "past"
+        : "subjunctive"
 }

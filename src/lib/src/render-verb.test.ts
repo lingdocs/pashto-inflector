@@ -1372,7 +1372,7 @@ test("ability simple verb forms", () => {
         ]
       },
     },
-    // exception with tlul verbs losing aspect
+    // exception with tlul verbs losing aspect 
     {
       tense: "subjunctiveVerbModal",
       person: 10,
