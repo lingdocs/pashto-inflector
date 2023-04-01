@@ -84,7 +84,11 @@ export function accentFSylsOnNFromEnd(syls: string[] | string, n: number): strin
 }
 
 export function accentOnNFromEnd(ps: T.PsString, n: number): T.PsString {
-    const fSyls = splitUpSyllables(removeAccents(ps.f));
+    const fNoAccents = removeAccents(ps.f);
+    const fSyls = splitUpSyllables(fNoAccents);
+    // TODO: enable this and fix the tests it breaks!!!  
+    // don't add accent if only one syllable
+    // if (fSyls.length === 1) return makePsString(ps.p, fNoAccents);
     return makePsString(
         ps.p,
         accentFSylsOnNFromEnd(fSyls, n),

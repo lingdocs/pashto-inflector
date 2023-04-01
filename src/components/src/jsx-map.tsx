@@ -57,7 +57,6 @@ export function psJSXMap(ps: T.PsJSX, target: "p" | "f", dealWithString: (ps: T.
             },
         };
     } catch (e) {
-        console.error(e);
         throw new Error("error mapping out PsJSX - unbalanced trees");
     }
 }

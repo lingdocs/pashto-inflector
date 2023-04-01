@@ -1069,3 +1069,47 @@ export type MiniPronoun = {
     np: NPSelection,
 };
 
+export type VB = PH | VA | VI | PT | EQ | Welded;
+
+/** perfective head block */
+export type PH = {
+    type: "PH",
+    ps: PsString,
+};
+
+/** verb block with person agreement */
+export type VA = {
+    type: "VA",
+    ps: SingleOrLengthOpts<PsString[]>,
+    person: Person,
+};
+
+/** invariable verb block */
+export type VI = {
+    type: "VI",
+    ps: SingleOrLengthOpts<PsString[]>,
+};
+
+/** participle block with inflection */
+export type PT = {
+    type: "PT",
+    ps: SingleOrLengthOpts<PsString[]>,
+    gender: Gender,
+    number: NounNumber,
+};
+
+/** equative block */
+export type EQ = {
+    type: "EQ",
+    ps: SingleOrLengthOpts<PsString[]>,
+    person: Person,
+};
+
+/** a veb block with a welded part having it's accents removed */
+export type Welded = {
+    type: "welded",
+    /** accents must be removed from the left */
+    left: VI, // TODO - will get more complex with compounds
+    right: VA | PT | VI,
+};
+

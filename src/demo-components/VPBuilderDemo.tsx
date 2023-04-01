@@ -47,10 +47,13 @@ const testVerbTenses: T.VerbTense[] = [
 
 const testPerfectTenses: T.PerfectTense[] = [
     "presentPerfect",
+    "futurePerfect",
+    "habitualPerfect",
     "pastPerfect",
     "subjunctivePerfect",
     "wouldBePerfect",
     "wouldHaveBeenPerfect",
+    "pastSubjunctivePerfect",
 ];
 
 const testAbilityTenses: T.ModalTense[] = testVerbTenses.map<T.ModalTense>(t => `${t}Modal`);
