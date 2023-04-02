@@ -222,7 +222,7 @@ export function isVerbTense(tense: T.Tense): tense is T.VerbTense {
     return verbTenses.some(x => x === tense);
 }
 
-export function isModalTense(tense: T.Tense): tense is T.ModalTense {
+export function isAbilityTense(tense: T.Tense): tense is T.AbilityTense {
     return tense.endsWith("Modal");
 }
 

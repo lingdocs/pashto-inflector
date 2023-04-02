@@ -1,39 +1,49 @@
-import * as T from "../../types";
+import * as T from "../../../types";
 import {
     functionOnOptLengths,
     getPersonInflectionsKey,
     getVerbBlockPosFromPerson,
-    noPersInfs,
     personGender,
     personIsPlural,
     personNumber,
-} from "./misc-helpers";
+} from "../misc-helpers";
 import {
     yulEndingInfinitive,
-} from "./p-text-helpers";
+} from "../p-text-helpers";
 import {
     concatPsString,
     getLength,
-} from "./p-text-helpers";
+} from "../p-text-helpers";
 import {
     presentEndings,
     pastEndings,
     equativeEndings,
-} from "./grammar-units";
-import { isKawulVerb, isModalTense, isPerfectTense, isTlulVerb } from "./type-predicates";
-import { tenseHasBa } from "./phrase-building/vp-tools";
-import { inflectYey } from "./pashto-inflector";
+} from "../grammar-units";
+import { isKawulVerb, isAbilityTense, isPerfectTense, isTlulVerb } from "../type-predicates";
+import { tenseHasBa } from "../phrase-building/vp-tools";
+import { inflectYey } from "../pashto-inflector";
 import {
     getVerbInfo,
-} from "./verb-info";
-import { isPastTense } from "./phrase-building/vp-tools"; 
-import { makePsString, removeFVarients } from "./accent-and-ps-utils";
-import { pashtoConsonants } from "./pashto-consonants";
-import { accentOnNFromEnd, removeAccents } from "./accent-helpers";
+} from "../verb-info";
+import { isPastTense } from "../phrase-building/vp-tools"; 
+import { makePsString, removeFVarients } from "../accent-and-ps-utils";
+import { pashtoConsonants } from "../pashto-consonants";
+import { accentOnNFromEnd, removeAccents } from "../accent-helpers";
+import { getRootStem as newGetRootStem } from "./roots-and-stems";
 
 const kedulStatVerb: T.VerbEntry = {
     entry: {"ts":1581086654898,"i":11100,"p":"کېدل","f":"kedul","g":"kedul","e":"to become _____","r":2,"c":"v. intrans.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true,"ec":"become"} as T.VerbDictionaryEntry,
 };
+
+// TODO: Amazingly, the basic formula with the roots and stems from the basic verbs
+// works perfectly with stative compounds as well!
+// The only issue is that if we want to include more information (complement noun gender etc) in the blocks
+// we need to redo the stem building to have those parts
+// 2 options:
+//   1. redo the root/stem builder to output primitive blocks
+//   2. rebuild the roots/stems in the verb engine
+// Will start with number 2 and then if I go back and rebuild the root/stem builder
+// We can go back to using a very simple verb building formula
 
 // TODO: problem with laaR - no perfective split
 // TODO: are azmóyulum and wáayulo really not just azmoyúlum and waayúlo ?
@@ -41,7 +51,7 @@ const kedulStatVerb: T.VerbEntry = {
 
 export function renderVerb({ verb, tense, person, voice }: {
     verb: T.VerbEntry,
-    tense: T.VerbTense | T.PerfectTense | T.ModalTense, // TODO: make T.Tense
+    tense: T.VerbTense | T.PerfectTense | T.AbilityTense, // TODO: make T.Tense
     person: T.Person,
     voice: T.Voice,
 }): {
@@ -52,26 +62,37 @@ export function renderVerb({ verb, tense, person, voice }: {
     if (isPerfectTense(tense)) {
         return getPerfectVBs({ verb, tense, person, voice });
     }
+
     const hasBa = tenseHasBa(tense);
     const isPast = isPastTense(tense);
     const aspect = getAspect(tense);
-    const isAbility = isModalTense(tense);
+    const isAbility = isAbilityTense(tense);
     const noPerfective = isAbility && (voice === "passive" || isTlulVerb(verb) || isKedul(verb));
+    // console.log(newGetRootStem({
+    //     verb,
+    //     part: {
+    //         rs: isPast ? "root" : "stem",
+    //         aspect,
+    //     },
+    //     type: "basic",
+    //     person: undefined,
+    // }));
     const { perfectiveHead, rootStem } = getRootStem({
         verb, aspect, isPast, isAbility, person, voice, noPerfective,
     });
     const verbBlocks: T.VB[] = isAbility
         ? getAbilityVerbBlocks({ isPast, person, root: rootStem, aspect, voice, noPerfective })
         : voice === "passive"
-        ? getPassiveVerbBlocks({ root: rootStem, tense, person })
-        : getBasicVerbBlock({
-            rootStem, person, isPast, verb, aspect,
-        });
+            ? getPassiveVerbBlocks({ root: rootStem, tense, person })
+            : getBasicVerbBlock({
+                rootStem, person, isPast, verb, aspect,
+            });
     return {
         hasBa,
         verbBlocks: [
-            ...!noPerfective && perfectiveHead ? [perfectiveHead] : [],
-            ...verbBlocks, 
+            ...(!noPerfective && perfectiveHead)
+                ? [perfectiveHead] : [],
+            ...verbBlocks,
         ],
     };
 }
@@ -185,19 +206,19 @@ function getPerfectVBs({ verb, tense, person, voice }: {
     voice: T.Voice,
 }): { hasBa: boolean, verbBlocks: T.VB[] } {
     const hasBa = tenseHasBa(tense);
-    const vInfo = getVerbInfo(verb.entry) as T.SimpleVerbInfo;
+    const vInfo = getVerbInfo(verb.entry, verb.complement) as T.SimpleVerbInfo;
 
     if (voice === "passive") {
         const [pt, eq] = getKedulStatPerfect(person, tense);
         const passiveRoot: T.VI = {
             type: "VI",
-            ps: [noPersInfs(vInfo.root.imperfective).long],
+            ps: [fromPersInfls(vInfo.root.imperfective, person).long],
         };
         const welded: T.Welded = weld(passiveRoot, pt);
         return {
             hasBa,
             verbBlocks: [welded, eq],
-        }
+        };
     }
 
     const equative = equativeEndings[perfectTenseToEquative(tense)];
@@ -215,7 +236,7 @@ function getPerfectVBs({ verb, tense, person, voice }: {
         type: "PT",
         gender: personGender(person),
         number: personNumber(person),
-        ps: chooseParticipleInflection(inflectYey(noPersInfs(vInfo.participle.past)), person)
+        ps: chooseParticipleInflection(inflectYey(fromPersInfls(vInfo.participle.past, person)), person)
     }
     return {
         hasBa,
@@ -246,13 +267,13 @@ function getRootStem({ verb, aspect, isPast, isAbility, voice, person, noPerfect
     perfectiveHead: undefined | T.PH,
     rootStem: T.SingleOrLengthOpts<T.PsString>,
 } {
-    const vInfo = getVerbInfo(verb.entry) as T.SimpleVerbInfo;
+    const vInfo = getVerbInfo(verb.entry, verb.complement) as T.SimpleVerbInfo;
     const rs = vInfo[(isPast || isAbility || voice === "passive") ? "root" : "stem"];
     if (noPerfective) {
         // exception with tlul verbs for ability stems
         return {
             perfectiveHead: undefined,
-            rootStem: noPersInfs(rs.imperfective),
+            rootStem: fromPersInfls(rs.imperfective, person),
         };
     }
     if (aspect === "perfective" && rs.perfectiveSplit) {
@@ -262,7 +283,7 @@ function getRootStem({ verb, aspect, isPast, isAbility, voice, person, noPerfect
         perfectiveHead: undefined,
         // because the persInfs only happen with stative compound verbs,j
         // which we are handling differently now 
-        rootStem: noPersInfs(rs[aspect]),
+        rootStem: fromPersInfls(rs[aspect], person),
     }
 
     function extractPerfectiveSplit(splitInfo: T.SplitInfo): ReturnType<typeof getRootStem> {
@@ -438,7 +459,7 @@ function ensure3rdPast(ending: T.PsString[], rs: T.PsString, verb: T.VerbEntry, 
     ] : ending).map(e => concatPsString(rs, e));
 }
 
-function getAspect(tense: T.VerbTense | T.ModalTense): T.Aspect {
+function getAspect(tense: T.VerbTense | T.AbilityTense): T.Aspect {
     const t = tense.replace("Modal", "");
     if (["presentVerb", "imperfectiveFuture", "imperfectivePast", "habitualImperfectivePast"].includes(t)) {
         return "imperfective";

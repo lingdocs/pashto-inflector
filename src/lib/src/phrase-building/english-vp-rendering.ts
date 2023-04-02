@@ -88,7 +88,7 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
         ]),
     };
     const modalBuilders: Record<
-        T.ModalTense,
+        T.AbilityTense,
         (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => string[]
     > = {
         presentVerbModal: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([
@@ -215,7 +215,7 @@ export function renderEnglishVPBase({ subjectPerson, object, vs }: {
         ]),
     }
     const passiveModalBuilders: Record<
-        T.ModalTense,
+        T.AbilityTense,
         (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => string[]
     > = {
         presentVerbModal: (s: T.Person, v: T.EnglishVerbConjugationEc, n: boolean) => ([

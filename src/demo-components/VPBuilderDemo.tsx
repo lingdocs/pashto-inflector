@@ -12,7 +12,7 @@ import {
     randomNumber,
 } from "../lib/src/misc-helpers";
 import { entryFeeder } from "./entryFeeder";
-import { renderVerb } from "../lib/src/render-verb";
+import { renderVerb } from "../lib/src/new-verb-engine/render-verb";
 import NPPronounPicker from "../components/src/np-picker/NPPronounPicker";
 
 
@@ -56,7 +56,7 @@ const testPerfectTenses: T.PerfectTense[] = [
     "pastSubjunctivePerfect",
 ];
 
-const testAbilityTenses: T.ModalTense[] = testVerbTenses.map<T.ModalTense>(t => `${t}Modal`);
+const testAbilityTenses: T.AbilityTense[] = testVerbTenses.map<T.AbilityTense>(t => `${t}Modal`);
 
 const testTenses = [
     ...testVerbTenses,
@@ -76,7 +76,7 @@ function VPBuilderDemo({ opts }: {
         person: 0,
     }, "testPronoun");
     const [testVoice, setTestVoice] = useStickyState<T.Voice>("active", "testVoice");
-    const [testTense, setTestTense] = useStickyState<T.VerbTense | T.PerfectTense | T.ModalTense>("presentVerb", "testTense");
+    const [testTense, setTestTense] = useStickyState<T.VerbTense | T.PerfectTense | T.AbilityTense>("presentVerb", "testTense");
     // const onlyGrammTrans = (arr: Transitivity[]) => (
     //     arr.length === 1 && arr[0] === "grammatically transitive"
     // );

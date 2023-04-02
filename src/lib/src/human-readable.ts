@@ -1,6 +1,6 @@
 import * as T from "../../types";
 import {
-    isModalTense,
+    isAbilityTense,
     isPerfectTense,
     isImperativeTense,
 } from "./type-predicates";
@@ -24,7 +24,7 @@ function humanReadableVerbTense(tense: T.VerbTense): string {
         : "habitual continuous past";
 }
 
-function humanReadableModalTense(tense: T.ModalTense): string {
+function humanReadableModalTense(tense: T.AbilityTense): string {
     const base = tense.replace("Modal", "") as T.VerbTense;
     return `${humanReadableVerbTense(base)} ability`;
 }
@@ -55,7 +55,7 @@ function humanReadableImperativeTense(tense: T.ImperativeTense): string {
 }
 
 export function humanReadableVerbForm(f: T.VerbFormName): string {
-    return isModalTense(f)
+    return isAbilityTense(f)
         ? humanReadableModalTense(f)
         : isPerfectTense(f)
         ? humanReadablePerfectTense(f)

@@ -142,6 +142,11 @@ export type DictionaryEntry = {
 }
 
 export type DictionaryEntryNoFVars = DictionaryEntry & { __brand: "name for a dictionary entry with all the phonetics variations removed" };
+export type VerbDictionaryEntryNoFVars = VerbDictionaryEntry & { __brand2: "name for a verb dictionary entry with all the phonetics variations removed" };
+export type VerbEntryNoFVars = {
+    entry: VerbDictionaryEntryNoFVars,
+    complement?: DictionaryEntryNoFVars,
+} & { __brand: "name for a verb entry with all the phonetics variations removed" };
 export type PsStringNoFVars = PsString & { __brand: "name for a ps string with all the phonetics variations removed" };
 export type FStringNoFVars = string & { __brand: "name for a phonetics string with all the phonetics variations removed" };
 
@@ -612,9 +617,9 @@ export type NounNumber = "singular" | "plural";
 
 export type EquativeTense = "present" | "subjunctive" | "habitual" | "past" | "future" | "wouldBe" | "pastSubjunctive" | "wouldHaveBeen";
 export type PerfectTense = `${EquativeTense}Perfect`;
-export type ModalTense = `${VerbTense}Modal`;
+export type AbilityTense = `${VerbTense}Modal`;
 export type ImperativeTense = `${Aspect}Imperative`;
-export type Tense = EquativeTense | VerbTense | PerfectTense | ModalTense | ImperativeTense;
+export type Tense = EquativeTense | VerbTense | PerfectTense | AbilityTense | ImperativeTense;
 
 export type SubjectSelection = {
     type: "subjectSelection",
@@ -655,7 +660,7 @@ export type VPSelectionComplete = {
     form: FormVersion,
 };
 
-export type VerbFormName = VerbTense | PerfectTense | ModalTense | ImperativeTense;
+export type VerbFormName = VerbTense | PerfectTense | AbilityTense | ImperativeTense;
 
 export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" | "perfectTense" | "imperativeTense" | "tenseCategory"> & {
     tense: VerbFormName,
@@ -1075,6 +1080,9 @@ export type VB = PH | VA | VI | PT | EQ | Welded;
 export type PH = {
     type: "PH",
     ps: PsString,
+} | {
+    type: "PHComp",
+    comp: Comp,
 };
 
 /** verb block with person agreement */
@@ -1105,11 +1113,30 @@ export type EQ = {
     person: Person,
 };
 
+// Complement can be one of
+// - adjective
+// - locative adv
+// - sandwich (TODO)
+// - noun
+/** complement block */
+export type Comp = {
+    type: "AdjComp",
+    ps: PsString,
+    gender: Gender,
+    number: NounNumber,
+} | {
+    type: "LocAdvComp",
+    ps: PsString,
+} | {
+    type: "NounComp",
+    ps: PsString,
+};
+
 /** a veb block with a welded part having it's accents removed */
 export type Welded = {
     type: "welded",
     /** accents must be removed from the left */
-    left: VI, // TODO - will get more complex with compounds
+    left: VI | Comp,
     right: VA | PT | VI,
 };
 

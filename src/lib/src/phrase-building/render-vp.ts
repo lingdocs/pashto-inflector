@@ -21,7 +21,7 @@ import {
     isAdjectiveEntry,
     isImperativeTense,
     isLocativeAdverbEntry,
-    isModalTense,
+    isAbilityTense,
     isNounEntry,
     isPattern4Entry,
     isPerfectTense,
@@ -505,7 +505,7 @@ export function isStativeHelper(v: T.VerbEntry): boolean {
 }
 
 function splitUpIfModal(v: T.VerbRenderedBlock): [T.VerbRenderedBlock] | [T.ModalVerbBlock, T.ModalVerbKedulPart] {
-    if (!isModalTense(v.block.tense)) {
+    if (!isAbilityTense(v.block.tense)) {
         return [v];
     }
     const [vrb, k] = splitOffLeapfrogWordFull(v.block.ps);
@@ -561,8 +561,8 @@ function getPsVerbConjugation(conj: T.VerbConjugation, vs: T.VerbSelectionComple
     const hasBa = hasBaParticle(getLong(verbForm)[0]);
     if (perfective) {
         const past = isPastTense(vs.tense);
-        const splitInfo = conj.info[(past || isModalTense(vs.tense)) ? "root" : "stem"].perfectiveSplit;
-        if (!splitInfo || (isTlulVerb(vs.verb.entry) && isModalTense(vs.tense))) {
+        const splitInfo = conj.info[(past || isAbilityTense(vs.tense)) ? "root" : "stem"].perfectiveSplit;
+        if (!splitInfo || (isTlulVerb(vs.verb.entry) && isAbilityTense(vs.tense))) {
             return { ps: { head: undefined, rest: removeBaFromForm(verbForm) }, hasBa };
         }
         // TODO: Either solve this in the inflector or here, it seems silly (or redundant)

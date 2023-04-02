@@ -1,7 +1,7 @@
 import Select from "react-select";
 import * as T from "../../../types";
 import ButtonSelect from "../ButtonSelect";
-import { isImperativeTense, isModalTense, isPerfectTense, isVerbTense } from "../../../lib/src/type-predicates";
+import { isImperativeTense, isAbilityTense, isPerfectTense, isVerbTense } from "../../../lib/src/type-predicates";
 import useStickyState from "../useStickyState";
 import { customStyles } from "../EntrySelect";
 import {
@@ -19,15 +19,15 @@ function composeFormula(formula: string, prefix: "passive" | "ability"): string 
         .replace("past participle", `${prefix} past participle`);
 }
 
-export function getRandomTense(o?: T.PerfectTense | T.VerbTense | T.ModalTense | T.ImperativeTense): T.PerfectTense | T.VerbTense | T.ModalTense | T.ImperativeTense {
-    let tns: T.PerfectTense | T.VerbTense | T.ModalTense | T.ImperativeTense;
+export function getRandomTense(o?: T.PerfectTense | T.VerbTense | T.AbilityTense | T.ImperativeTense): T.PerfectTense | T.VerbTense | T.AbilityTense | T.ImperativeTense {
+    let tns: T.PerfectTense | T.VerbTense | T.AbilityTense | T.ImperativeTense;
     const oldTenseCategory = !o
         ? undefined
         : getTenseCategory(o);
     const tenseOptions = oldTenseCategory === "perfect"
         ? perfectTenseOptions
         : oldTenseCategory === "modal"
-        ? verbTenseOptions.map(x => ({ ...x, value: `${x.value}Modal` as T.ModalTense }))
+        ? verbTenseOptions.map(x => ({ ...x, value: `${x.value}Modal` as T.AbilityTense }))
         : oldTenseCategory === "imperative"
         ? imperativeTenseOptions
         : verbTenseOptions;
@@ -238,14 +238,14 @@ function TensePicker(props: ({
 
 export default TensePicker;
 
-function getTenseCategory(tense: T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense): "basic" | "perfect" | "modal" | "imperative" {
+function getTenseCategory(tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense): "basic" | "perfect" | "modal" | "imperative" {
     if (isPerfectTense(tense)) {
         return "perfect";
     }
     if (isVerbTense(tense)) {
         return "basic";
     }
-    if (isModalTense(tense)) {
+    if (isAbilityTense(tense)) {
         return "modal";
     }
     if (isImperativeTense(tense)) {

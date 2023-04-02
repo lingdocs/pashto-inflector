@@ -6,7 +6,7 @@ import * as T from "../../../types";
 
 function ChartDisplay({ conjugations, tense, opts, voice }: {
     conjugations: T.VerbConjugation,
-    tense: T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense,
+    tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense,
     opts: T.TextOptions,
     voice: T.VerbSelection["voice"],
 }) {

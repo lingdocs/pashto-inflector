@@ -38,7 +38,7 @@ export function isInvalidSubjObjCombo(subj: T.Person, obj: T.Person): boolean {
  */
 export function getTenseVerbForm(
     conjR: T.VerbConjugation,
-    tense: T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense,
+    tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense,
     voice: "active" | "passive",
     mode: "charts" | "phrase-building",
     negative: boolean,
@@ -152,8 +152,8 @@ export function removeBa(ps: T.PsString): T.PsString {
     return psRemove(ps, concatPsString(grammarUnits.baParticle, " "));
 }
 
-export function getTenseFromVerbSelection(vs: T.VerbSelection): T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense {
-    function verbTenseToModalTense(tn: T.VerbTense): T.ModalTense {
+export function getTenseFromVerbSelection(vs: T.VerbSelection): T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense {
+    function verbTenseToModalTense(tn: T.VerbTense): T.AbilityTense {
         if (tn === "presentVerb") {
             return "presentVerbModal";
         }
@@ -198,7 +198,7 @@ export function isPastTense(tense: T.Tense): boolean {
     return tense.toLowerCase().includes("past");
 }
 
-export function tenseHasBa(tense: T.VerbTense | T.PerfectTense | T.ModalTense | T.ImperativeTense): boolean {
+export function tenseHasBa(tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense): boolean {
     return [
         "imperfectiveFuture",
         "perfectiveFuture",

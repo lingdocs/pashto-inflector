@@ -28,8 +28,8 @@ function AllTensesDisplay({ VS, opts }: { VS: T.VerbSelection, opts: T.TextOptio
         : ("transitive" in rawConjugations)
         ? rawConjugations[VS.transitivity === "grammatically transitive" ? "grammaticallyTransitive" : "transitive"]
         : rawConjugations;
-    function getTense(baseTense: T.VerbTense | T.PerfectTense | T.ImperativeTense): T.VerbTense | T.PerfectTense | T.ImperativeTense | T.ModalTense {
-        return VS.tenseCategory === "modal" ? `${baseTense}Modal` as T.ModalTense : baseTense;
+    function getTense(baseTense: T.VerbTense | T.PerfectTense | T.ImperativeTense): T.VerbTense | T.PerfectTense | T.ImperativeTense | T.AbilityTense {
+        return VS.tenseCategory === "modal" ? `${baseTense}Modal` as T.AbilityTense : baseTense;
     }
     return <div>
         <div className="clickable mb-2 small text-center" onClick={() => setShowFormulas(x => !x)}>

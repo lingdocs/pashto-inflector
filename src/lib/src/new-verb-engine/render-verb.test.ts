@@ -1,7 +1,7 @@
-import * as T from "../../types";
+import * as T from "../../../types";
 import { renderVerb } from "./render-verb";
 
-function vEntry(e: any, c?: any): T.VerbEntry {
+export function vEntry(e: any, c?: any): T.VerbEntry {
   return {
     entry: e,
     ...c ? {
@@ -1214,7 +1214,7 @@ test("perfect simple verb forms", () => {
 });
 
 test("ability simple verb forms", () => {
-  const tests: { verb: T.VerbEntry, tense: T.ModalTense, person: T.Person, output: ReturnType<typeof renderVerb> }[] = [
+  const tests: { verb: T.VerbEntry, tense: T.AbilityTense, person: T.Person, output: ReturnType<typeof renderVerb> }[] = [
     {
       tense: "presentVerbModal",
       verb: ganul,
@@ -1625,7 +1625,7 @@ test("passive perfect simple verbs", () => {
 });
 
 test("passive ability simple verbs", () => {
-  const tests: { verb: T.VerbEntry, tense: T.ModalTense, person: T.Person, output: ReturnType<typeof renderVerb> }[] = [
+  const tests: { verb: T.VerbEntry, tense: T.AbilityTense, person: T.Person, output: ReturnType<typeof renderVerb> }[] = [
     {
       verb: ganul,
       tense: "presentVerbModal",
