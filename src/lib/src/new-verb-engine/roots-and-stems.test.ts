@@ -1,7 +1,7 @@
 import * as T from "../../../types";
 import { getRootStem } from "./roots-and-stems";
 import { vEntry } from "./render-verb.test";
-import { ooPrefix } from "./roots-and-stems";
+import { ooPrefix } from "../grammar-units";
 
 const wahul = vEntry({"ts":1527815399,"i":15049,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"});
 const achawul = vEntry({"ts":1527811872,"i":224,"p":"اچول","f":"achawul","g":"achawul","e":"to put, pour, drop, throw, put on","r":4,"c":"v. trans.","ec":"put,puts,putting,put,put"});
@@ -34,6 +34,11 @@ function getAllRs(verb: T.VerbEntry): (typeof regularVerbs)[0]["result"] {
     };
 }
 
+const ooPh: T.PH = {
+    type: "PH",
+    ps: { p: "و", f: "óo" },
+};
+
 const regularVerbs: {
     verb: T.VerbEntry,
     result: Record<"stem" | "root", {
@@ -46,7 +51,7 @@ const regularVerbs: {
         result: {
             stem: {
                 perfective: [
-                    ooPrefix,
+                    ooPh,
                     [{ p: "وېش", f: "wesh" }],
                 ],
                 imperfective: [
@@ -55,7 +60,7 @@ const regularVerbs: {
             },
             root: {
                 perfective: [
-                    ooPrefix,
+                    ooPh,
                     {
                         long: [{ p: "وېشل", f: "weshul" }],
                         short: [{ p: "وېش", f: "wesh" }],
@@ -75,7 +80,7 @@ const regularVerbs: {
         result: {
             stem: {
                 perfective: [
-                    ooPrefix,
+                    ooPh,
                     [{ p: "ګڼ", f: "gaN" }],
                 ],
                 imperfective: [
@@ -84,7 +89,7 @@ const regularVerbs: {
             },
             root: {
                 perfective: [
-                    ooPrefix,
+                    ooPh,
                     {
                         long: [{ p: "ګڼل", f: "gaNul" }],
                         short: [{ p: "ګڼ", f: "gaN" }],
@@ -113,7 +118,7 @@ const verbsWithIrregularStems: {
         result: {
             stem: {
                 perfective: [
-                    ooPrefix,
+                    ooPh,
                     [{ p: "خور", f: "khor" }],
                 ],
                 imperfective: [
@@ -122,7 +127,7 @@ const verbsWithIrregularStems: {
             },
             root: {
                 perfective: [
-                    ooPrefix,
+                    ooPh,
                     {
                         long: [{ p: "خوړل", f: "khoRul" }],
                         short: [{ p: "خوړ", f: "khoR" }],
@@ -142,7 +147,7 @@ const verbsWithIrregularStems: {
         result: {
             stem: {
                 perfective: [
-                    ooPrefix,
+                    ooPh,
                     [{ p: "خېژ", f: "khejz" }],
                 ],
                 imperfective: [
@@ -151,7 +156,7 @@ const verbsWithIrregularStems: {
             },
             root: {
                 perfective: [
-                    ooPrefix,
+                    ooPh,
                     {
                         long: [{ p: "ختل", f: "khatul" }],
                         short: [{ p: "خت", f: "khat" }],

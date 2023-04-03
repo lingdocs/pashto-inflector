@@ -15,11 +15,6 @@ import { accentOnNFromEnd, removeAccents } from "../accent-helpers";
 
 type RootStemOutput = (T.PH | T.SingleOrLengthOpts<T.PsString[]>)[];
 
-export const ooPrefix: T.PH = {
-    type: "PH",
-    ps: { p: "و", f: "óo" },
-};
-
 export function getRootStem({ verb, part, type, person }: {
     verb: T.VerbEntry,
     part: {
@@ -61,12 +56,12 @@ function getRoot(verb: T.VerbEntryNoFVars, aspect: T.Aspect): RootStemOutput {
                 ? makePsString(verb.entry.prp, verb.entry.prf)
                 : makePsString(verb.entry.p, verb.entry.f)
         );
-        // TODO: determine ph and base
+        const [perfectiveHead, rest] = getPerfectiveHead(base, verb);
         return [
-            ooPrefix,
+            ...perfectiveHead ? [perfectiveHead] : [],
             {
-                long: [base],
-                short: [removeL(base)],
+                long: [rest],
+                short: [removeL(rest)],
             },
         ];
     }
@@ -93,13 +88,76 @@ function getStem(verb: T.VerbEntryNoFVars, aspect: T.Aspect): RootStemOutput {
             ? makePsString(verb.entry.psp, verb.entry.psf)
             // with regular infinitive based perfective stem
             : removeL(makePsString(verb.entry.p, verb.entry.f));
-        // TODO: determine ph and base
+        const [perfectiveHead, rest] = getPerfectiveHead(base, verb);
         return [
-            ooPrefix,
-            [base],
+            ...perfectiveHead ? [perfectiveHead] : [],
+            [rest],
         ];
     }
     return [];
+}
+
+function getPerfectiveHead(base: T.PsString, { entry }: T.VerbEntry): [T.PH, T.PsString] | [undefined, T.PsString] {
+    // if ((verb.entry.ssp && verb.entry.ssf) || verb.entry.separationAtP) {
+    //     // handle split
+    // }
+    const [ph, rest]: [T.PH | undefined, T.PsString] = entry.noOo
+        ? [undefined, base]
+        : entry.sepOo 
+        ? [
+            { type: "PH", ps: { p: "و ", f: "óo`"}},
+            base,
+        ]
+        : base.p.charAt(0) === "ا" && base.f.charAt(0) === "a"
+        ? [
+            { type: "PH", ps: { p: "وا", f: "wáa" }},
+            removeAStart(base),
+        ]
+        : ["آ", "ا"].includes(base.p.charAt(0)) && base.f.slice(0, 2) === "aa"
+        ? [
+            { type: "PH", ps: { p: "وا", f: "wáa" }},
+            removeAStart(base),
+        ]
+        : ["óo", "oo"].includes(base.f.slice(0, 2))
+        ? [
+            { type: "PH", ps: { p: "wÚ", f: "و" }},
+            base,
+        ]
+        : ["ée", "ee"].includes(base.f.slice(0, 2)) && base.p.slice(0, 2) === "ای"
+        ? [
+            { type: "PH", ps: { p: "وي", f: "wée" }},
+            {
+                p: base.p.slice(2),
+                f: base.f.slice(2),
+            },
+        ] : ["é", "e"].includes(base.f.slice(0, 2)) && base.p.slice(0, 2) === "اې"
+        ? [
+            { type: "PH", ps: { p: "وي", f: "wé" }},
+            {
+                p: base.p.slice(2),
+                f: base.f.slice(1),
+            },
+        ] : ["ó", "o"].includes(base.f[0]) && base.p.slice(0, 2) === "او"
+        ? [
+            { type: "PH", ps: { p: "و", f: "óo`"}},
+            {
+                p: base.p.slice(2),
+                f: base.f.slice(1),
+            },
+        ] : [
+            { type: "PH", ps: { p: "و", f: "óo" }},
+            base,
+        ];
+    return [
+        ph,
+        removeAccents(rest),
+    ];
+    function removeAStart(ps: T.PsString) {
+        return {
+            p: ps.p.slice(1),
+            f: ps.f.slice(ps.f[1] === "a" ? 2 : 1),
+        };
+    }
 }
 
 function addTrailingAccent(ps: T.PsString): T.PsString {
