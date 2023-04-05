@@ -12,8 +12,7 @@ import {
 import * as T from "../../../types";
 import { makePsString, removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import { accentOnNFromEnd, removeAccents } from "../accent-helpers";
-
-type RootStemOutput = (T.PH | T.SingleOrLengthOpts<T.PsString[]>)[];
+import { assertNever } from "../assert-never";
 
 export function getRootStem({ verb, part, type, person }: {
     verb: T.VerbEntry,
@@ -28,19 +27,17 @@ export function getRootStem({ verb, part, type, person }: {
         gender: T.Gender,
         number: T.NounNumber,
     } | undefined,
-}): RootStemOutput {
+}): T.RootStemOutput {
     const v = removeFVarientsFromVerb(verb);
     if ("participle" in part) {
         return [];
     }
-    if (part.rs === "stem") {
-        return getStem(v, part.aspect);
-    } else {
-        return getRoot(v, part.aspect);
-    }
+    return part.rs === "stem"
+        ? getStem(v, part.aspect)
+        : getRoot(v, part.aspect);
 }
 
-function getRoot(verb: T.VerbEntryNoFVars, aspect: T.Aspect): RootStemOutput {
+function getRoot(verb: T.VerbEntryNoFVars, aspect: T.Aspect): T.RootStemOutput {
     if (aspect === "imperfective") {
         const infinitive = accentOnNFromEnd(makePsString(verb.entry.p, verb.entry.f), 0);
         return [
@@ -50,33 +47,43 @@ function getRoot(verb: T.VerbEntryNoFVars, aspect: T.Aspect): RootStemOutput {
             },
         ];
     }
-    if (aspect === "perfective") {
-        const base = removeAccents(
-            (verb.entry.prp && verb.entry.prf)
-                ? makePsString(verb.entry.prp, verb.entry.prf)
-                : makePsString(verb.entry.p, verb.entry.f)
-        );
-        const [perfectiveHead, rest] = getPerfectiveHead(base, verb);
-        return [
-            ...perfectiveHead ? [perfectiveHead] : [],
-            {
-                long: [rest],
-                short: [removeL(rest)],
-            },
-        ];
-    }
-    throw new Error("unknown aspect");
+    // aspect === "perfective"
+    const base = removeAccents(
+        (verb.entry.prp && verb.entry.prf)
+            ? makePsString(verb.entry.prp, verb.entry.prf)
+            : makePsString(verb.entry.p, verb.entry.f)
+    );
+    const [perfectiveHead, rest] = getPerfectiveHead(base, verb);
+    return [
+        ...perfectiveHead ? [perfectiveHead] : [],
+        {
+            long: [rest],
+            short: [removeL(rest)],
+        },
+    ];
 }
 
-function getStem(verb: T.VerbEntryNoFVars, aspect: T.Aspect): RootStemOutput {
+function getStem(verb: T.VerbEntryNoFVars, aspect: T.Aspect): T.RootStemOutput {
     if (aspect === "imperfective") {
-        const base = (verb.entry.psp && verb.entry.psf)
-            // with irregular imperfective stem
-            ? makePsString(verb.entry.psp, verb.entry.psf)
-            // with regular infinitive based imperfective stem
-            : removeL(makePsString(verb.entry.p, verb.entry.f));
+        if (verb.entry.psp && verb.entry.psf) {
+            return [[makePsString(verb.entry.psp, verb.entry.psf)]];
+        }
+        const rawBase = removeL(makePsString(verb.entry.p, verb.entry.f));
+        if (verb.entry.c?.includes("intrans.") && rawBase.p.endsWith("ېد")) {
+            const long: T.PsString[] = [{
+                p: rawBase.p.slice(0, -1) + "ږ",
+                f: rawBase.f.slice(0, -2) + "éG",
+            }];
+            const short: T.PsString[] | undefined  = (verb.entry.shortIntrans)
+                ? [{
+                    p: rawBase.p.slice(0, -2),
+                    f: rawBase.f.slice(0, -2),
+                }]
+                : undefined;
+            return short ? [{ long, short }] : [long]
+        }
         return [
-            [base],
+            [rawBase],
         ];
     }
     if (aspect === "perfective") {
@@ -101,6 +108,20 @@ function getPerfectiveHead(base: T.PsString, { entry }: T.VerbEntry): [T.PH, T.P
     // if ((verb.entry.ssp && verb.entry.ssf) || verb.entry.separationAtP) {
     //     // handle split
     // }
+    if (entry.separationAtP && entry.separationAtF) {
+        const ph: T.PH = {
+            type: "PH",
+            ps: accentOnNFromEnd({
+                p: base.p.slice(0, entry.separationAtP),
+                f: base.f.slice(0, entry.separationAtF),
+            }, 0),
+        };
+        const rest = {
+            p: base.p.slice(entry.separationAtP),
+            f: base.f.slice(entry.separationAtF),
+        };
+        return [ph, rest];
+    }
     const [ph, rest]: [T.PH | undefined, T.PsString] = entry.noOo
         ? [undefined, base]
         : entry.sepOo 

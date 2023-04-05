@@ -1,14 +1,6 @@
 import * as T from "../../../types";
 import { renderVerb } from "./render-verb";
-
-export function vEntry(e: any, c?: any): T.VerbEntry {
-  return {
-    entry: e,
-    ...c ? {
-      c,
-    } : {},
-  } as T.VerbEntry;
-}
+import { vEntry } from "./rs-helpers";
 
 const wahul = vEntry({"ts":1527815399,"i":15049,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"});
 const achawul = vEntry({"ts":1527811872,"i":224,"p":"اچول","f":"achawul","g":"achawul","e":"to put, pour, drop, throw, put on","r":4,"c":"v. trans.","ec":"put,puts,putting,put,put"});

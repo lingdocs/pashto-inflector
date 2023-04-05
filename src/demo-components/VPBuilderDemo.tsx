@@ -14,6 +14,7 @@ import {
 import { entryFeeder } from "./entryFeeder";
 import { renderVerb } from "../lib/src/new-verb-engine/render-verb";
 import NPPronounPicker from "../components/src/np-picker/NPPronounPicker";
+import { getAllRs } from "../lib/src/new-verb-engine/rs-helpers";
 
 
 const transitivities: T.Transitivity[] = [
@@ -152,6 +153,7 @@ function VPBuilderDemo({ opts }: {
         person: testPerson.person,
         voice: testVoice,
     }) : undefined;
+    const rs = v ? getAllRs(v.verb as T.VerbEntry) : undefined
     return <div className="mt-4">
         <div className="d-block mx-auto card" style={{ maxWidth: "700px", background: "var(--closer)"}}>
             <div className="card-body">
@@ -249,7 +251,10 @@ function VPBuilderDemo({ opts }: {
             pronoun={testPerson}
             role="subject"
             opts={opts}
-        />                
+        />
+        <pre>
+            {JSON.stringify(rs, null, "  ")}
+        </pre>                
         <pre>
             {JSON.stringify(rv, null, "  ")}
         </pre>

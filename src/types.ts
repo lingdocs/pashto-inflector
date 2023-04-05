@@ -1140,3 +1140,4 @@ export type Welded = {
     right: VA | PT | VI,
 };
 
+export type RootStemOutput = (PH | SingleOrLengthOpts<PsString[]>)[];
