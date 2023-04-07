@@ -38,6 +38,8 @@ import { verbEndingConcat } from "./rs-helpers";
 // TODO: are azmóyulum and wáayulo really not just azmoyúlum and waayúlo ?
 // TODO: automatic 3rd person idiosyncronizing of raTul raaTu, shaRul, shaaRu, rasedul rased etc
 
+// IMMEDIATE TODO: shwoo -> shoo
+
 export function renderVerb({ verb, tense, person, voice }: {
     verb: T.VerbEntry,
     tense: T.VerbTense | T.PerfectTense | T.AbilityTense, // TODO: make T.Tense
@@ -56,7 +58,7 @@ export function renderVerb({ verb, tense, person, voice }: {
 
     const isPast = isPastTense(tense);
     const aspect = getAspect(tense);
-    const isAbility = isAbilityTense(tense);
+    const type = isAbilityTense(tense) ? "ability" : "basic";
     const genderNumber = {
         gender: personGender(person),
         number: personNumber(person),
@@ -68,11 +70,8 @@ export function renderVerb({ verb, tense, person, voice }: {
             rs: isPast ? "root" : "stem",
             aspect,
         },
-        type: voice === "passive"
-            ? "passive"
-            : isAbility
-            ? "ability"
-            : "basic",
+        voice,
+        type,
         genderNumber,
     });
     // #2 add the verb ending to it

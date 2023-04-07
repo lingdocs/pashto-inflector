@@ -26,12 +26,12 @@ export function getAllRs(verb: T.VerbEntry): {
 } { 
     return {
         stem: {
-            perfective: getRootStem({ verb, type: "basic", part: { rs: "stem", aspect: "perfective" }, genderNumber: { gender: "masc", number: "singular" } }),
-            imperfective: getRootStem({ verb, type: "basic", part: { rs: "stem", aspect: "imperfective" }, genderNumber: { gender: "masc", number: "singular" } }),
+            perfective: getRootStem({ verb, type: "basic", voice: "active", part: { rs: "stem", aspect: "perfective" }, genderNumber: { gender: "masc", number: "singular" } }),
+            imperfective: getRootStem({ verb, type: "basic", voice: "active", part: { rs: "stem", aspect: "imperfective" }, genderNumber: { gender: "masc", number: "singular" } }),
         },
         root: {
-            perfective: getRootStem({ verb, type: "basic", part: { rs: "root", aspect: "perfective" }, genderNumber: { gender: "masc", number: "singular" } }),
-            imperfective: getRootStem({ verb, type: "basic", part: { rs: "root", aspect: "imperfective" }, genderNumber: { gender: "masc", number: "singular" } }),
+            perfective: getRootStem({ verb, type: "basic", voice: "active", part: { rs: "root", aspect: "perfective" }, genderNumber: { gender: "masc", number: "singular" } }),
+            imperfective: getRootStem({ verb, type: "basic", voice: "active", part: { rs: "root", aspect: "imperfective" }, genderNumber: { gender: "masc", number: "singular" } }),
         },
     };
 }

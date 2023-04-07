@@ -29,16 +29,16 @@ const shVB: T.VBBasic = {
     ps: [{ p: "ش", f: "sh" }],
 }
 
-// start basic inflection functions for pattern 1 and pattern ey things
-// to be used by inflecting لاړ and participles
+// put the past participle in a different function
 
-export function getRootStem({ verb, part, type, genderNumber }: {
+export function getRootStem({ verb, part, type, genderNumber, voice }: {
     verb: T.VerbEntry,
     part: {
         rs: "root" | "stem",
         aspect: T.Aspect,
     } | "pastPart",
-    type: "basic" | "ability" | "passive",
+    voice: "active" | "passive",
+    type: "basic" | "ability",
     genderNumber: {
         gender: T.Gender,
         number: T.NounNumber,
@@ -51,7 +51,7 @@ export function getRootStem({ verb, part, type, genderNumber }: {
     if (type === "ability") {
         return getAbilityRs(v, part);
     }
-    if (type === "passive") {
+    if (voice === "passive") {
         return getPassiveRs(v, part);
     }
     return part.rs === "stem"
@@ -83,7 +83,7 @@ function getPassiveRs(verb: T.VerbEntryNoFVars, part: { aspect: T.Aspect, rs: "r
         : getPerfectiveRoot
     )(verb);
     const longRoot = getLongVB(basicRoot);
-    const kedulVba = getRootStem({ verb: kedulStat, part, type: "basic", genderNumber: { gender: "masc", number: "singular" }})[1][0] as T.VBBasic;
+    const kedulVba = getRootStem({ verb: kedulStat, part, type: "basic", voice: "active", genderNumber: { gender: "masc", number: "singular" }})[1][0] as T.VBBasic;
     return [
         vHead,
         [weld(longRoot, kedulVba)],
