@@ -7,13 +7,15 @@
  */
 
 import {
-    concatPsString, trimOffPs,
+    concatPsString, getLength, trimOffPs,
 } from "../p-text-helpers";
 import * as T from "../../../types";
 import { makePsString, removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import { accentOnNFromEnd, accentSyllable, removeAccents } from "../accent-helpers";
 import { isKawulVerb } from "../type-predicates";
-import { inflectPattern1 } from "./new-inflectors";
+import { vEntry, addAbilityEnding, weld, removeL, addTrailingAccent, tlulPerfectiveStem } from "./rs-helpers";
+
+const kedulStat = vEntry({"ts":1581086654898,"i":11100,"p":"کېدل","f":"kedul","g":"kedul","e":"to become _____","r":2,"c":"v. intrans.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true,"ec":"become"});
 
 const shwulVB: T.VBBasic = {
     type: "VB",
@@ -21,6 +23,10 @@ const shwulVB: T.VBBasic = {
         long: [{ p: "شول", f: "shwul" }],
         short: [{ p: "شو", f: "shw" }],
     },
+}
+const shVB: T.VBBasic = {
+    type: "VB",
+    ps: [{ p: "ش", f: "sh" }],
 }
 
 // start basic inflection functions for pattern 1 and pattern ey things
@@ -38,36 +44,65 @@ export function getRootStem({ verb, part, type, genderNumber }: {
         number: T.NounNumber,
     },
 }): T.RootsStemsOutput {
-    console.log({ type }); 
     const v = removeFVarientsFromVerb(verb);
     if (part === "pastPart") {
         throw new Error("not implemented yet");
     }
-    console.log({ part });
+    if (type === "ability") {
+        return getAbilityRs(v, part);
+    }
+    if (type === "passive") {
+        return getPassiveRs(v, part);
+    }
     return part.rs === "stem"
         ? part.aspect === "imperfective"
             ? getImperfectiveStem(v)
             : getPerfectiveStem(v, genderNumber)
         : part.aspect === "imperfective"
-            ? getImperfectiveRoot(v, type)
+            ? getImperfectiveRoot(v)
             : getPerfectiveRoot(v);
 }
 
-function getImperfectiveRoot(verb: T.VerbEntryNoFVars, type: "basic" | "ability" | "passive"): T.RootsStemsOutput {
-    // if (type === "ability") {
-    //     console.log("in ability");
-    //     const basic = getImperfectiveRoot(verb, "basic") as [[T.VHead] | [], [T.VBA]];
-    //     return [
-    //         basic[0],
-    //         [
-    //             {
-    //                 type: "VB",
-                    
-    //                 [1],
-    //             shwulVB,
-    //         ],
-    //     ];
-    // }
+function getAbilityRs(verb: T.VerbEntryNoFVars, { aspect, rs }: { aspect: T.Aspect, rs: "root" | "stem" }): [[] | [T.VHead], [T.VB, T.VBA]] {
+    const [vHead, [basicRoot]] = (aspect === "imperfective"
+        ? getImperfectiveRoot
+        : getPerfectiveRoot
+    )(verb);
+    return [
+        vHead, 
+        [
+            addAbilityEnding(basicRoot),
+            rs === "root" ? shwulVB : shVB,
+        ],
+    ];
+}
+
+function getPassiveRs(verb: T.VerbEntryNoFVars, part: { aspect: T.Aspect, rs: "root" | "stem" }): [[] | [T.VHead], [T.VBA]] {
+    const [vHead, [basicRoot]] = (part.aspect === "imperfective"
+        ? getImperfectiveRoot
+        : getPerfectiveRoot
+    )(verb);
+    const longRoot = getLongVB(basicRoot);
+    const kedulVba = getRootStem({ verb: kedulStat, part, type: "basic", genderNumber: { gender: "masc", number: "singular" }})[1][0] as T.VBBasic;
+    return [
+        vHead,
+        [weld(longRoot, kedulVba)],
+    ];
+    function getLongVB(vb: T.VBA): T.VBA {
+        if (vb.type === "welded") {
+            return {
+                ...vb,
+                right: getLongVB(vb) as T.VBBasic,
+            };
+        }
+        return {
+            ...vb,
+            ps: getLength(vb.ps, "long"),
+        };
+    }
+} 
+
+function getImperfectiveRoot(verb: T.VerbEntryNoFVars): [[], [T.VBA]] { 
     const infinitive = accentOnNFromEnd(makePsString(verb.entry.p, verb.entry.f), 0);
     return [
         [],
@@ -83,7 +118,7 @@ function getImperfectiveRoot(verb: T.VerbEntryNoFVars, type: "basic" | "ability"
     ];
 }
 
-function getPerfectiveRoot(verb: T.VerbEntryNoFVars): T.RootsStemsOutput {
+function getPerfectiveRoot(verb: T.VerbEntryNoFVars): [[T.VHead] | [], [T.VBA]] {
     const base = removeAccents(
         (verb.entry.prp && verb.entry.prf)
             ? makePsString(verb.entry.prp, verb.entry.prf)
@@ -257,38 +292,4 @@ function getPerfectiveHead(base: T.PsString, { entry }: T.VerbEntryNoFVars): [T.
             f: ps.f.slice(ps.f[1] === "a" ? 2 : 1),
         };
     }
-}
-
-function addTrailingAccent(ps: T.PsString): T.PsString {
-    return {
-        p: ps.p,
-        f: ps.f + "X",
-    };
-}
-
-function addUl(b: T.PsString): T.PsString {
-    return concatPsString(b, { p: "ل", f: "ul" });
-}
-
-// TODO: could do removeEndingL (slower but safer)
-
-function removeL(ps: T.PsString): T.PsString {
-    return trimOffPs(ps, 1, 2);
-}
-
-function tlulPerfectiveStem(person: { gender: T.Gender, number: T.NounNumber }): T.RootsStemsOutput {
-    return [
-        [
-            {
-                type: "PH",
-                ps: inflectPattern1({ p: "لاړ", f: "laaR" }, person).map(x => concatPsString(x, " "))[0],
-            },
-        ],
-        [
-            {
-                type: "VB",
-                ps: [{ p: "ش", f: "sh" }],
-            },
-        ],
-    ];
 }

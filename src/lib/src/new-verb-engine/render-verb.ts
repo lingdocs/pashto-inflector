@@ -5,9 +5,6 @@ import {
     personNumber,
 } from "../misc-helpers";
 import {
-    trimOffPs,
-} from "../p-text-helpers";
-import {
     concatPsString,
     getLength,
 } from "../p-text-helpers";
@@ -21,8 +18,8 @@ import { tenseHasBa } from "../phrase-building/vp-tools";
 import { isPastTense } from "../phrase-building/vp-tools"; 
 import { makePsString, removeFVarients } from "../accent-and-ps-utils";
 import { pashtoConsonants } from "../pashto-consonants";
-import { accentPsSyllable } from "../accent-helpers";
 import { getRootStem } from "./roots-and-stems";
+import { verbEndingConcat } from "./rs-helpers";
 
 // For the chart display of the results: base the length thing on the VBE at the end, if there are other
 // length variations earlier in the blocks, flatten those into the variations
@@ -65,14 +62,17 @@ export function renderVerb({ verb, tense, person, voice }: {
         number: personNumber(person),
     };
     // #1 get the appropriate root / stem
-    console.log({ isAbility });
     const [vHead, rest] = getRootStem({
         verb,
         part: {
             rs: isPast ? "root" : "stem",
             aspect,
         },
-        type: isAbility ? "ability" : "basic",
+        type: voice === "passive"
+            ? "passive"
+            : isAbility
+            ? "ability"
+            : "basic",
         genderNumber,
     });
     // #2 add the verb ending to it
@@ -154,20 +154,6 @@ function addEnding({ verb, rs, ending, person, pastThird, aspect }: {
             ps: verbEndingConcat(vb.ps, end),
         };
     }
-}
-
-function verbEndingConcat(ps: T.PsString[], end: T.PsString[]): T.PsString[] {
-    return ps.flatMap(v => (
-        end.map(e => {
-            if (v.f.charAt(v.f.length-1) === "X") {
-                return concatPsString(trimOffPs(v, 0, 1), accentPsSyllable(e))
-            }
-            if (e.p === "ل" && ["ul", "úl"].includes(v.f.slice(-2))) {
-                return v;
-            }
-            return concatPsString(v, e);
-        })
-    ));
 }
 
 function getEnding(person: T.Person, isPast: boolean) {

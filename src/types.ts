@@ -1078,8 +1078,9 @@ export type VerbRenderedOutput = [[VHead] | [], [VB, VBE] | [VBE]];
 export type RootsStemsOutput = [[VHead] | [], [VB, VBA] | [VBA]]; // or perfect / equative 
 
 export type VB = VBBasic | VBGenNum | Welded;
+/** A VB block that can have endings attached to it */
 export type VBA = Exclude<VB, VBGenNum>;
-
+/** A VB block that has had a person verb ending attached */
 export type VBE = (VBBasic | Welded) & {
     person: Person,
 }; // or equative
