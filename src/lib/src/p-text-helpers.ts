@@ -89,6 +89,22 @@ export function concatPsString(...items: Array<T.PsString | T.LengthOptions<T.Ps
 }
 
 /**
+ * Trims off a given amount of characters of p and f in a PsString
+ * (also removes any other fields in the object)
+ * 
+ * @param ps 
+ * @param pOff - number of characters of pashto script to remove from the end
+ * @param fOff - number of characters of phonetics to remove from the end
+ * @returns 
+ */
+export function trimOffPs(ps: T.PsString, pOff: number, fOff: number): T.PsString {
+    return {
+        p: pOff === 0 ? ps.p : ps.p.slice(0, -pOff),
+        f: fOff === 0 ? ps.f : ps.f.slice(0, -fOff),
+    };
+}
+
+/**
  * breaks a dictionary entry with a double wording (ie. ګډ وډ) into two seperate words
  * 
  * @param w 

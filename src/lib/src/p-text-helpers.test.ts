@@ -24,6 +24,7 @@ import {
     endsInShwa,
     splitPsByVarients,
     endsWith,
+    trimOffPs,
 } from "./p-text-helpers";
 import * as T from "../../types";
 import {
@@ -702,6 +703,15 @@ test(`splitDoubleWord should work`, () => {
         },
     ];
     expect(splitDoubleWord(removeFVarients(orig))).toEqual(out);
+});
+
+test("trimOffPs should word", () => {
+    expect(trimOffPs({ p: "لیدل", f: "leedúl" }, 1, 2))
+        .toEqual({ p: "لید", f: "leed" });
+    expect(trimOffPs({ p: "کور", f: "kor" }, 2, 2))
+        .toEqual({ p: "ک", f: "k" });
+    expect(trimOffPs({ p: "کور", f: "kor" }, 0, 0))
+        .toEqual({ p: "کور", f: "kor" });
 });
 
 // test(`allThirdPersMascPlur should work`, () => {

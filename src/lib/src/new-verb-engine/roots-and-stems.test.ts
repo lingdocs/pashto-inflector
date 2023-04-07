@@ -29,7 +29,7 @@ const ooPh: T.PH = {
   ps: { p: "و", f: "óo" },
 };
 
-type TestGroup = {
+type RootsAndStemsTestGroup = {
   verb: T.VerbEntry,
   result: Record<"stem" | "root", {
     imperfective: T.RootStemOutput,
@@ -37,9 +37,9 @@ type TestGroup = {
   }>
 }[];
 
-const tests: {
+const rootsAndStemsTests: {
   title: string,
-  testGroup: TestGroup,
+  testGroup: RootsAndStemsTestGroup,
 }[] =
   [
     {
@@ -615,7 +615,7 @@ const tests: {
                 }
               ]
             }
-          },          
+          },
         },
       ],
     },
@@ -824,7 +824,7 @@ const tests: {
                 }
               ]
             }
-          },          
+          },
         },
         {
           verb: kedulDyn,
@@ -901,14 +901,20 @@ const tests: {
           verb: kawulStat,
           result: {
             "stem": {
-              "perfective": [
-                [
+              "perfective": [{
+                long: [
                   {
                     "p": "کړ",
                     "f": "kR"
                   }
-                ]
-              ],
+                ],
+                short: [
+                  {
+                    p: "ک",
+                    f: "k",
+                  },
+                ],
+              }],
               "imperfective": [
                 [
                   {
@@ -932,7 +938,13 @@ const tests: {
                       "p": "کړ",
                       "f": "kR"
                     }
-                  ]
+                  ],
+                  "mini": [
+                    {
+                      "p": "ک",
+                      "f": "k",
+                    },
+                  ],
                 }
               ],
               "imperfective": [
@@ -966,12 +978,17 @@ const tests: {
                     "f": "óo",
                   }
                 },
-                [
-                  {
-                    "p": "کړ",
-                    "f": "kR"
-                  }
-                ]
+                {
+                  long: [
+                    {
+                      "p": "کړ",
+                      "f": "kR"
+                    },
+                  ],
+                  short: [
+                    { p: "ک", f: "k" },
+                  ],
+                },
               ],
               "imperfective": [
                 [
@@ -1003,8 +1020,11 @@ const tests: {
                       "p": "کړ",
                       "f": "kR"
                     }
-                  ]
-                }
+                  ],
+                  "mini": [
+                    { p: "ک", f: "k" },
+                  ],
+                },
               ],
               "imperfective": [
                 {
@@ -1029,7 +1049,7 @@ const tests: {
     }
   ];
 
-tests.forEach(({ title, testGroup }) => {
+rootsAndStemsTests.forEach(({ title, testGroup }) => {
   test(title, () => {
     testGroup.forEach(({ verb, result }) => {
       expect(getAllRs(verb)).toEqual(result);

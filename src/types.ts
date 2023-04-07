@@ -1074,43 +1074,45 @@ export type MiniPronoun = {
     np: NPSelection,
 };
 
-export type VB = PH | VA | VI | PT | EQ | Welded;
+export type VerbRenderedOutput = [[VHead] | [], [VB, VBE] | [VBE]];
+export type RootsStemsOutput = [[VHead] | [], [VB, VBA] | [VBA]]; // or perfect / equative 
+
+export type VB = VBBasic | VBGenNum | Welded;
+export type VBA = Exclude<VB, VBGenNum>;
+
+export type VBE = (VBBasic | Welded) & {
+    person: Person,
+}; // or equative
+
+export type VBBasic = {
+    type: "VB",
+    ps: SingleOrLengthOpts<PsString[]>,
+};
+
+export type VBGenNum = VBBasic & GenderNumber;
+
+export type GenderNumber = {
+    gender: Gender,
+    number: NounNumber,
+};
+
+export type Welded = {
+    type: "welded",
+    left: NComp | VBBasic | Welded, 
+    right: VBBasic,
+};
+
+export type VHead = PH | NComp;
 
 /** perfective head block */
 export type PH = {
     type: "PH",
     ps: PsString,
-} | {
-    type: "PHComp",
+};
+
+export type NComp = {
+    type: "NComp",
     comp: Comp,
-};
-
-/** verb block with person agreement */
-export type VA = {
-    type: "VA",
-    ps: SingleOrLengthOpts<PsString[]>,
-    person: Person,
-};
-
-/** invariable verb block */
-export type VI = {
-    type: "VI",
-    ps: SingleOrLengthOpts<PsString[]>,
-};
-
-/** participle block with inflection */
-export type PT = {
-    type: "PT",
-    ps: SingleOrLengthOpts<PsString[]>,
-    gender: Gender,
-    number: NounNumber,
-};
-
-/** equative block */
-export type EQ = {
-    type: "EQ",
-    ps: SingleOrLengthOpts<PsString[]>,
-    person: Person,
 };
 
 // Complement can be one of
@@ -1131,13 +1133,3 @@ export type Comp = {
     type: "NounComp",
     ps: PsString,
 };
-
-/** a veb block with a welded part having it's accents removed */
-export type Welded = {
-    type: "welded",
-    /** accents must be removed from the left */
-    left: VI | Comp,
-    right: VA | PT | VI,
-};
-
-export type RootStemOutput = (PH | SingleOrLengthOpts<PsString[]>)[];

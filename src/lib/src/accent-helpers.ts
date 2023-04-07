@@ -104,13 +104,21 @@ const accentReplacer = [
     { vowel: "U", accented: "Ú" },
 ];
 
-function accentSyllable(s: string): string {
+export function accentSyllable(s: string): string {
     return s.replace(/a|e|i|o|u|U/, (match) => {
         const r = accentReplacer.find((x) => x.vowel === match);
         /* istanbul ignore next */
         return r?.accented || "";
     });
 }
+
+export function accentPsSyllable(ps: T.PsString): T.PsString {
+    return {
+        p: ps.p,
+        f: accentSyllable(ps.f),
+    };
+}
+
 
 export function removeAccentsWLength(s: T.SingleOrLengthOpts<T.PsString[]>): T.SingleOrLengthOpts<T.PsString[]> {
     if ("long" in s) {

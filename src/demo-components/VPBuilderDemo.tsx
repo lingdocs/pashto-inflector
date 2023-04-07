@@ -153,7 +153,7 @@ function VPBuilderDemo({ opts }: {
         person: testPerson.person,
         voice: testVoice,
     }) : undefined;
-    const rs = v ? getAllRs(v.verb as T.VerbEntry) : undefined
+    // const rs = v ? getAllRs(v.verb as T.VerbEntry) : undefined
     return <div className="mt-4">
         <div className="d-block mx-auto card" style={{ maxWidth: "700px", background: "var(--closer)"}}>
             <div className="card-body">
@@ -252,9 +252,12 @@ function VPBuilderDemo({ opts }: {
             role="subject"
             opts={opts}
         />
-        <pre>
-            {JSON.stringify(rs, null, "  ")}
-        </pre>                
+        {/* <details>
+            <summary>Roots and Stems</summary>
+            <pre>
+                {JSON.stringify(rs, null, "  ")}
+            </pre>                
+        </details> */}
         <pre>
             {JSON.stringify(rv, null, "  ")}
         </pre>
