@@ -1136,9 +1136,6 @@ export type Comp = {
     gender: Gender,
     number: NounNumber,
 } | {
-    type: "LocAdvComp",
-    ps: PsString,
-} | {
-    type: "NounComp",
+    type: "Comp",
     ps: PsString,
 };

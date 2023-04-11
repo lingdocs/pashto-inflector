@@ -19,7 +19,7 @@ import { isPastTense } from "../phrase-building/vp-tools";
 import { makePsString, removeFVarients } from "../accent-and-ps-utils";
 import { pashtoConsonants } from "../pashto-consonants";
 import { getPastParticiple, getRootStem } from "./roots-and-stems";
-import { verbEndingConcat } from "./rs-helpers";
+import { getAspect, isKedul, perfectTenseToEquative, verbEndingConcat } from "./rs-helpers";
 
 // For the chart display of the results: base the length thing on the VBE at the end, if there are other
 // length variations earlier in the blocks, flatten those into the variations
@@ -237,33 +237,4 @@ function ensure3rdPast(rs: T.PsString[], ending: T.PsString[], verb: T.VerbEntry
         "",
         ...ending,
     ] : ending).map(e => concatPsString(rs[0], e));
-}
-
-function getAspect(tense: T.VerbTense | T.AbilityTense): T.Aspect {
-    const t = tense.replace("Modal", "");
-    if (["presentVerb", "imperfectiveFuture", "imperfectivePast", "habitualImperfectivePast"].includes(t)) {
-        return "imperfective";
-    } else {
-        return "perfective";
-    }
-}
-
-function isKedul(v: T.VerbEntry): boolean {
-    return v.entry.p === "کېدل";
-}
-
-function perfectTenseToEquative(t: T.PerfectTense): keyof typeof equativeEndings {
-    return t === "presentPerfect"
-        ? "present"
-        : t === "futurePerfect"
-        ? "habitual"
-        : t === "habitualPerfect"
-        ? "habitual"
-        : t === "pastPerfect"
-        ? "past"
-        : t === "pastSubjunctivePerfect"
-        ? "pastSubjunctive"
-        : t === "wouldBePerfect"
-        ? "past"
-        : "subjunctive"
 }

@@ -1,10 +1,51 @@
 import * as T from "../../../types";
 import { removeFVarients } from "../accent-and-ps-utils";
-import { accentPsSyllable, removeAccents, removeAccentsWLength } from "../accent-helpers";
-import { concatPsString, trimOffPs } from "../p-text-helpers";
+import { accentOnNFromEnd, accentPsSyllable, countSyllables, removeAccents, removeAccentsWLength } from "../accent-helpers";
+import { concatPsString, isUnisexSet, psStringFromEntry, trimOffPs } from "../p-text-helpers";
 import { getRootStem } from "./roots-and-stems";
 import { inflectPattern1 } from "./new-inflectors";
 import { getLength } from "../p-text-helpers";
+import { equativeEndings } from "../grammar-units";
+import { isAdjectiveEntry } from "../type-predicates";
+import { inflectWord } from "../pashto-inflector";
+
+export function isStatComp(v: T.VerbEntry): boolean {
+    return !!v.entry.c?.includes("stat. comp.") && !!v.complement;
+}
+
+export function statCompImperfectiveSpace(v: T.VerbEntryNoFVars): boolean {
+    return v.entry.p.startsWith(`${v.complement?.p} `);
+}
+
+export function makeComplement(e: T.DictionaryEntryNoFVars, { gender, number }: T.GenderNumber): T.NComp {
+    if (isAdjectiveEntry(e)) {
+        const infs = inflectWord(e);
+        const ps = infs && infs.inflections && isUnisexSet(infs.inflections)
+            ? infs.inflections[gender][number === "singular" ? 0 : 1][0]
+            : psStringFromEntry(e);
+        return {
+            type: "NComp",
+            comp: {
+                type: "AdjComp",
+                ps: lightEnforceCompAccent(ps),
+                gender,
+                number,
+            },
+        };
+    }
+    return {
+        type: "NComp",
+        comp: {
+            type: "Comp",
+            ps: lightEnforceCompAccent(psStringFromEntry(e)),
+        },
+    };
+    function lightEnforceCompAccent(ps: T.PsString): T.PsString {
+        return countSyllables(ps) === 1
+            ? accentPsSyllable(ps)
+            : ps;
+    }
+}
 
 export function vEntry(e: any, c?: any): T.VerbEntryNoFVars {
     return {
@@ -114,7 +155,7 @@ export function removeL(ps: T.PsString): T.PsString {
     return trimOffPs(ps, 1, 2);
 }
 
-export function tlulPerfectiveStem(person: { gender: T.Gender, number: T.NounNumber }): T.RootsStemsOutput {
+export function tlulPerfectiveStem(person: { gender: T.Gender, number: T.NounNumber }): [[T.PH], [T.VB]] {
     return [
         [
             {
@@ -161,6 +202,37 @@ export function addToVBBasicEnd(vb: T.VBBasic, end: T.PsString[]): T.VBBasic {
     };
 }
 
+export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBBasic>): T.VBBasic;
+export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA;
+export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA {
+    const shortenableEndings = ["ښتل", "ستل", "وتل"];
+    const wrul = ["وړل", "راوړل", "وروړل", "دروړل"];
+    if ("right" in vba) {
+        return {
+            ...vba,
+            right: possiblePPartLengths(vba.right),
+        };
+    }
+    const infinitive = vba.ps[0];
+    const [trimP, trimF] = (infinitive.p.slice(-4) === "ښودل" && infinitive.p.length > 4 && infinitive.p !== "کېښودل" && infinitive.p !== "کښېښودل") 
+        // special thing for اېښودل - پرېښودل
+        ? [3, 4]
+        : (wrul.includes(infinitive.p) || (shortenableEndings.includes(infinitive.p.slice(-3)) && infinitive.p.slice(-4) !== "استل"))
+        ? [1, 2]
+        : [0, 0];
+    if (trimP) {
+        return {
+            type: "VB",
+            ps: {
+                long: [infinitive],
+                short: [accentOnNFromEnd(trimOffPs(infinitive, trimP, trimF), 0)],
+            },
+        };
+    }
+    return vba;
+}
+
+
 export function getLongVB(vb: T.VBBasic): T.VBNoLenghts<T.VBBasic>;
 export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA>;
 export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA> {
@@ -174,4 +246,33 @@ export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA> {
         ...vb,
         ps: getLength(vb.ps, "long"),
     };
+}
+
+export function getAspect(tense: T.VerbTense | T.AbilityTense): T.Aspect {
+    const t = tense.replace("Modal", "");
+    if (["presentVerb", "imperfectiveFuture", "imperfectivePast", "habitualImperfectivePast"].includes(t)) {
+        return "imperfective";
+    } else {
+        return "perfective";
+    }
+}
+
+export function isKedul(v: T.VerbEntry): boolean {
+    return v.entry.p === "کېدل";
+}
+
+export function perfectTenseToEquative(t: T.PerfectTense): keyof typeof equativeEndings {
+    return t === "presentPerfect"
+        ? "present"
+        : t === "futurePerfect"
+        ? "habitual"
+        : t === "habitualPerfect"
+        ? "habitual"
+        : t === "pastPerfect"
+        ? "past"
+        : t === "pastSubjunctivePerfect"
+        ? "pastSubjunctive"
+        : t === "wouldBePerfect"
+        ? "past"
+        : "subjunctive"
 }
