@@ -4,6 +4,7 @@ import { accentPsSyllable, removeAccents, removeAccentsWLength } from "../accent
 import { concatPsString, trimOffPs } from "../p-text-helpers";
 import { getRootStem } from "./roots-and-stems";
 import { inflectPattern1 } from "./new-inflectors";
+import { getLength } from "../p-text-helpers";
 
 export function vEntry(e: any, c?: any): T.VerbEntryNoFVars {
     return {
@@ -26,12 +27,12 @@ export function getAllRs(verb: T.VerbEntry): {
 } { 
     return {
         stem: {
-            perfective: getRootStem({ verb, type: "basic", voice: "active", part: { rs: "stem", aspect: "perfective" }, genderNumber: { gender: "masc", number: "singular" } }),
-            imperfective: getRootStem({ verb, type: "basic", voice: "active", part: { rs: "stem", aspect: "imperfective" }, genderNumber: { gender: "masc", number: "singular" } }),
+            perfective: getRootStem({ verb, type: "basic", voice: "active", rs: "stem", aspect: "perfective", genderNumber: { gender: "masc", number: "singular" } }),
+            imperfective: getRootStem({ verb, type: "basic", voice: "active", rs: "stem", aspect: "imperfective", genderNumber: { gender: "masc", number: "singular" } }),
         },
         root: {
-            perfective: getRootStem({ verb, type: "basic", voice: "active", part: { rs: "root", aspect: "perfective" }, genderNumber: { gender: "masc", number: "singular" } }),
-            imperfective: getRootStem({ verb, type: "basic", voice: "active", part: { rs: "root", aspect: "imperfective" }, genderNumber: { gender: "masc", number: "singular" } }),
+            perfective: getRootStem({ verb, type: "basic", voice: "active", rs: "root", aspect: "perfective", genderNumber: { gender: "masc", number: "singular" } }),
+            imperfective: getRootStem({ verb, type: "basic", voice: "active", rs: "root", aspect: "imperfective", genderNumber: { gender: "masc", number: "singular" } }),
         },
     };
 }
@@ -45,6 +46,14 @@ export function getAllRs(verb: T.VerbEntry): {
  * @returns 
  */
 export function verbEndingConcat(ps: T.PsString[], end: T.PsString[]): T.PsString[] {
+    if (ps[0].f === "shw") {
+        if (end[1]?.f === "o") {
+            return [{ p: "شو", f: "sho" }];
+        }
+        if (end[0].f === "oo") {
+            return [{ p: "شو", f: "oo" }];
+        }
+    }
     return ps.flatMap(v => (
         end.map(e => {
             if (v.f.charAt(v.f.length-1) === "X") {
@@ -58,17 +67,26 @@ export function verbEndingConcat(ps: T.PsString[], end: T.PsString[]): T.PsStrin
     ));
 }
 
-export function weld(left: T.Welded["left"], right: T.Welded["right"]): T.Welded {
+// TODO: better to have the genderNumber included and inferred in the right?
+export function weld(left: T.Welded["left"], right: T.Welded["right"]): T.Welded;
+export function weld(left: T.Welded["left"], right: T.Welded["right"], genderNum: T.GenderNumber): T.Welded & T.GenderNumber;
+export function weld(left: T.Welded["left"], right: T.Welded["right"], genderNum?: T.GenderNumber): T.Welded {
     return {
         type: "welded",
         left: removeAccentsFromLeft(left),
         right,
+        ...genderNum ? {
+            ...genderNum,
+        } : {},
     }
     function removeAccentsFromLeft(left: T.Welded["left"]): T.Welded["left"] {
         if (left.type === "VB") {
             return {
                 ...left,
                 ps: removeAccentsWLength(left.ps),
+                ...genderNum ? {
+                    ...genderNum,
+                } : {},
             }
         }
         if (left.type === "NComp") {
@@ -77,7 +95,10 @@ export function weld(left: T.Welded["left"], right: T.Welded["right"]): T.Welded
                 comp: {
                     ...left.comp,
                     ps: removeAccents(left.comp.ps),
-                }
+                },
+                ...genderNum ? {
+                    ...genderNum,
+                } : {},
             };
         }
         return {
@@ -86,6 +107,9 @@ export function weld(left: T.Welded["left"], right: T.Welded["right"]): T.Welded
                 ...left.right,
                 ps: removeAccentsWLength(left.right.ps),
             },
+            ...genderNum ? {
+                ...genderNum,
+            } : {},
         };
     }
 }
@@ -147,5 +171,18 @@ export function addToVBBasicEnd(vb: T.VBBasic, end: T.PsString[]): T.VBBasic {
     return {
         ...vb,
         ps: verbEndingConcat(vb.ps, end),
+    };
+}
+
+export function getLongVB(vb: T.VBA): T.VBA {
+    if (vb.type === "welded") {
+        return {
+            ...vb,
+            right: getLongVB(vb) as T.VBBasic,
+        };
+    }
+    return {
+        ...vb,
+        ps: getLength(vb.ps, "long"),
     };
 }

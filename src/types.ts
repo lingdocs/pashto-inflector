@@ -1090,7 +1090,9 @@ export type VBBasic = {
     ps: SingleOrLengthOpts<PsString[]>,
 };
 
-export type VBGenNum = VBBasic & GenderNumber;
+// TODO: might be a better design decision to keep the GenderNuber stuff
+// in the RIGHT side of the weld
+export type VBGenNum = (VBBasic | Welded) & GenderNumber;
 
 export type GenderNumber = {
     gender: Gender,

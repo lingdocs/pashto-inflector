@@ -7,13 +7,14 @@
  */
 
 import {
-    concatPsString, getLength, trimOffPs,
+    concatPsString, trimOffPs,
 } from "../p-text-helpers";
 import * as T from "../../../types";
 import { makePsString, removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import { accentOnNFromEnd, accentSyllable, removeAccents } from "../accent-helpers";
-import { isKawulVerb } from "../type-predicates";
-import { vEntry, addAbilityEnding, weld, removeL, addTrailingAccent, tlulPerfectiveStem } from "./rs-helpers";
+import { isKawulVerb, isTlulVerb } from "../type-predicates";
+import { vEntry, addAbilityEnding, weld, removeL, addTrailingAccent, tlulPerfectiveStem, getLongVB } from "./rs-helpers";
+import { inflectPattern3 } from "./new-inflectors";
 
 const kedulStat = vEntry({"ts":1581086654898,"i":11100,"p":"کېدل","f":"kedul","g":"kedul","e":"to become _____","r":2,"c":"v. intrans.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true,"ec":"become"});
 
@@ -29,15 +30,60 @@ const shVB: T.VBBasic = {
     ps: [{ p: "ش", f: "sh" }],
 }
 
-// put the past participle in a different function
+// TODO: kuRee shuwey etc 
+export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, number }: { gender: T.Gender, number: T.NounNumber }): T.VBGenNum {
+    const v = removeFVarientsFromVerb(verb);
+    if (voice === "passive") {
+        return getPassivePp(v, { gender, number });
+    }
+    if (verb.entry.pprtp && verb.entry.pprtf) {
+        const base = makePsString(verb.entry.pprtp, verb.entry.pprtf);
+        return {
+            type: "VB",
+            ps: inflectPattern3(base, { gender, number }),
+            gender,
+            number,
+        };
+    }
+    const [_, [basicRoot]] = getImperfectiveRoot(removeFVarientsFromVerb(verb));
+    const longRoot = getLongVB(basicRoot);
 
-export function getRootStem({ verb, part, type, genderNumber, voice }: {
+    if ("right" in longRoot) {
+        return {
+            ...longRoot,
+            right: {
+                ...longRoot.right,
+                ps: addTail(longRoot.right.ps),
+            },
+            gender,
+            number,
+        };
+    } else {
+        return {
+            ...longRoot,
+            ps: addTail(longRoot.ps),
+            gender,
+            number,
+        };
+    }
+    
+    function addTail(ps: T.SingleOrLengthOpts<T.PsString[]>): T.SingleOrLengthOpts<T.PsString[]> {
+        if ("long" in ps) {
+            return {
+                long: addTail(ps.long) as T.PsString[],
+                short: addTail(ps.short) as T.PsString[],
+            };
+        }
+        const withTail = concatPsString(ps[0], { p: "ی", f: "ey"});
+        return inflectPattern3(withTail, { gender, number });
+    }
+}
+
+export function getRootStem({ verb, rs, aspect, type, genderNumber, voice }: {
     verb: T.VerbEntry,
-    part: {
-        rs: "root" | "stem",
-        aspect: T.Aspect,
-    } | "pastPart",
-    voice: "active" | "passive",
+    rs: "root" | "stem",
+    aspect: T.Aspect,
+    voice: T.Voice,
     type: "basic" | "ability",
     genderNumber: {
         gender: T.Gender,
@@ -45,62 +91,66 @@ export function getRootStem({ verb, part, type, genderNumber, voice }: {
     },
 }): T.RootsStemsOutput {
     const v = removeFVarientsFromVerb(verb);
-    if (part === "pastPart") {
-        throw new Error("not implemented yet");
-    }
     if (type === "ability") {
-        return getAbilityRs(v, part);
+        return getAbilityRs(v, aspect, rs, voice);
     }
     if (voice === "passive") {
-        return getPassiveRs(v, part);
+        return getPassiveRs(v, aspect, rs);
     }
-    return part.rs === "stem"
-        ? part.aspect === "imperfective"
+    return rs === "stem"
+        ? aspect === "imperfective"
             ? getImperfectiveStem(v)
             : getPerfectiveStem(v, genderNumber)
-        : part.aspect === "imperfective"
+        : aspect === "imperfective"
             ? getImperfectiveRoot(v)
             : getPerfectiveRoot(v);
 }
 
-function getAbilityRs(verb: T.VerbEntryNoFVars, { aspect, rs }: { aspect: T.Aspect, rs: "root" | "stem" }): [[] | [T.VHead], [T.VB, T.VBA]] {
-    const [vHead, [basicRoot]] = (aspect === "imperfective"
-        ? getImperfectiveRoot
-        : getPerfectiveRoot
-    )(verb);
+function getAbilityRs(
+    verb: T.VerbEntryNoFVars,
+    aspect: T.Aspect,
+    rs: "root" | "stem",
+    voice: T.Voice,
+): [[] | [T.VHead], [T.VB, T.VBA]] {
+    const losesAspect = isTlulVerb(verb); // or is intransitive stative compound
+    const [vhead, [basicroot]] = voice === "passive"
+        // passive ability loses aspect
+        ? getPassiveRs(verb, "imperfective", "root")
+        : aspect === "imperfective" || losesAspect
+        ? getImperfectiveRoot(verb)
+        : getPerfectiveRoot(verb);
     return [
-        vHead, 
+        vhead, 
         [
-            addAbilityEnding(basicRoot),
+            addAbilityEnding(basicroot),
             rs === "root" ? shwulVB : shVB,
         ],
     ];
 }
 
-function getPassiveRs(verb: T.VerbEntryNoFVars, part: { aspect: T.Aspect, rs: "root" | "stem" }): [[] | [T.VHead], [T.VBA]] {
-    const [vHead, [basicRoot]] = (part.aspect === "imperfective"
+function getPassivePp(verb: T.VerbEntryNoFVars, genderNumber: T.GenderNumber): T.VBGenNum {
+    const [_, [basicRoot]] = getImperfectiveRoot(verb);
+    const longRoot = getLongVB(basicRoot);
+    const kedulVbGenNum = getPastParticiple(kedulStat, "active", genderNumber) as T.VBBasic & T.GenderNumber;
+    const kedulVb: T.VBBasic = {
+        type: "VB",
+        ps: kedulVbGenNum.ps,
+    };
+    return weld(longRoot, kedulVb, genderNumber);
+} 
+
+function getPassiveRs(verb: T.VerbEntryNoFVars, aspect: T.Aspect, rs: "root" | "stem"): [[] | [T.VHead], [T.VBA]] {
+    const [vHead, [basicRoot]] = (aspect === "imperfective"
         ? getImperfectiveRoot
         : getPerfectiveRoot
     )(verb);
     const longRoot = getLongVB(basicRoot);
-    const kedulVba = getRootStem({ verb: kedulStat, part, type: "basic", voice: "active", genderNumber: { gender: "masc", number: "singular" }})[1][0] as T.VBBasic;
+    const kedulVba = getRootStem({ verb: kedulStat, aspect, rs, type: "basic", voice: "active", genderNumber: { gender: "masc", number: "singular" }})[1][0] as T.VBBasic;
     return [
         vHead,
         [weld(longRoot, kedulVba)],
     ];
-    function getLongVB(vb: T.VBA): T.VBA {
-        if (vb.type === "welded") {
-            return {
-                ...vb,
-                right: getLongVB(vb) as T.VBBasic,
-            };
-        }
-        return {
-            ...vb,
-            ps: getLength(vb.ps, "long"),
-        };
-    }
-} 
+}
 
 function getImperfectiveRoot(verb: T.VerbEntryNoFVars): [[], [T.VBA]] { 
     const infinitive = accentOnNFromEnd(makePsString(verb.entry.p, verb.entry.f), 0);
@@ -210,12 +260,6 @@ function getPerfectiveStem(verb: T.VerbEntryNoFVars, person: { gender: T.Gender,
         ],
     ];
 }
-
-// function getPastPart(verb: T.VerbEntryNoFVars, person: { gender: T.Gender, number: T.NounNumber }): T.SingleOrLengthOpts<T.PsString> {
-//     const root = getImperfectiveRoot(verb); 
-//     // TODO: with new inflection engine more streamlined
-//     return inflectRoot
-// }
 
 function getPerfectiveHead(base: T.PsString, { entry }: T.VerbEntryNoFVars): [T.PH, T.PsString] | [undefined, T.PsString] {
     // if ((verb.entry.ssp && verb.entry.ssf) || verb.entry.separationAtP) {

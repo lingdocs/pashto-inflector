@@ -18,7 +18,7 @@ import { tenseHasBa } from "../phrase-building/vp-tools";
 import { isPastTense } from "../phrase-building/vp-tools"; 
 import { makePsString, removeFVarients } from "../accent-and-ps-utils";
 import { pashtoConsonants } from "../pashto-consonants";
-import { getRootStem } from "./roots-and-stems";
+import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import { verbEndingConcat } from "./rs-helpers";
 
 // For the chart display of the results: base the length thing on the VBE at the end, if there are other
@@ -49,27 +49,24 @@ export function renderVerb({ verb, tense, person, voice }: {
     hasBa: boolean,
     vbs: T.VerbRenderedOutput,
 } {
-    // TODO: check for transitivity with passive voice ??
-    
-    const hasBa = tenseHasBa(tense);
     if (isPerfectTense(tense)) {
-        throw new Error("not implemented yet");
+        return renderPerfectVerb({ verb, tense, voice, person });
     }
 
-    const isPast = isPastTense(tense);
-    const aspect = getAspect(tense);
-    const type = isAbilityTense(tense) ? "ability" : "basic";
+    const hasBa = tenseHasBa(tense);
     const genderNumber = {
         gender: personGender(person),
         number: personNumber(person),
     };
+    const isPast = isPastTense(tense);
+    const aspect = getAspect(tense);
+    const type = isAbilityTense(tense) ? "ability" : "basic";
+
     // #1 get the appropriate root / stem
     const [vHead, rest] = getRootStem({
         verb,
-        part: {
-            rs: isPast ? "root" : "stem",
-            aspect,
-        },
+        rs: isPast ? "root" : "stem",
+        aspect,
         voice,
         type,
         genderNumber,
@@ -87,28 +84,50 @@ export function renderVerb({ verb, tense, person, voice }: {
                 person,
                 pastThird: isPast && person === T.Person.ThirdSingMale,
                 aspect,
+                basicForm: type === "basic" && voice === "active",
             }),
         ],  
     };
 }
-    // const equative = equativeEndings[perfectTenseToEquative(tense)];
-    // const [row, col] = getVerbBlockPosFromPerson(person);
-    // const equativeBlock: T.EQ = {
-    //     type: "EQ",
-    //     person,
-    //     ps: "long" in equative ? {
-    //         long: equative.long[row][col],
-    //         short: equative.short[row][col],
-    //     } : equative[row][col],
-    // }
 
-function addEnding({ verb, rs, ending, person, pastThird, aspect }: {
+function renderPerfectVerb({ tense, verb, voice, person }: {
+    tense: T.PerfectTense,
+    verb: T.VerbEntry,
+    voice: T.Voice,
+    person: T.Person,
+}): { hasBa: boolean, vbs: [[], [T.VBGenNum, T.VBE]] } {
+    const hasBa = tenseHasBa(tense);
+    const genderNumber = {
+        gender: personGender(person),
+        number: personNumber(person),
+    };
+    // #1 get the past participle
+    const pp = getPastParticiple(verb, voice, genderNumber);
+    // #2 get the right equative
+    const equative = equativeEndings[perfectTenseToEquative(tense)];
+    const [row, col] = getVerbBlockPosFromPerson(person);
+    const equativeBlock: T.VBE = {
+        type: "VB",
+        person,
+        ps: "long" in equative ? {
+            long: equative.long[row][col],
+            short: equative.short[row][col],
+        } : equative[row][col],
+    };
+    return {
+        hasBa, 
+        vbs: [[], [pp, equativeBlock]],
+    };
+}
+
+function addEnding({ verb, rs, ending, person, pastThird, aspect, basicForm }: {
     rs: [T.VB, T.VBA] | [T.VBA],
     ending: T.SingleOrLengthOpts<T.PsString[]>,
     person: T.Person,
     verb: T.VerbEntry,
     pastThird: boolean,
     aspect: T.Aspect,
+    basicForm: boolean,
 }): [T.VB, T.VBE] | [T.VBE] {
     return rs.length === 2
         ? [rs[0], addEnd(rs[1], ending)]
@@ -138,7 +157,7 @@ function addEnding({ verb, rs, ending, person, pastThird, aspect }: {
                 ...vb,
                 ps: {
                     long: verbEndingConcat(rsLong, endLong),
-                    short: pastThird
+                    short: pastThird && basicForm
                         ? ensure3rdPast(endShort, vb.ps.short, verb, aspect)
                         : verbEndingConcat(vb.ps.short, endShort),
                 },
@@ -164,7 +183,7 @@ function getEnding(person: T.Person, isPast: boolean) {
 }
 
 // TODO: THIS IS PROBABLY SKEEEETCH
-function ensure3rdPast(ending: T.PsString[], rs: T.PsString[], verb: T.VerbEntry, aspect: T.Aspect): T.PsString[] {
+function ensure3rdPast(rs: T.PsString[], ending: T.PsString[], verb: T.VerbEntry, aspect: T.Aspect): T.PsString[] {
     if (isKedul(verb) && rs[0].p === "شو") {
         return [{ p: "شو", f: "sho" }];
     }
