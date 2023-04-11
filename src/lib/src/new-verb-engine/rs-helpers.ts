@@ -67,26 +67,19 @@ export function verbEndingConcat(ps: T.PsString[], end: T.PsString[]): T.PsStrin
     ));
 }
 
-// TODO: better to have the genderNumber included and inferred in the right?
-export function weld(left: T.Welded["left"], right: T.Welded["right"]): T.Welded;
-export function weld(left: T.Welded["left"], right: T.Welded["right"], genderNum: T.GenderNumber): T.Welded & T.GenderNumber;
-export function weld(left: T.Welded["left"], right: T.Welded["right"], genderNum?: T.GenderNumber): T.Welded {
+export function weld(left: T.Welded["left"], right: T.VBGenNum): T.WeldedGN;
+export function weld(left: T.Welded["left"], right: T.VBBasic): T.Welded;
+export function weld(left: T.Welded["left"], right: T.VBBasic | T.VBGenNum): T.Welded | T.WeldedGN {
     return {
         type: "welded",
         left: removeAccentsFromLeft(left),
         right,
-        ...genderNum ? {
-            ...genderNum,
-        } : {},
-    }
+    };
     function removeAccentsFromLeft(left: T.Welded["left"]): T.Welded["left"] {
         if (left.type === "VB") {
             return {
                 ...left,
                 ps: removeAccentsWLength(left.ps),
-                ...genderNum ? {
-                    ...genderNum,
-                } : {},
             }
         }
         if (left.type === "NComp") {
@@ -96,9 +89,6 @@ export function weld(left: T.Welded["left"], right: T.Welded["right"], genderNum
                     ...left.comp,
                     ps: removeAccents(left.comp.ps),
                 },
-                ...genderNum ? {
-                    ...genderNum,
-                } : {},
             };
         }
         return {
@@ -107,9 +97,6 @@ export function weld(left: T.Welded["left"], right: T.Welded["right"], genderNum
                 ...left.right,
                 ps: removeAccentsWLength(left.right.ps),
             },
-            ...genderNum ? {
-                ...genderNum,
-            } : {},
         };
     }
 }
@@ -174,11 +161,13 @@ export function addToVBBasicEnd(vb: T.VBBasic, end: T.PsString[]): T.VBBasic {
     };
 }
 
-export function getLongVB(vb: T.VBA): T.VBA {
+export function getLongVB(vb: T.VBBasic): T.VBNoLenghts<T.VBBasic>;
+export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA>;
+export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA> {
     if (vb.type === "welded") {
         return {
             ...vb,
-            right: getLongVB(vb) as T.VBBasic,
+            right: getLongVB(vb.right),
         };
     }
     return {

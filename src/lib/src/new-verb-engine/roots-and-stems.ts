@@ -30,8 +30,8 @@ const shVB: T.VBBasic = {
     ps: [{ p: "ش", f: "sh" }],
 }
 
-// TODO: kuRee shuwey etc 
-export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, number }: { gender: T.Gender, number: T.NounNumber }): T.VBGenNum {
+// TODO: kuRee shuwey etc
+export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, number }: { gender: T.Gender, number: T.NounNumber }): T.VBGenNum | T.WeldedGN {
     const v = removeFVarientsFromVerb(verb);
     if (voice === "passive") {
         return getPassivePp(v, { gender, number });
@@ -47,21 +47,22 @@ export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, n
     }
     const [_, [basicRoot]] = getImperfectiveRoot(removeFVarientsFromVerb(verb));
     const longRoot = getLongVB(basicRoot);
+    const rootWLengths = possiblePPartLengths(longRoot);
 
-    if ("right" in longRoot) {
+    if ("right" in rootWLengths) {
         return {
-            ...longRoot,
+            ...rootWLengths,
             right: {
-                ...longRoot.right,
-                ps: addTail(longRoot.right.ps),
+                ...rootWLengths.right,
+                ps: addTail(rootWLengths.right.ps),
+                gender,
+                number,
             },
-            gender,
-            number,
         };
     } else {
         return {
-            ...longRoot,
-            ps: addTail(longRoot.ps),
+            ...rootWLengths,
+            ps: addTail(rootWLengths.ps),
             gender,
             number,
         };
@@ -77,6 +78,36 @@ export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, n
         const withTail = concatPsString(ps[0], { p: "ی", f: "ey"});
         return inflectPattern3(withTail, { gender, number });
     }
+}
+
+function possiblePPartLengths(vba: T.VBNoLenghts<T.VBBasic>): T.VBBasic;
+function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA;
+function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA {
+    const shortenableEndings = ["ښتل", "ستل", "وتل"];
+    const wrul = ["وړل", "راوړل", "وروړل", "دروړل"];
+    if ("right" in vba) {
+        return {
+            ...vba,
+            right: possiblePPartLengths(vba.right),
+        };
+    }
+    const infinitive = vba.ps[0];
+    const [trimP, trimF] = (infinitive.p.slice(-4) === "ښودل" && infinitive.p.length > 4 && infinitive.p !== "کېښودل" && infinitive.p !== "کښېښودل") 
+        // special thing for اېښودل - پرېښودل
+        ? [3, 4]
+        : (wrul.includes(infinitive.p) || (shortenableEndings.includes(infinitive.p.slice(-3)) && infinitive.p.slice(-4) !== "استل"))
+        ? [1, 2]
+        : [0, 0];
+    if (trimP) {
+        return {
+            type: "VB",
+            ps: {
+                long: [infinitive],
+                short: [accentOnNFromEnd(trimOffPs(infinitive, trimP, trimF), 0)],
+            },
+        };
+    }
+    return vba;
 }
 
 export function getRootStem({ verb, rs, aspect, type, genderNumber, voice }: {
@@ -128,17 +159,14 @@ function getAbilityRs(
     ];
 }
 
-function getPassivePp(verb: T.VerbEntryNoFVars, genderNumber: T.GenderNumber): T.VBGenNum {
+function getPassivePp(verb: T.VerbEntryNoFVars, genderNumber: T.GenderNumber): T.WeldedGN {
     const [_, [basicRoot]] = getImperfectiveRoot(verb);
     const longRoot = getLongVB(basicRoot);
-    const kedulVbGenNum = getPastParticiple(kedulStat, "active", genderNumber) as T.VBBasic & T.GenderNumber;
-    const kedulVb: T.VBBasic = {
-        type: "VB",
-        ps: kedulVbGenNum.ps,
-    };
-    return weld(longRoot, kedulVb, genderNumber);
-} 
+    const kedulVb: T.VBGenNum = getPastParticiple(kedulStat, "active", genderNumber) as T.VBGenNum;
+    return weld(longRoot, kedulVb);
+}
 
+// TODO: could combine these two functions...
 function getPassiveRs(verb: T.VerbEntryNoFVars, aspect: T.Aspect, rs: "root" | "stem"): [[] | [T.VHead], [T.VBA]] {
     const [vHead, [basicRoot]] = (aspect === "imperfective"
         ? getImperfectiveRoot

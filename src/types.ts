@@ -1077,13 +1077,17 @@ export type MiniPronoun = {
 export type VerbRenderedOutput = [[VHead] | [], [VB, VBE] | [VBE]];
 export type RootsStemsOutput = [[VHead] | [], [VB, VBA] | [VBA]]; // or perfect / equative 
 
-export type VB = VBBasic | VBGenNum | Welded;
+export type VB = VBBasic | VBGenNum | Welded | WeldedGN;
 /** A VB block that can have endings attached to it */
-export type VBA = Exclude<VB, VBGenNum>;
+export type VBA = Exclude<VB, VBGenNum | WeldedGN>;
 /** A VB block that has had a person verb ending attached */
 export type VBE = (VBBasic | Welded) & {
     person: Person,
 }; // or equative
+
+export type VBNoLenghts<V extends VB> = V extends VBBasic
+    ? Omit<VBBasic, "ps"> & { ps: PsString[] }
+    : Omit<Welded, "right"> & { right: VBNoLenghts<Exclude<VB, Welded>> };
 
 export type VBBasic = {
     type: "VB",
@@ -1092,7 +1096,7 @@ export type VBBasic = {
 
 // TODO: might be a better design decision to keep the GenderNuber stuff
 // in the RIGHT side of the weld
-export type VBGenNum = (VBBasic | Welded) & GenderNumber;
+export type VBGenNum = VBBasic & GenderNumber;
 
 export type GenderNumber = {
     gender: Gender,
@@ -1104,6 +1108,8 @@ export type Welded = {
     left: NComp | VBBasic | Welded, 
     right: VBBasic,
 };
+
+export type WeldedGN = Omit<Welded, "right"> & { right: VBGenNum };
 
 export type VHead = PH | NComp;
 

@@ -95,7 +95,8 @@ function renderPerfectVerb({ tense, verb, voice, person }: {
     verb: T.VerbEntry,
     voice: T.Voice,
     person: T.Person,
-}): { hasBa: boolean, vbs: [[], [T.VBGenNum, T.VBE]] } {
+    // TODO: Tighter typing on the output for T.VB (enforce genderNumber?)
+}): { hasBa: boolean, vbs: [[], [T.VB, T.VBE]] } {
     const hasBa = tenseHasBa(tense);
     const genderNumber = {
         gender: personGender(person),
