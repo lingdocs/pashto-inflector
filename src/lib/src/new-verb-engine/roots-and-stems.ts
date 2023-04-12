@@ -11,13 +11,15 @@ import {
 } from "../p-text-helpers";
 import * as T from "../../../types";
 import { makePsString, removeFVarientsFromVerb } from "../accent-and-ps-utils";
-import { accentOnNFromEnd, accentSyllable, removeAccents } from "../accent-helpers";
+import { accentOnNFromEnd, countSyllables, removeAccents } from "../accent-helpers";
 import { isKawulVerb, isTlulVerb } from "../type-predicates";
-import { vEntry, addAbilityEnding, weld, removeL, addTrailingAccent, tlulPerfectiveStem, getLongVB, possiblePPartLengths, isStatComp, statCompImperfectiveSpace, makeComplement } from "./rs-helpers";
+import { vEntry, addAbilityEnding, weld, removeL, addTrailingAccent, tlulPerfectiveStem, getLongVB, possiblePPartLengths, isStatComp, statCompImperfectiveSpace, makeComplement, vTransitivity } from "./rs-helpers";
 import { inflectPattern3 } from "./new-inflectors";
 
-const kedulStat = vEntry({"ts":1581086654898,"i":11100,"p":"کېدل","f":"kedul","g":"kedul","e":"to become _____","r":2,"c":"v. intrans.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true,"ec":"become"});
-const kawulStat = vEntry({"ts":1579015359582,"i":11030,"p":"کول","f":"kawul","g":"kawul","e":"to make ____ ____ (as in \"He's making me angry.\")","r":4,"c":"v. trans.","ssp":"کړ","ssf":"kR","prp":"کړل","prf":"kRul","pprtp":"کړی","pprtf":"kúRey","noOo":true,"ec":"make,makes,making,made,made"});
+const statVerb = {
+    intransitive: vEntry({"ts":1581086654898,"i":11100,"p":"کېدل","f":"kedul","g":"kedul","e":"to become _____","r":2,"c":"v. intrans.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true,"ec":"become"}),
+    transitive: vEntry({"ts":1579015359582,"i":11030,"p":"کول","f":"kawul","g":"kawul","e":"to make ____ ____ (as in \"He's making me angry.\")","r":4,"c":"v. trans.","ssp":"کړ","ssf":"kR","prp":"کړل","prf":"kRul","pprtp":"کړی","pprtf":"kúRey","noOo":true,"ec":"make,makes,making,made,made"}),
+};
 
 const shwulVB: T.VBBasic = {
     type: "VB",
@@ -54,9 +56,7 @@ export function getRootStem({ verb, rs, aspect, type, genderNumber, voice }: {
         ? aspect === "imperfective"
             ? getImperfectiveStem(v, genderNumber)
             : getPerfectiveStem(v, genderNumber)
-        : aspect === "imperfective"
-            ? getImperfectiveRoot(v, genderNumber)
-            : getPerfectiveRoot(v, genderNumber);
+        : getRoot(v, genderNumber, aspect);
 }
 
 function getAbilityRs(
@@ -66,13 +66,10 @@ function getAbilityRs(
     voice: T.Voice,
     genderNum: T.GenderNumber,
 ): [[] | [T.VHead], [T.VB, T.VBA]] {
-    const losesAspect = isTlulVerb(verb) || (isStatComp(verb) && verb.entry.c?.includes("intrans."));
+    const losesAspect = isTlulVerb(verb) || (isStatComp(verb) && vTransitivity(verb) === "intransitive");
     const [vhead, [basicroot]] = voice === "passive"
-        // passive ability loses aspect
         ? getPassiveRs(verb, "imperfective", "root", genderNum)
-        : aspect === "imperfective" || losesAspect
-        ? getImperfectiveRoot(verb, genderNum)
-        : getPerfectiveRoot(verb, genderNum);
+        : getRoot(verb, genderNum, losesAspect ? "imperfective" : aspect);
     return [
         vhead, 
         [
@@ -88,6 +85,16 @@ export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, n
     if (voice === "passive") {
         return getPassivePp(v, { gender, number });
     }
+    if (isStatComp(v) && v.complement) {
+        return weld(
+            makeComplement(v.complement, { gender, number }),
+            getPastParticiple(
+                statVerb[vTransitivity(verb)],
+                voice,
+                { gender, number },
+            ) as T.VBGenNum,
+        );
+    }
     if (verb.entry.pprtp && verb.entry.pprtf) {
         const base = makePsString(verb.entry.pprtp, verb.entry.pprtf);
         return {
@@ -97,28 +104,19 @@ export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, n
             number,
         };
     }
-    const basicRoot = getImperfectiveRoot(removeFVarientsFromVerb(verb), { gender, number })[1][0];
+    const basicRoot = getRoot(removeFVarientsFromVerb(verb), { gender, number }, "imperfective")[1][0];
     const longRoot = getLongVB(basicRoot);
     const rootWLengths = possiblePPartLengths(longRoot);
-
+    /* istanbul ignore next */
     if ("right" in rootWLengths) {
-        return {
-            ...rootWLengths,
-            right: {
-                ...rootWLengths.right,
-                ps: addTail(rootWLengths.right.ps),
-                gender,
-                number,
-            },
-        };
-    } else {
-        return {
-            ...rootWLengths,
-            ps: addTail(rootWLengths.ps),
-            gender,
-            number,
-        };
-    }
+        throw new Error("should not have welded here");
+    } 
+    return {
+        ...rootWLengths,
+        ps: addTail(rootWLengths.ps),
+        gender,
+        number,
+    };
     
     function addTail(ps: T.SingleOrLengthOpts<T.PsString[]>): T.SingleOrLengthOpts<T.PsString[]> {
         if ("long" in ps) {
@@ -133,97 +131,87 @@ export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, n
 }
 
 function getPassivePp(verb: T.VerbEntryNoFVars, genderNumber: T.GenderNumber): T.WeldedGN {
-    const basicRoot = getImperfectiveRoot(verb, genderNumber)[1][0];
+    if (isStatComp(verb) && verb.complement) {
+        return weld(
+            makeComplement(verb.complement, genderNumber),
+            getPassivePp(statVerb.transitive, genderNumber),
+        );
+    }
+    const basicRoot = getRoot(verb, genderNumber, isKawulVerb(verb) ? "perfective" : "imperfective")[1][0];
     const longRoot = getLongVB(basicRoot);
-    const kedulVb: T.VBGenNum = getPastParticiple(kedulStat, "active", genderNumber) as T.VBGenNum;
+    const kedulVb: T.VBGenNum = getPastParticiple(statVerb.intransitive, "active", genderNumber) as T.VBGenNum;
     return weld(longRoot, kedulVb);
 }
 
-// TODO: could combine these two functions...
 function getPassiveRs(verb: T.VerbEntryNoFVars, aspect: T.Aspect, rs: "root" | "stem", genderNumber: T.GenderNumber): [[] | [T.VHead], [T.VBA]] {
-    const [vHead, [basicRoot]] = (aspect === "imperfective"
-        ? getImperfectiveRoot
-        : getPerfectiveRoot
-    )(verb, genderNumber);
+    const [vHead, [basicRoot]] = getRoot(verb, genderNumber, aspect);
     const longRoot = getLongVB(basicRoot);
-    const kedulVba = getRootStem({ verb: kedulStat, aspect, rs, type: "basic", voice: "active", genderNumber: { gender: "masc", number: "singular" }})[1][0] as T.VBBasic;
+    const kedulVba = getRootStem({ verb: statVerb.intransitive, aspect, rs, type: "basic", voice: "active", genderNumber: { gender: "masc", number: "singular" }})[1][0] as T.VBBasic;
     return [
         vHead,
         [weld(longRoot, kedulVba)],
     ];
 }
 
-function getImperfectiveRoot(verb: T.VerbEntryNoFVars, genderNum: T.GenderNumber): [[], [T.VBA]] {
-    if (verb.complement && isStatComp(verb) && statCompImperfectiveSpace(verb)) {
-        const auxStem = getImperfectiveRoot(verb.entry.c?.includes("intrans.")
-            ? kedulStat
-            : kawulStat
-        , genderNum)[1][0];
-        return [
-            [],
-            [
-                weld(
-                    makeComplement(verb.complement, genderNum),
-                    auxStem as T.VBBasic,
-                ),
-            ],
-        ];
+function getRoot(verb: T.VerbEntryNoFVars, genderNum: T.GenderNumber, aspect: T.Aspect): [[T.VHead] | [], [T.VBA]] {
+    if (verb.complement && isStatComp(verb) && (aspect === "perfective" || statCompImperfectiveSpace(verb))) {
+        const auxStem = getRoot(
+            statVerb[vTransitivity(verb)],
+            genderNum,
+            aspect,
+        )[1][0] as T.VBBasic;
+        const comp = makeComplement(verb.complement, genderNum);
+        return aspect === "perfective"
+            ? [[comp], [auxStem]]
+            : [
+                [],
+                [
+                    weld(
+                        makeComplement(verb.complement, genderNum),
+                        auxStem as T.VBBasic,
+                    ),
+                ],
+            ];
     }
-    const infinitive = accentOnNFromEnd(makePsString(verb.entry.p, verb.entry.f), 0);
-    return [
-        [],
-        [
-            {
-                type: "VB",
-                ps: {
-                    long: [infinitive],
-                    short: [addTrailingAccent(removeL(infinitive))],
-                },
-            },
-        ],
-    ];
-}
-
-function getPerfectiveRoot(verb: T.VerbEntryNoFVars, genderNum: T.GenderNumber): [[T.VHead] | [], [T.VBA]] {
-    if (verb.complement && isStatComp(verb)) {
-        const auxStem = getPerfectiveRoot(verb.entry.c?.includes("intrans.")
-            ? kedulStat
-            : kawulStat,
-        genderNum)[1][0];
-        return [
-            [makeComplement(verb.complement, genderNum)],
-            [auxStem as T.VBBasic],
-        ];
-    }
-    const base = removeAccents(
-        (verb.entry.prp && verb.entry.prf)
-            ? makePsString(verb.entry.prp, verb.entry.prf)
-            : makePsString(verb.entry.p, verb.entry.f)
-    );
-    const [perfectiveHead, rest] = getPerfectiveHead(base, verb);
+    const base = aspect === "imperfective"
+        ? accentOnNFromEnd(makePsString(verb.entry.p, verb.entry.f), 0)
+        : removeAccents(
+            (verb.entry.prp && verb.entry.prf)
+                ? makePsString(verb.entry.prp, verb.entry.prf)
+                : makePsString(verb.entry.p, verb.entry.f)
+        );
+    const [perfectiveHead, rest] = aspect === "perfective"
+        ? getPerfectiveHead(base, verb)
+        : [undefined, base];
     return [
         perfectiveHead ? [perfectiveHead] : [],
         [
             {
                 type: "VB",
-                ps: {
-                    long: [rest],
-                    short: [removeL(rest)],
-                    ...isKawulVerb(verb) ? {
-                        mini: [{ p: "ک", f: "k" }],
-                    } : {},
-                },
+                ps: aspect === "imperfective"
+                    ? {
+                        long: [rest],
+                        short: [addTrailingAccent(removeL(rest))],
+                    }
+                    : {
+                        long: [rest],
+                        short: [removeL(rest)],
+                        ...(aspect === "perfective" && isKawulVerb(verb)) ? {
+                            mini: [{ p: "ک", f: "k" }],
+                        } : {},
+                    },
             },
         ],
     ];
 }
 
 function getImperfectiveStem(verb: T.VerbEntryNoFVars, genderNum: T.GenderNumber): [[], [T.VB]] {
-    if (verb.complement && isStatComp(verb) && statCompImperfectiveSpace(verb)) {
-        const auxStem = getImperfectiveStem(verb.entry.c?.includes("intrans.")
-            ? kedulStat
-            : kawulStat,
-        genderNum)[1][0];
+    const statComp = isStatComp(verb);
+    if (verb.complement && statComp && statCompImperfectiveSpace(verb)) {
+        const auxStem = getImperfectiveStem(
+            statVerb[vTransitivity(verb)],
+            genderNum,
+        )[1][0];
         return [
             [],
             [
@@ -245,12 +233,17 @@ function getImperfectiveStem(verb: T.VerbEntryNoFVars, genderNum: T.GenderNumber
             ],
         ];
     }
-    const rawBase = removeL(makePsString(verb.entry.p, verb.entry.f));
-    if (verb.entry.c?.includes("intrans.") && rawBase.p.endsWith("ېد")) {
-        const shortBase = trimOffPs(rawBase, 1, 2);
+    const extraRawBase = removeL(makePsString(verb.entry.p, verb.entry.f));
+    // welded stative -awul verbs should always have a trailing accent
+    const rawBase = isKawulVerb(verb) || statComp || (countSyllables(extraRawBase) > 1 && extraRawBase.f.endsWith("aw"))
+        ? addTrailingAccent(extraRawBase)
+        : extraRawBase;
+    if (vTransitivity(verb) === "intransitive" && extraRawBase.p.endsWith("ېد")) {
+        // TODO: Factor out into a function
+        const shortBase = trimOffPs(extraRawBase, 2, 2);
         const long: T.PsString[] = [concatPsString(
             shortBase, 
-            { p: "ږ", f: "éG" },
+            { p: "ېږ", f: "éG" },
         )];
         const short: T.PsString[] | undefined = (verb.entry.shortIntrans)
             ? [shortBase]
@@ -277,10 +270,7 @@ function getImperfectiveStem(verb: T.VerbEntryNoFVars, genderNum: T.GenderNumber
 
 function getPerfectiveStem(verb: T.VerbEntryNoFVars, genderNum: { gender: T.Gender, number: T.NounNumber }): [[T.VHead] | [], [T.VB]] {
     if (verb.complement && isStatComp(verb)) {
-        const auxStem = getPerfectiveStem(verb.entry.c?.includes("intrans.")
-            ? kedulStat
-            : kawulStat,
-        genderNum)[1][0];
+        const auxStem = getPerfectiveStem(statVerb[vTransitivity(verb)], genderNum)[1][0];
         return [
             [makeComplement(verb.complement, genderNum)],
             [auxStem as T.VBBasic],
@@ -319,10 +309,10 @@ function getPerfectiveHead(base: T.PsString, { entry }: T.VerbEntryNoFVars): [T.
     if (entry.separationAtP && entry.separationAtF) {
         const ph: T.PH = {
             type: "PH",
-            ps: {
+            ps: accentOnNFromEnd({
                 p: base.p.slice(0, entry.separationAtP),
-                f: accentSyllable(base.f.slice(0, entry.separationAtF)),
-            },       
+                f: base.f.slice(0, entry.separationAtF),
+            }, 0),       
         };
         const rest = {
             p: base.p.slice(entry.separationAtP),

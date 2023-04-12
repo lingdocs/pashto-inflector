@@ -51,7 +51,7 @@ export function vEntry(e: any, c?: any): T.VerbEntryNoFVars {
     return {
         entry: removeFVarients(e),
         ...c ? {
-            c,
+            complement: c,
         } : {},
     } as T.VerbEntryNoFVars;
 }
@@ -108,9 +108,17 @@ export function verbEndingConcat(ps: T.PsString[], end: T.PsString[]): T.PsStrin
     ));
 }
 
-export function weld(left: T.Welded["left"], right: T.VBGenNum): T.WeldedGN;
-export function weld(left: T.Welded["left"], right: T.VBBasic): T.Welded;
-export function weld(left: T.Welded["left"], right: T.VBBasic | T.VBGenNum): T.Welded | T.WeldedGN {
+// TODO: THIS IS UGGGGLY NEED TO THINK THROUGH THE TYPING ON THE WELDING
+export function weld(left: T.Welded["left"], right: T.VBGenNum | T.WeldedGN): T.WeldedGN;
+export function weld(left: T.Welded["left"], right: T.VBBasic | T.NComp | T.Welded): T.Welded;
+export function weld(left: T.Welded["left"], right: T.VBBasic | T.VBGenNum | T.Welded | T.NComp | T.WeldedGN): T.Welded | T.WeldedGN {
+    if (right.type === "welded") {
+        return weld(weld(left, right.left), right.right);
+    }
+    /* istanbul ignore next */
+    if (right.type === "NComp") {
+        throw new Error("can't weld a complement on the right side");
+    }
     return {
         type: "welded",
         left: removeAccentsFromLeft(left),
@@ -154,13 +162,22 @@ export function addTrailingAccent(ps: T.PsString): T.PsString {
 export function removeL(ps: T.PsString): T.PsString {
     return trimOffPs(ps, 1, 2);
 }
+/**
+ * returns a simple polar transitivity of the verb, only intransitive or transitive
+ * 
+ * @param v 
+ * @returns 
+ */
+export function vTransitivity(v: T.VerbEntry): "intransitive" | "transitive" {
+    return v.entry.c?.includes("intrans.") ? "intransitive" : "transitive";
+}
 
 export function tlulPerfectiveStem(person: { gender: T.Gender, number: T.NounNumber }): [[T.PH], [T.VB]] {
     return [
         [
             {
                 type: "PH",
-                ps: inflectPattern1({ p: "لاړ", f: "laaR" }, person).map(x => concatPsString(x, " "))[0],
+                ps: inflectPattern1({ p: "لاړ", f: "láaR" }, person).map(x => concatPsString(x, " "))[0],
             },
         ],
         [
@@ -214,6 +231,15 @@ export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA {
         };
     }
     const infinitive = vba.ps[0];
+    if (infinitive.f === "tlúl") {
+        return {
+            type: "VB",
+            ps: {
+                long: [infinitive],
+                short: [{ p: "تل", f: "túl" }],
+            },
+        };
+    }
     const [trimP, trimF] = (infinitive.p.slice(-4) === "ښودل" && infinitive.p.length > 4 && infinitive.p !== "کېښودل" && infinitive.p !== "کښېښودل") 
         // special thing for اېښودل - پرېښودل
         ? [3, 4]

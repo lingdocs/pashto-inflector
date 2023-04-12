@@ -27,7 +27,7 @@ export function accentOnFront(s: T.SingleOrLengthOpts<T.PsString>): T.SingleOrLe
     }
     return {
         ...s,
-        f: accentSyllable(removeAccents(s.f)),
+        f: accentLetter(removeAccents(s.f)),
     };
 }
 
@@ -78,7 +78,7 @@ export function accentFSylsOnNFromEnd(syls: string[] | string, n: number): strin
     }
     return [
         ...syls.slice(0, syls.length-(n+1)), // before accent
-        accentSyllable(syls[syls.length-(n+1)]), // syllable to be accented
+        accentLetter(syls[syls.length-(n+1)]), // syllable to be accented
         ...(n !== 0) ? syls.slice(syls.length-n) : [], // after syllable to be accented
     ].join("");
 }
@@ -104,7 +104,7 @@ const accentReplacer = [
     { vowel: "U", accented: "Ú" },
 ];
 
-export function accentSyllable(s: string): string {
+export function accentLetter(s: string): string {
     return s.replace(/a|e|i|o|u|U/, (match) => {
         const r = accentReplacer.find((x) => x.vowel === match);
         /* istanbul ignore next */
@@ -115,7 +115,7 @@ export function accentSyllable(s: string): string {
 export function accentPsSyllable(ps: T.PsString): T.PsString {
     return {
         p: ps.p,
-        f: accentSyllable(ps.f),
+        f: accentLetter(ps.f),
     };
 }
 

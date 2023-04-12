@@ -1,7 +1,6 @@
 import * as T from "../../../types";
-import { getPastParticiple } from "./roots-and-stems";
+import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import { vEntry } from "./rs-helpers";
-import { getAllRs } from "./rs-helpers"; 
 
 const wahul = vEntry({"ts":1527815399,"i":15049,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"});
 const achawul = vEntry({"ts":1527811872,"i":224,"p":"اچول","f":"achawul","g":"achawul","e":"to put, pour, drop, throw, put on","r":4,"c":"v. trans.","ec":"put,puts,putting,put,put"});
@@ -26,6 +25,719 @@ const kenaastul = vEntry({"ts":1527812759,"i":11124,"p":"کېناستل","f":"ke
 const ghadzedul = vEntry({"ts":1527812615,"i":9500,"p":"غځېدل","f":"ghadzedul","g":"ghadzedul","e":"stretch out, lie, be extended, expand","r":3,"c":"v. intrans.","ec":"stretch","ep":"out"});
 const prexodul = vEntry({"ts":1527815190,"i":2495,"p":"پرېښودل","f":"prexodúl","g":"prexodul","e":"to leave, abandon, forsake, let go, allow","r":4,"c":"v. trans.","psp":"پرېږد","psf":"preGd","noOo":true,"separationAtP":3,"separationAtF":3,"ec":"abandon"});
 const raawustul = vEntry({"ts":1527819827,"i":6955,"p":"راوستل","f":"raawustúl","g":"raawustul","e":"to bring, deliver (animate objects), obtain, extract","r":3,"c":"v. trans.","psp":"راول","psf":"raawul","noOo":true,"separationAtP":2,"separationAtF":3,"ec":"bring,brings,bringing,brought,brought"});
+const bandawul = vEntry(
+  {"ts":1527821309,"i":1792,"p":"بندول","f":"bandawul","g":"bandawul","e":"to close, block, stop, barricade, cut off, restrain, hold back","r":3,"c":"v. stat. comp. trans.","l":1577301753727,"ec":"close"},
+  {"ts":1577301753727,"i":1780,"p":"بند","f":"band","g":"band","e":"closed, blocked, stopped","c":"adj."},
+);
+const bandedul = vEntry(
+  {"ts":1588781671306,"i":1796,"p":"بندېدل","f":"bandedúl","g":"bandedul","e":"to be closed, blocked, stopped","r":4,"c":"v. stat. comp. intrans.","l":1577301753727,"ec":"be","ep":"closed"},
+  {"ts":1577301753727,"i":1780,"p":"بند","f":"band","g":"band","e":"closed, blocked, stopped","c":"adj."},
+);
+const stureyKawul = vEntry(
+  {"ts":1591033078746,"i":7877,"p":"ستړی کول","f":"stuRey kawul","g":"stuReykawul","e":"to make tired, wear out","r":4,"c":"v. stat. comp. trans.","l":1527815306,"ec":"make","ep":"tired"},
+  {"ts":1527815306,"i":7876,"p":"ستړی","f":"stúRey","g":"stuRey","e":"tired","r":4,"c":"adj. / adv."},
+);
+const stureyKedul = vEntry(
+  {"ts":1591033069786,"i":7878,"p":"ستړی کېدل","f":"stuRey kedul","g":"stuReykedul","e":"to get tired, fatigued","r":4,"c":"v. stat. comp. intrans.","l":1527815306,"ec":"get","ep":"tired"},
+  {"ts":1527815306,"i":7876,"p":"ستړی","f":"stúRey","g":"stuRey","e":"tired","r":4,"c":"adj. / adv."},
+);
+
+const ooPH: T.PH= { type: "PH", ps: { p: "و", f: "óo" }};
+
+describe("imperfective stems", () => {
+  const tests: {
+    title: string,
+    tests: {
+      verb: T.VerbEntry,
+      genderNumber?: T.GenderNumber,
+      result: T.RootsStemsOutput,
+    }[],
+  }[] = [
+    {
+      title: "is the shortened infinitive for regular verbs",
+      tests: [
+        {
+          verb: ganul,
+          result: [[], [{ type: "VB", ps: [{ p: "ګڼ", f: "gaN" }]}]],
+        },
+        {
+          verb: wahul,
+          result: [[], [{ type: "VB", ps: [{ p: "وه", f: "wah" }]}]],
+        },
+      ],
+    },
+    {
+      title: "is the -eG for for regular intransitive verbs",
+      tests: [
+        {
+          verb: ghadzedul,
+          result: [[], [{ type: "VB", ps: [{ p: "غځېږ", f: "ghadzéG" }]}]],
+        },
+        {
+          verb: rasedul,
+          result: [[], [{
+            type: "VB",
+            ps: {
+              long: [{ p: "رسېږ", f: "raséG" }],
+              short: [{ p: "رس", f: "ras" }],
+            },
+          }]],
+        },
+      ],
+    },
+    {
+      title: "is the special imperfective stem for irregular verbs with a special imperfective stem",
+      tests: [
+        {
+          verb: khorul,
+          result: [[], [{ type: "VB", ps: [{ p: "خور", f: "khor" }]}]],
+        },
+        {
+          verb: kexodul,
+          result: [[], [{ type: "VB", ps: [{ p: "ږد", f: "Gd" }] }]],
+        },
+      ],
+    },
+    {
+      title: "is the fused word for stative compounds that swallow the k",
+      tests: [
+        {
+          verb: bandawul,
+          genderNumber: { gender: "masc", number: "singular" },
+          result: [[], [{ type: "VB", ps: [{ p: "بندو", f: "bandawX" }]}]],
+        },
+        {
+          verb: bandedul,
+          genderNumber: { gender: "masc", number: "singular" },
+          result: [[], [{ type: "VB", ps: [{ p: "بندېږ", f: "bandéG" }]}]],
+        },
+      ],
+    },
+    {
+      title: "is welded together with the complement on seperated stative compounds",
+      tests: [
+        {
+          verb: stureyKawul,
+          genderNumber: { gender: "fem", number: "singular" },
+          result: [[], [{
+            type: "welded",
+            left: {
+              type: "NComp",
+              comp: {
+                type: "AdjComp",
+                ps: { p: "ستړې", f: "stuRe" },
+                number: "singular",
+                gender: "fem",
+              },
+            },
+            right: {
+              type: "VB",
+              ps: [{ p: "کو", f: "kawX" }],
+            },
+          }]],
+        },
+        {
+          verb: stureyKedul,
+          genderNumber: { gender: "fem", number: "singular" },
+          result: [[], [{
+            type: "welded",
+            left: {
+              type: "NComp",
+              comp: {
+                type: "AdjComp",
+                ps: { p: "ستړې", f: "stuRe" },
+                number: "singular",
+                gender: "fem",
+              },
+            },
+            right: {
+              type: "VB",
+              ps: [{ p: "کېږ", f: "kéG" }],
+            },
+          }]],
+        },
+      ]
+    }
+  ];
+  tests.forEach(x => {
+    test(x.title, () => {
+      x.tests.forEach(y => {
+        expect(getRootStem({
+          verb: y.verb,
+          aspect: "imperfective",
+          type: "basic",
+          rs: "stem",
+          voice: "active",
+          genderNumber: y.genderNumber || {
+            gender: "masc",
+            number: "singular",
+          },
+        })).toEqual(y.result);
+      });
+    })
+  });
+});
+
+describe("imperfective roots", () => {
+  const tests: {
+    title: string,
+    tests: {
+      verb: T.VerbEntry,
+      genderNumber?: T.GenderNumber,
+      result: T.RootsStemsOutput,
+    }[],
+  }[] = [
+    {
+      title: "is the infinitive with and without ل for regular verbs, with a trailing accent on the short form",
+      tests: [
+        {
+          verb: wahul,
+          result: [[], [{
+            type: "VB",
+            ps: {
+                long: [{ p: "وهل", f: "wahúl" }],
+                short: [{ p: "وه", f: "wahX" }],
+              },
+            }]
+          ],
+        },
+      ],
+    },
+    {
+      title: "is the fused word for stative compounds that swallow the k",
+      tests: [
+        {
+          verb: bandawul,
+          genderNumber: { gender: "masc", number: "singular" },
+          result: [
+            [],
+            [
+              { 
+                type: "VB",
+                ps: {
+                  long: [{ p: "بندول", f: "bandawúl" }],
+                  short: [{ p: "بندو", f: "bandawX" }],
+                }
+              },
+            ],
+          ],
+        },
+        {
+          verb: bandedul,
+          genderNumber: { gender: "masc", number: "singular" },
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "بندېدل", f: "bandedúl" }],
+                  short: [{ p: "بندېد", f: "bandedX" }]
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "is welded together with the complement on seperated stative compounds",
+      tests: [
+        {
+          verb: stureyKawul,
+          genderNumber: { gender: "fem", number: "singular" },
+          result: [[], [{
+            type: "welded",
+            left: {
+              type: "NComp",
+              comp: {
+                type: "AdjComp",
+                ps: { p: "ستړې", f: "stuRe" },
+                number: "singular",
+                gender: "fem",
+              },
+            },
+            right: {
+              type: "VB",
+              ps: {
+                long: [{ p: "کول", f: "kawúl" }],
+                short: [{ p: "کو", f: "kawX" }],
+              },
+            },
+          }]],
+        },
+        {
+          verb: stureyKedul,
+          genderNumber: { gender: "fem", number: "singular" },
+          result: [[], [{
+            type: "welded",
+            left: {
+              type: "NComp",
+              comp: {
+                type: "AdjComp",
+                ps: { p: "ستړې", f: "stuRe" },
+                number: "singular",
+                gender: "fem",
+              },
+            },
+            right: {
+              type: "VB",
+              ps: {
+                long: [{ p: "کېدل", f: "kedúl" }],
+                short: [{ p: "کېد", f: "kedX" }],
+              },
+            },
+          }]],
+        },
+      ]
+    }
+  ];
+  tests.forEach(x => {
+    test(x.title, () => {
+      x.tests.forEach(y => {
+        expect(getRootStem({
+          verb: y.verb,
+          aspect: "imperfective",
+          type: "basic",
+          rs: "root",
+          voice: "active",
+          genderNumber: y.genderNumber || {
+            gender: "masc",
+            number: "singular",
+          },
+        })).toEqual(y.result);
+      });
+    })
+  });
+});
+
+describe("perfective stems", () => {
+  const tests: {
+    title: string,
+    tests: {
+      verb: T.VerbEntry,
+      genderNumber?: T.GenderNumber,
+      result: T.RootsStemsOutput,
+    }[],
+  }[] = [
+    {
+      title: "is the imprefective stem with an oo- prefix for regular verbs",
+      tests: [
+        {
+          verb: ganul,
+          result: [
+            [ooPH],
+            [{ type: "VB", ps: [{ p: "ګڼ", f: "gaN" }]}],
+          ],
+        },
+        {
+          verb: wahul,
+          result: [[ooPH], [{ type: "VB", ps: [{ p: "وه", f: "wah" }]}]],
+        },
+      ],
+    },
+    {
+      title: "the imperfective stem the perfective stem is regularly built off could be irregular",
+      tests: [
+        {
+          verb: khorul,
+          result: [[ooPH], [{ type: "VB", ps: [{ p: "خور", f: "khor" }]}]],
+        },
+      ],
+    },
+    {
+      title: "is the irregular perfective stem if the entry has a ssp/ssf",
+      tests: [
+        {
+          verb: wurul,
+          result: [
+            [{ type: "PH", ps: { p: "یو", f: "yó" }}],
+            [{ type: "VB", ps: [{ p: "س", f: "s" }]}],
+          ],
+        }
+      ]
+    },
+    {
+      title: "includes extra irregular short roots for kawul verbs",
+      tests: [
+        {
+          verb: kawulDyn,
+          result: [
+            [ooPH],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړ", f: "kR" }],
+                  short: [{ p: "ک", f: "k" }],
+                },
+              },
+            ]
+          ],
+        },
+      ],
+    },
+    {
+      title: "doesn't have a perfective head for kawul stative",
+      tests: [
+        {
+          verb: kawulStat,
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړ", f: "kR" }],
+                  short: [{ p: "ک", f: "k" }],
+                },
+              },
+            ]
+          ],
+        },
+      ],
+    },
+    {
+      title: "irregular, inflecting stem for tlul",
+      tests: [
+        {
+          verb: tlul,
+          genderNumber: { gender: "fem", number: "singular" },
+          result: [
+            [{ type: "PH", ps: { p: "لاړه ", f: "láaRa " }}],
+            [
+              { type: "VB", ps: [{ p: "ش", f: "sh" }]},
+            ],
+          ],
+        },
+        {
+          verb: tlul,
+          genderNumber: { gender: "fem", number: "plural" },
+          result: [
+            [{ type: "PH", ps: { p: "لاړې ", f: "láaRe " }}],
+            [
+              { type: "VB", ps: [{ p: "ش", f: "sh" }]},
+            ],
+          ],
+        },
+        {
+          verb: tlul,
+          genderNumber: { gender: "masc", number: "plural" },
+          result: [
+            [{ type: "PH", ps: { p: "لاړ ", f: "láaR " }}],
+            [
+              { type: "VB", ps: [{ p: "ش", f: "sh" }]},
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "broken apart with complement seperately in the perfective",
+      tests: [
+        {
+          verb: bandawul,
+          genderNumber: { gender: "masc", number: "singular" },
+          result: [
+            [
+              {
+                type: "NComp",
+                comp: {
+                  type: "AdjComp",
+                  ps: { p: "بند", f: "bánd" },
+                  gender: "masc",
+                  number: "singular",
+                },
+              },
+            ],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړ", f: "kR" }],
+                  short: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+        {
+          verb: bandedul,
+          genderNumber: { gender: "fem", number: "plural" },
+          result: [
+            [
+              {
+                type: "NComp",
+                comp: {
+                  type: "AdjComp",
+                  ps: { p: "بندې", f: "bánde" },
+                  gender: "fem",
+                  number: "plural",
+                },
+              },
+            ],
+            [
+              {
+                type: "VB",
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+        {
+          verb: stureyKedul,
+          genderNumber: { gender: "masc", number: "plural" },
+          result: [
+            [
+              {
+                type: "NComp",
+                comp: {
+                  type: "AdjComp",
+                  ps: { p: "ستړي", f: "stúRee" },
+                  gender: "masc",
+                  number: "plural",
+                },
+              },
+            ],
+            [
+              {
+                type: "VB",
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+      ],
+    },
+  ];
+  tests.forEach(x => {
+    test(x.title, () => {
+      x.tests.forEach(y => {
+        expect(getRootStem({
+          verb: y.verb,
+          aspect: "perfective",
+          type: "basic",
+          rs: "stem",
+          voice: "active",
+          genderNumber: y.genderNumber || {
+            gender: "masc",
+            number: "singular",
+          },
+        })).toEqual(y.result);
+      });
+    })
+  });
+});
+
+describe("perfective roots", () => {
+  const tests: {
+    title: string,
+    tests: {
+      verb: T.VerbEntry,
+      genderNumber?: T.GenderNumber,
+      result: T.RootsStemsOutput,
+    }[],
+  }[] = [
+    {
+      title: "is the imprefective root with an oo- prefix for regular verbs",
+      tests: [
+        {
+          verb: ganul,
+          result: [
+            [ooPH],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "ګڼل", f: "gaNul" }],
+                  short: [{ p: "ګڼ", f: "gaN" }],
+                },
+              },
+            ],
+          ],
+        },
+        {
+          verb: wahul,
+          result: [
+            [ooPH],
+            [
+              { 
+                type: "VB",
+                ps: {
+                  long: [{ p: "وهل", f: "wahul" }],
+                  short: [{ p: "وه", f: "wah" }],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "is the irregular perfective root if the entry has a ssp/ssf",
+      tests: [
+        {
+          verb: wurul,
+          result: [
+            [{ type: "PH", ps: { p: "یو", f: "yó" }}],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "ړل", f: "Rul" }],
+                  short: [{ p: "ړ", f: "R" }],
+                }
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "includes extra irregular short roots for kawul verbs",
+      tests: [
+        {
+          verb: kawulDyn,
+          result: [
+            [ooPH],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړل", f: "kRul" }],
+                  short: [{ p: "کړ", f: "kR" }],
+                  mini: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "doesn't have a perfective head for kawul stative",
+      tests: [
+        {
+          verb: kawulStat,
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړل", f: "kRul" }],
+                  short: [{ p: "کړ", f: "kR" }],
+                  mini: [{ p: "ک", f: "k" }],
+                },
+              },
+            ]
+          ],
+        },
+      ],
+    },
+    {
+      title: "broken apart with complement seperately in the perfective",
+      tests: [
+        {
+          verb: bandawul,
+          genderNumber: { gender: "masc", number: "singular" },
+          result: [
+            [
+              {
+                type: "NComp",
+                comp: {
+                  type: "AdjComp",
+                  ps: { p: "بند", f: "bánd" },
+                  gender: "masc",
+                  number: "singular",
+                },
+              },
+            ],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړل", f: "kRul" }],
+                  short: [{ p: "کړ", f: "kR" }],
+                  mini: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+        {
+          verb: bandedul,
+          genderNumber: { gender: "fem", number: "plural" },
+          result: [
+            [
+              {
+                type: "NComp",
+                comp: {
+                  type: "AdjComp",
+                  ps: { p: "بندې", f: "bánde" },
+                  gender: "fem",
+                  number: "plural",
+                },
+              },
+            ],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "شول", f: "shwul" }],
+                  short: [{ p: "شو", f: "shw" }],
+                }
+              },
+            ],
+          ],
+        },
+        {
+          verb: stureyKedul,
+          genderNumber: { gender: "masc", number: "plural" },
+          result: [
+            [
+              {
+                type: "NComp",
+                comp: {
+                  type: "AdjComp",
+                  ps: { p: "ستړي", f: "stúRee" },
+                  gender: "masc",
+                  number: "plural",
+                },
+              },
+            ],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "شول", f: "shwul" }],
+                  short: [{ p: "شو", f: "shw" }],
+                }
+              },
+            ],
+          ],
+        },
+      ],
+    },
+  ];
+  tests.forEach(x => {
+    test(x.title, () => {
+      x.tests.forEach(y => {
+        expect(getRootStem({
+          verb: y.verb,
+          aspect: "perfective",
+          type: "basic",
+          rs: "root",
+          voice: "active",
+          genderNumber: y.genderNumber || {
+            gender: "masc",
+            number: "singular",
+          },
+        })).toEqual(y.result);
+      });
+    })
+  });
+});
 
 describe("past participles", () => {
   test("for most verbs are just the imperfective root (imperative) plus ی - ey", () => {
@@ -97,7 +809,19 @@ describe("past participles", () => {
         number: "plural",
       });
   });
-  test("kawul/kedul verbs have an irregular pprt fields that give us the irregular past participle", () => {
+  test("special short form with تلل - tlul", () => {
+    expect(getPastParticiple(tlul, "active", { gender: "masc", number: "plural" }))
+      .toEqual({
+        type: "VB",
+        ps: {
+          long: [{ p: "تللي", f: "tlúlee" }],
+          short: [{ p: "تلي", f: "túlee" }],
+        },
+        gender: "masc",
+        number: "plural",
+      });
+  });
+  test("kawul/kedul/raatlul verbs have an irregular pprt fields that give us the irregular past participle", () => {
     expect(getPastParticiple(kawulDyn, "active", { gender: "masc", number: "singular" }))
       .toEqual({
         type: "VB",
@@ -127,7 +851,118 @@ describe("past participles", () => {
         number: "plural",
       });
   });
-  
+  test("stative compounds weld the complement to the kawul/kedul participle", () => {
+    expect(getPastParticiple(bandawul, "active", { gender: "fem", number: "singular" }))
+      .toEqual({
+        type: "welded",
+        left: {
+          type: "NComp",
+          comp: {
+            type: "AdjComp",
+            ps: { p: "بنده", f: "banda" },
+            gender: "fem",
+            number: "singular",
+          },
+        },
+        right: {
+          type: "VB",
+          ps: [{ p: "کړې", f: "kúRe" }],
+          gender: "fem",
+          number: "singular",
+        },
+      });
+    expect(getPastParticiple(bandedul, "active", { gender: "fem", number: "plural" }))
+      .toEqual({
+        type: "welded",
+        left: {
+          type: "NComp",
+          comp: {
+            type: "AdjComp",
+            ps: { p: "بندې", f: "bande" },
+            gender: "fem",
+            number: "plural",
+          },
+        },
+        right: {
+          type: "VB",
+          ps: [{ p: "شوې", f: "shúwe" }],
+          gender: "fem",
+          number: "plural",
+        },
+      });
+  });
+  test("for passive with simple verbs, long perfective root welded to kedul participle", () => {
+    expect(getPastParticiple(ganul, "passive", { gender: "fem", number: "singular" }))
+      .toEqual({
+        type: "welded",
+        left: {
+          type: "VB",
+          ps: [{ p: "ګڼل", f: "gaNul" }],
+        },
+        right: {
+          type: "VB",
+          ps: [{ p: "شوې", f: "shúwe" }],
+          gender: "fem",
+          number: "singular",
+        },
+      });
+  });
+  test("special passive forms for kawul verbs - kRul perfective root + shúwey", () => {
+    expect(getPastParticiple(kawulStat, "passive", { gender: "masc", number: "singular"}))
+      .toEqual({
+        type: "welded",
+        left: {
+          type: "VB",
+          ps: [{ p: "کړل", f: "kRul" }],
+        },
+        right: {
+          type: "VB",
+          ps: [{ p: "شوی", f: "shúwey" }],
+          gender: "masc",
+          number: "singular",
+        },
+      });
+    expect(getPastParticiple(kawulDyn, "passive", { gender: "masc", number: "singular"}))
+      .toEqual({
+        type: "welded",
+        left: {
+          type: "VB",
+          ps: [{ p: "کړل", f: "kRul" }],
+        },
+        right: {
+          type: "VB",
+          ps: [{ p: "شوی", f: "shúwey" }],
+          gender: "masc",
+          number: "singular",
+        },
+      });
+    expect(getPastParticiple(bandawul, "passive", { gender: "fem", number: "plural" }))
+      .toEqual({
+        type: "welded",
+        left: {
+          type: "welded",
+          left: {
+            type: "NComp",
+            comp: {
+              type: "AdjComp",
+              ps: { p: "بندې", f: "bande" },
+              gender: "fem",
+              number: "plural",
+            },
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "کړل", f: "kRul" }],
+          },
+        },
+        right: {
+          type: "VB",
+          ps: [{ "p": "شوې", "f": "shúwe" }],
+          gender: "fem",
+          number: "plural"
+        },
+      });
+  })
 });
 
 // const ooPh: T.PH = {

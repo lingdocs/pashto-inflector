@@ -1,0 +1,52 @@
+{
+	"PS Sententce": {
+		"prefix": "pssentence",
+		"body": [
+			"{",
+			"\tp: \"$1\",",
+			"\tf: \"$2\",",
+			"\te: \"$3\",",
+			"}"
+		],
+	},
+	"PS String": {
+		"prefix": "psstring",
+		"body": "{ p: \"$1\", f: \"$2\" }",	
+	},
+	"InlinePs": {
+		"prefix": "inlineps",
+		"body": "<InlinePs opts={opts} ps={{ p: \"$1\", f: \"$2\", e: \"$3\" }} />",
+	},
+	"EditableVPEx": {
+		"prefix": "editablevpex",
+		"body": [
+			"<EditableVPEx opts={opts}>{",
+			"\t$1",
+			"}</EditableVPEx>"
+		]
+	},
+	"EditableEPEx": {
+		"prefix": "editableepex",
+		"body": [
+			"<EditableEPEx opts={opts} hideOmitSubject>{",
+			"\t$1",
+			"}</EditableEPEx>"
+		]
+	},
+	"Examples": {
+		"prefix": "examples",
+		"body": [
+			"<Examples opts={opts}>{[",
+			"\t{",
+			"\t\tp: \"$1\",",
+			"\t\tf: \"$2\",",
+			"\t\te: \"$3\",",
+			"\t},",
+			"]}</Examples>",
+		],
+	},
+	"Link": {
+		"prefix": "link",
+		"body": "<Link to=\"$1\">$2</Link>",
+	}
+}
