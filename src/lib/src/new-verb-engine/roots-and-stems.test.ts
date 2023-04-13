@@ -965,1035 +965,292 @@ describe("past participles", () => {
   })
 });
 
-// const ooPh: T.PH = {
-//   type: "PH",
-//   ps: { p: "و", f: "óo" },
-// };
+describe("ability roots and stems", () => {
+  const tests: {
+    title: string,
+    tests: {
+      verb: T.VerbEntry,
+      aspect: T.Aspect,
+      rs: "root" | "stem",
+      genderNumber?: T.GenderNumber,
+      result: T.RootsStemsOutput,
+      voice: T.Voice,
+    }[],
+  }[] = [
+    {
+      title: "is the aspect's root with the ability endings and then the perfective kedul modal verb stem or root",
+      tests: [
+        {
+          verb: khatul,
+          aspect: "imperfective",
+          rs: "stem",
+          voice: "active",
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "ختلی", f: "khatúley" },
+                    { p: "ختلای", f: "khatúlaay" },
+                  ],
+                  short: [
+                    { p: "ختی", f: "khatéy" },
+                    { p: "ختای", f: "khatáay" },
+                  ],
+                },
+              },
+              {
+                type: "VB",
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+        {
+          verb: khatul,
+          aspect: "perfective",
+          rs: "stem",
+          voice: "active",
+          result: [
+            [ooPH],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "ختلی", f: "khatuley" },
+                    { p: "ختلای", f: "khatulaay" },
+                  ],
+                  short: [
+                    { p: "ختی", f: "khatey" },
+                    { p: "ختای", f: "khataay" },
+                  ],
+                },
+              },
+              {
+                type: "VB",
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+        {
+          verb: khatul,
+          aspect: "imperfective",
+          rs: "root",
+          voice: "active",
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "ختلی", f: "khatúley" },
+                    { p: "ختلای", f: "khatúlaay" },
+                  ],
+                  short: [
+                    { p: "ختی", f: "khatéy" },
+                    { p: "ختای", f: "khatáay" },
+                  ],
+                },
+              },
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "شول", f: "shwul" }],
+                  short: [{ p: "شو", f: "shw" }],
+                },
+              },
+            ],
+          ],
+        },
+        {
+          verb: khatul,
+          aspect: "perfective",
+          rs: "root",
+          voice: "active",
+          result: [
+            [ooPH],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "ختلی", f: "khatuley" },
+                    { p: "ختلای", f: "khatulaay" },
+                  ],
+                  short: [
+                    { p: "ختی", f: "khatey" },
+                    { p: "ختای", f: "khataay" },
+                  ],
+                },
+              },
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "شول", f: "shwul" }],
+                  short: [{ p: "شو", f: "shw" }],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "tlul verbs lose the perfective aspect",
+      tests: [
+        {
+          verb: raatlul,
+          aspect: "perfective",
+          rs: "stem",
+          voice: "active",
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "راتللی", f: "raatlúley" },
+                    { p: "راتللای", f: "raatlúlaay" },
+                  ],
+                  short: [
+                    { p: "راتلی", f: "raatléy" },
+                    { p: "راتلای", f: "raatláay" },
+                  ],
+                },
+              },
+              { 
+                type: "VB", 
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+        {
+          verb: raatlul,
+          aspect: "imperfective",
+          rs: "stem",
+          voice: "active",
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "راتللی", f: "raatlúley" },
+                    { p: "راتللای", f: "raatlúlaay" },
+                  ],
+                  short: [
+                    { p: "راتلی", f: "raatléy" },
+                    { p: "راتلای", f: "raatláay" },
+                  ],
+                },
+              },
+              { 
+                type: "VB", 
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "intransitive stative compounds lose aspect",
+      tests: [
+        {
+          verb: bandedul,
+          aspect: "perfective",
+          rs: "stem",
+          voice: "active",
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "بندېدلی", f: "bandedúley" },
+                    { p: "بندېدلای", f: "bandedúlaay" },
+                  ],
+                  short: [
+                    { p: "بندېدی", f: "bandedéy" },
+                    { p: "بندېدای", f: "bandedáay" },
+                  ],
+                },
+              },
+              { 
+                type: "VB", 
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "passive takes the long imperfective passive root (loses aspect), and adds the ability endings",
+      tests: [
+        {
+          verb: achawul,
+          aspect: "perfective",
+          rs: "stem",
+          voice: "passive",
+          result: [
+            [],
+            [
+              {
+                type: "welded",
+                left: {
+                  type: "VB",
+                  ps: [{ p: "اچول", f: "achawul" }],
+                },
+                right: {
+                  type: "VB",
+                  ps: {
+                    long: [
+                      { p: "کېدلی", f: "kedúley" },
+                      { p: "کېدلای", f: "kedúlaay" },
+                    ],                    
+                    short: [
+                      { p: "کېدی", f: "kedéy" },
+                      { p: "کېدای", f: "kedáay" },
+                    ],                    
+                  },
+                },
+              },
+              { 
+                type: "VB", 
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+      ],
+    },
+  ];
+  tests.forEach((x) => {
+    test(x.title, () => {
+      x.tests.forEach((y) => {
+        expect(getRootStem({
+          verb: y.verb,
+          aspect: y.aspect,
+          rs: y.rs,
+          genderNumber: y.genderNumber || { gender: "masc", number: "plural" },
+          type: "ability",
+          voice: y.voice,
+        })).toEqual(y.result);
+      })
+    })
+  });
+});
 
-// type RootsAndStemsTestGroup = {
-//   verb: T.VerbEntry,
-//   result: Record<"stem" | "root", {
-//     imperfective: T.RootStemOutput,
-//     perfective: T.RootStemOutput,
-//   }>
-// }[];
-
-// const rootsAndStemsTests: {
-//   title: string,
-//   testGroup: RootsAndStemsTestGroup,
-// }[] =
-//   [
-//     {
-//       title: "regular verbs",
-//       testGroup: [
-//         {
-//           verb: weshul,
-//           result: {
-//             stem: {
-//               perfective: [
-//                 ooPh,
-//                 [{ p: "وېش", f: "wesh" }],
-//               ],
-//               imperfective: [
-//                 [{ p: "وېش", f: "wesh" }],
-//               ],
-//             },
-//             root: {
-//               perfective: [
-//                 ooPh,
-//                 {
-//                   long: [{ p: "وېشل", f: "weshul" }],
-//                   short: [{ p: "وېش", f: "wesh" }],
-//                 },
-//               ],
-//               imperfective: [
-//                 {
-//                   long: [{ p: "وېشل", f: "weshúl" }],
-//                   short: [{ p: "وېش", f: "weshX" }],
-//                 },
-//               ],
-//             },
-//           },
-//         },
-//         {
-//           verb: ganul,
-//           result: {
-//             stem: {
-//               perfective: [
-//                 ooPh,
-//                 [{ p: "ګڼ", f: "gaN" }],
-//               ],
-//               imperfective: [
-//                 [{ p: "ګڼ", f: "gaN" }],
-//               ],
-//             },
-//             root: {
-//               perfective: [
-//                 ooPh,
-//                 {
-//                   long: [{ p: "ګڼل", f: "gaNul" }],
-//                   short: [{ p: "ګڼ", f: "gaN" }],
-//                 },
-//               ],
-//               imperfective: [
-//                 {
-//                   long: [{ p: "ګڼل", f: "gaNúl" }],
-//                   short: [{ p: "ګڼ", f: "gaNX" }],
-//                 },
-//               ],
-//             },
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       title: "intransitive edul verbs",
-//       testGroup: [
-//         // without shorter intrans version
-//         {
-//           verb: ghadzedul,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و",
-//                     "f": "óo"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "غځېد",
-//                     "f": "ghadzed"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "غځېږ",
-//                     "f": "ghadzéG"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و",
-//                     "f": "óo"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "غځېدل",
-//                       "f": "ghadzedul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "غځېد",
-//                       "f": "ghadzed"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "غځېدل",
-//                       "f": "ghadzedúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "غځېد",
-//                       "f": "ghadzedX"
-//                     },
-//                   ],
-//                 },
-//               ],
-//             },
-//           },
-//         },
-//         // with shorter intrans version
-//         {
-//           verb: rasedul,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و",
-//                     "f": "óo"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "رسېد",
-//                     "f": "rased"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "رسېږ",
-//                       "f": "raséG"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "رس",
-//                       "f": "ras"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و",
-//                     "f": "óo"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "رسېدل",
-//                       "f": "rasedul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "رسېد",
-//                       "f": "rased"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "رسېدل",
-//                       "f": "rasedúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "رسېد",
-//                       "f": "rasedX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       title: "verbs with irregular stems",
-//       testGroup: [
-//         {
-//           verb: khorul,
-//           result: {
-//             stem: {
-//               perfective: [
-//                 ooPh,
-//                 [{ p: "خور", f: "khor" }],
-//               ],
-//               imperfective: [
-//                 [{ p: "خور", f: "khor" }],
-//               ],
-//             },
-//             root: {
-//               perfective: [
-//                 ooPh,
-//                 {
-//                   long: [{ p: "خوړل", f: "khoRul" }],
-//                   short: [{ p: "خوړ", f: "khoR" }],
-//                 },
-//               ],
-//               imperfective: [
-//                 {
-//                   long: [{ p: "خوړل", f: "khoRúl" }],
-//                   short: [{ p: "خوړ", f: "khoRX" }],
-//                 },
-//               ],
-//             },
-//           },
-//         },
-//         {
-//           verb: khatul,
-//           result: {
-//             stem: {
-//               perfective: [
-//                 ooPh,
-//                 [{ p: "خېژ", f: "khejz" }],
-//               ],
-//               imperfective: [
-//                 [{ p: "خېژ", f: "khejz" }],
-//               ],
-//             },
-//             root: {
-//               perfective: [
-//                 ooPh,
-//                 {
-//                   long: [{ p: "ختل", f: "khatul" }],
-//                   short: [{ p: "خت", f: "khat" }],
-//                 },
-//               ],
-//               imperfective: [
-//                 {
-//                   long: [{ p: "ختل", f: "khatúl" }],
-//                   short: [{ p: "خت", f: "khatX" }],
-//                 },
-//               ],
-//             },
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       title: "verbs with special prefix behavior",
-//       testGroup: [
-//         {
-//           verb: achawul,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "وا",
-//                     "f": "wáa"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "چو",
-//                     "f": "chaw"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "اچو",
-//                     "f": "achaw"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "وا",
-//                     "f": "wáa"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "چول",
-//                       "f": "chawul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "چو",
-//                       "f": "chaw"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "اچول",
-//                       "f": "achawúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "اچو",
-//                       "f": "achawX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//         {
-//           verb: watul,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "wÚ",
-//                     "f": "و"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "وځ",
-//                     "f": "oodz"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "وځ",
-//                     "f": "oodz"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و",
-//                     "f": "óo"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "وتل",
-//                       "f": "watul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "وت",
-//                       "f": "wat"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "وتل",
-//                       "f": "watúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "وت",
-//                       "f": "watX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//         {
-//           verb: azmoyul,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و ",
-//                     "f": "óo`"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "ازموی",
-//                     "f": "azmoy"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "ازموی",
-//                     "f": "azmoy"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و ",
-//                     "f": "óo`"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "ازمویل",
-//                       "f": "azmoyul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "ازموی",
-//                       "f": "azmoy"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "ازمویل",
-//                       "f": "azmoyúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "ازموی",
-//                       "f": "azmoyX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       title: "verbs with seperable oo prefix",
-//       testGroup: [
-//         {
-//           verb: kenaastul,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "کې",
-//                     "f": "ké"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "ن",
-//                     "f": "n"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "کېن",
-//                     "f": "ken"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "کې",
-//                     "f": "ké"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "ناستل",
-//                       "f": "naastul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "ناست",
-//                       "f": "naast"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "کېناستل",
-//                       "f": "kenaastúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "کېناست",
-//                       "f": "kenaastX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       title: "verbs with irregular roots and stems",
-//       testGroup: [
-//         {
-//           verb: wurul,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "یو",
-//                     "f": "yó"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "س",
-//                     "f": "s"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "وړ",
-//                     "f": "wuR"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "یو",
-//                     "f": "yó"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "ړل",
-//                       "f": "Rul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "ړ",
-//                       "f": "R"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "وړل",
-//                       "f": "wuRúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "وړ",
-//                       "f": "wuRX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           }
-//         },
-//         {
-//           verb: kexodul,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "کې",
-//                     "f": "ké"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "ږد",
-//                     "f": "Gd"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "ږد",
-//                     "f": "Gd"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "کې",
-//                     "f": "ké"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "ښودل",
-//                       "f": "xodul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "ښود",
-//                       "f": "xod"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "کېښودل",
-//                       "f": "kexodúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "کېښود",
-//                       "f": "kexodX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       title: "especially irregular verbs",
-//       testGroup: [
-//         {
-//           verb: kedulStat,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 [
-//                   {
-//                     "p": "ش",
-//                     "f": "sh"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "کېږ",
-//                     "f": "kéG",
-//                   },
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "شول",
-//                       "f": "shwul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "شو",
-//                       "f": "shw"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "کېدل",
-//                       "f": "kedúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "کېد",
-//                       "f": "kedX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//         {
-//           verb: kedulDyn,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "f": "óo",
-//                     "p": "و"
-//                   }
-//                 },
-//                 [
-//                   {
-//                     "p": "ش",
-//                     "f": "sh"
-//                   }
-//                 ]
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "کېږ",
-//                     "f": "kéG"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "f": "óo",
-//                     "p": "و"
-//                   }
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "شول",
-//                       "f": "shwul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "شو",
-//                       "f": "shw"
-//                     }
-//                   ]
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "کېدل",
-//                       "f": "kedúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "کېد",
-//                       "f": "kedX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//         {
-//           verb: kawulStat,
-//           result: {
-//             "stem": {
-//               "perfective": [{
-//                 long: [
-//                   {
-//                     "p": "کړ",
-//                     "f": "kR"
-//                   }
-//                 ],
-//                 short: [
-//                   {
-//                     p: "ک",
-//                     f: "k",
-//                   },
-//                 ],
-//               }],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "کو",
-//                     "f": "kaw"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "کړل",
-//                       "f": "kRul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "کړ",
-//                       "f": "kR"
-//                     }
-//                   ],
-//                   "mini": [
-//                     {
-//                       "p": "ک",
-//                       "f": "k",
-//                     },
-//                   ],
-//                 }
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "کول",
-//                       "f": "kawúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "کو",
-//                       "f": "kawX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         },
-//         {
-//           verb: kawulDyn,
-//           result: {
-//             "stem": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و",
-//                     "f": "óo",
-//                   }
-//                 },
-//                 {
-//                   long: [
-//                     {
-//                       "p": "کړ",
-//                       "f": "kR"
-//                     },
-//                   ],
-//                   short: [
-//                     { p: "ک", f: "k" },
-//                   ],
-//                 },
-//               ],
-//               "imperfective": [
-//                 [
-//                   {
-//                     "p": "کو",
-//                     "f": "kaw"
-//                   }
-//                 ]
-//               ]
-//             },
-//             "root": {
-//               "perfective": [
-//                 {
-//                   "type": "PH",
-//                   "ps": {
-//                     "p": "و",
-//                     "f": "óo",
-//                   },
-//                 },
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "کړل",
-//                       "f": "kRul"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "کړ",
-//                       "f": "kR"
-//                     }
-//                   ],
-//                   "mini": [
-//                     { p: "ک", f: "k" },
-//                   ],
-//                 },
-//               ],
-//               "imperfective": [
-//                 {
-//                   "long": [
-//                     {
-//                       "p": "کول",
-//                       "f": "kawúl"
-//                     }
-//                   ],
-//                   "short": [
-//                     {
-//                       "p": "کو",
-//                       "f": "kawX"
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           },
-//         }
-//       ],
-//     }
-//   ];
-
-// rootsAndStemsTests.forEach(({ title, testGroup }) => {
-//   test(title, () => {
-//     testGroup.forEach(({ verb, result }) => {
-//       expect(getAllRs(verb)).toEqual(result);
-//     });
-//   });
-// });
+// describe("passive roots and stems", () => {
+//   test("");
+// })
