@@ -21,21 +21,7 @@ import { pashtoConsonants } from "../pashto-consonants";
 import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import { getAspect, isKedul, perfectTenseToEquative, verbEndingConcat } from "./rs-helpers";
 
-// For the chart display of the results: base the length thing on the VBE at the end, if there are other
-// length variations earlier in the blocks, flatten those into the variations
-
-// TODO: Amazingly, the basic formula with the roots and stems from the basic verbs
-// works perfectly with stative compounds as well!
-// The only issue is that if we want to include more information (complement noun gender etc) in the blocks
-// we need to redo the stem building to have those parts
-// 2 options:
-//   1. redo the root/stem builder to output primitive blocks
-//   2. rebuild the roots/stems in the verb engine
-// Will start with number 2 and then if I go back and rebuild the root/stem builder
-// We can go back to using a very simple verb building formula
-
 // TODO: problem with laaR - no perfective split
-// TODO: are azmóyulum and wáayulo really not just azmoyúlum and waayúlo ?
 // TODO: automatic 3rd person idiosyncronizing of raTul raaTu, shaRul, shaaRu, rasedul rased etc
 
 // IMMEDIATE TODO: shwoo -> shoo

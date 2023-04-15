@@ -11,6 +11,7 @@ const kedulStat = vEntry({"ts":1581086654898,"i":11100,"p":"کېدل","f":"kedul
 const kedulDyn = vEntry({"ts":1527812754,"i":11101,"p":"کېدل","f":"kedul","g":"kedul","e":"to happen, occur","r":2,"c":"v. intrans.","ssp":"وش","ssf":"óosh","prp":"وشول","prf":"óoshwul","pprtp":"شوی","pprtf":"shúwey","diacExcept":true,"ec":"happen","separationAtP":1,"separationAtF":2});
 const raatlul = vEntry({"ts":1527815216,"i":6875,"p":"راتلل","f":"raatlúl","g":"raatlul","e":"to come","r":4,"c":"v. intrans.","psp":"راځ","psf":"raadz","ssp":"راش","ssf":"ráash","prp":"راغلل","prf":"ráaghlul","pprtp":"راغلی","pprtf":"raaghúley","tppp":"راغی","tppf":"ráaghey","noOo":true,"separationAtP":2,"separationAtF":3,"ec":"come,comes,coming,came,come"});
 const wartlul = vEntry({"ts":1585228579997,"i":14821,"p":"ورتلل","f":"wărtlul","g":"wartlul","e":"to come / go over to (third person or place)","r":4,"c":"v. intrans.","psp":"ورځ","psf":"wărdz","ssp":"ورش","ssf":"wársh","prp":"ورغلل","prf":"wárghlul","pprtp":"ورغلی","pprtf":"wărghúley","tppp":"ورغی","tppf":"wărghey","noOo":true,"separationAtP":2,"separationAtF":3,"ec":"come,comes,coming,came,come"});
+const osedul = vEntry({"ts":1527815139,"i":1127,"p":"اوسېدل","f":"osedul","g":"osedul","e":"to live, reside, stay, be","r":4,"c":"v. intrans.","shortIntrans":true,"diacExcept":true});
 const tlul = vEntry({"ts":1527815348,"i":3791,"p":"تلل","f":"tlul","g":"tlul","e":"to go","r":4,"c":"v. intrans.","psp":"ځ","psf":"dz","ssp":"لاړ ش","ssf":"láaR sh","prp":"لاړ","prf":"láaR","ec":"go,goes,going,went,gone"});
 const awuxtul = vEntry({"ts":1527814012,"i":1133,"p":"اوښتل","f":"awUxtul","g":"awUxtul","e":"to pass over, overturn, be flipped over, spill over, shift, change, diverge, pass, cross, abandon; to be sprained","r":4,"c":"v. intrans.","psp":"اوړ","psf":"awR","ec":"pass","ep":"over"});
 const khorul = vEntry({"ts":1527812790,"i":6002,"p":"خوړل","f":"khoRul","g":"khoRul","e":"to eat, to bite","r":4,"c":"v. trans.","psp":"خور","psf":"khor","tppp":"خوړ","tppf":"khoR","ec":"eat,eats,eating,ate,eaten"});
@@ -63,6 +64,24 @@ describe("imperfective stems", () => {
         {
           verb: wahul,
           result: [[], [{ type: "VB", ps: [{ p: "وه", f: "wah" }]}]],
+        },
+      ],
+    },
+    {
+      title: "-awul verbs have a trailing accent",
+      tests: [
+        {
+          verb: achawul,
+          genderNumber: { gender: "masc", number: "singular" },
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: [{ p: "اچو", f: "achawX" }],
+              },
+            ],
+          ],
         },
       ],
     },
@@ -337,6 +356,30 @@ describe("perfective stems", () => {
       ],
     },
     {
+      title: "is the -eG for for regular intransitive verbs",
+      tests: [
+        {
+          verb: ghadzedul,
+          result: [[ooPH], [{ type: "VB", ps: [{ p: "غځېږ", f: "ghadzeG" }]}]],
+        },
+        {
+          verb: rasedul,
+          result: [
+            [ooPH],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "رسېږ", f: "raseG" }],
+                  short: [{ p: "رس", f: "ras" }],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
       title: "the imperfective stem the perfective stem is regularly built off could be irregular",
       tests: [
         {
@@ -503,6 +546,71 @@ describe("perfective stems", () => {
               {
                 type: "VB",
                 ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "special/unusual heads for perfective split",
+      tests: [
+        {
+          verb: azmoyul,
+          genderNumber: { gender: "masc", number: "plural" },
+          result: [
+            [
+              { type: "PH", ps: { p: "و ", f: "óo`" }},
+            ],
+            [
+              {
+                type: "VB",
+                ps: [{ p: "ازموی", f: "azmoy" }],
+              },
+            ],
+          ],
+        },
+        {
+          verb: achawul,
+          genderNumber: { gender: "masc", number: "plural" },
+          result: [
+            [
+              { type: "PH", ps: { p: "وا", f: "wáa" }},
+            ],
+            [
+              {
+                type: "VB",
+                ps: [{ p: "چو", f: "chaw" }],
+              },
+            ],
+          ],
+        },
+        {
+          verb: watul,
+          genderNumber: { gender: "masc", number: "plural" },
+          result: [
+            [
+              { type: "PH", ps: { p: "و", f: "wÚ" }},
+            ],
+            [
+              { type: "VB", ps: [{ p: "وځ", f: "oodz" }]},
+            ],
+          ],
+        },
+        {
+          verb: osedul,
+          genderNumber: { gender: "masc", number: "plural" },
+          result: [
+            [
+              { type: "PH", ps: { p: "و", f: "óo`" }},
+            ],
+            [
+              {
+                type: "VB",
+                ps: {
+                  short: [{ p: "اوس", f: "os" }],
+                  long: [{ p: "اوسېږ", f: "oseG" }],
+                },
               },
             ],
           ],
@@ -1251,6 +1359,185 @@ describe("ability roots and stems", () => {
   });
 });
 
-// describe("passive roots and stems", () => {
-//   test("");
-// })
+describe("passive roots and stems", () => {
+  test("root plus kedul", () => {
+    expect(getRootStem({
+      verb: wahul,
+      aspect: "imperfective",
+      type: "basic",
+      rs: "stem",
+      genderNumber: {
+        gender: "masc",
+        number: "singular",
+      },
+      voice: "passive",
+    })).toEqual([
+      [],
+      [
+        {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "وهل", f: "wahul" }],
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "کېږ", f: "kéG" }],
+          },
+        },
+      ],
+    ]);
+    expect(getRootStem({
+      verb: wahul,
+      aspect: "imperfective",
+      type: "basic",
+      rs: "root",
+      genderNumber: {
+        gender: "masc",
+        number: "singular",
+      },
+      voice: "passive",
+    })).toEqual([
+      [],
+      [
+        {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "وهل", f: "wahul" }],
+          },
+          right: {
+            type: "VB",
+            ps: {
+              short: [{ p: "کېد", f: "kedX" }],
+              long: [{ p: "کېدل", f: "kedúl" }],
+            },
+          },
+        },
+      ],
+    ]);
+    expect(getRootStem({
+      verb: wahul,
+      aspect: "perfective",
+      type: "basic",
+      rs: "stem",
+      genderNumber: {
+        gender: "masc",
+        number: "singular",
+      },
+      voice: "passive",
+    })).toEqual([
+      [ooPH],
+      [
+        {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "وهل", f: "wahul" }],
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "ش", f: "sh" }],
+          },
+        },
+      ],
+    ]);
+    expect(getRootStem({
+      verb: wahul,
+      aspect: "perfective",
+      type: "basic",
+      rs: "root",
+      genderNumber: {
+        gender: "masc",
+        number: "singular",
+      },
+      voice: "passive",
+    })).toEqual([
+      [ooPH],
+      [
+        {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "وهل", f: "wahul" }],
+          },
+          right: {
+            type: "VB",
+            ps: {
+              short: [{ p: "شو", f: "shw" }],
+              long: [{ p: "شول", f: "shwul" }],
+            },
+          },
+        },
+      ],
+    ]);
+    expect(getRootStem({
+      verb: bandawul,
+      aspect: "perfective",
+      type: "basic",
+      rs: "root",
+      genderNumber: {
+        gender: "fem",
+        number: "singular",
+      },
+      voice: "passive",
+    })).toEqual([
+      [
+        {
+          type: "NComp",
+          comp: {
+            type: "AdjComp",
+            ps: { p: "بنده", f: "bánda" },
+            gender: "fem",
+            number: "singular",
+          },
+        },
+      ],
+      [
+        {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "کړل", f: "kRul" }],
+          },
+          right: {
+            type: "VB",
+            ps: {
+              short: [{ p: "شو", f: "shw" }],
+              long: [{ p: "شول", f: "shwul" }],
+            },
+          },
+        },
+      ],
+    ]);
+    expect(getRootStem({
+      verb: bandawul,
+      aspect: "imperfective",
+      type: "basic",
+      rs: "root",
+      genderNumber: {
+        gender: "fem",
+        number: "singular",
+      },
+      voice: "passive",
+    })).toEqual([
+      [],
+      [
+        {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "بندول", f: "bandawul" }],
+          },
+          right: {
+            type: "VB",
+            ps: {
+              short: [{ p: "کېد", f: "kedX" }],
+              long: [{ p: "کېدل", f: "kedúl" }],
+            },
+          },
+        },
+      ],
+    ]);
+  });
+});

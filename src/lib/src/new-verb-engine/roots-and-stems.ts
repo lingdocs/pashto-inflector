@@ -13,7 +13,7 @@ import * as T from "../../../types";
 import { makePsString, removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import { accentOnNFromEnd, countSyllables, removeAccents } from "../accent-helpers";
 import { isKawulVerb, isTlulVerb } from "../type-predicates";
-import { vEntry, addAbilityEnding, weld, removeL, addTrailingAccent, tlulPerfectiveStem, getLongVB, possiblePPartLengths, isStatComp, statCompImperfectiveSpace, makeComplement, vTransitivity } from "./rs-helpers";
+import { vEntry, addAbilityEnding, weld, removeL, addTrailingAccent, tlulPerfectiveStem, getLongVB, possiblePPartLengths, isStatComp, statCompImperfectiveSpace, makeComplement, vTransitivity, isKedul } from "./rs-helpers";
 import { inflectPattern3 } from "./new-inflectors";
 
 const statVerb = {
@@ -212,10 +212,13 @@ function getStem(verb: T.VerbEntryNoFVars, genderNum: T.GenderNumber, aspect: T.
         if (verb.entry.f === "tlul") {
             return tlulPerfectiveStem(genderNum);
         }
-        const base = (verb.entry.ssp && verb.entry.ssf)
-        // with irregular perfective stem
-        ? makePsString(verb.entry.ssp, verb.entry.ssf)
-        : (verb.entry.psp && verb.entry.psf)
+        if (!isKedul(verb) && vTransitivity(verb) === "intransitive" && verb.entry.p.endsWith("ېدل")) {
+            return splitEdulIntans(edulIntransBase(verb))
+        }
+        const base: T.PsString = (verb.entry.ssp && verb.entry.ssf)
+            // with irregular perfective stem
+            ? makePsString(verb.entry.ssp, verb.entry.ssf)
+            : (verb.entry.psp && verb.entry.psf)
             // with perfective stem based on irregular perfective root
             ? makePsString(verb.entry.psp, verb.entry.psf)
             // with regular infinitive based perfective stem
@@ -248,46 +251,70 @@ function getStem(verb: T.VerbEntryNoFVars, genderNum: T.GenderNumber, aspect: T.
             },
         ],
     ];
+    function splitEdulIntans(ps: T.SingleOrLengthOpts<T.PsString[]>): [[T.PH] | [], [T.VB]] {
+        const [ph, long] = ("long" in ps) 
+            ? getPerfectiveHead(ps.long[0], verb)
+            : getPerfectiveHead(ps[0], verb)
+        const short = ("long" in ps)
+            ? getPerfectiveHead(ps.short[0], verb)
+            : undefined;
+        if (short) {
+            return [
+                ph ? [ph] : [],
+                [
+                    {
+                        type: "VB",
+                        ps: {
+                            long: [long],
+                            short: [short[1]],
+                        },
+                    },
+                ],
+            ];
+        }
+        return [
+            ph ? [ph] : [],
+            [
+                { type: "VB", ps: [long] },
+            ],
+        ];
+    }
 }
 
-function getPerfectiveHead(base: T.PsString, { entry }: T.VerbEntryNoFVars): [T.PH, T.PsString] | [undefined, T.PsString] {
+// TODO: This is a nasty and messy way to do it with the length options included
+function getPerfectiveHead(base: T.PsString, v: T.VerbEntryNoFVars): [T.PH, T.PsString] | [undefined, T.PsString] {
     // if ((verb.entry.ssp && verb.entry.ssf) || verb.entry.separationAtP) {
     //     // handle split
     // }
-    if (entry.separationAtP && entry.separationAtF) {
+    if (v.entry.separationAtP && v.entry.separationAtF) {
         const ph: T.PH = {
             type: "PH",
             ps: accentOnNFromEnd({
-                p: base.p.slice(0, entry.separationAtP),
-                f: base.f.slice(0, entry.separationAtF),
+                p: base.p.slice(0, v.entry.separationAtP),
+                f: base.f.slice(0, v.entry.separationAtF),
             }, 0),       
         };
         const rest = {
-            p: base.p.slice(entry.separationAtP),
-            f: base.f.slice(entry.separationAtF),
+            p: base.p.slice(v.entry.separationAtP),
+            f: base.f.slice(v.entry.separationAtF),
         };
         return [ph, rest];
     }
-    const [ph, rest]: [T.PH | undefined, T.PsString] = entry.noOo
+    const [ph, rest]: [T.PH | undefined, T.PsString] = v.entry.noOo
         ? [undefined, base]
-        : entry.sepOo 
+        : v.entry.sepOo 
         ? [
             { type: "PH", ps: { p: "و ", f: "óo`"}},
             base,
         ]
-        : base.p.charAt(0) === "ا" && base.f.charAt(0) === "a"
-        ? [
-            { type: "PH", ps: { p: "وا", f: "wáa" }},
-            removeAStart(base),
-        ]
-        : ["آ", "ا"].includes(base.p.charAt(0)) && base.f.slice(0, 2) === "aa"
+        : ["آ", "ا"].includes(base.p.charAt(0)) && base.f.charAt(0) === "a"
         ? [
             { type: "PH", ps: { p: "وا", f: "wáa" }},
             removeAStart(base),
         ]
         : ["óo", "oo"].includes(base.f.slice(0, 2))
         ? [
-            { type: "PH", ps: { p: "wÚ", f: "و" }},
+            { type: "PH", ps: { p: "و", f: "wÚ" }},
             base,
         ]
         : ["ée", "ee"].includes(base.f.slice(0, 2)) && base.p.slice(0, 2) === "ای"
@@ -307,10 +334,7 @@ function getPerfectiveHead(base: T.PsString, { entry }: T.VerbEntryNoFVars): [T.
         ] : ["ó", "o"].includes(base.f[0]) && base.p.slice(0, 2) === "او"
         ? [
             { type: "PH", ps: { p: "و", f: "óo`"}},
-            {
-                p: base.p.slice(2),
-                f: base.f.slice(1),
-            },
+            base,
         ] : [
             { type: "PH", ps: { p: "و", f: "óo" }},
             base,

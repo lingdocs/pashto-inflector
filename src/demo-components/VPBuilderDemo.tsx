@@ -14,8 +14,6 @@ import {
 import { entryFeeder } from "./entryFeeder";
 import { renderVerb } from "../lib/src/new-verb-engine/render-verb";
 import NPPronounPicker from "../components/src/np-picker/NPPronounPicker";
-import { getAllRs } from "../lib/src/new-verb-engine/rs-helpers";
-
 
 const transitivities: T.Transitivity[] = [
     "transitive",
@@ -252,12 +250,6 @@ function VPBuilderDemo({ opts }: {
             role="subject"
             opts={opts}
         />
-        {/* <details>
-            <summary>Roots and Stems</summary>
-            <pre>
-                {JSON.stringify(rs, null, "  ")}
-            </pre>                
-        </details> */}
         <pre>
             {JSON.stringify(rv, null, "  ")}
         </pre>
