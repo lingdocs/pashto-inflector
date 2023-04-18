@@ -1,6 +1,7 @@
 import * as T from "../../../types";
 import {
     getVerbBlockPosFromPerson,
+    isSecondPerson,
     personGender,
     personNumber,
 } from "../misc-helpers";
@@ -12,21 +13,20 @@ import {
     presentEndings,
     pastEndings,
     equativeEndings,
+    imperativeEndings,
 } from "../grammar-units";
-import { isKawulVerb, isAbilityTense, isPerfectTense, isTlulVerb } from "../type-predicates";
+import { isKawulVerb, isAbilityTense, isPerfectTense, isTlulVerb, isImperativeTense } from "../type-predicates";
 import { tenseHasBa } from "../phrase-building/vp-tools";
 import { isPastTense } from "../phrase-building/vp-tools"; 
 import { makePsString, removeFVarients } from "../accent-and-ps-utils";
 import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import { getAspect, isKedul, perfectTenseToEquative, verbEndingConcat } from "./rs-helpers";
-import { accentOnNFromEnd, removeAccents } from "../accent-helpers";
-// TODO: problem with laaR - no perfective split
-// TODO: non past compounds with different object
-// TODO: coverage of rs-helpers
+import { accentOnNFromEnd, accentPsSyllable, removeAccents } from "../accent-helpers";
 
+// TODO: problem with laaR - no perfective split
 export function renderVerb({ verb, tense, person, voice, presObj }: {
     verb: T.VerbEntry,
-    tense: T.VerbTense | T.PerfectTense | T.AbilityTense, // TODO: make T.Tense
+    tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense, // TODO: make T.Tense
     person: T.Person,
     voice: T.Voice,
     presObj?: T.Person,
@@ -46,6 +46,7 @@ export function renderVerb({ verb, tense, person, voice, presObj }: {
         number: personNumber(rootPerson),
     };
     const aspect = getAspect(tense);
+    const isImperative = isImperativeTense(tense);
     const type = isAbilityTense(tense) ? "ability" : "basic";
 
     // #1 get the appropriate root / stem
@@ -58,7 +59,7 @@ export function renderVerb({ verb, tense, person, voice, presObj }: {
         genderNumber,
     });
     // #2 add the verb ending to it
-    const ending = getEnding(person, isPast);
+    const ending = getEnding(person, isPast, isImperative, aspect);
     return {
         hasBa,
         vbs: [
@@ -167,7 +168,17 @@ function addEnding({ verb, rs, ending, person, pastThird, aspect, basicForm }: {
     }
 }
 
-function getEnding(person: T.Person, isPast: boolean) {
+function getEnding(person: T.Person, isPast: boolean, isImperative: boolean, aspect: T.Aspect) {
+    if (isImperative) {
+        if (!isSecondPerson(person)) {
+            throw new Error("imperative forms must be second person");
+        }
+        const number = personNumber(person);
+        const ends = imperativeEndings[0][number === "singular" ? 0 : 1];
+        return aspect === "imperfective"
+            ? ends.map(e => accentPsSyllable(e))
+            : ends;
+    }
     const [row, col] = getVerbBlockPosFromPerson(person);
     return isPast ? {
         long: pastEndings.long[row][col],

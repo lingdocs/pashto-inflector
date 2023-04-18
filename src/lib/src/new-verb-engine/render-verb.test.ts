@@ -630,6 +630,152 @@ test("special endings", () => {
     });
 });
 
+test("imperative tenses", () => {
+    expect(renderVerb({
+        verb: wahul,
+        tense: "imperfectiveImperative",
+        person: T.Person.SecondSingMale,
+        voice: "active",
+    })).toEqual({
+        hasBa: false,
+        vbs: [
+            [],
+            [
+                { type: "VB", ps: [{ p: "وهه", f: "wahá" } ], person: 2},
+            ],
+        ],
+    });
+    expect(renderVerb({
+        verb: wahul,
+        tense: "perfectiveImperative",
+        person: T.Person.SecondSingFemale,
+        voice: "active",
+    })).toEqual({
+        hasBa: false,
+        vbs: [
+            [ooPh],
+            [
+                { type: "VB", ps: [{ p: "وهه", f: "waha" }], person: 3 },
+            ],
+        ],
+    });
+    expect(renderVerb({
+        verb: wahul,
+        tense: "imperfectiveImperative",
+        person: T.Person.SecondPlurMale,
+        voice: "active",
+    })).toEqual({
+        hasBa: false,
+        vbs: [
+            [],
+            [
+                { type: "VB", ps: [{ p: "وهئ", f: "wahéyy" } ], person: 8 },
+            ],
+        ],
+    });
+    expect(renderVerb({
+        verb: wahul,
+        tense: "perfectiveImperative",
+        person: T.Person.SecondPlurFemale,
+        voice: "active",
+    })).toEqual({
+        hasBa: false,
+        vbs: [
+            [ooPh],
+            [
+                { type: "VB", ps: [{ p: "وهئ", f: "waheyy" }], person: 9 },
+            ],
+        ],
+    });
+});
+
+test("ability tenses", () => {
+    expect(renderVerb({
+        verb: wahul,
+        tense: "presentVerbModal",
+        person: T.Person.FirstSingMale,
+        voice: "active",
+    })).toEqual({
+        hasBa: false,
+        vbs: [
+            [],
+            [
+                {
+                    type: "VB", 
+                    ps: {
+                        long: [
+                            { p: "وهلی", f: "wahúley" },
+                            { p: "وهلای", f: "wahúlaay" },
+                        ],
+                        short: [
+                            { p: "وهی", f: "wahéy" },
+                            { p: "وهای", f: "waháay" },
+                        ],
+                    },
+                },
+                {
+                    type: "VB",
+                    ps: [{ p: "شم", f: "shum" }],
+                    person: T.Person.FirstSingMale,
+                },
+            ],
+        ],
+    });
+});
+
+test("basic tenses", () => {
+    expect(renderVerb({
+        verb: wahul,
+        tense: "presentVerb",
+        person: T.Person.FirstSingMale,
+        voice: "active",
+    })).toEqual({
+        hasBa: false,
+        
+        vbs: [
+            [],
+            [
+                { type: "VB", ps: [{ p: "وهم", f: "wahum" }], person: T.Person.FirstSingMale },
+            ],
+        ],
+    });
+    expect(renderVerb({
+        verb: wahul,
+        tense: "subjunctiveVerb",
+        person: T.Person.SecondSingMale,
+        voice: "active",
+    })).toEqual({
+        hasBa: false,
+        vbs: [
+            [{ type: "PH", ps: { f: "óo", p: "و" }}],
+            [
+                { type: "VB", ps: [{ p: "وهې", f: "wahe" }], person: T.Person.SecondSingMale },
+            ],
+        ],
+    });
+    expect(renderVerb({
+        verb: wahul,
+        tense: "habitualPerfectivePast",
+        person: T.Person.ThirdSingFemale,
+        voice: "active",
+    })).toEqual({
+        hasBa: true,
+        vbs: [
+            [{ type: "PH", ps: { f: "óo", p: "و" }}],
+            [
+                {
+                    type: "VB",
+                    ps: {
+                        long: [{ p: "وهله", f: "wahula" }],
+                        short: [{ p: "وهه", f: "waha" }],
+                    },
+                    person: T.Person.ThirdSingFemale
+                },
+            ],
+        ],
+    });
+});
+
 test("perfect tenses", () => {
     expect(renderVerb({
         verb: wahul,
@@ -784,40 +930,6 @@ test("perfect tenses", () => {
                     type: "VB",
                     ps: [{ p: "وای", f: "waay" }, { p: "وی", f: "wey" }],
                     person: T.Person.SecondSingFemale,
-                },
-            ],
-        ],
-    });
-});
-
-test("ability tenses", () => {
-    expect(renderVerb({
-        verb: wahul,
-        tense: "presentVerbModal",
-        person: T.Person.FirstSingMale,
-        voice: "active",
-    })).toEqual({
-        hasBa: false,
-        vbs: [
-            [],
-            [
-                {
-                    type: "VB", 
-                    ps: {
-                        long: [
-                            { p: "وهلی", f: "wahúley" },
-                            { p: "وهلای", f: "wahúlaay" },
-                        ],
-                        short: [
-                            { p: "وهی", f: "wahéy" },
-                            { p: "وهای", f: "waháay" },
-                        ],
-                    },
-                },
-                {
-                    type: "VB",
-                    ps: [{ p: "شم", f: "shum" }],
-                    person: T.Person.FirstSingMale,
                 },
             ],
         ],

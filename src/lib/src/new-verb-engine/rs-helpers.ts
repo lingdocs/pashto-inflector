@@ -273,9 +273,10 @@ export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA> {
     };
 }
 
-export function getAspect(tense: T.VerbTense | T.AbilityTense): T.Aspect {
+export function getAspect(tense: T.VerbTense | T.AbilityTense | T.ImperativeTense): T.Aspect {
     const t = tense.replace("Modal", "");
-    if (["presentVerb", "imperfectiveFuture", "imperfectivePast", "habitualImperfectivePast"].includes(t)) {
+    const imperfectives: Parameters<typeof getAspect>[0][] = ["presentVerb", "imperfectiveFuture", "imperfectivePast", "habitualImperfectivePast", "imperfectiveImperative"];
+    if (imperfectives.includes(t as Parameters<typeof getAspect>[0])) {
         return "imperfective";
     } else {
         return "perfective";
