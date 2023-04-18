@@ -77,7 +77,6 @@ function getAbilityRs(
     ];
 }
 
-// TODO: kuRee shuwey etc
 export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, number }: { gender: T.Gender, number: T.NounNumber }): T.VBGenNum | T.WeldedGN {
     const v = removeFVarientsFromVerb(verb);
     if (voice === "passive") {

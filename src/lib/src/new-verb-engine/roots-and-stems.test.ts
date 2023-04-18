@@ -42,6 +42,14 @@ const stureyKedul = vEntry(
   {"ts":1591033069786,"i":7878,"p":"ستړی کېدل","f":"stuRey kedul","g":"stuReykedul","e":"to get tired, fatigued","r":4,"c":"v. stat. comp. intrans.","l":1527815306,"ec":"get","ep":"tired"},
   {"ts":1527815306,"i":7876,"p":"ستړی","f":"stúRey","g":"stuRey","e":"tired","r":4,"c":"adj. / adv."},
 );
+const bayaanedul = vEntry(
+  {"ts":1659037345120,"i":2055,"p":"بیانېدل","f":"bayaanedúl","g":"bayaanedul","e":"to be described, told, narrated, explained, declared","r":4,"c":"v. stat. comp. intrans.","l":1527814259},
+  {"ts":1527814259,"i":2052,"p":"بیان","f":"bayáan","g":"bayaan","e":"description, statement, speaking, narration, sermon","r":4,"c":"n. m.","app":"بیانات","apf":"bayaanaat"},
+);
+const khufaKedul = vEntry(
+  {"ts":1577898920635,"i":5845,"p":"خفه کېدل","f":"khufa kedul","g":"khufakedul","e":"to become sad, grieved, annoyed, upset; to be choked, to suffocate","r":4,"c":"v. stat. comp. intrans.","l":1527812798,"ec":"become","ep":"sad"},
+  {"ts":1527812798,"i":5843,"p":"خفه","f":"khufa","g":"khufa","e":"sad, upset, angry; choked, suffocated","r":4,"c":"adj."},
+);
 
 const ooPH: T.PH= { type: "PH", ps: { p: "و", f: "óo" }};
 
@@ -441,6 +449,26 @@ describe("perfective stems", () => {
       ],
     },
     {
+      title: "has a perfective head from kawul dynamic",
+      tests: [
+        {
+          verb: kawulDyn,
+          result: [
+            [ooPH],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړ", f: "kR" }],
+                  short: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
       title: "irregular, inflecting stem for tlul",
       tests: [
         {
@@ -538,6 +566,52 @@ describe("perfective stems", () => {
                   type: "AdjComp",
                   ps: { p: "ستړي", f: "stúRee" },
                   gender: "masc",
+                  number: "plural",
+                },
+              },
+            ],
+            [
+              {
+                type: "VB",
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+        // noun complements don't inflect
+        {
+          verb: bayaanedul,
+          genderNumber: { gender: "fem", number: "plural" },
+          result: [
+            [
+              {
+                type: "NComp",
+                comp: {
+                  type: "Comp",
+                  ps: { p: "بیان", f: "bayáan" },
+                },
+              },
+            ],
+            [
+              {
+                type: "VB",
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+        // some adjectives can't inflect
+        {
+          verb: khufaKedul,
+          genderNumber: { gender: "fem", number: "plural" },
+          result: [
+            [
+              {
+                type: "NComp",
+                comp: {
+                  type: "AdjComp",
+                  ps: { p: "خفه", f: "khufa" },
+                  gender: "fem",
                   number: "plural",
                 },
               },
@@ -739,6 +813,27 @@ describe("perfective roots", () => {
                 },
               },
             ]
+          ],
+        },
+      ],
+    },
+    {
+      title: "has a perfective head from kawul dynamic",
+      tests: [
+        {
+          verb: kawulDyn,
+          result: [
+            [ooPH],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړل", f: "kRul" }],
+                  short: [{ p: "کړ", f: "kR" }],
+                  mini: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
           ],
         },
       ],
@@ -1538,6 +1633,57 @@ describe("passive roots and stems", () => {
           },
         },
       ],
+    ]);
+    expect(getRootStem({
+      verb: stureyKawul,
+      aspect: "imperfective",
+      type: "basic",
+      voice: "passive",
+      genderNumber: {
+        gender: "masc",
+        number: "singular",
+      },
+      rs: "stem",
+    })).toEqual([
+      [],
+      [
+        {
+          "type": "welded",
+          "left": {
+            "type": "welded",
+            "left": {
+              "type": "NComp",
+              "comp": {
+                "type": "AdjComp",
+                "ps": {
+                  "p": "ستړی",
+                  "f": "stuRey"
+                },
+                "gender": "masc",
+                "number": "singular"
+              }
+            },
+            "right": {
+              "type": "VB",
+              "ps": [
+                {
+                  "p": "کول",
+                  "f": "kawul"
+                }
+              ]
+            }
+          },
+          "right": {
+            "type": "VB",
+            "ps": [
+              {
+                "p": "کېږ",
+                "f": "kéG"
+              }
+            ]
+          },
+        }
+      ]
     ]);
   });
 });

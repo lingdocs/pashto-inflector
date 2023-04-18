@@ -17,20 +17,19 @@ import { isKawulVerb, isAbilityTense, isPerfectTense, isTlulVerb } from "../type
 import { tenseHasBa } from "../phrase-building/vp-tools";
 import { isPastTense } from "../phrase-building/vp-tools"; 
 import { makePsString, removeFVarients } from "../accent-and-ps-utils";
-import { pashtoConsonants } from "../pashto-consonants";
 import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import { getAspect, isKedul, perfectTenseToEquative, verbEndingConcat } from "./rs-helpers";
-
+import { accentOnNFromEnd, removeAccents } from "../accent-helpers";
 // TODO: problem with laaR - no perfective split
-// TODO: automatic 3rd person idiosyncronizing of raTul raaTu, shaRul, shaaRu, rasedul rased etc
+// TODO: non past compounds with different object
+// TODO: coverage of rs-helpers
 
-// IMMEDIATE TODO: shwoo -> shoo
-
-export function renderVerb({ verb, tense, person, voice }: {
+export function renderVerb({ verb, tense, person, voice, presObj }: {
     verb: T.VerbEntry,
     tense: T.VerbTense | T.PerfectTense | T.AbilityTense, // TODO: make T.Tense
     person: T.Person,
     voice: T.Voice,
+    presObj?: T.Person,
 }): {
     hasBa: boolean,
     vbs: T.VerbRenderedOutput,
@@ -38,13 +37,14 @@ export function renderVerb({ verb, tense, person, voice }: {
     if (isPerfectTense(tense)) {
         return renderPerfectVerb({ verb, tense, voice, person });
     }
+    const isPast = isPastTense(tense);
+    const rootPerson = isPast ? person : (presObj ?? person);
 
     const hasBa = tenseHasBa(tense);
     const genderNumber = {
-        gender: personGender(person),
-        number: personNumber(person),
+        gender: personGender(rootPerson),
+        number: personNumber(rootPerson),
     };
-    const isPast = isPastTense(tense);
     const aspect = getAspect(tense);
     const type = isAbilityTense(tense) ? "ability" : "basic";
 
@@ -134,19 +134,25 @@ function addEnding({ verb, rs, ending, person, pastThird, aspect, basicForm }: {
     }
     function addToVBBasicEnd(vb: T.VBBasic, end: T.SingleOrLengthOpts<T.PsString[]>): T.VBBasic {
         if ("long" in vb.ps) {
+            if (vb.ps.short[0].f === "ghl" && pastThird && basicForm) {
+                return {
+                    ...vb,
+                    ps: [{ p: "غی", f: "ghey" }],
+                };
+            }
             const endLong = getLength(end, "long");
             const endShort = getLength(end, "short");
-            // TODO: this is hacky
-            const rsLong: T.PsString[] = vb.ps.long[0].f === "tlul"
-                ? [{ p: "تلل", f: "tlúl" }]
-                : vb.ps.long;
+            // TODO: this is hackyۉ
             return {
                 ...vb,
                 ps: {
-                    long: verbEndingConcat(rsLong, endLong),
+                    long: verbEndingConcat(vb.ps.long, endLong),
                     short: pastThird && basicForm
-                        ? ensure3rdPast(endShort, vb.ps.short, verb, aspect)
+                        ? ensure3rdPast(vb.ps.short, endShort, verb, aspect)
                         : verbEndingConcat(vb.ps.short, endShort),
+                    ...vb.ps.mini ? {
+                        mini: verbEndingConcat(vb.ps.mini, endShort),
+                    } : {},
                 },
             };
         }
@@ -171,8 +177,10 @@ function getEnding(person: T.Person, isPast: boolean) {
 
 // TODO: THIS IS PROBABLY SKEEEETCH
 function ensure3rdPast(rs: T.PsString[], ending: T.PsString[], verb: T.VerbEntry, aspect: T.Aspect): T.PsString[] {
-    if (isKedul(verb) && rs[0].p === "شو") {
-        return [{ p: "شو", f: "sho" }];
+    if (isKedul(verb)) {
+        return aspect === "perfective"
+            ? [{ p: "شو", f: "sho" }]
+            : [{ p: "کېده", f: "kedú" }];
     }
     if (isKawulVerb(verb) && rs[0].p === "کړ") {
         return [
@@ -182,30 +190,30 @@ function ensure3rdPast(rs: T.PsString[], ending: T.PsString[], verb: T.VerbEntry
         ];
     }
     if (isTlulVerb(verb)) {
-        if (aspect === "perfective") {
-            return [{ p: "غی", f: "ghey" }];
-        }
-        const specialTuShort: T.PsString = {
+        // should be imperfective at this point
+        // the perfective غی should already be covered in the function this is coming from
+        return [{
             p: rs[0].p.slice(0, -1) + "ه",
-            f: rs[0].f.slice(0, -1) + (rs[0].f === "tl" ? "u" : "ú"),
-        };
-        return [
-            specialTuShort,
-            concatPsString(rs[0], { p: "و", f: "o" }),
-        ];
+            f: rs[0].f.slice(0, -2) + "ú",
+        }];
     }
     if (verb.entry.tppp && verb.entry.tppf) {
-        const tip = makePsString(verb.entry.tppp, verb.entry.tppf)
+        const tip = removeAccents(verb.entry.separationAtP !== undefined
+            ? makePsString(verb.entry.tppp.slice(verb.entry.separationAtP), verb.entry.tppf.slice(verb.entry.separationAtF))
+            : makePsString(verb.entry.tppp, verb.entry.tppf));
+        const aTip = aspect === "imperfective"
+            ? accentOnNFromEnd(tip, 0)
+            : tip;
+        return [aTip];
         // if it ends in a consonant, the special form will also have another
         // variation ending with a ه - u
-        const endsInAConsonant = (pashtoConsonants.includes(tip.p.slice(-1)) || tip.f.slice(-1) === "w");
-        return [
-            tip,
-            ...endsInAConsonant ? [
-                concatPsString(tip, { p: "ه", f: "u" }),
-                concatPsString(tip, { p: "و", f: "o" }),
-            ] : [],
-        ];
+        // const endsInAConsonant = (pashtoConsonants.includes(tip.p.slice(-1)) || tip.f.slice(-1) === "w");
+        // return [
+        //     aTip,
+        //     ...endsInAConsonant ? [
+        //         ...verbEndingConcat([aTip], [{ p: "ه", f: "u" }, { p: "و", f: "o" }]),
+        //     ] : [],
+        // ];
     }
     const endsInAwul = (
         (["awul", "awúl"].includes(removeFVarients(verb.entry.f).slice(-4)))
@@ -215,12 +223,13 @@ function ensure3rdPast(rs: T.PsString[], ending: T.PsString[], verb: T.VerbEntry
     // TODO: check about verbs like tawul (if they exist)
     if (endsInAwul) {
         const base = { p: rs[0].p.slice(0, -1), f: rs[0].f.slice(0, -2) };
-        return [concatPsString(base, { p: "اوه", f: "aawu" })];
+        const aawuEnd = concatPsString(base, { p: "اوه", f: base.f.charAt(base.f.length-1) === "a" ? "awu" : "aawu" });
+        return [aspect === "imperfective"
+            ? accentOnNFromEnd(aawuEnd, 0)
+            : aawuEnd];
     }
     const endsInDental = ["د", "ت"].includes(rs[0].p.slice(-1));
     // short endings like ورسېد
-    return (endsInDental ? [
-        "",
-        ...ending,
-    ] : ending).map(e => concatPsString(rs[0], e));
+    const ends = endsInDental ? [{ p: "", f: "" }, ...ending] : ending;
+    return verbEndingConcat(rs, ends);
 }

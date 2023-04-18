@@ -2,7 +2,6 @@ import * as T from "../../../types";
 import { removeFVarients } from "../accent-and-ps-utils";
 import { accentOnNFromEnd, accentPsSyllable, countSyllables, removeAccents, removeAccentsWLength } from "../accent-helpers";
 import { concatPsString, isUnisexSet, psStringFromEntry, trimOffPs } from "../p-text-helpers";
-import { getRootStem } from "./roots-and-stems";
 import { inflectPattern1 } from "./new-inflectors";
 import { getLength } from "../p-text-helpers";
 import { equativeEndings } from "../grammar-units";
@@ -56,27 +55,27 @@ export function vEntry(e: any, c?: any): T.VerbEntryNoFVars {
     } as T.VerbEntryNoFVars;
 }
 
-export function getAllRs(verb: T.VerbEntry): {
-    stem: {
-        perfective: T.RootsStemsOutput,
-        imperfective: T.RootsStemsOutput,
-    },
-    root: {
-        perfective: T.RootsStemsOutput,
-        imperfective: T.RootsStemsOutput,
-    },
-} { 
-    return {
-        stem: {
-            perfective: getRootStem({ verb, type: "basic", voice: "active", rs: "stem", aspect: "perfective", genderNumber: { gender: "masc", number: "singular" } }),
-            imperfective: getRootStem({ verb, type: "basic", voice: "active", rs: "stem", aspect: "imperfective", genderNumber: { gender: "masc", number: "singular" } }),
-        },
-        root: {
-            perfective: getRootStem({ verb, type: "basic", voice: "active", rs: "root", aspect: "perfective", genderNumber: { gender: "masc", number: "singular" } }),
-            imperfective: getRootStem({ verb, type: "basic", voice: "active", rs: "root", aspect: "imperfective", genderNumber: { gender: "masc", number: "singular" } }),
-        },
-    };
-}
+// export function getAllRs(verb: T.VerbEntry): {
+//     stem: {
+//         perfective: T.RootsStemsOutput,
+//         imperfective: T.RootsStemsOutput,
+//     },
+//     root: {
+//         perfective: T.RootsStemsOutput,
+//         imperfective: T.RootsStemsOutput,
+//     },
+// } { 
+//     return {
+//         stem: {
+//             perfective: getRootStem({ verb, type: "basic", voice: "active", rs: "stem", aspect: "perfective", genderNumber: { gender: "masc", number: "singular" } }),
+//             imperfective: getRootStem({ verb, type: "basic", voice: "active", rs: "stem", aspect: "imperfective", genderNumber: { gender: "masc", number: "singular" } }),
+//         },
+//         root: {
+//             perfective: getRootStem({ verb, type: "basic", voice: "active", rs: "root", aspect: "perfective", genderNumber: { gender: "masc", number: "singular" } }),
+//             imperfective: getRootStem({ verb, type: "basic", voice: "active", rs: "root", aspect: "imperfective", genderNumber: { gender: "masc", number: "singular" } }),
+//         },
+//     };
+// }
 
 /**
  * adds a verb ending, creating all the variations with a set of root psStrings
@@ -87,18 +86,16 @@ export function getAllRs(verb: T.VerbEntry): {
  * @returns 
  */
 export function verbEndingConcat(ps: T.PsString[], end: T.PsString[]): T.PsString[] {
-    if (ps[0].f === "shw") {
-        if (end[1]?.f === "o") {
-            return [{ p: "شو", f: "sho" }];
-        }
-        if (end[0].f === "oo") {
-            return [{ p: "شو", f: "oo" }];
-        }
+    if (ps[0].f === "shw" && end[0].f === "oo") {
+        return [{ p: "شو", f: "shoo" }];
     }
     return ps.flatMap(v => (
         end.map(e => {
             if (v.f.charAt(v.f.length-1) === "X") {
-                return concatPsString(trimOffPs(v, 0, 1), accentPsSyllable(e))
+                // faster to do concatPsString(trimOffPs(v, 0, 1), accentSyllable(e))
+                // but this covers cases like adding the 3rd person no-ending to a string with the 
+                // trailing accent marker and still getting the accent right
+                return accentOnNFromEnd(concatPsString(trimOffPs(v, 0, 1), e), 0);
             }
             if (e.p === "ل" && ["ul", "úl"].includes(v.f.slice(-2))) {
                 return v;
@@ -199,14 +196,15 @@ export function addAbilityEnding(vb: T.VBA): T.VBA {
     if (vb.type === "welded") {
         return {
             ...vb,
-            right: addToVBBasicEnd(vb.right, abilityEnding),
+            right: addToEnd(vb.right, abilityEnding),
         };
     }
-    return addToVBBasicEnd(vb, abilityEnding);
-}
-
-export function addToVBBasicEnd(vb: T.VBBasic, end: T.PsString[]): T.VBBasic {
-    if ("long" in vb.ps) {
+    return addToEnd(vb, abilityEnding);
+    function addToEnd(vb: T.VBBasic, end: T.PsString[]): T.VBBasic {
+        /* istanbul ignore next */
+        if (!("long" in vb.ps)) {
+            throw new Error("should have long and short form for adding to ability ending");
+        }
         return {
             ...vb,
             ps: {
@@ -215,17 +213,16 @@ export function addToVBBasicEnd(vb: T.VBBasic, end: T.PsString[]): T.VBBasic {
             },
         };
     }
-    return {
-        ...vb,
-        ps: verbEndingConcat(vb.ps, end),
-    };
 }
+
 
 export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBBasic>): T.VBBasic;
 export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA;
 export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA {
     const shortenableEndings = ["ښتل", "ستل", "وتل"];
     const wrul = ["وړل", "راوړل", "وروړل", "دروړل"];
+    // can't find a case where this is used - type safety
+    /* istanbul ignore next */
     if ("right" in vba) {
         return {
             ...vba,
@@ -302,5 +299,7 @@ export function perfectTenseToEquative(t: T.PerfectTense): keyof typeof equative
         ? "pastSubjunctive"
         : t === "wouldBePerfect"
         ? "past"
-        : "subjunctive"
+        : t === "wouldHaveBeenPerfect"
+        ? "pastSubjunctive"
+        : "subjunctive";
 }

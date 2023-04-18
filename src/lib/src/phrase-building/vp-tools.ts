@@ -199,7 +199,7 @@ export function isPastTense(tense: T.Tense): boolean {
 }
 
 export function tenseHasBa(tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense): boolean {
-    return [
+    const withBa: Parameters<typeof tenseHasBa>[0][] = [
         "imperfectiveFuture",
         "perfectiveFuture",
         "habitualPerfectivePast",
@@ -210,8 +210,9 @@ export function tenseHasBa(tense: T.VerbTense | T.PerfectTense | T.AbilityTense 
         "habitualImperfectivePastModal",
         "futurePerfect",
         "wouldBePerfect",
-        "wouldBeHaveBeenPerfect",
-    ].includes(tense);
+        "wouldHaveBeenPerfect",
+    ];
+    return withBa.includes(tense);
 }
 
 export function removeDuplicates(psv: T.PsString[]): T.PsString[] {
