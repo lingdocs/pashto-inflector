@@ -25,7 +25,6 @@ import {
     getObjectSelectionFromBlocks,
     getSubjectSelectionFromBlocks,
     getSubjectSelection,
-    getVerbAndHeadFromBlocks,
 } from "../../../lib/src/phrase-building/blocks-utils";
 
 const correctEmoji = ["✅", '🤓', "✅", '😊', "🌹", "✅", "✅", '🥳', "👏", "✅", "💯", "😎", "✅", "👍"];
@@ -354,17 +353,18 @@ function tickQuizState(startingWith: T.VPSelectionComplete | QuizState): QuizSta
 }
 
 function getBlanksAnswer(vps: T.VPSelectionComplete): { ps: T.PsString[], withBa: boolean } {
-    const { verb, perfectiveHead } = getVerbAndHeadFromBlocks(renderVP(vps).blocks);
-    const ps = flattenLengths(verb.block.ps).map(x => {
-        const y = removeBa(x);
-        if (perfectiveHead) {
-            return concatPsString(perfectiveHead.ps, y);
-        }
-        return y;
-    });
+    // TODO: !!!
+    // const { verb, perfectiveHead } = getVerbAndHeadFromBlocks(renderVP(vps).blocks);
+    // const ps = flattenLengths(verb.block.ps).map(x => {
+    //     const y = removeBa(x);
+    //     if (perfectiveHead) {
+    //         return concatPsString(perfectiveHead.ps, y);
+    //     }
+    //     return y;
+    // });
     return {
-        ps,
-        withBa: verb.block.hasBa,
+        ps: [{ p: "TOOD", f: "TODO" }],
+        withBa: false, // verb.block.hasBa,
     }
 }
 

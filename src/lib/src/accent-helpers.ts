@@ -8,6 +8,7 @@
 
 import * as T from "../../types";
 import { makePsString, removeFVarients } from "./accent-and-ps-utils";
+import { applyToSingOrLengthOpts } from "./misc-helpers";
 
 /**
  * Returns a Pashto string (or string with Length options) ensuring that
@@ -173,4 +174,61 @@ export function removeAccentsFromInflections(inf: T.UnisexInflections): T.Unisex
 export function hasAccents(s: string | T.PsString): boolean {
     if (typeof s !== "string") return hasAccents(s.f);
     return accentReplacer.some((x) => s.includes(x.accented));
+}
+
+export function removeVerbAccent([a, b]: T.VerbRenderedOutput): T.VerbRenderedOutput {
+    return [
+        removeVHeadAccent(a),
+        removeVAccent(b),
+    ];
+}
+
+function removeVHeadAccent([v]: [T.VHead] | []): [T.VHead] | [] {
+    if (v === undefined) {
+        return [];
+    }
+    if (v.type === "PH") {
+        return [{
+            ...v,
+            ps: removeAccents(v.ps),
+        }];
+    }
+    return [{
+        ...v,
+        comp: removeCompAccent(v.comp),
+    }];
+}
+
+function removeCompAccent(comp: T.Comp): T.Comp {
+    return {
+        ...comp,
+        ps: removeAccents(comp.ps),
+    }
+}
+
+function removeVAccent(v: [T.VB, T.VBE] | [T.VBE]): [T.VB, T.VBE]| [T.VBE] {
+    return v.map(removeVBAccent) as [T.VB, T.VBE]| [T.VBE];
+}
+
+function removeVBAccent<V extends T.VB | T.VBE>(v: V): V {
+    if (v.type === "welded") {
+        return {
+            ...v,
+            left: removeWeldedLeftAccent(v.left),
+        }
+    }
+    return {
+        ...v,
+        ps: applyToSingOrLengthOpts(removeAccents, v.ps),
+    };
+}
+
+function removeWeldedLeftAccent(v: T.NComp | T.VBBasic | T.Welded) {
+    if (v.type === "NComp") {
+        return {
+            ...v,
+            comp: removeCompAccent(v.comp),
+        };
+    }
+    return removeVBAccent(v);
 }

@@ -38,31 +38,32 @@ function Block({ opts, block, king, script }: {
     if (block.block.type === "negative") {
         return <NegBlock opts={opts} imperative={block.block.imperative} script={script} />
     }
-    if (block.block.type === "perfectiveHead") {
-        return <PerfHeadBlock opts={opts} ps={block.block.ps} script={script} />
-    }
-    if (block.block.type === "verb") {
-        return <VerbSBlock opts={opts} v={block.block.block} script={script} />;
-    }
-    if (block.block.type === "objectSelection") {
-        const role = king === "object" ? "king" : king === "subject" ? "servant" : undefined;
-        return <ObjectBlock opts={opts} obj={block.block.selection} role={role} script={script} />;
-    }
-    if (block.block.type === "perfectParticipleBlock") {
-        return <VerbSBlock opts={opts} v={block.block} script={script} />;
-    }
-    if (block.block.type === "perfectEquativeBlock") {
-        return <EquativeBlock opts={opts} eq={block.block} script={script} />;
-    }
-    if (block.block.type === "modalVerbBlock") {
-        return <ModalVerbBlock opts={opts} v={block.block} script={script} />;
-    }
-    if (block.block.type === "modalVerbKedulPart") {
-        return <ModalAuxBlock opts={opts} aux={block.block} script={script} />
-    }
-    if (block.block.type === "complement") {
-        return <ComplementBlock opts={opts} comp={block.block.selection} script={script} />;
-    }
+    return <div>TODO</div>
+    // if (block.block.type === "perfectiveHead") {
+    //     return <PerfHeadBlock opts={opts} ps={block.block.ps} script={script} />
+    // }
+    // if (block.block.type === "verb") {
+    //     return <VerbSBlock opts={opts} v={block.block.block} script={script} />;
+    // }
+    // if (block.block.type === "objectSelection") {
+    //     const role = king === "object" ? "king" : king === "subject" ? "servant" : undefined;
+    //     return <ObjectBlock opts={opts} obj={block.block.selection} role={role} script={script} />;
+    // }
+    // if (block.block.type === "perfectParticipleBlock") {
+    //     return <VerbSBlock opts={opts} v={block.block} script={script} />;
+    // }
+    // if (block.block.type === "perfectEquativeBlock") {
+    //     return <EquativeBlock opts={opts} eq={block.block} script={script} />;
+    // }
+    // if (block.block.type === "modalVerbBlock") {
+    //     return <ModalVerbBlock opts={opts} v={block.block} script={script} />;
+    // }
+    // if (block.block.type === "modalVerbKedulPart") {
+    //     return <ModalAuxBlock opts={opts} aux={block.block} script={script} />
+    // }
+    // if (block.block.type === "complement") {
+    //     return <ComplementBlock opts={opts} comp={block.block.selection} script={script} />;
+    // }
     return null;
 }
 
@@ -80,96 +81,96 @@ function Border({ children, extraClassName, padding }: { children: JSX.Element |
     </div>
 }
 
-function VerbSBlock({ opts, v, script }: {
-    opts: T.TextOptions,
-    script: "p" | "f",
-    v: T.VerbRenderedBlock["block"] | T.PerfectParticipleBlock,
-}) {
-    const [length, setLength] = useState<T.Length>("long");
-    function changeLength() {
-        setLength(o => (
-            o === "long"
-                ? "short"
-                : o === "short" && "mini" in v.ps
-                ? "mini"
-                : "long"
-        ));
-    }
-    return <div className="text-center">
-        {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
-        <Border>
-            <>
-                {(v.type === "verb" || v.type === "perfectParticipleBlock") && v.complementWelded && <span className="mx-2">
-                    <ComplementBlock opts={opts} comp={v.complementWelded.selection} script={script} inside />
-                </span>}
-                {getLength(v.ps, length)[0][script]}
-            </>
-        </Border>
-        <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"}</div>
-        <EnglishBelow>{(v.type === "perfectParticipleBlock"
-            ? getEnglishParticipleInflection
-            : getEnglishPersonInfo
-        )(v.person, "short")}</EnglishBelow>
-    </div>
-}
+// function VerbSBlock({ opts, v, script }: {
+//     opts: T.TextOptions,
+//     script: "p" | "f",
+//     v: T.VerbRenderedBlock["block"] | T.PerfectParticipleBlock,
+// }) {
+//     const [length, setLength] = useState<T.Length>("long");
+//     function changeLength() {
+//         setLength(o => (
+//             o === "long"
+//                 ? "short"
+//                 : o === "short" && "mini" in v.ps
+//                 ? "mini"
+//                 : "long"
+//         ));
+//     }
+//     return <div className="text-center">
+//         {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
+//         <Border>
+//             <>
+//                 {(v.type === "verb" || v.type === "perfectParticipleBlock") && v.complementWelded && <span className="mx-2">
+//                     <ComplementBlock opts={opts} comp={v.complementWelded.selection} script={script} inside />
+//                 </span>}
+//                 {getLength(v.ps, length)[0][script]}
+//             </>
+//         </Border>
+//         <div>{v.type === "perfectParticipleBlock" ? "Past Partic." : "Verb"}</div>
+//         <EnglishBelow>{(v.type === "perfectParticipleBlock"
+//             ? getEnglishParticipleInflection
+//             : getEnglishPersonInfo
+//         )(v.person, "short")}</EnglishBelow>
+//     </div>
+// }
 
-function ModalVerbBlock({ opts, v, script }: {
-    opts: T.TextOptions,
-    script: "p" | "f",
-    v: T.ModalVerbBlock,
-}) {
-    const [length, setLength] = useState<T.Length>("long");
-    function changeLength() {
-        setLength(o => (
-            o === "long"
-                ? "short"
-                : "long"
-        ));
-    }
-    return <div className="text-center">
-        {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
-        <Border>
-            <>
-                {v.complementWelded && <span className="mx-2">
-                    <ComplementBlock opts={opts} comp={v.complementWelded.selection} script={script} inside />
-                </span>}
-                {getLength(v.ps, length)[0][script]}
-            </>
-        </Border>
-        <div>Verb</div>
-        <EnglishBelow>Ability</EnglishBelow>
-    </div>
-}
+// function ModalVerbBlock({ opts, v, script }: {
+//     opts: T.TextOptions,
+//     script: "p" | "f",
+//     v: T.ModalVerbBlock,
+// }) {
+//     const [length, setLength] = useState<T.Length>("long");
+//     function changeLength() {
+//         setLength(o => (
+//             o === "long"
+//                 ? "short"
+//                 : "long"
+//         ));
+//     }
+//     return <div className="text-center">
+//         {"long" in v.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
+//         <Border>
+//             <>
+//                 {v.complementWelded && <span className="mx-2">
+//                     <ComplementBlock opts={opts} comp={v.complementWelded.selection} script={script} inside />
+//                 </span>}
+//                 {getLength(v.ps, length)[0][script]}
+//             </>
+//         </Border>
+//         <div>Verb</div>
+//         <EnglishBelow>Ability</EnglishBelow>
+//     </div>
+// }
 
-function PerfHeadBlock({ opts, ps, script }: {
-    opts: T.TextOptions,
-    ps: T.PsString,
-    script: "p" | "f",
+// function PerfHeadBlock({ opts, ps, script }: {
+//     opts: T.TextOptions,
+//     ps: T.PsString,
+//     script: "p" | "f",
 
-}) {
-    return <div className="text-center">
-        <Border>
-            {ps[script]}
-        </Border>
-        <div>perf. head</div>
-        <EnglishBelow>{'\u00A0'}</EnglishBelow>
-    </div>;
-}
+// }) {
+//     return <div className="text-center">
+//         <Border>
+//             {ps[script]}
+//         </Border>
+//         <div>perf. head</div>
+//         <EnglishBelow>{'\u00A0'}</EnglishBelow>
+//     </div>;
+// }
 
-function ModalAuxBlock({ opts, aux, script }: {
-    opts: T.TextOptions,
-    aux: T.ModalVerbKedulPart,
-    script: "p" | "f",
+// function ModalAuxBlock({ opts, aux, script }: {
+//     opts: T.TextOptions,
+//     aux: T.ModalVerbKedulPart,
+//     script: "p" | "f",
 
-}) {
-    return <div className="text-center">
-        <Border>
-            {aux.ps[0][script]}
-        </Border>
-        <div>Abil. Aux</div>
-        <EnglishBelow>{getEnglishPersonInfo(aux.verb.block.person, "short")}</EnglishBelow>
-    </div>;
-}
+// }) {
+//     return <div className="text-center">
+//         <Border>
+//             {aux.ps[0][script]}
+//         </Border>
+//         <div>Abil. Aux</div>
+//         <EnglishBelow>{getEnglishPersonInfo(aux.verb.block.person, "short")}</EnglishBelow>
+//     </div>;
+// }
 
 function NegBlock({ opts, imperative, script }: {
     opts: T.TextOptions,
@@ -187,7 +188,7 @@ function NegBlock({ opts, imperative, script }: {
 
 function EquativeBlock({ opts, eq, script }: {
     opts: T.TextOptions,
-    eq: T.EquativeRendered | T.PerfectEquativeBlock,
+    eq: T.EquativeRendered,
     script: "p" | "f",
 }) {
     const [length, setLength] = useState<T.Length>("long");

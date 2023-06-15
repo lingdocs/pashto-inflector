@@ -24,8 +24,9 @@ import { getAspect, isKedul, perfectTenseToEquative, verbEndingConcat } from "./
 import { accentOnNFromEnd, accentPsSyllable, removeAccents } from "../accent-helpers";
 
 // TODO: problem with laaR - no perfective split
-export function renderVerb({ verb, tense, person, voice, presObj }: {
+export function renderVerb({ verb, tense, person, voice, presObj, negative }: {
     verb: T.VerbEntry,
+    negative: boolean,
     tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense, // TODO: make T.Tense
     person: T.Person,
     voice: T.Voice,
@@ -45,7 +46,7 @@ export function renderVerb({ verb, tense, person, voice, presObj }: {
         gender: personGender(rootPerson),
         number: personNumber(rootPerson),
     };
-    const aspect = getAspect(tense);
+    const aspect = getAspect(tense, negative);
     const isImperative = isImperativeTense(tense);
     const type = isAbilityTense(tense) ? "ability" : "basic";
 

@@ -1,34 +1,6 @@
 import * as T from "../../../types";
 import { getLength } from "../p-text-helpers";
 
-export function isRenderedVerbB(block: T.Block["block"]): block is T.RenderedVerbB {
-    if (block.type === "modalVerbBlock") {
-        return true;
-    }
-    if (block.type === "modalVerbKedulPart") {
-        return true;
-    }
-    if (block.type === "perfectEquativeBlock") {
-        return true;
-    }
-    if (block.type === "perfectParticipleBlock") {
-        return true;
-    }
-    if (block.type === "perfectiveHead") {
-        return true;
-    }
-    if (block.type === "verb") {
-        return true;
-    }
-    return false;
-}
-
-export function getVerbBlocks(blocks: T.Block[][]): T.RenderedVerbB[] {
-    return blocks[0]
-        .filter(b => isRenderedVerbB(b.block))
-        .map(b => b.block) as T.RenderedVerbB[];
-}
-
 export function makeBlock(block: T.Block["block"], key?: number): T.Block {
     return {
         key: key === undefined ? Math.random() : key,
@@ -53,15 +25,6 @@ export function getSubjectSelection(blocks: T.EPSBlock[] | T.EPSBlockComplete[] 
     return b.block;
 }
 
-export function findPerfectiveHead(blocks: T.Block[][]): T.PerfectiveHeadBlock | undefined {
-
-    const b = blocks[0].find(f => f.block.type === "perfectiveHead");
-    if (!b || b.block.type !== "perfectiveHead") {
-        return undefined;
-    }
-    return b.block;
-}
-
 export function getSubjectSelectionFromBlocks(blocks: T.Block[][]): T.Rendered<T.SubjectSelectionComplete> {
     const b = blocks[0].find(f => f.block.type === "subjectSelection");
     if (!b || b.block.type !== "subjectSelection") {
@@ -76,49 +39,6 @@ export function getObjectSelectionFromBlocks(blocks: T.Block[][]): T.Rendered<T.
         throw new Error("objectSelection not found in blocks");
     }
     return b.block;
-}
-
-export function getVerbFromBlocks(blocks: T.Block[][]): T.VerbRenderedBlock {
-    const b = blocks[0].find(f => f.block.type === "verb");
-    const p = blocks[0].find(f => f.block.type === "perfectParticipleBlock");
-    const m = blocks[0].find(f => f.block.type === "modalVerbBlock");
-    const v = (b && b.block.type === "verb")
-        ? b.block
-        : (p && p.block.type === "perfectParticipleBlock")
-        ? p.block.verb
-        : (m && m.block.type === "modalVerbBlock")
-        ? m.block.verb
-        : undefined;
-    if (!v) {
-        throw new Error("verbSelection not found in blocks");
-    }
-    return v;
-}
-
-export function getLengthyFromBlocks(blocks: T.Block[][]): T.VerbRenderedBlock | T.PerfectParticipleBlock | T.ModalVerbBlock | T.PerfectEquativeBlock | undefined {
-    return blocks[0].find(f => f.block.type === "verb"
-        ||
-        f.block.type === "perfectParticipleBlock"
-        || 
-        f.block.type === "modalVerbBlock"
-        ||
-        f.block.type === "perfectEquativeBlock"
-    )?.block as T.VerbRenderedBlock | T.PerfectParticipleBlock | T.ModalVerbBlock | T.PerfectEquativeBlock | undefined;
-}
-
-export function getVerbAndHeadFromBlocks(blocks: T.Block[][]): { verb: T.VerbRenderedBlock, perfectiveHead: T.PerfectiveHeadBlock | undefined } {
-    const verb = getVerbFromBlocks(blocks);
-    const perfectiveHead = blocks[0].find(f => f.block.type === "perfectiveHead");
-    if (!perfectiveHead || perfectiveHead.block.type !== "perfectiveHead") {
-        return {
-            verb,
-            perfectiveHead: undefined,
-        };
-    }
-    return {
-        verb,
-        perfectiveHead: perfectiveHead.block,
-    };
 }
 
 export function includesShrunkenServant(kids?: T.Kid[]): boolean {
@@ -138,19 +58,6 @@ export function getPredicateSelectionFromBlocks(blocks: T.Block[][]): T.Rendered
 
 export function getAPsFromBlocks(blocks: T.Block[][]): T.Rendered<T.APSelection>[] {
     return blocks[0].filter(b => b.block.type === "AP").map(b => b.block) as T.Rendered<T.APSelection>[];
-}
-
-export function getComplementFromBlocks(blocks: T.Block[][]): T.Rendered<T.ComplementSelection> | T.Rendered<T.UnselectedComplementSelection> | undefined {
-    const complement = blocks[0].find(b => b.block.type === "complement")?.block as T.Rendered<T.ComplementSelection> | T.Rendered<T.UnselectedComplementSelection> | undefined;
-    if (complement) {
-        return complement;
-    }
-    // maybe there's a complement in the verb block
-    const verb = getVerbFromBlocks(blocks);
-    if (verb?.block.complementWelded) {
-        return verb.block.complementWelded;
-    }
-    return undefined;
 }
 
 export function getObjectSelection(blocks: T.VPSBlockComplete[]): T.ObjectSelectionComplete;
@@ -337,56 +244,26 @@ export function specifyEquativeLength(blocksWVars: T.Block[][], length: "long" |
     return blocksWVars.map(specify);
 }
 
-export function specifyBlockLength(blocksWVars: T.Block[][], length: "long" | "short" | "mini"): T.Block[][] {
-    function specify(blocks: T.Block[]): T.Block[] {
-        return blocks.map((block): T.Block => {
-            if (block.block.type === "verb") {
-                const v: T.Block = {
-                    ...block,
-                    block: {
-                        ...block.block,
-                        block: {
-                            ...block.block.block,
-                            ps: getLength(block.block.block.ps, length),
-                        },
-                    },
-                };
-                return v;
-            }
-            if (block.block.type === "perfectEquativeBlock") {
-                const v: T.Block = {
-                    ...block,
-                    block: {
-                        ...block.block,
-                        ps: getLength(block.block.ps, length),
-                    },
-                };
-                return v;
-            }
-            if (block.block.type === "perfectParticipleBlock") {
-                const p: T.Block = {
-                    ...block,
-                    block: {
-                        ...block.block,
-                        ps: getLength(block.block.ps, length),
-                    },
-                };
-                return p;
-            }
-            if (block.block.type === "modalVerbBlock") {
-                const m: T.Block = {
-                    ...block,
-                    block: {
-                        ...block.block,
-                        ps: getLength(block.block.ps, length),
-                    },
-                };
-                return m;
-            }
-            return block;
-        });
+export function isRenderedVerbB({ block }: T.Block): boolean {
+    if (block.type === "equative") {
+        return true;
     }
-    return blocksWVars.map(specify);
+    if (block.type === "VB") {
+        return true;
+    }
+    if (block.type === "PH") {
+        return true;
+    }
+    if (block.type === "NComp") {
+        return true;
+    }
+    if (block.type === "welded") {
+        return true;
+    }
+    if (block.type === "complement") {
+        return true;
+    }
+    return false
 }
 
 export function hasEquativeWithLengths(blocks: T.Block[][]): boolean {
@@ -394,18 +271,6 @@ export function hasEquativeWithLengths(blocks: T.Block[][]): boolean {
     if (!equative) throw new Error("equative not found in blocks");
     if (equative.block.type !== "equative") throw new Error("error finding equative in blocks");
     return "long" in equative.block.equative.ps;
-}
-
-export function hasVerbWithLengths(blocks: T.Block[][]): boolean {
-    // TODO: handle length options with perfect verb equative as well?
-    const verb = blocks[0].find(x => (x.block.type === "verb" || x.block.type === "perfectParticipleBlock" || x.block.type === "modalVerbBlock"));
-    if (!verb) throw new Error("verb not found in blocks");
-    if (verb.block.type !== "verb" && verb.block.type !== "perfectParticipleBlock" && verb.block.type !== "modalVerbBlock") throw new Error("error finding verb in blocks");
-    return (
-        (verb.block.type === "verb" && "long" in verb.block.block.ps)
-        || (verb.block.type === "perfectParticipleBlock" && "long" in verb.block.ps)
-        || (verb.block.type === "modalVerbBlock" && "long" in verb.block.ps)
-    );
 }
 
 function arrayMove<X>(ar: X[], old_index: number, new_index: number): X[] {

@@ -1298,7 +1298,7 @@ const toTest = [
                 entry: {"i":9369,"ts":1527822084,"p":"کار","g":"","f":"kaar","e":"work, job, business, stuff to do","c":"n. m."},
                 person: 4,
             },
-            auxVerb: {"i":10058,"ts":1527812752,"p":"کول","g":"","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
+            auxVerb: {"ts":1527812752,"i":11033,"p":"کول","f":"kawul","g":"kawul","e":"to do (an action or activity)","r":4,"c":"v. trans./gramm. trans.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","separationAtP":1,"separationAtF":2,"diacExcept":true,"ec":"do,does,doing,did,done"},
             intransitiveForm: {
                 entry: {
                     entry: {"i":9371,"ts":1527812732,"p":"کار کېدل","g":"","f":"kaar kedul","e":"to work","l":1527822084,"c":"v. intrans. dyn. comp."},
@@ -1377,17 +1377,7 @@ const toTest = [
                 plural: { p: "منډې", f: "munDe" },
                 person: 11,
             },
-            auxVerb: {
-                ts: 1527815399,
-                p: "وهل",
-                f: "wahul",
-                g:"",
-                e: "to hit",
-                c: "v. trans.",
-                i: 12183,
-                tppp: "واهه",
-                tppf: "waahu",
-            },
+            auxVerb: {"ts":1527815399,"i":15049,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"},
             singularForm: {
                 entry: {
                     entry: {"i":12101,"ts":1527812939,"p":"منډې وهل","g":"","f":"munDe wahul","e":"to run","l":1527815805,"c":"v. dyn. comp. trans. sing. or plur."},
@@ -1423,17 +1413,7 @@ const toTest = [
                     entry: {"i":12098,"ts":1527815805,"p":"منډه","g":"","f":"múnDa","e":"run, running","c":"n. f."},
                     person: 5,
                 },
-                auxVerb: {
-                    ts: 1527815399,
-                    p: "وهل",
-                    f: "wahul",
-                    g:"",
-                    e: "to hit",
-                    c: "v. trans.",
-                    i: 12183,
-                    tppp: "واهه",
-                    tppf: "waahu",
-                },
+                auxVerb: {"ts":1527815399,"i":15049,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"},
             },
         },
     },
@@ -1537,7 +1517,7 @@ const toTest = [
                     entry: {"i":7909,"ts":1527819252,"p":"شروع","g":"","f":"shUróo'","e":"beginning, start, undertaking","c":"n. m."},
                     person: 4,
                 },
-                auxVerb: {"i":10058,"ts":1527812752,"p":"کول","g":"","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
+                auxVerb: {"ts":1527812752,"i":11033,"p":"کول","f":"kawul","g":"kawul","e":"to do (an action or activity)","r":4,"c":"v. trans./gramm. trans.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","separationAtP":1,"separationAtF":2,"diacExcept":true,"ec":"do,does,doing,did,done"}, 
                 intransitiveForm: {
                     entry: {
                         entry: {"i":7910,"ts":1527819253,"p":"شروع کېدل","g":"","f":"shUróo' kedul","e":"to start, to begin","l":1527819252,"c":"v. intrans. dyn. comp."},
@@ -1680,7 +1660,7 @@ const toTest = [
                     entry: {"i":4769,"ts":1527813972,"p":"چیغه","g":"","f":"chéegha","e":"yell, scream, cry","c":"n. f."},
                     person: 5,
                 },
-                auxVerb: {"i":10058,"ts":1527812752,"p":"کول","g":"","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
+                auxVerb: {"ts":1527812752,"i":11033,"p":"کول","f":"kawul","g":"kawul","e":"to do (an action or activity)","r":4,"c":"v. trans./gramm. trans.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","separationAtP":1,"separationAtF":2,"diacExcept":true,"ec":"do,does,doing,did,done"},
                 intransitiveForm: {
                     entry: {
                         entry: {"i":4770,"ts":1608137130992,"p":"چیغه کېدل","g":"","f":"chéegha kedul","e":"to yell, scream, cry out","l":1527813972,"c":"v. intrans. dyn. comp."},
@@ -1887,22 +1867,7 @@ const toTest = [
                     },
                     "person": 11
                 },
-                "auxVerb": {
-                    "i": 10058,
-                    "ts": 1527812752,
-                    "p": "کول",
-                    "f": "kawul",
-                    "g": "",
-                    "e": "to do (an action or activity)",
-                    "c": "v. trans. irreg. dyn. aux.",
-                    "ssp": "وکړ",
-                    "ssf": "óokR",
-                    "prp": "وکړل",
-                    "prf": "óokRul",
-                    "pprtp": "کړی",
-                    "pprtf": "kúRey",
-                    "diacExcept": true
-                },
+                "auxVerb": {"ts":1527812752,"i":11033,"p":"کول","f":"kawul","g":"kawul","e":"to do (an action or activity)","r":4,"c":"v. trans./gramm. trans.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","separationAtP":1,"separationAtF":2,"diacExcept":true,"ec":"do,does,doing,did,done"},
                 "singularForm": {
                     entry: {
                         entry: {"i":4770,"ts":1608137130992,"p":"چیغې کول","g":"","f":"chéeghe kawul","e":"to yell, scream, cry out","l":1527813972,"c":"v. dyn. comp. trans."},
@@ -2014,22 +1979,7 @@ const toTest = [
                         },
                         "person": 5
                     },
-                    "auxVerb": {
-                        "i": 10058,
-                        "ts": 1527812752,
-                        "p": "کول",
-                        "f": "kawul",
-                        "g": "",
-                        "e": "to do (an action or activity)",
-                        "c": "v. trans. irreg. dyn. aux.",
-                        "ssp": "وکړ",
-                        "ssf": "óokR",
-                        "prp": "وکړل",
-                        "prf": "óokRul",
-                        "pprtp": "کړی",
-                        "pprtf": "kúRey",
-                        "diacExcept": true
-                    },
+                    "auxVerb": {"ts":1527812752,"i":11033,"p":"کول","f":"kawul","g":"kawul","e":"to do (an action or activity)","r":4,"c":"v. trans./gramm. trans.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","separationAtP":1,"separationAtF":2,"diacExcept":true,"ec":"do,does,doing,did,done"},
                     "intransitiveForm": {
                         entry: {
                             entry: {"i":4770,"ts":1608137130992,"p":"چیغې کېدل","g":"","f":"chéeghe kedul","e":"to yell, scream, cry out","l":1527813972,"c":"v. intrans. dyn. comp."},

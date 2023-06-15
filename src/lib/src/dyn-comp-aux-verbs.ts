@@ -17,7 +17,7 @@ export const dynamicAuxVerbs: Array<
     }
 > = [
     {
-        entry: {"i":10058,"ts":1527812752,g: "","p":"کول","f":"kawul","e":"to do (an action or activity)","c":"v. trans. irreg. dyn. aux.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","diacExcept":true},
+        entry: {"ts":1527812752,"i":11033,"p":"کول","f":"kawul","g":"kawul","e":"to do (an action or activity)","r":4,"c":"v. trans./gramm. trans.","ssp":"وکړ","ssf":"óokR","prp":"وکړل","prf":"óokRul","pprtp":"کړی","pprtf":"kúRey","separationAtP":1,"separationAtF":2,"diacExcept":true,"ec":"do,does,doing,did,done"}, 
     },
     {
         entry: {"i":10122,"ts":1527812754,g: "","p":"کېدل","f":"kedul","e":"to happen, occur","c":"v. intrans. irreg. aux. dyn.","ssp":"وش","ssf":"óosh","prp":"وشول","prf":"óoshwul","pprtp":"شوی","pprtf":"shúwey","diacExcept":true},
@@ -47,17 +47,7 @@ export const dynamicAuxVerbs: Array<
         complement: {"i":3774,"ts":1527813139,g: "","p":"تېر","f":"ter","e":"last, past, previous, passed, gone over","c":"adj."},
     },
     {
-        entry: {
-            ts: 1527815399,
-            p: "وهل",
-            f: "wahul",
-            g: "",
-            e: "to hit",
-            c: "v. trans.",
-            i: 12183,
-            tppp: "واهه",
-            tppf: "waahu",
-        },
+        entry: {"ts":1527815399,"i":15049,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"},
     },
     {
         entry: {

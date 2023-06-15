@@ -11,18 +11,14 @@ import {
 import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
 import { completeEPSelection, renderEP } from "./render-ep";
 import { completeVPSelection } from "./vp-tools";
-import { isStativeHelper, renderVP } from "./render-vp";
+import { renderVP } from "./render-vp";
 import {
     getAPsFromBlocks,
-    getComplementFromBlocks,
-    getLengthyFromBlocks,
     getObjectSelectionFromBlocks,
     getPredicateSelectionFromBlocks,
     getSubjectSelectionFromBlocks,
-    getVerbFromBlocks,
     hasEquativeWithLengths,
     isRenderedVerbB,
-    specifyBlockLength,
     specifyEquativeLength,
 } from "./blocks-utils";
 import {
@@ -77,29 +73,16 @@ export function compileEP(EP: T.EPRendered, combineLengths?: boolean, blankOut?:
 export function compileVP(VP: T.VPRendered, form: T.FormVersion): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] };
 export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths: true, blankOut?: BlankoutOptions): { ps: T.PsString[], e?: string [] };
 export function compileVP(VP: T.VPRendered, form: T.FormVersion, combineLengths?: true, blankOut?: BlankoutOptions): { ps: T.SingleOrLengthOpts<T.PsString[]>, e?: string [] } {
-    const verb = getVerbFromBlocks(VP.blocks).block;
+    // const verb = getVerbFromBlocks(VP.blocks).block;
     const psResult = compileVPPs(VP.blocks, VP.kids, form, VP.king, blankOut);
     return {
         ps: combineLengths ? flattenLengths(psResult) : psResult,
         // TODO: English doesn't quite work for dynamic compounds in passive voice
-        e: (verb.voice === "passive" && VP.isCompound === "dynamic") ? undefined : compileEnglishVP(VP),
+        e: /* (verb.voice === "passive" && VP.isCompound === "dynamic") ? undefined : */ compileEnglishVP(VP),
     };
 }
 
-function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, king: "subject" | "object", blankOut?: BlankoutOptions): T.SingleOrLengthOpts<T.PsString[]> {
-    const lengthyBlock = getLengthyFromBlocks(blocks);
-    const potentialLengthy = lengthyBlock?.type === "verb"
-        ? lengthyBlock.block.ps
-        : lengthyBlock?.ps;
-    if (potentialLengthy && "long" in potentialLengthy) {
-        return {
-            long: compileVPPs(specifyBlockLength(blocks, "long"), kids, form, king, blankOut) as T.PsString[],
-            short: compileVPPs(specifyBlockLength(blocks, "short"), kids, form, king, blankOut) as T.PsString[],
-            ..."mini" in potentialLengthy ? {
-                mini: compileVPPs(specifyBlockLength(blocks, "mini"), kids, form, king, blankOut) as T.PsString[],
-            } : {},
-        };
-    }
+function compileVPPs(blocks: T.Block[][], kids: T.Kid[], form: T.FormVersion, king: "subject" | "object", blankOut?: BlankoutOptions): T.PsString[] {
     const subjectPerson = getSubjectSelectionFromBlocks(blocks)
         .selection.selection.person;
     const blocksWKids = putKidsInKidsSection(
@@ -176,7 +159,7 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
             ? [first]
             : (
                 (blankOut?.equative && "block" in first && first.block.type === "equative") ||
-                (blankOut?.verb && "block" in first && isRenderedVerbB(first.block)) ||
+                (blankOut?.verb && "block" in first && isRenderedVerbB(first)) ||
                 (blankOut?.predicate && "block" in first && first.block.type === "predicateSelection")
             )
             ? [blank]
@@ -192,7 +175,7 @@ function combineIntoText(piecesWVars: (T.Block | T.Kid | T.PsString)[][], subjec
                 firstPs.map(fPs => concatPsString(
                     fPs,
                     // TODO: this spacing is a mess and not accurate
-                    (!("p" in first) && "block" in first && first.block.type === "perfectiveHead" && !("p" in next) && (("block" in next && (next.block.type === "verb" || next.block.type === "negative" || next.block.type === "modalVerbBlock")) || ("kid" in next && next.kid.type === "mini-pronoun")))
+                    (!("p" in first) && "block" in first && first.block.type === "PH" && !("p" in next) && (("block" in next && (isRenderedVerbB(next) || next.block.type === "negative")) || ("kid" in next && next.kid.type === "mini-pronoun")))
                         ? ((("block" in next && next.block.type === "negative") || ("kid" in next && next.kid.type === "mini-pronoun")) ? { p: "", f: " " } : "")
                         : " ",
                     r,
@@ -220,8 +203,11 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
         if (piece.block.type === "AP") {
             return getPashtoFromRendered(piece.block, subjectPerson);
         }
-        if (piece.block.type === "perfectiveHead") {
+        if (piece.block.type === "PH") {
             return [piece.block.ps];
+        }
+        if (piece.block.type === "VB") {
+            return flattenLengths(piece.block.ps);
         }
         if (piece.block.type === "objectSelection") {
             if (typeof piece.block.selection !== "object") {
@@ -229,37 +215,8 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
             }
             return getPashtoFromRendered(piece.block.selection, subjectPerson);
         }
-        if (piece.block.type === "verb") {
-            // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
-            const verbPs = getLong(piece.block.block.ps);
-            if (piece.block.block.complementWelded) {
-                return combineComplementWVerbPs(piece.block.block.complementWelded, verbPs);
-            }
-            return verbPs;
-        }
-        if (piece.block.type === "perfectParticipleBlock") {
-            // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
-            const verbPs = getLong(piece.block.ps);
-            if (piece.block.complementWelded) {
-                return combineComplementWVerbPs(piece.block.complementWelded, verbPs);
-            }
-            return verbPs;
-        }
-        if (piece.block.type === "perfectEquativeBlock") {
-            // just using the short one for now - it will only be short anyways
-            return getShort(piece.block.ps);
-        }
-        if (piece.block.type === "modalVerbBlock") {
-            // getLong is just for type safety - we will have split up the length options earlier in compileVPPs
-            const verbPs = getLong(piece.block.ps);
-            if (piece.block.complementWelded) {
-                return combineComplementWVerbPs(piece.block.complementWelded, verbPs);
-            }
-            return verbPs;
-        }
-        if (piece.block.type === "modalVerbKedulPart") {
-            // just using the short one for now - it will only be short anyways
-            return getShort(piece.block.ps);
+        if (piece.block.type === "NComp") {
+            return [piece.block.comp.ps];
         }
         if (piece.block.type === "complement") {
             if (piece.block.selection.type === "sandwich") {
@@ -268,6 +225,8 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
             }
             return piece.block.selection.ps;
         }
+        // welded
+        return getPsFromWelded(piece.block);
     }
     if ("kid" in piece) {
         if (piece.kid.type === "ba") {
@@ -280,13 +239,17 @@ function getPsFromPiece(piece: T.Block | T.Kid, subjectPerson: T.Person): T.PsSt
     throw new Error("unrecognized piece type");
 }
 
-function combineComplementWVerbPs(comp: T.Rendered<T.ComplementSelection | T.UnselectedComplementSelection>, v: T.PsString[]): T.PsString[] {
-    const compPs = comp.selection.type === "sandwich" 
-        ? getPashtoFromRendered({ type: "AP", selection: comp.selection }, false)
-        : comp.selection.ps;
-    return compPs.flatMap((c) => (
-        v.map((p) => concatPsString(c, " ", p))
-    ));
+function getPsFromWelded(v: T.Welded): T.PsString[] {
+    function getPsFromSide(v: T.VBBasic | T.Welded | T.NComp | T.VBGenNum): T.PsString[] {
+        if (v.type === "VB") {
+            return flattenLengths(v.ps);
+        }
+        if (v.type === "NComp") {
+            return [v.comp.ps];
+        }
+        return getPsFromWelded(v);
+    }
+    return [...getPsFromSide(v.left), ...getPsFromSide(v.right)];
 }
 
 function getEngAPs(blocks: T.Block[][]): string {
@@ -298,15 +261,16 @@ function getEngAPs(blocks: T.Block[][]): string {
 }
 
 function getEngComplement(blocks: T.Block[][]): string | undefined {
-    const comp = getComplementFromBlocks(blocks);
-    if (!comp) return undefined;
-    if (comp.selection.type === "unselected") {
-        return "____";
-    }
-    if (comp.selection.type === "sandwich") {
-        return getEnglishFromRendered({ type: "AP", selection: comp.selection });
-    }
-    return comp.selection.e;
+    return "TODO";
+    // const comp = getComplementFromBlocks(blocks);
+    // if (!comp) return undefined;
+    // if (comp.selection.type === "unselected") {
+    //     return "____";
+    // }
+    // if (comp.selection.type === "sandwich") {
+    //     return getEnglishFromRendered({ type: "AP", selection: comp.selection });
+    // }
+    // return comp.selection.e;
 }
 
 function putKidsInKidsSection(blocksWVars: T.Block[][], kids: T.Kid[], enforceKidsSectionBlankout: boolean): (T.Block | T.Kid | T.PsString)[][] {
@@ -328,7 +292,8 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
             .replace("$SUBJ", subject)
             .replace("$OBJ", object || "")
             // add the complement in English if it's an external complement from a helper verb (kawul/kedul)
-            + ((complement && isStativeHelper(getVerbFromBlocks(VP.blocks).block.verb))
+            // TODO!
+            + (complement /* && isStativeHelper(getVerbFromBlocks(VP.blocks).block.verb))*/
                 ? ` ${complement}`
                 : "")
             + APs;

@@ -12,7 +12,6 @@ import {
     randomNumber,
 } from "../lib/src/misc-helpers";
 import { entryFeeder } from "./entryFeeder";
-import { renderVerb } from "../lib/src/new-verb-engine/render-verb";
 import NPPronounPicker from "../components/src/np-picker/NPPronounPicker";
 
 const transitivities: T.Transitivity[] = [
@@ -143,14 +142,6 @@ function VPBuilderDemo({ opts }: {
     const makeVerbLabel = (entry: T.DictionaryEntry): string => (
         `${entry.p} - ${clamp(entry.e, 20)}`
     );
-    const rv = v ? renderVerb({
-        // verb: { entry: {"ts":1527815399,"i":15035,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"} as T.VerbDictionaryEntry},
-        // verb: { entry: {"ts":1527814596,"i":8648,"p":"شرمول","f":"shărmawul","g":"sharmawul","e":"to shame, to disgrace, to dishonor, to embarrass","r":4,"c":"v. trans.","ec":"embarrass"} as T.VerbDictionaryEntry },
-        verb: v.verb as T.VerbEntry,
-        tense: testTense,
-        person: testPerson.person,
-        voice: testVoice,
-    }) : undefined;
     // const rs = v ? getAllRs(v.verb as T.VerbEntry) : undefined
     return <div className="mt-4">
         <div className="d-block mx-auto card" style={{ maxWidth: "700px", background: "var(--closer)"}}>
@@ -250,9 +241,6 @@ function VPBuilderDemo({ opts }: {
             role="subject"
             opts={opts}
         />
-        <pre>
-            {JSON.stringify(rv, null, "  ")}
-        </pre>
         {v?.verb.entry && <div style={{ paddingBottom: "20px" }}>
             <PhraseBuilder
                 handleLinkClick="none"

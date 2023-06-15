@@ -6,6 +6,10 @@
  *
  */
 
+type Prettify<T> = {
+    [K in keyof T]: T[K];
+} & {};
+
 export type PsStringField = "p" | "f";
 export type PsString = {
     [k in PsStringField]: string;
@@ -558,7 +562,7 @@ export type UnisexAnimNounEntry = UnisexNounEntry & { __brand4: "an anim unisex 
 export type AdverbEntry = DictionaryEntry & { c: string } & { __brand: "an adverb entry" };
 export type LocativeAdverbEntry = AdverbEntry & { __brand2: "a locative adverb entry" };
 export type AdjectiveEntry = DictionaryEntry & { c: string } & { __brand: "an adjective entry" };
-export type VerbDictionaryEntry = DictionaryEntry & { __brand: "a verb entry" };
+export type VerbDictionaryEntry = DictionaryEntry & { c: string } & { __brand: "a verb entry" };
 export type VerbEntry = {
     entry: VerbDictionaryEntry,
     // TODO: the compliment could also be typed? Maybe?
@@ -667,6 +671,22 @@ export type VerbSelectionComplete = Omit<VerbSelection, "object" | "verbTense" |
 }
 
 export type Voice = "active" | "passive";
+
+export type NewVerbSelection = {
+    type: "verb",
+    verb: VerbEntryNoFVars,
+    dynAuxVerb?: VerbEntryNoFVars,
+    voice: Voice,
+    canChangeVoice: boolean,
+    negative: boolean,
+    tense: VerbTense | PerfectTense | AbilityTense | ImperativeTense,
+    transitivity: Transitivity,
+    canChangeTransGenTrans: boolean,
+    compound: "stative" | "dynamic" | false,
+    canChangeStatDyn: boolean,
+    canBeGenStat: boolean,
+    variableRs: boolean,
+}
 
 export type VerbSelection = {
     type: "verb",
@@ -1001,40 +1021,6 @@ export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
 
 export type EquativeBlock = { type: "equative", equative: EquativeRendered };
 
-export type PerfectParticipleBlock = {
-    type: "perfectParticipleBlock",
-    ps: SingleOrLengthOpts<PsString[]>,
-    verb: VerbRenderedBlock,
-    person: Person,
-    complementWelded: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
-};
-export type PerfectEquativeBlock = {
-    type: "perfectEquativeBlock",
-    ps: PsString[],
-    person: Person,
-};
-export type ModalVerbBlock = {
-    type: "modalVerbBlock",
-    ps: SingleOrLengthOpts<PsString[]>,
-    verb: VerbRenderedBlock,
-    complementWelded: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
-};
-export type ModalVerbKedulPart = {
-    type: "modalVerbKedulPart",
-    ps: PsString[],
-    verb: VerbRenderedBlock,
-};
-export type PerfectiveHeadBlock = { type: "perfectiveHead", ps: PsString };
-export type VerbRenderedBlock = {
-    type: "verb",
-    block: Omit<VerbSelectionComplete, "object"> & {
-        hasBa: boolean,
-        ps: SingleOrLengthOpts<PsString[]>,
-        person: Person,
-        complementWelded: undefined | Rendered<ComplementSelection> | Rendered<UnselectedComplementSelection>,
-    },
-};
-
 export type Block = {
     key: number,
     block: | Rendered<SubjectSelectionComplete>
@@ -1043,22 +1029,12 @@ export type Block = {
         | Rendered<PredicateSelectionComplete>
         | Rendered<ComplementSelection>
         | Rendered<UnselectedComplementSelection>
-        | PerfectParticipleBlock
-        | PerfectEquativeBlock
-        | ModalVerbBlock
-        | ModalVerbKedulPart
         | { type: "negative", imperative: boolean }
-        | PerfectiveHeadBlock
-        | VerbRenderedBlock
-        | EquativeBlock;
-}
-
-export type RenderedVerbB = VerbRenderedBlock
-    | PerfectiveHeadBlock
-    | ModalVerbBlock
-    | ModalVerbKedulPart
-    | PerfectEquativeBlock
-    | PerfectParticipleBlock;
+        | EquativeBlock
+        | VB
+        | VBE
+        | VHead,
+};
     
 export type Kid = {
     key: number,
@@ -1124,7 +1100,7 @@ export type NComp = {
     comp: Comp,
 };
 
-// Complement can be one of
+// element can be one of
 // - adjective
 // - locative adv
 // - sandwich (TODO)

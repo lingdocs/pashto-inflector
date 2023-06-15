@@ -8,6 +8,20 @@
 
 import * as T from "../../types";
 
+export function applyToSingOrLengthOpts<X extends object>(f: (x: X) => X, x: T.SingleOrLengthOpts<X>): T.SingleOrLengthOpts<X> {
+    if ("long" in x) {
+        return {
+            long: f(x.long),
+            short: f(x.short),
+            ..."mini" in x && x.mini ? {
+                mini: f(x.mini),
+            } : {},
+        };
+    } else {
+        return f(x);
+    }
+}
+
 export const blank: T.PsString = {
     p: "_____",
     f: "_____",

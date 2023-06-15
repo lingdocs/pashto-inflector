@@ -5,7 +5,7 @@ import { concatPsString, isUnisexSet, psStringFromEntry, trimOffPs } from "../p-
 import { inflectPattern1 } from "./new-inflectors";
 import { getLength } from "../p-text-helpers";
 import { equativeEndings } from "../grammar-units";
-import { isAdjectiveEntry } from "../type-predicates";
+import { isAdjectiveEntry, isImperativeTense } from "../type-predicates";
 import { inflectWord } from "../pashto-inflector";
 
 export function isStatComp(v: T.VerbEntry): boolean {
@@ -273,7 +273,10 @@ export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA> {
     };
 }
 
-export function getAspect(tense: T.VerbTense | T.AbilityTense | T.ImperativeTense): T.Aspect {
+export function getAspect(tense: T.VerbTense | T.AbilityTense | T.ImperativeTense, negative: boolean): T.Aspect {
+    if (isImperativeTense(tense) && negative) {
+        return "imperfective";
+    }
     const t = tense.replace("Modal", "");
     const imperfectives: Parameters<typeof getAspect>[0][] = ["presentVerb", "imperfectiveFuture", "imperfectivePast", "habitualImperfectivePast", "imperfectiveImperative"];
     if (imperfectives.includes(t as Parameters<typeof getAspect>[0])) {

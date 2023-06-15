@@ -1,6 +1,7 @@
 import { renderVerb } from "./render-verb";
 import { vEntry } from "./rs-helpers";
 import * as T from "../../../types";
+import { negate } from "rambda";
 
 const wahul = vEntry({"ts":1527815399,"i":15049,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"});
 const raawrul = vEntry({"ts":1527815214,"i":6954,"p":"راوړل","f":"raawRúl","g":"raawRul","e":"to bring, deliver (inanimate objects)","r":4,"c":"v. trans.","tppp":"راووړ","tppf":"raawoR","noOo":true,"separationAtP":2,"separationAtF":3,"ec":"bring,brings,bringing,brought,brought"});
@@ -52,6 +53,7 @@ test("basic tenses", () => {
         tense: "presentVerb",
         person: T.Person.FirstSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         
@@ -67,6 +69,7 @@ test("basic tenses", () => {
         tense: "subjunctiveVerb",
         person: T.Person.SecondSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -81,6 +84,7 @@ test("basic tenses", () => {
         tense: "habitualPerfectivePast",
         person: T.Person.ThirdSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: true,
         vbs: [
@@ -106,6 +110,7 @@ test("basic tenses with inflecting roots/stems", () => {
         person: T.Person.FirstSingMale,
         presObj: T.Person.ThirdSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -517,6 +522,7 @@ test("special endings", () => {
             tense: x.tense,
             person: T.Person.ThirdSingMale,
             voice: "active",
+            negative: false,
         })).toEqual({ hasBa: false, vbs: x.result });
     });
 
@@ -525,6 +531,7 @@ test("special endings", () => {
         tense: "perfectivePast",
         person: T.Person.FirstPlurMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -546,6 +553,7 @@ test("special endings", () => {
         tense: "imperfectivePast",
         person: T.Person.FirstSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -568,6 +576,7 @@ test("special endings", () => {
         tense: "imperfectivePast",
         person: T.Person.ThirdSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -591,6 +600,7 @@ test("special endings", () => {
         tense: "imperfectivePast",
         person: T.Person.ThirdPlurMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -612,6 +622,7 @@ test("special endings", () => {
         tense: "perfectivePast",
         person: T.Person.ThirdPlurMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -636,6 +647,7 @@ test("imperative tenses", () => {
         tense: "imperfectiveImperative",
         person: T.Person.SecondSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -650,6 +662,7 @@ test("imperative tenses", () => {
         tense: "perfectiveImperative",
         person: T.Person.SecondSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -664,6 +677,7 @@ test("imperative tenses", () => {
         tense: "imperfectiveImperative",
         person: T.Person.SecondPlurMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -678,6 +692,7 @@ test("imperative tenses", () => {
         tense: "perfectiveImperative",
         person: T.Person.SecondPlurFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -695,6 +710,7 @@ test("ability tenses", () => {
         tense: "presentVerbModal",
         person: T.Person.FirstSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -729,6 +745,7 @@ test("basic tenses", () => {
         tense: "presentVerb",
         person: T.Person.FirstSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         
@@ -744,6 +761,7 @@ test("basic tenses", () => {
         tense: "subjunctiveVerb",
         person: T.Person.SecondSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -758,6 +776,7 @@ test("basic tenses", () => {
         tense: "habitualPerfectivePast",
         person: T.Person.ThirdSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: true,
         vbs: [
@@ -782,6 +801,7 @@ test("perfect tenses", () => {
         tense: "presentPerfect",
         person: T.Person.FirstSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -797,6 +817,7 @@ test("perfect tenses", () => {
         tense: "subjunctivePerfect",
         person: T.Person.FirstSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -812,6 +833,7 @@ test("perfect tenses", () => {
         tense: "habitualPerfect",
         person: T.Person.FirstSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -827,6 +849,7 @@ test("perfect tenses", () => {
         tense: "habitualPerfect",
         person: T.Person.ThirdPlurMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -842,6 +865,7 @@ test("perfect tenses", () => {
         tense: "futurePerfect",
         person: T.Person.FirstSingMale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: true,
         vbs: [
@@ -857,6 +881,7 @@ test("perfect tenses", () => {
         tense: "pastPerfect",
         person: T.Person.SecondSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -879,6 +904,7 @@ test("perfect tenses", () => {
         tense: "wouldBePerfect",
         person: T.Person.SecondSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: true,
         vbs: [
@@ -901,6 +927,7 @@ test("perfect tenses", () => {
         tense: "pastSubjunctivePerfect",
         person: T.Person.SecondSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -920,6 +947,7 @@ test("perfect tenses", () => {
         tense: "wouldHaveBeenPerfect",
         person: T.Person.SecondSingFemale,
         voice: "active",
+        negative: false,
     })).toEqual({
         hasBa: true,
         vbs: [
@@ -942,7 +970,8 @@ test("ending on complex verbs", () => {
         tense: "presentVerbModal",
         person: T.Person.SecondSingMale,
         voice: "active",
-        presObj: T.Person.ThirdSingFemale
+        presObj: T.Person.ThirdSingFemale,
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
@@ -986,7 +1015,8 @@ test("ending on complex verbs", () => {
         tense: "presentVerb",
         person: T.Person.SecondSingMale,
         voice: "active",
-        presObj: T.Person.ThirdSingFemale
+        presObj: T.Person.ThirdSingFemale,
+        negative: false,
     })).toEqual({
         hasBa: false,
         vbs: [
