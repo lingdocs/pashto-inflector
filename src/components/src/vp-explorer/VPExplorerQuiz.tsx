@@ -15,8 +15,6 @@ import playAudio from "../play-audio";
 import TensePicker from "./TensePicker";
 import Keyframes from "../Keyframes";
 import energyDrink from "./energy-drink.jpg";
-import { flattenLengths } from "../../../lib/src/phrase-building/compile";
-import { concatPsString } from "../../../lib/src/p-text-helpers";
 import { isImperativeTense } from "../../../lib/src/type-predicates";
 import {
     adjustObjectSelection,

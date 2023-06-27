@@ -1,7 +1,7 @@
 import * as T from "../../../types";
 import {
     capitalizeFirstLetter,
-    concatPsString, getLong, getShort,
+    concatPsString, getLong, 
 } from "../p-text-helpers";
 import { negativeParticle } from "../grammar-units";
 import * as grammarUnits from "../grammar-units";
@@ -14,6 +14,7 @@ import { completeVPSelection } from "./vp-tools";
 import { renderVP } from "./render-vp";
 import {
     getAPsFromBlocks,
+    getComplementFromBlocks,
     getObjectSelectionFromBlocks,
     getPredicateSelectionFromBlocks,
     getSubjectSelectionFromBlocks,
@@ -249,7 +250,13 @@ function getPsFromWelded(v: T.Welded): T.PsString[] {
         }
         return getPsFromWelded(v);
     }
-    return [...getPsFromSide(v.left), ...getPsFromSide(v.right)];
+    const left = getPsFromSide(v.left);
+    const right = getPsFromSide(v.right);
+    return left.flatMap(leftVar => (
+        right.flatMap(rightVar => (
+            concatPsString(leftVar, " ", rightVar)
+        ))
+    ));
 }
 
 function getEngAPs(blocks: T.Block[][]): string {
@@ -261,16 +268,17 @@ function getEngAPs(blocks: T.Block[][]): string {
 }
 
 function getEngComplement(blocks: T.Block[][]): string | undefined {
-    return "TODO";
-    // const comp = getComplementFromBlocks(blocks);
-    // if (!comp) return undefined;
-    // if (comp.selection.type === "unselected") {
-    //     return "____";
-    // }
-    // if (comp.selection.type === "sandwich") {
-    //     return getEnglishFromRendered({ type: "AP", selection: comp.selection });
-    // }
-    // return comp.selection.e;
+    console.log("getting comp");
+    const comp = getComplementFromBlocks(blocks);
+    console.log({ blocks, comp });
+    if (!comp) return undefined;
+    if (comp.selection.type === "unselected") {
+        return "____";
+    }
+    if (comp.selection.type === "sandwich") {
+        return getEnglishFromRendered({ type: "AP", selection: comp.selection });
+    }
+    return comp.selection.e;
 }
 
 function putKidsInKidsSection(blocksWVars: T.Block[][], kids: T.Kid[], enforceKidsSectionBlankout: boolean): (T.Block | T.Kid | T.PsString)[][] {

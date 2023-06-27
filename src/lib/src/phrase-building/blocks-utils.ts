@@ -25,6 +25,11 @@ export function getSubjectSelection(blocks: T.EPSBlock[] | T.EPSBlockComplete[] 
     return b.block;
 }
 
+export function getComplementFromBlocks(blocks: T.Block[][]): T.Rendered<T.ComplementSelection> | T.UnselectedComplementSelection | undefined {
+    const b = blocks[0].find(f => f.block.type === "complement");
+    return b?.block as T.Rendered<T.ComplementSelection> | T.UnselectedComplementSelection | undefined;
+}
+
 export function getSubjectSelectionFromBlocks(blocks: T.Block[][]): T.Rendered<T.SubjectSelectionComplete> {
     const b = blocks[0].find(f => f.block.type === "subjectSelection");
     if (!b || b.block.type !== "subjectSelection") {

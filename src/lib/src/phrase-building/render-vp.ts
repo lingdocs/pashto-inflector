@@ -1,42 +1,23 @@
 import * as T from "../../../types";
 import {
-    applyToSingOrLengthOpts,
-    getVerbBlockPosFromPerson,
-} from "../misc-helpers";
-import { conjugateVerb } from "../verb-conjugation";
-import {
-    hasBaParticle,
-    getLong,
-    isImperativeBlock,
-    splitOffLeapfrogWordFull,
-    getShort,
-} from "../p-text-helpers";
-import { removeAccents, removeAccentsWLength, removeVerbAccent } from "../accent-helpers";
+    mapVerbRenderedOutput,
+} from "../fmaps";
+import { removeAccents } from "../accent-helpers";
 import {
     getPersonFromNP,
-    removeBa,
     isPastTense,
-    getTenseVerbForm,
 } from "./vp-tools";
 import {
-    isAdjectiveEntry,
     isImperativeTense,
-    isLocativeAdverbEntry,
-    isAbilityTense,
-    isNounEntry,
     isPattern4Entry,
-    isPerfectTense,
-    isTlulVerb,
 } from "../type-predicates";
 import { renderVerb } from "../new-verb-engine/render-verb";
 import { renderEnglishVPBase } from "./english-vp-rendering";
-import { personGender } from "../misc-helpers";
 import { renderNPSelection } from "./render-np";
 import { getObjectSelection, getSubjectSelection, makeBlock, makeKid } from "./blocks-utils";
 import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
-import { makeNounSelection } from "./make-selections";
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const subject = getSubjectSelection(VP.blocks).selection;
@@ -58,7 +39,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const inflectSubject = isPast && isTransitive && !isMascSingAnimatePattern4(subject);
     const inflectObject = !isPast && isFirstOrSecondPersPronoun(object);
     // Render Elements
-    const firstBlocks = renderVPBlocks(VP.blocks, {
+    const firstBlocks = renderVPBlocks(VP.blocks, VP.externalComplement, {
         inflectSubject,
         inflectObject,
         king,
@@ -68,6 +49,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         verb: VP.verb.verb,
         tense: VP.verb.tense,
         person: kingPerson,
+        complementPerson: objectPerson || kingPerson,
         voice: VP.verb.voice,
         negative: VP.verb.negative,
     });
@@ -119,14 +101,15 @@ function removeAbbreviated(blocks: T.VPSBlockComplete[], form: T.FormVersion, ki
             if (form.removeKing && king === "object") return false;
         }
         return true;
-    })
+    });
 }
 
 function insertNegative(blocks: T.VerbRenderedOutput, negative: boolean, imperative: boolean): T.Block[][] {
     if (!negative) {
         return [blocks.flat().map(makeBlock)];
     };
-    const blocksA = removeVerbAccent(blocks).flat().map(makeBlock);
+    const blocksA = blocks.flat().map(makeBlock);
+    const blocksNoAccentA = mapVerbRenderedOutput(removeAccents, blocks).flat().map(makeBlock);
     const neg = makeBlock({ type: "negative", imperative });
     const nonStandPerfectiveSplit = hasNonStandardPerfectiveSplit(blocks);
     if (blocks[1].length === 2) {
@@ -135,21 +118,21 @@ function insertNegative(blocks: T.VerbRenderedOutput, negative: boolean, imperat
             return [
                 insertFromEnd(swapEndingBlocks(blocksA), neg, 2),
                 insertFromEnd(swapEndingBlocks(blocksA, 2), neg, 3),
-                insertFromEnd(blocksA, neg, 1),
+                insertFromEnd(blocksNoAccentA, neg, 1),
             ]
         }
         return [
             insertFromEnd(swapEndingBlocks(blocksA), neg, 2),
-            insertFromEnd(blocksA, neg, 1),
+            insertFromEnd(blocksNoAccentA, neg, 1),
         ];
     }
     if (nonStandPerfectiveSplit) {
         return [
-            insertFromEnd(blocksA, neg, 1),
-            insertFromEnd(blocksA, neg, 2),
+            insertFromEnd(blocksNoAccentA, neg, 1),
+            insertFromEnd(blocksNoAccentA, neg, 2),
         ];
     } else {
-        return [insertFromEnd(blocksA, neg, 1)];
+        return [insertFromEnd(blocksNoAccentA, neg, 1)];
     }
 }
 
@@ -171,8 +154,6 @@ function insertFromEnd<X>(arr: X[], x: X, n: number): X[] {
         ...arr.slice(-n),
     ];
 }
-
-
 
 function hasNonStandardPerfectiveSplit([[ph]]: T.VerbRenderedOutput): boolean {
     if (!ph) {
@@ -196,7 +177,7 @@ function shrinkServant(np: T.NPSelection): T.MiniPronoun {
 }
 
 
-function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
+function renderVPBlocks(blocks: T.VPSBlockComplete[], externalComplement: T.VPSelectionComplete["externalComplement"],  config: {
     inflectSubject: boolean,
     inflectObject: boolean,
     king: "subject" | "object",
@@ -207,7 +188,8 @@ function renderVPBlocks(blocks: T.VPSBlockComplete[], config: {
     const adverbPerson = typeof object.selection === "object"
         ? getPersonFromNP(object.selection)
         : getPersonFromNP(subject.selection);
-    return blocks.reduce((blocks, { block }): T.Block[] => {
+    const b = externalComplement ? [...blocks, { block: externalComplement }] : blocks
+    return b.reduce((blocks, { block }): T.Block[] => {
         if (block.type === "subjectSelection") {
             return [
                 ...blocks,

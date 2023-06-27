@@ -6,9 +6,9 @@
  *
  */
 
-type Prettify<T> = {
-    [K in keyof T]: T[K];
-} & {};
+// type prettify<t> = {
+//     [k in keyof t]: t[k];
+// } & {};
 
 export type PsStringField = "p" | "f";
 export type PsString = {
@@ -1105,13 +1105,16 @@ export type NComp = {
 // - locative adv
 // - sandwich (TODO)
 // - noun
-/** complement block */
-export type Comp = {
+export type Comp = AdjComp | OtherComp
+
+export type AdjComp = {
     type: "AdjComp",
     ps: PsString,
-    gender: Gender,
     number: NounNumber,
-} | {
+    gender: Gender,
+};
+
+export type OtherComp = {
     type: "Comp",
     ps: PsString,
 };

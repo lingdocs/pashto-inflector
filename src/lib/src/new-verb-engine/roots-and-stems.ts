@@ -15,6 +15,7 @@ import { accentOnNFromEnd, countSyllables, removeAccents } from "../accent-helpe
 import { isKawulVerb, isTlulVerb } from "../type-predicates";
 import { vEntry, addAbilityEnding, weld, removeL, addTrailingAccent, tlulPerfectiveStem, getLongVB, possiblePPartLengths, isStatComp, statCompImperfectiveSpace, makeComplement, vTransitivity, isKedul } from "./rs-helpers";
 import { inflectPattern3 } from "./new-inflectors";
+import { fmapSingleOrLengthOpts } from "../fmaps";
 
 const statVerb = {
     intransitive: vEntry({"ts":1581086654898,"i":11100,"p":"کېدل","f":"kedul","g":"kedul","e":"to become _____","r":2,"c":"v. intrans.","ssp":"ش","ssf":"sh","prp":"شول","prf":"shwul","pprtp":"شوی","pprtf":"shúwey","noOo":true,"ec":"become"}),
@@ -116,14 +117,10 @@ export function getPastParticiple(verb: T.VerbEntry, voice: T.Voice, { gender, n
     };
     
     function addTail(ps: T.SingleOrLengthOpts<T.PsString[]>): T.SingleOrLengthOpts<T.PsString[]> {
-        if ("long" in ps) {
-            return {
-                long: addTail(ps.long) as T.PsString[],
-                short: addTail(ps.short) as T.PsString[],
-            };
-        }
-        const withTail = concatPsString(ps[0], { p: "ی", f: "ey"});
-        return inflectPattern3(withTail, { gender, number });
+        return fmapSingleOrLengthOpts((x) => {
+            const withTail = concatPsString(x[0], { p: "ی", f: "ey"});
+            return inflectPattern3(withTail, { gender, number });
+        }, ps);
     }
 }
 

@@ -7,20 +7,7 @@
  */
 
 import * as T from "../../types";
-
-export function applyToSingOrLengthOpts<X extends object>(f: (x: X) => X, x: T.SingleOrLengthOpts<X>): T.SingleOrLengthOpts<X> {
-    if ("long" in x) {
-        return {
-            long: f(x.long),
-            short: f(x.short),
-            ..."mini" in x && x.mini ? {
-                mini: f(x.mini),
-            } : {},
-        };
-    } else {
-        return f(x);
-    }
-}
+import { fmapSingleOrLengthOpts } from "./fmaps";
 
 export const blank: T.PsString = {
     p: "_____",
@@ -110,19 +97,6 @@ export function hasPersInfs(info: T.NonComboVerbInfo | T.PassiveRootsAndStems | 
     );
 }
 
-export function functionOnOptLengths<U extends object, F extends object>(x: T.SingleOrLengthOpts<U>, f: (y: U) => F): T.SingleOrLengthOpts<F> {
-    if ("long" in x) {
-        return {
-            long: f(x.long),
-            short: f(x.short),
-            ...("mini" in x && x.mini) ? {
-                mini: f(x.mini),
-            } : {},
-        };
-    }
-    return f(x);
-}
-
 // TODO: deprecated using new verb rendering thing
 export function chooseParticipleInflection(
     pPartInfs: T.SingleOrLengthOpts<T.UnisexInflections> | T.SingleOrLengthOpts<T.PsString>,
@@ -166,17 +140,10 @@ export function spaceInForm(form: T.FullForm<T.PsString>): boolean {
 }
 
 export function getPersonFromVerbForm(form: T.SingleOrLengthOpts<T.VerbBlock>, person: T.Person): T.SentenceForm {
-    if ("long" in form) {
-        return {
-            long: getPersonFromVerbForm(form.long, person) as T.ArrayOneOrMore<T.PsString>,
-            short: getPersonFromVerbForm(form.short, person) as T.ArrayOneOrMore<T.PsString>,
-            ...form.mini ? {
-                mini: getPersonFromVerbForm(form.mini, person) as T.ArrayOneOrMore<T.PsString>,
-            } : {},
-        };
-    }
-    const [row, col] = getVerbBlockPosFromPerson(person);
-    return form[row][col];
+    return fmapSingleOrLengthOpts(x => {
+        const [row, col] = getVerbBlockPosFromPerson(person);
+        return x[row][col];
+    }, form);
 }
 
 export function getVerbBlockPosFromPerson(person: T.Person): [0 | 1 | 2 | 3 | 4 | 5, 0 | 1] {
@@ -207,7 +174,7 @@ export function getEnglishPersonInfo(person: T.Person, version?: "short" | "long
         ? "1st"
         : [2,3,8,9].includes(person)
         ? "2nd"
-        : "3rd") + (version !== "short" ? " pers." : "");
+        : "3rd") + " pers.";
     const number = personIsPlural(person) ? "plur" : "sing";
     const n = version === "short"
         ? (number === "plur" ? "pl" : "sg") : number;
@@ -216,6 +183,10 @@ export function getEnglishPersonInfo(person: T.Person, version?: "short" | "long
         ? (gender === "masc" ? "m" : "f")
         : gender;
     return `${p} ${n}. ${g}.`;
+}
+
+export function getEnglishGenNumInfo(gender: T.Gender, number: T.NounNumber): string {
+    return `${gender === "masc" ? "masc" : "fem"} ${number === "plural" ? "plur." : "sing."}`;
 }
 
 export function getEnglishParticipleInflection(person: T.Person, version?: "short" | "long"): string {

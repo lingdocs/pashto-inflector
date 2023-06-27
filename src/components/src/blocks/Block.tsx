@@ -3,7 +3,7 @@ import classNames from "classnames";
 import {
     getEnglishFromRendered,
 } from "../../../lib/src/phrase-building/np-tools";
-import { getEnglishPersonInfo, getEnglishParticipleInflection } from "../../../lib/src/misc-helpers";
+import { getEnglishPersonInfo, getEnglishParticipleInflection, getEnglishGenNumInfo } from "../../../lib/src/misc-helpers";
 import { useState } from "react";
 import { getLength } from "../../../lib/src/p-text-helpers";
 import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
@@ -26,6 +26,10 @@ function Block({ opts, block, king, script }: {
         const role = king === "subject" ? "king" : king === "object" ? "servant" : undefined;
         return <SubjectBlock opts={opts} np={block.block.selection} role={role} script={script} />
     }
+    if (block.block.type === "objectSelection") {
+        const role = king === "object" ? "king" : king === "subject" ? "servant" : undefined;
+        return <ObjectBlock opts={opts} obj={block.block.selection} role={role} script={script} />;
+    }
     if (block.block.type === "predicateSelection") {
         const english = getEnglishFromRendered(block.block.selection);
         return <div className="text-center">
@@ -38,33 +42,19 @@ function Block({ opts, block, king, script }: {
     if (block.block.type === "negative") {
         return <NegBlock opts={opts} imperative={block.block.imperative} script={script} />
     }
-    return <div>TODO</div>
-    // if (block.block.type === "perfectiveHead") {
-    //     return <PerfHeadBlock opts={opts} ps={block.block.ps} script={script} />
-    // }
-    // if (block.block.type === "verb") {
-    //     return <VerbSBlock opts={opts} v={block.block.block} script={script} />;
-    // }
-    // if (block.block.type === "objectSelection") {
-    //     const role = king === "object" ? "king" : king === "subject" ? "servant" : undefined;
-    //     return <ObjectBlock opts={opts} obj={block.block.selection} role={role} script={script} />;
-    // }
-    // if (block.block.type === "perfectParticipleBlock") {
-    //     return <VerbSBlock opts={opts} v={block.block} script={script} />;
-    // }
-    // if (block.block.type === "perfectEquativeBlock") {
-    //     return <EquativeBlock opts={opts} eq={block.block} script={script} />;
-    // }
-    // if (block.block.type === "modalVerbBlock") {
-    //     return <ModalVerbBlock opts={opts} v={block.block} script={script} />;
-    // }
-    // if (block.block.type === "modalVerbKedulPart") {
-    //     return <ModalAuxBlock opts={opts} aux={block.block} script={script} />
-    // }
-    // if (block.block.type === "complement") {
-    //     return <ComplementBlock opts={opts} comp={block.block.selection} script={script} />;
-    // }
-    return null;
+    if (block.block.type === "PH") {
+        return <PerfHeadBlock opts={opts} ps={block.block.ps} script={script} />;
+    }
+    if (block.block.type === "VB") {
+        return <VBBlock opts={opts} block={block.block} script={script} />; 
+    }
+    if (block.block.type === "complement") {
+        return <ComplementBlock opts={opts} comp={block.block.selection} script={script} />
+    }
+    if (block.block.type === "NComp") {
+        return <NCompBlock opts={opts} comp={block.block.comp} script={script} />
+    }
+    return <WeldedBlock opts={opts} welded={block.block} script={script} />
 }
 
 export default Block;
@@ -75,9 +65,69 @@ function Border({ children, extraClassName, padding }: { children: JSX.Element |
         style={{
             padding: padding ? padding : "1rem",
             textAlign: "center",
+            gap: "0.5rem",
         }}
     >
         <>{children}</>
+    </div>
+}
+
+function VBBlock({ opts, block, script }: {
+    opts: T.TextOptions,
+    script: "p" | "f",
+    block: T.VBBasic | T.VBGenNum | (T.VBBasic & {
+        person: T.Person;
+    }),
+}) {
+    const [length, setLength] = useState<T.Length>("long");
+    const [version, setVersion] = useState<number>(0);
+    const ps = getLength(block.ps, length);
+    function changeVersion() {
+        setVersion(o => (o + 1) % ps.length);
+    }
+    function changeLength() {
+        setLength(o => (
+            o === "long"
+                ? "short"
+                : o === "short" && "mini" in block.ps
+                ? "mini"
+                : "long"
+        ));
+    }
+    const infInfo = "gender" in block
+        ? getEnglishGenNumInfo(block.gender, block.number)
+        : "person" in block
+        ? getEnglishPersonInfo(block.person, "short")
+        : "";
+    return <div className="text-center">
+        <div className="d-flex flex-row justify-content-around">
+            {"long" in block.ps && <div className="clickable small mb-1" onClick={changeLength}>{length}</div>}
+            {ps.length > 1 && <div className="clickable small mb-1" onClick={changeVersion}>v. {version + 1}</div>}
+        </div>
+        <Border>
+            <>
+                {ps[version][script]}
+            </>
+        </Border>
+        <div>VBlock</div>
+        <SubText>{infInfo}</SubText>
+    </div>
+}
+
+function WeldedBlock({ opts, welded, script }: {
+    opts: T.TextOptions,
+    script: "p" | "f",
+    welded: T.Welded,
+}) {
+    return <div className="text-center">
+        <Border padding="0.5rem" extraClassName={script === "p" ? "flex-row-reverse" : ""}>
+            {welded.left.type === "NComp"
+                ? <NCompBlock opts={opts} comp={welded.left.comp} script={script} />
+                : welded.left.type === "VB"
+                ? <VBBlock opts={opts} block={welded.left} script={script} />
+                : <WeldedBlock opts={opts} welded={welded.left} script={script} />}
+            <VBBlock opts={opts} block={welded.right} script={script} />
+        </Border>
     </div>
 }
 
@@ -142,20 +192,20 @@ function Border({ children, extraClassName, padding }: { children: JSX.Element |
 //     </div>
 // }
 
-// function PerfHeadBlock({ opts, ps, script }: {
-//     opts: T.TextOptions,
-//     ps: T.PsString,
-//     script: "p" | "f",
+function PerfHeadBlock({ opts, ps, script }: {
+    opts: T.TextOptions,
+    ps: T.PsString,
+    script: "p" | "f",
 
-// }) {
-//     return <div className="text-center">
-//         <Border>
-//             {ps[script]}
-//         </Border>
-//         <div>perf. head</div>
-//         <EnglishBelow>{'\u00A0'}</EnglishBelow>
-//     </div>;
-// }
+}) {
+    return <div className="text-center">
+        <Border>
+            {ps[script]}
+        </Border>
+        <div>perf. head</div>
+        <SubText>{'\u00A0'}</SubText>
+    </div>;
+}
 
 // function ModalAuxBlock({ opts, aux, script }: {
 //     opts: T.TextOptions,
@@ -182,7 +232,7 @@ function NegBlock({ opts, imperative, script }: {
             {negativeParticle[imperative ? "imperative" : "nonImperative"][script]}
         </Border>
         <div>Neg.</div>
-        <EnglishBelow>{imperative ? "don't" : "not"}</EnglishBelow>
+        <SubText>{imperative ? "don't" : "not"}</SubText>
     </div>;
 }
 
@@ -207,7 +257,7 @@ function EquativeBlock({ opts, eq, script }: {
             {getLength(eq.ps, length)[0][script]}
         </Border>
         <div>Equative</div>
-        <EnglishBelow>{getEnglishPersonInfo(eq.person, "short")}</EnglishBelow>
+        <SubText>{getEnglishPersonInfo(eq.person, "short")}</SubText>
     </div>;
 }
 
@@ -240,6 +290,25 @@ function ObjectBlock({ opts, obj, role, script }: {
     </div>;
 }
 
+function NCompBlock({ opts, comp, script }: {
+    script: "p" | "f",
+    opts: T.TextOptions,
+    comp: T.Comp,
+}) {
+    return <div className="text-center">
+        <Border>
+            {comp.ps[script]}
+        </Border>
+        {comp.type === "AdjComp" 
+            ? <div>adj. <span className="text-muted small">{getEnglishGenNumInfo(comp.gender, comp.number)}</span></div>
+            : <div>TODO</div>}
+        <SubText>
+            todo
+            {/* {adj.e} */}
+        </SubText>
+    </div>;
+}
+
 function ComplementBlock({ opts, comp, script, inside }: {
     script: "p" | "f",
     opts: T.TextOptions,
@@ -255,7 +324,7 @@ function ComplementBlock({ opts, comp, script, inside }: {
                 {adj.ps[0][script]}
             </Border>
             <div>Adj. <span className="text-muted small">({getEnglishParticipleInflection(adj.person, "short")})</span></div>
-            <EnglishBelow>{adj.e}</EnglishBelow>
+            <SubText>{adj.e}</SubText>
         </div>;
     }
 
@@ -268,7 +337,7 @@ function ComplementBlock({ opts, comp, script, inside }: {
                 {adv.ps[0][script]}
             </Border>
             <div>Loc. Adv.</div>
-            <EnglishBelow>{adv.e}</EnglishBelow>
+            <SubText>{adv.e}</SubText>
         </div>;
     }
     return <div className="text-center">
@@ -286,13 +355,13 @@ function ComplementBlock({ opts, comp, script, inside }: {
                 </Border>
                 {!inside && <>
                     <div>&nbsp;</div>
-                    <EnglishBelow>{comp.e}</EnglishBelow>
+                    <SubText>{comp.e}</SubText>
                 </>}
             </div>
             : <div>
                 <Sandwich opts={opts} sandwich={comp} script={script} />
                 <div>Sandwich</div>
-                <EnglishBelow>{comp.e}</EnglishBelow>
+                <SubText>{comp.e}</SubText>
             </div>}
     </div>;
 }
@@ -310,13 +379,13 @@ export function APBlock({ opts, children, english, script }: {
                 {ap.selection.ps[0][script]}
             </Border>
             <div>AP</div>
-            <EnglishBelow>{english}</EnglishBelow>
+            <SubText>{english}</SubText>
         </div>;
     }
     return <div>
         <Sandwich opts={opts} sandwich={ap.selection} script={script} />
         <div>AP</div>
-        <EnglishBelow>{english}</EnglishBelow>
+        <SubText>{english}</SubText>
     </div>;
 }
 
@@ -355,7 +424,7 @@ function CompNounBlock({ opts, noun, script }: {
         <div>
             Comp. Noun
         </div>
-        <EnglishBelow>{noun.e}</EnglishBelow>
+        <SubText>{noun.e}</SubText>
     </div>
 }
 
@@ -388,7 +457,7 @@ export function NPBlock({ opts, children, inside, english, script }: {
                 <span className="text-muted small">({getEnglishPersonInfo(np.selection.person, "short")})</span>
             </> : <></>}
         </div>
-        {!inside && <EnglishBelow>{english}</EnglishBelow>}
+        {!inside && <SubText>{english}</SubText>}
     </div>
 }
 
@@ -438,7 +507,7 @@ function Adjectives({ opts, children, script }: {
     </em>
 }
 
-function EnglishBelow({ children: e }: { children: string | undefined }) {
+function SubText({ children: e }: { children: string | undefined }) {
     return <div className="small text-muted text-center" style={{
         margin: "0 auto",
         maxWidth: "300px",

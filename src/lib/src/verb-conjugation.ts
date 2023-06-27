@@ -32,8 +32,11 @@ import {
     inflectYey,
 } from "./pashto-inflector";
 import {
-    accentOnNFromEnd, removeAccents, removeAccentsFromInflections,
+    accentOnNFromEnd, removeAccents,
 } from "./accent-helpers";
+import {
+    mapInflections,
+} from "./fmaps";
 import { pashtoConsonants } from "./pashto-consonants";
 import {
     checkForIrregularConjugation,
@@ -289,7 +292,7 @@ function makeJoinedModalContent(info: T.NonComboVerbInfo, aspectIn: T.Aspect): T
 function makeStativeCompoundSeperatedAspectContent(info: T.StativeCompoundVerbInfo, aspect: T.Aspect): T.AspectContent {
     const transitivity = getTransitivity(info);
     const complement: T.UnisexInflections = aspect === "imperfective"
-        ? removeAccentsFromInflections(info.complement)
+        ? mapInflections(removeAccents, info.complement)
         : info.complement;
     const presentComplement = (transitivity === "transitive" && complementInflects(complement))
         ? unisexInfToObjectMatrix(complement)  // transitive verb requires an object matrix for the complex
@@ -406,7 +409,7 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
     const pastPart: (" " | T.SingleOrLengthOpts<T.UnisexInflections> | T.SingleOrLengthOpts<T.PsString>)[] =
         (info.type === "stative compound")
             // for stative compounds 
-            ? [removeAccentsFromInflections(info.complement), " ", stativeAux[transitivity].participle.past]
+            ? [mapInflections(removeAccents, info.complement), " ", stativeAux[transitivity].participle.past]
             // for regular compounds
             : [inflectYey(noPersInfs(info.participle.past))]
 

@@ -6,6 +6,9 @@ import {
     personNumber,
 } from "../misc-helpers";
 import {
+    fmapSingleOrLengthOpts,
+} from "../fmaps";
+import {
     concatPsString,
     getLength,
 } from "../p-text-helpers";
@@ -24,13 +27,13 @@ import { getAspect, isKedul, perfectTenseToEquative, verbEndingConcat } from "./
 import { accentOnNFromEnd, accentPsSyllable, removeAccents } from "../accent-helpers";
 
 // TODO: problem with laaR - no perfective split
-export function renderVerb({ verb, tense, person, voice, presObj, negative }: {
+export function renderVerb({ verb, tense, person, voice, negative, complementPerson }: {
     verb: T.VerbEntry,
     negative: boolean,
     tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense, // TODO: make T.Tense
     person: T.Person,
+    complementPerson: T.Person,
     voice: T.Voice,
-    presObj?: T.Person,
 }): {
     hasBa: boolean,
     vbs: T.VerbRenderedOutput,
@@ -39,13 +42,7 @@ export function renderVerb({ verb, tense, person, voice, presObj, negative }: {
         return renderPerfectVerb({ verb, tense, voice, person });
     }
     const isPast = isPastTense(tense);
-    const rootPerson = isPast ? person : (presObj ?? person);
-
     const hasBa = tenseHasBa(tense);
-    const genderNumber = {
-        gender: personGender(rootPerson),
-        number: personNumber(rootPerson),
-    };
     const aspect = getAspect(tense, negative);
     const isImperative = isImperativeTense(tense);
     const type = isAbilityTense(tense) ? "ability" : "basic";
@@ -57,7 +54,10 @@ export function renderVerb({ verb, tense, person, voice, presObj, negative }: {
         aspect,
         voice,
         type,
-        genderNumber,
+        genderNumber: {
+            gender: personGender(complementPerson),
+            number: personNumber(complementPerson),
+        },
     });
     // #2 add the verb ending to it
     const ending = getEnding(person, isPast, isImperative, aspect);
@@ -98,10 +98,7 @@ function renderPerfectVerb({ tense, verb, voice, person }: {
     const equativeBlock: T.VBE = {
         type: "VB",
         person,
-        ps: "long" in equative ? {
-            long: equative.long[row][col],
-            short: equative.short[row][col],
-        } : equative[row][col],
+        ps: fmapSingleOrLengthOpts(x => x[row][col], equative),
     };
     return {
         hasBa, 

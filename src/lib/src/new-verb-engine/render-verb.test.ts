@@ -52,6 +52,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "presentVerb",
         person: T.Person.FirstSingMale,
+        complementPerson: T.Person.FirstSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -68,6 +69,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "subjunctiveVerb",
         person: T.Person.SecondSingMale,
+        complementPerson: T.Person.SecondSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -83,6 +85,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "habitualPerfectivePast",
         person: T.Person.ThirdSingFemale,
+        complementPerson: T.Person.ThirdSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -108,7 +111,7 @@ test("basic tenses with inflecting roots/stems", () => {
         verb: bandawul,
         tense: "subjunctiveVerb",
         person: T.Person.FirstSingMale,
-        presObj: T.Person.ThirdSingFemale,
+        complementPerson: T.Person.ThirdSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -521,6 +524,7 @@ test("special endings", () => {
             verb: x.verb,
             tense: x.tense,
             person: T.Person.ThirdSingMale,
+            complementPerson: T.Person.ThirdSingMale,
             voice: "active",
             negative: false,
         })).toEqual({ hasBa: false, vbs: x.result });
@@ -530,6 +534,7 @@ test("special endings", () => {
         verb: kedulStat,
         tense: "perfectivePast",
         person: T.Person.FirstPlurMale,
+        complementPerson: T.Person.FirstPlurMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -552,6 +557,7 @@ test("special endings", () => {
         verb: tlul,
         tense: "imperfectivePast",
         person: T.Person.FirstSingMale,
+        complementPerson: T.Person.FirstSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -575,6 +581,7 @@ test("special endings", () => {
         verb: tlul,
         tense: "imperfectivePast",
         person: T.Person.ThirdSingFemale,
+        complementPerson: T.Person.ThirdSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -599,6 +606,7 @@ test("special endings", () => {
         verb: khorul,
         tense: "imperfectivePast",
         person: T.Person.ThirdPlurMale,
+        complementPerson: T.Person.ThirdPlurMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -621,6 +629,7 @@ test("special endings", () => {
         verb: khorul,
         tense: "perfectivePast",
         person: T.Person.ThirdPlurMale,
+        complementPerson: T.Person.ThirdPlurMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -646,6 +655,7 @@ test("imperative tenses", () => {
         verb: wahul,
         tense: "imperfectiveImperative",
         person: T.Person.SecondSingMale,
+        complementPerson: T.Person.SecondSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -661,6 +671,7 @@ test("imperative tenses", () => {
         verb: wahul,
         tense: "perfectiveImperative",
         person: T.Person.SecondSingFemale,
+        complementPerson: T.Person.SecondSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -676,6 +687,7 @@ test("imperative tenses", () => {
         verb: wahul,
         tense: "imperfectiveImperative",
         person: T.Person.SecondPlurMale,
+        complementPerson: T.Person.SecondPlurMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -691,6 +703,7 @@ test("imperative tenses", () => {
         verb: wahul,
         tense: "perfectiveImperative",
         person: T.Person.SecondPlurFemale,
+        complementPerson: T.Person.SecondPlurFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -709,6 +722,7 @@ test("ability tenses", () => {
         verb: wahul,
         tense: "presentVerbModal",
         person: T.Person.FirstSingMale,
+        complementPerson: T.Person.FirstSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -744,6 +758,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "presentVerb",
         person: T.Person.FirstSingMale,
+        complementPerson: T.Person.FirstSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -760,6 +775,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "subjunctiveVerb",
         person: T.Person.SecondSingMale,
+        complementPerson: T.Person.SecondSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -775,6 +791,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "habitualPerfectivePast",
         person: T.Person.ThirdSingFemale,
+        complementPerson: T.Person.ThirdSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -800,6 +817,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "presentPerfect",
         person: T.Person.FirstSingMale,
+        complementPerson: T.Person.FirstSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -816,6 +834,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "subjunctivePerfect",
         person: T.Person.FirstSingMale,
+        complementPerson: T.Person.FirstSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -832,6 +851,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "habitualPerfect",
         person: T.Person.FirstSingMale,
+        complementPerson: T.Person.FirstSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -848,6 +868,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "habitualPerfect",
         person: T.Person.ThirdPlurMale,
+        complementPerson: T.Person.ThirdPlurMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -864,6 +885,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "futurePerfect",
         person: T.Person.FirstSingMale,
+        complementPerson: T.Person.FirstSingMale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -880,6 +902,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "pastPerfect",
         person: T.Person.SecondSingFemale,
+        complementPerson: T.Person.SecondSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -903,6 +926,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "wouldBePerfect",
         person: T.Person.SecondSingFemale,
+        complementPerson: T.Person.SecondSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -926,6 +950,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "pastSubjunctivePerfect",
         person: T.Person.SecondSingFemale,
+        complementPerson: T.Person.SecondSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -946,6 +971,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "wouldHaveBeenPerfect",
         person: T.Person.SecondSingFemale,
+        complementPerson: T.Person.SecondSingFemale,
         voice: "active",
         negative: false,
     })).toEqual({
@@ -970,7 +996,7 @@ test("ending on complex verbs", () => {
         tense: "presentVerbModal",
         person: T.Person.SecondSingMale,
         voice: "active",
-        presObj: T.Person.ThirdSingFemale,
+        complementPerson: T.Person.ThirdSingFemale,
         negative: false,
     })).toEqual({
         hasBa: false,
@@ -1015,7 +1041,7 @@ test("ending on complex verbs", () => {
         tense: "presentVerb",
         person: T.Person.SecondSingMale,
         voice: "active",
-        presObj: T.Person.ThirdSingFemale,
+        complementPerson: T.Person.ThirdSingFemale,
         negative: false,
     })).toEqual({
         hasBa: false,

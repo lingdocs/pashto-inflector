@@ -30,6 +30,7 @@ import {
   splitUpSyllables,
 } from "./accent-helpers";
 import * as T from "../../types";
+import { fmapSingleOrLengthOpts } from "./fmaps";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
 const endingInHeyOrAynRegex = /[^ا][هع]$/;
@@ -661,11 +662,5 @@ function makePlural(w: T.DictionaryEntryNoFVars): { plural: T.PluralInflections,
 }
 
 export function inflectYey(ps: T.SingleOrLengthOpts<T.PsString>): T.SingleOrLengthOpts<T.UnisexInflections> {
-  if ("long" in ps) {
-      return {
-          long: inflectYey(ps.long) as T.UnisexInflections,
-          short: inflectYey(ps.short) as T.UnisexInflections,
-      }
-  }
-  return inflectRegularYeyUnisex(ps.p, ps.f);
+  return fmapSingleOrLengthOpts((x) => inflectRegularYeyUnisex(x.p, x.f), ps);
 }
