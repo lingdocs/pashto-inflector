@@ -268,9 +268,7 @@ function getEngAPs(blocks: T.Block[][]): string {
 }
 
 function getEngComplement(blocks: T.Block[][]): string | undefined {
-    console.log("getting comp");
     const comp = getComplementFromBlocks(blocks);
-    console.log({ blocks, comp });
     if (!comp) return undefined;
     if (comp.selection.type === "unselected") {
         return "____";

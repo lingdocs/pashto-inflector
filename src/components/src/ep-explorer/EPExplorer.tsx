@@ -68,7 +68,6 @@ function EPExplorer(props: {
         adjustEps({ type: "load EPS", payload: e });
     }
     function flashMessage(msg: string) {
-        console.log(msg);
         alert(msg);
         // for some crazy reason using this alert functionality breaks the flow!
         // setAlertMsg(msg);
