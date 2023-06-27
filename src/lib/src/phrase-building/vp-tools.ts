@@ -198,16 +198,8 @@ export function isPastTense(tense: T.Tense): boolean {
     return tense.toLowerCase().includes("past");
 }
 
-export function tenseHasBa(tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense): boolean {
-    const withBa: Parameters<typeof tenseHasBa>[0][] = [
-        "imperfectiveFuture",
-        "perfectiveFuture",
-        "habitualPerfectivePast",
-        "habitualImperfectivePast",
-        "imperfectiveFutureModal",
-        "perfectiveFutureModal",
-        "habitualPerfectivePastModal",
-        "habitualImperfectivePastModal",
+export function perfectTenseHasBa(tense: T.PerfectTense): boolean {
+    const withBa: Parameters<typeof perfectTenseHasBa>[0][] = [
         "futurePerfect",
         "wouldBePerfect",
         "wouldHaveBeenPerfect",

@@ -18,6 +18,7 @@ import { getObjectSelection, getSubjectSelection, makeBlock, makeKid } from "./b
 import { renderAPSelection } from "./render-ap";
 import { findPossesivesToShrink, orderKids, getMiniPronounPs } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
+import { personToGenNum } from "../misc-helpers";
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     const subject = getSubjectSelection(VP.blocks).selection;
@@ -49,7 +50,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
         verb: VP.verb.verb,
         tense: VP.verb.tense,
         person: kingPerson,
-        complementPerson: objectPerson || kingPerson,
+        complementGenNum: personToGenNum(objectPerson || kingPerson),
         voice: VP.verb.voice,
         negative: VP.verb.negative,
     });

@@ -189,6 +189,16 @@ export function getEnglishGenNumInfo(gender: T.Gender, number: T.NounNumber): st
     return `${gender === "masc" ? "masc" : "fem"} ${number === "plural" ? "plur." : "sing."}`;
 }
 
+export function personToGenNum(p: T.Person): {
+    gender: T.Gender,
+    number: T.NounNumber,
+} {
+    return {
+        gender: personGender(p),
+        number: personNumber(p),
+    };
+}
+
 export function getEnglishParticipleInflection(person: T.Person, version?: "short" | "long"): string {
     const number = personIsPlural(person) ? "plural" : "singular";
     const n = version === "short"

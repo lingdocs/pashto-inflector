@@ -4,6 +4,7 @@ import {
     isSecondPerson,
     personGender,
     personNumber,
+    personToGenNum,
 } from "../misc-helpers";
 import {
     fmapSingleOrLengthOpts,
@@ -19,20 +20,90 @@ import {
     imperativeEndings,
 } from "../grammar-units";
 import { isKawulVerb, isAbilityTense, isPerfectTense, isTlulVerb, isImperativeTense } from "../type-predicates";
-import { tenseHasBa } from "../phrase-building/vp-tools";
-import { isPastTense } from "../phrase-building/vp-tools"; 
+import { perfectTenseHasBa } from "../phrase-building/vp-tools";
 import { makePsString, removeFVarients } from "../accent-and-ps-utils";
 import { getPastParticiple, getRootStem } from "./roots-and-stems";
-import { getAspect, isKedul, perfectTenseToEquative, verbEndingConcat } from "./rs-helpers";
+import { isKedul, perfectTenseToEquative, verbEndingConcat } from "./rs-helpers";
 import { accentOnNFromEnd, accentPsSyllable, removeAccents } from "../accent-helpers";
 
+const formulas: Record<T.VerbTense | T.ImperativeTense, {
+    aspect: T.Aspect,
+    tenseC: "past" | "present" | "imperative",
+    hasBa: boolean,
+}> = {
+    "presentVerb": {
+        aspect: "imperfective",
+        tenseC: "present",
+        hasBa: false,
+    },
+    "subjunctiveVerb": {
+        aspect: "imperfective",
+        tenseC: "present",
+        hasBa: false,
+    },
+    "perfectiveFuture": {
+        aspect: "perfective",
+        tenseC: "present",
+        hasBa: true,
+    },
+    "imperfectiveFuture": {
+        aspect: "imperfective",
+        tenseC: "present",
+        hasBa: true,
+    },
+    "perfectivePast": {
+        aspect: "perfective",
+        tenseC: "past",
+        hasBa: false,
+    },
+    "imperfectivePast": {
+        aspect: "imperfective",
+        tenseC: "past",
+        hasBa: false,
+    },
+    "habitualImperfectivePast": {
+        aspect: "imperfective",
+        tenseC: "past",
+        hasBa: true,
+    },
+    "habitualPerfectivePast": {
+        aspect: "perfective",
+        tenseC: "past",
+        hasBa: true,
+    },
+    "perfectiveImperative": {
+        aspect: "perfective",
+        tenseC: "imperative",
+        hasBa: false,
+    },
+    "imperfectiveImperative": {
+        aspect: "imperfective",
+        tenseC: "imperative",
+        hasBa: false,
+    },
+}
+
+// to get the chart of conjugations:
+//  1. get the conjugation for all persons
+//  2. if transitive present tense, check (or do all the conjugation) the conjugation with all different complement person stuff
+//     if necessary pull out the object option
+//
+
+// to make the verbs displayable for the charts
+// - take the output of renderVerb { hasBa, VerbRenderedOutput }
+// - filter out a long and short version etc if necessary
+// - pass it into combineIntoText
+
+// PROBLEM: how to handle when to specify the object
+// present tense 
+
 // TODO: problem with laaR - no perfective split
-export function renderVerb({ verb, tense, person, voice, negative, complementPerson }: {
+export function renderVerb({ verb, tense: tense, person, voice, negative, complementGenNum }: {
     verb: T.VerbEntry,
     negative: boolean,
     tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense, // TODO: make T.Tense
     person: T.Person,
-    complementPerson: T.Person,
+    complementGenNum: { gender: T.Gender, number: T.NounNumber },
     voice: T.Voice,
 }): {
     hasBa: boolean,
@@ -41,10 +112,8 @@ export function renderVerb({ verb, tense, person, voice, negative, complementPer
     if (isPerfectTense(tense)) {
         return renderPerfectVerb({ verb, tense, voice, person });
     }
-    const isPast = isPastTense(tense);
-    const hasBa = tenseHasBa(tense);
-    const aspect = getAspect(tense, negative);
-    const isImperative = isImperativeTense(tense);
+    const { aspect, tenseC, hasBa } = formulas[removeAbility(tense)];
+    const isPast = tenseC === "past";
     const type = isAbilityTense(tense) ? "ability" : "basic";
 
     // #1 get the appropriate root / stem
@@ -54,13 +123,10 @@ export function renderVerb({ verb, tense, person, voice, negative, complementPer
         aspect,
         voice,
         type,
-        genderNumber: {
-            gender: personGender(complementPerson),
-            number: personNumber(complementPerson),
-        },
+        genderNumber: complementGenNum,
     });
     // #2 add the verb ending to it
-    const ending = getEnding(person, isPast, isImperative, aspect);
+    const ending = getEnding(person, tenseC, aspect);
     return {
         hasBa,
         vbs: [
@@ -85,13 +151,9 @@ function renderPerfectVerb({ tense, verb, voice, person }: {
     person: T.Person,
     // TODO: Tighter typing on the output for T.VB (enforce genderNumber?)
 }): { hasBa: boolean, vbs: [[], [T.VB, T.VBE]] } {
-    const hasBa = tenseHasBa(tense);
-    const genderNumber = {
-        gender: personGender(person),
-        number: personNumber(person),
-    };
+    const hasBa = perfectTenseHasBa(tense);
     // #1 get the past participle
-    const pp = getPastParticiple(verb, voice, genderNumber);
+    const pp = getPastParticiple(verb, voice, personToGenNum(person));
     // #2 get the right equative
     const equative = equativeEndings[perfectTenseToEquative(tense)];
     const [row, col] = getVerbBlockPosFromPerson(person);
@@ -141,7 +203,7 @@ function addEnding({ verb, rs, ending, person, pastThird, aspect, basicForm }: {
             }
             const endLong = getLength(end, "long");
             const endShort = getLength(end, "short");
-            // TODO: this is hackyۉ
+            // TODO: this is hacky
             return {
                 ...vb,
                 ps: {
@@ -166,8 +228,8 @@ function addEnding({ verb, rs, ending, person, pastThird, aspect, basicForm }: {
     }
 }
 
-function getEnding(person: T.Person, isPast: boolean, isImperative: boolean, aspect: T.Aspect) {
-    if (isImperative) {
+function getEnding(person: T.Person, tenseC: "present" | "past" | "imperative", aspect: T.Aspect) {
+    if (tenseC === "imperative") {
         if (!isSecondPerson(person)) {
             throw new Error("imperative forms must be second person");
         }
@@ -178,7 +240,7 @@ function getEnding(person: T.Person, isPast: boolean, isImperative: boolean, asp
             : ends;
     }
     const [row, col] = getVerbBlockPosFromPerson(person);
-    return isPast ? {
+    return tenseC === "past" ? {
         long: pastEndings.long[row][col],
         short: pastEndings.short[row][col],
     } : presentEndings[row][col];
@@ -241,4 +303,8 @@ function ensure3rdPast(rs: T.PsString[], ending: T.PsString[], verb: T.VerbEntry
     // short endings like ورسېد
     const ends = endsInDental ? [{ p: "", f: "" }, ...ending] : ending;
     return verbEndingConcat(rs, ends);
+}
+
+function removeAbility(tense: T.VerbTense | T.AbilityTense | T.ImperativeTense): T.VerbTense | T.ImperativeTense {
+    return tense.replace("Modal", "") as T.VerbTense | T.ImperativeTense; 
 }

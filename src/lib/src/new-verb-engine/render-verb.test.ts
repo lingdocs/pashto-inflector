@@ -2,6 +2,7 @@ import { renderVerb } from "./render-verb";
 import { vEntry } from "./rs-helpers";
 import * as T from "../../../types";
 import { negate } from "rambda";
+import { personToGenNum } from "../misc-helpers";
 
 const wahul = vEntry({"ts":1527815399,"i":15049,"p":"وهل","f":"wahul","g":"wahul","e":"to hit","r":4,"c":"v. trans.","tppp":"واهه","tppf":"waahu","ec":"hit,hits,hitting,hit,hit"});
 const raawrul = vEntry({"ts":1527815214,"i":6954,"p":"راوړل","f":"raawRúl","g":"raawRul","e":"to bring, deliver (inanimate objects)","r":4,"c":"v. trans.","tppp":"راووړ","tppf":"raawoR","noOo":true,"separationAtP":2,"separationAtF":3,"ec":"bring,brings,bringing,brought,brought"});
@@ -52,7 +53,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "presentVerb",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.FirstSingMale,
+        complementGenNum: personToGenNum(T.Person.FirstSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -69,7 +70,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "subjunctiveVerb",
         person: T.Person.SecondSingMale,
-        complementPerson: T.Person.SecondSingMale,
+        complementGenNum: personToGenNum(T.Person.SecondSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -85,7 +86,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "habitualPerfectivePast",
         person: T.Person.ThirdSingFemale,
-        complementPerson: T.Person.ThirdSingFemale,
+        complementGenNum: personToGenNum(T.Person.ThirdSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -111,7 +112,7 @@ test("basic tenses with inflecting roots/stems", () => {
         verb: bandawul,
         tense: "subjunctiveVerb",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.ThirdSingFemale,
+        complementGenNum: personToGenNum(T.Person.ThirdSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -524,7 +525,7 @@ test("special endings", () => {
             verb: x.verb,
             tense: x.tense,
             person: T.Person.ThirdSingMale,
-            complementPerson: T.Person.ThirdSingMale,
+            complementGenNum: personToGenNum(T.Person.ThirdSingMale),
             voice: "active",
             negative: false,
         })).toEqual({ hasBa: false, vbs: x.result });
@@ -534,7 +535,7 @@ test("special endings", () => {
         verb: kedulStat,
         tense: "perfectivePast",
         person: T.Person.FirstPlurMale,
-        complementPerson: T.Person.FirstPlurMale,
+        complementGenNum: personToGenNum(T.Person.FirstPlurMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -557,7 +558,7 @@ test("special endings", () => {
         verb: tlul,
         tense: "imperfectivePast",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.FirstSingMale,
+        complementGenNum: personToGenNum(T.Person.FirstSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -581,7 +582,7 @@ test("special endings", () => {
         verb: tlul,
         tense: "imperfectivePast",
         person: T.Person.ThirdSingFemale,
-        complementPerson: T.Person.ThirdSingFemale,
+        complementGenNum: personToGenNum(T.Person.ThirdSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -606,7 +607,7 @@ test("special endings", () => {
         verb: khorul,
         tense: "imperfectivePast",
         person: T.Person.ThirdPlurMale,
-        complementPerson: T.Person.ThirdPlurMale,
+        complementGenNum: personToGenNum(T.Person.ThirdPlurMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -629,7 +630,7 @@ test("special endings", () => {
         verb: khorul,
         tense: "perfectivePast",
         person: T.Person.ThirdPlurMale,
-        complementPerson: T.Person.ThirdPlurMale,
+        complementGenNum: personToGenNum(T.Person.ThirdPlurMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -655,7 +656,7 @@ test("imperative tenses", () => {
         verb: wahul,
         tense: "imperfectiveImperative",
         person: T.Person.SecondSingMale,
-        complementPerson: T.Person.SecondSingMale,
+        complementGenNum: personToGenNum(T.Person.SecondSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -671,7 +672,7 @@ test("imperative tenses", () => {
         verb: wahul,
         tense: "perfectiveImperative",
         person: T.Person.SecondSingFemale,
-        complementPerson: T.Person.SecondSingFemale,
+        complementGenNum: personToGenNum(T.Person.SecondSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -687,7 +688,7 @@ test("imperative tenses", () => {
         verb: wahul,
         tense: "imperfectiveImperative",
         person: T.Person.SecondPlurMale,
-        complementPerson: T.Person.SecondPlurMale,
+        complementGenNum: personToGenNum(T.Person.SecondPlurMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -703,7 +704,7 @@ test("imperative tenses", () => {
         verb: wahul,
         tense: "perfectiveImperative",
         person: T.Person.SecondPlurFemale,
-        complementPerson: T.Person.SecondPlurFemale,
+        complementGenNum: personToGenNum(T.Person.SecondPlurFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -722,7 +723,7 @@ test("ability tenses", () => {
         verb: wahul,
         tense: "presentVerbModal",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.FirstSingMale,
+        complementGenNum: personToGenNum(T.Person.FirstSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -758,7 +759,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "presentVerb",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.FirstSingMale,
+        complementGenNum: personToGenNum(T.Person.FirstSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -775,7 +776,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "subjunctiveVerb",
         person: T.Person.SecondSingMale,
-        complementPerson: T.Person.SecondSingMale,
+        complementGenNum: personToGenNum(T.Person.SecondSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -791,7 +792,7 @@ test("basic tenses", () => {
         verb: wahul,
         tense: "habitualPerfectivePast",
         person: T.Person.ThirdSingFemale,
-        complementPerson: T.Person.ThirdSingFemale,
+        complementGenNum: personToGenNum(T.Person.ThirdSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -817,7 +818,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "presentPerfect",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.FirstSingMale,
+        complementGenNum: personToGenNum(T.Person.FirstSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -834,7 +835,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "subjunctivePerfect",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.FirstSingMale,
+        complementGenNum: personToGenNum(T.Person.FirstSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -851,7 +852,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "habitualPerfect",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.FirstSingMale,
+        complementGenNum: personToGenNum(T.Person.FirstSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -868,7 +869,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "habitualPerfect",
         person: T.Person.ThirdPlurMale,
-        complementPerson: T.Person.ThirdPlurMale,
+        complementGenNum: personToGenNum(T.Person.ThirdPlurMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -885,7 +886,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "futurePerfect",
         person: T.Person.FirstSingMale,
-        complementPerson: T.Person.FirstSingMale,
+        complementGenNum: personToGenNum(T.Person.FirstSingMale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -902,7 +903,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "pastPerfect",
         person: T.Person.SecondSingFemale,
-        complementPerson: T.Person.SecondSingFemale,
+        complementGenNum: personToGenNum(T.Person.SecondSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -926,7 +927,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "wouldBePerfect",
         person: T.Person.SecondSingFemale,
-        complementPerson: T.Person.SecondSingFemale,
+        complementGenNum: personToGenNum(T.Person.SecondSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -950,7 +951,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "pastSubjunctivePerfect",
         person: T.Person.SecondSingFemale,
-        complementPerson: T.Person.SecondSingFemale,
+        complementGenNum: personToGenNum(T.Person.SecondSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -971,7 +972,7 @@ test("perfect tenses", () => {
         verb: wahul,
         tense: "wouldHaveBeenPerfect",
         person: T.Person.SecondSingFemale,
-        complementPerson: T.Person.SecondSingFemale,
+        complementGenNum: personToGenNum(T.Person.SecondSingFemale),
         voice: "active",
         negative: false,
     })).toEqual({
@@ -996,7 +997,7 @@ test("ending on complex verbs", () => {
         tense: "presentVerbModal",
         person: T.Person.SecondSingMale,
         voice: "active",
-        complementPerson: T.Person.ThirdSingFemale,
+        complementGenNum: personToGenNum(T.Person.ThirdSingFemale),
         negative: false,
     })).toEqual({
         hasBa: false,
@@ -1041,7 +1042,7 @@ test("ending on complex verbs", () => {
         tense: "presentVerb",
         person: T.Person.SecondSingMale,
         voice: "active",
-        complementPerson: T.Person.ThirdSingFemale,
+        complementGenNum: personToGenNum(T.Person.ThirdSingFemale),
         negative: false,
     })).toEqual({
         hasBa: false,
