@@ -5425,6 +5425,11 @@ forwarded@0.2.0:
   resolved "https://registry.npmjs.org/forwarded/-/forwarded-0.2.0.tgz"
   integrity sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==
 
+fp-ts@^2.16.0:
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.16.0.tgz#64e03314dfc1c7ce5e975d3496ac14bc3eb7f92e"
+  integrity sha512-bLq+KgbiXdTEoT1zcARrWEpa5z6A/8b7PcDW7Gef3NSisQ+VS7ll2Xbf1E+xsgik0rWub/8u0qP/iTTjj+PhxQ==
+
 fragment-cache@^0.2.1:
   version "0.2.1"
   resolved "https://registry.npmjs.org/fragment-cache/-/fragment-cache-0.2.1.tgz"
@@ -9538,6 +9543,11 @@ react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-media-hook@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-media-hook/-/react-media-hook-0.5.0.tgz#f830231f31ea80049f8cbaf8058da90ab71e7150"
+  integrity sha512-OupDgOSCjUUWPiXq3HMoRwpsQry4cGf4vKzh2E984Xtm4I01ZFbq8JwCG/RPqXB9h0qxgzoYLbABC+LIZH8deQ==
 
 react-overlays@^5.1.1:
   version "5.1.1"
