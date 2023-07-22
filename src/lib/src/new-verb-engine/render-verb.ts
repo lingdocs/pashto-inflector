@@ -5,7 +5,7 @@ import {
   personNumber,
   personToGenNum,
 } from "../misc-helpers";
-import { fmapSingleOrLengthOpts } from "../fmaps";
+import { fmapSingleOrLengthOpts } from "../fp-ps";
 import { concatPsString, getLength } from "../p-text-helpers";
 import {
   presentEndings,
@@ -18,6 +18,7 @@ import {
   isAbilityTense,
   isPerfectTense,
   isTlulVerb,
+  isImperativeTense,
 } from "../type-predicates";
 import { perfectTenseHasBa } from "../phrase-building/vp-tools";
 import { makePsString, removeFVarients } from "../accent-and-ps-utils";
@@ -100,6 +101,7 @@ export function renderVerb({
   subject,
   object,
   voice,
+  negative,
 }: {
   verb: T.VerbEntry;
   negative: boolean;
@@ -126,7 +128,7 @@ export function renderVerb({
   const [vHead, rest] = getRootStem({
     verb,
     rs: isPast ? "root" : "stem",
-    aspect,
+    aspect: negative && isImperativeTense(tense) ? "imperfective" : aspect,
     voice,
     type,
     genderNumber: personToGenNum(transitive ? object : subject),
@@ -136,7 +138,6 @@ export function renderVerb({
   const ending = getEnding(king, tenseC, aspect);
   return {
     hasBa,
-    objComp: undefined,
     vbs: [
       vHead,
       addEnding({

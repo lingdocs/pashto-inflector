@@ -1,5 +1,5 @@
 import * as T from "../../../types";
-import { mapVerbRenderedOutput } from "../fmaps";
+import { mapVerbRenderedOutput } from "../fp-ps";
 import { removeAccents } from "../accent-helpers";
 import { getPersonFromNP, isPastTense } from "./vp-tools";
 import { isImperativeTense, isPattern4Entry } from "../type-predicates";
@@ -19,6 +19,7 @@ import {
   getMiniPronounPs,
 } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
+import { statVerb } from "../new-verb-engine/roots-and-stems";
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const subject = getSubjectSelection(VP.blocks).selection;
@@ -45,8 +46,18 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     king,
     complementPerson,
   });
+  // TODO: for dynamic -
   const { vbs, hasBa } = renderVerb({
-    verb: VP.verb.verb,
+    verb:
+      VP.verb.isCompound === "generative stative"
+        ? statVerb[
+            VP.verb.transitivity === "intransitive"
+              ? "intransitive"
+              : "transitive"
+          ]
+        : VP.verb.dynAuxVerb
+        ? VP.verb.dynAuxVerb
+        : VP.verb.verb,
     tense: VP.verb.tense,
     subject: subjectPerson,
     object: objectPerson,
@@ -128,7 +139,6 @@ export function insertNegative(
   if (!negative) {
     return [blocks.flat().map(makeBlock)];
   }
-  const blocksA = blocks.flat().map(makeBlock);
   const blocksNoAccentA = mapVerbRenderedOutput(removeAccents, blocks)
     .flat()
     .map(makeBlock);
@@ -138,13 +148,13 @@ export function insertNegative(
     // swapped ending with negative for ability and perfect verb forms
     if (nonStandPerfectiveSplit) {
       return [
-        insertFromEnd(swapEndingBlocks(blocksA), neg, 2),
-        insertFromEnd(swapEndingBlocks(blocksA, 2), neg, 3),
+        insertFromEnd(swapEndingBlocks(blocksNoAccentA), neg, 2),
+        insertFromEnd(swapEndingBlocks(blocksNoAccentA, 2), neg, 3),
         insertFromEnd(blocksNoAccentA, neg, 1),
       ];
     }
     return [
-      insertFromEnd(swapEndingBlocks(blocksA), neg, 2),
+      insertFromEnd(swapEndingBlocks(blocksNoAccentA), neg, 2),
       insertFromEnd(blocksNoAccentA, neg, 1),
     ];
   }
@@ -280,8 +290,9 @@ function whatsAdjustable(
   VP: T.VPSelectionComplete
 ): "both" | "king" | "servant" {
   // TODO: intransitive dynamic compounds?
-  return VP.verb.isCompound === "dynamic" &&
-    VP.verb.transitivity === "transitive"
+  return VP.verb.isCompound === "dynamic" ||
+    (VP.verb.isCompound === "generative stative" &&
+      VP.verb.transitivity === "transitive")
     ? isPastTense(VP.verb.tense)
       ? "servant"
       : "king"

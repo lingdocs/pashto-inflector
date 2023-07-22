@@ -8,7 +8,13 @@ import { choosePersInf, getLength } from "../../../lib/src/p-text-helpers";
 import genderColors from "../gender-colors";
 import { eqPsStringWVars } from "../../../lib/src/fp-ps";
 import PersInfsPicker from "../PersInfsPicker";
-import { useMediaPredicate } from "react-media-hook";
+import "./form-display.css";
+import {
+  makeBlock,
+  makeKid,
+} from "../../../lib/src/phrase-building/blocks-utils";
+import InlinePs from "../InlinePs";
+import { personToGenNum } from "../../../lib/src/misc-helpers";
 
 export const roleIcon = {
   king: <i className="mx-1 fas fa-crown" />,
@@ -21,14 +27,21 @@ function VerbChartDisplay({
   shortDefault,
   transitivity,
   past,
+  negative,
+  imperative,
 }: {
-  chart: T.OptionalPersonInflections<
-    T.SingleOrLengthOpts<T.RenderVerbOutput[]>
-  >;
+  chart: {
+    objNP: T.Rendered<T.NPSelection> | undefined;
+    vbs: T.OptionalPersonInflections<
+      T.SingleOrLengthOpts<T.RenderVerbOutput[]>
+    >;
+  };
   opts: T.TextOptions;
   shortDefault?: boolean;
   transitivity: T.Transitivity;
   past: boolean;
+  negative: boolean;
+  imperative: boolean;
 }) {
   const [length, setLength] = useState<T.Length>(
     shortDefault ? "short" : "long"
@@ -37,13 +50,23 @@ function VerbChartDisplay({
   useEffect(() => {
     setLength("long");
   }, [chart]);
-  const desktop = useMediaPredicate("(min-width: 600px)");
-  const chartWPers = choosePersInf(chart, persInf);
+  const chartWPers = choosePersInf(chart.vbs, persInf);
   const chartWLength = getLength(chartWPers, length);
 
-  const x = chartWLength.map(renderVerbOutputToText(false));
+  const x = chartWLength.map(
+    renderVerbOutputToText({
+      objNP: chart.objNP,
+      negative,
+      hasBa: chartWLength[0].hasBa,
+      imperative,
+      intransitive: transitivity === "intransitive",
+    })
+  );
   const verbBlock =
-    x.length === 12
+    x.length === 1
+      ? // unchanging gramm trans or dynamic compound past transitive
+        [[[x[0]]]]
+      : x.length === 12
       ? [
           // 1st pers
           [
@@ -83,10 +106,15 @@ function VerbChartDisplay({
       </div>
       <div className="row">
         <div className="col">
-          <AgreementInfo transitivity={transitivity} past={past} />
+          <AgreementInfo
+            opts={opts}
+            transitivity={transitivity}
+            past={past}
+            objNP={chart.objNP}
+          />
         </div>
         <div className="col">
-          {"long" in chartWPers && (
+          {"long" in chartWPers && lengthsMakeADiff(chartWPers) && (
             <LengthSelection
               hasMini={"mini" in chartWPers}
               value={length}
@@ -94,30 +122,36 @@ function VerbChartDisplay({
             />
           )}
         </div>
-        {desktop && <div className="col" />}
+        <div className="hide-on-mobile col" />
       </div>
-      <table className="table mt-2" style={{ tableLayout: "fixed" }}>
-        <thead>
-          <tr>
-            <th scope="col" style={{ width: "3rem" }}>
-              Pers.
-            </th>
-            <th scope="col">Singular</th>
-            <th scope="col">Plural</th>
-          </tr>
-        </thead>
-        <tbody>
-          {verbBlock.map((personRow, i) => (
-            <PersonRow
-              key={Math.random()}
-              // get proper version for imperative blocks
-              person={verbBlock.length === 1 ? 1 : i}
-              item={personRow}
-              opts={opts}
-            />
-          ))}
-        </tbody>
-      </table>
+      {verbBlock.length === 1 ? (
+        <div className="d-flex flex-row justify-content-center mt-3 text-center">
+          <TableCell item={verbBlock[0][0][0]} textOptions={opts} />
+        </div>
+      ) : (
+        <table className="table mt-2" style={{ tableLayout: "fixed" }}>
+          <thead>
+            <tr>
+              <th scope="col" style={{ width: "3rem" }}>
+                Pers.
+              </th>
+              <th scope="col">Singular</th>
+              <th scope="col">Plural</th>
+            </tr>
+          </thead>
+          <tbody>
+            {verbBlock.map((personRow, i) => (
+              <PersonRow
+                key={Math.random()}
+                // get proper version for imperative blocks
+                person={verbBlock.length === 1 ? 1 : i}
+                item={personRow}
+                opts={opts}
+              />
+            ))}
+          </tbody>
+        </table>
+      )}
     </>
   );
 }
@@ -224,32 +258,93 @@ function LengthSelection({
   );
 }
 
-function renderVerbOutputToText(negative: boolean) {
+function renderVerbOutputToText({
+  objNP,
+  negative,
+  hasBa,
+  imperative,
+  intransitive,
+}: {
+  objNP: T.Rendered<T.NPSelection> | undefined;
+  negative: boolean;
+  hasBa: boolean;
+  imperative: boolean;
+  intransitive: boolean;
+}) {
   return function (v: T.RenderVerbOutput): T.PsString[] {
-    const blocks = insertNegative(
-      v.vbs,
-      negative,
-      false /* TODO: apply imperative */
+    const blocks: T.Block[][] = insertNegative(v.vbs, negative, imperative).map(
+      (b) => {
+        if (!objNP) return b;
+        return [
+          ...(objNP
+            ? [makeBlock({ type: "objectSelection", selection: objNP })]
+            : []),
+          ...b,
+        ];
+      }
     );
-    return combineIntoText(blocks, 0 /* TODO: why is this needed */);
+
+    const b = hasBa
+      ? blocks.flatMap((v) => [
+          [
+            { p: " ... ", f: " ... " },
+            ...[makeKid({ type: "ba" }), { p: " ... ", f: " ... " }],
+            ...v,
+          ],
+          ...(v.length > 1 && intransitive
+            ? [[v[0], makeKid({ type: "ba" }), ...v.slice(1)]]
+            : []),
+        ])
+      : blocks;
+    return combineIntoText(b, 0 /* TODO: why is this needed */);
   };
 }
 
 function AgreementInfo({
   transitivity,
   past,
+  objNP,
+  opts,
 }: {
   transitivity: T.Transitivity;
   past: boolean;
+  objNP: T.Rendered<T.NPSelection> | undefined;
+  opts: T.TextOptions;
 }) {
+  function printGenNum({ gender, number }: T.GenderNumber): string {
+    return `${gender === "masc" ? "m." : "f."} ${
+      number === "singular" ? "s." : "pl."
+    }`;
+  }
   return (
     <div className="text-muted small mt-1">
-      {roleIcon.king} agrees w/{" "}
-      <strong>
-        {transitivity !== "intransitive" && past ? "object" : "subject"}
-      </strong>
+      <div>
+        {roleIcon.king} agrees w/{" "}
+        <strong>
+          {transitivity !== "intransitive" && past ? "object" : "subject"}
+        </strong>
+        {transitivity === "transitive" && past && objNP ? " noun" : ""}
+      </div>
+      {transitivity === "transitive" && past && objNP && (
+        <div>
+          <InlinePs opts={opts}>{objNP.selection.ps[0]}</InlinePs>
+          {` `}({printGenNum(personToGenNum(objNP.selection.person))})
+        </div>
+      )}
+      {transitivity === "grammatically transitive" && past && (
+        <div>(implied 3rd pers. m. pl.)</div>
+      )}
     </div>
   );
+}
+
+function lengthsMakeADiff(v: T.LengthOptions<T.RenderVerbOutput[]>): boolean {
+  if (v.long.length > 1) {
+    return true;
+  }
+  const longSample = combineIntoText([[makeBlock(v.long[0].vbs[1][0])]], 0);
+  const shortSample = combineIntoText([[makeBlock(v.short[0].vbs[1][0])]], 0);
+  return !eqPsStringWVars.equals(longSample, shortSample);
 }
 
 export default VerbChartDisplay;

@@ -1,6 +1,4 @@
-import {
-    makeNounSelection,
-} from "../../../lib/src/phrase-building/make-selections";
+import { makeNounSelection } from "../../../lib/src/phrase-building/make-selections";
 
 import * as T from "../../../types";
 import ButtonSelect from "../ButtonSelect";
@@ -57,45 +55,49 @@ import AdjectiveManager from "./AdjectiveManager";
 // }
 
 function NPNounPicker(props: {
-    entryFeeder: T.EntryFeeder,
-    noun: T.NounSelection | undefined,
-    onChange: (p: T.NounSelection | undefined) => void,
-    opts: T.TextOptions,
-    phraseIsComplete: boolean,
+  entryFeeder: T.EntryFeeder;
+  noun: T.NounSelection | undefined;
+  onChange: (p: T.NounSelection | undefined) => void;
+  opts: T.TextOptions;
+  phraseIsComplete: boolean;
 }) {
-    // const [patternFilter, setPatternFilter] = useState<FilterPattern | undefined>(undefined);
-    // const [showFilter, setShowFilter] = useState<boolean>(false)
-    // const nounsFiltered = props.nouns
-    //     .filter(nounFilter(patternFilter))
-    //     .sort((a, b) => (a.p.localeCompare(b.p, "af-PS")));
-    function onEntrySelect(entry: T.NounEntry | undefined) {
-        if (!entry) {
-            return props.onChange(undefined);
-        }
-        props.onChange(makeNounSelection(entry, props.noun));
+  console.log({ noun: props.noun });
+  // const [patternFilter, setPatternFilter] = useState<FilterPattern | undefined>(undefined);
+  // const [showFilter, setShowFilter] = useState<boolean>(false)
+  // const nounsFiltered = props.nouns
+  //     .filter(nounFilter(patternFilter))
+  //     .sort((a, b) => (a.p.localeCompare(b.p, "af-PS")));
+  function onEntrySelect(entry: T.NounEntry | undefined) {
+    if (!entry) {
+      return props.onChange(undefined);
     }
-    // function handleFilterClose() {
-    //     setPatternFilter(undefined);
-    //     setShowFilter(false);
-    // }
-    function handelAdjectivesUpdate(adjectives: T.AdjectiveSelection[]) {
-        if (props.noun) {
-            props.onChange({
-                ...props.noun,
-                adjectives,
-            });
-        }
+    props.onChange(makeNounSelection(entry, props.noun));
+  }
+  // function handleFilterClose() {
+  //     setPatternFilter(undefined);
+  //     setShowFilter(false);
+  // }
+  function handelAdjectivesUpdate(adjectives: T.AdjectiveSelection[]) {
+    if (props.noun) {
+      props.onChange({
+        ...props.noun,
+        adjectives,
+      });
     }
-    function handleDemonstrativeUpdate(demonstrative: undefined | T.NounSelection["demonstrative"]) {
-        if (props.noun) {
-            props.onChange({
-                ...props.noun,
-                demonstrative,
-            });
-        }
+  }
+  function handleDemonstrativeUpdate(
+    demonstrative: undefined | T.NounSelection["demonstrative"]
+  ) {
+    if (props.noun) {
+      props.onChange({
+        ...props.noun,
+        demonstrative,
+      });
     }
-    return <div style={{ maxWidth: "225px", minWidth: "125px" }}>
-        {/* {showFilter && <div className="mb-2 text-center">
+  }
+  return (
+    <div style={{ maxWidth: "225px", minWidth: "125px" }}>
+      {/* {showFilter && <div className="mb-2 text-center">
             <div className="d-flex flex-row justify-content-between">
                 <div className="text-small mb-1">Filter by inflection pattern</div>
                 <div className="clickable" onClick={handleFilterClose}>X</div>
@@ -108,72 +110,102 @@ function NPNounPicker(props: {
                 handleChange={setPatternFilter}
             />
         </div>} */}
-        {props.noun && <AdjectiveManager
-            phraseIsComplete={props.phraseIsComplete}
-            adjectives={props.noun?.adjectives}
-            demonstrative={props.noun.demonstrative}
-            entryFeeder={props.entryFeeder}
+      {props.noun && (
+        <AdjectiveManager
+          phraseIsComplete={props.phraseIsComplete}
+          adjectives={props.noun?.adjectives}
+          demonstrative={props.noun.demonstrative}
+          entryFeeder={props.entryFeeder}
+          opts={props.opts}
+          onChange={handelAdjectivesUpdate}
+          onDemonstrativeChange={handleDemonstrativeUpdate}
+        />
+      )}
+      <div className="h6">Noun</div>
+      {!(
+        props.noun &&
+        (props.noun.dynamicComplement || props.noun.genStativeComplement)
+      ) ? (
+        <div>
+          <EntrySelect
+            value={props.noun?.entry}
+            entryFeeder={props.entryFeeder.nouns}
+            onChange={onEntrySelect}
+            name="Noun"
             opts={props.opts}
-            onChange={handelAdjectivesUpdate}
-            onDemonstrativeChange={handleDemonstrativeUpdate}
-        />}
-        <div className="h6">Noun</div>
-        {!(props.noun && props.noun.dynamicComplement) ? <div>
-            <EntrySelect
-                value={props.noun?.entry}
-                entryFeeder={props.entryFeeder.nouns}
-                onChange={onEntrySelect}
-                name="Noun"
-                opts={props.opts}
-            />
-        </div> : <div>
-            {props.noun && <div>
-                <div className="mb-2">Included in Dyn. Compound:</div>
-                <div className="mb-3 text-center">
-                    <InlinePs opts={props.opts}>
-                        {{ p: props.noun.entry.p, f: props.noun.entry.f }}
-                    </InlinePs>
-                    <div className="text-muted">{props.noun.entry.e}</div>
-                </div>
-            </div>}
-        </div>}
-        {props.noun && <div className="my-2 d-flex flex-row justify-content-around align-items-center">
+          />
+        </div>
+      ) : (
+        <div>
+          {props.noun && (
             <div>
-                {props.noun.genderCanChange ? <ButtonSelect
-                    small
-                    options={[
-                        { label: "Masc", value: "masc" },
-                        { label: "Fem", value: "fem" },
-                    ]}
-                    value={props.noun.gender}
-                    handleChange={(gender) => {
-                        if (!props.noun || !props.noun.genderCanChange) return;
-                        props.onChange({
-                            ...props.noun,
-                            gender, 
-                        });
-                    }}
-                /> : props.noun.gender === "masc" ? "Masc." : "Fem."}
+              <div className="mb-2">
+                Included in{" "}
+                {props.noun.genStativeComplement ? "Gen. Stat." : "Dyn."}{" "}
+                Compound:
+              </div>
+              <div className="mb-3 text-center">
+                <InlinePs opts={props.opts}>
+                  {{ p: props.noun.entry.p, f: props.noun.entry.f }}
+                </InlinePs>
+                <div className="text-muted">{props.noun.entry.e}</div>
+              </div>
             </div>
-            <div>
-                {props.noun.numberCanChange ? <ButtonSelect
-                    small
-                    options={[
-                        { label: "Sing.", value: "singular" },
-                        { label: "Plur.", value: "plural" },
-                    ]}
-                    value={props.noun.number}
-                    handleChange={(number) => {
-                        if (!props.noun || !props.noun.numberCanChange) return;
-                        props.onChange({
-                            ...props.noun,
-                            number,
-                        });
-                    }}
-                /> : props.noun.number === "singular" ? "Sing." : "Plur."}
-            </div>
-        </div>}
-    </div>;
+          )}
+        </div>
+      )}
+      {props.noun && (
+        <div className="my-2 d-flex flex-row justify-content-around align-items-center">
+          <div>
+            {props.noun.genderCanChange ? (
+              <ButtonSelect
+                small
+                options={[
+                  { label: "Masc", value: "masc" },
+                  { label: "Fem", value: "fem" },
+                ]}
+                value={props.noun.gender}
+                handleChange={(gender) => {
+                  if (!props.noun || !props.noun.genderCanChange) return;
+                  props.onChange({
+                    ...props.noun,
+                    gender,
+                  });
+                }}
+              />
+            ) : props.noun.gender === "masc" ? (
+              "Masc."
+            ) : (
+              "Fem."
+            )}
+          </div>
+          <div>
+            {props.noun.numberCanChange ? (
+              <ButtonSelect
+                small
+                options={[
+                  { label: "Sing.", value: "singular" },
+                  { label: "Plur.", value: "plural" },
+                ]}
+                value={props.noun.number}
+                handleChange={(number) => {
+                  if (!props.noun || !props.noun.numberCanChange) return;
+                  props.onChange({
+                    ...props.noun,
+                    number,
+                  });
+                }}
+              />
+            ) : props.noun.number === "singular" ? (
+              "Sing."
+            ) : (
+              "Plur."
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default NPNounPicker;

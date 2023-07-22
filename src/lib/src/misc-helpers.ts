@@ -7,7 +7,7 @@
  */
 
 import * as T from "../../types";
-import { fmapSingleOrLengthOpts } from "./fmaps";
+import { fmapSingleOrLengthOpts } from "./fp-ps";
 
 export const blank: T.PsString = {
   p: "_____",

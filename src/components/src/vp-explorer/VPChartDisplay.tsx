@@ -3,6 +3,8 @@ import * as T from "../../../types";
 import { buildVerbChart } from "./chart-builder";
 import { isPastTense } from "../../library";
 
+// TODO - combine this with NewVerbFormDisplay
+
 function ChartDisplay({
   verb,
   tense,
@@ -11,6 +13,7 @@ function ChartDisplay({
   imperative,
   negative,
   transitivity,
+  objectNP,
 }: {
   verb: T.VerbEntry;
   tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
@@ -19,6 +22,7 @@ function ChartDisplay({
   imperative: boolean;
   negative: boolean;
   transitivity: T.Transitivity;
+  objectNP: T.NPSelection | undefined;
 }) {
   const verbChart = buildVerbChart({
     verb,
@@ -27,10 +31,13 @@ function ChartDisplay({
     negative,
     transitivity,
     imperative,
+    objectNP,
   });
   return (
     <div className="mb-4">
       <NewVerbFormDisplay
+        imperative={imperative}
+        negative={negative}
         chart={verbChart}
         opts={opts}
         transitivity={transitivity}

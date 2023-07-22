@@ -693,7 +693,7 @@ export type VPRendered = {
   servant: "subject" | "object" | undefined;
   isPast: boolean;
   isTransitive: boolean;
-  isCompound: "stative" | "dynamic" | false;
+  isCompound: "stative" | "dynamic" | "generative stative" | false;
   blocks: Block[][];
   kids: Kid[];
   englishBase?: string[];
@@ -811,7 +811,7 @@ export type VerbSelection = {
   transitivity: Transitivity;
   canChangeTransitivity: boolean;
   canChangeStatDyn: boolean;
-  isCompound: "stative" | "dynamic" | false;
+  isCompound: "stative" | "dynamic" | "generative stative" | false;
   voice: Voice;
   canChangeVoice: boolean;
   negative: boolean;
@@ -867,6 +867,7 @@ export type NounSelection = {
   number: NounNumber;
   numberCanChange: boolean;
   dynamicComplement?: boolean;
+  genStativeComplement?: boolean;
   adjectives: AdjectiveSelection[];
   possesor: undefined | PossesorSelection;
   demonstrative: undefined | DemonstrativeSelection;
@@ -1199,7 +1200,6 @@ export type MiniPronoun = {
 export type RenderVerbOutput = {
   hasBa: boolean;
   vbs: VerbRenderedOutput;
-  objComp: Rendered<NPSelection> | undefined;
 };
 export type VerbRenderedOutput = [[VHead] | [], [VB, VBE] | [VBE]];
 export type RootsStemsOutput = [[VHead] | [], [VB, VBA] | [VBA]]; // or perfect / equative

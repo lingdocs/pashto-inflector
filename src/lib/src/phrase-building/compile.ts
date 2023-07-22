@@ -22,6 +22,8 @@ import {
   specifyEquativeLength,
 } from "./blocks-utils";
 import { blank, kidsBlank } from "../misc-helpers";
+import { monoidPsStringWVars } from "../fp-ps";
+import { concatAll } from "fp-ts/lib/Monoid";
 
 type BlankoutOptions = {
   equative?: boolean;
@@ -215,64 +217,66 @@ export function combineIntoText(
   subjectPerson: T.Person,
   blankOut?: BlankoutOptions
 ): T.PsString[] {
-  function removeDoubleBlanks(x: T.PsString): T.PsString {
-    return {
-      p: x.p.replace(blank.p + blank.p, blank.p),
-      f: x.f.replace(blank.f + blank.f, blank.f),
-    };
-  }
-  function combine(pieces: (T.Block | T.Kid | T.PsString)[]): T.PsString[] {
-    const first = pieces[0];
-    const next = pieces[1];
-    const rest = pieces.slice(1);
-    // better to do map-reduce
-    // map the blocks into monoids [T.PsString] (with appropriate space blocks) and then concat them all together
-    const firstPs =
-      "p" in first
-        ? [first]
-        : (blankOut?.equative &&
-            "block" in first &&
-            first.block.type === "equative") ||
-          (blankOut?.verb && "block" in first && isRenderedVerbB(first)) ||
-          (blankOut?.predicate &&
-            "block" in first &&
-            first.block.type === "predicateSelection")
-        ? [blank]
-        : blankOut?.ba && "kid" in first && first.kid.type === "ba"
-        ? [kidsBlank]
-        : blankOut?.negative &&
-          "block" in first &&
-          first.block.type === "negative"
-        ? [{ p: "", f: "" }]
-        : getPsFromPiece(first, subjectPerson);
-    if (!rest.length) {
-      return firstPs;
+  return piecesWVars
+    .map((pieces) => {
+      const psVarsBlocks = getPsVarsBlocks(
+        applyBlankOut(pieces, blankOut),
+        subjectPerson
+      );
+      return concatAll(monoidPsStringWVars)(psVarsBlocks);
+    })
+    .flat();
+}
+
+function getPsVarsBlocks(
+  pieces: (T.Block | T.Kid | T.PsString)[],
+  subjectPerson: T.Person
+): T.PsString[][] {
+  const space = [{ p: " ", f: " " }];
+  const phToCliticNegSpace = [{ p: "", f: "-" }];
+  const endIndex = pieces.length - 1;
+  return pieces.reduce<T.PsString[][]>((acc, x, i) => {
+    const next = pieces[i + 1];
+    if ("p" in x) {
+      return [...acc, [x]];
     }
-    return combine(rest)
-      .flatMap((r) =>
-        firstPs.map((fPs) =>
-          concatPsString(
-            fPs,
-            // TODO: this spacing is a mess and not accurate
-            !("p" in first) &&
-              "block" in first &&
-              first.block.type === "PH" &&
-              !("p" in next) &&
-              (("block" in next &&
-                (isRenderedVerbB(next) || next.block.type === "negative")) ||
-                ("kid" in next && next.kid.type === "mini-pronoun"))
-              ? ("block" in next && next.block.type === "negative") ||
-                ("kid" in next && next.kid.type === "mini-pronoun")
-                ? { p: "", f: " " }
-                : ""
-              : " ",
-            r
-          )
-        )
-      )
-      .map(removeDoubleBlanks);
-  }
-  return piecesWVars.flatMap(combine);
+    const ps = getPsFromPiece(x, subjectPerson);
+    return [
+      ...acc,
+      ps,
+      ...(i === endIndex
+        ? []
+        : "block" in x && x.block.type === "PH"
+        ? "kid" in next || ("block" in next && next.block.type === "negative")
+          ? [phToCliticNegSpace]
+          : []
+        : [space]),
+    ];
+  }, []);
+}
+function applyBlankOut(
+  pieces: (T.Block | T.Kid | T.PsString)[],
+  blankOut: BlankoutOptions | undefined
+): (T.Block | T.Kid | T.PsString)[] {
+  if (!blankOut) return pieces;
+  return pieces.map((x) => {
+    if (
+      (blankOut.equative && "block" in x && x.block.type === "equative") ||
+      (blankOut.verb && "block" in x && isRenderedVerbB(x)) ||
+      (blankOut?.predicate &&
+        "block" in x &&
+        x.block.type === "predicateSelection")
+    ) {
+      return blank;
+    }
+    if (blankOut?.ba && "kid" in x && x.kid.type === "ba") {
+      return kidsBlank;
+    }
+    if (blankOut?.negative && "block" in x && x.block.type === "negative") {
+      return { p: "", f: "" };
+    }
+    return x;
+  });
 }
 
 function getPsFromPiece(

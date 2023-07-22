@@ -132,12 +132,14 @@ export function isInvalidSubjObjCombo(subj: T.Person, obj: T.Person): boolean {
 //     throw new Error("unknown tense");
 // }
 
-export function getPersonFromNP(np: T.NPSelection): T.Person;
 export function getPersonFromNP(
-  np: T.NPSelection | T.ObjectNP
+  np: T.NPSelection | T.Rendered<T.NPSelection>
+): T.Person;
+export function getPersonFromNP(
+  np: T.NPSelection | T.Rendered<T.NPSelection> | T.ObjectNP
 ): T.Person | undefined;
 export function getPersonFromNP(
-  np: T.NPSelection | T.ObjectNP
+  np: T.NPSelection | T.Rendered<T.NPSelection> | T.ObjectNP
 ): T.Person | undefined {
   if (np === "none") {
     return undefined;

@@ -1,7 +1,8 @@
 import { renderVerb } from "../../../lib/src/new-verb-engine/render-verb";
 import * as T from "../../../types";
 import { equals } from "rambda";
-import { isPastTense } from "../../library";
+import { isPastTense, renderNPSelection } from "../../library";
+import { getPersonFromNP } from "../../../lib/src/phrase-building/vp-tools";
 
 export function buildVerbChart({
   verb,
@@ -10,6 +11,7 @@ export function buildVerbChart({
   voice,
   imperative,
   negative,
+  objectNP,
 }: {
   verb: T.VerbEntry;
   tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
@@ -17,7 +19,11 @@ export function buildVerbChart({
   imperative: boolean;
   voice: T.VerbSelection["voice"];
   negative: boolean;
-}): T.OptionalPersonInflections<T.SingleOrLengthOpts<T.RenderVerbOutput[]>> {
+  objectNP: T.NPSelection | undefined;
+}): {
+  objNP: T.Rendered<T.NPSelection> | undefined;
+  vbs: T.OptionalPersonInflections<T.SingleOrLengthOpts<T.RenderVerbOutput[]>>;
+} {
   const allPersons = imperative
     ? [
         T.Person.SecondSingMale,
@@ -27,6 +33,9 @@ export function buildVerbChart({
       ]
     : ([...Array(12).keys()] as T.Person[]);
   const isPast = isPastTense(tense);
+  const objNP: T.Rendered<T.NPSelection> | undefined = objectNP
+    ? renderNPSelection(objectNP, false, false, "object", "none", false)
+    : undefined;
   function conjugateAllPers(
     p?: T.Person
   ): T.SingleOrLengthOpts<T.RenderVerbOutput[]> {
@@ -46,19 +55,51 @@ export function buildVerbChart({
         negative,
       });
     });
-    const hasLengths = vIsLength("long")(ps[0]);
-    const hasMini = vIsLength("mini")(ps[0]);
-    return pullOutLengths(hasLengths, hasMini, ps);
+    return pullOutLengths(ps);
   }
   if (transitivity === "transitive" && !isPast) {
-    return conflateIfNoCompGenNumDiff({
-      mascSing: conjugateAllPers(T.Person.FirstSingMale),
-      mascPlur: conjugateAllPers(T.Person.FirstPlurMale),
-      femSing: conjugateAllPers(T.Person.FirstSingFemale),
-      femPlur: conjugateAllPers(T.Person.FirstPlurFemale),
-    });
+    return {
+      objNP,
+      vbs: conflateIfNoCompGenNumDiff({
+        mascSing: conjugateAllPers(T.Person.FirstSingMale),
+        mascPlur: conjugateAllPers(T.Person.FirstPlurMale),
+        femSing: conjugateAllPers(T.Person.FirstSingFemale),
+        femPlur: conjugateAllPers(T.Person.FirstPlurFemale),
+      }),
+    };
+  } else if (objNP && isPast) {
+    return {
+      objNP,
+      vbs: pullOutLengths([
+        renderVerb({
+          verb,
+          tense,
+          subject: 0,
+          object: getPersonFromNP(objNP),
+          voice,
+          negative,
+        }),
+      ]),
+    };
+  } else if (isPast && transitivity === "grammatically transitive") {
+    return {
+      objNP,
+      vbs: pullOutLengths([
+        renderVerb({
+          verb,
+          tense,
+          subject: 0,
+          object: T.Person.ThirdPlurMale,
+          voice,
+          negative,
+        }),
+      ]),
+    };
   } else {
-    return conjugateAllPers();
+    return {
+      objNP: undefined,
+      vbs: conjugateAllPers(),
+    };
   }
 }
 
@@ -106,23 +147,21 @@ function grabLength(
   if (v.length === 2) {
     const [vb, vbe] = v;
     return {
-      objComp: undefined,
       hasBa,
       vbs: [ph, [grabVBLength(vb), vbe]],
     };
   }
   return {
-    objComp: undefined,
     hasBa,
     vbs: [ph, [grabVBLength(v[0])]],
   };
 }
 
 function pullOutLengths(
-  hasLengths: boolean,
-  hasMini: boolean,
   ps: T.RenderVerbOutput[]
 ): T.SingleOrLengthOpts<T.RenderVerbOutput[]> {
+  const hasLengths = vIsLength("long")(ps[0]);
+  const hasMini = vIsLength("mini")(ps[0]);
   if (!hasLengths) {
     return ps;
   }

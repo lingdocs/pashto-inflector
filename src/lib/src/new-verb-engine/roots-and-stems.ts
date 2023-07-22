@@ -31,9 +31,9 @@ import {
   isKedul,
 } from "./rs-helpers";
 import { inflectPattern3 } from "./new-inflectors";
-import { fmapSingleOrLengthOpts } from "../fmaps";
+import { fmapSingleOrLengthOpts } from "../fp-ps";
 
-const statVerb = {
+export const statVerb = {
   intransitive: vEntry({
     ts: 1581086654898,
     i: 11100,
