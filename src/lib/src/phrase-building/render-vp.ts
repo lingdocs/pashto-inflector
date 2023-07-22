@@ -81,7 +81,11 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     kids: getVPKids(hasBa, VP.blocks, VP.form, king),
     englishBase: renderEnglishVPBase({
       subjectPerson,
-      object: VP.verb.isCompound === "dynamic" ? "none" : object,
+      object:
+        VP.verb.isCompound === "dynamic" ||
+        VP.verb.isCompound === "generative stative"
+          ? "none"
+          : object,
       vs: VP.verb,
     }),
     form: VP.form,
