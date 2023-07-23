@@ -342,3 +342,7 @@ export function chooseLength<N>(
   }
   return x;
 }
+
+export function isGivingVerb(v: T.VerbEntry): boolean {
+  return ["raakawul", "darkawul", "warkawul"].includes(v.entry.g);
+}

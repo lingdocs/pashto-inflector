@@ -534,6 +534,39 @@ const khufaKedul = vEntry(
     c: "adj.",
   }
 );
+const warkawul = vEntry({
+  ts: 1527813914,
+  i: 14899,
+  p: "ورکول",
+  f: "warkawul",
+  g: "warkawul",
+  e: "to give (to him/her/it - towards third person)",
+  r: 4,
+  c: "v. trans.",
+  ec: "give,gives,giving,gave,given",
+});
+const raakawul = vEntry({
+  ts: 1527813914,
+  i: 14899,
+  p: "راکول",
+  f: "raakawul",
+  g: "raakawul",
+  e: "to give (to him/her/it - towards first person)",
+  r: 4,
+  c: "v. trans.",
+  ec: "give,gives,giving,gave,given",
+});
+const darkawul = vEntry({
+  ts: 1527813914,
+  i: 14899,
+  p: "درکول",
+  f: "darkawul",
+  g: "darkawul",
+  e: "to give (to him/her/it - towards second person)",
+  r: 4,
+  c: "v. trans.",
+  ec: "give,gives,giving,gave,given",
+});
 
 const ooPH: T.PH = { type: "PH", ps: { p: "و", f: "óo" } };
 
@@ -947,6 +980,56 @@ describe("perfective stems", () => {
       ],
     },
     {
+      title: "special giving verbs",
+      tests: [
+        {
+          verb: warkawul,
+          result: [
+            [{ type: "PH", ps: { p: "ور", f: "wár" } }],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړ", f: "kR" }],
+                  short: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+        {
+          verb: darkawul,
+          result: [
+            [{ type: "PH", ps: { p: "در", f: "dár" } }],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړ", f: "kR" }],
+                  short: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+        {
+          verb: raakawul,
+          result: [
+            [{ type: "PH", ps: { p: "را", f: "ráa" } }],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړ", f: "kR" }],
+                  short: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
       title: "includes extra irregular short roots for kawul verbs",
       tests: [
         {
@@ -1292,6 +1375,59 @@ describe("perfective roots", () => {
                 ps: {
                   long: [{ p: "ړل", f: "Rul" }],
                   short: [{ p: "ړ", f: "R" }],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      title: "special giving verbs",
+      tests: [
+        {
+          verb: warkawul,
+          result: [
+            [{ type: "PH", ps: { p: "ور", f: "wár" } }],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړل", f: "kRul" }],
+                  short: [{ p: "کړ", f: "kR" }],
+                  mini: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+        {
+          verb: darkawul,
+          result: [
+            [{ type: "PH", ps: { p: "در", f: "dár" } }],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړل", f: "kRul" }],
+                  short: [{ p: "کړ", f: "kR" }],
+                  mini: [{ p: "ک", f: "k" }],
+                },
+              },
+            ],
+          ],
+        },
+        {
+          verb: raakawul,
+          result: [
+            [{ type: "PH", ps: { p: "را", f: "ráa" } }],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "کړل", f: "kRul" }],
+                  short: [{ p: "کړ", f: "kR" }],
+                  mini: [{ p: "ک", f: "k" }],
                 },
               },
             ],

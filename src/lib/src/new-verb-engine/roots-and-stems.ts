@@ -10,6 +10,7 @@ import { concatPsString, trimOffPs } from "../p-text-helpers";
 import * as T from "../../../types";
 import { makePsString, removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import {
+  accentOnFront,
   accentOnNFromEnd,
   countSyllables,
   removeAccents,
@@ -32,6 +33,7 @@ import {
 } from "./rs-helpers";
 import { inflectPattern3 } from "./new-inflectors";
 import { fmapSingleOrLengthOpts } from "../fp-ps";
+import { isGivingVerb } from "../misc-helpers";
 
 export const statVerb = {
   intransitive: vEntry({
@@ -250,6 +252,21 @@ function getRoot(
       ? [[complement], [auxStem]]
       : [[], [weld(complement, auxStem)]];
   }
+  if (isGivingVerb(verb) && aspect === "perfective") {
+    const auxStem = getRoot(
+      statVerb.transitive,
+      genderNum,
+      "perfective"
+    )[1][0] as T.VBBasic;
+    const ph: T.PH = {
+      type: "PH",
+      ps: accentOnFront({
+        p: verb.entry.p.slice(0, 2),
+        f: verb.entry.f.slice(0, 3),
+      }),
+    };
+    return [[ph], [auxStem]];
+  }
   const base =
     aspect === "imperfective"
       ? accentOnNFromEnd(makePsString(verb.entry.p, verb.entry.f), 0)
@@ -319,6 +336,21 @@ function getStem(
     return aspect === "perfective"
       ? [[complement], [auxStem]]
       : [[], [weld(complement, auxStem)]];
+  }
+  if (isGivingVerb(verb) && aspect === "perfective") {
+    const auxStem = getStem(
+      statVerb.transitive,
+      genderNum,
+      "perfective"
+    )[1][0] as T.VBBasic;
+    const ph: T.PH = {
+      type: "PH",
+      ps: accentOnFront({
+        p: verb.entry.p.slice(0, 2),
+        f: verb.entry.f.slice(0, 3),
+      }),
+    };
+    return [[ph], [auxStem]];
   }
   if (aspect === "perfective") {
     if (verb.entry.f === "tlul") {
