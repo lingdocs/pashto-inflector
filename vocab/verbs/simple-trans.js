@@ -9,6 +9,7 @@
 module.exports = [
   1527819279, // راکول
   1527813914, // ورکول
+  1527817457, // درکول
   1527814617, // نیول - to take
   1527811872, // اچول - to put, pour, drop, throw, put on
   1527817298, // اخیستل - to take, buy, purchase, receive; to shave, cut with scissors
