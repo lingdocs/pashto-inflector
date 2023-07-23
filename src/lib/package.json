@@ -1,6 +1,6 @@
 {
   "name": "@lingdocs/inflect",
-  "version": "5.9.0",
+  "version": "5.10.0",
   "description": "Pashto inflector library",
   "main": "dist/index.js",
   "types": "dist/lib/library.d.ts",
@@ -22,14 +22,15 @@
   "author": "lingdocs.com",
   "license": "MIT",
   "dependencies": {
+    "fp-ts": "^2.16.0",
     "pbf": "^3.2.1",
     "rambda": "^7.3.0"
   },
   "devDependencies": {
-    "@types/pbf": "^3.0.2",
-    "rollup": "^2.79.1",
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-image": "^2.0.6",
-    "@rollup/plugin-node-resolve": "^14.1.0"
+    "@rollup/plugin-node-resolve": "^14.1.0",
+    "@types/pbf": "^3.0.2",
+    "rollup": "^2.79.1"
   }
 }
