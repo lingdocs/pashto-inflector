@@ -33,7 +33,7 @@ import * as T from "../../types";
 import { fmapSingleOrLengthOpts } from "./fp-ps";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
-const endingInHeyOrAynRegex = /[^ا][هع]$/;
+const endingInHayOrAynRegex = /[^ا][هع]$/;
 // const endingInAlefRegex = /اع?$/;
 
 export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
@@ -89,8 +89,8 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
       ...plurals,
     };
   }
-  if (pEnd === "ی" && word.f.slice(-2) === "ey") {
-    return { inflections: inflectRegularYeyUnisex(word.p, word.f), ...plurals };
+  if (pEnd === "ی" && word.f.slice(-2) === "ay") {
+    return { inflections: inflectRegularYayUnisex(word.p, word.f), ...plurals };
   }
   if (pEnd === "ه" && word.g.slice(-1) === "u") {
     return {
@@ -98,9 +98,9 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
       ...plurals,
     };
   }
-  if (pEnd === "ی" && word.f.slice(-2) === "éy") {
+  if (pEnd === "ی" && word.f.slice(-2) === "áy") {
     return {
-      inflections: inflectEmphasizedYeyUnisex(word.p, word.f),
+      inflections: inflectEmphasizedYayUnisex(word.p, word.f),
       ...plurals,
     };
   }
@@ -155,12 +155,12 @@ function handleMascNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
   if (isTobEnding) {
     return { inflections: inflectTobMasc(w.p, w.f), ...plurals };
   }
-  if (pEnd === "ی" && fEnd === "ey") {
-    return { inflections: inflectRegularYeyMasc(w.p, w.f), ...plurals };
+  if (pEnd === "ی" && fEnd === "ay") {
+    return { inflections: inflectRegularYayMasc(w.p, w.f), ...plurals };
   }
-  if (pEnd === "ی" && fEnd === "éy") {
+  if (pEnd === "ی" && fEnd === "áy") {
     return {
-      inflections: inflectRegularEmphasizedYeyMasc(w.p, w.f),
+      inflections: inflectRegularEmphasizedYayMasc(w.p, w.f),
       ...plurals,
     };
   }
@@ -179,7 +179,7 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
     return !plurals ? false : { ...plurals };
   }
 
-  if (endingInHeyOrAynRegex.test(word.p) && endingInSingleARegex.test(word.f)) {
+  if (endingInHayOrAynRegex.test(word.p) && endingInSingleARegex.test(word.f)) {
     return { inflections: inflectRegularAFem(word.p, word.f), ...plurals };
   }
   if (word.p.slice(-1) === "ح" && endingInSingleARegex.test(word.f)) {
@@ -238,7 +238,7 @@ function inflectIrregularUnisex(
   };
 }
 
-export function inflectRegularYeyUnisex(
+export function inflectRegularYayUnisex(
   p: string,
   f: string
 ): T.UnisexInflections {
@@ -283,7 +283,7 @@ export function inflectRegularShwaEndingUnisex(
   };
 }
 
-function inflectEmphasizedYeyUnisex(p: string, f: string): T.UnisexInflections {
+function inflectEmphasizedYayUnisex(p: string, f: string): T.UnisexInflections {
   const baseP = p.slice(0, -1);
   const baseF = f.slice(0, -2);
   return {
@@ -325,7 +325,7 @@ function inflectConsonantEndingUnisex(
   };
 }
 
-function inflectRegularYeyMasc(p: string, f: string): T.Inflections {
+function inflectRegularYayMasc(p: string, f: string): T.Inflections {
   const baseP = p.slice(0, -1);
   const baseF = f.slice(0, -2);
   return {
@@ -352,7 +352,7 @@ function inflectTobMasc(p: string, f: string): T.Inflections {
   };
 }
 
-function inflectRegularEmphasizedYeyMasc(p: string, f: string): T.Inflections {
+function inflectRegularEmphasizedYayMasc(p: string, f: string): T.Inflections {
   const baseP = p.slice(0, -1);
   const baseF = f.slice(0, -2);
   return {
@@ -677,7 +677,7 @@ function makePlural(
         plural: { masc: addMascPluralSuffix(anim, shortSquish) },
       };
     }
-    if (endsWith([{ p: "ی", f: "éy" }, { p: "ي" }], w, true)) {
+    if (endsWith([{ p: "ی", f: "áy" }, { p: "ي" }], w, true)) {
       return { arabicPlural, plural: addAnimN3UnisexPluralSuffix() };
     }
     // usually shortSquish nouns would never have arabicPlurals -- so we don't have to worry about catching
@@ -696,7 +696,7 @@ function makePlural(
       },
     };
   }
-  if (type === "masc noun" && endsWith({ p: "ی", f: "éy" }, w, true) && anim) {
+  if (type === "masc noun" && endsWith({ p: "ی", f: "áy" }, w, true) && anim) {
     const { masc } = addAnimN3UnisexPluralSuffix();
     return {
       arabicPlural,
@@ -744,8 +744,8 @@ function makePlural(
   return undefined;
 }
 
-export function inflectYey(
+export function inflectYay(
   ps: T.SingleOrLengthOpts<T.PsString>
 ): T.SingleOrLengthOpts<T.UnisexInflections> {
-  return fmapSingleOrLengthOpts((x) => inflectRegularYeyUnisex(x.p, x.f), ps);
+  return fmapSingleOrLengthOpts((x) => inflectRegularYayUnisex(x.p, x.f), ps);
 }

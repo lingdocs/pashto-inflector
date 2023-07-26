@@ -1,9 +1,6 @@
 import { renderVerb } from "./render-verb";
 import { vEntry } from "./rs-helpers";
 import * as T from "../../../types";
-import { negate } from "rambda";
-import { personToGenNum } from "../misc-helpers";
-import { getTransitivity } from "../verb-info";
 
 const wahul = vEntry({
   ts: 1527815399,
@@ -72,7 +69,7 @@ const kawulStat = vEntry({
   prp: "کړل",
   prf: "kRul",
   pprtp: "کړی",
-  pprtf: "kúRey",
+  pprtf: "kúRay",
   noOo: true,
   ec: "make,makes,making,made,made",
 });
@@ -90,7 +87,7 @@ const kawulDyn = vEntry({
   prp: "وکړل",
   prf: "óokRul",
   pprtp: "کړی",
-  pprtf: "kúRey",
+  pprtf: "kúRay",
   diacExcept: true,
   ec: "do,does,doing,did,done",
   separationAtP: 1,
@@ -110,7 +107,7 @@ const kedulStat = vEntry({
   prp: "شول",
   prf: "shwul",
   pprtp: "شوی",
-  pprtf: "shúwey",
+  pprtf: "shúway",
   noOo: true,
   ec: "become",
 });
@@ -128,7 +125,7 @@ const kedulDyn = vEntry({
   prp: "وشول",
   prf: "óoshwul",
   pprtp: "شوی",
-  pprtf: "shúwey",
+  pprtf: "shúway",
   diacExcept: true,
   ec: "happen",
   separationAtP: 1,
@@ -150,9 +147,9 @@ const raatlul = vEntry({
   prp: "راغلل",
   prf: "ráaghlul",
   pprtp: "راغلی",
-  pprtf: "raaghúley",
+  pprtf: "raaghúlay",
   tppp: "راغی",
-  tppf: "ráaghey",
+  tppf: "ráaghay",
   noOo: true,
   separationAtP: 2,
   separationAtF: 3,
@@ -174,9 +171,9 @@ const wartlul = vEntry({
   prp: "ورغلل",
   prf: "wárghlul",
   pprtp: "ورغلی",
-  pprtf: "wărghúley",
+  pprtf: "wărghúlay",
   tppp: "ورغی",
-  tppf: "wărghey",
+  tppf: "wărghay",
   noOo: true,
   separationAtP: 2,
   separationAtF: 3,
@@ -468,13 +465,13 @@ const bandedul = vEntry(
     c: "adj.",
   }
 );
-const stureyKawul = vEntry(
+const sturayKawul = vEntry(
   {
     ts: 1591033078746,
     i: 7877,
     p: "ستړی کول",
-    f: "stuRey kawul",
-    g: "stuReykawul",
+    f: "stuRay kawul",
+    g: "stuRaykawul",
     e: "to make tired, wear out",
     r: 4,
     c: "v. stat. comp. trans.",
@@ -486,20 +483,20 @@ const stureyKawul = vEntry(
     ts: 1527815306,
     i: 7876,
     p: "ستړی",
-    f: "stúRey",
-    g: "stuRey",
+    f: "stúRay",
+    g: "stuRay",
     e: "tired",
     r: 4,
     c: "adj. / adv.",
   }
 );
-const stureyKedul = vEntry(
+const sturayKedul = vEntry(
   {
     ts: 1591033069786,
     i: 7878,
     p: "ستړی کېدل",
-    f: "stuRey kedul",
-    g: "stuReykedul",
+    f: "stuRay kedul",
+    g: "stuRaykedul",
     e: "to get tired, fatigued",
     r: 4,
     c: "v. stat. comp. intrans.",
@@ -511,8 +508,8 @@ const stureyKedul = vEntry(
     ts: 1527815306,
     i: 7876,
     p: "ستړی",
-    f: "stúRey",
-    g: "stuRey",
+    f: "stúRay",
+    g: "stuRay",
     e: "tired",
     r: 4,
     c: "adj. / adv.",
@@ -1055,7 +1052,7 @@ test("special endings", () => {
         [
           {
             type: "VB",
-            ps: [{ p: "غی", f: "ghey" }],
+            ps: [{ p: "غی", f: "ghay" }],
             person: T.Person.ThirdSingMale,
           },
         ],
@@ -1069,7 +1066,7 @@ test("special endings", () => {
         [
           {
             type: "VB",
-            ps: [{ p: "غی", f: "ghey" }],
+            ps: [{ p: "غی", f: "ghay" }],
             person: T.Person.ThirdSingMale,
           },
         ],
@@ -1259,7 +1256,7 @@ test("imperative tenses", () => {
     })
   ).toEqual({
     hasBa: false,
-    vbs: [[], [{ type: "VB", ps: [{ p: "وهئ", f: "wahéyy" }], person: 8 }]],
+    vbs: [[], [{ type: "VB", ps: [{ p: "وهئ", f: "wahéy" }], person: 8 }]],
   });
   expect(
     renderVerb({
@@ -1272,7 +1269,7 @@ test("imperative tenses", () => {
     })
   ).toEqual({
     hasBa: false,
-    vbs: [[ooPh], [{ type: "VB", ps: [{ p: "وهئ", f: "waheyy" }], person: 9 }]],
+    vbs: [[ooPh], [{ type: "VB", ps: [{ p: "وهئ", f: "wahey" }], person: 9 }]],
   });
 });
 
@@ -1295,11 +1292,11 @@ test("ability tenses", () => {
           type: "VB",
           ps: {
             long: [
-              { p: "وهلی", f: "wahúley" },
+              { p: "وهلی", f: "wahúlay" },
               { p: "وهلای", f: "wahúlaay" },
             ],
             short: [
-              { p: "وهی", f: "wahéy" },
+              { p: "وهی", f: "waháy" },
               { p: "وهای", f: "waháay" },
             ],
           },
@@ -1331,7 +1328,7 @@ test("perfect tenses", () => {
       [
         {
           type: "VB",
-          ps: [{ p: "وهلی", f: "wahúley" }],
+          ps: [{ p: "وهلی", f: "wahúlay" }],
           gender: "masc",
           number: "singular",
         },
@@ -1359,7 +1356,7 @@ test("perfect tenses", () => {
       [
         {
           type: "VB",
-          ps: [{ p: "وهلی", f: "wahúley" }],
+          ps: [{ p: "وهلی", f: "wahúlay" }],
           gender: "masc",
           number: "singular",
         },
@@ -1387,7 +1384,7 @@ test("perfect tenses", () => {
       [
         {
           type: "VB",
-          ps: [{ p: "وهلی", f: "wahúley" }],
+          ps: [{ p: "وهلی", f: "wahúlay" }],
           gender: "masc",
           number: "singular",
         },
@@ -1443,7 +1440,7 @@ test("perfect tenses", () => {
       [
         {
           type: "VB",
-          ps: [{ p: "وهلی", f: "wahúley" }],
+          ps: [{ p: "وهلی", f: "wahúlay" }],
           gender: "masc",
           number: "singular",
         },
@@ -1541,7 +1538,7 @@ test("perfect tenses", () => {
           type: "VB",
           ps: [
             { p: "وای", f: "waay" },
-            { p: "وی", f: "wey" },
+            { p: "وی", f: "way" },
           ],
           person: T.Person.SecondSingFemale,
         },
@@ -1572,7 +1569,7 @@ test("perfect tenses", () => {
           type: "VB",
           ps: [
             { p: "وای", f: "waay" },
-            { p: "وی", f: "wey" },
+            { p: "وی", f: "way" },
           ],
           person: T.Person.SecondSingFemale,
         },
@@ -1584,7 +1581,7 @@ test("perfect tenses", () => {
 test("ending on complex verbs", () => {
   expect(
     renderVerb({
-      verb: stureyKawul,
+      verb: sturayKawul,
       tense: "presentVerbModal",
       subject: T.Person.SecondSingMale,
       object: T.Person.ThirdSingFemale,
@@ -1611,11 +1608,11 @@ test("ending on complex verbs", () => {
             type: "VB",
             ps: {
               long: [
-                { p: "کولی", f: "kawúley" },
+                { p: "کولی", f: "kawúlay" },
                 { p: "کولای", f: "kawúlaay" },
               ],
               short: [
-                { p: "کوی", f: "kawéy" },
+                { p: "کوی", f: "kawáy" },
                 { p: "کوای", f: "kawáay" },
               ],
             },
@@ -1631,7 +1628,7 @@ test("ending on complex verbs", () => {
   });
   expect(
     renderVerb({
-      verb: stureyKawul,
+      verb: sturayKawul,
       tense: "presentVerb",
       subject: T.Person.SecondSingMale,
       voice: "active",

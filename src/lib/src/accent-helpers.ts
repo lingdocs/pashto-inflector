@@ -38,12 +38,12 @@ export function accentOnFront(
 }
 
 /**
- * Ensures an accent on a past participle ie. leedúley, préxey, azmóyuley
+ * Ensures an accent on a past participle ie. leedúlay, préxay, azmóyulay
  *
  * @param s - the Pashto string (with Pashto and Phonetics) to ensure the accent on
  */
 export function accentPastParticiple(s: T.PsString): T.PsString {
-  // check for accent placing in words like wáayuley and azmóyuley
+  // check for accent placing in words like wáayulay and azmóyulay
   const accentFallsOnThirdLast = (syls: string[]) => {
     if (syls.length < 3) return false;
     const secondLast = syls[syls.length - 2];
@@ -64,7 +64,7 @@ export function accentPastParticiple(s: T.PsString): T.PsString {
 export function splitUpSyllables(f: string): string[] {
   return (
     f.match(
-      / |([^a|á|e|é|i|í|o|ó|u|ú| ]*(aa|áa|a|á|ey|éy|ee|ée|e|é|oo|óo|o|ó|i|í|u|ú)[^a|á|e|é|i|í|o|ó|u|ú| ]*)/gi
+      / |([^a|á|e|é|i|í|o|ó|u|ú| ]*(aa|áa|a|á|ay|áy|ee|ée|e|é|oo|óo|o|ó|i|í|u|ú)[^a|á|e|é|i|í|o|ó|u|ú| ]*)/gi
     ) || ([] as string[])
   );
 }

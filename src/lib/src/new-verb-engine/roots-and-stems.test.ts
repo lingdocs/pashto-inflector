@@ -53,7 +53,7 @@ const kawulStat = vEntry({
   prp: "کړل",
   prf: "kRul",
   pprtp: "کړی",
-  pprtf: "kúRey",
+  pprtf: "kúRay",
   noOo: true,
   ec: "make,makes,making,made,made",
 });
@@ -71,7 +71,7 @@ const kawulDyn = vEntry({
   prp: "وکړل",
   prf: "óokRul",
   pprtp: "کړی",
-  pprtf: "kúRey",
+  pprtf: "kúRay",
   diacExcept: true,
   ec: "do,does,doing,did,done",
   separationAtP: 1,
@@ -91,7 +91,7 @@ const kedulStat = vEntry({
   prp: "شول",
   prf: "shwul",
   pprtp: "شوی",
-  pprtf: "shúwey",
+  pprtf: "shúway",
   noOo: true,
   ec: "become",
 });
@@ -109,7 +109,7 @@ const kedulDyn = vEntry({
   prp: "وشول",
   prf: "óoshwul",
   pprtp: "شوی",
-  pprtf: "shúwey",
+  pprtf: "shúway",
   diacExcept: true,
   ec: "happen",
   separationAtP: 1,
@@ -131,9 +131,9 @@ const raatlul = vEntry({
   prp: "راغلل",
   prf: "ráaghlul",
   pprtp: "راغلی",
-  pprtf: "raaghúley",
+  pprtf: "raaghúlay",
   tppp: "راغی",
-  tppf: "ráaghey",
+  tppf: "ráaghay",
   noOo: true,
   separationAtP: 2,
   separationAtF: 3,
@@ -155,9 +155,9 @@ const wartlul = vEntry({
   prp: "ورغلل",
   prf: "wárghlul",
   pprtp: "ورغلی",
-  pprtf: "wărghúley",
+  pprtf: "wărghúlay",
   tppp: "ورغی",
-  tppf: "wărghey",
+  tppf: "wărghay",
   noOo: true,
   separationAtP: 2,
   separationAtF: 3,
@@ -434,13 +434,13 @@ const bandedul = vEntry(
     c: "adj.",
   }
 );
-const stureyKawul = vEntry(
+const sturayKawul = vEntry(
   {
     ts: 1591033078746,
     i: 7877,
     p: "ستړی کول",
-    f: "stuRey kawul",
-    g: "stuReykawul",
+    f: "stuRay kawul",
+    g: "stuRaykawul",
     e: "to make tired, wear out",
     r: 4,
     c: "v. stat. comp. trans.",
@@ -452,20 +452,20 @@ const stureyKawul = vEntry(
     ts: 1527815306,
     i: 7876,
     p: "ستړی",
-    f: "stúRey",
-    g: "stuRey",
+    f: "stúRay",
+    g: "stuRay",
     e: "tired",
     r: 4,
     c: "adj. / adv.",
   }
 );
-const stureyKedul = vEntry(
+const sturayKedul = vEntry(
   {
     ts: 1591033069786,
     i: 7878,
     p: "ستړی کېدل",
-    f: "stuRey kedul",
-    g: "stuReykedul",
+    f: "stuRay kedul",
+    g: "stuRaykedul",
     e: "to get tired, fatigued",
     r: 4,
     c: "v. stat. comp. intrans.",
@@ -477,8 +477,8 @@ const stureyKedul = vEntry(
     ts: 1527815306,
     i: 7876,
     p: "ستړی",
-    f: "stúRey",
-    g: "stuRey",
+    f: "stúRay",
+    g: "stuRay",
     e: "tired",
     r: 4,
     c: "adj. / adv.",
@@ -544,7 +544,7 @@ const warkawul = vEntry({
   r: 4,
   c: "v. trans.",
   pprtp: "ورکړی",
-  pprtf: "wărkúRey",
+  pprtf: "wărkúRay",
   ec: "give,gives,giving,gave,given",
 });
 const raakawul = vEntry({
@@ -557,7 +557,7 @@ const raakawul = vEntry({
   r: 4,
   c: "v. trans.",
   pprtp: "راکړی",
-  pprtf: "raakúRey",
+  pprtf: "raakúRay",
   ec: "give,gives,giving,gave,given",
 });
 const darkawul = vEntry({
@@ -569,7 +569,7 @@ const darkawul = vEntry({
   e: "to give (to second person - you, you pl.)",
   r: 4,
   pprtp: "درکړی",
-  pprtf: "dărkúRey",
+  pprtf: "dărkúRay",
   ec: "give,gives,giving,gave,given",
 });
 
@@ -677,7 +677,7 @@ describe("imperfective stems", () => {
         "is welded together with the complement on seperated stative compounds",
       tests: [
         {
-          verb: stureyKawul,
+          verb: sturayKawul,
           genderNumber: { gender: "fem", number: "singular" },
           result: [
             [],
@@ -702,7 +702,7 @@ describe("imperfective stems", () => {
           ],
         },
         {
-          verb: stureyKedul,
+          verb: sturayKedul,
           genderNumber: { gender: "fem", number: "singular" },
           result: [
             [],
@@ -837,7 +837,7 @@ describe("imperfective roots", () => {
         "is welded together with the complement on seperated stative compounds",
       tests: [
         {
-          verb: stureyKawul,
+          verb: sturayKawul,
           genderNumber: { gender: "fem", number: "singular" },
           result: [
             [],
@@ -865,7 +865,7 @@ describe("imperfective roots", () => {
           ],
         },
         {
-          verb: stureyKedul,
+          verb: sturayKedul,
           genderNumber: { gender: "fem", number: "singular" },
           result: [
             [],
@@ -1176,7 +1176,7 @@ describe("perfective stems", () => {
           ],
         },
         {
-          verb: stureyKedul,
+          verb: sturayKedul,
           genderNumber: { gender: "masc", number: "plural" },
           result: [
             [
@@ -1580,7 +1580,7 @@ describe("perfective roots", () => {
           ],
         },
         {
-          verb: stureyKedul,
+          verb: sturayKedul,
           genderNumber: { gender: "masc", number: "plural" },
           result: [
             [
@@ -1630,7 +1630,7 @@ describe("perfective roots", () => {
 });
 
 describe("past participles", () => {
-  test("for most verbs are just the imperfective root (imperative) plus ی - ey", () => {
+  test("for most verbs are just the imperfective root (imperative) plus ی - ay", () => {
     expect(
       getPastParticiple(rasedul, "active", {
         gender: "masc",
@@ -1638,7 +1638,7 @@ describe("past participles", () => {
       })
     ).toEqual({
       type: "VB",
-      ps: [{ p: "رسېدلی", f: "rasedúley" }],
+      ps: [{ p: "رسېدلی", f: "rasedúlay" }],
       gender: "masc",
       number: "singular",
     });
@@ -1739,7 +1739,7 @@ describe("past participles", () => {
       })
     ).toEqual({
       type: "VB",
-      ps: [{ p: "کړی", f: "kúRey" }],
+      ps: [{ p: "کړی", f: "kúRay" }],
       gender: "masc",
       number: "singular",
     });
@@ -1836,7 +1836,7 @@ describe("past participles", () => {
       },
     });
   });
-  test("special passive forms for kawul verbs - kRul perfective root + shúwey", () => {
+  test("special passive forms for kawul verbs - kRul perfective root + shúway", () => {
     expect(
       getPastParticiple(kawulStat, "passive", {
         gender: "masc",
@@ -1850,7 +1850,7 @@ describe("past participles", () => {
       },
       right: {
         type: "VB",
-        ps: [{ p: "شوی", f: "shúwey" }],
+        ps: [{ p: "شوی", f: "shúway" }],
         gender: "masc",
         number: "singular",
       },
@@ -1868,7 +1868,7 @@ describe("past participles", () => {
       },
       right: {
         type: "VB",
-        ps: [{ p: "شوی", f: "shúwey" }],
+        ps: [{ p: "شوی", f: "shúway" }],
         gender: "masc",
         number: "singular",
       },
@@ -1934,11 +1934,11 @@ describe("ability roots and stems", () => {
                 type: "VB",
                 ps: {
                   long: [
-                    { p: "ختلی", f: "khatúley" },
+                    { p: "ختلی", f: "khatúlay" },
                     { p: "ختلای", f: "khatúlaay" },
                   ],
                   short: [
-                    { p: "ختی", f: "khatéy" },
+                    { p: "ختی", f: "khatáy" },
                     { p: "ختای", f: "khatáay" },
                   ],
                 },
@@ -1962,11 +1962,11 @@ describe("ability roots and stems", () => {
                 type: "VB",
                 ps: {
                   long: [
-                    { p: "ختلی", f: "khatuley" },
+                    { p: "ختلی", f: "khatulay" },
                     { p: "ختلای", f: "khatulaay" },
                   ],
                   short: [
-                    { p: "ختی", f: "khatey" },
+                    { p: "ختی", f: "khatay" },
                     { p: "ختای", f: "khataay" },
                   ],
                 },
@@ -1990,11 +1990,11 @@ describe("ability roots and stems", () => {
                 type: "VB",
                 ps: {
                   long: [
-                    { p: "ختلی", f: "khatúley" },
+                    { p: "ختلی", f: "khatúlay" },
                     { p: "ختلای", f: "khatúlaay" },
                   ],
                   short: [
-                    { p: "ختی", f: "khatéy" },
+                    { p: "ختی", f: "khatáy" },
                     { p: "ختای", f: "khatáay" },
                   ],
                 },
@@ -2021,11 +2021,11 @@ describe("ability roots and stems", () => {
                 type: "VB",
                 ps: {
                   long: [
-                    { p: "ختلی", f: "khatuley" },
+                    { p: "ختلی", f: "khatulay" },
                     { p: "ختلای", f: "khatulaay" },
                   ],
                   short: [
-                    { p: "ختی", f: "khatey" },
+                    { p: "ختی", f: "khatay" },
                     { p: "ختای", f: "khataay" },
                   ],
                 },
@@ -2057,11 +2057,11 @@ describe("ability roots and stems", () => {
                 type: "VB",
                 ps: {
                   long: [
-                    { p: "راتللی", f: "raatlúley" },
+                    { p: "راتللی", f: "raatlúlay" },
                     { p: "راتللای", f: "raatlúlaay" },
                   ],
                   short: [
-                    { p: "راتلی", f: "raatléy" },
+                    { p: "راتلی", f: "raatláy" },
                     { p: "راتلای", f: "raatláay" },
                   ],
                 },
@@ -2085,11 +2085,11 @@ describe("ability roots and stems", () => {
                 type: "VB",
                 ps: {
                   long: [
-                    { p: "راتللی", f: "raatlúley" },
+                    { p: "راتللی", f: "raatlúlay" },
                     { p: "راتللای", f: "raatlúlaay" },
                   ],
                   short: [
-                    { p: "راتلی", f: "raatléy" },
+                    { p: "راتلی", f: "raatláy" },
                     { p: "راتلای", f: "raatláay" },
                   ],
                 },
@@ -2118,11 +2118,11 @@ describe("ability roots and stems", () => {
                 type: "VB",
                 ps: {
                   long: [
-                    { p: "بندېدلی", f: "bandedúley" },
+                    { p: "بندېدلی", f: "bandedúlay" },
                     { p: "بندېدلای", f: "bandedúlaay" },
                   ],
                   short: [
-                    { p: "بندېدی", f: "bandedéy" },
+                    { p: "بندېدی", f: "bandedáy" },
                     { p: "بندېدای", f: "bandedáay" },
                   ],
                 },
@@ -2158,11 +2158,11 @@ describe("ability roots and stems", () => {
                   type: "VB",
                   ps: {
                     long: [
-                      { p: "کېدلی", f: "kedúley" },
+                      { p: "کېدلی", f: "kedúlay" },
                       { p: "کېدلای", f: "kedúlaay" },
                     ],
                     short: [
-                      { p: "کېدی", f: "kedéy" },
+                      { p: "کېدی", f: "kedáy" },
                       { p: "کېدای", f: "kedáay" },
                     ],
                   },
@@ -2393,7 +2393,7 @@ describe("passive roots and stems", () => {
     ]);
     expect(
       getRootStem({
-        verb: stureyKawul,
+        verb: sturayKawul,
         aspect: "imperfective",
         type: "basic",
         voice: "passive",
@@ -2416,7 +2416,7 @@ describe("passive roots and stems", () => {
                 type: "AdjComp",
                 ps: {
                   p: "ستړی",
-                  f: "stuRey",
+                  f: "stuRay",
                 },
                 gender: "masc",
                 number: "singular",

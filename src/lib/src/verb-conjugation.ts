@@ -28,7 +28,7 @@ import {
   psStringEquals,
 } from "./p-text-helpers";
 import { makePsString } from "./accent-and-ps-utils";
-import { inflectYey } from "./pashto-inflector";
+import { inflectYay } from "./pashto-inflector";
 import { accentOnNFromEnd, removeAccents } from "./accent-helpers";
 import { mapInflections } from "./fp-ps";
 import { pashtoConsonants } from "./pashto-consonants";
@@ -55,7 +55,7 @@ const dummyEntry: T.DictionaryEntry = {
 
 const aayTail = [
   { p: "ای", f: "aay" },
-  { p: "ی", f: "ey" },
+  { p: "ی", f: "ay" },
 ];
 
 export function conjugateVerb(
@@ -508,14 +508,14 @@ function makeParticipleContent(info: T.NonComboVerbInfo): T.ParticipleContent {
             : info.objComplement.entry,
           stativeAux[transitivity].participle.past as T.UnisexInflections
         )
-      : inflectYey(noPersInfs(info.participle.past));
+      : inflectYay(noPersInfs(info.participle.past));
   const present =
     "complement" in info && spaceInForm(info.root.imperfective)
       ? concatInflections(
           info.complement,
           stativeAux[transitivity].participle.present as T.UnisexInflections
         )
-      : inflectYey(noPersInfs(info.participle.present));
+      : inflectYay(noPersInfs(info.participle.present));
   return {
     present, // PRESENT PARTICIPLE inflected
     past, // PAST PARTICIPLE inflected
@@ -537,7 +537,7 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
           stativeAux[transitivity].participle.past,
         ]
       : // for regular compounds
-        [inflectYey(noPersInfs(info.participle.past))];
+        [inflectYay(noPersInfs(info.participle.past))];
 
   const halfPerfect = addToForm([...pastPart], emptyVerbBlock);
   const past = addToForm([...pastPart, " "], equativeEndings.past.short);

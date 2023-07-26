@@ -230,7 +230,7 @@ function addEnding({
       if (vb.ps.short[0].f === "ghl" && pastThird && basicForm) {
         return {
           ...vb,
-          ps: [{ p: "غی", f: "ghey" }],
+          ps: [{ p: "غی", f: "ghay" }],
         };
       }
       const endLong = getLength(end, "long");

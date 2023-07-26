@@ -659,8 +659,8 @@ export type FullEntry = VerbEntry | DictionaryEntry;
 export enum InflectionPattern {
   None = 0,
   Basic = 1,
-  UnstressedEy = 2,
-  StressedEy = 3,
+  UnstressedAy = 2,
+  StressedAy = 3,
   Pashtun = 4,
   Squish = 5,
   FemInanEe = 6,

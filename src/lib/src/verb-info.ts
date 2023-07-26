@@ -24,7 +24,7 @@ import {
   getShort,
 } from "./p-text-helpers";
 import { makePsString, removeFVarients } from "./accent-and-ps-utils";
-import { inflectYey } from "./pashto-inflector";
+import { inflectYay } from "./pashto-inflector";
 import {
   accentOnFront,
   accentOnNFromEnd,
@@ -49,7 +49,7 @@ import {
 import * as T from "../../types";
 import { isTlulVerb } from "./type-predicates";
 
-const eyEndingUnaccented: T.PsString = { p: "ی", f: "ey" };
+const ayEndingUnaccented: T.PsString = { p: "ی", f: "ay" };
 
 /**
  * Compiles the base information (roots, stems etc.) needed in order
@@ -217,7 +217,7 @@ function getGenerativeStativeCompoundVerbInfo(
     participle: {
       present: auxVerb.info.participle.present,
       past: chooseParticipleInflection(
-        inflectYey(
+        inflectYay(
           "mascSing" in auxVerb.info.participle.past
             ? // purely for type saftey, will not have mascSing
               // in a non stative compound verb
@@ -315,7 +315,7 @@ function getDynamicCompoundInfo(
           participle: {
             present: auxVerbInfo.participle.present,
             past: chooseParticipleInflection(
-              inflectYey(
+              inflectYay(
                 "mascSing" in auxVerbInfo.participle.past
                   ? // purely for type saftey, will not have mascSing
                     // in a non stative compound verb
@@ -944,7 +944,7 @@ function getParticiple(
       removeAccentsFull(comp),
       " ",
       compInflects
-        ? unisexInfToObjectMatrix(inflectYey(aux) as T.UnisexInflections)
+        ? unisexInfToObjectMatrix(inflectYay(aux) as T.UnisexInflections)
         : aux
     );
   };
@@ -962,12 +962,12 @@ function getParticiple(
           short: accentPastPart(
             concatPsString(
               ensureShortWurShwaShift(shortParticipleRoot),
-              eyEndingUnaccented
+              ayEndingUnaccented
             )
           ),
-          long: accentPastPart(concatPsString(infinitive, eyEndingUnaccented)),
+          long: accentPastPart(concatPsString(infinitive, ayEndingUnaccented)),
         }
-      : accentPastPart(concatPsString(infinitive, eyEndingUnaccented));
+      : accentPastPart(concatPsString(infinitive, ayEndingUnaccented));
 
   // TODO: make this into a rule?
   const shortImperfectiveRoot =
@@ -1334,7 +1334,7 @@ export function getPassiveRootsAndStems(
   };
 }
 
-const passiveRootTail: T.PsString = { p: "ی", f: "ey" };
+const passiveRootTail: T.PsString = { p: "ی", f: "ay" };
 
 function getPassiveStem(
   root: T.VerbRootSet,
@@ -1444,8 +1444,8 @@ function getPassiveRootPerfectiveSplit(
   };
 }
 
-const abilityTail = { p: "ی", f: "ey" };
-const abilityTailAccented = { p: "ی", f: "éy" };
+const abilityTail = { p: "ی", f: "ay" };
+const abilityTailAccented = { p: "ی", f: "áy" };
 
 function getAbilityRoots(
   root: T.VerbRootSet,

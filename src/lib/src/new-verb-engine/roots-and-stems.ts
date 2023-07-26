@@ -50,7 +50,7 @@ export const statVerb = {
     prp: "شول",
     prf: "shwul",
     pprtp: "شوی",
-    pprtf: "shúwey",
+    pprtf: "shúway",
     noOo: true,
     ec: "become",
   }),
@@ -68,7 +68,7 @@ export const statVerb = {
     prp: "کړل",
     prf: "kRul",
     pprtp: "کړی",
-    pprtf: "kúRey",
+    pprtf: "kúRay",
     noOo: true,
     ec: "make,makes,making,made,made",
   }),
@@ -183,7 +183,7 @@ export function getPastParticiple(
     ps: T.SingleOrLengthOpts<T.PsString[]>
   ): T.SingleOrLengthOpts<T.PsString[]> {
     return fmapSingleOrLengthOpts((x) => {
-      const withTail = concatPsString(x[0], { p: "ی", f: "ey" });
+      const withTail = concatPsString(x[0], { p: "ی", f: "ay" });
       return inflectPattern3(withTail, { gender, number });
     }, ps);
   }

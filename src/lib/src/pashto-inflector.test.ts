@@ -9,7 +9,7 @@
 // TODO: See if there are animate feminine words ending in ي and test
 
 import {
-    inflectRegularYeyUnisex,
+    inflectRegularYayUnisex,
     inflectWord,
 } from "./pashto-inflector";
 import * as T from "../../types";
@@ -53,7 +53,7 @@ const adjectives: {
         in: {
             ts: 1527815306,
             p: "ستړی",
-            f: "stúRey",
+            f: "stúRay",
             g: "",
             e: "tired",
             c: "adj.",
@@ -62,7 +62,7 @@ const adjectives: {
         out: {
             inflections: {
                 masc: [
-                    [{p: "ستړی", f: "stúRey"}],
+                    [{p: "ستړی", f: "stúRay"}],
                     [{p: "ستړي", f: "stúRee"}],
                     [{p: "ستړیو", f: "stúRiyo"}, {p: "ستړو", f: "stúRo"}],
                 ],
@@ -79,7 +79,7 @@ const adjectives: {
         in: {
             ts: 1527813636,
             p: "وروستی",
-            f: "wroostéy",
+            f: "wroostáy",
             g: "",
             e: "last, latest, recent",
             c: "adj.",
@@ -88,7 +88,7 @@ const adjectives: {
         out: {
             inflections: {
                 masc: [
-                    [{p: "وروستی", f: "wroostéy"}],
+                    [{p: "وروستی", f: "wroostáy"}],
                     [{p: "وروستي", f: "wroostée"}],
                     [{p: "وروستیو", f: "wroostiyo"}, {p: "وروستو", f: "wroostó"}],
                 ],
@@ -374,7 +374,7 @@ const nouns: {
         in: {
             ts: 1527814159,
             p: "ملګری",
-            f: "malgúrey",
+            f: "malgúray",
             g: "",
             e: "friend, companion",
             c: "n. m. unisex",
@@ -383,7 +383,7 @@ const nouns: {
         out: {
             inflections: {
                 masc: [
-                    [{p: "ملګری", f: "malgúrey"}],
+                    [{p: "ملګری", f: "malgúray"}],
                     [{p: "ملګري", f: "malgúree"}],
                     [{p: "ملګریو", f: "malgúriyo"}, {p: "ملګرو", f: "malgúro"}],
                 ],
@@ -397,11 +397,11 @@ const nouns: {
     },
     // Unisex noun ending on ی with emphasis on the end
     {
-        in: {"i":3319,"ts":1527816431,"p":"ترورزی","f":"trorzéy","g":"trorzey","e":"cousin (of paternal aunt)","c":"n. m. unisex","ppp":"ترورزامن","ppf":"trorzaamun"},
+        in: {"i":3319,"ts":1527816431,"p":"ترورزی","f":"trorzáy","g":"trorzay","e":"cousin (of paternal aunt)","c":"n. m. unisex","ppp":"ترورزامن","ppf":"trorzaamun"},
         out: {
             inflections: {
                 masc: [
-                    [{p: "ترورزی", f: "trorzéy"}],
+                    [{p: "ترورزی", f: "trorzáy"}],
                     [{p: "ترورزي", f: "trorzée"}],
                     [{p: "ترورزیو", f: "trorziyo"}, {p: "ترورزو", f: "trorzó"}],
                 ],
@@ -463,11 +463,11 @@ const nouns: {
     },
     // with #3 pattern anim unisex
     {
-        in: {"ts":1527820130,"i":2561,"p":"پلوی","f":"palawéy","g":"palawey","e":"adherent, supporter; the outside or further ox in a team of oxes grinding or threshing","c":"n. m. anim. unisex"},
+        in: {"ts":1527820130,"i":2561,"p":"پلوی","f":"palawáy","g":"palaway","e":"adherent, supporter; the outside or further ox in a team of oxes grinding or threshing","c":"n. m. anim. unisex"},
         out: {
             inflections: {
                 masc: [
-                    [{ p: "پلوی", f: "palawéy" }],
+                    [{ p: "پلوی", f: "palawáy" }],
                     [{ p: "پلوي", f: "palawée" }],
                     [{ p: "پلویو", f: "palawiyo" }, { p: "پلوو", f: "palawó" }],
                 ],
@@ -495,7 +495,7 @@ const nouns: {
         in: {
             ts: 1527815251,
             p: "سړی",
-            f: "saRéy",
+            f: "saRáy",
             g: "",
             e: "man",
             c: "n. m.",
@@ -504,7 +504,7 @@ const nouns: {
         out: {
             inflections: {
                 masc: [
-                    [{p: "سړی", f: "saRéy"}],
+                    [{p: "سړی", f: "saRáy"}],
                     [{p: "سړي", f: "saRée"}],
                     [{p: "سړیو", f: "saRiyo"}, {p: "سړو", f: "saRo"}],
                 ],
@@ -514,19 +514,19 @@ const nouns: {
     // Masculine #3 anim
     // TODO: Also do Fem #3 anim!
     {
-        in: {"ts":1527819801,"i":8082,"p":"سیلانی","f":"seylaanéy","g":"seylaaney","e":"tourist, sightseer, visitor","c":"n. m. anim."},
+        in: {"ts":1527819801,"i":8082,"p":"سیلانی","f":"saylaanáy","g":"saylaanay","e":"tourist, sightseer, visitor","c":"n. m. anim."},
         out: {
             inflections: {
                 masc: [
-                    [{ p: "سیلانی", f: "seylaanéy" }],
-                    [{ p: "سیلاني", f: "seylaanée" }],
-                    [{ p: "سیلانیو", f: "seylaaniyo" }, { p: "سیلانو", f: "seylaano" }],
+                    [{ p: "سیلانی", f: "saylaanáy" }],
+                    [{ p: "سیلاني", f: "saylaanée" }],
+                    [{ p: "سیلانیو", f: "saylaaniyo" }, { p: "سیلانو", f: "saylaano" }],
                 ],
             },
             plural: {
                 masc: [
-                    [{ p: "سیلانیان", f: "seylaaniyáan" }],
-                    [{ p: "سیلانیانو", f: "seylaaniyáano" }],
+                    [{ p: "سیلانیان", f: "saylaaniyáan" }],
+                    [{ p: "سیلانیانو", f: "saylaaniyáano" }],
                 ],
             },
         },
@@ -536,7 +536,7 @@ const nouns: {
         in: {
             ts: 1527818511,
             p: "ترېلی",
-            f: "treléy",
+            f: "treláy",
             g: "",
             e: "pool, reservoir",
             c: "n. m.",
@@ -545,7 +545,7 @@ const nouns: {
         out: {
             inflections: {
                 masc: [
-                    [{p: "ترېلی", f: "treléy"}],
+                    [{p: "ترېلی", f: "treláy"}],
                     [{p: "ترېلي", f: "trelée"}],
                     [{p: "ترېلیو", f: "treliyo"}, {p: "ترېلو", f: "trelo"}],
                 ],
@@ -617,9 +617,9 @@ const nouns: {
             }
         },
     },
-    // should NOT do the oona plural with the squish nouns, when they're animate
+    // should NOT do the oona plural with the squish nouns, when thay're animate
     {
-        in: {"i":5465,"ts":1527812802,"p":"خر","f":"khur","g":"khur","e":"donkey","c":"n. m. anim. unisex irreg.","infap":"خره","infaf":"khru","infbp":"خر","infbf":"khr"},
+        in: {"i":5465,"ts":1527812802,"p":"خر","f":"khur","g":"khur","e":"donkay","c":"n. m. anim. unisex irreg.","infap":"خره","infaf":"khru","infbp":"خر","infbf":"khr"},
         out: {
             inflections: {
                 // TODO: use smarter system using new isType5Entry predicates, to allow for not using the redundant one syllable accents with these
@@ -1104,14 +1104,14 @@ const nouns: {
             e: "mother, mom",
             c: "n. f. anim.",
             ppp: "میندې",
-            ppf: "meynde",
+            ppf: "maynde",
             i: 11113,
         },
         out: {
             plural: {
                 fem: [
-                    [{ p: "میندې", f: "meynde" }],
-                    [{ p: "میندو", f: "meyndo" }],
+                    [{ p: "میندې", f: "maynde" }],
+                    [{ p: "میندو", f: "mayndo" }],
                 ],
             },
         },
@@ -1218,19 +1218,19 @@ const nouns: {
     },
     // with variations on Pashto plural
     {
-        in: {"ts":1527815268,"i":8475,"p":"شی","f":"shey","g":"shey","ppp":"شیان، شیونه", "ppf": "sheyáan, sheyóona","e":"thing","c":"n. m."},
+        in: {"ts":1527815268,"i":8475,"p":"شی","f":"shay","g":"shay","ppp":"شیان، شیونه", "ppf": "shayáan, shayóona","e":"thing","c":"n. m."},
         out: {
             inflections: {
                 masc: [
-                    [{ p: "شی", f: "shey" }],
+                    [{ p: "شی", f: "shay" }],
                     [{ p: "شي", f: "shee" }],
                     [{ p: "شیو", f: "shiyo" }, { p: "شو", f: "sho" }],
                 ],
             },
             plural: {
                 masc: [
-                    [{ p: "شیان", f: "sheyáan" }, { p: "شیونه", f: "sheyóona" }],
-                    [{ p: "شیانو", f: "sheyáano" }, { p: "شیونو", f: "sheyóono" }],
+                    [{ p: "شیان", f: "shayáan" }, { p: "شیونه", f: "shayóona" }],
+                    [{ p: "شیانو", f: "shayáano" }, { p: "شیونو", f: "shayóono" }],
                 ],
             },
         },
@@ -1309,10 +1309,10 @@ others.forEach((word) => {
     });
 });
 
-test(`inflectRegularYeyUnisex should work`, () => {
-    expect(inflectRegularYeyUnisex("لیدونکی", "leedóonkey")).toEqual({
+test(`inflectRegularYayUnisex should work`, () => {
+    expect(inflectRegularYayUnisex("لیدونکی", "leedóonkay")).toEqual({
         masc: [
-            [{p: "لیدونکی", f: "leedóonkey" }],
+            [{p: "لیدونکی", f: "leedóonkay" }],
             [{p: "لیدونکي", f: "leedóonkee" }],
             [{p: "لیدونکیو", f: "leedóonkiyo" }, {p: "لیدونکو", f: "leedóonko"}],
         ],
