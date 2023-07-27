@@ -105,14 +105,14 @@ export const replacerInfo: IReplacerInfoItem[] = [
     ipa: "ɪ́",
   },
   {
-    char: "ey",
+    char: "ay",
     alalc: "ay",
-    ipa: "ai",
+    ipa: "ay",
   },
   {
-    char: "éy",
+    char: "áy",
     alalc: "áy",
-    ipa: "ái",
+    ipa: "áj",
   },
   {
     char: "ee",
@@ -140,9 +140,9 @@ export const replacerInfo: IReplacerInfoItem[] = [
     ipa: "u:j",
   },
   {
-    char: "eyy",
-    alalc: "ạy",
-    ipa: "ɛ̝j",
+    char: "ey",
+    alalc: "ey",
+    ipa: "ej",
   },
   {
     char: "e",
@@ -351,4 +351,5 @@ export const replacerInfo: IReplacerInfoItem[] = [
 ];
 
 // tslint:disable-next-line
-export const replacerRegex = /aay|áay|aa|áa|a|á|U|Ú|u|ú|ooy|o{1,2}|óo|ó|ey|éy|e{1,2}|ée|é|uy|úy|i|í|w|y|q|g|ts|sh|s|dz|z|t|T|d|D|r|R|n|N|f|b|p|x|kh|q|k|gh|g|G|j|ch|l|l|m|h/g;
+export const replacerRegex =
+  /aay|áay|aa|áa|a|á|U|Ú|u|ú|ooy|o{1,2}|óo|ó|ay|áy|e{1,2}|ée|é|ey|éy|uy|úy|i|í|w|y|q|g|ts|sh|s|dz|z|t|T|d|D|r|R|n|N|f|b|p|x|kh|q|k|gh|g|G|j|ch|l|l|m|h/g;

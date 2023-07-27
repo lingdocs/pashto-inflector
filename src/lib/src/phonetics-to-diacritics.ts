@@ -7,7 +7,7 @@
  */
 
 const zwar = "َ";
-const zwarakey = "ٙ";
+const zwarakay = "ٙ";
 const zer = "ِ";
 const pesh = "ُ";
 const sukun = "ْ";
@@ -19,8 +19,25 @@ const fathahan = "ً";
 
 // TODO: THESE OTHER TRIGRAPHS??
 const quadrigraphs = ["-Ul-"];
-const trigraphs = ["eyy", "éyy", "-i-", "-U-"]; // , "aay", "áay", "ooy", "óoy"];
-const digraphs = ["ắ", "aa", "áa", "ee", "ée", "ey", "éy", "oo", "óo", "kh", "gh", "ts", "dz", "jz", "ch", "sh"];
+const trigraphs = ["ey", "éy", "-i-", "-U-"]; // , "aay", "áay", "ooy", "óoy"];
+const digraphs = [
+  "ắ",
+  "aa",
+  "áa",
+  "ee",
+  "ée",
+  "ay",
+  "áy",
+  "oo",
+  "óo",
+  "kh",
+  "gh",
+  "ts",
+  "dz",
+  "jz",
+  "ch",
+  "sh",
+];
 const endingDigraphs = ["uy", "úy"];
 const willIgnore = ["?", " ", "`", ".", "…"];
 
@@ -28,7 +45,7 @@ export function splitFIntoPhonemes(f: string): string[] {
   const result: string[] = [];
   let index = 0;
   while (index < f.length) {
-    const isLastTwoLetters = (index === f.length - 2 || f[index + 2] === " ");
+    const isLastTwoLetters = index === f.length - 2 || f[index + 2] === " ";
     const threeLetterChunk = f.slice(index, index + 3);
     const fourLetterChunk = f.slice(index, index + 4);
     if (quadrigraphs.includes(fourLetterChunk)) {
@@ -89,43 +106,145 @@ const phonemeTable = [
   { phoneme: "m", possibilities: ["م"], consonant: true },
   { phoneme: "n", possibilities: ["ن"], consonant: true },
   { phoneme: "N", possibilities: ["ڼ"], consonant: true },
-  { phoneme: "h", possibilities: ["ه", "ح"], consonant: true, takesSukunOnEnding: true },
+  {
+    phoneme: "h",
+    possibilities: ["ه", "ح"],
+    consonant: true,
+    takesSukunOnEnding: true,
+  },
   { phoneme: "w", possibilities: ["و"], consonant: true },
   { phoneme: "y", possibilities: ["ی"], consonant: true },
 
   { phoneme: "'", possibilities: ["ع", "ئ"], consonant: true },
   { phoneme: "-i-", isIzafe: true },
-  { phoneme: "-U-", possibilities: [" و ", "و"]},
-  { phoneme: "-Ul-", possibilities: ["ال"]},
+  { phoneme: "-U-", possibilities: [" و ", "و"] },
+  { phoneme: "-Ul-", possibilities: ["ال"] },
 
   // vowels
-  { phoneme: "aa", possibilities: ["ا"], beginning: ["آ", "ا"], endingPossibilities: ["ا", "یٰ"], isLongA: true, canStartWithAynBefore: true },
-  { phoneme: "áa", possibilities: ["ا"], beginning: ["آ", "ا"], endingPossibilities: ["ا", "یٰ"], isLongA: true, canStartWithAynBefore: true },
-  { phoneme: "ee", possibilities: ["ی"], addAlefOnBeginning: true, endingPossibilities: ["ي"], diacritic: zer, canStartWithAynBefore: true },
-  { phoneme: "ée", possibilities: ["ی"], addAlefOnBeginning: true, endingPossibilities: ["ي"], diacritic: zer, canStartWithAynBefore: true },
+  {
+    phoneme: "aa",
+    possibilities: ["ا"],
+    beginning: ["آ", "ا"],
+    endingPossibilities: ["ا", "یٰ"],
+    isLongA: true,
+    canStartWithAynBefore: true,
+  },
+  {
+    phoneme: "áa",
+    possibilities: ["ا"],
+    beginning: ["آ", "ا"],
+    endingPossibilities: ["ا", "یٰ"],
+    isLongA: true,
+    canStartWithAynBefore: true,
+  },
+  {
+    phoneme: "ee",
+    possibilities: ["ی"],
+    addAlefOnBeginning: true,
+    endingPossibilities: ["ي"],
+    diacritic: zer,
+    canStartWithAynBefore: true,
+  },
+  {
+    phoneme: "ée",
+    possibilities: ["ی"],
+    addAlefOnBeginning: true,
+    endingPossibilities: ["ي"],
+    diacritic: zer,
+    canStartWithAynBefore: true,
+  },
   { phoneme: "e", possibilities: ["ې"], addAlefOnBeginning: true },
   { phoneme: "é", possibilities: ["ې"], addAlefOnBeginning: true },
   { phoneme: "o", possibilities: ["و"], addAlefOnBeginning: true },
   { phoneme: "ó", possibilities: ["و"], addAlefOnBeginning: true },
-  { phoneme: "oo", possibilities: ["و"], addAlefOnBeginning: true, alsoCanBePrefix: true, diacritic: pesh },
-  { phoneme: "óo", possibilities: ["و"], addAlefOnBeginning: true, diacritic: pesh },
-  { phoneme: "ey", possibilities: ["ی"], addAlefOnBeginning: true, endingPossibilities: ["ی"]},
-  { phoneme: "éy", possibilities: ["ی"], addAlefOnBeginning: true, endingPossibilities: ["ی"]},
+  {
+    phoneme: "oo",
+    possibilities: ["و"],
+    addAlefOnBeginning: true,
+    alsoCanBePrefix: true,
+    diacritic: pesh,
+  },
+  {
+    phoneme: "óo",
+    possibilities: ["و"],
+    addAlefOnBeginning: true,
+    diacritic: pesh,
+  },
+  {
+    phoneme: "ay",
+    possibilities: ["ی"],
+    addAlefOnBeginning: true,
+    endingPossibilities: ["ی"],
+  },
+  {
+    phoneme: "áy",
+    possibilities: ["ی"],
+    addAlefOnBeginning: true,
+    endingPossibilities: ["ی"],
+  },
   { phoneme: "uy", possibilities: ["ۍ"], endingOnly: true },
   { phoneme: "úy", possibilities: ["ۍ"], endingOnly: true }, // THIS CAN ONLY COME AT THE END DEAL WITH THIS
-  { phoneme: "eyy", possibilities: ["ئ"], endingOnly: true },
-  { phoneme: "éyy", possibilities: ["ئ"], endingOnly: true },
+  { phoneme: "ey", possibilities: ["ئ"], endingOnly: true },
+  { phoneme: "éy", possibilities: ["ئ"], endingOnly: true },
 
-  { phoneme: "a", diacritic: zwar, endingPossibilities: ["ه"], canComeAfterHeyEnding: true, canBeFirstPartOfFathahanEnding: true },
-  { phoneme: "á", diacritic: zwar, endingPossibilities: ["ه"], canComeAfterHeyEnding: true, canBeFirstPartOfFathahanEnding: true },
+  {
+    phoneme: "a",
+    diacritic: zwar,
+    endingPossibilities: ["ه"],
+    canComeAfterHayEnding: true,
+    canBeFirstPartOfFathahanEnding: true,
+  },
+  {
+    phoneme: "á",
+    diacritic: zwar,
+    endingPossibilities: ["ه"],
+    canComeAfterHayEnding: true,
+    canBeFirstPartOfFathahanEnding: true,
+  },
   { phoneme: "ă", diacritic: zwar },
   { phoneme: "ắ", diacritic: zwar },
-  { phoneme: "u", diacritic: zwarakey, endingPossibilities: ["ه"], hamzaOnEnd: true },
-  { phoneme: "ú", diacritic: zwarakey, endingPossibilities: ["ه"], hamzaOnEnd: true },
-  { phoneme: "i", diacritic: zer, endingPossibilities: ["ه"], takesDiacriticBeforeGurdaHeyEnding: true, canBeWasla: true, beginning: ["ا", "ع"] },
-  { phoneme: "í", diacritic: zer, endingPossibilities: ["ه"], takesDiacriticBeforeGurdaHeyEnding: true, canBeWasla: true, beginning: ["ا", "ع"] },
-  { phoneme: "U", diacritic: pesh, endingPossibilities: ["ه"], takesDiacriticBeforeGurdaHeyEnding: true, beginning: ["ا", "ع"] },
-  { phoneme: "Ú", diacritic: pesh, endingPossibilities: ["ه"], takesDiacriticBeforeGurdaHeyEnding: true, beginning: ["ا", "ع"] },
+  {
+    phoneme: "u",
+    diacritic: zwarakay,
+    endingPossibilities: ["ه"],
+    hamzaOnEnd: true,
+  },
+  {
+    phoneme: "ú",
+    diacritic: zwarakay,
+    endingPossibilities: ["ه"],
+    hamzaOnEnd: true,
+  },
+  {
+    phoneme: "i",
+    diacritic: zer,
+    endingPossibilities: ["ه"],
+    takesDiacriticBeforeGurdaHayEnding: true,
+    canBeWasla: true,
+    beginning: ["ا", "ع"],
+  },
+  {
+    phoneme: "í",
+    diacritic: zer,
+    endingPossibilities: ["ه"],
+    takesDiacriticBeforeGurdaHayEnding: true,
+    canBeWasla: true,
+    beginning: ["ا", "ع"],
+  },
+  {
+    phoneme: "U",
+    diacritic: pesh,
+    endingPossibilities: ["ه"],
+    takesDiacriticBeforeGurdaHayEnding: true,
+    beginning: ["ا", "ع"],
+  },
+  {
+    phoneme: "Ú",
+    diacritic: pesh,
+    endingPossibilities: ["ه"],
+    takesDiacriticBeforeGurdaHayEnding: true,
+    beginning: ["ا", "ع"],
+  },
 ];
 
 function isSpace(s: string): boolean {
@@ -142,7 +261,11 @@ interface IDiacriticsErrorMessage {
   i: number;
 }
 
-function possibilityMatches(p: string, pIndex: number, possibilities: string[] | undefined): boolean {
+function possibilityMatches(
+  p: string,
+  pIndex: number,
+  possibilities: string[] | undefined
+): boolean {
   /* istanbul ignore next */
   if (!possibilities) {
     return false;
@@ -155,10 +278,15 @@ function possibilityMatches(p: string, pIndex: number, possibilities: string[] |
   return false;
 }
 
-function isPrefixedByDirectionalPronoun(i: number, phonemes: string[]): boolean {
+function isPrefixedByDirectionalPronoun(
+  i: number,
+  phonemes: string[]
+): boolean {
   const potentialPronounFourCharSlice = phonemes.slice(i - 4, i).join("");
   const potentialPronounThreeCharSlice = phonemes.slice(i - 3, i).join("");
-  if (["wăr-", "war-", "dăr-", "dar-"].includes(potentialPronounFourCharSlice)) {
+  if (
+    ["wăr-", "war-", "dăr-", "dar-"].includes(potentialPronounFourCharSlice)
+  ) {
     return true;
   }
   if (potentialPronounThreeCharSlice === "raa-") {
@@ -167,7 +295,11 @@ function isPrefixedByDirectionalPronoun(i: number, phonemes: string[]): boolean 
   return false;
 }
 
-export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: boolean = false): string | undefined {
+export function phoneticsToDiacritics(
+  ps: string,
+  ph: string,
+  forbidOoPrefixes: boolean = false
+): string | undefined {
   const phonemes = splitFIntoPhonemes(ph.trim().split(",")[0]);
   const p = ps.trim();
   let result = "";
@@ -179,58 +311,72 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
     if (phoneme === "-") {
       return;
     }
-    const phonemeInfo = phonemeTable.find((element) => element.phoneme === phoneme);
+    const phonemeInfo = phonemeTable.find(
+      (element) => element.phoneme === phoneme
+    );
     if (!phonemeInfo) {
       errored.push({ error: "phoneme info not found", phoneme, i });
       return;
     }
-    const isDoubleConsonant = (
+    const isDoubleConsonant =
       phonemeInfo.consonant &&
       phoneme === phonemes[i - 1] &&
       // TODO: is this thourough enough to allow double consonants on the ending of the previous word?
       !(isSpace(p[pIndex - 1]) && phonemeInfo.possibilities.includes(p[pIndex])) // avoid false double consonant ie ازل لیک azalleek
-    ) ? true : false;
-    const isBeginning = !isDoubleConsonant && ((i === 0) || isSpace(p[pIndex - 1]) || (phonemes[i - 1] === "-Ul-") || isPrefixedByDirectionalPronoun(i, phonemes));
-    const upcomingAEndingAfterHey = (p[pIndex] === "ح" && isSpace(p[pIndex + 1]) && ["a", "á"].includes(phonemes[i + 1]));
-    
-    // TODO: break this into a seperate function -- why can it sometimes be set to undefined?
-    const isEnding = (i === phonemes.length - 1) || ((
-      (phonemeInfo.possibilities && isSpace(p[pIndex + 1])) ||
-      (!phonemeInfo.possibilities && isSpace(p[pIndex])) ||
-      (
-        (!phonemeInfo.possibilities && isSpace(p[pIndex + 1])) &&
-        (possibilityMatches(p, pIndex, phonemeInfo.endingPossibilities) || (p[pIndex] === "ع" && phonemes[i + 1] !== "'"))
-      )
-    ) && !upcomingAEndingAfterHey
-      && // makes sure the next letter isn't a double consonant like haqq <-
-      !(
-          phonemeInfo.consonant && phoneme === phonemes[i + 1] // &&
-          // !(isSpace(p[pIndex + 1]) && phonemeInfo.possibilities.includes(p[pIndex]))
-      )
-    ) || // can be the trailing double consanant on the end of a word
-    (
-      phonemeInfo.consonant && phoneme === phonemes[i - 1] &&
-      !(isEndSpace(p[pIndex - 1]) && phonemeInfo.possibilities.includes(p[pIndex]))
-    ) || // can be یٰ ending
-    (
-      isEndSpace(p[pIndex + 2]) && (p.slice(pIndex, pIndex + 2) === "یٰ")
-    );
+        ? true
+        : false;
+    const isBeginning =
+      !isDoubleConsonant &&
+      (i === 0 ||
+        isSpace(p[pIndex - 1]) ||
+        phonemes[i - 1] === "-Ul-" ||
+        isPrefixedByDirectionalPronoun(i, phonemes));
+    const upcomingAEndingAfterHay =
+      p[pIndex] === "ح" &&
+      isSpace(p[pIndex + 1]) &&
+      ["a", "á"].includes(phonemes[i + 1]);
 
-    const isUofDu = phoneme === "u" && (
-      p.slice(pIndex - 2, pIndex) === "د " || // د as previous word
-      (p[pIndex] === undefined && p[pIndex - 1] === "د") || // د as the whole thing
-      p.slice(pIndex - 6, pIndex) === "د ... " // ... د is as the previous word
-    );
+    // TODO: break this into a seperate function -- why can it sometimes be set to undefined?
+    const isEnding =
+      i === phonemes.length - 1 ||
+      (((phonemeInfo.possibilities && isSpace(p[pIndex + 1])) ||
+        (!phonemeInfo.possibilities && isSpace(p[pIndex])) ||
+        (!phonemeInfo.possibilities &&
+          isSpace(p[pIndex + 1]) &&
+          (possibilityMatches(p, pIndex, phonemeInfo.endingPossibilities) ||
+            (p[pIndex] === "ع" && phonemes[i + 1] !== "'")))) &&
+        !upcomingAEndingAfterHay && // makes sure the next letter isn't a double consonant like haqq <-
+        !(
+          (phonemeInfo.consonant && phoneme === phonemes[i + 1]) // &&
+          // !(isSpace(p[pIndex + 1]) && phonemeInfo.possibilities.includes(p[pIndex]))
+        )) || // can be the trailing double consanant on the end of a word
+      (phonemeInfo.consonant &&
+        phoneme === phonemes[i - 1] &&
+        !(
+          isEndSpace(p[pIndex - 1]) &&
+          phonemeInfo.possibilities.includes(p[pIndex])
+        )) || // can be یٰ ending
+      (isEndSpace(p[pIndex + 2]) && p.slice(pIndex, pIndex + 2) === "یٰ");
+
+    const isUofDu =
+      phoneme === "u" &&
+      (p.slice(pIndex - 2, pIndex) === "د " || // د as previous word
+        (p[pIndex] === undefined && p[pIndex - 1] === "د") || // د as the whole thing
+        p.slice(pIndex - 6, pIndex) === "د ... "); // ... د is as the previous word
     // TODO: Should p[pIndex - 1] also be in there ??? It messed up قطعه for instance
-    const isEndingAynVowel = isEnding && phonemeInfo.diacritic && [p[pIndex], p[pIndex - 1]].includes("ع") && p[pIndex] !== "ه";
+    const isEndingAynVowel =
+      isEnding &&
+      phonemeInfo.diacritic &&
+      [p[pIndex], p[pIndex - 1]].includes("ع") &&
+      p[pIndex] !== "ه";
     const isMiddle = !isBeginning && !isEnding;
-    const isSilentWaw = (
+    const isSilentWaw =
       p[pIndex] === "و" &&
       p[pIndex - 1] === "خ" &&
       p[pIndex + 1] === "ا" &&
-      ["áa", "aa"].includes(phoneme)
-    );
-    const isAnAEndingAfterHey = isEnding && p[pIndex - 1] === "ح" && phonemeInfo.canComeAfterHeyEnding;
+      ["áa", "aa"].includes(phoneme);
+    const isAnAEndingAfterHay =
+      isEnding && p[pIndex - 1] === "ح" && phonemeInfo.canComeAfterHayEnding;
     if (isDoubleConsonant) {
       pIndex--;
       if (isSpace(p[pIndex])) {
@@ -247,14 +393,22 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       pIndex++;
     }
     // special check for Arabic wasla
-    if (p.slice(0, 3) === "بال" && phonemes[i - 1] === "b" && phonemeInfo.canBeWasla && phonemes[i + 1] === "l") {
+    if (
+      p.slice(0, 3) === "بال" &&
+      phonemes[i - 1] === "b" &&
+      phonemeInfo.canBeWasla &&
+      phonemes[i + 1] === "l"
+    ) {
       result += phonemeInfo.diacritic + wasla;
       pIndex++;
       previousPhonemeWasAConsonant = false;
       return;
     }
     // special check for fathahan ending
-    if (phonemeInfo.canBeFirstPartOfFathahanEnding && p.slice(pIndex, pIndex + 2) === "اً") {
+    if (
+      phonemeInfo.canBeFirstPartOfFathahanEnding &&
+      p.slice(pIndex, pIndex + 2) === "اً"
+    ) {
       result += "ا";
       pIndex++;
       return;
@@ -265,7 +419,12 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       return;
     }
     // special check for words starting with عا or عی
-    if (isBeginning && phonemeInfo.canStartWithAynBefore && p[pIndex] === "ع" && phonemeInfo.possibilities.includes(p[pIndex + 1])) {
+    if (
+      isBeginning &&
+      phonemeInfo.canStartWithAynBefore &&
+      p[pIndex] === "ع" &&
+      phonemeInfo.possibilities.includes(p[pIndex + 1])
+    ) {
       result += "ع";
       result += phonemeInfo.diacritic ? phonemeInfo.diacritic : "";
       result += p[pIndex + 1];
@@ -273,23 +432,45 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       return;
     }
     // special check for ؤ Ua
-    if (phoneme === "U" && phonemes[i + 1] === "a" && phonemes[i + 2] !== "a" && p[pIndex] === "و") {
+    if (
+      phoneme === "U" &&
+      phonemes[i + 1] === "a" &&
+      phonemes[i + 2] !== "a" &&
+      p[pIndex] === "و"
+    ) {
       result += "ؤ";
       pIndex++;
       return;
     }
-    if (phoneme === "a" && phonemes[i - 1] === "U" && phonemes[i + 1] !== "a" && result.slice(-2) === "ؤ") {
+    if (
+      phoneme === "a" &&
+      phonemes[i - 1] === "U" &&
+      phonemes[i + 1] !== "a" &&
+      result.slice(-2) === "ؤ"
+    ) {
       previousPhonemeWasAConsonant = false;
       return;
     }
     // special check for و wo
-    if (isBeginning && phoneme === "w" && phonemes[i + 1] === "o" && p[pIndex] === "و" && isEndSpace(p[pIndex + 1])) {
+    if (
+      isBeginning &&
+      phoneme === "w" &&
+      phonemes[i + 1] === "o" &&
+      p[pIndex] === "و" &&
+      isEndSpace(p[pIndex + 1])
+    ) {
       result += "و";
       pIndex++;
       return;
     }
     // TODO: isEndSpace here is redundant??
-    if (isEnding && phoneme === "o" && phonemes[i - 1] === "w" && p[pIndex - 1] === "و" && isEndSpace(p[pIndex])) {
+    if (
+      isEnding &&
+      phoneme === "o" &&
+      phonemes[i - 1] === "w" &&
+      p[pIndex - 1] === "و" &&
+      isEndSpace(p[pIndex])
+    ) {
       pIndex++;
       return;
     }
@@ -300,38 +481,67 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       return;
     }
     // special check for for أ in the middle of the word
-    if (!isBeginning && p[pIndex] === "أ" && phoneme === "a" && phonemes[i + 1] === "'" && phonemes[i + 2] === "a") {
+    if (
+      !isBeginning &&
+      p[pIndex] === "أ" &&
+      phoneme === "a" &&
+      phonemes[i + 1] === "'" &&
+      phonemes[i + 2] === "a"
+    ) {
       result += "أ";
       pIndex++;
       return;
     }
-    if (p[pIndex - 1] === "أ" && phonemes[i - 1] === "a" && phoneme === "'" && phonemes[i + 1] === "a") {
+    if (
+      p[pIndex - 1] === "أ" &&
+      phonemes[i - 1] === "a" &&
+      phoneme === "'" &&
+      phonemes[i + 1] === "a"
+    ) {
       return;
     }
-    if (p[pIndex - 1] === "أ" && phonemes[i - 2] === "a" && phonemes[i - 1] === "'" && phoneme === "a") {
+    if (
+      p[pIndex - 1] === "أ" &&
+      phonemes[i - 2] === "a" &&
+      phonemes[i - 1] === "'" &&
+      phoneme === "a"
+    ) {
       previousPhonemeWasAConsonant = false;
       return;
     }
     // special check for وو 'oo
-    if (!isBeginning && p[pIndex] === "و" && p[pIndex + 1] === "و" && phoneme === "'" && phonemes[i + 1] === "oo") {
+    if (
+      !isBeginning &&
+      p[pIndex] === "و" &&
+      p[pIndex + 1] === "و" &&
+      phoneme === "'" &&
+      phonemes[i + 1] === "oo"
+    ) {
       result += "وُو";
       pIndex += 2;
       return;
     }
-    if (p[pIndex - 2] === "و" && p[pIndex - 1] === "و" && phonemes[i - 1] === "'" && phoneme === "oo") {
+    if (
+      p[pIndex - 2] === "و" &&
+      p[pIndex - 1] === "و" &&
+      phonemes[i - 1] === "'" &&
+      phoneme === "oo"
+    ) {
       previousPhonemeWasAConsonant = false;
       return;
     }
 
-    const prevLetterWasBeginningAyn = (
+    const prevLetterWasBeginningAyn =
       p[pIndex - 1] === "ع" &&
       // isEndSpace(p[pIndex]) && // This breaks it
-      phoneme === "'" 
-    );
+      phoneme === "'";
     // check if the phoneme lines up in the Pashto word
     if (isBeginning && !isUofDu && phonemeInfo.addAlefOnBeginning) {
       // TODO: Maybe a little bad because it doesn't loop through possibilities
-      if ((!phonemeInfo.alsoCanBePrefix || forbidOoPrefixes) && p.slice(pIndex, pIndex + 2) !== "ا" + phonemeInfo.possibilities[0]) {
+      if (
+        (!phonemeInfo.alsoCanBePrefix || forbidOoPrefixes) &&
+        p.slice(pIndex, pIndex + 2) !== "ا" + phonemeInfo.possibilities[0]
+      ) {
         errored.push({ error: "didn't start with an aleph", phoneme, i });
         return;
       }
@@ -348,18 +558,18 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       pIndex++;
       return;
     } else if (
-      (isEnding && phonemeInfo.endingPossibilities) &&
+      isEnding &&
+      phonemeInfo.endingPossibilities &&
       !isUofDu &&
-      (
-        !possibilityMatches(p, pIndex, phonemeInfo.endingPossibilities) &&
-        !isEndingAynVowel && // allowing short vowels on the end of words ending with ع
-        !isAnAEndingAfterHey
-      )
+      !possibilityMatches(p, pIndex, phonemeInfo.endingPossibilities) &&
+      !isEndingAynVowel && // allowing short vowels on the end of words ending with ع
+      !isAnAEndingAfterHay
     ) {
       errored.push({ error: "bad ending", phoneme, i });
       return;
     } else if (
-      (isEnding && !phonemeInfo.endingPossibilities) &&
+      isEnding &&
+      !phonemeInfo.endingPossibilities &&
       phonemeInfo.possibilities &&
       !phonemeInfo.possibilities.includes(p[pIndex])
     ) {
@@ -367,14 +577,17 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       errored.push({ error: "bad ending 2", phoneme, i });
       return;
     } else if (
-      (phonemeInfo.possibilities && !isEnding) &&
-      (
-        !(phonemeInfo.possibilities.includes(p[pIndex])) &&
-        !(p[pIndex] === "ن" && (p[pIndex + 1] === "ب" && phoneme === "m")) && // && // exception case with نب === mb
-        !prevLetterWasBeginningAyn // exception case with words starting with ع like i'zzat
-      )
+      phonemeInfo.possibilities &&
+      !isEnding &&
+      !phonemeInfo.possibilities.includes(p[pIndex]) &&
+      !(p[pIndex] === "ن" && p[pIndex + 1] === "ب" && phoneme === "m") && // && // exception case with نب === mb
+      !prevLetterWasBeginningAyn // exception case with words starting with ع like i'zzat
     ) {
-      errored.push({ error: "improper coressponding letter in middle of word", phoneme, i });
+      errored.push({
+        error: "improper coressponding letter in middle of word",
+        phoneme,
+        i,
+      });
       return;
     }
     // console.log(phoneme, pIndex, p[pIndex], isEnding);
@@ -382,7 +595,12 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
     // OK, it lines up with the Pashto word, we're good
     // Now continue building the result string
     // deal with starting with short vowels and alef
-    if (!isUofDu && isBeginning && !phonemeInfo.possibilities && !phonemeInfo.isIzafe) {
+    if (
+      !isUofDu &&
+      isBeginning &&
+      !phonemeInfo.possibilities &&
+      !phonemeInfo.isIzafe
+    ) {
       // TODO: WHY IS THIS HERE
       if (!["ا", "ع"].includes(p[pIndex])) {
         errored.push({ error: "bad beginning 2", phoneme, i });
@@ -392,22 +610,30 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       pIndex++;
     }
     // if the phoneme carries a diacritic insert it (before the letter if it's coming)
-    const isOoPrefix = (phonemeInfo.alsoCanBePrefix && isBeginning && (p[pIndex - 1] !== "ا"));
+    const isOoPrefix =
+      phonemeInfo.alsoCanBePrefix && isBeginning && p[pIndex - 1] !== "ا";
     if (phonemeInfo.diacritic && !isEnding && !isOoPrefix) {
-      // using this hack to remove the space and put it after the zwarakey we're going to add after د 
-      if (isUofDu && result.slice(-5) === " ... ")  {
-        result = result.slice(0, -5) + zwarakey + " ... ";
+      // using this hack to remove the space and put it after the zwarakay we're going to add after د
+      if (isUofDu && result.slice(-5) === " ... ") {
+        result = result.slice(0, -5) + zwarakay + " ... ";
       } else if (isUofDu && result.slice(-1) === " ") {
-        result = result.slice(0, -1) + zwarakey + " ";
+        result = result.slice(0, -1) + zwarakay + " ";
       } else {
         result += phonemeInfo.diacritic;
       }
     }
     // TODO: The middle stuff might be unneccessary/unhelpful
-    const isACommaWithoutAyn = (phoneme === "'" && (p[pIndex] !== "ع" && !(isMiddle && p[pIndex] === "ئ")));
+    const isACommaWithoutAyn =
+      phoneme === "'" && p[pIndex] !== "ع" && !(isMiddle && p[pIndex] === "ئ");
     // if the previous phoneme was a consonant insert a sukun
     // console.log("Will I go into the adding thing?");
-    if (!isBeginning && previousPhonemeWasAConsonant && phonemeInfo.consonant && phonemes[i - 1] !== "'" && p[pIndex] !== "ع") {
+    if (
+      !isBeginning &&
+      previousPhonemeWasAConsonant &&
+      phonemeInfo.consonant &&
+      phonemes[i - 1] !== "'" &&
+      p[pIndex] !== "ع"
+    ) {
       result += isDoubleConsonant ? tashdeed : sukun;
     }
     if (isEnding && isDoubleConsonant) {
@@ -417,30 +643,38 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       }
     }
     // if there's a pashto letter for the phoneme, insert it
-    if (!isEndingAynVowel && !isACommaWithoutAyn && (phonemeInfo.possibilities || isEnding)) {
+    if (
+      !isEndingAynVowel &&
+      !isACommaWithoutAyn &&
+      (phonemeInfo.possibilities || isEnding)
+    ) {
       // need the isSpace check to prevent weird behaviour with izafe
       if (!isUofDu) {
-        if (isAnAEndingAfterHey) {
+        if (isAnAEndingAfterHay) {
           result += zwar;
           if (p[pIndex] === " ") {
             result += " ";
           }
         } else {
-          result += (isDoubleConsonant || isSpace(p[pIndex])) ? "" : p[pIndex];
+          result += isDoubleConsonant || isSpace(p[pIndex]) ? "" : p[pIndex];
         }
       }
       pIndex++;
     }
     if (isEnding) {
       if (isUofDu) {
-        result += zwarakey;
+        result += zwarakay;
       } else if (phonemeInfo.hamzaOnEnd) {
         result += hamzaAbove;
       } else if (phonemeInfo.takesSukunOnEnding) {
         result += sukun;
       } else if (p[pIndex] === daggerAlif) {
         result += daggerAlif;
-      } else if (isEndSpace(p[pIndex]) && p[pIndex - 1] === "ه" && phonemeInfo.takesDiacriticBeforeGurdaHeyEnding) {
+      } else if (
+        isEndSpace(p[pIndex]) &&
+        p[pIndex - 1] === "ه" &&
+        phonemeInfo.takesDiacriticBeforeGurdaHayEnding
+      ) {
         result = result.slice(0, -1) + phonemeInfo.diacritic + "ه";
       }
     }
@@ -456,13 +690,20 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       }
       return;
     }
-    previousPhonemeWasAConsonant = (!isEnding && phonemeInfo.consonant) ? true : false;
+    previousPhonemeWasAConsonant =
+      !isEnding && phonemeInfo.consonant ? true : false;
     // ignore the ع or ئ if there's not a ' in the phonetics
-    const nextPhonemeInfo = phonemeTable.find((element) => phonemes[i + 1] === element.phoneme);
+    const nextPhonemeInfo = phonemeTable.find(
+      (element) => phonemes[i + 1] === element.phoneme
+    );
     if (
       ["ع", "ئ"].includes(p[pIndex]) &&
       ![phonemes[i + 1], phonemes[i + 2]].includes("'") &&
-      !(nextPhonemeInfo && nextPhonemeInfo.diacritic && isEndSpace(p[pIndex + 1])) && // don't skip the ع on the end if there's another short letter coming after it
+      !(
+        nextPhonemeInfo &&
+        nextPhonemeInfo.diacritic &&
+        isEndSpace(p[pIndex + 1])
+      ) && // don't skip the ع on the end if there's another short letter coming after it
       !(p[pIndex] === "ئ" && isEndSpace(p[pIndex + 1])) && // don't skip ئ on the end
       !phonemeInfo.isIzafe
     ) {
@@ -476,7 +717,11 @@ export function phoneticsToDiacritics(ps: string, ph: string, forbidOoPrefixes: 
       return;
     }
     // if we've arrived at a space in the Pashto, move along before the next iteration
-    if (isSpace(p[pIndex]) && phonemes[i + 1] !== "-i-" && !upcomingAEndingAfterHey) {
+    if (
+      isSpace(p[pIndex]) &&
+      phonemes[i + 1] !== "-i-" &&
+      !upcomingAEndingAfterHay
+    ) {
       result += " ";
       pIndex++;
     }

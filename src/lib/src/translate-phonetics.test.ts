@@ -6,9 +6,7 @@
  *
  */
 
-import {
-  translatePhonetics,
-} from "./translate-phonetics";
+import { translatePhonetics } from "./translate-phonetics";
 
 const dialects = ["southern", "standard", "peshawer"];
 const systems = ["ipa", "alalc"];
@@ -54,11 +52,11 @@ const translations = [
     },
   },
   {
-    original: "saRey",
+    original: "saRay",
     ipa: {
-      southern: "saɻai",
-      standard: "saɻai",
-      peshawer: "saɻai",
+      southern: "saɻaj",
+      standard: "saɻaj",
+      peshawer: "saɻaj",
     },
     alalc: {
       southern: "saṛay",
@@ -72,20 +70,17 @@ translations.forEach((t) => {
   systems.forEach((system) => {
     // check each dialect with given system
     dialects.forEach((dialect) => {
-      test(
-        // @ts-ignore
-        `${t.original} should be translated to ${t.ipa[dialect]} using ${system} with ${dialect} dialect`,
-        () => {
-          const translated = translatePhonetics(t.original, {
-            // @ts-ignore
-            system,
-            // @ts-ignore
-            dialect,
-          });
+      test(// @ts-ignore
+      `${t.original} should be translated to ${t.ipa[dialect]} using ${system} with ${dialect} dialect`, () => {
+        const translated = translatePhonetics(t.original, {
           // @ts-ignore
-          expect(translated).toBe(t[system][dialect]);
-        },
-      );
+          system,
+          // @ts-ignore
+          dialect,
+        });
+        // @ts-ignore
+        expect(translated).toBe(t[system][dialect]);
+      });
     });
   });
 });
