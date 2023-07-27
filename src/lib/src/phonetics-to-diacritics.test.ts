@@ -72,6 +72,20 @@ const toTest: Array<{
 }> = [
   {
     in: {
+      p: "شئ",
+      f: "shey",
+    },
+    out: "شئ",
+  },
+  {
+    in: {
+      p: "کړئ",
+      f: "kRey",
+    },
+    out: "کْړئ",
+  },
+  {
+    in: {
       p: "کور",
       f: "kor",
     },
