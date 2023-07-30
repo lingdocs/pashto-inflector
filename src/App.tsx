@@ -19,6 +19,7 @@ import { entryFeeder } from "./demo-components/entryFeeder";
 import { Hider } from "./components/library";
 import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
+import ParserDemo from "./demo-components/ParserDemo";
 
 function App() {
   const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(
@@ -131,6 +132,14 @@ function App() {
             handleChange={() => handleHiderClick("spelling")}
           >
             <SpellingDemo opts={textOptions} onChange={setTextOptions} />
+          </Hider>
+          <Hider
+            label="Parser (IN PROGRESS)"
+            hLevel={3}
+            showing={showing === "parser"}
+            handleChange={() => handleHiderClick("parser")}
+          >
+            <ParserDemo opts={textOptions} />
           </Hider>
         </div>
       </main>

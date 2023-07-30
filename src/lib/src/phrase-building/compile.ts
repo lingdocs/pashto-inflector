@@ -121,9 +121,7 @@ function compileVPPs(
     kids,
     !!blankOut?.ba
   );
-  return removeDuplicates(
-    combineIntoText(blocksWKids, subjectPerson, blankOut)
-  );
+  return combineIntoText(blocksWKids, subjectPerson, blankOut);
 }
 
 function compileEPPs(
@@ -217,15 +215,17 @@ export function combineIntoText(
   subjectPerson: T.Person,
   blankOut?: BlankoutOptions
 ): T.PsString[] {
-  return piecesWVars
-    .map((pieces) => {
-      const psVarsBlocks = getPsVarsBlocks(
-        applyBlankOut(pieces, blankOut),
-        subjectPerson
-      );
-      return concatAll(monoidPsStringWVars)(psVarsBlocks);
-    })
-    .flat();
+  return removeDuplicates(
+    piecesWVars
+      .map((pieces) => {
+        const psVarsBlocks = getPsVarsBlocks(
+          applyBlankOut(pieces, blankOut),
+          subjectPerson
+        );
+        return concatAll(monoidPsStringWVars)(psVarsBlocks);
+      })
+      .flat()
+  );
 }
 
 function getPsVarsBlocks(

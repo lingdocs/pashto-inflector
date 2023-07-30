@@ -1,0 +1,291 @@
+import { makeNounSelection } from "../phrase-building/make-selections";
+import * as T from "../../../types";
+import { lookup } from "./lookup";
+import { parseNoun } from "./parse-noun";
+
+const sarey = {
+  ts: 1527815251,
+  i: 8163,
+  p: "سړی",
+  f: "saRáy",
+  g: "saRay",
+  e: "man",
+  r: 4,
+  c: "n. m.",
+  ec: "man",
+  ep: "men",
+} as T.NounEntry;
+const dostee = {
+  ts: 1527811877,
+  i: 6627,
+  p: "دوستي",
+  f: "dostee",
+  g: "dostee",
+  e: "friendship",
+  r: 3,
+  c: "n. f.",
+} as T.NounEntry;
+const wreejze = {
+  ts: 1586551382412,
+  i: 14985,
+  p: "وریژې",
+  f: "wreejze",
+  g: "wreejze",
+  e: "rice",
+  r: 4,
+  c: "n. f. pl.",
+} as T.NounEntry;
+const xudza = {
+  ts: 1527812797,
+  i: 9018,
+  p: "ښځه",
+  f: "xúdza",
+  g: "xudza",
+  e: "woman, wife",
+  r: 4,
+  c: "n. f.",
+  ec: "woman",
+  ep: "women",
+} as T.NounEntry;
+const kursuy = {
+  ts: 1527814203,
+  i: 10573,
+  p: "کرسۍ",
+  f: "kUrsúy",
+  g: "kUrsuy",
+  e: "chair, seat, stool",
+  r: 3,
+  c: "n. f.",
+} as T.NounEntry;
+const kor = {
+  ts: 1527812828,
+  i: 11022,
+  p: "کور",
+  f: "kor",
+  g: "kor",
+  e: "house, home",
+  r: 4,
+  c: "n. m.",
+} as T.NounEntry;
+const daktar = {
+  ts: 1527816747,
+  i: 6709,
+  p: "ډاکټر",
+  f: "DaakTar",
+  g: "DaakTar",
+  e: "doctor",
+  r: 4,
+  c: "n. m. anim. unisex",
+} as T.NounEntry;
+
+// TODO: test unisex ملګری etc
+
+const tests: {
+  category: string;
+  cases: {
+    input: string;
+    output: {
+      inflected: boolean;
+      selection: T.NounSelection;
+    }[];
+  }[];
+}[] = [
+  {
+    category: "pattern 1 nouns",
+    cases: [
+      {
+        input: "کور",
+        output: [
+          {
+            inflected: false,
+            selection: makeNounSelection(kor, undefined),
+          },
+        ],
+      },
+      {
+        input: "کورو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(kor, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "ډاکټره",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(daktar, undefined),
+              gender: "fem",
+            },
+          },
+        ],
+      },
+      {
+        input: "ډاکټرې",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(daktar, undefined),
+              gender: "fem",
+            },
+          },
+        ],
+      },
+    ],
+  },
+];
+// {
+//   input: "سړی",
+//   output: [
+//     {
+//       inflected: false,
+//       selection: makeNounSelection(sarey, undefined),
+//     },
+//   ],
+// },
+// {
+//   input: "سړي",
+//   output: [
+//     {
+//       inflected: true,
+//       selection: makeNounSelection(sarey, undefined),
+//     },
+//   ],
+// },
+// {
+//   input: "سړو",
+//   output: [
+//     {
+//       inflected: true,
+//       selection: {
+//         ...makeNounSelection(sarey, undefined),
+//         number: "plural",
+//       },
+//     },
+//   ],
+// },
+// {
+//   input: "سړیو",
+//   output: [
+//     {
+//       inflected: true,
+//       selection: {
+//         ...makeNounSelection(sarey, undefined),
+//         number: "plural",
+//       },
+//     },
+//   ],
+// },
+// {
+//   input: "دوستي",
+//   output: [
+//     {
+//       inflected: false,
+//       selection: makeNounSelection(dostee, undefined),
+//     },
+//   ],
+// },
+// {
+//   input: "دوستۍ",
+//   output: [
+//     {
+//       inflected: true,
+//       selection: makeNounSelection(dostee, undefined),
+//     },
+//   ],
+// },
+// {
+//   input: "دوستیو",
+//   output: [
+//     {
+//       inflected: true,
+//       selection: {
+//         ...makeNounSelection(dostee, undefined),
+//         number: "plural",
+//       },
+//     },
+//   ],
+// },
+// {
+//   input: "وریژې",
+//   output: [
+//     {
+//       inflected: false,
+//       selection: makeNounSelection(wreejze, undefined),
+//     },
+//   ],
+// },
+// {
+//   input: "ښځه",
+//   output: [
+//     {
+//       inflected: false,
+//       selection: makeNounSelection(xudza, undefined),
+//     },
+//   ],
+// },
+// {
+//   input: "ښځې",
+//   output: [
+//     {
+//       inflected: true,
+//       selection: makeNounSelection(xudza, undefined),
+//     },
+//   ],
+// },
+// {
+//   input: "ښځو",
+//   output: [
+//     {
+//       inflected: true,
+//       selection: {
+//         ...makeNounSelection(xudza, undefined),
+//         number: "plural",
+//       },
+//     },
+//   ],
+// },
+// {
+//   input: "کرسۍ",
+//   output: [
+//     {
+//       inflected: false,
+//       selection: makeNounSelection(kursuy, undefined),
+//     },
+//     {
+//       inflected: true,
+//       selection: makeNounSelection(kursuy, undefined),
+//     },
+//   ],
+// },
+// {
+//   input: "کرسیو",
+//   output: [
+//     {
+//       inflected: true,
+//       selection: {
+//         ...makeNounSelection(kursuy, undefined),
+//         number: "plural",
+//       },
+//     },
+//   ],
+// },
+// ];
+
+describe("parsing nouns", () => {
+  tests.forEach(({ category, cases }) => {
+    // eslint-disable-next-line jest/valid-title
+    test(category, () => {
+      cases.forEach(({ input, output }) => {
+        expect(parseNoun(input, lookup)).toEqual(output);
+      });
+    });
+  });
+});

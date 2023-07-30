@@ -60,6 +60,11 @@ This is published on [a private NPM proxy registry](https://npm.lingdocs.com) as
 The Pashto Verb Explorer website can be used to view and play with the verb conjugations and various components. 
 
 ```
+cd src/components
+yarn install
+cd ../lib
+yarn install
+cd ../..
 yarn install
 yarn start
 ```
