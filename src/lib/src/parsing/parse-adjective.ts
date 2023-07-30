@@ -11,6 +11,7 @@ export function parseAdjective(
   {
     inflection: (0 | 1 | 2)[];
     gender: T.Gender[];
+    given: string;
     selection: T.AdjectiveSelection;
   }
 ][] {
@@ -32,6 +33,7 @@ export function parseAdjective(
             selection,
             inflection: deets.inflection,
             gender: deets.gender,
+            given: first,
           },
         ]);
       });

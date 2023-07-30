@@ -313,7 +313,12 @@ describe("parsing adjectives", () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
         const possibilities = parseAdjective(tokens, lookup).map((x) => x[1]);
-        expect(possibilities).toEqual(output);
+        expect(
+          possibilities.map((x) => {
+            const { given, ...rest } = x;
+            return rest;
+          })
+        ).toEqual(output);
       });
     });
   });

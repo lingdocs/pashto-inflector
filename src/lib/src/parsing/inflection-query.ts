@@ -6,6 +6,7 @@ import {
   isPattern,
   isPattern5Entry,
   isPattern4Entry,
+  isPattern6FemEntry,
 } from "../type-predicates";
 import { equals } from "rambda";
 
@@ -135,6 +136,14 @@ export function getInflectionQueries(
         predicate: (e) => isPattern2Entry(e) || isPattern3Entry(e),
       },
     });
+    queries.push({
+      search: { p: s },
+      details: {
+        inflection: [0],
+        gender: ["fem"],
+        predicate: isPattern6FemEntry,
+      },
+    });
   } else if (s.endsWith("و")) {
     queries.push({
       search: { p: s.slice(0, -1) },
@@ -179,6 +188,24 @@ export function getInflectionQueries(
         predicate: isPattern3Entry,
       },
     });
+    if (includeNouns) {
+      queries.push({
+        search: { p: s.slice(0, -1) + "ي" },
+        details: {
+          inflection: [1],
+          gender: ["fem"],
+          predicate: isPattern6FemEntry,
+        },
+      });
+      queries.push({
+        search: { p: s },
+        details: {
+          inflection: [0, 1],
+          gender: ["fem"],
+          predicate: isPattern3Entry,
+        },
+      });
+    }
   }
 
   const coallated: ReturnType<typeof getInflectionQueries> = [];

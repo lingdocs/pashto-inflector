@@ -6,13 +6,19 @@ import { parseNoun } from "./parse-noun";
 export function parsePhrase(
   s: string[],
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]
-): any[] {
+): {
+  success: any[];
+  errors: string[];
+} {
   const adjsRes = parseAdjective(s, lookup);
   const prnsRes = parsePronoun(s);
   const nounsRes = parseNoun(s, lookup, []);
 
-  const correct = [...adjsRes, ...prnsRes, ...nounsRes]
+  const correct = [...adjsRes, ...prnsRes, ...nounsRes.success]
     .filter(([tkns]) => tkns.length === 0)
     .map((x) => x[1]);
-  return correct;
+  return {
+    success: correct,
+    errors: nounsRes.errors,
+  };
 }

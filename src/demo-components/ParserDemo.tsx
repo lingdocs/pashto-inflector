@@ -7,16 +7,19 @@ import { tokenizer } from "../lib/src/parsing/tokenizer";
 function ParserDemo({ opts }: { opts: T.TextOptions }) {
   const [text, setText] = useState<string>("");
   const [result, setResult] = useState<string>("");
+  const [errors, setErrors] = useState<string[]>([]);
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
     if (!value) {
       setText("");
       setResult("");
+      setErrors([]);
       return;
     }
-    const r = parsePhrase(tokenizer(value), lookup);
+    const { success, errors } = parsePhrase(tokenizer(value), lookup);
     setText(value);
-    setResult(JSON.stringify(r, null, "  "));
+    setErrors(errors);
+    setResult(JSON.stringify(success, null, "  "));
   }
   return (
     <div className="mt-3" style={{ marginBottom: "1000px" }}>
@@ -32,6 +35,13 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
           onChange={handleChange}
         />
       </div>
+      {result === "[]" && errors.length > 0 && (
+        <div className="alert alert-danger" role="alert">
+          {errors.map((e) => (
+            <div key={Math.random()}>{e}</div>
+          ))}
+        </div>
+      )}
       <samp>
         <pre>{result}</pre>
       </samp>

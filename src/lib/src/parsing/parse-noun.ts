@@ -15,17 +15,28 @@ export function parseNoun(
   adjectives: {
     inflection: (0 | 1 | 2)[];
     gender: T.Gender[];
+    given: string;
     selection: T.AdjectiveSelection;
   }[]
-): [string[], { inflection: (0 | 1 | 2)[]; selection: T.NounSelection }][] {
+): {
+  success: [
+    string[],
+    { inflection: (0 | 1 | 2)[]; selection: T.NounSelection }
+  ][];
+  errors: string[];
+} {
   if (tokens.length === 0) {
-    return [];
+    return {
+      success: [],
+      errors: [],
+    };
   }
   const adjRes = parseAdjective(tokens, lookup);
-  const withAdj = adjRes.flatMap(([tkns, adj]) =>
+  const withAdj = adjRes.map(([tkns, adj]) =>
     parseNoun(tkns, lookup, [...adjectives, adj])
   );
-  const w: ReturnType<typeof parseNoun> = [];
+  const success: ReturnType<typeof parseNoun>["success"] = [];
+  const errors: string[] = [];
   const [first, ...rest] = tokens;
 
   const searches = getInflectionQueries(first, true);
@@ -34,11 +45,15 @@ export function parseNoun(
     details.forEach((deets) => {
       const fittingEntries = nounEntries.filter(deets.predicate);
       fittingEntries.forEach((entry) => {
-        console.log({ entry, deets });
         if (isUnisexNounEntry(entry)) {
           deets.gender.forEach((gender) => {
-            if (adjsMatch(adjectives, gender, deets.inflection)) {
-              w.push([
+            const { ok, error } = adjsMatch(
+              adjectives,
+              gender,
+              deets.inflection
+            );
+            if (ok) {
+              success.push([
                 rest,
                 {
                   inflection: deets.inflection,
@@ -49,11 +64,16 @@ export function parseNoun(
                   },
                 },
               ]);
+            } else {
+              error.forEach((e) => {
+                errors.push(e);
+              });
             }
           });
         } else if (isMascNounEntry(entry) && deets.gender.includes("masc")) {
-          if (adjsMatch(adjectives, "masc", deets.inflection)) {
-            w.push([
+          const { ok, error } = adjsMatch(adjectives, "masc", deets.inflection);
+          if (ok) {
+            success.push([
               rest,
               {
                 inflection: deets.inflection,
@@ -63,10 +83,15 @@ export function parseNoun(
                 },
               },
             ]);
+          } else {
+            error.forEach((e) => {
+              errors.push(e);
+            });
           }
         } else if (isFemNounEntry(entry) && deets.gender.includes("fem")) {
-          if (adjsMatch(adjectives, "fem", deets.inflection)) {
-            w.push([
+          const { ok, error } = adjsMatch(adjectives, "fem", deets.inflection);
+          if (ok) {
+            success.push([
               rest,
               {
                 inflection: deets.inflection,
@@ -76,22 +101,63 @@ export function parseNoun(
                 },
               },
             ]);
+          } else {
+            error.forEach((e) => {
+              errors.push(e);
+            });
           }
         }
       });
     });
   });
-  return [...withAdj, ...w];
+  return {
+    success: [...withAdj.map((x) => x.success).flat(), ...success],
+    errors: [...withAdj.map((x) => x.errors).flat(), ...errors],
+  };
 }
 
 function adjsMatch(
   adjectives: Parameters<typeof parseNoun>[2],
   gender: T.Gender,
   inflection: (0 | 1 | 2)[]
-): boolean {
-  return adjectives.every(
+): { ok: boolean; error: string[] } {
+  const unmatching = adjectives.filter(
     (adj) =>
-      adj.gender.includes(gender) &&
-      adj.inflection.some((i) => inflection.includes(i))
+      !adj.gender.includes(gender) ||
+      !adj.inflection.some((i) => inflection.includes(i))
   );
+  if (unmatching.length) {
+    return {
+      ok: false,
+      error: unmatching.map((x) => {
+        const adjText =
+          x.given === x.selection.entry.p
+            ? x.given
+            : `${x.given} (${x.selection.entry.p})`;
+        const inflectionIssue = !x.inflection.some((x) =>
+          inflection.includes(x)
+        )
+          ? ` should be ${showInflection(inflection)}`
+          : ``;
+        return `Adjective agreement error: ${adjText} should be ${inflectionIssue} ${gender}.`;
+      }),
+    };
+  } else {
+    return {
+      ok: true,
+      error: [],
+    };
+  }
+}
+
+function showInflection(inf: (0 | 1 | 2)[]): string {
+  const [last, ...rest] = inf.reverse();
+  const template = rest.length
+    ? `${rest.join(", ")}, or ${last}`
+    : last.toString();
+  console.log(template);
+  return template
+    .replace("0", "plain")
+    .replace("1", "first inflection")
+    .replace("2", "second inflection");
 }
