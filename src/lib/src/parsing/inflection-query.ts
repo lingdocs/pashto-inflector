@@ -51,6 +51,35 @@ export function getInflectionQueries(
     },
   });
   if (noun) {
+    queries.push({
+      search: { ppp: s },
+      details: {
+        inflection: [0],
+        gender: ["masc", "fem"],
+        plural: true,
+        predicate: isNounEntry,
+      },
+    });
+    if (s.endsWith("و")) {
+      queries.push({
+        search: { ppp: s.slice(0, -1) },
+        details: {
+          inflection: [1],
+          gender: ["masc"],
+          plural: true,
+          predicate: isMascNounEntry,
+        },
+      });
+      queries.push({
+        search: { ppp: s.slice(0, -1) + "ې" },
+        details: {
+          inflection: [1],
+          gender: ["fem"],
+          plural: true,
+          predicate: isFemNounEntry,
+        },
+      });
+    }
     if (s.endsWith("ونه")) {
       queries.push({
         search: { p: s.slice(0, -3) },
@@ -71,6 +100,136 @@ export function getInflectionQueries(
         details: {
           inflection: [0],
           gender: ["masc"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            !isPluralNounEntry(e) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("ان") && !["ا", "و"].includes(s.at(-3) || "")) {
+      queries.push({
+        search: { p: s.slice(0, -2) },
+        details: {
+          inflection: [0],
+          gender: ["masc"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            (isMascNounEntry(e) || isUnisexNounEntry(e)) &&
+            !isPluralNounEntry(e) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("انې") && !["ا", "و"].includes(s.at(-4) || "")) {
+      queries.push({
+        search: { p: s.slice(0, -3) },
+        details: {
+          inflection: [0],
+          gender: ["fem"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            (isFemNounEntry(e) || isUnisexNounEntry(e)) &&
+            !isPluralNounEntry(e) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("ګان") && ["ا", "و"].includes(s.at(-4) || "")) {
+      queries.push({
+        search: { p: s.slice(0, -3) },
+        details: {
+          inflection: [0],
+          gender: ["masc"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            (isMascNounEntry(e) || isUnisexNounEntry(e)) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("ګانې") && ["ا", "و"].includes(s.at(-5) || "")) {
+      queries.push({
+        search: { p: s.slice(0, -4) },
+        details: {
+          inflection: [0],
+          gender: ["fem"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            (isFemNounEntry(e) || isUnisexNounEntry(e)) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("وې") && ["ا", "و"].includes(s.at(-3) || "")) {
+      queries.push({
+        search: { p: s.slice(0, -2) },
+        details: {
+          inflection: [0],
+          gender: ["fem"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            (isFemNounEntry(e) || isUnisexNounEntry(e)) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("وو") && ["ا", "و"].includes(s.at(-3) || "")) {
+      queries.push({
+        search: { p: s.slice(0, -2) },
+        details: {
+          inflection: [1],
+          gender: ["fem"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            (isFemNounEntry(e) || isUnisexNounEntry(e)) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("ګانو") && ["ا", "و"].includes(s.at(-5) || "")) {
+      queries.push({
+        search: { p: s.slice(0, -4) },
+        details: {
+          inflection: [1],
+          gender: ["masc", "fem"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            !isPluralNounEntry(e) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("انو")) {
+      queries.push({
+        search: { p: s.slice(0, -3) },
+        details: {
+          inflection: [1],
+          gender: ["masc", "fem"],
           plural: true,
           predicate: (e) =>
             isNounEntry(e) &&

@@ -4,6 +4,16 @@ import { isAdjectiveEntry, isNounEntry } from "../type-predicates";
 
 export function lookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   const [key, value] = Object.entries(s)[0];
+  if (key === "ppp") {
+    return nounsAdjs.filter(
+      (e) =>
+        e.ppp &&
+        e.ppp
+          .split(",")
+          .map((w) => w.trim())
+          .includes(value as string)
+    );
+  }
   // @ts-ignore
   return nounsAdjs.filter((e) => e[key] === value) as T.DictionaryEntry[];
 }
