@@ -12,7 +12,7 @@ export function parsePhrase(
 } {
   const adjsRes = parseAdjective(s, lookup);
   const prnsRes = parsePronoun(s);
-  const nounsRes = parseNoun(s, lookup, []);
+  const nounsRes = parseNoun(s, lookup, undefined);
 
   const correct = [...adjsRes, ...prnsRes, ...nounsRes.success]
     .filter(([tkns]) => tkns.length === 0)

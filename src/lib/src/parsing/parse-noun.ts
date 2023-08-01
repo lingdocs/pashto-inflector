@@ -2,7 +2,6 @@ import * as T from "../../../types";
 import { getInflectionPattern } from "../inflection-pattern";
 import { makeNounSelection } from "../phrase-building/make-selections";
 import {
-  isFemNounEntry,
   isMascNounEntry,
   isNounEntry,
   isPluralNounEntry,
@@ -18,6 +17,71 @@ import { parseAdjective } from "./parse-adjective";
 export function parseNoun(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
+  prevPossesor: T.NounSelection | undefined
+): {
+  success: [T.Token[], { inflected: boolean; selection: T.NounSelection }][];
+  errors: string[];
+} {
+  if (tokens.length === 0) {
+    return {
+      success: [],
+      errors: [],
+    };
+  }
+  const [first, ...rest] = tokens;
+  const possesor =
+    first.s === "د" ? parseNoun(rest, lookup, undefined) : undefined;
+  if (possesor) {
+    const runsAfterPossesor: [
+      Readonly<T.Token[]>,
+      { inflected: boolean; selection: T.NounSelection } | undefined
+    ][] = possesor ? [...possesor.success] : [[tokens, undefined]];
+    // could be a case for a monad ??
+    return runsAfterPossesor.reduce<ReturnType<typeof parseNoun>>(
+      (acc, [tokens, possesor]) => {
+        if (possesor?.inflected === false) {
+          return {
+            success: [...acc.success],
+            errors: [...acc.errors, "possesor should be inflected"],
+          };
+        }
+        const { success, errors } = parseNoun(
+          tokens,
+          lookup,
+          possesor
+            ? {
+                ...possesor.selection,
+                possesor: prevPossesor
+                  ? {
+                      shrunken: false,
+                      np: {
+                        type: "NP",
+                        selection: prevPossesor,
+                      },
+                    }
+                  : undefined,
+              }
+            : undefined
+        );
+        return {
+          success: [...acc.success, ...success],
+          errors: [...acc.errors, ...errors],
+        };
+      },
+      { success: [], errors: [] }
+    );
+  } else {
+    return parseNounAfterPossesor(tokens, lookup, prevPossesor, []);
+  }
+}
+
+// create NP parsing function for that
+// TODO with possesor, parse an NP not a noun
+
+function parseNounAfterPossesor(
+  tokens: Readonly<T.Token[]>,
+  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
+  possesor: T.NounSelection | undefined,
   adjectives: {
     inflection: (0 | 1 | 2)[];
     gender: T.Gender[];
@@ -34,16 +98,14 @@ export function parseNoun(
       errors: [],
     };
   }
-  const [first, ...rest] = tokens;
   // TODO: add recognition of او between adjectives
   const adjRes = parseAdjective(tokens, lookup);
   const withAdj = adjRes.map(([tkns, adj]) =>
-    parseNoun(tkns, lookup, [...adjectives, adj])
+    parseNounAfterPossesor(tkns, lookup, possesor, [...adjectives, adj])
   );
+  const [first, ...rest] = tokens;
   const success: ReturnType<typeof parseNoun>["success"] = [];
   const errors: string[] = [];
-  // const possesor =
-  //   first === "د" ? parseNoun(rest, lookup, adjectives).success : undefined;
 
   const searches = getInflectionQueries(first.s, true);
 
@@ -52,8 +114,13 @@ export function parseNoun(
     details.forEach((deets) => {
       const fittingEntries = nounEntries.filter(deets.predicate);
       fittingEntries.forEach((entry) => {
-        if (isUnisexNounEntry(entry)) {
-          deets.gender.forEach((gender) => {
+        const genders: T.Gender[] = isUnisexNounEntry(entry)
+          ? ["masc", "fem"]
+          : isMascNounEntry(entry)
+          ? ["masc"]
+          : ["fem"];
+        deets.gender.forEach((gender) => {
+          if (genders.includes(gender)) {
             deets.inflection.forEach((inf) => {
               const { ok, error } = adjsMatch(
                 adjectives,
@@ -78,6 +145,17 @@ export function parseNoun(
                             ? number
                             : selection.number,
                           adjectives: adjectives.map((a) => a.selection),
+                          // TODO: could be nicer to validate that the possesor is inflected before
+                          // and just pass in the selection
+                          possesor: possesor
+                            ? {
+                                shrunken: false,
+                                np: {
+                                  type: "NP",
+                                  selection: possesor,
+                                },
+                              }
+                            : undefined,
                         },
                       },
                     ]);
@@ -89,74 +167,8 @@ export function parseNoun(
                 });
               }
             });
-          });
-        } else if (isMascNounEntry(entry) && deets.gender.includes("masc")) {
-          deets.inflection.forEach((inf) => {
-            const { ok, error } = adjsMatch(
-              adjectives,
-              "masc",
-              inf,
-              deets.plural
-            );
-            if (ok) {
-              convertInflection(inf, entry, "masc", deets.plural).forEach(
-                ({ inflected, number }) => {
-                  const selection = makeNounSelection(entry, undefined);
-                  success.push([
-                    rest,
-                    {
-                      inflected,
-                      selection: {
-                        ...selection,
-                        number: selection.numberCanChange
-                          ? number
-                          : selection.number,
-                        adjectives: adjectives.map((a) => a.selection),
-                      },
-                    },
-                  ]);
-                }
-              );
-            } else {
-              error.forEach((e) => {
-                errors.push(e);
-              });
-            }
-          });
-        } else if (isFemNounEntry(entry) && deets.gender.includes("fem")) {
-          deets.inflection.forEach((inf) => {
-            const { ok, error } = adjsMatch(
-              adjectives,
-              "fem",
-              inf,
-              deets.plural
-            );
-            if (ok) {
-              convertInflection(inf, entry, "fem", deets.plural).forEach(
-                ({ inflected, number }) => {
-                  const selection = makeNounSelection(entry, undefined);
-                  success.push([
-                    rest,
-                    {
-                      inflected,
-                      selection: {
-                        ...selection,
-                        number: selection.numberCanChange
-                          ? number
-                          : selection.number,
-                        adjectives: adjectives.map((a) => a.selection),
-                      },
-                    },
-                  ]);
-                }
-              );
-            } else {
-              error.forEach((e) => {
-                errors.push(e);
-              });
-            }
-          });
-        }
+          }
+        });
       });
     });
   });
@@ -167,7 +179,7 @@ export function parseNoun(
 }
 
 function adjsMatch(
-  adjectives: Parameters<typeof parseNoun>[2],
+  adjectives: Parameters<typeof parseNounAfterPossesor>[3],
   gender: T.Gender,
   inf: 0 | 1 | 2,
   plural: boolean | undefined

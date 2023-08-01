@@ -1,5 +1,4 @@
 import * as T from "../../../types";
-import { endsInConsonant } from "../p-text-helpers";
 import {
   isPattern1Entry,
   isPattern2Entry,
@@ -110,7 +109,10 @@ export function getInflectionQueries(
         },
       });
     }
-    if (s.endsWith("ان") && !["ا", "و"].includes(s.at(-3) || "")) {
+    if (
+      s.endsWith("ان") &&
+      !["ا", "و"].includes(s.charAt(s.length - 3) || "")
+    ) {
       queries.push({
         search: { p: s.slice(0, -2) },
         details: {
@@ -127,7 +129,10 @@ export function getInflectionQueries(
         },
       });
     }
-    if (s.endsWith("انې") && !["ا", "و"].includes(s.at(-4) || "")) {
+    if (
+      s.endsWith("انې") &&
+      !["ا", "و"].includes(s.charAt(s.length - 4) || "")
+    ) {
       queries.push({
         search: { p: s.slice(0, -3) },
         details: {
@@ -144,7 +149,10 @@ export function getInflectionQueries(
         },
       });
     }
-    if (s.endsWith("ګان") && ["ا", "و"].includes(s.at(-4) || "")) {
+    if (
+      s.endsWith("ګان") &&
+      ["ا", "و"].includes(s.charAt(s.length - 4) || "")
+    ) {
       queries.push({
         search: { p: s.slice(0, -3) },
         details: {
@@ -160,7 +168,10 @@ export function getInflectionQueries(
         },
       });
     }
-    if (s.endsWith("ګانې") && ["ا", "و"].includes(s.at(-5) || "")) {
+    if (
+      s.endsWith("ګانې") &&
+      ["ا", "و"].includes(s.charAt(s.length - 5) || "")
+    ) {
       queries.push({
         search: { p: s.slice(0, -4) },
         details: {
@@ -176,7 +187,7 @@ export function getInflectionQueries(
         },
       });
     }
-    if (s.endsWith("وې") && ["ا", "و"].includes(s.at(-3) || "")) {
+    if (s.endsWith("وې") && ["ا", "و"].includes(s.charAt(s.length - 3) || "")) {
       queries.push({
         search: { p: s.slice(0, -2) },
         details: {
@@ -192,7 +203,7 @@ export function getInflectionQueries(
         },
       });
     }
-    if (s.endsWith("وو") && ["ا", "و"].includes(s.at(-3) || "")) {
+    if (s.endsWith("وو") && ["ا", "و"].includes(s.charAt(s.length - 3) || "")) {
       queries.push({
         search: { p: s.slice(0, -2) },
         details: {
@@ -208,7 +219,10 @@ export function getInflectionQueries(
         },
       });
     }
-    if (s.endsWith("ګانو") && ["ا", "و"].includes(s.at(-5) || "")) {
+    if (
+      s.endsWith("ګانو") &&
+      ["ا", "و"].includes(s.charAt(s.length - 5) || "")
+    ) {
       queries.push({
         search: { p: s.slice(0, -4) },
         details: {

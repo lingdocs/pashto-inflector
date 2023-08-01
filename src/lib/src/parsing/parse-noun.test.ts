@@ -1301,7 +1301,7 @@ describe("parsing nouns", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const { success } = parseNoun(tokens, lookup, []);
+        const { success } = parseNoun(tokens, lookup, undefined);
         const res = success.map(([tkns, r]) => r);
         expect(res).toEqual(output);
       });
@@ -1408,7 +1408,8 @@ const adjsTests: {
           },
         ],
       },
-      // TODO: WHY DOES ADDING زړو break this ???
+      // TODO: testing issue with the parser returning multiple options needs
+      // to be worked out to test double adjectives
       {
         input: "غټو کورونو",
         output: [
@@ -1435,9 +1436,9 @@ describe("parsing nouns with adjectives", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        expect(parseNoun(tokens, lookup, []).success.map((x) => x[1])).toEqual(
-          output
-        );
+        expect(
+          parseNoun(tokens, lookup, undefined).success.map((x) => x[1])
+        ).toEqual(output);
       });
     });
   });
