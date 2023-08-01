@@ -4,10 +4,10 @@ import { isAdjectiveEntry } from "../type-predicates";
 import { getInflectionQueries } from "./inflection-query";
 
 export function parseAdjective(
-  tokens: Readonly<string[]>,
+  tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]
 ): [
-  string[],
+  T.Token[],
   {
     inflection: (0 | 1 | 2)[];
     gender: T.Gender[];
@@ -20,7 +20,7 @@ export function parseAdjective(
     return [];
   }
   const [first, ...rest] = tokens;
-  const queries = getInflectionQueries(first, false);
+  const queries = getInflectionQueries(first.s, false);
   queries.forEach(({ search, details }) => {
     const wideMatches = lookup(search).filter(isAdjectiveEntry);
     details.forEach((deets) => {
@@ -33,7 +33,7 @@ export function parseAdjective(
             selection,
             inflection: deets.inflection,
             gender: deets.gender,
-            given: first,
+            given: first.s,
           },
         ]);
       });

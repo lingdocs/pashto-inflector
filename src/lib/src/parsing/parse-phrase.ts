@@ -4,7 +4,7 @@ import { parsePronoun } from "./parse-pronoun";
 import { parseNoun } from "./parse-noun";
 
 export function parsePhrase(
-  s: string[],
+  s: T.Token[],
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]
 ): {
   success: any[];

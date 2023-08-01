@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import { endsInConsonant } from "../p-text-helpers";
 import {
   isPattern1Entry,
   isPattern2Entry,
@@ -7,18 +8,26 @@ import {
   isPattern5Entry,
   isPattern4Entry,
   isPattern6FemEntry,
+  isFemNounEntry,
+  isAdjectiveEntry,
+  isUnisexNounEntry,
+  isPluralNounEntry,
+  isNounEntry,
+  isAnimNounEntry,
+  isMascNounEntry,
 } from "../type-predicates";
 import { equals } from "rambda";
 
 export function getInflectionQueries(
   s: string,
-  includeNouns: boolean
+  noun: boolean
 ): {
   search: Partial<T.DictionaryEntry>;
   details: {
     inflection: (0 | 1 | 2)[];
     gender: T.Gender[];
     predicate: (e: T.AdjectiveEntry | T.NounEntry) => boolean;
+    plural?: boolean;
   }[];
 }[] {
   const queries: {
@@ -26,6 +35,7 @@ export function getInflectionQueries(
     details: {
       inflection: (0 | 1 | 2)[];
       gender: T.Gender[];
+      plural?: boolean;
       predicate: (e: T.NounEntry | T.AdjectiveEntry) => boolean;
     };
   }[] = [];
@@ -34,15 +44,111 @@ export function getInflectionQueries(
     details: {
       inflection: [0, 1, 2],
       gender: ["masc", "fem"],
-      predicate: isPattern(0),
+      predicate: (e) =>
+        !(isNounEntry(e) && isPluralNounEntry(e)) &&
+        isPattern(0)(e) &&
+        isAdjectiveEntry(e),
     },
   });
+  if (noun) {
+    if (s.endsWith("ونه")) {
+      queries.push({
+        search: { p: s.slice(0, -3) },
+        details: {
+          inflection: [0],
+          gender: ["masc"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            !isPluralNounEntry(e) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+      queries.push({
+        search: { p: s.slice(0, -3) + "ه" },
+        details: {
+          inflection: [0],
+          gender: ["masc"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            !isPluralNounEntry(e) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("ونو")) {
+      queries.push({
+        search: { p: s.slice(0, -3) },
+        details: {
+          inflection: [1],
+          gender: ["masc"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            !isPluralNounEntry(e) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+      queries.push({
+        search: { p: s.slice(0, -3) + "ه" },
+        details: {
+          inflection: [1],
+          gender: ["masc"],
+          plural: true,
+          predicate: (e) =>
+            isNounEntry(e) &&
+            !isPluralNounEntry(e) &&
+            !isPattern2Entry(e) &&
+            !isPattern3Entry(e) &&
+            !isPattern4Entry(e),
+        },
+      });
+    }
+    if (s.endsWith("و")) {
+      queries.push({
+        search: { p: s.slice(0, -1) },
+        details: {
+          inflection: [2],
+          gender: ["fem"],
+          predicate: (e) =>
+            isNounEntry(e) && isAnimNounEntry(e) && isFemNounEntry(e),
+        },
+      });
+    }
+    queries.push({
+      search: { p: s },
+      details: {
+        inflection: [0],
+        gender: ["fem"],
+        predicate: (e) =>
+          isNounEntry(e) && isFemNounEntry(e) && isPattern1Entry(e),
+      },
+    });
+    queries.push({
+      search: { p: s },
+      details: {
+        inflection: [0, 1],
+        gender: ["fem"],
+        predicate: (e) =>
+          isNounEntry(e) && isAnimNounEntry(e) && isFemNounEntry(e),
+      },
+    });
+  }
   queries.push({
     search: { p: s },
     details: {
       inflection: [0, 1],
       gender: ["masc"],
-      predicate: isPattern1Entry,
+      predicate: (e) =>
+        !(isNounEntry(e) && isPluralNounEntry(e)) &&
+        (isPattern1Entry(e) || isPattern(0)(e)),
     },
   });
   queries.push({
@@ -65,6 +171,17 @@ export function getInflectionQueries(
       predicate: (e) => isPattern4Entry(e) || isPattern5Entry(e),
     },
   });
+  if (noun) {
+    queries.push({
+      search: { p: s },
+      details: {
+        inflection: [0],
+        plural: true,
+        gender: ["masc", "fem"],
+        predicate: (e) => isNounEntry(e) && isPluralNounEntry(e),
+      },
+    });
+  }
   if (s.endsWith("ه")) {
     queries.push({
       search: { p: s.slice(0, -1) },
@@ -74,16 +191,6 @@ export function getInflectionQueries(
         predicate: isPattern1Entry,
       },
     });
-    if (includeNouns) {
-      queries.push({
-        search: { p: s },
-        details: {
-          inflection: [0],
-          gender: ["fem"],
-          predicate: isPattern1Entry,
-        },
-      });
-    }
     queries.push({
       search: { infbp: s.slice(0, -1) },
       details: {
@@ -101,7 +208,7 @@ export function getInflectionQueries(
         predicate: isPattern1Entry,
       },
     });
-    if (includeNouns) {
+    if (noun) {
       queries.push({
         search: { p: s.slice(0, -1) + "ه" },
         details: {
@@ -150,7 +257,7 @@ export function getInflectionQueries(
       details: {
         inflection: [2],
         gender: ["masc", "fem"],
-        predicate: (e) => isPattern1Entry(e) || isPattern5Entry(e),
+        predicate: (e) => isPattern1Entry(e),
       },
     });
     queries.push({
@@ -169,6 +276,48 @@ export function getInflectionQueries(
         predicate: (e) => isPattern2Entry(e) || isPattern3Entry(e),
       },
     });
+    if (noun) {
+      queries.push({
+        search: { p: s.slice(0, -1) + "ه" },
+        details: {
+          inflection: [2],
+          gender: ["fem"],
+          predicate: (e) => isPattern1Entry(e) || isFemNounEntry(e),
+        },
+      });
+      queries.push({
+        search: { p: s.slice(0, -1) + "ه" },
+        details: {
+          inflection: [2],
+          gender: ["masc"],
+          predicate: isMascNounEntry,
+        },
+      });
+      queries.push({
+        search: { p: s.slice(0, -1) + "ې" },
+        details: {
+          inflection: [2],
+          gender: ["fem"],
+          predicate: (e) => isNounEntry(e) || isFemNounEntry(e),
+        },
+      });
+      queries.push({
+        search: { p: s.slice(0, -1) + "ۍ" },
+        details: {
+          inflection: [2],
+          gender: ["fem"],
+          predicate: (e) => isFemNounEntry(e) && isPattern3Entry(e),
+        },
+      });
+      queries.push({
+        search: { p: s.slice(0, -1) + "ي" },
+        details: {
+          inflection: [2],
+          gender: ["fem"],
+          predicate: isPattern6FemEntry,
+        },
+      });
+    }
     if (s.endsWith("یو")) {
       queries.push({
         search: { p: s.slice(0, -2) + "ی" },
@@ -178,6 +327,24 @@ export function getInflectionQueries(
           predicate: (e) => isPattern2Entry(e) || isPattern3Entry(e),
         },
       });
+      if (noun) {
+        queries.push({
+          search: { p: s.slice(0, -2) + "ۍ" },
+          details: {
+            inflection: [2],
+            gender: ["fem"],
+            predicate: (e) => isPattern3Entry(e) && isFemNounEntry(e),
+          },
+        });
+        queries.push({
+          search: { p: s.slice(0, -2) + "ي" },
+          details: {
+            inflection: [2],
+            gender: ["fem"],
+            predicate: isPattern6FemEntry,
+          },
+        });
+      }
     }
   } else if (s.endsWith("ۍ")) {
     queries.push({
@@ -188,7 +355,7 @@ export function getInflectionQueries(
         predicate: isPattern3Entry,
       },
     });
-    if (includeNouns) {
+    if (noun) {
       queries.push({
         search: { p: s.slice(0, -1) + "ي" },
         details: {

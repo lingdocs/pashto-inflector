@@ -1,15 +1,15 @@
 import * as T from "../../../types";
 
-export function parsePronoun(tokens: Readonly<string[]>): [
-  string[],
+export function parsePronoun(tokens: Readonly<T.Token[]>): [
+  T.Token[],
   {
     inflected: boolean[];
     selection: T.PronounSelection;
   }
 ][] {
-  const [first, ...rest] = tokens;
+  const [{ s }, ...rest] = tokens;
   const w: ReturnType<typeof parsePronoun> = [];
-  if (first === "زه") {
+  if (s === "زه") {
     w.push([
       rest,
       {
@@ -32,7 +32,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (first === "ته") {
+  } else if (s === "ته") {
     w.push([
       rest,
       {
@@ -55,7 +55,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (first === "هغه") {
+  } else if (s === "هغه") {
     w.push([
       rest,
       {
@@ -78,7 +78,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (first === "هغې") {
+  } else if (s === "هغې") {
     w.push([
       rest,
       {
@@ -90,7 +90,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (first === "دی") {
+  } else if (s === "دی") {
     w.push([
       rest,
       {
@@ -102,7 +102,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (first === "ده") {
+  } else if (s === "ده") {
     w.push([
       rest,
       {
@@ -114,7 +114,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (first === "دا") {
+  } else if (s === "دا") {
     w.push([
       rest,
       {
@@ -126,7 +126,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (first === "دې") {
+  } else if (s === "دې") {
     w.push([
       rest,
       {
@@ -138,7 +138,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (["مونږ", "موږ"].includes(first)) {
+  } else if (["مونږ", "موږ"].includes(s)) {
     w.push([
       rest,
       {
@@ -161,7 +161,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (["تاسو", "تاسې"].includes(first)) {
+  } else if (["تاسو", "تاسې"].includes(s)) {
     w.push([
       rest,
       {
@@ -184,7 +184,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (["هغوي", "هغوی"].includes(first)) {
+  } else if (["هغوي", "هغوی"].includes(s)) {
     w.push([
       rest,
       {
@@ -207,7 +207,7 @@ export function parsePronoun(tokens: Readonly<string[]>): [
         },
       },
     ]);
-  } else if (["دوي", "دوی"].includes(first)) {
+  } else if (["دوي", "دوی"].includes(s)) {
     w.push([
       rest,
       {

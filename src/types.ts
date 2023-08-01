@@ -1269,3 +1269,8 @@ export type OtherComp = {
   type: "Comp";
   ps: PsString;
 };
+
+export type Token = {
+  i: number;
+  s: string;
+};

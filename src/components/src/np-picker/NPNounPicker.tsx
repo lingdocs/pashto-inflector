@@ -61,7 +61,6 @@ function NPNounPicker(props: {
   opts: T.TextOptions;
   phraseIsComplete: boolean;
 }) {
-  console.log({ noun: props.noun });
   // const [patternFilter, setPatternFilter] = useState<FilterPattern | undefined>(undefined);
   // const [showFilter, setShowFilter] = useState<boolean>(false)
   // const nounsFiltered = props.nouns

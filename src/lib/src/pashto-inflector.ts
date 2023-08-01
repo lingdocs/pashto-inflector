@@ -256,7 +256,10 @@ export function inflectRegularYayUnisex(
     fem: [
       [{ p: `${baseP}ې`, f: `${baseF}e` }],
       [{ p: `${baseP}ې`, f: `${baseF}e` }],
-      [{ p: `${baseP}و`, f: `${baseF}o` }],
+      [
+        { p: `${baseP}یو`, f: `${baseF}iyo` },
+        { p: `${baseP}و`, f: `${baseF}o` },
+      ],
     ],
   };
 }
@@ -291,7 +294,7 @@ function inflectEmphasizedYayUnisex(p: string, f: string): T.UnisexInflections {
       [{ p, f }],
       [{ p: `${baseP}ي`, f: `${baseF}ée` }],
       [
-        { p: `${baseP}یو`, f: `${baseF}iyo` },
+        { p: `${baseP}یو`, f: `${baseF}íyo` },
         { p: `${baseP}و`, f: `${baseF}ó` },
       ],
     ],
@@ -299,7 +302,7 @@ function inflectEmphasizedYayUnisex(p: string, f: string): T.UnisexInflections {
       [{ p: `${baseP}ۍ`, f: `${baseF}úy` }],
       [{ p: `${baseP}ۍ`, f: `${baseF}úy` }],
       [
-        { p: `${baseP}یو`, f: `${baseF}úyo` },
+        { p: `${baseP}یو`, f: `${baseF}íyo` },
         { p: `${baseP}و`, f: `${baseF}ó` },
       ],
     ],
@@ -360,8 +363,8 @@ function inflectRegularEmphasizedYayMasc(p: string, f: string): T.Inflections {
       [{ p, f }],
       [{ p: `${baseP}ي`, f: `${baseF}ée` }],
       [
-        { p: `${baseP}یو`, f: `${baseF}iyo` },
-        { p: `${baseP}و`, f: `${baseF}o` },
+        { p: `${baseP}یو`, f: `${baseF}íyo` },
+        { p: `${baseP}و`, f: `${baseF}ó` },
       ],
     ],
   };
@@ -453,8 +456,8 @@ function inflectRegularUyFem(p: string, f: string): T.Inflections {
       [{ p, f: `${baseF}úy` }],
       [{ p, f: `${baseF}úy` }],
       [
-        { p: `${baseP}یو`, f: `${baseF}úyo` },
-        { p: `${baseP}و`, f: `${baseF}o` },
+        { p: `${baseP}یو`, f: `${baseF}íyo` },
+        { p: `${baseP}و`, f: `${baseF}ó` },
       ],
     ],
   };
