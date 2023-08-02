@@ -1274,3 +1274,11 @@ export type Token = {
   i: number;
   s: string;
 };
+
+export type ParseError = {
+  message: string;
+  token?: Token;
+};
+
+/** a tuple containing the [left over tokens, parse result, errors associated with the result] */
+export type ParseResult<P> = [Readonly<Token[]>, P, ParseError[]];

@@ -321,7 +321,7 @@ export function getInflectionQueries(
       gender: ["masc"],
       predicate: (e) =>
         !(isNounEntry(e) && isPluralNounEntry(e)) &&
-        (isPattern1Entry(e) || isPattern(0)(e)),
+        (isPattern1Entry(e) || (isPattern(0)(e) && !isAdjectiveEntry(e))),
     },
   });
   queries.push({

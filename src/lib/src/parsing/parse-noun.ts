@@ -9,69 +9,86 @@ import {
 } from "../type-predicates";
 import { getInflectionQueries } from "./inflection-query";
 import { parseAdjective } from "./parse-adjective";
+import { groupWith, equals } from "rambda";
 
 // TODO:
 // - cleanup the workflow and make sure all nouns are covered and test
 // - add possesive parsing
+type NounResult = { inflected: boolean; selection: T.NounSelection };
 
 export function parseNoun(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  prevPossesor: T.NounSelection | undefined
-): {
-  success: [T.Token[], { inflected: boolean; selection: T.NounSelection }][];
-  errors: string[];
-} {
+  prevPossesor: { inflected: boolean; selection: T.NounSelection } | undefined
+): T.ParseResult<NounResult>[] {
   if (tokens.length === 0) {
-    return {
-      success: [],
-      errors: [],
-    };
+    return [];
   }
   const [first, ...rest] = tokens;
   const possesor =
     first.s === "د" ? parseNoun(rest, lookup, undefined) : undefined;
   if (possesor) {
-    const runsAfterPossesor: [
-      Readonly<T.Token[]>,
-      { inflected: boolean; selection: T.NounSelection } | undefined
-    ][] = possesor ? [...possesor.success] : [[tokens, undefined]];
+    const runsAfterPossesor: T.ParseResult<NounResult | undefined>[] = possesor
+      ? possesor
+      : [[tokens, undefined, []]];
     // could be a case for a monad ??
-    return runsAfterPossesor.reduce<ReturnType<typeof parseNoun>>(
-      (acc, [tokens, possesor]) => {
-        if (possesor?.inflected === false) {
-          return {
-            success: [...acc.success],
-            errors: [...acc.errors, "possesor should be inflected"],
-          };
-        }
-        const { success, errors } = parseNoun(
+    return removeUnneccesaryFailing(
+      runsAfterPossesor.flatMap(([tokens, possesor, errors]) =>
+        parseNoun(
           tokens,
           lookup,
           possesor
             ? {
-                ...possesor.selection,
-                possesor: prevPossesor
-                  ? {
-                      shrunken: false,
-                      np: {
-                        type: "NP",
-                        selection: prevPossesor,
-                      },
-                    }
-                  : undefined,
+                inflected: possesor.inflected,
+                selection: {
+                  ...possesor.selection,
+                  possesor: prevPossesor
+                    ? {
+                        shrunken: false,
+                        np: {
+                          type: "NP",
+                          selection: prevPossesor.selection,
+                        },
+                      }
+                    : undefined,
+                },
               }
             : undefined
-        );
-        return {
-          success: [...acc.success, ...success],
-          errors: [...acc.errors, ...errors],
-        };
-      },
-      { success: [], errors: [] }
+        ).map<T.ParseResult<NounResult>>(([t, r, errs]) => [
+          t,
+          r,
+          [...errs, ...errors],
+        ])
+      )
     );
   } else {
-    return parseNounAfterPossesor(tokens, lookup, prevPossesor, []);
+    return removeUnneccesaryFailing(
+      parseNounAfterPossesor(tokens, lookup, prevPossesor, [])
+    );
+  }
+}
+
+function removeUnneccesaryFailing(
+  results: T.ParseResult<NounResult>[]
+): T.ParseResult<NounResult>[] {
+  // group by identical results
+  const groups = groupWith(
+    (a, b) => equals(a[1].selection, b[1].selection),
+    results
+  );
+  // if there's a group of identical results with some success in it
+  // remove any erroneous results
+  const stage1 = groups.flatMap((group) => {
+    if (group.find((x) => x[2].length === 0)) {
+      return group.filter((x) => x[2].length === 0);
+    }
+    return group;
+  });
+  // finally, if there's any success anywhere, remove any of the errors
+  if (stage1.find((x) => x[2].length === 0)) {
+    return stage1.filter((x) => x[2].length === 0);
+  } else {
+    return stage1;
   }
 }
 
@@ -81,31 +98,24 @@ export function parseNoun(
 function parseNounAfterPossesor(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  possesor: T.NounSelection | undefined,
+  possesor: { inflected: boolean; selection: T.NounSelection } | undefined,
   adjectives: {
     inflection: (0 | 1 | 2)[];
     gender: T.Gender[];
     given: string;
     selection: T.AdjectiveSelection;
   }[]
-): {
-  success: [T.Token[], { inflected: boolean; selection: T.NounSelection }][];
-  errors: string[];
-} {
+): T.ParseResult<NounResult>[] {
   if (tokens.length === 0) {
-    return {
-      success: [],
-      errors: [],
-    };
+    return [];
   }
   // TODO: add recognition of او between adjectives
   const adjRes = parseAdjective(tokens, lookup);
-  const withAdj = adjRes.map(([tkns, adj]) =>
+  const withAdj = adjRes.flatMap(([tkns, adj]) =>
     parseNounAfterPossesor(tkns, lookup, possesor, [...adjectives, adj])
   );
   const [first, ...rest] = tokens;
-  const success: ReturnType<typeof parseNoun>["success"] = [];
-  const errors: string[] = [];
+  const w: ReturnType<typeof parseNoun> = [];
 
   const searches = getInflectionQueries(first.s, true);
 
@@ -122,60 +132,59 @@ function parseNounAfterPossesor(
         deets.gender.forEach((gender) => {
           if (genders.includes(gender)) {
             deets.inflection.forEach((inf) => {
-              const { ok, error } = adjsMatch(
+              const { error: adjErrors } = adjsMatch(
                 adjectives,
                 gender,
                 inf,
                 deets.plural
               );
-              if (ok) {
-                convertInflection(inf, entry, gender, deets.plural).forEach(
-                  ({ inflected, number }) => {
-                    const selection = makeNounSelection(entry, undefined);
-                    success.push([
-                      rest,
-                      {
-                        inflected,
-                        selection: {
-                          ...selection,
-                          gender: selection.genderCanChange
-                            ? gender
-                            : selection.gender,
-                          number: selection.numberCanChange
-                            ? number
-                            : selection.number,
-                          adjectives: adjectives.map((a) => a.selection),
-                          // TODO: could be nicer to validate that the possesor is inflected before
-                          // and just pass in the selection
-                          possesor: possesor
-                            ? {
-                                shrunken: false,
-                                np: {
-                                  type: "NP",
-                                  selection: possesor,
-                                },
-                              }
-                            : undefined,
-                        },
+              convertInflection(inf, entry, gender, deets.plural).forEach(
+                ({ inflected, number }) => {
+                  const selection = makeNounSelection(entry, undefined);
+                  w.push([
+                    rest,
+                    {
+                      inflected,
+                      selection: {
+                        ...selection,
+                        gender: selection.genderCanChange
+                          ? gender
+                          : selection.gender,
+                        number: selection.numberCanChange
+                          ? number
+                          : selection.number,
+                        adjectives: adjectives.map((a) => a.selection),
+                        // TODO: could be nicer to validate that the possesor is inflected before
+                        // and just pass in the selection
+                        possesor: possesor
+                          ? {
+                              shrunken: false,
+                              np: {
+                                type: "NP",
+                                selection: possesor.selection,
+                              },
+                            }
+                          : undefined,
                       },
-                    ]);
-                  }
-                );
-              } else {
-                error.forEach((e) => {
-                  errors.push(e);
-                });
-              }
+                    },
+                    [
+                      ...(possesor?.inflected === false
+                        ? [{ message: "possesor should be inflected" }]
+                        : []),
+                      ...adjErrors.map((message) => ({
+                        message,
+                      })),
+                    ],
+                  ] as T.ParseResult<NounResult>);
+                }
+              );
             });
           }
         });
       });
     });
   });
-  return {
-    success: [...withAdj.map((x) => x.success).flat(), ...success],
-    errors: [...withAdj.map((x) => x.errors).flat(), ...errors],
-  };
+  return [...withAdj, ...w];
 }
 
 function adjsMatch(

@@ -6,15 +6,12 @@ import { getInflectionQueries } from "./inflection-query";
 export function parseAdjective(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]
-): [
-  T.Token[],
-  {
-    inflection: (0 | 1 | 2)[];
-    gender: T.Gender[];
-    given: string;
-    selection: T.AdjectiveSelection;
-  }
-][] {
+): T.ParseResult<{
+  inflection: (0 | 1 | 2)[];
+  gender: T.Gender[];
+  given: string;
+  selection: T.AdjectiveSelection;
+}>[] {
   const w: ReturnType<typeof parseAdjective> = [];
   if (tokens.length === 0) {
     return [];
@@ -35,10 +32,10 @@ export function parseAdjective(
             gender: deets.gender,
             given: first.s,
           },
+          [],
         ]);
       });
     });
   });
-
   return w;
 }

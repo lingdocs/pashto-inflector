@@ -42,6 +42,17 @@ export const monoidPsStringWVars: Monoid<T.PsString[]> = {
   empty: [monoidPsString.empty],
 };
 
+export function fmapParseResult<A extends object, B extends object>(
+  f: (x: A) => B,
+  x: T.ParseResult<A>[]
+): T.ParseResult<B>[] {
+  return x.map<T.ParseResult<B>>(([tokens, result, errors]) => [
+    tokens,
+    f(result),
+    errors,
+  ]);
+}
+
 export function fmapSingleOrLengthOpts<A extends object, B extends object>(
   f: (x: A) => B,
   x: T.SingleOrLengthOpts<A>

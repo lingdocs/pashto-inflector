@@ -1,24 +1,22 @@
-import { parseAdjective } from "./parse-adjective";
 import * as T from "../../../types";
-import { parsePronoun } from "./parse-pronoun";
-import { parseNoun } from "./parse-noun";
+import { parseNP } from "./parse-np";
 
 export function parsePhrase(
   s: T.Token[],
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]
 ): {
-  success: any[];
+  success: { inflected: boolean; selection: T.NPSelection }[];
   errors: string[];
 } {
-  const adjsRes = parseAdjective(s, lookup);
-  const prnsRes = parsePronoun(s);
-  const nounsRes = parseNoun(s, lookup, undefined);
+  const nps = parseNP(s, lookup).filter(([tkns]) => !tkns.length);
 
-  const correct = [...adjsRes, ...prnsRes, ...nounsRes.success]
-    .filter(([tkns]) => tkns.length === 0)
-    .map((x) => x[1]);
+  const success = nps.map((x) => x[1]);
   return {
-    success: correct,
-    errors: nounsRes.errors,
+    success,
+    errors: [
+      ...new Set(
+        nps.flatMap(([tkns, r, errors]) => errors.map((e) => e.message))
+      ),
+    ],
   };
 }
