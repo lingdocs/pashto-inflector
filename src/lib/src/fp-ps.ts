@@ -46,11 +46,11 @@ export function fmapParseResult<A extends object, B extends object>(
   f: (x: A) => B,
   x: T.ParseResult<A>[]
 ): T.ParseResult<B>[] {
-  return x.map<T.ParseResult<B>>(([tokens, result, errors]) => [
-    tokens,
-    f(result),
-    errors,
-  ]);
+  return x.map<T.ParseResult<B>>((xi) => ({
+    tokens: xi.tokens,
+    body: f(xi.body),
+    errors: xi.errors,
+  }));
 }
 
 export function fmapSingleOrLengthOpts<A extends object, B extends object>(

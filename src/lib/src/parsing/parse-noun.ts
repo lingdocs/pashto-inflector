@@ -30,35 +30,41 @@ export function parseNoun(
   if (possesor) {
     const runsAfterPossesor: T.ParseResult<NounResult | undefined>[] = possesor
       ? possesor
-      : [[tokens, undefined, []]];
+      : [{ tokens, body: undefined, errors: [] }];
     // could be a case for a monad ??
     return removeUnneccesaryFailing(
-      runsAfterPossesor.flatMap(([tokens, possesor, errors]) =>
-        parseNoun(
-          tokens,
-          lookup,
-          possesor
-            ? {
-                inflected: possesor.inflected,
-                selection: {
-                  ...possesor.selection,
-                  possesor: prevPossesor
-                    ? {
-                        shrunken: false,
-                        np: {
-                          type: "NP",
-                          selection: prevPossesor.selection,
-                        },
-                      }
-                    : undefined,
-                },
-              }
-            : undefined
-        ).map<T.ParseResult<NounResult>>(([t, r, errs]) => [
-          t,
-          r,
-          [...errs, ...errors],
-        ])
+      runsAfterPossesor.flatMap(
+        ({ tokens, body: possesor, errors }) =>
+          parseNoun(
+            tokens,
+            lookup,
+            possesor
+              ? {
+                  inflected: possesor.inflected,
+                  selection: {
+                    ...possesor.selection,
+                    possesor: prevPossesor
+                      ? {
+                          shrunken: false,
+                          np: {
+                            type: "NP",
+                            selection: prevPossesor.selection,
+                          },
+                        }
+                      : undefined,
+                  },
+                }
+              : undefined
+          )
+        //   .map<T.ParseResult<NounResult>>(([t, r, errs]) => [
+        //   t,
+        //   r,
+        //   // TODO: should the errors from the runsAfterPossesor be thrown out?
+        //   // or ...errors should be kept?
+        //   // to show an error like د غتو ماشومان نومونه
+        //   // adj error غټ should be first inflection (seems confusing)
+        //   [...errs, ...errors],
+        // ])
       )
     );
   } else {
@@ -73,20 +79,20 @@ function removeUnneccesaryFailing(
 ): T.ParseResult<NounResult>[] {
   // group by identical results
   const groups = groupWith(
-    (a, b) => equals(a[1].selection, b[1].selection),
+    (a, b) => equals(a.body.selection, b.body.selection),
     results
   );
   // if there's a group of identical results with some success in it
   // remove any erroneous results
   const stage1 = groups.flatMap((group) => {
-    if (group.find((x) => x[2].length === 0)) {
-      return group.filter((x) => x[2].length === 0);
+    if (group.find((x) => x.errors.length === 0)) {
+      return group.filter((x) => x.errors.length === 0);
     }
     return group;
   });
   // finally, if there's any success anywhere, remove any of the errors
-  if (stage1.find((x) => x[2].length === 0)) {
-    return stage1.filter((x) => x[2].length === 0);
+  if (stage1.find((x) => x.errors.length === 0)) {
+    return stage1.filter((x) => x.errors.length === 0);
   } else {
     return stage1;
   }
@@ -111,7 +117,7 @@ function parseNounAfterPossesor(
   }
   // TODO: add recognition of او between adjectives
   const adjRes = parseAdjective(tokens, lookup);
-  const withAdj = adjRes.flatMap(([tkns, adj]) =>
+  const withAdj = adjRes.flatMap(({ tokens: tkns, body: adj }) =>
     parseNounAfterPossesor(tkns, lookup, possesor, [...adjectives, adj])
   );
   const [first, ...rest] = tokens;
@@ -141,9 +147,9 @@ function parseNounAfterPossesor(
               convertInflection(inf, entry, gender, deets.plural).forEach(
                 ({ inflected, number }) => {
                   const selection = makeNounSelection(entry, undefined);
-                  w.push([
-                    rest,
-                    {
+                  w.push({
+                    tokens: rest,
+                    body: {
                       inflected,
                       selection: {
                         ...selection,
@@ -167,7 +173,7 @@ function parseNounAfterPossesor(
                           : undefined,
                       },
                     },
-                    [
+                    errors: [
                       ...(possesor?.inflected === false
                         ? [{ message: "possesor should be inflected" }]
                         : []),
@@ -175,7 +181,7 @@ function parseNounAfterPossesor(
                         message,
                       })),
                     ],
-                  ] as T.ParseResult<NounResult>);
+                  });
                 }
               );
             });

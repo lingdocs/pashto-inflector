@@ -1281,4 +1281,8 @@ export type ParseError = {
 };
 
 /** a tuple containing the [left over tokens, parse result, errors associated with the result] */
-export type ParseResult<P> = [Readonly<Token[]>, P, ParseError[]];
+export type ParseResult<P> = {
+  tokens: Readonly<Token[]>;
+  body: P;
+  errors: ParseError[];
+};

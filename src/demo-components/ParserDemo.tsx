@@ -31,7 +31,11 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
         <input
           dir="rtl"
           className={`form-control ${
-            text && errors.length ? "is-invalid" : text ? "is-valid" : ""
+            text && (errors.length || !result.length)
+              ? "is-invalid"
+              : result.length
+              ? "is-valid"
+              : ""
           }`}
           type="text"
           value={text}
@@ -41,7 +45,9 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
       {errors.length > 0 && (
         <>
           <div className="alert alert-danger" role="alert">
-            <div>{errors[0]}</div>
+            {errors.map((e) => (
+              <div>{e}</div>
+            ))}
           </div>
           <div className="text-center">Did you mean:</div>
         </>

@@ -24,16 +24,16 @@ export function parseAdjective(
       const matches = wideMatches.filter(deets.predicate);
       matches.forEach((m) => {
         const selection = makeAdjectiveSelection(m);
-        w.push([
-          rest,
-          {
+        w.push({
+          tokens: rest,
+          body: {
             selection,
             inflection: deets.inflection,
             gender: deets.gender,
             given: first.s,
           },
-          [],
-        ]);
+          errors: [],
+        });
       });
     });
   });

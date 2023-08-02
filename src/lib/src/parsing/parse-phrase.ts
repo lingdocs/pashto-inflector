@@ -8,15 +8,13 @@ export function parsePhrase(
   success: { inflected: boolean; selection: T.NPSelection }[];
   errors: string[];
 } {
-  const nps = parseNP(s, lookup).filter(([tkns]) => !tkns.length);
+  const nps = parseNP(s, lookup).filter(({ tokens }) => !tokens.length);
 
-  const success = nps.map((x) => x[1]);
+  const success = nps.map((x) => x.body);
   return {
     success,
     errors: [
-      ...new Set(
-        nps.flatMap(([tkns, r, errors]) => errors.map((e) => e.message))
-      ),
+      ...new Set(nps.flatMap(({ errors }) => errors.map((e) => e.message))),
     ],
   };
 }

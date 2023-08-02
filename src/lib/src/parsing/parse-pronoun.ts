@@ -9,9 +9,9 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
 }>[] {
   const [{ s }, ...rest] = tokens;
   if (s === "زه") {
-    return [0, 1].map((person) => [
-      rest,
-      {
+    return [0, 1].map((person) => ({
+      tokens: rest,
+      body: {
         inflected: false,
         selection: {
           type: "pronoun",
@@ -19,12 +19,12 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
           distance: "far",
         },
       },
-      [],
-    ]);
+      errors: [],
+    }));
   } else if (s === "ته") {
-    return [2, 3].map((person) => [
-      rest,
-      {
+    return [2, 3].map((person) => ({
+      tokens: rest,
+      body: {
         inflected: false,
         selection: {
           type: "pronoun",
@@ -32,13 +32,13 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
           distance: "far",
         },
       },
-      [],
-    ]);
+      errors: [],
+    }));
   } else if (s === "هغه") {
     return [
-      ...[false, true].map<Result>((inflected) => [
-        rest,
-        {
+      ...[false, true].map<Result>((inflected) => ({
+        tokens: rest,
+        body: {
           inflected,
           selection: {
             type: "pronoun",
@@ -46,11 +46,11 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             distance: "far",
           },
         },
-        [],
-      ]),
-      [
-        rest,
-        {
+        errors: [],
+      })),
+      {
+        tokens: rest,
+        body: {
           inflected: false,
           selection: {
             type: "pronoun",
@@ -58,14 +58,14 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             distance: "far",
           },
         },
-        [],
-      ],
+        errors: [],
+      },
     ];
   } else if (s === "هغې") {
     return [
-      [
-        rest,
-        {
+      {
+        tokens: rest,
+        body: {
           inflected: true,
           selection: {
             type: "pronoun",
@@ -73,14 +73,14 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             distance: "far",
           },
         },
-        [],
-      ],
+        errors: [],
+      },
     ];
   } else if (s === "دی") {
     return [
-      [
-        rest,
-        {
+      {
+        tokens: rest,
+        body: {
           inflected: false,
           selection: {
             type: "pronoun",
@@ -88,14 +88,14 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             distance: "near",
           },
         },
-        [],
-      ],
+        errors: [],
+      },
     ];
   } else if (s === "ده") {
     return [
-      [
-        rest,
-        {
+      {
+        tokens: rest,
+        body: {
           inflected: true,
           selection: {
             type: "pronoun",
@@ -103,14 +103,14 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             distance: "near",
           },
         },
-        [],
-      ],
+        errors: [],
+      },
     ];
   } else if (s === "دا") {
     return [
-      [
-        rest,
-        {
+      {
+        tokens: rest,
+        body: {
           inflected: false,
           selection: {
             type: "pronoun",
@@ -118,14 +118,14 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             distance: "near",
           },
         },
-        [],
-      ],
+        errors: [],
+      },
     ];
   } else if (s === "دې") {
     return [
-      [
-        rest,
-        {
+      {
+        tokens: rest,
+        body: {
           inflected: true,
           selection: {
             type: "pronoun",
@@ -133,15 +133,15 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             distance: "near",
           },
         },
-        [],
-      ],
+        errors: [],
+      },
     ];
   } else if (["مونږ", "موږ"].includes(s)) {
     return [false, true].flatMap<Result>((inflected) =>
       [T.Person.FirstPlurMale, T.Person.FirstPlurFemale].map<Result>(
-        (person) => [
-          rest,
-          {
+        (person) => ({
+          tokens: rest,
+          body: {
             inflected,
             selection: {
               type: "pronoun",
@@ -149,16 +149,16 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
               distance: "far",
             },
           },
-          [],
-        ]
+          errors: [],
+        })
       )
     );
   } else if (["تاسو", "تاسې"].includes(s)) {
     return [false, true].flatMap<Result>((inflected) =>
       [T.Person.SecondPlurMale, T.Person.SecondPlurFemale].map<Result>(
-        (person) => [
-          rest,
-          {
+        (person) => ({
+          tokens: rest,
+          body: {
             inflected,
             selection: {
               type: "pronoun",
@@ -166,16 +166,16 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
               distance: "far",
             },
           },
-          [],
-        ]
+          errors: [],
+        })
       )
     );
   } else if (["هغوي", "هغوی"].includes(s)) {
     return [false, true].flatMap<Result>((inflected) =>
       [T.Person.ThirdPlurMale, T.Person.ThirdPlurFemale].map<Result>(
-        (person) => [
-          rest,
-          {
+        (person) => ({
+          tokens: rest,
+          body: {
             inflected,
             selection: {
               type: "pronoun",
@@ -183,16 +183,16 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
               distance: "far",
             },
           },
-          [],
-        ]
+          errors: [],
+        })
       )
     );
   } else if (["دوي", "دوی"].includes(s)) {
     return [false, true].flatMap<Result>((inflected) =>
       [T.Person.ThirdPlurMale, T.Person.ThirdPlurFemale].map<Result>(
-        (person) => [
-          rest,
-          {
+        (person) => ({
+          tokens: rest,
+          body: {
             inflected,
             selection: {
               type: "pronoun",
@@ -200,8 +200,8 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
               distance: "near",
             },
           },
-          [],
-        ]
+          errors: [],
+        })
       )
     );
   }
