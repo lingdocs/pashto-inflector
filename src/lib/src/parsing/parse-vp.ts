@@ -37,13 +37,17 @@ export function parseVP(
     return [];
   }
   // how to make this into a nice pipeline... 🤔
-  const NP1 = parseNP(tokens, lookup);
-  const NP2 = bindParseResult(NP1, (tokens) => parseNP(tokens, lookup), true);
+  const NP1 = parseNP(tokens, lookup).filter(({ errors }) => !errors.length);
+  const NP2 = bindParseResult(
+    NP1,
+    (tokens) => parseNP(tokens, lookup),
+    true
+  ).filter(({ errors }) => !errors.length);
   const vb = bindParseResult(
     NP2,
     (tokens) => parseVerb(tokens, verbLookup),
     true
-  );
+  ).filter(({ errors }) => !errors.length);
   // TODO: be able to bind mulitple vals
   return bindParseResult<Omit<T.VBE, "ps">, T.VPSelectionComplete>(
     vb,
@@ -51,28 +55,35 @@ export function parseVP(
       const w: T.ParseResult<T.VPSelectionComplete>[] = [];
       NP1.forEach(({ body: np1 }) => {
         NP2.forEach(({ body: np2 }) => {
+          // NICE TODO: IF there's an error in any of the NPS, don't try
+          // to make the VPS - just show them that error
+          // for that we probably need a different type of
           [
             [np1, np2],
             [np2, np1],
           ].forEach(([s, o]) => {
             const errors: T.ParseError[] = [];
             const subjPerson = getPersonFromNP(s.selection);
-            if (s.inflected) {
-              errors.push({ message: "subject should not be inflected" });
-            }
-            if (o.selection.selection.type === "pronoun") {
-              if (!isThirdPerson(subjPerson) && !o.inflected) {
-                errors.push({
-                  message:
-                    "1st or 2nd person object pronoun should be inflected",
-                });
-              }
-            } else if (o.inflected) {
-              errors.push({ message: "object should not be inflected" });
-            }
             if (getPersonFromNP(s.selection) !== v.person) {
-              errors.push({ message: "verb does not match subject" });
+              errors.push({
+                message: "verb does not match subject",
+              });
+            } else {
+              if (s.inflected) {
+                errors.push({ message: "subject should not be inflected" });
+              }
+              if (o.selection.selection.type === "pronoun") {
+                if (!isThirdPerson(subjPerson) && !o.inflected) {
+                  errors.push({
+                    message:
+                      "1st or 2nd person object pronoun should be inflected",
+                  });
+                }
+              } else if (o.inflected) {
+                errors.push({ message: "object should not be inflected" });
+              }
             }
+
             const blocks: T.VPSBlockComplete[] = [
               {
                 key: 1,

@@ -1,5 +1,4 @@
 import * as T from "../../../types";
-import { endsInConsonant } from "../p-text-helpers";
 import {
   isPattern1Entry,
   isPattern2Entry,
@@ -394,18 +393,19 @@ export function getInflectionQueries(
         predicate: isPattern1Entry,
       },
     });
-    if (noun) {
-      // bundled plural
-      queries.push({
-        search: { p: s.slice(0, -1) },
-        details: {
-          inflection: [0],
-          plural: true,
-          gender: ["masc"],
-          predicate: (e) => !isPattern5Entry(e) && endsInConsonant(e),
-        },
-      });
-    }
+    // TODO: Bundled plural only works when there is a quantifier in front of it !
+    // if (noun) {
+    //   // bundled plural
+    //   queries.push({
+    //     search: { p: s.slice(0, -1) },
+    //     details: {
+    //       inflection: [0],
+    //       plural: true,
+    //       gender: ["masc"],
+    //       predicate: (e) => !isPattern5Entry(e) && endsInConsonant(e),
+    //     },
+    //   });
+    // }
     queries.push({
       search: { infbp: s.slice(0, -1) },
       details: {

@@ -130,13 +130,6 @@ const tests: {
               gender: "fem",
             },
           },
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(daktar, undefined),
-              number: "plural",
-            },
-          },
         ],
       },
       {
@@ -1363,23 +1356,6 @@ const tests: {
             inflected: true,
             selection: {
               ...makeNounSelection(nabee, undefined),
-              number: "plural",
-            },
-          },
-        ],
-      },
-    ],
-  },
-  {
-    category: "bundled plurals",
-    cases: [
-      {
-        input: "کوره",
-        output: [
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(kor, undefined),
               number: "plural",
             },
           },

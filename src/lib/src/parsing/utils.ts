@@ -33,22 +33,21 @@ export function bindParseResult<C extends object, D extends object>(
       },
   ignorePrevious?: boolean
 ): T.ParseResult<D>[] {
-  // const prev = ignorePrevious
-  //   ? (() => {
-  //       const resArr: T.ParseResult<C>[] = [];
-  //       previous.filter((item) => {
-  //         var i = resArr.findIndex(
-  //           (x) => x.tokens.length === item.tokens.length
-  //         );
-  //         if (i <= -1) {
-  //           resArr.push(item);
-  //         }
-  //         return null;
-  //       });
-  //       return resArr;
-  //     })()
-  //   : previous;
-  const prev = previous;
+  const prev = ignorePrevious
+    ? (() => {
+        const resArr: T.ParseResult<C>[] = [];
+        previous.filter((item) => {
+          var i = resArr.findIndex(
+            (x) => x.tokens.length === item.tokens.length
+          );
+          if (i <= -1) {
+            resArr.push(item);
+          }
+          return null;
+        });
+        return resArr;
+      })()
+    : previous;
   const nextPossibilities = prev.flatMap(({ tokens, body, errors }) => {
     const res = f(tokens, body);
     const { errors: errsPassed, next } = Array.isArray(res)
