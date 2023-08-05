@@ -2,7 +2,7 @@ import * as T from "../../../types";
 
 type Result = ReturnType<typeof parsePronoun>[number];
 
-// TODO: map for doubling true, false, and masc fem
+// TODO: add chaa
 export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
   inflected: boolean;
   selection: T.PronounSelection;
@@ -13,6 +13,19 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
       tokens: rest,
       body: {
         inflected: false,
+        selection: {
+          type: "pronoun",
+          person,
+          distance: "far",
+        },
+      },
+      errors: [],
+    }));
+  } else if (s === "ما") {
+    return [0, 1].map((person) => ({
+      tokens: rest,
+      body: {
+        inflected: true,
         selection: {
           type: "pronoun",
           person,
@@ -34,6 +47,19 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
       },
       errors: [],
     }));
+  } else if (s === "تا") {
+    return [2, 3].map((person) => ({
+      tokens: rest,
+      body: {
+        inflected: true,
+        selection: {
+          type: "pronoun",
+          person,
+          distance: "far",
+        },
+      },
+      errors: [],
+    }));
   } else if (s === "هغه") {
     return [
       ...[false, true].map<Result>((inflected) => ({
@@ -42,7 +68,7 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
           inflected,
           selection: {
             type: "pronoun",
-            person: 5,
+            person: 4,
             distance: "far",
           },
         },
@@ -54,7 +80,7 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
           inflected: false,
           selection: {
             type: "pronoun",
-            person: 5,
+            person: 4,
             distance: "far",
           },
         },

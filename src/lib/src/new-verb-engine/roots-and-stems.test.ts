@@ -1,44 +1,13 @@
+/* eslint-disable jest/valid-title */
 import * as T from "../../../types";
 import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import { vEntry } from "./rs-helpers";
+import { wordQuery } from "../parsing/lookup";
 
-const wahul = vEntry({
-  ts: 1527815399,
-  i: 15049,
-  p: "وهل",
-  f: "wahul",
-  g: "wahul",
-  e: "to hit",
-  r: 4,
-  c: "v. trans.",
-  tppp: "واهه",
-  tppf: "waahu",
-  ec: "hit,hits,hitting,hit,hit",
-});
-const achawul = vEntry({
-  ts: 1527811872,
-  i: 224,
-  p: "اچول",
-  f: "achawul",
-  g: "achawul",
-  e: "to put, pour, drop, throw, put on",
-  r: 4,
-  c: "v. trans.",
-  ec: "put,puts,putting,put,put",
-});
-const ganul = vEntry({
-  ts: 1527812000,
-  i: 11398,
-  p: "ګڼل",
-  f: "gaNul, guNul",
-  g: "gaNul,guNul",
-  e: "to count, consider, reckon, suppose, assume",
-  r: 4,
-  c: "v. trans.",
-  tppp: "ګاڼه",
-  tppf: "gaaNu",
-  ec: "deem",
-});
+const wahul = wordQuery("وهل", "verb");
+const achawul = wordQuery("اچول", "verb");
+const ganul = wordQuery("ګڼل", "verb");
+
 const kawulStat = vEntry({
   ts: 1579015359582,
   i: 11030,
@@ -115,463 +84,32 @@ const kedulDyn = vEntry({
   separationAtP: 1,
   separationAtF: 2,
 });
-const raatlul = vEntry({
-  ts: 1527815216,
-  i: 6875,
-  p: "راتلل",
-  f: "raatlúl",
-  g: "raatlul",
-  e: "to come",
-  r: 4,
-  c: "v. intrans.",
-  psp: "راځ",
-  psf: "raadz",
-  ssp: "راش",
-  ssf: "ráash",
-  prp: "راغلل",
-  prf: "ráaghlul",
-  pprtp: "راغلی",
-  pprtf: "raaghúlay",
-  tppp: "راغی",
-  tppf: "ráaghay",
-  noOo: true,
-  separationAtP: 2,
-  separationAtF: 3,
-  ec: "come,comes,coming,came,come",
-});
-const wartlul = vEntry({
-  ts: 1585228579997,
-  i: 14821,
-  p: "ورتلل",
-  f: "wărtlul",
-  g: "wartlul",
-  e: "to come / go over to (third person or place)",
-  r: 4,
-  c: "v. intrans.",
-  psp: "ورځ",
-  psf: "wărdz",
-  ssp: "ورش",
-  ssf: "wársh",
-  prp: "ورغلل",
-  prf: "wárghlul",
-  pprtp: "ورغلی",
-  pprtf: "wărghúlay",
-  tppp: "ورغی",
-  tppf: "wărghay",
-  noOo: true,
-  separationAtP: 2,
-  separationAtF: 3,
-  ec: "come,comes,coming,came,come",
-});
-const osedul = vEntry({
-  ts: 1527815139,
-  i: 1127,
-  p: "اوسېدل",
-  f: "osedul",
-  g: "osedul",
-  e: "to live, reside, stay, be",
-  r: 4,
-  c: "v. intrans.",
-  shortIntrans: true,
-  diacExcept: true,
-});
-const awuxtul = vEntry({
-  ts: 1527814012,
-  i: 1133,
-  p: "اوښتل",
-  f: "awUxtul",
-  g: "awUxtul",
-  e: "to pass over, overturn, be flipped over, spill over, shift, change, diverge, pass, cross, abandon; to be sprained",
-  r: 4,
-  c: "v. intrans.",
-  psp: "اوړ",
-  psf: "awR",
-  ec: "pass",
-  ep: "over",
-});
-const khorul = vEntry({
-  ts: 1527812790,
-  i: 6002,
-  p: "خوړل",
-  f: "khoRul",
-  g: "khoRul",
-  e: "to eat, to bite",
-  r: 4,
-  c: "v. trans.",
-  psp: "خور",
-  psf: "khor",
-  tppp: "خوړ",
-  tppf: "khoR",
-  ec: "eat,eats,eating,ate,eaten",
-});
-const azmoyul = vEntry({
-  ts: 1527811605,
-  i: 468,
-  p: "ازمویل",
-  f: "azmoyul",
-  g: "azmoyul",
-  e: "to attempt, try; to experiment, test",
-  r: 4,
-  c: "v. trans.",
-  sepOo: true,
-  ec: "try",
-});
-const khatul = vEntry({
-  ts: 1527814025,
-  i: 5677,
-  p: "ختل",
-  f: "khatul",
-  g: "khatul",
-  e: "to climb, ascend, rise, go up; to fall out, to fall off, to leave/dissapear; to turn out to be ...; to give a sentence (in law)",
-  r: 3,
-  c: "v. intrans.",
-  psp: "خېژ",
-  psf: "khejz",
-  tppp: "خوت",
-  tppf: "khot",
-  ec: "climb",
-});
-const rasedul = vEntry({
-  ts: 1527813573,
-  i: 7057,
-  p: "رسېدل",
-  f: "rasedul",
-  g: "rasedul",
-  e: "arrive, reach; (fig.) understand, attain to; mature, ripen",
-  r: 4,
-  c: "v. intrans.",
-  shortIntrans: true,
-  ec: "arrive",
-});
-const weshul = vEntry({
-  ts: 1527811701,
-  i: 15106,
-  p: "وېشل",
-  f: "weshul",
-  g: "weshul",
-  e: "divide, distribute, share",
-  r: 4,
-  c: "v. trans.",
-  ec: "divide",
-});
-const watul = vEntry({
-  ts: 1527823376,
-  i: 14759,
-  p: "وتل",
-  f: "watul",
-  g: "watul",
-  e: "to go out, exit, leave, emerge",
-  r: 4,
-  c: "v. intrans.",
-  psp: "وځ",
-  psf: "oodz",
-  tppp: "واته",
-  tppf: "waatu",
-  ec: "go,goes,going,went,gone",
-  ep: "out",
-});
-const wurul = vEntry({
-  ts: 1527816865,
-  i: 14903,
-  p: "وړل",
-  f: "wuRúl, oRúl, wRul",
-  g: "wuRul,oRul,wRul",
-  e: "to take, carry, bear, move (inanimate objects); to win, earn (subjunctive یوسي - yósee or ویسي - wéesee, simple past یو یې وړلو - yo ye wRulo)",
-  r: 3,
-  c: "v. trans.",
-  ssp: "یوس",
-  ssf: "yos",
-  prp: "یوړل",
-  prf: "yóRul",
-  tppp: "یوړ",
-  tppf: "yoR",
-  noOo: true,
-  separationAtP: 2,
-  separationAtF: 2,
-  diacExcept: true,
-  ec: "take,takes,taking,took,taken",
-});
-const kexodul = vEntry({
-  ts: 1527812284,
-  i: 11113,
-  p: "کېښودل",
-  f: "kexodul",
-  g: "kexodul",
-  e: "to put, to put down, to set in place",
-  r: 4,
-  c: "v. trans.",
-  psp: "ږد",
-  psf: "Gd",
-  ssp: "کېږد",
-  ssf: "kéGd",
-  noOo: true,
-  separationAtP: 2,
-  separationAtF: 2,
-  ec: "put,puts,putting,put,put",
-});
-const kenaastul = vEntry({
-  ts: 1527812759,
-  i: 11124,
-  p: "کېناستل",
-  f: "kenaastul",
-  g: "kenaastul",
-  e: "to sit down, to have a seat",
-  r: 4,
-  c: "v. intrans.",
-  psp: "کېن",
-  psf: "ken",
-  noOo: true,
-  separationAtP: 2,
-  separationAtF: 2,
-  ec: "sit,sits,sitting,sat",
-  ep: "down",
-});
-const ghadzedul = vEntry({
-  ts: 1527812615,
-  i: 9500,
-  p: "غځېدل",
-  f: "ghadzedul",
-  g: "ghadzedul",
-  e: "stretch out, lie, be extended, expand",
-  r: 3,
-  c: "v. intrans.",
-  ec: "stretch",
-  ep: "out",
-});
-const prexodul = vEntry({
-  ts: 1527815190,
-  i: 2495,
-  p: "پرېښودل",
-  f: "prexodúl",
-  g: "prexodul",
-  e: "to leave, abandon, forsake, let go, allow",
-  r: 4,
-  c: "v. trans.",
-  psp: "پرېږد",
-  psf: "preGd",
-  noOo: true,
-  separationAtP: 3,
-  separationAtF: 3,
-  ec: "abandon",
-});
-const raawustul = vEntry({
-  ts: 1527819827,
-  i: 6955,
-  p: "راوستل",
-  f: "raawustúl",
-  g: "raawustul",
-  e: "to bring, deliver (animate objects), obtain, extract",
-  r: 3,
-  c: "v. trans.",
-  psp: "راول",
-  psf: "raawul",
-  noOo: true,
-  separationAtP: 2,
-  separationAtF: 3,
-  ec: "bring,brings,bringing,brought,brought",
-});
-const tlul = vEntry({
-  ts: 1527815348,
-  i: 3804,
-  p: "تلل",
-  f: "tlul",
-  g: "tlul",
-  e: "to go",
-  r: 4,
-  c: "v. intrans.",
-  psp: "ځ",
-  psf: "dz",
-  ssp: "لاړ ش",
-  ssf: "láaR sh",
-  prp: "لاړ",
-  prf: "láaR",
-  ec: "go,goes,going,went,gone",
-});
-const bandawul = vEntry(
-  {
-    ts: 1527821309,
-    i: 1792,
-    p: "بندول",
-    f: "bandawul",
-    g: "bandawul",
-    e: "to close, block, stop, barricade, cut off, restrain, hold back",
-    r: 3,
-    c: "v. stat. comp. trans.",
-    l: 1577301753727,
-    ec: "close",
-  },
-  {
-    ts: 1577301753727,
-    i: 1780,
-    p: "بند",
-    f: "band",
-    g: "band",
-    e: "closed, blocked, stopped",
-    c: "adj.",
-  }
-);
-const bandedul = vEntry(
-  {
-    ts: 1588781671306,
-    i: 1796,
-    p: "بندېدل",
-    f: "bandedúl",
-    g: "bandedul",
-    e: "to be closed, blocked, stopped",
-    r: 4,
-    c: "v. stat. comp. intrans.",
-    l: 1577301753727,
-    ec: "be",
-    ep: "closed",
-  },
-  {
-    ts: 1577301753727,
-    i: 1780,
-    p: "بند",
-    f: "band",
-    g: "band",
-    e: "closed, blocked, stopped",
-    c: "adj.",
-  }
-);
-const sturayKawul = vEntry(
-  {
-    ts: 1591033078746,
-    i: 7877,
-    p: "ستړی کول",
-    f: "stuRay kawul",
-    g: "stuRaykawul",
-    e: "to make tired, wear out",
-    r: 4,
-    c: "v. stat. comp. trans.",
-    l: 1527815306,
-    ec: "make",
-    ep: "tired",
-  },
-  {
-    ts: 1527815306,
-    i: 7876,
-    p: "ستړی",
-    f: "stúRay",
-    g: "stuRay",
-    e: "tired",
-    r: 4,
-    c: "adj. / adv.",
-  }
-);
-const sturayKedul = vEntry(
-  {
-    ts: 1591033069786,
-    i: 7878,
-    p: "ستړی کېدل",
-    f: "stuRay kedul",
-    g: "stuRaykedul",
-    e: "to get tired, fatigued",
-    r: 4,
-    c: "v. stat. comp. intrans.",
-    l: 1527815306,
-    ec: "get",
-    ep: "tired",
-  },
-  {
-    ts: 1527815306,
-    i: 7876,
-    p: "ستړی",
-    f: "stúRay",
-    g: "stuRay",
-    e: "tired",
-    r: 4,
-    c: "adj. / adv.",
-  }
-);
-const bayaanedul = vEntry(
-  {
-    ts: 1659037345120,
-    i: 2055,
-    p: "بیانېدل",
-    f: "bayaanedúl",
-    g: "bayaanedul",
-    e: "to be described, told, narrated, explained, declared",
-    r: 4,
-    c: "v. stat. comp. intrans.",
-    l: 1527814259,
-  },
-  {
-    ts: 1527814259,
-    i: 2052,
-    p: "بیان",
-    f: "bayáan",
-    g: "bayaan",
-    e: "description, statement, speaking, narration, sermon",
-    r: 4,
-    c: "n. m.",
-    app: "بیانات",
-    apf: "bayaanaat",
-  }
-);
-const khufaKedul = vEntry(
-  {
-    ts: 1577898920635,
-    i: 5845,
-    p: "خفه کېدل",
-    f: "khufa kedul",
-    g: "khufakedul",
-    e: "to become sad, grieved, annoyed, upset; to be choked, to suffocate",
-    r: 4,
-    c: "v. stat. comp. intrans.",
-    l: 1527812798,
-    ec: "become",
-    ep: "sad",
-  },
-  {
-    ts: 1527812798,
-    i: 5843,
-    p: "خفه",
-    f: "khufa",
-    g: "khufa",
-    e: "sad, upset, angry; choked, suffocated",
-    r: 4,
-    c: "adj.",
-  }
-);
-const warkawul = vEntry({
-  ts: 1527813914,
-  i: 14899,
-  p: "ورکول",
-  f: "wărkawul",
-  g: "warkawul",
-  e: "to give (to him/her/it - towards third person)",
-  r: 4,
-  c: "v. trans.",
-  pprtp: "ورکړی",
-  pprtf: "wărkúRay",
-  ec: "give,gives,giving,gave,given",
-});
-const raakawul = vEntry({
-  ts: 1527819279,
-  i: 6950,
-  p: "راکول",
-  f: "raakawul",
-  g: "raakawul",
-  e: "to give (to first person - to me, us)",
-  r: 4,
-  c: "v. trans.",
-  pprtp: "راکړی",
-  pprtf: "raakúRay",
-  ec: "give,gives,giving,gave,given",
-});
-const darkawul = vEntry({
-  ts: 1527817457,
-  i: 6330,
-  p: "درکول",
-  f: "dărkawul",
-  g: "darkawul",
-  e: "to give (to second person - you, you pl.)",
-  r: 4,
-  pprtp: "درکړی",
-  pprtf: "dărkúRay",
-  ec: "give,gives,giving,gave,given",
-});
+const raatlul = wordQuery("راتلل", "verb");
+const wartlul = wordQuery("ورتلل", "verb");
+const osedul = wordQuery("اوسېدل", "verb");
+const awuxtul = wordQuery("اوښتل", "verb");
+const khorul = wordQuery("خوړل", "verb");
+const azmoyul = wordQuery("ازمویل", "verb");
+const khatul = wordQuery("ختل", "verb");
+const rasedul = wordQuery("رسېدل", "verb");
+const weshul = wordQuery("وېشل", "verb");
+const watul = wordQuery("وتل", "verb");
+const wurul = wordQuery("وړل", "verb");
+const kexodul = wordQuery("کېښودل", "verb");
+const kenaastul = wordQuery("کېناستل", "verb");
+const ghadzedul = wordQuery("غځېدل", "verb");
+const prexodul = wordQuery("پرېښودل", "verb");
+const raawustul = wordQuery("راوستل", "verb");
+const tlul = wordQuery("تلل", "verb");
+const bandawul = wordQuery("بندول", "verb");
+const bandedul = wordQuery("بندېدل", "verb");
+const sturayKawul = wordQuery("ستړی کول", "verb");
+const sturayKedul = wordQuery("ستړی کېدل", "verb");
+const bayaanedul = wordQuery("بیانېدل", "verb");
+const khufaKedul = wordQuery("خفه کېدل", "verb");
+const warkawul = wordQuery("warkawul", "verb");
+const raakawul = wordQuery("raakawul", "verb");
+const darkawul = wordQuery("درکول", "verb");
 
 const ooPH: T.PH = { type: "PH", ps: { p: "و", f: "óo" } };
 
@@ -1629,279 +1167,535 @@ describe("perfective roots", () => {
   });
 });
 
-describe("past participles", () => {
-  test("for most verbs are just the imperfective root (imperative) plus ی - ay", () => {
-    expect(
-      getPastParticiple(rasedul, "active", {
-        gender: "masc",
-        number: "singular",
-      })
-    ).toEqual({
-      type: "VB",
-      ps: [{ p: "رسېدلی", f: "rasedúlay" }],
-      gender: "masc",
-      number: "singular",
-    });
-    expect(
-      getPastParticiple(ganul, "active", { gender: "fem", number: "singular" })
-    ).toEqual({
-      type: "VB",
-      ps: [{ p: "ګڼلې", f: "gaNúle" }],
-      gender: "fem",
-      number: "singular",
-    });
-  });
-  test("for verbs like اېښودل and پرېښودل they have a short version shortened taking off after ښ", () => {
-    expect(
-      getPastParticiple(prexodul, "active", {
-        gender: "masc",
-        number: "plural",
-      })
-    ).toEqual({
-      type: "VB",
-      ps: {
-        long: [{ p: "پرېښودلي", f: "prexodúlee" }],
-        short: [{ p: "پرېښي", f: "préxee" }],
-      },
-      gender: "masc",
-      number: "plural",
-    });
-  });
-  test("verbs ending in ستل ښتل وتل or وړل verbs also have a short version", () => {
-    expect(
-      getPastParticiple(raawustul, "active", {
-        gender: "fem",
-        number: "plural",
-      })
-    ).toEqual({
-      type: "VB",
-      ps: {
-        long: [{ p: "راوستلې", f: "raawustúle" }],
-        short: [{ p: "راوستې", f: "raawúste" }],
-      },
-      gender: "fem",
-      number: "plural",
-    });
-    expect(
-      getPastParticiple(awuxtul, "active", { gender: "masc", number: "plural" })
-    ).toEqual({
-      type: "VB",
-      ps: {
-        long: [{ p: "اوښتلي", f: "awUxtúlee" }],
-        short: [{ p: "اوښتي", f: "awÚxtee" }],
-      },
-      gender: "masc",
-      number: "plural",
-    });
-    expect(
-      getPastParticiple(watul, "active", { gender: "fem", number: "singular" })
-    ).toEqual({
-      type: "VB",
-      ps: {
-        long: [{ p: "وتلې", f: "watúle" }],
-        short: [{ p: "وتې", f: "wáte" }],
-      },
-      gender: "fem",
-      number: "singular",
-    });
-  });
-  test("but not verbs ending with استل", () => {
-    expect(
-      getPastParticiple(kenaastul, "active", {
-        gender: "fem",
-        number: "plural",
-      })
-    ).toEqual({
-      type: "VB",
-      ps: [{ p: "کېناستلې", f: "kenaastúle" }],
-      gender: "fem",
-      number: "plural",
-    });
-  });
-  test("special short form with تلل - tlul", () => {
-    expect(
-      getPastParticiple(tlul, "active", { gender: "masc", number: "plural" })
-    ).toEqual({
-      type: "VB",
-      ps: {
-        long: [{ p: "تللي", f: "tlúlee" }],
-        short: [{ p: "تلي", f: "túlee" }],
-      },
-      gender: "masc",
-      number: "plural",
-    });
-  });
-  test("kawul/kedul/raatlul verbs have an irregular pprt fields that give us the irregular past participle", () => {
-    expect(
-      getPastParticiple(kawulDyn, "active", {
-        gender: "masc",
-        number: "singular",
-      })
-    ).toEqual({
-      type: "VB",
-      ps: [{ p: "کړی", f: "kúRay" }],
-      gender: "masc",
-      number: "singular",
-    });
-    expect(
-      getPastParticiple(kawulStat, "active", {
-        gender: "masc",
-        number: "plural",
-      })
-    ).toEqual({
-      type: "VB",
-      ps: [{ p: "کړي", f: "kúRee" }],
-      gender: "masc",
-      number: "plural",
-    });
-    expect(
-      getPastParticiple(kedulStat, "active", {
-        gender: "fem",
-        number: "singular",
-      })
-    ).toEqual({
-      type: "VB",
-      ps: [{ p: "شوې", f: "shúwe" }],
-      gender: "fem",
-      number: "singular",
-    });
-    expect(
-      getPastParticiple(kedulDyn, "active", { gender: "fem", number: "plural" })
-    ).toEqual({
-      type: "VB",
-      ps: [{ p: "شوې", f: "shúwe" }],
-      gender: "fem",
-      number: "plural",
-    });
-  });
-  test("stative compounds weld the complement to the kawul/kedul participle", () => {
-    expect(
-      getPastParticiple(bandawul, "active", {
-        gender: "fem",
-        number: "singular",
-      })
-    ).toEqual({
-      type: "welded",
-      left: {
-        type: "NComp",
-        comp: {
-          type: "AdjComp",
-          ps: { p: "بنده", f: "banda" },
-          gender: "fem",
-          number: "singular",
+const pastPartTests: {
+  label: string;
+  cases: {
+    input: [T.VerbEntry, T.Voice, T.GenderNumber];
+    output: T.VBP;
+  }[];
+}[] = [
+  {
+    label:
+      "for most verbs are just the imperfective root (imperative) plus ی - ay",
+    cases: [
+      {
+        input: [
+          rasedul,
+          "active",
+          {
+            gender: "masc",
+            number: "singular",
+          },
+        ],
+        output: {
+          type: "VB",
+          ps: [{ p: "رسېدلی", f: "rasedúlay" }],
+          info: {
+            type: "ppart",
+            verb: rasedul,
+            genNum: {
+              gender: "masc",
+              number: "singular",
+            },
+          },
         },
       },
-      right: {
-        type: "VB",
-        ps: [{ p: "کړې", f: "kúRe" }],
-        gender: "fem",
-        number: "singular",
-      },
-    });
-    expect(
-      getPastParticiple(bandedul, "active", { gender: "fem", number: "plural" })
-    ).toEqual({
-      type: "welded",
-      left: {
-        type: "NComp",
-        comp: {
-          type: "AdjComp",
-          ps: { p: "بندې", f: "bande" },
-          gender: "fem",
-          number: "plural",
+      {
+        input: [
+          ganul,
+          "active",
+          {
+            gender: "fem",
+            number: "singular",
+          },
+        ],
+        output: {
+          type: "VB",
+          ps: [{ p: "ګڼلې", f: "gaNúle" }],
+          info: {
+            type: "ppart",
+            verb: ganul,
+            genNum: {
+              gender: "fem",
+              number: "singular",
+            },
+          },
         },
       },
-      right: {
-        type: "VB",
-        ps: [{ p: "شوې", f: "shúwe" }],
-        gender: "fem",
-        number: "plural",
+    ],
+  },
+  {
+    label:
+      "for verbs like اېښودل and پرېښودل they have a short version shortened taking off after ښ",
+    cases: [
+      {
+        input: [
+          prexodul,
+          "active",
+          {
+            gender: "masc",
+            number: "plural",
+          },
+        ],
+        output: {
+          type: "VB",
+          ps: {
+            long: [{ p: "پرېښودلي", f: "prexodúlee" }],
+            short: [{ p: "پرېښي", f: "préxee" }],
+          },
+          info: {
+            type: "ppart",
+            genNum: {
+              gender: "masc",
+              number: "plural",
+            },
+            verb: prexodul,
+          },
+        },
       },
-    });
-  });
-  test("for passive with simple verbs, long perfective root welded to kedul participle", () => {
-    expect(
-      getPastParticiple(ganul, "passive", { gender: "fem", number: "singular" })
-    ).toEqual({
-      type: "welded",
-      left: {
-        type: "VB",
-        ps: [{ p: "ګڼل", f: "gaNul" }],
-      },
-      right: {
-        type: "VB",
-        ps: [{ p: "شوې", f: "shúwe" }],
-        gender: "fem",
-        number: "singular",
-      },
-    });
-  });
-  test("special passive forms for kawul verbs - kRul perfective root + shúway", () => {
-    expect(
-      getPastParticiple(kawulStat, "passive", {
-        gender: "masc",
-        number: "singular",
-      })
-    ).toEqual({
-      type: "welded",
-      left: {
-        type: "VB",
-        ps: [{ p: "کړل", f: "kRul" }],
-      },
-      right: {
-        type: "VB",
-        ps: [{ p: "شوی", f: "shúway" }],
-        gender: "masc",
-        number: "singular",
-      },
-    });
-    expect(
-      getPastParticiple(kawulDyn, "passive", {
-        gender: "masc",
-        number: "singular",
-      })
-    ).toEqual({
-      type: "welded",
-      left: {
-        type: "VB",
-        ps: [{ p: "کړل", f: "kRul" }],
-      },
-      right: {
-        type: "VB",
-        ps: [{ p: "شوی", f: "shúway" }],
-        gender: "masc",
-        number: "singular",
-      },
-    });
-    expect(
-      getPastParticiple(bandawul, "passive", {
-        gender: "fem",
-        number: "plural",
-      })
-    ).toEqual({
-      type: "welded",
-      left: {
-        type: "welded",
-        left: {
-          type: "NComp",
-          comp: {
-            type: "AdjComp",
-            ps: { p: "بندې", f: "bande" },
+    ],
+  },
+  {
+    label: "verbs ending in ستل ښتل وتل or وړل verbs also have a short version",
+    cases: [
+      {
+        input: [
+          raawustul,
+          "active",
+          {
             gender: "fem",
             number: "plural",
           },
-        },
-        right: {
+        ],
+        output: {
           type: "VB",
-          ps: [{ p: "کړل", f: "kRul" }],
+          ps: {
+            long: [{ p: "راوستلې", f: "raawustúle" }],
+            short: [{ p: "راوستې", f: "raawúste" }],
+          },
+          info: {
+            type: "ppart",
+            verb: raawustul,
+            genNum: {
+              gender: "fem",
+              number: "plural",
+            },
+          },
         },
       },
-      right: {
-        type: "VB",
-        ps: [{ p: "شوې", f: "shúwe" }],
-        gender: "fem",
-        number: "plural",
+      {
+        input: [awuxtul, "active", { gender: "masc", number: "plural" }],
+        output: {
+          type: "VB",
+          ps: {
+            long: [{ p: "اوښتلي", f: "awUxtúlee" }],
+            short: [{ p: "اوښتي", f: "awÚxtee" }],
+          },
+          info: {
+            type: "ppart",
+            verb: awuxtul,
+            genNum: {
+              gender: "masc",
+              number: "plural",
+            },
+          },
+        },
       },
+      {
+        input: [watul, "active", { gender: "fem", number: "singular" }],
+        output: {
+          type: "VB",
+          ps: {
+            long: [{ p: "وتلې", f: "watúle" }],
+            short: [{ p: "وتې", f: "wáte" }],
+          },
+          info: {
+            type: "ppart",
+            verb: watul,
+            genNum: {
+              gender: "fem",
+              number: "singular",
+            },
+          },
+        },
+      },
+    ],
+  },
+  {
+    label: "but not verbs ending with استل",
+    cases: [
+      {
+        input: [
+          kenaastul,
+          "active",
+          {
+            gender: "fem",
+            number: "plural",
+          },
+        ],
+        output: {
+          type: "VB",
+          ps: [{ p: "کېناستلې", f: "kenaastúle" }],
+          info: {
+            type: "ppart",
+            verb: kenaastul,
+            genNum: {
+              gender: "fem",
+              number: "plural",
+            },
+          },
+        },
+      },
+    ],
+  },
+  {
+    label: "special short form with تلل - tlul",
+    cases: [
+      {
+        input: [tlul, "active", { gender: "masc", number: "plural" }],
+        output: {
+          type: "VB",
+          ps: {
+            long: [{ p: "تللي", f: "tlúlee" }],
+            short: [{ p: "تلي", f: "túlee" }],
+          },
+          info: {
+            type: "ppart",
+            verb: tlul,
+            genNum: { gender: "masc", number: "plural" },
+          },
+        },
+      },
+    ],
+  },
+  {
+    label:
+      "kawul/kedul/raatlul verbs have an irregular pprt fields that give us the irregular past participle",
+    cases: [
+      {
+        input: [
+          kawulDyn,
+          "active",
+          {
+            gender: "masc",
+            number: "singular",
+          },
+        ],
+        output: {
+          type: "VB",
+          ps: [{ p: "کړی", f: "kúRay" }],
+          info: {
+            type: "ppart",
+            genNum: {
+              gender: "masc",
+              number: "singular",
+            },
+            verb: kawulDyn,
+          },
+        },
+      },
+      {
+        input: [
+          kawulStat,
+          "active",
+          {
+            gender: "masc",
+            number: "plural",
+          },
+        ],
+        output: {
+          type: "VB",
+          ps: [{ p: "کړي", f: "kúRee" }],
+          info: {
+            type: "ppart",
+            verb: kawulStat,
+            genNum: {
+              gender: "masc",
+              number: "plural",
+            },
+          },
+        },
+      },
+      {
+        input: [
+          kedulStat,
+          "active",
+          {
+            gender: "fem",
+            number: "singular",
+          },
+        ],
+        output: {
+          type: "VB",
+          ps: [{ p: "شوې", f: "shúwe" }],
+          info: {
+            type: "ppart",
+            verb: kedulStat,
+            genNum: {
+              gender: "fem",
+              number: "singular",
+            },
+          },
+        },
+      },
+    ],
+  },
+  {
+    label:
+      "stative compounds weld the complement to the kawul/kedul participle",
+    cases: [
+      {
+        input: [
+          bandawul,
+          "active",
+          {
+            gender: "fem",
+            number: "singular",
+          },
+        ],
+        output: {
+          type: "welded",
+          left: {
+            type: "NComp",
+            comp: {
+              type: "AdjComp",
+              ps: { p: "بنده", f: "banda" },
+              gender: "fem",
+              number: "singular",
+            },
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "کړې", f: "kúRe" }],
+            info: {
+              type: "ppart",
+              verb: kawulStat,
+              genNum: {
+                gender: "fem",
+                number: "singular",
+              },
+            },
+          },
+          info: {
+            type: "ppart",
+            verb: bandawul,
+            genNum: {
+              gender: "fem",
+              number: "singular",
+            },
+          },
+        },
+      },
+      {
+        input: [bandedul, "active", { gender: "fem", number: "plural" }],
+        output: {
+          type: "welded",
+          left: {
+            type: "NComp",
+            comp: {
+              type: "AdjComp",
+              ps: { p: "بندې", f: "bande" },
+              gender: "fem",
+              number: "plural",
+            },
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "شوې", f: "shúwe" }],
+            info: {
+              type: "ppart",
+              verb: kedulStat,
+              genNum: {
+                gender: "fem",
+                number: "plural",
+              },
+            },
+          },
+          info: {
+            type: "ppart",
+            verb: bandedul,
+            genNum: {
+              gender: "fem",
+              number: "plural",
+            },
+          },
+        },
+      },
+    ],
+  },
+  {
+    label:
+      "for passive with simple verbs, long perfective root welded to kedul participle",
+    cases: [
+      {
+        input: [ganul, "passive", { gender: "fem", number: "singular" }],
+        output: {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "ګڼل", f: "gaNul" }],
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "شوې", f: "shúwe" }],
+            info: {
+              type: "ppart",
+              verb: kedulStat,
+              genNum: {
+                gender: "fem",
+                number: "singular",
+              },
+            },
+          },
+          info: {
+            type: "ppart",
+            verb: ganul,
+            genNum: {
+              gender: "fem",
+              number: "singular",
+            },
+          },
+        },
+      },
+    ],
+  },
+  {
+    label:
+      "special passive forms for kawul verbs - kRul perfective root + shúway",
+    cases: [
+      {
+        input: [
+          kawulStat,
+          "passive",
+          {
+            gender: "masc",
+            number: "singular",
+          },
+        ],
+        output: {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "کړل", f: "kRul" }],
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "شوی", f: "shúway" }],
+            info: {
+              type: "ppart",
+              verb: kedulStat,
+              genNum: {
+                gender: "masc",
+                number: "singular",
+              },
+            },
+          },
+          info: {
+            type: "ppart",
+            verb: kawulStat,
+            genNum: {
+              gender: "masc",
+              number: "singular",
+            },
+          },
+        },
+      },
+      {
+        input: [
+          kawulDyn,
+          "passive",
+          {
+            gender: "masc",
+            number: "singular",
+          },
+        ],
+        output: {
+          type: "welded",
+          left: {
+            type: "VB",
+            ps: [{ p: "کړل", f: "kRul" }],
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "شوی", f: "shúway" }],
+            info: {
+              type: "ppart",
+              verb: kedulStat,
+              genNum: {
+                gender: "masc",
+                number: "singular",
+              },
+            },
+          },
+          info: {
+            type: "ppart",
+            verb: kawulDyn,
+            genNum: {
+              gender: "masc",
+              number: "singular",
+            },
+          },
+        },
+      },
+      {
+        input: [
+          bandawul,
+          "passive",
+          {
+            gender: "fem",
+            number: "plural",
+          },
+        ],
+        output: {
+          type: "welded",
+          left: {
+            type: "welded",
+            left: {
+              type: "NComp",
+              comp: {
+                type: "AdjComp",
+                ps: { p: "بندې", f: "bande" },
+                gender: "fem",
+                number: "plural",
+              },
+            },
+            right: {
+              type: "VB",
+              ps: [{ p: "کړل", f: "kRul" }],
+            },
+          },
+          right: {
+            type: "VB",
+            ps: [{ p: "شوې", f: "shúwe" }],
+            info: {
+              type: "ppart",
+              verb: kedulStat,
+              genNum: {
+                gender: "fem",
+                number: "plural",
+              },
+            },
+          },
+          info: {
+            type: "ppart",
+            verb: bandawul,
+            genNum: {
+              gender: "fem",
+              number: "plural",
+            },
+          },
+        },
+      },
+    ],
+  },
+];
+
+describe("past participles", () => {
+  pastPartTests.forEach(({ label, cases }) => {
+    test(label, () => {
+      cases.forEach(({ input, output }) => {
+        expect(getPastParticiple(...input)).toEqual(output);
+      });
     });
   });
 });
@@ -1942,6 +1736,11 @@ describe("ability roots and stems", () => {
                     { p: "ختای", f: "khatáay" },
                   ],
                 },
+                info: {
+                  type: "ability",
+                  verb: khatul,
+                  aspect: "imperfective",
+                },
               },
               {
                 type: "VB",
@@ -1969,6 +1768,11 @@ describe("ability roots and stems", () => {
                     { p: "ختی", f: "khatay" },
                     { p: "ختای", f: "khataay" },
                   ],
+                },
+                info: {
+                  type: "ability",
+                  verb: khatul,
+                  aspect: "perfective",
                 },
               },
               {
@@ -1998,6 +1802,11 @@ describe("ability roots and stems", () => {
                     { p: "ختای", f: "khatáay" },
                   ],
                 },
+                info: {
+                  type: "ability",
+                  verb: khatul,
+                  aspect: "imperfective",
+                },
               },
               {
                 type: "VB",
@@ -2029,6 +1838,11 @@ describe("ability roots and stems", () => {
                     { p: "ختای", f: "khataay" },
                   ],
                 },
+                info: {
+                  type: "ability",
+                  verb: khatul,
+                  aspect: "perfective",
+                },
               },
               {
                 type: "VB",
@@ -2043,7 +1857,8 @@ describe("ability roots and stems", () => {
       ],
     },
     {
-      title: "tlul verbs lose the perfective aspect",
+      title:
+        "tlul verbs and verbs with irregular perfective roots lose the perfective aspect",
       tests: [
         {
           verb: raatlul,
@@ -2064,6 +1879,11 @@ describe("ability roots and stems", () => {
                     { p: "راتلی", f: "raatláy" },
                     { p: "راتلای", f: "raatláay" },
                   ],
+                },
+                info: {
+                  type: "ability",
+                  verb: raatlul,
+                  aspect: "imperfective",
                 },
               },
               {
@@ -2092,6 +1912,77 @@ describe("ability roots and stems", () => {
                     { p: "راتلی", f: "raatláy" },
                     { p: "راتلای", f: "raatláay" },
                   ],
+                },
+                info: {
+                  type: "ability",
+                  verb: raatlul,
+                  aspect: "imperfective",
+                },
+              },
+              {
+                type: "VB",
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+        {
+          verb: wurul,
+          aspect: "perfective",
+          rs: "stem",
+          voice: "active",
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "وړلی", f: "wuRúlay" },
+                    { p: "وړلای", f: "wuRúlaay" },
+                  ],
+                  short: [
+                    { p: "وړی", f: "wuRáy" },
+                    { p: "وړای", f: "wuRáay" },
+                  ],
+                },
+                info: {
+                  type: "ability",
+                  verb: wurul,
+                  aspect: "imperfective",
+                },
+              },
+              {
+                type: "VB",
+                ps: [{ p: "ش", f: "sh" }],
+              },
+            ],
+          ],
+        },
+        {
+          verb: wurul,
+          aspect: "imperfective",
+          rs: "stem",
+          voice: "active",
+          result: [
+            [],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [
+                    { p: "وړلی", f: "wuRúlay" },
+                    { p: "وړلای", f: "wuRúlaay" },
+                  ],
+                  short: [
+                    { p: "وړی", f: "wuRáy" },
+                    { p: "وړای", f: "wuRáay" },
+                  ],
+                },
+                info: {
+                  type: "ability",
+                  verb: wurul,
+                  aspect: "imperfective",
                 },
               },
               {
@@ -2125,6 +2016,11 @@ describe("ability roots and stems", () => {
                     { p: "بندېدی", f: "bandedáy" },
                     { p: "بندېدای", f: "bandedáay" },
                   ],
+                },
+                info: {
+                  type: "ability",
+                  verb: bandedul,
+                  aspect: "imperfective",
                 },
               },
               {
@@ -2166,6 +2062,11 @@ describe("ability roots and stems", () => {
                       { p: "کېدای", f: "kedáay" },
                     ],
                   },
+                },
+                info: {
+                  type: "ability",
+                  verb: achawul,
+                  aspect: "perfective",
                 },
               },
               {

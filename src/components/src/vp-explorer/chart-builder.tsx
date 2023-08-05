@@ -132,7 +132,7 @@ function grabLength(
     if (vb.type === "welded") {
       return {
         ...vb,
-        right: grabVBLength(vb.right) as T.VBBasic | T.VBGenNum,
+        right: grabVBLength(vb.right) as T.VBBasic | T.VBP,
       };
     }
     if (!(length in vb.ps)) {

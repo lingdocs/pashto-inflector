@@ -721,6 +721,14 @@ export type EquativeTense =
   | "wouldBe"
   | "pastSubjunctive"
   | "wouldHaveBeen";
+export type EquativeTenseWithoutBa =
+  | "present"
+  | "subjunctive"
+  | "habitual"
+  | "past"
+  | "wouldBe"
+  | "pastSubjunctive"
+  | "wouldHaveBeen";
 export type PerfectTense = `${EquativeTense}Perfect`;
 export type AbilityTense = `${VerbTense}Modal`;
 export type ImperativeTense = `${Aspect}Imperative`;
@@ -1201,16 +1209,50 @@ export type RenderVerbOutput = {
   hasBa: boolean;
   vbs: VerbRenderedOutput;
 };
-export type VerbRenderedOutput = [[VHead] | [], [VB, VBE] | [VBE]];
-export type RootsStemsOutput = [[VHead] | [], [VB, VBA] | [VBA]]; // or perfect / equative
+export type VerbRenderedOutput = [[VHead] | [], [VBP, VBE] | [VBE]];
+export type RootsStemsOutput = [[VHead] | [], [VBP, VB] | [VB]]; // or perfect / equative
 
-export type VB = VBBasic | VBGenNum | Welded | WeldedGN;
-/** A VB block that can have endings attached to it */
-export type VBA = Exclude<VB, VBGenNum | WeldedGN>;
+export type VB = VBBasic | Welded;
 /** A VB block that has had a person verb ending attached */
-export type VBE = (VBBasic | Welded) & {
+export type VBE = VB & {
   person: Person;
-}; // or equative
+  info:
+    | {
+        type: "equative";
+        tense: EquativeTenseWithoutBa;
+      }
+    | {
+        type: "verb";
+        aspect: Aspect;
+        base: "stem" | "root";
+        verb: VerbEntry;
+        abilityAux?: boolean;
+      };
+};
+
+/** A VB block used for ability verbs or perfect (past participle)
+ * get optionally swapped in order with the VBE when used with negative
+ */
+export type VBP = VB & (VBPartInfo | VBAbilityInfo);
+
+export type VBPartInfo = {
+  info: {
+    type: "ppart";
+    genNum: GenderNumber;
+    verb: VerbEntry;
+  };
+};
+
+export type VBAbilityInfo = {
+  info: {
+    type: "ability";
+    verb: VerbEntry;
+    aspect: Aspect;
+  };
+};
+
+// in VB OR VBE - add root / stem and entry for parsing info
+// but how would that work with perfect and ability verbs ...
 
 export type VBNoLenghts<V extends VB> = V extends VBBasic
   ? Omit<VBBasic, "ps"> & { ps: PsString[] }
@@ -1221,10 +1263,6 @@ export type VBBasic = {
   ps: SingleOrLengthOpts<PsString[]>;
 };
 
-// TODO: might be a better design decision to keep the GenderNuber stuff
-// in the RIGHT side of the weld
-export type VBGenNum = VBBasic & GenderNumber;
-
 export type GenderNumber = {
   gender: Gender;
   number: NounNumber;
@@ -1233,10 +1271,8 @@ export type GenderNumber = {
 export type Welded = {
   type: "welded";
   left: NComp | VBBasic | Welded;
-  right: VBBasic;
+  right: VBBasic | (VBBasic & (VBPartInfo | VBAbilityInfo));
 };
-
-export type WeldedGN = Omit<Welded, "right"> & { right: VBGenNum };
 
 export type VHead = PH | NComp;
 

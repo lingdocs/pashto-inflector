@@ -344,9 +344,7 @@ function getPsFromPiece(
 }
 
 function getPsFromWelded(v: T.Welded): T.PsString[] {
-  function getPsFromSide(
-    v: T.VBBasic | T.Welded | T.NComp | T.VBGenNum
-  ): T.PsString[] {
+  function getPsFromSide(v: T.VB | T.NComp): T.PsString[] {
     if (v.type === "VB") {
       return flattenLengths(v.ps);
     }

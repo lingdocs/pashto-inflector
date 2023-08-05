@@ -15,7 +15,7 @@ import {
   countSyllables,
   removeAccents,
 } from "../accent-helpers";
-import { isKawulVerb, isTlulVerb } from "../type-predicates";
+import { isKawulVerb } from "../type-predicates";
 import {
   vEntry,
   addAbilityEnding,
@@ -123,42 +123,60 @@ function getAbilityRs(
   rs: "root" | "stem",
   voice: T.Voice,
   genderNum: T.GenderNumber
-): [[] | [T.VHead], [T.VB, T.VBA]] {
+): [[] | [T.VHead], [T.VBP, T.VB]] {
+  // https://grammar.lingdocs.com/verbs/ability/#exceptions
   const losesAspect =
-    isTlulVerb(verb) ||
+    (verb.entry.prp && verb.entry.p !== "کول") ||
     (isStatComp(verb) && vTransitivity(verb) === "intransitive");
+  const asp = losesAspect ? "imperfective" : aspect;
   const [vhead, [basicroot]] =
     voice === "passive"
       ? getPassiveRs(verb, "imperfective", "root", genderNum)
-      : getRoot(verb, genderNum, losesAspect ? "imperfective" : aspect);
-  return [vhead, [addAbilityEnding(basicroot), rs === "root" ? shwulVB : shVB]];
+      : getRoot(verb, genderNum, asp);
+  return [
+    vhead,
+    [addAbilityEnding(basicroot, verb, asp), rs === "root" ? shwulVB : shVB],
+  ];
 }
 
 export function getPastParticiple(
   verb: T.VerbEntry,
   voice: T.Voice,
   { gender, number }: { gender: T.Gender; number: T.NounNumber }
-): T.VBGenNum | T.WeldedGN {
+): T.VBP {
   const v = removeFVarientsFromVerb(verb);
   if (voice === "passive") {
     return getPassivePp(v, { gender, number });
   }
   if (isStatComp(v) && v.complement) {
-    return weld(
-      makeComplement(v.complement, { gender, number }),
-      getPastParticiple(statVerb[vTransitivity(verb)], voice, {
-        gender,
-        number,
-      }) as T.VBGenNum
-    );
+    return {
+      ...weld(
+        makeComplement(v.complement, { gender, number }),
+        getPastParticiple(statVerb[vTransitivity(verb)], voice, {
+          gender,
+          number,
+        })
+      ),
+      info: {
+        type: "ppart",
+        genNum: { gender, number },
+        verb,
+      },
+    };
   }
   if (verb.entry.pprtp && verb.entry.pprtf) {
     const base = makePsString(verb.entry.pprtp, verb.entry.pprtf);
     return {
       type: "VB",
       ps: inflectPattern3(base, { gender, number }),
-      gender,
-      number,
+      info: {
+        type: "ppart",
+        verb,
+        genNum: {
+          gender,
+          number,
+        },
+      },
     };
   }
   const basicRoot = getRoot(
@@ -166,7 +184,7 @@ export function getPastParticiple(
     { gender, number },
     "imperfective"
   )[1][0];
-  const longRoot = getLongVB(basicRoot);
+  const longRoot = getLongVB(basicRoot) as T.VBNoLenghts<T.VB>;
   const rootWLengths = possiblePPartLengths(longRoot);
   /* istanbul ignore next */
   if ("right" in rootWLengths) {
@@ -175,8 +193,14 @@ export function getPastParticiple(
   return {
     ...rootWLengths,
     ps: addTail(rootWLengths.ps),
-    gender,
-    number,
+    info: {
+      type: "ppart",
+      verb,
+      genNum: {
+        gender,
+        number,
+      },
+    },
   };
 
   function addTail(
@@ -192,12 +216,19 @@ export function getPastParticiple(
 function getPassivePp(
   verb: T.VerbEntryNoFVars,
   genderNumber: T.GenderNumber
-): T.WeldedGN {
+): T.VBP {
   if (isStatComp(verb) && verb.complement) {
-    return weld(
-      makeComplement(verb.complement, genderNumber),
-      getPassivePp(statVerb.transitive, genderNumber)
-    );
+    return {
+      ...weld(
+        makeComplement(verb.complement, genderNumber),
+        getPassivePp(statVerb.transitive, genderNumber)
+      ),
+      info: {
+        type: "ppart",
+        verb,
+        genNum: genderNumber,
+      },
+    };
   }
   const basicRoot = getRoot(
     verb,
@@ -205,38 +236,26 @@ function getPassivePp(
     isKawulVerb(verb) ? "perfective" : "imperfective"
   )[1][0];
   const longRoot = getLongVB(basicRoot);
-  const kedulVb: T.VBGenNum = getPastParticiple(
+  const kedulVb = getPastParticiple(
     statVerb.intransitive,
     "active",
     genderNumber
-  ) as T.VBGenNum;
-  return weld(longRoot, kedulVb);
-}
-
-function getPassiveRs(
-  verb: T.VerbEntryNoFVars,
-  aspect: T.Aspect,
-  rs: "root" | "stem",
-  genderNumber: T.GenderNumber
-): [[] | [T.VHead], [T.VBA]] {
-  const [vHead, [basicRoot]] = getRoot(verb, genderNumber, aspect);
-  const longRoot = getLongVB(basicRoot);
-  const kedulVba = getRootStem({
-    verb: statVerb.intransitive,
-    aspect,
-    rs,
-    type: "basic",
-    voice: "active",
-    genderNumber: { gender: "masc", number: "singular" },
-  })[1][0] as T.VBBasic;
-  return [vHead, [weld(longRoot, kedulVba)]];
+  );
+  return {
+    ...weld(longRoot, kedulVb),
+    info: {
+      type: "ppart",
+      verb,
+      genNum: genderNumber,
+    },
+  };
 }
 
 function getRoot(
   verb: T.VerbEntryNoFVars,
   genderNum: T.GenderNumber,
   aspect: T.Aspect
-): [[T.VHead] | [], [T.VBA]] {
+): [[T.VHead] | [], [T.VB]] {
   if (
     verb.complement &&
     isStatComp(verb) &&
@@ -428,6 +447,25 @@ function getStem(
     }
     return [ph ? [ph] : [], [{ type: "VB", ps: [long] }]];
   }
+}
+
+function getPassiveRs(
+  verb: T.VerbEntryNoFVars,
+  aspect: T.Aspect,
+  rs: "root" | "stem",
+  genderNumber: T.GenderNumber
+): [[] | [T.VHead], [T.VB]] {
+  const [vHead, [basicRoot]] = getRoot(verb, genderNumber, aspect);
+  const longRoot = getLongVB(basicRoot);
+  const kedulVba = getRootStem({
+    verb: statVerb.intransitive,
+    aspect,
+    rs,
+    type: "basic",
+    voice: "active",
+    genderNumber: { gender: "masc", number: "singular" },
+  })[1][0] as T.VBBasic;
+  return [vHead, [weld(longRoot, kedulVba)]];
 }
 
 // TODO: This is a nasty and messy way to do it with the length options included

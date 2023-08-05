@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import { endsInConsonant } from "../p-text-helpers";
 import {
   isPattern1Entry,
   isPattern2Entry,
@@ -50,6 +51,7 @@ export function getInflectionQueries(
     },
   });
   if (noun) {
+    // TODO: could merge these queries for more efficiency ??
     queries.push({
       search: { ppp: s },
       details: {
@@ -59,9 +61,28 @@ export function getInflectionQueries(
         predicate: isNounEntry,
       },
     });
-    if (s.endsWith("و")) {
+    queries.push({
+      search: { app: s },
+      details: {
+        inflection: [0],
+        gender: ["masc", "fem"],
+        plural: true,
+        predicate: isNounEntry,
+      },
+    });
+    // TODO: what about short vowel ending nouns with وو etc
+    if (s.endsWith("و") && !["ا", "و"].includes(s.charAt(s.length - 2))) {
       queries.push({
         search: { ppp: s.slice(0, -1) },
+        details: {
+          inflection: [1],
+          gender: ["masc"],
+          plural: true,
+          predicate: isMascNounEntry,
+        },
+      });
+      queries.push({
+        search: { app: s.slice(0, -1) },
         details: {
           inflection: [1],
           gender: ["masc"],
@@ -218,6 +239,15 @@ export function getInflectionQueries(
             !isPattern4Entry(e),
         },
       });
+      queries.push({
+        search: { app: s.slice(0, -2) },
+        details: {
+          inflection: [1],
+          gender: ["masc"],
+          plural: true,
+          predicate: (e) => isNounEntry(e),
+        },
+      });
     }
     if (
       s.endsWith("ګانو") &&
@@ -364,6 +394,18 @@ export function getInflectionQueries(
         predicate: isPattern1Entry,
       },
     });
+    if (noun) {
+      // bundled plural
+      queries.push({
+        search: { p: s.slice(0, -1) },
+        details: {
+          inflection: [0],
+          plural: true,
+          gender: ["masc"],
+          predicate: (e) => !isPattern5Entry(e) && endsInConsonant(e),
+        },
+      });
+    }
     queries.push({
       search: { infbp: s.slice(0, -1) },
       details: {

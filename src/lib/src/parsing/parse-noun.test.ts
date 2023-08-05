@@ -6,6 +6,7 @@ import * as T from "../../../types";
 import { lookup, wordQuery } from "./lookup";
 import { parseNoun } from "./parse-noun";
 import { tokenizer } from "./tokenizer";
+import { isCompleteResult } from "./utils";
 
 const sor = wordQuery("سوړ", "adj");
 const zor = wordQuery("زوړ", "adj");
@@ -36,6 +37,12 @@ const maamaa = wordQuery("ماما", "noun");
 const peesho = wordQuery("پیشو", "noun");
 const duaa = wordQuery("دعا", "noun");
 const zooy = wordQuery("زوی", "noun");
+const nabee = wordQuery("نبي", "noun");
+const lafz = wordQuery("لفظ", "noun");
+
+// TODO: test for adjective errors etc
+
+// bundled plural
 
 const tests: {
   category: string;
@@ -121,6 +128,13 @@ const tests: {
             selection: {
               ...makeNounSelection(daktar, undefined),
               gender: "fem",
+            },
+          },
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(daktar, undefined),
+              number: "plural",
             },
           },
         ],
@@ -1290,10 +1304,90 @@ const tests: {
       },
     ],
   },
+  {
+    category: "arabic plurals",
+    cases: [
+      {
+        input: "الفاظ",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(lafz, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "الفاظو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(lafz, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "نبي",
+        output: [
+          {
+            inflected: false,
+            selection: makeNounSelection(nabee, undefined),
+          },
+          {
+            inflected: true,
+            selection: makeNounSelection(nabee, undefined),
+          },
+        ],
+      },
+      {
+        input: "انبیا",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(nabee, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "انبیاوو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(nabee, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    category: "bundled plurals",
+    cases: [
+      {
+        input: "کوره",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(kor, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+    ],
+  },
 ];
-
-// PROBLEM WITH غټې وریژې
-// ];
 
 describe("parsing nouns", () => {
   tests.forEach(({ category, cases }) => {
@@ -1301,7 +1395,7 @@ describe("parsing nouns", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup, undefined).map(([t, res]) => res);
+        const res = parseNoun(tokens, lookup).map(({ body }) => body);
         expect(res).toEqual(output);
       });
     });
@@ -1407,10 +1501,8 @@ const adjsTests: {
           },
         ],
       },
-      // TODO: testing issue with the parser returning multiple options needs
-      // to be worked out to test double adjectives
       {
-        input: "غټو کورونو",
+        input: "غټو زړو کورونو",
         output: [
           {
             inflected: true,
@@ -1419,7 +1511,7 @@ const adjsTests: {
               number: "plural",
               adjectives: [
                 makeAdjectiveSelection(ghut),
-                // makeAdjectiveSelection(zor),
+                makeAdjectiveSelection(zor),
               ],
             },
           },
@@ -1429,15 +1521,17 @@ const adjsTests: {
   },
 ];
 
-// describe("parsing nouns with adjectives", () => {
-//   adjsTests.forEach(({ category, cases }) => {
-//     // eslint-disable-next-line jest/valid-title
-//     test(category, () => {
-//       cases.forEach(({ input, output }) => {
-//         const tokens = tokenizer(input);
-//         const res = parseNoun(tokens, lookup, undefined).map(([t, res]) => res);
-//         expect(res).toEqual(output);
-//       });
-//     });
-//   });
-// });
+describe("parsing nouns with adjectives", () => {
+  adjsTests.forEach(({ category, cases }) => {
+    // eslint-disable-next-line jest/valid-title
+    test(category, () => {
+      cases.forEach(({ input, output }) => {
+        const tokens = tokenizer(input);
+        const res = parseNoun(tokens, lookup)
+          .filter(isCompleteResult)
+          .map(({ body }) => body);
+        expect(res).toEqual(output);
+      });
+    });
+  });
+});

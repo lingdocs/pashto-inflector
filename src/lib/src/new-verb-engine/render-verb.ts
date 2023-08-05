@@ -26,6 +26,7 @@ import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import {
   isKedul,
   perfectTenseToEquative,
+  vEntry,
   verbEndingConcat,
 } from "./rs-helpers";
 import {
@@ -33,7 +34,24 @@ import {
   accentPsSyllable,
   removeAccents,
 } from "../accent-helpers";
-
+const kedulStat = vEntry({
+  ts: 1581086654898,
+  i: 11100,
+  p: "کېدل",
+  f: "kedul",
+  g: "kedul",
+  e: "to become _____",
+  r: 2,
+  c: "v. intrans.",
+  ssp: "ش",
+  ssf: "sh",
+  prp: "شول",
+  prf: "shwul",
+  pprtp: "شوی",
+  pprtf: "shúway",
+  noOo: true,
+  ec: "become",
+});
 const formulas: Record<
   T.VerbTense | T.ImperativeTense,
   {
@@ -123,11 +141,12 @@ export function renderVerb({
   const type = isAbilityTense(tense) ? "ability" : "basic";
   const transitive = object !== undefined;
   const king = transitive && isPast ? object : subject;
+  const base = isPast ? "root" : "stem";
 
   // #1 get the appropriate root / stem
   const [vHead, rest] = getRootStem({
     verb,
-    rs: isPast ? "root" : "stem",
+    rs: base,
     aspect: negative && isImperativeTense(tense) ? "imperfective" : aspect,
     voice,
     type,
@@ -148,6 +167,8 @@ export function renderVerb({
         pastThird: isPast && king === T.Person.ThirdSingMale,
         aspect,
         basicForm: type === "basic" && voice === "active",
+        base,
+        ability: type === "ability",
       }),
     ],
   };
@@ -165,7 +186,7 @@ function renderPerfectVerb({
   voice: T.Voice;
 }): {
   hasBa: boolean;
-  vbs: [[], [T.VB, T.VBE]];
+  vbs: [[], [T.VBP, T.VBE]];
   objComp: T.Rendered<T.NPSelection> | undefined;
 } {
   const hasBa = perfectTenseHasBa(tense);
@@ -178,6 +199,10 @@ function renderPerfectVerb({
     type: "VB",
     person,
     ps: fmapSingleOrLengthOpts((x) => x[row][col], equative),
+    info: {
+      type: "equative",
+      tense: perfectTenseToEquative(tense),
+    },
   };
   return {
     hasBa,
@@ -194,32 +219,46 @@ function addEnding({
   pastThird,
   aspect,
   basicForm,
+  base,
+  ability,
 }: {
-  rs: [T.VB, T.VBA] | [T.VBA];
+  rs: [T.VBP, T.VB] | [T.VB];
   ending: T.SingleOrLengthOpts<T.PsString[]>;
   person: T.Person;
   verb: T.VerbEntry;
   pastThird: boolean;
   aspect: T.Aspect;
   basicForm: boolean;
-}): [T.VB, T.VBE] | [T.VBE] {
+  base: "stem" | "root";
+  ability: boolean;
+}): [T.VBP, T.VBE] | [T.VBE] {
   return rs.length === 2
     ? [rs[0], addEnd(rs[1], ending)]
     : [addEnd(rs[0], ending)];
-  function addEnd(
-    vba: T.VBA,
-    ending: T.SingleOrLengthOpts<T.PsString[]>
-  ): T.VBE {
-    if (vba.type === "welded") {
+  function addEnd(vb: T.VB, ending: T.SingleOrLengthOpts<T.PsString[]>): T.VBE {
+    const info = {
+      type: "verb" as const,
+      aspect: ability ? "perfective" : aspect,
+      base,
+      verb: ability ? kedulStat : verb,
+      ...(ability
+        ? {
+            abilityAux: true,
+          }
+        : {}),
+    };
+    if (vb.type === "welded") {
       return {
-        ...vba,
-        right: addToVBBasicEnd(vba.right, ending),
+        ...vb,
+        right: addToVBBasicEnd(vb.right, ending),
         person,
+        info,
       };
     }
     return {
-      ...addToVBBasicEnd(vba, ending),
+      ...addToVBBasicEnd(vb, ending),
       person,
+      info,
     };
   }
   function addToVBBasicEnd(

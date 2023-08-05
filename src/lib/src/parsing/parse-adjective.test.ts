@@ -1,67 +1,14 @@
 import { makeAdjectiveSelection } from "../phrase-building/make-selections";
 import * as T from "../../../types";
-import { lookup } from "./lookup";
+import { lookup, wordQuery } from "./lookup";
 import { parseAdjective } from "./parse-adjective";
 import { tokenizer } from "./tokenizer";
 
-const ghut = {
-  ts: 1527812625,
-  i: 9561,
-  p: "غټ",
-  f: "ghuT, ghaT",
-  g: "ghuT,ghaT",
-  e: "big, fat",
-  r: 4,
-  c: "adj.",
-} as T.AdjectiveEntry;
-const sturey = {
-  ts: 1527815306,
-  i: 7933,
-  p: "ستړی",
-  f: "stúRay",
-  g: "stuRay",
-  e: "tired",
-  r: 4,
-  c: "adj. / adv.",
-} as T.AdjectiveEntry;
-const narey = {
-  ts: 1527819320,
-  i: 14027,
-  p: "نری",
-  f: "naráy",
-  g: "naray",
-  e: "thin; mild; high (pitch)",
-  r: 4,
-  c: "adj.",
-} as T.AdjectiveEntry;
-const zor = {
-  ts: 1527815451,
-  i: 7570,
-  p: "زوړ",
-  f: "zoR",
-  g: "zoR",
-  e: "old",
-  r: 4,
-  c: "adj.",
-  infap: "زاړه",
-  infaf: "zaaRu",
-  infbp: "زړ",
-  infbf: "zaR",
-} as T.AdjectiveEntry;
-const sheen = {
-  ts: 1527815265,
-  i: 8979,
-  p: "شین",
-  f: "sheen",
-  g: "sheen",
-  e: "green, blue; unripe, immature; bright, sunny",
-  r: 4,
-  c: "adj.",
-  infap: "شنه",
-  infaf: "shnu",
-  infbp: "شن",
-  infbf: "shn",
-} as T.AdjectiveEntry;
+const ghut = wordQuery("غټ", "adj");
+const sturey = wordQuery("ستړی", "adj");
+const narey = wordQuery("نری", "adj");
+const zor = wordQuery("زوړ", "adj");
+const sheen = wordQuery("شین", "adj");
 
 const tests: {
   category: string;
@@ -312,7 +259,7 @@ describe("parsing adjectives", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const possibilities = parseAdjective(tokens, lookup).map((x) => x[1]);
+        const possibilities = parseAdjective(tokens, lookup).map((x) => x.body);
         expect(
           possibilities.map((x) => {
             const { given, ...rest } = x;

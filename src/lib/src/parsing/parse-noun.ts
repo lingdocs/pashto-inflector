@@ -9,102 +9,31 @@ import {
 } from "../type-predicates";
 import { getInflectionQueries } from "./inflection-query";
 import { parseAdjective } from "./parse-adjective";
-import { groupWith, equals } from "rambda";
+import { parsePossesor } from "./parse-possesor";
+import { bindParseResult } from "./utils";
 
-// TODO:
-// - cleanup the workflow and make sure all nouns are covered and test
-// - add possesive parsing
 type NounResult = { inflected: boolean; selection: T.NounSelection };
 
 export function parseNoun(
   tokens: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  prevPossesor: { inflected: boolean; selection: T.NounSelection } | undefined
+  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]
 ): T.ParseResult<NounResult>[] {
   if (tokens.length === 0) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  const possesor =
-    first.s === "د" ? parseNoun(rest, lookup, undefined) : undefined;
-  if (possesor) {
-    const runsAfterPossesor: T.ParseResult<NounResult | undefined>[] = possesor
-      ? possesor
-      : [{ tokens, body: undefined, errors: [] }];
-    // could be a case for a monad ??
-    return removeUnneccesaryFailing(
-      runsAfterPossesor.flatMap(
-        ({ tokens, body: possesor, errors }) =>
-          parseNoun(
-            tokens,
-            lookup,
-            possesor
-              ? {
-                  inflected: possesor.inflected,
-                  selection: {
-                    ...possesor.selection,
-                    possesor: prevPossesor
-                      ? {
-                          shrunken: false,
-                          np: {
-                            type: "NP",
-                            selection: prevPossesor.selection,
-                          },
-                        }
-                      : undefined,
-                  },
-                }
-              : undefined
-          )
-        //   .map<T.ParseResult<NounResult>>(([t, r, errs]) => [
-        //   t,
-        //   r,
-        //   // TODO: should the errors from the runsAfterPossesor be thrown out?
-        //   // or ...errors should be kept?
-        //   // to show an error like د غتو ماشومان نومونه
-        //   // adj error غټ should be first inflection (seems confusing)
-        //   [...errs, ...errors],
-        // ])
-      )
-    );
-  } else {
-    return removeUnneccesaryFailing(
-      parseNounAfterPossesor(tokens, lookup, prevPossesor, [])
-    );
+  const possesor = parsePossesor(tokens, lookup, undefined);
+  if (possesor.length) {
+    return bindParseResult(possesor, (tokens, p) => {
+      return parseNounAfterPossesor(tokens, lookup, p, []);
+    });
   }
+  return parseNounAfterPossesor(tokens, lookup, undefined, []);
 }
-
-function removeUnneccesaryFailing(
-  results: T.ParseResult<NounResult>[]
-): T.ParseResult<NounResult>[] {
-  // group by identical results
-  const groups = groupWith(
-    (a, b) => equals(a.body.selection, b.body.selection),
-    results
-  );
-  // if there's a group of identical results with some success in it
-  // remove any erroneous results
-  const stage1 = groups.flatMap((group) => {
-    if (group.find((x) => x.errors.length === 0)) {
-      return group.filter((x) => x.errors.length === 0);
-    }
-    return group;
-  });
-  // finally, if there's any success anywhere, remove any of the errors
-  if (stage1.find((x) => x.errors.length === 0)) {
-    return stage1.filter((x) => x.errors.length === 0);
-  } else {
-    return stage1;
-  }
-}
-
-// create NP parsing function for that
-// TODO with possesor, parse an NP not a noun
 
 function parseNounAfterPossesor(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  possesor: { inflected: boolean; selection: T.NounSelection } | undefined,
+  possesor: T.PossesorSelection | undefined,
   adjectives: {
     inflection: (0 | 1 | 2)[];
     gender: T.Gender[];
@@ -117,14 +46,13 @@ function parseNounAfterPossesor(
   }
   // TODO: add recognition of او between adjectives
   const adjRes = parseAdjective(tokens, lookup);
-  const withAdj = adjRes.flatMap(({ tokens: tkns, body: adj }) =>
+  const withAdj = bindParseResult(adjRes, (tkns, adj) =>
     parseNounAfterPossesor(tkns, lookup, possesor, [...adjectives, adj])
   );
   const [first, ...rest] = tokens;
-  const w: ReturnType<typeof parseNoun> = [];
-
   const searches = getInflectionQueries(first.s, true);
 
+  const w: ReturnType<typeof parseNoun> = [];
   searches.forEach(({ search, details }) => {
     const nounEntries = lookup(search).filter(isNounEntry);
     details.forEach((deets) => {
@@ -147,6 +75,11 @@ function parseNounAfterPossesor(
               convertInflection(inf, entry, gender, deets.plural).forEach(
                 ({ inflected, number }) => {
                   const selection = makeNounSelection(entry, undefined);
+                  const errors = [
+                    ...adjErrors.map((message) => ({
+                      message,
+                    })),
+                  ];
                   w.push({
                     tokens: rest,
                     body: {
@@ -162,25 +95,10 @@ function parseNounAfterPossesor(
                         adjectives: adjectives.map((a) => a.selection),
                         // TODO: could be nicer to validate that the possesor is inflected before
                         // and just pass in the selection
-                        possesor: possesor
-                          ? {
-                              shrunken: false,
-                              np: {
-                                type: "NP",
-                                selection: possesor.selection,
-                              },
-                            }
-                          : undefined,
+                        possesor,
                       },
                     },
-                    errors: [
-                      ...(possesor?.inflected === false
-                        ? [{ message: "possesor should be inflected" }]
-                        : []),
-                      ...adjErrors.map((message) => ({
-                        message,
-                      })),
-                    ],
+                    errors,
                   });
                 }
               );

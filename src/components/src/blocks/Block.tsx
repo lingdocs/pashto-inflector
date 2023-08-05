@@ -146,7 +146,7 @@ function VBBlock({
   script: "p" | "f";
   block:
     | T.VBBasic
-    | T.VBGenNum
+    | (T.VBBasic & (T.VBPartInfo | T.VBAbilityInfo))
     | (T.VBBasic & {
         person: T.Person;
       });
@@ -167,8 +167,8 @@ function VBBlock({
     );
   }
   const infInfo =
-    "gender" in block
-      ? getEnglishGenNumInfo(block.gender, block.number)
+    "info" in block && block.info.type === "ppart"
+      ? getEnglishGenNumInfo(block.info.genNum.gender, block.info.genNum.number)
       : "person" in block
       ? getEnglishPersonInfo(block.person, "short")
       : "";

@@ -1031,11 +1031,11 @@ export const persons = [
     person: 9,
   },
   {
-    label: { subject: "thay (m. pl.)", object: "them (m. pl.)" },
+    label: { subject: "they (m. pl.)", object: "them (m. pl.)" },
     person: 10,
   },
   {
-    label: { subject: "thay (f. pl.)", object: "them (f. pl.)" },
+    label: { subject: "they (f. pl.)", object: "them (f. pl.)" },
     person: 11,
   },
 ];

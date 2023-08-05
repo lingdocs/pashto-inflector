@@ -157,6 +157,15 @@ export function makeSubjectSelection(
   };
 }
 
+export function makeSubjectSelectionComplete(
+  selection: T.NPSelection
+): T.SubjectSelectionComplete {
+  return {
+    type: "subjectSelection",
+    selection,
+  };
+}
+
 export function makeObjectSelection(
   selection:
     | T.ObjectSelection
@@ -192,6 +201,15 @@ export function makeObjectSelection(
       type: "NP",
       selection,
     },
+  };
+}
+
+export function makeObjectSelectionComplete(
+  selection: T.NPSelection
+): T.ObjectSelectionComplete {
+  return {
+    type: "objectSelection",
+    selection,
   };
 }
 

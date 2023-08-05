@@ -31,6 +31,29 @@ export function makeAdjectiveSelection(
   };
 }
 
+export function makePossesorSelection(
+  np: T.NPSelection["selection"]
+): T.PossesorSelection {
+  return {
+    shrunken: false,
+    np: {
+      type: "NP",
+      selection: np,
+    },
+  };
+}
+
+export function makePronounSelection(
+  person: T.Person,
+  distance?: "near" | "far"
+): T.PronounSelection {
+  return {
+    type: "pronoun",
+    distance: distance || "far",
+    person,
+  };
+}
+
 export function makeParticipleSelection(
   verb: T.VerbEntry
 ): T.ParticipleSelection {

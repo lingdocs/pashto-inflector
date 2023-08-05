@@ -92,7 +92,7 @@ export function mapVerbRenderedOutput(
   f: (a: T.PsString) => T.PsString,
   [a, b]: T.VerbRenderedOutput
 ): T.VerbRenderedOutput {
-  return [fmapVHead(a), fmapV(b)];
+  return [fmapVHead(a), fmapVE(b)];
   function fmapVHead([v]: [T.VHead] | []): [T.VHead] | [] {
     if (v === undefined) {
       return [];
@@ -118,10 +118,10 @@ export function mapVerbRenderedOutput(
       ps: f(comp.ps),
     };
   }
-  function fmapV(v: [T.VB, T.VBE] | [T.VBE]): [T.VB, T.VBE] | [T.VBE] {
-    return v.map(fmapVB) as [T.VB, T.VBE] | [T.VBE];
+  function fmapVE(v: [T.VBP, T.VBE] | [T.VBE]): [T.VBP, T.VBE] | [T.VBE] {
+    return v.map(fmapVB) as [T.VBP, T.VBE] | [T.VBE];
   }
-  function fmapVB<V extends T.VB | T.VBE>(v: V): V {
+  function fmapVB<V extends T.VB | T.VBE | T.VBP>(v: V): V {
     if (v.type === "welded") {
       return {
         ...v,

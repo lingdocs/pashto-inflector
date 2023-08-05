@@ -123,19 +123,10 @@ export function verbEndingConcat(
   );
 }
 
-// TODO: THIS IS UGGGGLY NEED TO THINK THROUGH THE TYPING ON THE WELDING
 export function weld(
   left: T.Welded["left"],
-  right: T.VBGenNum | T.WeldedGN
-): T.WeldedGN;
-export function weld(
-  left: T.Welded["left"],
-  right: T.VBBasic | T.NComp | T.Welded
-): T.Welded;
-export function weld(
-  left: T.Welded["left"],
-  right: T.VBBasic | T.VBGenNum | T.Welded | T.NComp | T.WeldedGN
-): T.Welded | T.WeldedGN {
+  right: T.VB | T.VBP | T.NComp
+): T.Welded {
   if (right.type === "welded") {
     return weld(weld(left, right.left), right.right);
   }
@@ -218,7 +209,11 @@ export function tlulPerfectiveStem(person: {
   ];
 }
 
-export function addAbilityEnding(vb: T.VBA): T.VBA {
+export function addAbilityEnding(
+  vb: T.VB,
+  verb: T.VerbEntry,
+  aspect: T.Aspect
+): T.VBP {
   const abilityEnding: T.PsString[] = [
     { p: "ی", f: "ay" },
     { p: "ای", f: "aay" },
@@ -227,9 +222,21 @@ export function addAbilityEnding(vb: T.VBA): T.VBA {
     return {
       ...vb,
       right: addToEnd(vb.right, abilityEnding),
+      info: {
+        type: "ability",
+        verb,
+        aspect,
+      },
     };
   }
-  return addToEnd(vb, abilityEnding);
+  return {
+    ...addToEnd(vb, abilityEnding),
+    info: {
+      type: "ability",
+      verb,
+      aspect,
+    },
+  };
   function addToEnd(vb: T.VBBasic, end: T.PsString[]): T.VBBasic {
     /* istanbul ignore next */
     if (!("long" in vb.ps)) {
@@ -248,8 +255,8 @@ export function addAbilityEnding(vb: T.VBA): T.VBA {
 }
 
 export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBBasic>): T.VBBasic;
-export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA;
-export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA {
+export function possiblePPartLengths(vba: T.VBNoLenghts<T.VB>): T.VB;
+export function possiblePPartLengths(vba: T.VBNoLenghts<T.VB>): T.VB {
   const shortenableEndings = ["ښتل", "ستل", "وتل"];
   const wrul = ["وړل", "راوړل", "وروړل", "دروړل"];
   // can't find a case where this is used - type safety
@@ -294,12 +301,11 @@ export function possiblePPartLengths(vba: T.VBNoLenghts<T.VBA>): T.VBA {
   return vba;
 }
 
-export function getLongVB(vb: T.VBBasic): T.VBNoLenghts<T.VBBasic>;
-export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA>;
-export function getLongVB(vb: T.VBA): T.VBNoLenghts<T.VBA> {
+export function getLongVB(vb: T.VB): T.VBNoLenghts<T.VB> {
   if (vb.type === "welded") {
     return {
       ...vb,
+      // @ts-ignore
       right: getLongVB(vb.right),
     };
   }
