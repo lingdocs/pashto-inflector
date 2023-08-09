@@ -28,42 +28,167 @@ const kedulStat = vEntry({
   ec: "become",
 });
 
+// cool examples: زه خوږې ماشومې وهم
+
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  verbLookup: (s: (e: T.VerbDictionaryEntry) => boolean) => T.VerbEntry[]
+  verbLookup: (s: string) => T.VerbEntry[]
 ): T.ParseResult<T.VPSelectionComplete>[] {
   if (tokens.length === 0) {
     return [];
   }
   // how to make this into a nice pipeline... 🤔
   const NP1 = parseNP(tokens, lookup).filter(({ errors }) => !errors.length);
-  const NP2 = bindParseResult(
-    NP1,
-    (tokens) => parseNP(tokens, lookup),
-    true
-  ).filter(({ errors }) => !errors.length);
-  const vb = bindParseResult(
-    NP2,
-    (tokens) => parseVerb(tokens, verbLookup),
-    true
-  ).filter(({ errors }) => !errors.length);
+  const NP2 = bindParseResult<
+    {
+      inflected: boolean;
+      selection: T.NPSelection;
+    },
+    {
+      np1: {
+        inflected: boolean;
+        selection: T.NPSelection;
+      };
+      np2:
+        | {
+            inflected: boolean;
+            selection: T.NPSelection;
+          }
+        | undefined;
+    }
+  >(NP1, (tokens, np1) => {
+    const np2s = parseNP(tokens, lookup);
+    if (!np2s.length) {
+      const r: T.ParseResult<{
+        np1: {
+          inflected: boolean;
+          selection: T.NPSelection;
+        };
+        np2: undefined;
+      }>[] = [
+        {
+          tokens,
+          body: {
+            np1,
+            np2: undefined,
+          },
+          errors: [],
+        },
+      ];
+      return r;
+    }
+    return np2s.map((p) => ({
+      tokens: p.tokens,
+      body: {
+        np1,
+        np2: p.body,
+      },
+      errors: p.errors,
+    }));
+  }).filter(({ errors }) => !errors.length);
+  const vb = bindParseResult(NP2, (tokens, nps) => {
+    const vb = parseVerb(tokens, verbLookup);
+    // TODO make a nice functor that just maps or adds in the body
+    return vb.map((p) => ({
+      tokens: p.tokens,
+      body: {
+        np2: nps.np2,
+        v: p.body,
+        np1: nps.np1,
+      },
+      errors: p.errors,
+    }));
+  }).filter(({ errors }) => !errors.length);
   // TODO: be able to bind mulitple vals
-  return bindParseResult<Omit<T.VBE, "ps">, T.VPSelectionComplete>(
-    vb,
-    (tokens, v) => {
-      const w: T.ParseResult<T.VPSelectionComplete>[] = [];
-      NP1.forEach(({ body: np1 }) => {
-        NP2.forEach(({ body: np2 }) => {
-          // NICE TODO: IF there's an error in any of the NPS, don't try
-          // to make the VPS - just show them that error
-          // for that we probably need a different type of
-          [
-            [np1, np2],
-            [np2, np1],
-          ].forEach(([s, o]) => {
-            const errors: T.ParseError[] = [];
-            const subjPerson = getPersonFromNP(s.selection);
+  return bindParseResult(vb, (tokens, { np1, np2, v }) => {
+    const w: T.ParseResult<T.VPSelectionComplete>[] = [];
+    const isPast = v.info.type === "verb" && v.info.base === "root";
+    const intransitive =
+      v.info.type === "verb" && v.info.verb.entry.c.includes("intrans.");
+
+    if (!np2) {
+      const errors: T.ParseError[] = [];
+      const s = np1;
+      if (!intransitive) {
+        return [];
+      }
+      if (s.inflected) {
+        errors.push({
+          message: "subject of intransitive verb should not be inflected",
+        });
+      }
+      if (getPersonFromNP(s.selection) !== v.person) {
+        errors.push({
+          message: "subject should agree with intransitive verb",
+        });
+      }
+      const blocks: T.VPSBlockComplete[] = [
+        {
+          key: 1,
+          block: makeSubjectSelectionComplete(s.selection),
+        },
+        {
+          key: 2,
+          block: {
+            type: "objectSelection",
+            selection: "none",
+          },
+        },
+      ];
+      const verb: T.VerbSelectionComplete = {
+        type: "verb",
+        verb: v.info.type === "verb" ? v.info.verb : kedulStat,
+        transitivity: "intransitive",
+        canChangeTransitivity: false,
+        canChangeStatDyn: false,
+        negative: false,
+        tense: isPast ? "imperfectivePast" : "presentVerb",
+        canChangeVoice: true,
+        isCompound: false,
+        voice: "active",
+      };
+      w.push({
+        tokens,
+        body: {
+          blocks,
+          verb,
+          externalComplement: undefined,
+          form: {
+            removeKing: false,
+            shrinkServant: false,
+          },
+        },
+        errors,
+      });
+    } else {
+      [[np1, np2, false] as const, [np2, np1, true] as const].forEach(
+        ([s, o, reversed]) => {
+          const subjPerson = getPersonFromNP(s.selection);
+          const errors: T.ParseError[] = [];
+          if (intransitive) {
+            return [];
+          }
+
+          if (isPast) {
+            if (getPersonFromNP(o.selection) !== v.person) {
+              errors.push({
+                message: "transitive past tense verb does not match object",
+              });
+            } else {
+              if (!s.inflected) {
+                errors.push({
+                  message: "transitive past tense subject should be inflected",
+                });
+              }
+              if (o.inflected) {
+                errors.push({
+                  message:
+                    "transitive past tense object should not be inflected",
+                });
+              }
+            }
+          } else {
             if (getPersonFromNP(s.selection) !== v.person) {
               errors.push({
                 message: "verb does not match subject",
@@ -83,46 +208,49 @@ export function parseVP(
                 errors.push({ message: "object should not be inflected" });
               }
             }
+          }
 
-            const blocks: T.VPSBlockComplete[] = [
-              {
-                key: 1,
-                block: makeSubjectSelectionComplete(s.selection),
+          const blocks: T.VPSBlockComplete[] = [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete(s.selection),
+            },
+            {
+              key: 2,
+              block: makeObjectSelectionComplete(o.selection),
+            },
+          ];
+          if (reversed) {
+            blocks.reverse();
+          }
+          const verb: T.VerbSelectionComplete = {
+            type: "verb",
+            verb: v.info.type === "verb" ? v.info.verb : kedulStat,
+            transitivity: "transitive",
+            canChangeTransitivity: false,
+            canChangeStatDyn: false,
+            negative: false,
+            tense: isPast ? "imperfectivePast" : "presentVerb",
+            canChangeVoice: true,
+            isCompound: false,
+            voice: "active",
+          };
+          w.push({
+            tokens,
+            body: {
+              blocks,
+              verb,
+              externalComplement: undefined,
+              form: {
+                removeKing: false,
+                shrinkServant: false,
               },
-              {
-                key: 2,
-                block: makeObjectSelectionComplete(o.selection),
-              },
-            ];
-            const verb: T.VerbSelectionComplete = {
-              type: "verb",
-              verb: v.info.type === "verb" ? v.info.verb : kedulStat,
-              transitivity: "transitive",
-              canChangeTransitivity: false,
-              canChangeStatDyn: false,
-              negative: false,
-              tense: "presentVerb",
-              canChangeVoice: true,
-              isCompound: false,
-              voice: "active",
-            };
-            w.push({
-              tokens,
-              body: {
-                blocks,
-                verb,
-                externalComplement: undefined,
-                form: {
-                  removeKing: false,
-                  shrinkServant: false,
-                },
-              },
-              errors,
-            });
+            },
+            errors,
           });
-        });
-      });
-      return w;
+        }
+      );
     }
-  );
+    return w;
+  });
 }

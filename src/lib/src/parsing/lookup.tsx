@@ -31,10 +31,32 @@ export function lookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   return nounsAdjs.filter((e) => e[key] === value) as T.DictionaryEntry[];
 }
 
-export function verbLookup(
-  s: (e: T.VerbDictionaryEntry) => boolean
-): T.VerbEntry[] {
-  return verbs.filter(({ entry }) => s(entry));
+export function verbLookup(input: string): T.VerbEntry[] {
+  const s = input.slice(0, -1);
+  if (s.endsWith("ېږ")) {
+    return verbs.filter(
+      ({ entry }) =>
+        entry.p.slice(0, -1) === s ||
+        entry.p === s.slice(0, -1) + "دل" ||
+        entry.p === s ||
+        entry.psp === s ||
+        entry.prp === s ||
+        entry.ssp === s
+    );
+  }
+  return verbs.filter(
+    ({ entry }) =>
+      entry.p.slice(0, -1) === s ||
+      // for short intransitive forms
+      entry.p.slice(0, -3) === s ||
+      entry.p === s ||
+      entry.psp === s ||
+      entry.prp === s ||
+      entry.ssp === s ||
+      (entry.separationAtP &&
+        (entry.p.slice(entry.separationAtP) === s ||
+          entry.psp?.slice(entry.separationAtP) === s))
+  );
 }
 
 export function wordQuery(word: string, type: "adj"): T.AdjectiveEntry;
