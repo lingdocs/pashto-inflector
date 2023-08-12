@@ -251,6 +251,8 @@ function getPassivePp(
   };
 }
 
+// TODO: Abstract out the get T.Vhead part
+
 function getRoot(
   verb: T.VerbEntryNoFVars,
   genderNum: T.GenderNumber,

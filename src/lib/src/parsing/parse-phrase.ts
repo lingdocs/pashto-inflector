@@ -20,7 +20,7 @@ export function parsePhrase(
 } {
   const res = [
     ...parseNP(s, lookup).filter(({ tokens }) => !tokens.length),
-    ...parseVerb(s, verbLookup),
+    // ...parseVerb(s, verbLookup),
     ...parseVP(s, lookup, verbLookup),
   ];
 

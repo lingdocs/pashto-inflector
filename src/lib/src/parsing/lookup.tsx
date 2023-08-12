@@ -33,29 +33,52 @@ export function lookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
 
 export function verbLookup(input: string): T.VerbEntry[] {
   const s = input.slice(0, -1);
+  const sWoutOo = s.startsWith("و") ? s.slice(1) : undefined;
   if (s.endsWith("ېږ")) {
     return verbs.filter(
-      ({ entry }) =>
-        entry.p.slice(0, -1) === s ||
-        entry.p === s.slice(0, -1) + "دل" ||
-        entry.p === s ||
-        entry.psp === s ||
-        entry.prp === s ||
-        entry.ssp === s
+      sWoutOo
+        ? ({ entry }) =>
+            [s, sWoutOo].includes(entry.p.slice(0, -1)) ||
+            [s.slice(0, -1) + "دل", sWoutOo.slice(0, -1) + "دل"].includes(
+              entry.p
+            ) ||
+            [s, sWoutOo].includes(entry.p) ||
+            (entry.psp && [s, sWoutOo].includes(entry.psp)) ||
+            entry.prp === s ||
+            entry.ssp === s
+        : ({ entry }) =>
+            entry.p.slice(0, -1) === s ||
+            entry.p === s.slice(0, -1) + "دل" ||
+            entry.p === s ||
+            entry.psp === s ||
+            entry.prp === s ||
+            entry.ssp === s
     );
   }
   return verbs.filter(
-    ({ entry }) =>
-      entry.p.slice(0, -1) === s ||
-      // for short intransitive forms
-      entry.p.slice(0, -3) === s ||
-      entry.p === s ||
-      entry.psp === s ||
-      entry.prp === s ||
-      entry.ssp === s ||
-      (entry.separationAtP &&
-        (entry.p.slice(entry.separationAtP) === s ||
-          entry.psp?.slice(entry.separationAtP) === s))
+    sWoutOo
+      ? ({ entry }) =>
+          [s, sWoutOo].includes(entry.p.slice(0, -1)) ||
+          // for short intransitive forms
+          [s, sWoutOo].includes(entry.p.slice(0, -3)) ||
+          [s, sWoutOo].includes(entry.p) ||
+          (entry.psp && [s, sWoutOo].includes(entry.psp)) ||
+          entry.prp === s ||
+          entry.ssp === s ||
+          (entry.separationAtP &&
+            (entry.p.slice(entry.separationAtP) === s ||
+              entry.psp?.slice(entry.separationAtP) === s))
+      : ({ entry }) =>
+          entry.p.slice(0, -1) === s ||
+          // for short intransitive forms
+          entry.p.slice(0, -3) === s ||
+          entry.p === s ||
+          entry.psp === s ||
+          entry.prp === s ||
+          entry.ssp === s ||
+          (entry.separationAtP &&
+            (entry.p.slice(entry.separationAtP) === s ||
+              entry.psp?.slice(entry.separationAtP) === s))
   );
 }
 

@@ -3,7 +3,7 @@ import * as T from "../../../types";
 export function parseVerb(
   tokens: Readonly<T.Token[]>,
   verbLookup: (s: string) => T.VerbEntry[]
-): T.ParseResult<Omit<T.VBE, "ps">>[] {
+): T.ParseResult<[{ type: "PH"; s: string } | undefined, Omit<T.VBE, "ps">]>[] {
   if (tokens.length === 0) {
     return [];
   }
@@ -25,9 +25,13 @@ function matchVerbs(
     root: T.Person[];
     stem: T.Person[];
   }
-): Omit<T.VBE, "ps">[] {
-  const w: Omit<T.VBE, "ps">[] = [];
+): [{ type: "PH"; s: string } | undefined, Omit<T.VBE, "ps">][] {
+  const w: ReturnType<typeof matchVerbs> = [];
+  const lEnding = s.endsWith("ل");
   const base = s.endsWith("ل") ? s : s.slice(0, -1);
+  const matchShortOrLong = (b: string, x: string) => {
+    return b === x || (!lEnding && b === x.slice(0, -1));
+  };
   if (people.stem.length) {
     const stemMatches = {
       imperfective: entries.filter(({ entry: e }) => {
@@ -44,39 +48,135 @@ function matchVerbs(
           return e.p.slice(0, -1) === base;
         }
       }),
-      perfective: entries.filter(({ entry: e }) => {
+      perfective: entries.reduce<
+        { ph: string | undefined; entry: T.VerbEntry }[]
+      >((acc, entry) => {
+        const e = entry.entry;
         if (e.c.includes("comp")) {
-          return false;
+          return acc;
         }
         if (e.ssp) {
-          const bSep = e.separationAtP ? e.ssp.slice(e.separationAtP) : "";
-          return bSep === base || e.ssp === base;
-        }
-        if (e.psp) {
-          const bSep = e.separationAtP ? e.psp.slice(e.separationAtP) : "";
-          return bSep === base || e.psp === base;
-        }
-        if (e.c.includes("intrans.")) {
+          const bRest = e.separationAtP ? e.ssp.slice(e.separationAtP) : "";
+          if (bRest === base) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
+          if (e.ssp === base) {
+            return [
+              ...acc,
+              {
+                ph: e.separationAtF
+                  ? e.ssp.slice(0, e.separationAtP)
+                  : undefined,
+                entry,
+              },
+            ];
+          }
+        } else if (e.psp) {
+          const bRest = e.separationAtP ? e.psp.slice(e.separationAtP) : "";
+          if (bRest === base) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
+          if (e.psp === base && e.separationAtP) {
+            return [
+              ...acc,
+              {
+                ph: e.psp.slice(0, e.separationAtP),
+                entry,
+              },
+            ];
+          }
+          if ((base.startsWith("و") && base.slice(1)) === e.psp) {
+            return [
+              ...acc,
+              {
+                ph: "و",
+                entry,
+              },
+            ];
+          }
+          if (base === e.psp) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
+        } else if (e.c.includes("intrans.")) {
           const miniRoot = e.p.slice(0, -3);
-          return miniRoot + "ېږ" === base || miniRoot === base;
+          const miniRootEg = miniRoot + "ېږ";
+          if ([miniRoot, miniRootEg].includes(base)) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          } else if (
+            base.startsWith("و") &&
+            [miniRoot, miniRootEg].includes(base.slice(1))
+          ) {
+            return [
+              ...acc,
+              {
+                ph: "و", // TODO: check for وا etc
+                entry,
+              },
+            ];
+          }
         } else {
-          return e.p.slice(0, -1) === base;
+          const eb = e.p.slice(0, -1);
+          if (eb === base) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          } else if (base.startsWith("و") && eb === base.slice(1)) {
+            return [
+              ...acc,
+              {
+                ph: "و",
+                entry,
+              },
+            ];
+          }
         }
-      }),
+        return acc;
+      }, []),
     };
     Object.entries(stemMatches).forEach(([aspect, entries]) => {
       entries.forEach((verb) => {
         people.stem.forEach((person) => {
-          w.push({
-            type: "VB",
-            person,
-            info: {
-              type: "verb",
-              aspect: aspect as T.Aspect,
-              base: "stem",
-              verb: verb,
+          w.push([
+            "ph" in verb && verb.ph ? { type: "PH", s: verb.ph } : undefined,
+            {
+              type: "VB",
+              person,
+              info: {
+                type: "verb",
+                aspect: aspect as T.Aspect,
+                base: "stem",
+                verb: "ph" in verb ? verb.entry : verb,
+              },
             },
-          });
+          ]);
         });
       });
     });
@@ -84,43 +184,76 @@ function matchVerbs(
   if (people.root.length) {
     const rootMatches = {
       imperfective: entries.filter(
-        ({ entry: e }) =>
-          !e.c.includes("comp") &&
-          (base === e.p || (!s.endsWith("ل") && base === e.p.slice(0, -1)))
+        ({ entry: e }) => !e.c.includes("comp") && matchShortOrLong(base, e.p)
       ),
-      perfective: entries.filter(({ entry: e }) => {
+      perfective: entries.reduce<
+        { ph: string | undefined; entry: T.VerbEntry }[]
+      >((acc, entry) => {
+        const e = entry.entry;
         if (e.c.includes("comp")) {
-          return false;
+          return acc;
         }
         if (e.separationAtP) {
-          const bSep = e.p.slice(e.separationAtP);
-          return (
-            base === bSep ||
-            base === e.p ||
-            (!s.endsWith("ل") &&
-              (base === e.p.slice(0, -1) || base === bSep.slice(0, -1)))
-          );
-        } else {
-          // TODO: perfective roots are so rare could optimize this with a couple of checks?
-          return e.prp
-            ? e.prp === base || e.prp.slice(0, -1) === base
-            : base === e.p || (!s.endsWith("ل") && base === e.p.slice(0, -1));
+          const b = e.prp || e.p;
+          const bHead = b.slice(0, e.separationAtP);
+          const bRest = b.slice(e.separationAtP);
+          if (matchShortOrLong(base, b)) {
+            return [
+              ...acc,
+              {
+                ph: bHead,
+                entry,
+              },
+            ];
+          } else if (matchShortOrLong(base, bRest)) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
+        } else if (!e.prp) {
+          const baseNoOo = base.startsWith("و") && base.slice(1);
+          if (baseNoOo && matchShortOrLong(baseNoOo, e.p)) {
+            return [
+              ...acc,
+              {
+                ph: "و",
+                entry,
+              },
+            ];
+          } else if (matchShortOrLong(base, e.p)) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
         }
-      }),
+        return acc;
+      }, []),
     };
+
     Object.entries(rootMatches).forEach(([aspect, entries]) => {
       entries.forEach((verb) => {
         people.root.forEach((person) => {
-          w.push({
-            type: "VB",
-            person,
-            info: {
-              type: "verb",
-              aspect: aspect as T.Aspect,
-              base: "root",
-              verb: verb,
+          w.push([
+            "ph" in verb && verb.ph ? { type: "PH", s: verb.ph } : undefined,
+            {
+              type: "VB",
+              person,
+              info: {
+                type: "verb",
+                aspect: aspect as T.Aspect,
+                base: "root",
+                verb: "ph" in verb ? verb.entry : verb,
+              },
             },
-          });
+          ]);
         });
       });
     });

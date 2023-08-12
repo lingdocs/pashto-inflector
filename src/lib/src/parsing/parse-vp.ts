@@ -101,18 +101,18 @@ export function parseVP(
     }));
   }).filter(({ errors }) => !errors.length);
   // TODO: be able to bind mulitple vals
-  return bindParseResult(vb, (tokens, { np1, np2, v }) => {
+  return bindParseResult(vb, (tokens, { np1, np2, v: [ph, v] }) => {
     const w: T.ParseResult<T.VPSelectionComplete>[] = [];
-    const isPast = v.info.type === "verb" && v.info.base === "root";
+    if (v.info.type === "equative") {
+      throw new Error("not yet implemented");
+    }
+    const isPast = v.info.base === "root";
     const intransitive =
       v.info.type === "verb" && v.info.verb.entry.c.includes("intrans.");
-
-    if (!np2) {
-      const errors: T.ParseError[] = [];
+    if (intransitive) {
+      if (np2) return [];
       const s = np1;
-      if (!intransitive) {
-        return [];
-      }
+      const errors: T.ParseError[] = [];
       if (s.inflected) {
         errors.push({
           message: "subject of intransitive verb should not be inflected",
@@ -143,7 +143,7 @@ export function parseVP(
         canChangeTransitivity: false,
         canChangeStatDyn: false,
         negative: false,
-        tense: isPast ? "imperfectivePast" : "presentVerb",
+        tense: getTenseFromRootsStems(false, v.info.base, v.info.aspect),
         canChangeVoice: true,
         isCompound: false,
         voice: "active",
@@ -162,8 +162,18 @@ export function parseVP(
         errors,
       });
     } else {
+      // transitive verb
+      if (!(np1 && np2)) return [];
       [[np1, np2, false] as const, [np2, np1, true] as const].forEach(
         ([s, o, reversed]) => {
+          if (v.info.type === "equative") {
+            throw new Error("not yet implemented");
+          }
+          if (!s || !o) return [];
+          // TODO: check if perfective head MATCHES verb
+          if (v.info.aspect === "perfective" && !ph) {
+            return [];
+          }
           const subjPerson = getPersonFromNP(s.selection);
           const errors: T.ParseError[] = [];
           if (intransitive) {
@@ -230,7 +240,7 @@ export function parseVP(
             canChangeTransitivity: false,
             canChangeStatDyn: false,
             negative: false,
-            tense: isPast ? "imperfectivePast" : "presentVerb",
+            tense: getTenseFromRootsStems(false, v.info.base, v.info.aspect),
             canChangeVoice: true,
             isCompound: false,
             voice: "active",
@@ -253,4 +263,28 @@ export function parseVP(
     }
     return w;
   });
+}
+
+function getTenseFromRootsStems(
+  hasBa: boolean,
+  base: "root" | "stem",
+  aspect: T.Aspect
+): T.VerbTense {
+  if (!hasBa) {
+    if (base === "root") {
+      return aspect === "perfective" ? "perfectivePast" : "imperfectivePast";
+    } else {
+      return aspect === "imperfective" ? "presentVerb" : "subjunctiveVerb";
+    }
+  } else {
+    if (base === "root") {
+      return aspect === "perfective"
+        ? "habitualPerfectivePast"
+        : "habitualImperfectivePast";
+    } else {
+      return aspect === "imperfective"
+        ? "imperfectiveFuture"
+        : "perfectiveFuture";
+    }
+  }
 }
