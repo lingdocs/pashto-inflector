@@ -8,6 +8,7 @@ import {
 } from "../phrase-building/blocks-utils";
 import { vEntry } from "../new-verb-engine/rs-helpers";
 import { getPersonFromNP, isThirdPerson } from "../phrase-building/vp-tools";
+import { parseBa } from "./parse-ba";
 // to hide equatives type-doubling issue
 const kedulStat = vEntry({
   ts: 1581086654898,
@@ -40,16 +41,44 @@ export function parseVP(
   }
   // how to make this into a nice pipeline... 🤔
   const NP1 = parseNP(tokens, lookup).filter(({ errors }) => !errors.length);
+  const ba = bindParseResult(NP1, (tokens, np1) => {
+    const b = parseBa(tokens);
+    if (!b.length) {
+      return [
+        {
+          tokens,
+          body: {
+            np1,
+            ba: false,
+          },
+          errors: [],
+        },
+      ];
+    } else {
+      return b.map(({ tokens, errors }) => ({
+        body: {
+          np1,
+          ba: true,
+        },
+        errors,
+        tokens,
+      }));
+    }
+  });
   const NP2 = bindParseResult<
     {
-      inflected: boolean;
-      selection: T.NPSelection;
+      np1: {
+        inflected: boolean;
+        selection: T.NPSelection;
+      };
+      ba: boolean;
     },
     {
       np1: {
         inflected: boolean;
         selection: T.NPSelection;
       };
+      ba: boolean;
       np2:
         | {
             inflected: boolean;
@@ -57,7 +86,7 @@ export function parseVP(
           }
         | undefined;
     }
-  >(NP1, (tokens, np1) => {
+  >(ba, (tokens, { np1, ba }) => {
     const np2s = parseNP(tokens, lookup);
     if (!np2s.length) {
       const r: T.ParseResult<{
@@ -65,6 +94,7 @@ export function parseVP(
           inflected: boolean;
           selection: T.NPSelection;
         };
+        ba: boolean;
         np2: undefined;
       }>[] = [
         {
@@ -72,6 +102,7 @@ export function parseVP(
           body: {
             np1,
             np2: undefined,
+            ba,
           },
           errors: [],
         },
@@ -83,6 +114,7 @@ export function parseVP(
       body: {
         np1,
         np2: p.body,
+        ba,
       },
       errors: p.errors,
     }));
@@ -96,12 +128,13 @@ export function parseVP(
         np2: nps.np2,
         v: p.body,
         np1: nps.np1,
+        ba: nps.ba,
       },
       errors: p.errors,
     }));
   }).filter(({ errors }) => !errors.length);
   // TODO: be able to bind mulitple vals
-  return bindParseResult(vb, (tokens, { np1, np2, v: [ph, v] }) => {
+  return bindParseResult(vb, (tokens, { np1, np2, v: [ph, v], ba }) => {
     const w: T.ParseResult<T.VPSelectionComplete>[] = [];
     if (v.info.type === "equative") {
       throw new Error("not yet implemented");
@@ -143,7 +176,7 @@ export function parseVP(
         canChangeTransitivity: false,
         canChangeStatDyn: false,
         negative: false,
-        tense: getTenseFromRootsStems(false, v.info.base, v.info.aspect),
+        tense: getTenseFromRootsStems(ba, v.info.base, v.info.aspect),
         canChangeVoice: true,
         isCompound: false,
         voice: "active",
@@ -240,7 +273,7 @@ export function parseVP(
             canChangeTransitivity: false,
             canChangeStatDyn: false,
             negative: false,
-            tense: getTenseFromRootsStems(false, v.info.base, v.info.aspect),
+            tense: getTenseFromRootsStems(ba, v.info.base, v.info.aspect),
             canChangeVoice: true,
             isCompound: false,
             voice: "active",

@@ -15,6 +15,7 @@ const kenaastul = wordQuery("کېناستل", "verb");
 const prexodul = wordQuery("پرېښودل", "verb");
 const xodul = wordQuery("ښودل", "verb");
 const kexodul = wordQuery("کېښودل", "verb");
+const katul = wordQuery("کتل", "verb");
 
 const tests: {
   label: string;
@@ -376,6 +377,7 @@ const tests: {
           },
         ],
       },
+      // TODO!! THESE COULD ALSO BE MALE
       {
         input: "لیده",
         output: [
@@ -402,6 +404,7 @@ const tests: {
           },
         ],
       },
+      // BUT NOT THIS ONE
       {
         input: "ولیدله",
         output: [
@@ -468,6 +471,33 @@ const tests: {
               aspects: ["perfective"],
             },
             verb: khorul,
+          },
+        ],
+      },
+      {
+        input: "خوړ",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: khorul,
+          },
+        ],
+      },
+      // TODO: should do کاته as well... what to do, have multiple tpp forms ? YES!
+      {
+        input: "وکوت",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: katul,
           },
         ],
       },
@@ -633,194 +663,3 @@ tests.forEach(({ label, cases }) => {
     });
   });
 });
-
-const b = [
-  [
-    undefined,
-    {
-      info: {
-        aspect: "imperfective",
-        base: "stem",
-        type: "verb",
-        verb: {
-          entry: {
-            c: "v. trans.",
-            e: "to put, to put down, to set in place",
-            ec: "put,puts,putting,put,put",
-            f: "kexodul",
-            g: "kexodul",
-            i: 11193,
-            noOo: true,
-            p: "کېښودل",
-            psf: "Gd",
-            psp: "ږد",
-            r: 4,
-            separationAtF: 2,
-            separationAtP: 2,
-            ssf: "kéGd",
-            ssp: "کېږد",
-            ts: 1527812284,
-          },
-        },
-      },
-      person: 6,
-      type: "VB",
-    },
-  ],
-  [
-    undefined,
-    {
-      info: {
-        aspect: "imperfective",
-        base: "stem",
-        type: "verb",
-        verb: {
-          entry: {
-            c: "v. trans.",
-            e: "to put, to put down, to set in place",
-            ec: "put,puts,putting,put,put",
-            f: "kexodul",
-            g: "kexodul",
-            i: 11193,
-            noOo: true,
-            p: "کېښودل",
-            psf: "Gd",
-            psp: "ږد",
-            r: 4,
-            separationAtF: 2,
-            separationAtP: 2,
-            ssf: "kéGd",
-            ssp: "کېږد",
-            ts: 1527812284,
-          },
-        },
-      },
-      person: 7,
-      type: "VB",
-    },
-  ],
-  [
-    undefined,
-    {
-      info: {
-        aspect: "perfective",
-        base: "stem",
-        type: "verb",
-        verb: {
-          entry: {
-            c: "v. trans.",
-            e: "to leave, abandon, forsake, let go, allow",
-            ec: "abandon",
-            f: "prexodúl",
-            g: "prexodul",
-            i: 2516,
-            noOo: true,
-            p: "پرېښودل",
-            psf: "preGd",
-            psp: "پرېږد",
-            r: 4,
-            separationAtF: 3,
-            separationAtP: 3,
-            ts: 1527815190,
-          },
-        },
-      },
-      person: 6,
-      type: "VB",
-    },
-  ],
-  [
-    undefined,
-    {
-      info: {
-        aspect: "perfective",
-        base: "stem",
-        type: "verb",
-        verb: {
-          entry: {
-            c: "v. trans.",
-            e: "to leave, abandon, forsake, let go, allow",
-            ec: "abandon",
-            f: "prexodúl",
-            g: "prexodul",
-            i: 2516,
-            noOo: true,
-            p: "پرېښودل",
-            psf: "preGd",
-            psp: "پرېږد",
-            r: 4,
-            separationAtF: 3,
-            separationAtP: 3,
-            ts: 1527815190,
-          },
-        },
-      },
-      person: 7,
-      type: "VB",
-    },
-  ],
-  [
-    { s: "کې", type: "PH" },
-    {
-      info: {
-        aspect: "perfective",
-        base: "stem",
-        type: "verb",
-        verb: {
-          entry: {
-            c: "v. trans.",
-            e: "to put, to put down, to set in place",
-            ec: "put,puts,putting,put,put",
-            f: "kexodul",
-            g: "kexodul",
-            i: 11193,
-            noOo: true,
-            p: "کېښودل",
-            psf: "Gd",
-            psp: "ږد",
-            r: 4,
-            separationAtF: 2,
-            separationAtP: 2,
-            ssf: "kéGd",
-            ssp: "کېږد",
-            ts: 1527812284,
-          },
-        },
-      },
-      person: 6,
-      type: "VB",
-    },
-  ],
-  [
-    { s: "کې", type: "PH" },
-    {
-      info: {
-        aspect: "perfective",
-        base: "stem",
-        type: "verb",
-        verb: {
-          entry: {
-            c: "v. trans.",
-            e: "to put, to put down, to set in place",
-            ec: "put,puts,putting,put,put",
-            f: "kexodul",
-            g: "kexodul",
-            i: 11193,
-            noOo: true,
-            p: "کېښودل",
-            psf: "Gd",
-            psp: "ږد",
-            r: 4,
-            separationAtF: 2,
-            separationAtP: 2,
-            ssf: "kéGd",
-            ssp: "کېږد",
-            ts: 1527812284,
-          },
-        },
-      },
-      person: 7,
-      type: "VB",
-    },
-  ],
-];

@@ -31,9 +31,23 @@ export function lookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   return nounsAdjs.filter((e) => e[key] === value) as T.DictionaryEntry[];
 }
 
+export function shouldCheckTpp(s: string): boolean {
+  return (
+    ["د", "ړ", "ت", "ځ", "و", "ډ", "ڼ", "ن", "ه"].includes(s.slice(-1)) ||
+    ["ست", "ښت"].includes(s.slice(-2)) ||
+    ["ښود"].includes(s.slice(-3))
+  );
+}
+
 export function verbLookup(input: string): T.VerbEntry[] {
   const s = input.slice(0, -1);
+  // check endings TODO: ONLY LOOKUP THE VERB POSSIBILITIES IF IT HAS A LEGITIMATE ENDING
+  // if theres no legit verb ending and no tpp possibilities, just return an empty array
   const sWoutOo = s.startsWith("و") ? s.slice(1) : undefined;
+  const checkTpp = shouldCheckTpp(input);
+  const inputWoutOo =
+    checkTpp && input.startsWith("و") ? input.slice(1) : undefined;
+  // TODO: don't do the slice of and checking for useless things when you have a NON verb ending (like with the tpp)
   if (s.endsWith("ېږ")) {
     return verbs.filter(
       sWoutOo
@@ -43,12 +57,14 @@ export function verbLookup(input: string): T.VerbEntry[] {
               entry.p
             ) ||
             [s, sWoutOo].includes(entry.p) ||
+            (checkTpp && [input, inputWoutOo].includes(entry.tppp)) ||
             (entry.psp && [s, sWoutOo].includes(entry.psp)) ||
             entry.prp === s ||
             entry.ssp === s
         : ({ entry }) =>
             entry.p.slice(0, -1) === s ||
             entry.p === s.slice(0, -1) + "دل" ||
+            (checkTpp && [input, inputWoutOo].includes(entry.tppp)) ||
             entry.p === s ||
             entry.psp === s ||
             entry.prp === s ||
@@ -63,6 +79,7 @@ export function verbLookup(input: string): T.VerbEntry[] {
           [s, sWoutOo].includes(entry.p.slice(0, -3)) ||
           [s, sWoutOo].includes(entry.p) ||
           (entry.psp && [s, sWoutOo].includes(entry.psp)) ||
+          (checkTpp && [input, inputWoutOo].includes(entry.tppp)) ||
           entry.prp === s ||
           entry.ssp === s ||
           (entry.separationAtP &&
@@ -73,6 +90,7 @@ export function verbLookup(input: string): T.VerbEntry[] {
           // for short intransitive forms
           entry.p.slice(0, -3) === s ||
           entry.p === s ||
+          (checkTpp && [input, inputWoutOo].includes(entry.tppp)) ||
           entry.psp === s ||
           entry.prp === s ||
           entry.ssp === s ||

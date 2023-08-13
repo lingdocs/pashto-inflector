@@ -7,6 +7,7 @@ import {
 } from "../misc-helpers";
 import { fmapSingleOrLengthOpts } from "../fp-ps";
 import { concatPsString, getLength } from "../p-text-helpers";
+import { zipWith } from "rambda";
 import {
   presentEndings,
   pastEndings,
@@ -362,16 +363,20 @@ function ensure3rdPast(
     ];
   }
   if (verb.entry.tppp && verb.entry.tppf) {
-    const tip = removeAccents(
-      verb.entry.separationAtP !== undefined
-        ? makePsString(
-            verb.entry.tppp.slice(verb.entry.separationAtP),
-            verb.entry.tppf.slice(verb.entry.separationAtF)
-          )
-        : makePsString(verb.entry.tppp, verb.entry.tppf)
-    );
-    const aTip = aspect === "imperfective" ? accentOnNFromEnd(tip, 0) : tip;
-    return [aTip];
+    const tppp = verb.entry.tppp.split(",").map((x) => x.trim());
+    const tppf = verb.entry.tppf.split(",").map((x) => x.trim());
+    const tpps = zipWith((p, f) => ({ p, f }), tppp, tppf);
+    return tpps.map(({ p, f }) => {
+      const tip = removeAccents(
+        verb.entry.separationAtP !== undefined
+          ? makePsString(
+              p.slice(verb.entry.separationAtP),
+              f.slice(verb.entry.separationAtF)
+            )
+          : makePsString(p, f)
+      );
+      return aspect === "imperfective" ? accentOnNFromEnd(tip, 0) : tip;
+    });
     // if it ends in a consonant, the special form will also have another
     // variation ending with a ه - u
     // const endsInAConsonant = (pashtoConsonants.includes(tip.p.slice(-1)) || tip.f.slice(-1) === "w");

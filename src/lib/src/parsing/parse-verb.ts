@@ -1,5 +1,27 @@
 import * as T from "../../../types";
 
+// third persion idosyncratic
+// if it ends in a dental or ه - look for tttp
+//
+// if not having tttp
+// automatic things: (with blank or u)
+//  ېد ست ښت
+// ښود
+//
+// ول - اوه
+
+// وېشه ?
+
+// test ګالو ❌ vs ګاللو ✅
+
+// واخیست / واخیسته / واخیستلو
+// ولید // ولیده // ولیدو
+//
+//  ووت  / واته
+//
+// also write the rules for the third pers sing endings in the grammar
+// multiple third pers sing options
+
 export function parseVerb(
   tokens: Readonly<T.Token[]>,
   verbLookup: (s: string) => T.VerbEntry[]
@@ -258,6 +280,52 @@ function matchVerbs(
       });
     });
   }
+  const tppMatches = {
+    imperfective: entries.filter(
+      ({ entry: e }) => !e.c.includes("comp") && s === e.tppp
+    ),
+    perfective: entries.reduce<
+      { ph: string | undefined; entry: T.VerbEntry }[]
+    >((acc, entry) => {
+      const e = entry.entry;
+      const sNoOo = s.startsWith("و") && s.slice(1);
+      if (sNoOo && sNoOo === e.tppp) {
+        return [
+          ...acc,
+          {
+            ph: "و",
+            entry,
+          },
+        ];
+      } else if (s === e.tppp) {
+        return [
+          ...acc,
+          {
+            ph: undefined,
+            entry,
+          },
+        ];
+      }
+      return acc;
+    }, []),
+  };
+  Object.entries(tppMatches).forEach(([aspect, entries]) => {
+    entries.forEach((verb) => {
+      w.push([
+        "ph" in verb && verb.ph ? { type: "PH", s: verb.ph } : undefined,
+        {
+          type: "VB",
+          person: T.Person.ThirdSingMale,
+          info: {
+            type: "verb",
+            aspect: aspect as T.Aspect,
+            base: "root",
+            verb: "ph" in verb ? verb.entry : verb,
+          },
+        },
+      ]);
+    });
+  });
   return w;
 }
 
