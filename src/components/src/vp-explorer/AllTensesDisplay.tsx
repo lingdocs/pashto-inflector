@@ -151,6 +151,7 @@ function AllTensesDisplay({
                 <ChartDisplay
                   verb={verb}
                   objectNP={
+                    VS.isCompound === "dynamic" &&
                     objectNP?.selection.type === "noun"
                       ? {
                           ...objectNP,
