@@ -31,7 +31,7 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
   }
   return (
     <div className="mt-3" style={{ marginBottom: "1000px" }}>
-      <p>Type a NP</p>
+      <p>Type an NP or full kernel verb phrase (not fully working!)</p>
       <div className="form-group mb-2">
         <input
           dir="rtl"
