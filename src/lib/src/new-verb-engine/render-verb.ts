@@ -6,8 +6,11 @@ import {
   personToGenNum,
 } from "../misc-helpers";
 import { fmapSingleOrLengthOpts } from "../fp-ps";
-import { concatPsString, getLength } from "../p-text-helpers";
-import { zipWith } from "rambda";
+import {
+  concatPsString,
+  getLength,
+  splitPsByVarients,
+} from "../p-text-helpers";
 import {
   presentEndings,
   pastEndings,
@@ -363,9 +366,9 @@ function ensure3rdPast(
     ];
   }
   if (verb.entry.tppp && verb.entry.tppf) {
-    const tppp = verb.entry.tppp.split(",").map((x) => x.trim());
-    const tppf = verb.entry.tppf.split(",").map((x) => x.trim());
-    const tpps = zipWith((p, f) => ({ p, f }), tppp, tppf);
+    const tpps = splitPsByVarients(
+      makePsString(verb.entry.tppp, verb.entry.tppf)
+    );
     return tpps.map(({ p, f }) => {
       const tip = removeAccents(
         verb.entry.separationAtP !== undefined

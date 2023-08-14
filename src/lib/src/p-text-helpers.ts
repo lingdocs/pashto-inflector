@@ -16,6 +16,7 @@ import { hasAccents, removeAccents } from "./accent-helpers";
 import { phoneticsConsonants } from "./pashto-consonants";
 import { simplifyPhonetics } from "./simplify-phonetics";
 import { makePsString, removeFVarients } from "./accent-and-ps-utils";
+import { zipWith } from "rambda";
 
 // export function concatPsStringWithVars(...items: Array<T.PsString | " " | "">): T.PsString[] {
 
@@ -1086,14 +1087,8 @@ export function splitPsByVarients(w: T.PsString): T.ArrayOneOrMore<T.PsString> {
   function cut(s: string) {
     return s.split(/[,|،]/).map((s) => s.trim());
   }
-  const ps = mapPsString(w, cut);
-  return ps.p.map((p, i) => {
-    if (!ps.f[i])
-      throw new Error(
-        "uneven comma seperated ps varients: " + JSON.stringify(w)
-      );
-    return makePsString(p, ps.f[i]);
-  }) as T.ArrayOneOrMore<T.PsString>;
+  const { p, f } = mapPsString(w, cut);
+  return zipWith(makePsString, p, f) as T.ArrayOneOrMore<T.PsString>;
 }
 
 export function removeEndTick(w: T.PsString): T.PsString;

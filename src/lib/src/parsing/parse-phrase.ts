@@ -1,7 +1,6 @@
 import * as T from "../../../types";
 import { verbLookup } from "./lookup";
 import { parseNP } from "./parse-np";
-import { parseVerb } from "./parse-verb";
 import { parseVP } from "./parse-vp";
 
 export function parsePhrase(

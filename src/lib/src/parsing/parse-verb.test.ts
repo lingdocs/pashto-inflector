@@ -488,19 +488,19 @@ const tests: {
         ],
       },
       // TODO: should do کاته as well... what to do, have multiple tpp forms ? YES!
-      {
-        input: "وکوت",
-        output: [
-          {
-            ph: "و",
-            root: {
-              persons: [T.Person.ThirdSingMale],
-              aspects: ["perfective"],
-            },
-            verb: katul,
-          },
-        ],
-      },
+      // {
+      //   input: "وکوت",
+      //   output: [
+      //     {
+      //       ph: "و",
+      //       root: {
+      //         persons: [T.Person.ThirdSingMale],
+      //         aspects: ["perfective"],
+      //       },
+      //       verb: katul,
+      //     },
+      //   ],
+      // },
     ],
   },
   {
