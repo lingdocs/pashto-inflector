@@ -16,6 +16,9 @@ const prexodul = wordQuery("پرېښودل", "verb");
 const xodul = wordQuery("ښودل", "verb");
 const kexodul = wordQuery("کېښودل", "verb");
 const katul = wordQuery("کتل", "verb");
+const tlul = wordQuery("تلل", "verb");
+
+// todo alwatul waalwatul akhistul azmoyul etc
 
 const tests: {
   label: string;
@@ -384,7 +387,7 @@ const tests: {
           {
             ph: undefined,
             root: {
-              persons: [T.Person.ThirdSingFemale],
+              persons: [T.Person.ThirdSingFemale, T.Person.ThirdSingMale],
               aspects: ["imperfective", "perfective"],
             },
             verb: leedul,
@@ -397,7 +400,7 @@ const tests: {
           {
             ph: "و",
             root: {
-              persons: [T.Person.ThirdSingFemale],
+              persons: [T.Person.ThirdSingFemale, T.Person.ThirdSingMale],
               aspects: ["perfective"],
             },
             verb: leedul,
@@ -487,20 +490,58 @@ const tests: {
           },
         ],
       },
-      // TODO: should do کاته as well... what to do, have multiple tpp forms ? YES!
-      // {
-      //   input: "وکوت",
-      //   output: [
-      //     {
-      //       ph: "و",
-      //       root: {
-      //         persons: [T.Person.ThirdSingMale],
-      //         aspects: ["perfective"],
-      //       },
-      //       verb: katul,
-      //     },
-      //   ],
-      // },
+      {
+        input: "وخوړ",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: khorul,
+          },
+        ],
+      },
+      {
+        input: "کوت",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: katul,
+          },
+        ],
+      },
+      {
+        input: "کاته",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: katul,
+          },
+        ],
+      },
+      {
+        input: "وکاته",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: katul,
+          },
+        ],
+      },
     ],
   },
   {
@@ -577,7 +618,7 @@ const tests: {
           {
             ph: "پرې",
             root: {
-              persons: [T.Person.ThirdSingFemale],
+              persons: [T.Person.ThirdSingFemale, T.Person.ThirdSingMale],
               aspects: ["imperfective", "perfective"],
             },
             verb: prexodul,
@@ -613,6 +654,24 @@ const tests: {
           },
         ],
       },
+    ],
+  },
+  {
+    label: "verbs with abrupt 3rd pers sing past endings",
+    cases: [
+      // {
+      //   input: "لاړ",
+      //   output: [
+      //     {
+      //       ph: undefined,
+      //       root: {
+      //         persons: [T.Person.ThirdSingMale],
+      //         aspects: ["perfective"],
+      //       },
+      //       verb: tlul,
+      //     },
+      //   ],
+      // },
     ],
   },
 ];

@@ -46,7 +46,6 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     king,
     complementPerson,
   });
-  // TODO: for dynamic -
   const { vbs, hasBa } = renderVerb({
     verb:
       VP.verb.isCompound === "generative stative"
@@ -164,12 +163,32 @@ export function insertNegative(
   }
   if (nonStandPerfectiveSplit) {
     return [
-      insertFromEnd(blocksNoAccentA, neg, 1),
+      // special case to handle نه لاړ  (can't say لا نه ړ)
+      insertFromEnd(ensureNoHangingR(blocksNoAccentA), neg, 1),
       insertFromEnd(blocksNoAccentA, neg, 2),
     ];
   } else {
     return [insertFromEnd(blocksNoAccentA, neg, 1)];
   }
+}
+
+function ensureNoHangingR(b: T.Block[]): T.Block[] {
+  return b.map((x) =>
+    x.block.type === "VB" &&
+    "short" in x.block.ps &&
+    x.block.ps.short.find((x) => x.p === "ړ")
+      ? {
+          ...x,
+          block: {
+            ...x.block,
+            ps: {
+              ...x.block.ps,
+              short: x.block.ps.short.filter((ps) => ps.p !== "ړ"),
+            },
+          },
+        }
+      : x
+  );
 }
 
 function swapEndingBlocks<X>(arr: X[], n: number = 1): X[] {

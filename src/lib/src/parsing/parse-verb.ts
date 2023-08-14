@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import { isInVarients } from "../p-text-helpers";
 
 // third persion idosyncratic
 // if it ends in a dental or ه - look for tttp
@@ -280,16 +281,66 @@ function matchVerbs(
       });
     });
   }
+  const hamzaEnd = s.endsWith("ه");
   const tppMatches = {
     imperfective: entries.filter(
-      ({ entry: e }) => !e.c.includes("comp") && s === e.tppp
+      ({ entry: e }) =>
+        !e.c.includes("comp") &&
+        (isInVarients(e.tppp, s) || (hamzaEnd && base === e.p.slice(0, -1)))
     ),
     perfective: entries.reduce<
       { ph: string | undefined; entry: T.VerbEntry }[]
     >((acc, entry) => {
       const e = entry.entry;
+      if (e.c.includes("comp")) {
+        return acc;
+      }
+      if (e.separationAtP && hamzaEnd) {
+        const b = e.prp || e.p;
+        const bHead = b.slice(0, e.separationAtP);
+        const bRest = b.slice(e.separationAtP);
+        // this is REPETITIVE from above ... but doing it again here because the ه will only match on the SHORT versions for 3rd pers masc sing
+        // could modify and reuse the code above for this
+        if (base === b.slice(0, -1)) {
+          return [
+            ...acc,
+            {
+              ph: bHead,
+              entry,
+            },
+          ];
+        }
+        if (base === bRest.slice(0, -1)) {
+          return [
+            ...acc,
+            {
+              ph: undefined,
+              entry,
+            },
+          ];
+        }
+      } else if (!e.prp && hamzaEnd) {
+        const baseNoOo = base.startsWith("و") && base.slice(1);
+        if (baseNoOo && baseNoOo === e.p.slice(0, -1)) {
+          return [
+            ...acc,
+            {
+              ph: "و",
+              entry,
+            },
+          ];
+        } else if (base === e.p.slice(0, -1)) {
+          return [
+            ...acc,
+            {
+              ph: undefined,
+              entry,
+            },
+          ];
+        }
+      }
       const sNoOo = s.startsWith("و") && s.slice(1);
-      if (sNoOo && sNoOo === e.tppp) {
+      if (isInVarients(e.tppp, sNoOo)) {
         return [
           ...acc,
           {
@@ -297,7 +348,7 @@ function matchVerbs(
             entry,
           },
         ];
-      } else if (s === e.tppp) {
+      } else if (isInVarients(e.tppp, s)) {
         return [
           ...acc,
           {

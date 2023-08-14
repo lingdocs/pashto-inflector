@@ -354,6 +354,22 @@ function ensure3rdPast(
   if (isTlulVerb(verb)) {
     // should be imperfective at this point
     // the perfective غی should already be covered in the function this is coming from
+    if (verb.entry.p === "تلل" && aspect === "perfective") {
+      return [
+        {
+          p: "ړ",
+          f: "R",
+        },
+        {
+          p: "ړه",
+          f: "Ru",
+        },
+        {
+          p: "ړو",
+          f: "Ro",
+        },
+      ];
+    }
     return [
       {
         p: rs[0].p.slice(0, -1) + "ه",

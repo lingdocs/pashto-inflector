@@ -3,6 +3,8 @@ import verbs from "../../../verbs";
 import * as T from "../../../types";
 import { isAdjectiveEntry, isNounEntry } from "../type-predicates";
 import { removeFVarientsFromVerb } from "../accent-and-ps-utils";
+import { splitVarients } from "../p-text-helpers";
+import { arraysHaveCommon } from "../misc-helpers";
 
 export function lookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   const [key, value] = Object.entries(s)[0];
@@ -41,6 +43,7 @@ export function shouldCheckTpp(s: string): boolean {
 
 export function verbLookup(input: string): T.VerbEntry[] {
   const s = input.slice(0, -1);
+  // IMPORTANT TODO FOR EFFECIANCY!
   // check endings TODO: ONLY LOOKUP THE VERB POSSIBILITIES IF IT HAS A LEGITIMATE ENDING
   // if theres no legit verb ending and no tpp possibilities, just return an empty array
   const sWoutOo = s.startsWith("و") ? s.slice(1) : undefined;
@@ -57,14 +60,12 @@ export function verbLookup(input: string): T.VerbEntry[] {
               entry.p
             ) ||
             [s, sWoutOo].includes(entry.p) ||
-            (checkTpp && [input, inputWoutOo].includes(entry.tppp)) ||
             (entry.psp && [s, sWoutOo].includes(entry.psp)) ||
             entry.prp === s ||
             entry.ssp === s
         : ({ entry }) =>
             entry.p.slice(0, -1) === s ||
             entry.p === s.slice(0, -1) + "دل" ||
-            (checkTpp && [input, inputWoutOo].includes(entry.tppp)) ||
             entry.p === s ||
             entry.psp === s ||
             entry.prp === s ||
@@ -79,7 +80,11 @@ export function verbLookup(input: string): T.VerbEntry[] {
           [s, sWoutOo].includes(entry.p.slice(0, -3)) ||
           [s, sWoutOo].includes(entry.p) ||
           (entry.psp && [s, sWoutOo].includes(entry.psp)) ||
-          (checkTpp && [input, inputWoutOo].includes(entry.tppp)) ||
+          (entry.tppp &&
+            arraysHaveCommon(
+              [input, inputWoutOo],
+              splitVarients(entry.tppp)
+            )) ||
           entry.prp === s ||
           entry.ssp === s ||
           (entry.separationAtP &&
@@ -90,7 +95,11 @@ export function verbLookup(input: string): T.VerbEntry[] {
           // for short intransitive forms
           entry.p.slice(0, -3) === s ||
           entry.p === s ||
-          (checkTpp && [input, inputWoutOo].includes(entry.tppp)) ||
+          (entry.tppp &&
+            arraysHaveCommon(
+              [input, inputWoutOo],
+              splitVarients(entry.tppp)
+            )) ||
           entry.psp === s ||
           entry.prp === s ||
           entry.ssp === s ||

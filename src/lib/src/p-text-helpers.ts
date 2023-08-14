@@ -1084,11 +1084,23 @@ export function mapPsString<T>(
  * @returns
  */
 export function splitPsByVarients(w: T.PsString): T.ArrayOneOrMore<T.PsString> {
-  function cut(s: string) {
-    return s.split(/[,|،]/).map((s) => s.trim());
-  }
-  const { p, f } = mapPsString(w, cut);
+  const { p, f } = mapPsString(w, splitVarients);
   return zipWith(makePsString, p, f) as T.ArrayOneOrMore<T.PsString>;
+}
+
+export function splitVarients(s: string) {
+  return s.split(/[,|،]/).map((s) => s.trim());
+}
+
+/**
+ * checks to see if a search string exists in a list of comma-seperated varents
+ */
+export function isInVarients(
+  vars: string | false | undefined,
+  search: string | false | undefined
+): boolean {
+  if (!vars || !search) return false;
+  return splitVarients(vars).includes(search);
 }
 
 export function removeEndTick(w: T.PsString): T.PsString;

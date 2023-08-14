@@ -346,3 +346,10 @@ export function chooseLength<N>(
 export function isGivingVerb(v: T.VerbEntry): boolean {
   return ["raakawul", "darkawul", "warkawul"].includes(v.entry.g);
 }
+
+/**
+ * checks to see if two arrays have a common element
+ */
+export function arraysHaveCommon<X>(a: X[], b: X[]): boolean {
+  return a.some((x) => b.includes(x));
+}
