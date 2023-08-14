@@ -402,9 +402,9 @@ function ensure3rdPast(
     });
     return [aspect === "imperfective" ? accentOnNFromEnd(aawuEnd, 0) : aawuEnd];
   }
-  const endsInDental = ["د", "ت"].includes(rs[0].p.slice(-1));
+  const abruptEnder = ["د", "ت", "ړ"].includes(rs[0].p.slice(-1));
   // short endings like ورسېد
-  const ends = endsInDental ? [{ p: "", f: "" }, ...ending] : ending;
+  const ends = abruptEnder ? [{ p: "", f: "" }, ...ending] : ending;
   return verbEndingConcat(rs, ends);
 }
 

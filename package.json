@@ -40,7 +40,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "install-r": "yarn install && cd src/lib && yarn install && cd ../components && yarn install",
+    "install-r": "yarn install && node get-words.js && cd src/lib && yarn install && cd ../components && yarn install",
     "build-website": "node get-words.js && npm run build",
     "build-library": "cd src/components && rimraf dist && tsc --project lib-tsconfig.json && node post-build.cjs && cd ../lib && rimraf dist && tsc --project lib-tsconfig.json && node_modules/rollup/dist/bin/rollup -c",
     "test-ci": "npm run test -- --watchAll=false",
