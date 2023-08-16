@@ -1224,3 +1224,29 @@ export function getShort<U extends object>(a: T.SingleOrLengthOpts<U>): U {
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+/**
+ * For use with the
+ */
+export function undoAaXuPattern(p: string): false | string {
+  if (p.at(-1) !== "ه") {
+    return false;
+  }
+  const chars = p.split("");
+  const prevVowel = chars.findIndex((c) => ["ی", "ې", "ا"].includes(c));
+  if (prevVowel === -1) {
+    return false;
+  }
+  if (p[prevVowel] !== "ا") {
+    return false;
+  }
+  return p.slice(0, prevVowel) + p.slice(prevVowel + 1, -1);
+}
+
+export function lastVowelNotA(g: string): boolean {
+  const matches = g.match(/ee|aa|i|u|o|oo|U|e|a/g);
+  if (!matches) {
+    return true;
+  }
+  return matches[matches.length - 1] !== "a";
+}

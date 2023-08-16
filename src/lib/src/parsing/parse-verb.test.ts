@@ -1,5 +1,13 @@
 /* eslint-disable jest/valid-title */
 import * as T from "../../../types";
+import {
+  dartlul,
+  kedulDyn,
+  kedulStat,
+  tlul,
+  wartlul,
+  raatlul,
+} from "./irreg-verbs";
 import { verbLookup, wordQuery } from "./lookup";
 import { parseVerb } from "./parse-verb";
 import { tokenizer } from "./tokenizer";
@@ -16,7 +24,11 @@ const prexodul = wordQuery("پرېښودل", "verb");
 const xodul = wordQuery("ښودل", "verb");
 const kexodul = wordQuery("کېښودل", "verb");
 const katul = wordQuery("کتل", "verb");
-const tlul = wordQuery("تلل", "verb");
+const watul = wordQuery("وتل", "verb");
+const wurul = wordQuery("وړل", "verb");
+const akheestul = wordQuery("اخیستل", "verb");
+const alwatul = wordQuery("الوتل", "verb");
+// const dartlul = wordQuery("درتلل", "verb");
 
 // todo alwatul waalwatul akhistul azmoyul etc
 
@@ -115,8 +127,29 @@ const tests: {
           {
             ph: undefined,
             root: {
-              persons: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
+              persons: [
+                T.Person.FirstPlurMale,
+                T.Person.FirstPlurFemale,
+                T.Person.ThirdSingMale,
+              ],
               aspects: ["imperfective", "perfective"],
+            },
+            verb: leekul,
+          },
+        ],
+      },
+      {
+        input: "ولیکلو",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [
+                T.Person.FirstPlurMale,
+                T.Person.FirstPlurFemale,
+                T.Person.ThirdSingMale,
+              ],
+              aspects: ["perfective"],
             },
             verb: leekul,
           },
@@ -542,6 +575,123 @@ const tests: {
           },
         ],
       },
+      {
+        input: "واخلم",
+        output: [
+          {
+            ph: "وا",
+            stem: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: akheestul,
+          },
+        ],
+      },
+      {
+        input: "خلم",
+        output: [
+          {
+            ph: undefined,
+            stem: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: akheestul,
+          },
+        ],
+      },
+      {
+        input: "اخیستم",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: akheestul,
+          },
+        ],
+      },
+      {
+        input: "واخیستم",
+        output: [
+          {
+            ph: "وا",
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: akheestul,
+          },
+        ],
+      },
+      {
+        input: "واخیستلم",
+        output: [
+          {
+            ph: "وا",
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: akheestul,
+          },
+        ],
+      },
+      {
+        input: "خیستلم",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: akheestul,
+          },
+        ],
+      },
+      {
+        input: "الوځې",
+        output: [
+          {
+            ph: undefined,
+            stem: {
+              persons: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: alwatul,
+          },
+        ],
+      },
+      {
+        input: "والوځې",
+        output: [
+          {
+            ph: "وا",
+            stem: {
+              persons: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: alwatul,
+          },
+        ],
+      },
+      {
+        input: "لوځې",
+        output: [
+          {
+            ph: undefined,
+            stem: {
+              persons: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: alwatul,
+          },
+        ],
+      },
     ],
   },
   {
@@ -654,16 +804,202 @@ const tests: {
           },
         ],
       },
-    ],
-  },
-  {
-    label: "verbs with abrupt 3rd pers sing past endings",
-    cases: [
+      {
+        input: "لاړلم",
+        output: [
+          {
+            ph: "لا",
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: tlul,
+          },
+        ],
+      },
+      {
+        input: "لاړم",
+        output: [
+          {
+            ph: "لا",
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: tlul,
+          },
+        ],
+      },
+      {
+        input: "لاړو",
+        output: [
+          {
+            ph: "لا",
+            root: {
+              persons: [
+                T.Person.FirstPlurMale,
+                T.Person.FirstPlurFemale,
+                T.Person.ThirdSingMale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: tlul,
+          },
+        ],
+      },
+      {
+        input: "لاړه",
+        output: [
+          {
+            ph: "لا",
+            root: {
+              persons: [T.Person.ThirdSingFemale, T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: tlul,
+          },
+        ],
+      },
+      {
+        input: "ړلم",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: tlul,
+          },
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: wurul,
+          },
+        ],
+      },
+      {
+        input: "ړم",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: tlul,
+          },
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: wurul,
+          },
+        ],
+      },
+      {
+        input: "والووت",
+        output: [
+          {
+            ph: "وا",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: alwatul,
+          },
+        ],
+      },
+      {
+        input: "والواته",
+        output: [
+          {
+            ph: "وا",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: alwatul,
+          },
+        ],
+      },
+      {
+        input: "لواته",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: alwatul,
+          },
+        ],
+      },
+      {
+        input: "راشې",
+        output: [
+          {
+            ph: "را",
+            stem: {
+              persons: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: raatlul,
+          },
+        ],
+      },
+      {
+        input: "ورشې",
+        output: [
+          {
+            ph: "ور",
+            stem: {
+              persons: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: wartlul,
+          },
+        ],
+      },
+      {
+        input: "یوسم",
+        output: [
+          {
+            ph: "یو",
+            stem: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: wurul,
+          },
+        ],
+      },
+      {
+        input: "سم",
+        output: [
+          {
+            ph: undefined,
+            stem: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: wurul,
+          },
+        ],
+      },
+
+      // TOOD: would be more robust if it looked for this without excetions // same as واخیست etc
       // {
       //   input: "لاړ",
       //   output: [
       //     {
-      //       ph: undefined,
+      //       ph: "لا",
       //       root: {
       //         persons: [T.Person.ThirdSingMale],
       //         aspects: ["perfective"],
@@ -674,8 +1010,456 @@ const tests: {
       // },
     ],
   },
+  {
+    label: "verbs with different 3rd pers sing past endings",
+    cases: [
+      {
+        input: "رسېد",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: rasedul,
+          },
+        ],
+      },
+      {
+        input: "ورسېد",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: rasedul,
+          },
+        ],
+      },
+      {
+        input: "کېناسته",
+        output: [
+          {
+            ph: "کې",
+            root: {
+              persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: kenaastul,
+          },
+        ],
+      },
+      {
+        input: "کېناست",
+        output: [
+          {
+            ph: "کې",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: kenaastul,
+          },
+        ],
+      },
+      {
+        input: "کېناستو",
+        output: [
+          {
+            ph: "کې",
+            root: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.FirstPlurMale,
+                T.Person.FirstPlurFemale,
+              ],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: kenaastul,
+          },
+        ],
+      },
+      {
+        input: "ووتلو",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.FirstPlurMale,
+                T.Person.FirstPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: watul,
+          },
+        ],
+      },
+      {
+        input: "ووتو",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.FirstPlurMale,
+                T.Person.FirstPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: watul,
+          },
+        ],
+      },
+      {
+        input: "ووته",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: watul,
+          },
+        ],
+      },
+      {
+        input: "واته",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: watul,
+          },
+        ],
+      },
+      {
+        input: "ووت",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: watul,
+          },
+        ],
+      },
+      {
+        input: "وووت",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: watul,
+          },
+        ],
+      },
+      {
+        input: "ورسېد",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: rasedul,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "irregular verbs",
+    cases: [
+      {
+        input: "ته",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective"],
+            },
+            verb: tlul,
+          },
+        ],
+      },
+      {
+        input: "راته",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective"],
+            },
+            verb: raatlul,
+          },
+        ],
+      },
+      {
+        input: "ورته",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective"],
+            },
+            verb: wartlul,
+          },
+        ],
+      },
+      {
+        input: "درته",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective"],
+            },
+            verb: dartlul,
+          },
+        ],
+      },
+      {
+        input: "شو",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.FirstPlurMale,
+                T.Person.FirstPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            stem: {
+              persons: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulStat,
+          },
+          {
+            ph: undefined,
+            root: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.FirstPlurMale,
+                T.Person.FirstPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            stem: {
+              persons: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulDyn,
+          },
+        ],
+      },
+      {
+        input: "شوله",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulStat,
+          },
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulDyn,
+          },
+        ],
+      },
+      {
+        input: "شوه",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulStat,
+          },
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulDyn,
+          },
+        ],
+      },
+      {
+        input: "شوله",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulStat,
+          },
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulDyn,
+          },
+        ],
+      },
+      {
+        input: "وشوله",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulDyn,
+          },
+        ],
+      },
+      {
+        input: "وشوه",
+        output: [
+          {
+            ph: "و",
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kedulDyn,
+          },
+        ],
+      },
+      {
+        input: "وشي",
+        output: [
+          {
+            ph: "و",
+            stem: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.ThirdSingFemale,
+                T.Person.ThirdPlurMale,
+                T.Person.ThirdPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: kedulDyn,
+          },
+        ],
+      },
+      // TODO: It would probably be more effecient just to return the kedul verb options
+      // and then when we put things together with the perfective head parsed they could
+      // become raatlul etc...
+      {
+        input: "شي",
+        output: [
+          {
+            ph: undefined,
+            stem: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.ThirdSingFemale,
+                T.Person.ThirdPlurMale,
+                T.Person.ThirdPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: kedulDyn,
+          },
+          {
+            ph: undefined,
+            stem: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.ThirdSingFemale,
+                T.Person.ThirdPlurMale,
+                T.Person.ThirdPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: kedulStat,
+          },
+          {
+            ph: undefined,
+            stem: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.ThirdSingFemale,
+                T.Person.ThirdPlurMale,
+                T.Person.ThirdPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: raatlul,
+          },
+          {
+            ph: undefined,
+            stem: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.ThirdSingFemale,
+                T.Person.ThirdPlurMale,
+                T.Person.ThirdPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: dartlul,
+          },
+          {
+            ph: undefined,
+            stem: {
+              persons: [
+                T.Person.ThirdSingMale,
+                T.Person.ThirdSingFemale,
+                T.Person.ThirdPlurMale,
+                T.Person.ThirdPlurFemale,
+              ],
+              aspects: ["perfective"],
+            },
+            verb: wartlul,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
+// Also do سي yo see
 tests.forEach(({ label, cases }) => {
   test(label, () => {
     cases.forEach(({ input, output }) => {
@@ -718,7 +1502,11 @@ tests.forEach(({ label, cases }) => {
           ),
         ];
       }, []);
-      expect(vbs).toIncludeSameMembers(madeVbsS);
+      expect(removeIs(vbs)).toIncludeSameMembers(removeIs(madeVbsS));
     });
   });
 });
+
+function removeIs(a: any): any {
+  return JSON.parse(JSON.stringify(a, (k, v) => (k === "i" ? undefined : v)));
+}

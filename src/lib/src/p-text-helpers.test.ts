@@ -25,6 +25,9 @@ import {
   splitPsByVarients,
   endsWith,
   trimOffPs,
+  undoAaXuPattern,
+  prevValNotA,
+  lastVowelNotA,
 } from "./p-text-helpers";
 import * as T from "../../types";
 import { pastEndings } from "./grammar-units";
@@ -1664,4 +1667,18 @@ test("endsWith", () => {
     false
   );
   expect(endsWith({ f: ["d", "D"] })({ p: "چت", f: "chat" })).toBe(false);
+});
+
+test("undoAaXuPattern", () => {
+  expect(undoAaXuPattern("تور")).toBe(false);
+  expect(undoAaXuPattern("پښتان")).toBe(false);
+  expect(undoAaXuPattern("کاوه")).toBe("کو");
+  expect(undoAaXuPattern("وواته")).toBe("ووت");
+  expect(undoAaXuPattern("واسته")).toBe("وست");
+  expect(undoAaXuPattern("لیده")).toBe(false);
+});
+
+test("lastVowelNotA", () => {
+  expect(lastVowelNotA("raat")).toBe(true);
+  expect(lastVowelNotA("oowat")).toBe(false);
 });

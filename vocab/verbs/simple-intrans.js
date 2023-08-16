@@ -10,6 +10,7 @@ module.exports = [
   1527815139, // osedul
   1585228579997, // ورتلل
   1527815216, // راتلل - to come
+  1585228551150, // درتلل
   1527813473, // الوتل - to fly
   1527814012, // اوښتل - to pass over, overturn, be flipped over, spill over, shift, change, diverge, pass, cross, abandon
   1527822843, // برېښېدل - to appear, seem; to shine, sparkle; to smart, have a pricking pain

@@ -3,6 +3,8 @@ import { verbLookup } from "./lookup";
 import { parseNP } from "./parse-np";
 import { parseVP } from "./parse-vp";
 
+// شو should not be sheyaano !!
+
 export function parsePhrase(
   s: T.Token[],
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]

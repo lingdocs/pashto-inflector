@@ -471,7 +471,7 @@ function getPassiveRs(
 }
 
 // TODO: This is a nasty and messy way to do it with the length options included
-function getPerfectiveHead(
+export function getPerfectiveHead(
   base: T.PsString,
   v: T.VerbEntryNoFVars
 ): [T.PH, T.PsString] | [undefined, T.PsString] {

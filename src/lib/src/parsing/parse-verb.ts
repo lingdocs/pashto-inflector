@@ -1,27 +1,16 @@
 import * as T from "../../../types";
-import { isInVarients } from "../p-text-helpers";
+import { removeFVarientsFromVerb } from "../accent-and-ps-utils";
+import { isInVarients, lastVowelNotA } from "../p-text-helpers";
+import {
+  dartlul,
+  kedulDyn,
+  kedulStat,
+  raatlul,
+  tlul,
+  wartlul,
+} from "./irreg-verbs";
 
-// third persion idosyncratic
-// if it ends in a dental or ه - look for tttp
-//
-// if not having tttp
-// automatic things: (with blank or u)
-//  ېد ست ښت
-// ښود
-//
-// ول - اوه
-
-// وېشه ?
-
-// test ګالو ❌ vs ګاللو ✅
-
-// واخیست / واخیسته / واخیستلو
-// ولید // ولیده // ولیدو
-//
-//  ووت  / واته
-//
-// also write the rules for the third pers sing endings in the grammar
-// multiple third pers sing options
+// big problem ما سړی یوړ crashes it !!
 
 export function parseVerb(
   tokens: Readonly<T.Token[]>,
@@ -31,9 +20,22 @@ export function parseVerb(
     return [];
   }
   const [first, ...rest] = tokens;
+  const irregResults = parseIrregularVerb(first.s);
+  if (irregResults.length) {
+    return irregResults.map((body) => ({
+      tokens: rest,
+      body,
+      errors: [],
+    }));
+  }
   const people = getVerbEnding(first.s);
+  // First do rough verb lookup, grab wide pool of possible verbs (low searching complexity for fast lookup)
   // TODO: can optimize this to not have to look for possible stems/roots if none
   const verbs = verbLookup(first.s);
+  // if (first.s === "سم") {
+  //   console.log({ verbs: JSON.stringify(verbs) });
+  // }
+  // Then find out which ones match exactly and how
   return matchVerbs(first.s, verbs, people).map((body) => ({
     tokens: rest,
     body,
@@ -75,6 +77,7 @@ function matchVerbs(
         { ph: string | undefined; entry: T.VerbEntry }[]
       >((acc, entry) => {
         const e = entry.entry;
+        const baseWAa = "ا" + base;
         if (e.c.includes("comp")) {
           return acc;
         }
@@ -120,14 +123,34 @@ function matchVerbs(
               },
             ];
           }
-          if ((base.startsWith("و") && base.slice(1)) === e.psp) {
-            return [
-              ...acc,
-              {
-                ph: "و",
-                entry,
-              },
-            ];
+          if (!e.sepOo) {
+            if (base.startsWith("وا") && base.slice(1) === e.psp) {
+              return [
+                ...acc,
+                {
+                  ph: "وا",
+                  entry,
+                },
+              ];
+            }
+            if ((base.startsWith("و") && base.slice(1)) === e.psp) {
+              return [
+                ...acc,
+                {
+                  ph: "و",
+                  entry,
+                },
+              ];
+            }
+            if (baseWAa === e.psp) {
+              return [
+                ...acc,
+                {
+                  ph: undefined,
+                  entry,
+                },
+              ];
+            }
           }
           if (base === e.psp) {
             return [
@@ -149,17 +172,30 @@ function matchVerbs(
                 entry,
               },
             ];
-          } else if (
-            base.startsWith("و") &&
-            [miniRoot, miniRootEg].includes(base.slice(1))
-          ) {
-            return [
-              ...acc,
-              {
-                ph: "و", // TODO: check for وا etc
-                entry,
-              },
-            ];
+          } else if (!e.sepOo) {
+            if (
+              base.startsWith("وا") &&
+              [miniRoot, miniRootEg].includes(base.slice(1))
+            ) {
+              return [
+                ...acc,
+                {
+                  ph: "وا",
+                  entry,
+                },
+              ];
+            } else if (
+              base.startsWith("و") &&
+              [miniRoot, miniRootEg].includes(base.slice(1))
+            ) {
+              return [
+                ...acc,
+                {
+                  ph: "و",
+                  entry,
+                },
+              ];
+            }
           }
         } else {
           const eb = e.p.slice(0, -1);
@@ -171,14 +207,34 @@ function matchVerbs(
                 entry,
               },
             ];
-          } else if (base.startsWith("و") && eb === base.slice(1)) {
-            return [
-              ...acc,
-              {
-                ph: "و",
-                entry,
-              },
-            ];
+          } else if (!e.sepOo) {
+            if (base.startsWith("وا") && eb === base.slice(1)) {
+              return [
+                ...acc,
+                {
+                  ph: "وا",
+                  entry,
+                },
+              ];
+            }
+            if (base.startsWith("و") && eb === base.slice(1)) {
+              return [
+                ...acc,
+                {
+                  ph: "و",
+                  entry,
+                },
+              ];
+            }
+            if (baseWAa === base.slice(1)) {
+              return [
+                ...acc,
+                {
+                  ph: undefined,
+                  entry,
+                },
+              ];
+            }
           }
         }
         return acc;
@@ -196,7 +252,7 @@ function matchVerbs(
                 type: "verb",
                 aspect: aspect as T.Aspect,
                 base: "stem",
-                verb: "ph" in verb ? verb.entry : verb,
+                verb: "ph" in verb ? removeFVarientsFromVerb(verb.entry) : verb,
               },
             },
           ]);
@@ -237,17 +293,21 @@ function matchVerbs(
               },
             ];
           }
-        } else if (!e.prp) {
+        } else {
           const baseNoOo = base.startsWith("و") && base.slice(1);
-          if (baseNoOo && matchShortOrLong(baseNoOo, e.p)) {
+          const p = e.prp || e.p;
+          if (baseNoOo && matchShortOrLong(baseNoOo, p)) {
             return [
               ...acc,
               {
-                ph: "و",
+                ph: !e.sepOo && e.p.at(0) === "ا" ? "وا" : "و",
                 entry,
               },
             ];
-          } else if (matchShortOrLong(base, e.p)) {
+          } else if (
+            matchShortOrLong(base, p) ||
+            matchShortOrLong("ا" + base, p)
+          ) {
             return [
               ...acc,
               {
@@ -273,7 +333,7 @@ function matchVerbs(
                 type: "verb",
                 aspect: aspect as T.Aspect,
                 base: "root",
-                verb: "ph" in verb ? verb.entry : verb,
+                verb: "ph" in verb ? removeFVarientsFromVerb(verb.entry) : verb,
               },
             },
           ]);
@@ -281,12 +341,20 @@ function matchVerbs(
       });
     });
   }
-  const hamzaEnd = s.endsWith("ه");
+  const hamzaEnd = s.at(-1) === "ه";
+  const oEnd = s.at(-1) === "و";
+  const abruptEnd = ["د", "ت", "ړ"].includes(s.slice(-1));
+  const b = hamzaEnd || oEnd ? base : s;
+  const bNoOo = b.startsWith("و") && b.slice(1);
   const tppMatches = {
     imperfective: entries.filter(
       ({ entry: e }) =>
         !e.c.includes("comp") &&
-        (isInVarients(e.tppp, s) || (hamzaEnd && base === e.p.slice(0, -1)))
+        (isInVarients(e.tppp, s) ||
+          (oEnd && [e.p, e.p.slice(0, -1)].includes(base)) ||
+          (lastVowelNotA(e.g.slice(0, -2)) &&
+            (hamzaEnd ? base : abruptEnd ? s : "") === e.p.slice(0, -1)))
+      // TODO: if check for modified aaXu thing!
     ),
     perfective: entries.reduce<
       { ph: string | undefined; entry: T.VerbEntry }[]
@@ -295,48 +363,110 @@ function matchVerbs(
       if (e.c.includes("comp")) {
         return acc;
       }
-      if (e.separationAtP && hamzaEnd) {
+      if (e.separationAtP) {
         const b = e.prp || e.p;
         const bHead = b.slice(0, e.separationAtP);
         const bRest = b.slice(e.separationAtP);
-        // this is REPETITIVE from above ... but doing it again here because the ه will only match on the SHORT versions for 3rd pers masc sing
-        // could modify and reuse the code above for this
-        if (base === b.slice(0, -1)) {
-          return [
-            ...acc,
-            {
-              ph: bHead,
-              entry,
-            },
-          ];
+        if (bRest === "شول") {
+          return acc;
         }
-        if (base === bRest.slice(0, -1)) {
-          return [
-            ...acc,
-            {
-              ph: undefined,
-              entry,
-            },
-          ];
+        if (abruptEnd) {
+          if (s === b.slice(0, -1)) {
+            return [
+              ...acc,
+              {
+                ph: bHead,
+                entry,
+              },
+            ];
+          }
+          if (s === bRest.slice(0, -1)) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
+        } else if (hamzaEnd) {
+          if (base === b.slice(0, -1)) {
+            return [
+              ...acc,
+              {
+                ph: bHead,
+                entry,
+              },
+            ];
+          }
+          if (base === bRest.slice(0, -1)) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
+        } else if (oEnd) {
+          if ([b, b.slice(0, -1)].includes(base)) {
+            return [
+              ...acc,
+              {
+                ph: bHead,
+                entry,
+              },
+            ];
+          }
+          if ([bRest, bRest.slice(0, -1)].includes(base)) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
         }
-      } else if (!e.prp && hamzaEnd) {
-        const baseNoOo = base.startsWith("و") && base.slice(1);
-        if (baseNoOo && baseNoOo === e.p.slice(0, -1)) {
-          return [
-            ...acc,
-            {
-              ph: "و",
-              entry,
-            },
-          ];
-        } else if (base === e.p.slice(0, -1)) {
-          return [
-            ...acc,
-            {
-              ph: undefined,
-              entry,
-            },
-          ];
+      } else if (!e.prp) {
+        if (oEnd) {
+          if (bNoOo && [e.p, e.p.slice(0, -1).includes(bNoOo)]) {
+            return [
+              ...acc,
+              {
+                ph: "و",
+                entry,
+              },
+            ];
+          } else if ([e.p, e.p.slice(0, -1)].includes(base)) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
+        } else if ((hamzaEnd || abruptEnd) && lastVowelNotA(e.g.slice(0, -2))) {
+          const b = hamzaEnd ? base : s;
+          const p = e.p.slice(0, -1);
+          if (bNoOo && bNoOo === p) {
+            return [
+              ...acc,
+              {
+                ph: "و",
+                entry,
+              },
+            ];
+          } else if (b === p) {
+            return [
+              ...acc,
+              {
+                ph: undefined,
+                entry,
+              },
+            ];
+          }
         }
       }
       const sNoOo = s.startsWith("و") && s.slice(1);
@@ -344,11 +474,19 @@ function matchVerbs(
         return [
           ...acc,
           {
-            ph: "و",
+            ph: !e.sepOo && e.p.at(0) === "ا" ? "وا" : "و",
             entry,
           },
         ];
       } else if (isInVarients(e.tppp, s)) {
+        return [
+          ...acc,
+          {
+            ph: undefined,
+            entry,
+          },
+        ];
+      } else if (isInVarients(e.tppp, "ا" + s)) {
         return [
           ...acc,
           {
@@ -371,7 +509,7 @@ function matchVerbs(
             type: "verb",
             aspect: aspect as T.Aspect,
             base: "root",
-            verb: "ph" in verb ? verb.entry : verb,
+            verb: "ph" in verb ? removeFVarientsFromVerb(verb.entry) : verb,
           },
         },
       ]);
@@ -433,4 +571,111 @@ function getVerbEnding(p: string): {
     root: [],
     stem: [],
   };
+}
+
+// const [ph, rest]: [T.PH | undefined, T.PsString] = v.entry.noOo
+//   ? [undefined, base]
+//   : v.entry.sepOo
+//   ? [{ type: "PH", ps: { p: "و ", f: "óo`" } }, base]
+//   : ["آ", "ا"].includes(base.p.charAt(0)) && base.f.charAt(0) === "a"
+//   ? [{ type: "PH", ps: { p: "وا", f: "wáa" } }, removeAStart(base)]
+//   : ["óo", "oo"].includes(base.f.slice(0, 2))
+//   ? [{ type: "PH", ps: { p: "و", f: "wÚ" } }, base]
+//   : ["ée", "ee"].includes(base.f.slice(0, 2)) && base.p.slice(0, 2) === "ای"
+//   ? [
+//       { type: "PH", ps: { p: "وي", f: "wée" } },
+//       {
+//         p: base.p.slice(2),
+//         f: base.f.slice(2),
+//       },
+//     ]
+//   : ["é", "e"].includes(base.f.slice(0, 2)) && base.p.slice(0, 2) === "اې"
+//   ? [
+//       { type: "PH", ps: { p: "وي", f: "wé" } },
+//       {
+//         p: base.p.slice(2),
+//         f: base.f.slice(1),
+//       },
+//     ]
+//   : ["ó", "o"].includes(base.f[0]) && base.p.slice(0, 2) === "او"
+//   ? [{ type: "PH", ps: { p: "و", f: "óo`" } }, base]
+//   : [{ type: "PH", ps: { p: "و", f: "óo" } }, base];
+// return [ph, removeAccents(rest)];
+// function removeAStart(ps: T.PsString) {
+//   return {
+//     p: ps.p.slice(1),
+//     f: ps.f.slice(ps.f[1] === "a" ? 2 : 1),
+//   };
+// }
+
+// TODO: could handle all sh- verbs for efficiencies sake
+function parseIrregularVerb(
+  s: string
+): [{ type: "PH"; s: string } | undefined, Omit<T.VBE, "ps">][] {
+  if (["ته", "راته", "ورته", "درته"].includes(s)) {
+    return [
+      [
+        undefined,
+        {
+          type: "VB",
+          info: {
+            aspect: "imperfective",
+            base: "root",
+            type: "verb",
+            verb: s.startsWith("را")
+              ? raatlul
+              : s.startsWith("ور")
+              ? wartlul
+              : s.startsWith("در")
+              ? dartlul
+              : tlul,
+          },
+          person: T.Person.ThirdSingMale,
+        },
+      ],
+    ];
+  }
+  if (s === "شو") {
+    return [
+      ...[
+        T.Person.ThirdSingMale,
+        T.Person.FirstPlurMale,
+        T.Person.FirstPlurFemale,
+      ].flatMap((person) =>
+        [kedulStat, kedulDyn].map<
+          [{ type: "PH"; s: string } | undefined, Omit<T.VBE, "ps">]
+        >((verb) => [
+          undefined,
+          {
+            type: "VB",
+            info: {
+              aspect: "perfective",
+              base: "root",
+              type: "verb",
+              verb,
+            },
+            person,
+          },
+        ])
+      ),
+      ...[T.Person.FirstPlurMale, T.Person.FirstPlurFemale].flatMap((person) =>
+        [kedulStat, kedulDyn].map<
+          [{ type: "PH"; s: string } | undefined, Omit<T.VBE, "ps">]
+        >((verb) => [
+          undefined,
+          {
+            type: "VB",
+            info: {
+              aspect: "perfective",
+              base: "stem",
+              type: "verb",
+              verb,
+            },
+            person,
+          },
+        ])
+      ),
+    ];
+  }
+  return [];
 }
