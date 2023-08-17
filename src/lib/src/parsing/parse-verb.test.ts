@@ -11,6 +11,7 @@ import {
 import { verbLookup, wordQuery } from "./lookup";
 import { parseVerb } from "./parse-verb";
 import { tokenizer } from "./tokenizer";
+import { removeKeys } from "./utils";
 
 const wahul = wordQuery("وهل", "verb");
 const leekul = wordQuery("لیکل", "verb");
@@ -1502,11 +1503,7 @@ tests.forEach(({ label, cases }) => {
           ),
         ];
       }, []);
-      expect(removeIs(vbs)).toIncludeSameMembers(removeIs(madeVbsS));
+      expect(removeKeys(vbs)).toIncludeSameMembers(removeKeys(madeVbsS));
     });
   });
 });
-
-function removeIs(a: any): any {
-  return JSON.parse(JSON.stringify(a, (k, v) => (k === "i" ? undefined : v)));
-}

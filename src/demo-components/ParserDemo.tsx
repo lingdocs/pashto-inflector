@@ -50,7 +50,7 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
       {errors.length > 0 && (
         <>
           <div className="alert alert-danger" role="alert">
-            {errors.length > 0 ? (
+            {errors.length > 1 ? (
               <>
                 <div>possible errors:</div>
                 <ul>

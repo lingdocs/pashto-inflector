@@ -16,6 +16,7 @@ import {
 // check that aawu stuff is working
 // check oo`azmooy -
 // check څاته
+// laaRa shum etc
 
 export function parseVerb(
   tokens: Readonly<T.Token[]>,
