@@ -12,6 +12,11 @@ import {
 
 // big problem ما سړی یوړ crashes it !!
 
+// TODO: کول verbs!
+// check that aawu stuff is working
+// check oo`azmooy -
+// check څاته
+
 export function parseVerb(
   tokens: Readonly<T.Token[]>,
   verbLookup: (s: string) => T.VerbEntry[]

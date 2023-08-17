@@ -20,7 +20,7 @@ import * as T from "../../../types";
  * from the different previous results
  * @returns
  */
-export function bindParseResult<C extends object, D extends object>(
+export function bindParseResult<C, D>(
   previous: T.ParseResult<C>[],
   f: (
     tokens: Readonly<T.Token[]>,
@@ -59,18 +59,42 @@ export function bindParseResult<C extends object, D extends object>(
       errors: [...errsPassed, ...x.errors, ...errors],
     }));
   });
-  return cleanOutFails(nextPossibilities);
+  return cleanOutResults(nextPossibilities);
 }
 
-export function cleanOutFails<C extends object>(
+export function returnParseResult<D>(
+  tokens: Readonly<T.Token[]>,
+  body: D,
+  errors?: T.ParseError[]
+): T.ParseResult<D>[] {
+  return [
+    {
+      tokens,
+      body,
+      errors: errors || [],
+    },
+  ];
+}
+
+/**
+ * finds the most successful path(s) and culls out any other more erroneous
+ * or redundant paths
+ */
+export function cleanOutResults<C>(
   results: T.ParseResult<C>[]
 ): T.ParseResult<C>[] {
-  // if there's any success anywhere, remove any of the errors
-  const errorsGone = results.find((x) => x.errors.length === 0)
-    ? results.filter((x) => x.errors.length === 0)
-    : results;
+  if (results.length === 0) {
+    return results;
+  }
+  let min = Infinity;
+  for (let a of results) {
+    if (a.errors.length < min) {
+      min = a.errors.length;
+    }
+  }
+  const errorsCulled = results.filter((x) => x.errors.length === min);
   // @ts-ignore
-  return Array.from(new Set(errorsGone.map(JSON.stringify))).map(JSON.parse);
+  return Array.from(new Set(errorsCulled.map(JSON.stringify))).map(JSON.parse);
 }
 
 export function isCompleteResult<C extends object>(

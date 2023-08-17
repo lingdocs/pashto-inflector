@@ -1197,6 +1197,8 @@ export type Kid = {
   kid: { type: "ba" } | MiniPronoun;
 };
 
+export type ParsedKid = "ba" | "me" | "de" | "ye" | "mU";
+
 export type MiniPronoun = {
   type: "mini-pronoun";
   person: Person;

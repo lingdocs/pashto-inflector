@@ -352,7 +352,7 @@ export function getKingAndServant(
       };
 }
 
-function isFirstOrSecondPersPronoun(
+export function isFirstOrSecondPersPronoun(
   o: "none" | T.NPSelection | T.Person.ThirdPlurMale
 ): boolean {
   if (typeof o !== "object") return false;

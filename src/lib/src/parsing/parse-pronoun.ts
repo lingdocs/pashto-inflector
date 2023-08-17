@@ -80,7 +80,7 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
           inflected: false,
           selection: {
             type: "pronoun",
-            person: 4,
+            person: 5,
             distance: "far",
           },
         },
