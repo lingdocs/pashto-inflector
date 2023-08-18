@@ -90,10 +90,9 @@ function App() {
               <a href="https://grammar.lingdocs.com">LingDocs Pashto Grammar</a>
             </p>
             <p>
-              by <a href="https://adueck.github.io">Adam Dueck</a> - GPLv3
-              licensed{" "}
+              GPLv3 licensed{" "}
               <a href="https://github.com/lingdocs/pashto-inflector">
-                Source Code
+                source code
               </a>{" "}
               on GitHub
             </p>
