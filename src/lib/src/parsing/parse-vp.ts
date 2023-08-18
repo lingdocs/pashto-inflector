@@ -15,7 +15,11 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // ماشومان سړي ولیدل
 // ماشومانو سړي ولیدل
 
+// map over transitivities, to give transitive / gramm. transitive optionns
+
 // make impossible subjects like I saw me, error
+
+// کې به ناست not working!
 
 // TODO: transitivity options
 
@@ -30,13 +34,10 @@ export function parseVP(
   const blocks = parseBlocks(tokens, lookup, verbLookup, [], []);
   return bindParseResult(blocks, (tokens, { blocks, kids }) => {
     const ph = blocks.find((x) => "type" in x && x.type === "PH") as
-      | {
-          type: "PH";
-          s: string;
-        }
+      | T.ParsedPH
       | undefined;
     const verb = blocks.find((x) => "type" in x && x.type === "VB") as
-      | Omit<T.VBE, "ps">
+      | T.ParsedVBE
       | undefined;
     const ba = !!kids.find((k) => k === "ba");
     if (!verb || verb.type !== "VB" || verb.info.type !== "verb") {
@@ -45,6 +46,10 @@ export function parseVP(
     if (verb.info.aspect === "perfective") {
       // TODO: check that the perfective head is in the right place and actually matches
       if (!ph) {
+        return [];
+      }
+    } else {
+      if (ph) {
         return [];
       }
     }
@@ -70,6 +75,12 @@ export function parseVP(
     );
     // TODO: check that verb and PH match
     if (verb.info.verb.entry.c.includes("intrans")) {
+      const errors: T.ParseError[] = [];
+      if (getMiniPronouns(kids).length) {
+        errors.push({
+          message: "unknown mini-pronoun",
+        });
+      }
       if (nps.length > 1) {
         return [];
       }
@@ -90,17 +101,20 @@ export function parseVP(
             },
           },
         ];
-        return returnParseResult(tokens, {
-          blocks,
-          verb: v,
-          externalComplement: undefined,
-          form: {
-            removeKing: true,
-            shrinkServant: false,
-          },
-        } as T.VPSelectionComplete);
+        return returnParseResult(
+          tokens,
+          {
+            blocks,
+            verb: v,
+            externalComplement: undefined,
+            form: {
+              removeKing: true,
+              shrinkServant: false,
+            },
+          } as T.VPSelectionComplete,
+          errors
+        );
       }
-      const errors: T.ParseError[] = [];
       if (getPersonFromNP(nps[0].selection) !== verb.person) {
         errors.push({ message: "subject must agree with intransitive verb" });
       }
@@ -141,7 +155,71 @@ export function parseVP(
         return [];
       }
       if (nps.length === 0) {
-        return [];
+        // present:
+        //  - no king (subject)
+        //  - servant (object) is shrunken
+        // past:
+        //  - no king (object)
+        //  - servant (subject) is shrunken
+        const errors: T.ParseError[] = [];
+        const miniPronouns = getMiniPronouns(kids);
+        if (miniPronouns.length > 1) {
+          errors.push({
+            message: "unknown mini-pronoun in kid's section",
+          });
+        }
+        const blockOpts: T.VPSBlockComplete[][] = getPeopleFromMiniPronouns(
+          miniPronouns
+        ).map((person) =>
+          !isPast
+            ? [
+                {
+                  key: 1,
+                  block: makeSubjectSelectionComplete({
+                    type: "NP",
+                    selection: makePronounSelection(verb.person),
+                  }),
+                },
+                {
+                  key: 2,
+                  block: makeObjectSelectionComplete({
+                    type: "NP",
+                    selection: makePronounSelection(person),
+                  }),
+                },
+              ]
+            : [
+                {
+                  key: 1,
+                  block: makeSubjectSelectionComplete({
+                    type: "NP",
+                    selection: makePronounSelection(person),
+                  }),
+                },
+                {
+                  key: 2,
+                  block: makeObjectSelectionComplete({
+                    type: "NP",
+                    selection: makePronounSelection(verb.person),
+                  }),
+                },
+              ]
+        );
+        return blockOpts.flatMap((blocks) =>
+          returnParseResult(
+            tokens,
+            {
+              blocks,
+              verb: v,
+              externalComplement: undefined,
+              form: {
+                removeKing: true,
+                shrinkServant: true,
+              },
+            } as T.VPSelectionComplete,
+            errors
+          )
+        );
       }
       if (nps.length === 1) {
         const np = nps[0];
@@ -172,13 +250,18 @@ export function parseVP(
               }
             : np.selection;
           const servants: T.NPSelection[] = form.shrinkServant
-            ? getPeopleFromKids(kids).map((person) => ({
+            ? getPeopleFromMiniPronouns(kids).map((person) => ({
                 type: "NP",
                 selection: makePronounSelection(person),
               }))
             : [np.selection];
           // check for vp structure errors
           if (form.removeKing) {
+            if (getMiniPronouns(kids).length) {
+              errors.push({
+                message: "unknown mini-pronoun in kid's section",
+              });
+            }
             if (!isPast) {
               if (isFirstOrSecondPersPronoun(np.selection))
                 if (!np.inflected) {
@@ -358,7 +441,13 @@ export function parseVP(
   });
 }
 
-function getPeopleFromKids(kids: T.ParsedKid[]): T.Person[] {
+function getMiniPronouns(kids: T.ParsedKid[]): T.ParsedMiniPronoun[] {
+  return kids.filter((k): k is T.ParsedMiniPronoun =>
+    ["me", "de", "ye", "mU"].includes(k)
+  );
+}
+
+function getPeopleFromMiniPronouns(kids: T.ParsedKid[]): T.Person[] {
   const p: T.Person[] = [];
   for (let k of kids) {
     if (k === "me") {

@@ -1192,12 +1192,26 @@ export type Block = {
     | VHead;
 };
 
+export type ParsedBlock = ParsedNP | ParsedPH | ParsedVBE;
+
+export type ParsedNP = {
+  inflected: boolean;
+  selection: NPSelection;
+};
+export type ParsedPH = {
+  type: "PH";
+  s: string;
+};
+export type ParsedVBE = Omit<VBE, "ps">;
+
 export type Kid = {
   key: number;
   kid: { type: "ba" } | MiniPronoun;
 };
 
-export type ParsedKid = "ba" | "me" | "de" | "ye" | "mU";
+export type ParsedMiniPronoun = "me" | "de" | "ye" | "mU";
+
+export type ParsedKid = "ba" | ParsedMiniPronoun;
 
 export type MiniPronoun = {
   type: "mini-pronoun";

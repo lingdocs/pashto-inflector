@@ -108,3 +108,16 @@ export function removeKeys(a: any): any {
     JSON.stringify(a, (k, v) => (k === "i" || k === "key" ? undefined : v))
   );
 }
+
+export function getPeople(
+  person: 1 | 2 | 3,
+  number: "sing" | "pl" | "both"
+): T.Person[] {
+  const people: T.Person[] =
+    person === 1 ? [0, 1, 6, 7] : person === 2 ? [2, 3, 8, 9] : [4, 5, 10, 11];
+  return number === "sing"
+    ? people.filter((p) => p < 6)
+    : number === "pl"
+    ? people.filter((p) => p > 5)
+    : people;
+}
