@@ -10,10 +10,23 @@ import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // to hide equatives type-doubling issue
 
+// demo
+
+// ماشوم
+// ماشومان
+// خوږ
+// masc plur
+
+// past tense
+// ماشومانو ښځه ولیدله
+// ماشومانو ښځه ولیدله
+
 // cool examples:
-// زه خوږې ماشومې وهم
-// ماشومان سړي ولیدل
-// ماشومانو سړي ولیدل
+// زه ماشوم وهم
+// وهلم // خواږه
+
+// ومې لیدې
+// ویې وهم
 
 // map over transitivities, to give transitive / gramm. transitive optionns
 
