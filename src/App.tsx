@@ -134,7 +134,7 @@ function App() {
             <SpellingDemo opts={textOptions} onChange={setTextOptions} />
           </Hider>
           <Hider
-            label="Parser (IN PROGRESS)"
+            label="Parser (🚧 IN PROGRESS 🚧)"
             hLevel={3}
             showing={showing === "parser"}
             handleChange={() => handleHiderClick("parser")}

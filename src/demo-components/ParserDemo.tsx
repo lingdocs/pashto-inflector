@@ -33,8 +33,8 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
     <div className="mt-3" style={{ marginBottom: "1000px" }}>
       <div>Type a sentence to parse</div>
       <div className="small text-muted">
-        (IN PROGRESS: limited vocab and not working for APs, compound verbs, or
-        grammatically transitive verbs allowed... yet)
+        (NOT DONE!! limited vocab, and not working for APs, compound verbs, or
+        grammatically transitive verbs... yet 👷)
       </div>
       <div className="form-group mb-2">
         <input
