@@ -10,14 +10,47 @@ import {
   renderVP,
 } from "../components/library";
 
+const working = [
+  "limited demo vocab",
+  "phrases with simple verbs",
+  "basic verb tenses",
+  "noun phrases (except participles)",
+  "mini-pronouns for shrunken servants",
+  "grammar error correction",
+];
+
+const todo = [
+  "participles",
+  "compound verbs",
+  "adverbial phrases",
+  "relative clauses",
+  "equative verbs",
+  "perfect tenses",
+  "ability verbs",
+  "imperative verbs",
+  "passive verbs",
+  "quantifiers",
+  "demonstrative pronouns",
+  "mini-pronouns for possesives",
+  "approximate spelling",
+];
+
+const examples = [
+  "سړي زه ولیدم",
+  "تلم به",
+  "یو به مې ړلې",
+  "د غټې ماشومې زاړه پلار ولیدم",
+  "ستا پخواني ملګري مې ولیدل",
+  "ما ډوډۍ خوړله",
+];
+
 function ParserDemo({ opts }: { opts: T.TextOptions }) {
   const [text, setText] = useState<string>("");
   const [result, setResult] = useState<
     ReturnType<typeof parsePhrase>["success"]
   >([]);
   const [errors, setErrors] = useState<string[]>([]);
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
+  function handleInput(value: string) {
     if (!value) {
       setText("");
       setResult([]);
@@ -31,11 +64,30 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
   }
   return (
     <div className="mt-3" style={{ marginBottom: "1000px" }}>
-      <div>Type a sentence to parse</div>
-      <div className="small text-muted">
-        (NOT DONE!! limited vocab, and not working for APs, compound verbs, or
-        grammatically transitive verbs... yet 👷)
+      <div className="mb-2">Type a sentence to parse</div>
+      <div className="small text-muted mb-2">
+        <div>
+          <strong>NOT DONE:</strong> <em>sort of</em> works with:{` `}
+          {working.map((x) => (
+            <span className="mr-2" key={x}>
+              ✅ {x}
+            </span>
+          ))}
+          {todo.map((x) => (
+            <span className="mr-2" key={x}>
+              ❌ {x}
+            </span>
+          ))}
+        </div>
       </div>
+      <div className="mt-2 text-right">working examples</div>
+      <ul dir="rtl" className="text-right">
+        {examples.map((ex) => (
+          <li key={ex} className="clickable" onClick={() => handleInput(ex)}>
+            {ex}
+          </li>
+        ))}
+      </ul>
       <div className="form-group mb-2">
         <input
           dir="rtl"
@@ -48,7 +100,7 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
           }`}
           type="text"
           value={text}
-          onChange={handleChange}
+          onChange={(e) => handleInput(e.target.value)}
         />
       </div>
       {errors.length > 0 && (

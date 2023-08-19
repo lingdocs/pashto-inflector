@@ -32,7 +32,7 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 
 // make impossible subjects like I saw me, error
 
-// کې به ناست not working!
+// TODO: learn how to yank / use plugin for JSON neovim
 
 // TODO: transitivity options
 
@@ -72,7 +72,9 @@ export function parseVP(
     const v: T.VerbSelectionComplete = {
       type: "verb",
       verb: verb.info.verb,
-      transitivity: "transitive",
+      transitivity: verb.info.verb.entry.c.includes("intrans")
+        ? "intransitive"
+        : "transitive",
       canChangeTransitivity: false,
       canChangeStatDyn: false,
       negative: false,

@@ -73,7 +73,7 @@ function matchVerbs(
           return e.psp === base;
         }
         if (e.c.includes("intrans.")) {
-          const miniRoot = e.p.slice(0, -3);
+          const miniRoot = e.p !== "کېدل" && e.p.slice(0, -3);
           return miniRoot + "ېږ" === base || miniRoot === base;
         } else {
           return e.p.slice(0, -1) === base;
@@ -168,7 +168,7 @@ function matchVerbs(
             ];
           }
         } else if (e.c.includes("intrans.")) {
-          const miniRoot = e.p.slice(0, -3);
+          const miniRoot = e.p !== "کېدل" && e.p.slice(0, -3);
           const miniRootEg = miniRoot + "ېږ";
           if ([miniRoot, miniRootEg].includes(base)) {
             return [

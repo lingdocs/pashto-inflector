@@ -3,7 +3,6 @@
 import * as T from "../../../types";
 import {
   makeObjectSelectionComplete,
-  makeSubjectSelection,
   makeSubjectSelectionComplete,
 } from "../phrase-building/blocks-utils";
 import {
@@ -20,6 +19,8 @@ const sarey = wordQuery("سړی", "noun");
 const rasedul = wordQuery("رسېدل", "verb");
 const maashoom = wordQuery("ماشوم", "noun");
 const leedul = wordQuery("لیدل", "verb");
+const kenaastul = wordQuery("کېناستل", "verb");
+const wurul = wordQuery("وړل", "verb");
 
 const tests: {
   label: string;
@@ -91,7 +92,7 @@ const tests: {
           verb: {
             type: "verb",
             verb: tlul,
-            transitivity: "transitive",
+            transitivity: "intransitive",
             canChangeTransitivity: false,
             canChangeStatDyn: false,
             negative: false,
@@ -129,7 +130,7 @@ const tests: {
           verb: {
             type: "verb",
             verb: tlul,
-            transitivity: "transitive",
+            transitivity: "intransitive",
             canChangeTransitivity: false,
             canChangeStatDyn: false,
             negative: false,
@@ -168,7 +169,7 @@ const tests: {
             verb: {
               type: "verb",
               verb: rasedul,
-              transitivity: "transitive",
+              transitivity: "intransitive",
               canChangeTransitivity: false,
               canChangeStatDyn: false,
               negative: false,
@@ -208,7 +209,7 @@ const tests: {
             verb: {
               type: "verb",
               verb: rasedul,
-              transitivity: "transitive",
+              transitivity: "intransitive",
               canChangeTransitivity: false,
               canChangeStatDyn: false,
               negative: false,
@@ -252,7 +253,7 @@ const tests: {
           verb: {
             type: "verb",
             verb: tlul,
-            transitivity: "transitive",
+            transitivity: "intransitive",
             canChangeTransitivity: false,
             canChangeStatDyn: false,
             negative: false,
@@ -267,6 +268,46 @@ const tests: {
             shrinkServant: false,
           },
         })),
+      },
+      {
+        input: "کې به ناست",
+        output: [
+          {
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(T.Person.ThirdSingMale),
+                }),
+              },
+              {
+                key: 2,
+                block: {
+                  type: "objectSelection",
+                  selection: "none",
+                },
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: kenaastul,
+              transitivity: "intransitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense: "habitualPerfectivePast",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: true,
+              shrinkServant: false,
+            },
+          },
+        ],
       },
     ],
   },
@@ -936,6 +977,129 @@ const tests: {
               shrinkServant: true,
             },
           }))
+        ),
+      },
+      {
+        input: "ودې وینم",
+        output: getPeople(2, "sing").flatMap((objectPerson) =>
+          getPeople(1, "sing").map<T.VPSelectionComplete>((subjectPerson) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(subjectPerson),
+                }),
+              },
+              {
+                key: 2,
+                block: makeObjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(objectPerson),
+                }),
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: leedul,
+              transitivity: "transitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense: "subjunctiveVerb",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: true,
+              shrinkServant: true,
+            },
+          }))
+        ),
+      },
+      {
+        input: "وینم به دې",
+        output: getPeople(2, "sing").flatMap((objectPerson) =>
+          getPeople(1, "sing").map<T.VPSelectionComplete>((subjectPerson) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(subjectPerson),
+                }),
+              },
+              {
+                key: 2,
+                block: makeObjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(objectPerson),
+                }),
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: leedul,
+              transitivity: "transitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense: "imperfectiveFuture",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: true,
+              shrinkServant: true,
+            },
+          }))
+        ),
+      },
+      {
+        input: "یو به مې ړلې",
+        output: [...getPeople(2, "sing"), T.Person.ThirdPlurFemale].flatMap(
+          (objectPerson) =>
+            getPeople(1, "sing").map<T.VPSelectionComplete>(
+              (subjectPerson) => ({
+                blocks: [
+                  {
+                    key: 1,
+                    block: makeSubjectSelectionComplete({
+                      type: "NP",
+                      selection: makePronounSelection(subjectPerson),
+                    }),
+                  },
+                  {
+                    key: 2,
+                    block: makeObjectSelectionComplete({
+                      type: "NP",
+                      selection: makePronounSelection(objectPerson),
+                    }),
+                  },
+                ],
+                verb: {
+                  type: "verb",
+                  verb: wurul,
+                  transitivity: "transitive",
+                  canChangeTransitivity: false,
+                  canChangeStatDyn: false,
+                  negative: false,
+                  tense: "habitualPerfectivePast",
+                  canChangeVoice: true,
+                  isCompound: false,
+                  voice: "active",
+                },
+                externalComplement: undefined,
+                form: {
+                  removeKing: true,
+                  shrinkServant: true,
+                },
+              })
+            )
         ),
       },
     ],

@@ -42,6 +42,9 @@ export function shouldCheckTpp(s: string): boolean {
 }
 
 export function verbLookup(input: string): T.VerbEntry[] {
+  // TODO:
+  // only look up forms if there's an ending
+  // or is third person thing
   const s = input.slice(0, -1);
   // IMPORTANT TODO FOR EFFECIANCY!
   // check endings TODO: ONLY LOOKUP THE VERB POSSIBILITIES IF IT HAS A LEGITIMATE ENDING
@@ -127,7 +130,10 @@ export function verbLookup(input: string): T.VerbEntry[] {
           ) ||
           [s, sAddedAa, "و" + s].includes(entry.ssp || "") ||
           (entry.separationAtP &&
+            // TODO this is super ugly, do check of short and long function
             (entry.p.slice(entry.separationAtP) === s ||
+              entry.p.slice(entry.separationAtP, -1) === s ||
+              (checkTpp && entry.p.slice(entry.separationAtP, -1) === input) ||
               entry.psp?.slice(entry.separationAtP) === s ||
               (entry.prp &&
                 [

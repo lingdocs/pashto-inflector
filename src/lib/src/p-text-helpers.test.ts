@@ -26,7 +26,6 @@ import {
   endsWith,
   trimOffPs,
   undoAaXuPattern,
-  prevValNotA,
   lastVowelNotA,
 } from "./p-text-helpers";
 import * as T from "../../types";

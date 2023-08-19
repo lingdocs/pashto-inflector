@@ -73,18 +73,22 @@ function phMatches(ph: T.ParsedPH | undefined, vb: T.ParsedVBE | undefined) {
   if (!ph) {
     return true;
   }
-  const v = vb && vb.type === "VB" && vb.info.type === "verb" && vb.info.verb;
-  if (!v) {
+  if (!vb) {
     return true;
   }
-  const verbPh = getPhFromVerb(v);
+  if (vb.info.type !== "verb") {
+    return false;
+  }
+  const verbPh = getPhFromVerb(vb.info.verb, vb.info.base);
   return verbPh === ph.s;
 }
 
-function getPhFromVerb(v: T.VerbEntry): string {
+function getPhFromVerb(v: T.VerbEntry, base: "root" | "stem"): string {
   // TODO!! what to do about yo / bo ???
   if (v.entry.separationAtP) {
-    return v.entry.p.slice(0, v.entry.separationAtP);
+    const p =
+      base === "root" ? v.entry.prp || v.entry.p : v.entry.ssp || v.entry.p;
+    return p.slice(0, v.entry.separationAtP);
   }
   // TODO or آ
   if (v.entry.p.startsWith("ا")) {

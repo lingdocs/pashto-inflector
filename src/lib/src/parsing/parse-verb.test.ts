@@ -11,7 +11,7 @@ import {
 import { verbLookup, wordQuery } from "./lookup";
 import { parseVerb } from "./parse-verb";
 import { tokenizer } from "./tokenizer";
-import { removeKeys } from "./utils";
+import { getPeople, removeKeys } from "./utils";
 
 const wahul = wordQuery("وهل", "verb");
 const leekul = wordQuery("لیکل", "verb");
@@ -383,6 +383,11 @@ const tests: {
           },
         ],
       },
+      // but not for kedul
+      {
+        input: "کې",
+        output: [],
+      },
     ],
   },
   {
@@ -723,6 +728,32 @@ const tests: {
             ph: undefined,
             stem: {
               persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kenaastul,
+          },
+        ],
+      },
+      {
+        input: "کېناست",
+        output: [
+          {
+            ph: "کې",
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: kenaastul,
+          },
+        ],
+      },
+      {
+        input: "ناست",
+        output: [
+          {
+            ph: undefined,
+            root: {
+              persons: [T.Person.ThirdSingMale],
               aspects: ["perfective"],
             },
             verb: kenaastul,
