@@ -1,6 +1,7 @@
 import * as T from "../../../types";
 import { fmapParseResult } from "../fp-ps";
 import { parseKidsSection } from "./parse-kids-section";
+import { parseNeg } from "./parse-negative";
 import { parseNP } from "./parse-np";
 import { parsePH } from "./parse-ph";
 import { parseVerb } from "./parse-verb";
@@ -31,8 +32,9 @@ export function parseBlocks(
     ([ph, v]) => (ph ? [ph, v] : [v]),
     parseVerb(tokens, verbLookup)
   );
+  const neg = fmapParseResult((x) => [x], parseNeg(tokens));
   const kidsR = parseKidsSection(tokens, []);
-  const allResults = [...np, ...ph, ...vb, ...kidsR] as T.ParseResult<
+  const allResults = [...np, ...ph, ...neg, ...vb, ...kidsR] as T.ParseResult<
     T.ParsedBlock[] | { kids: T.ParsedKid[] }
   >[];
   // TODO: is this necessary?
@@ -46,6 +48,7 @@ export function parseBlocks(
   //   ];
   // }
   return bindParseResult(allResults, (tokens, r) => {
+    const errors: T.ParseError[] = [];
     if ("kids" in r) {
       return {
         next: parseBlocks(tokens, lookup, verbLookup, blocks, [
@@ -65,7 +68,18 @@ export function parseBlocks(
     if (!phMatches(prevPh, vb)) {
       return [];
     }
-    return parseBlocks(tokens, lookup, verbLookup, [...blocks, ...r], kids);
+    // don't allow two negatives
+    if (
+      "type" in r[0] &&
+      r[0].type === "negative" &&
+      blocks.some((b) => "type" in b && b.type === "negative")
+    ) {
+      return [];
+    }
+    return {
+      next: parseBlocks(tokens, lookup, verbLookup, [...blocks, ...r], kids),
+      errors,
+    };
   });
 }
 

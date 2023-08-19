@@ -36,6 +36,8 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 
 // TODO: transitivity options
 
+// TODO: the و is really making it slow down... why?
+
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
@@ -46,14 +48,28 @@ export function parseVP(
   }
   const blocks = parseBlocks(tokens, lookup, verbLookup, [], []);
   return bindParseResult(blocks, (tokens, { blocks, kids }) => {
-    const ph = blocks.find((x) => "type" in x && x.type === "PH") as
-      | T.ParsedPH
-      | undefined;
-    const verb = blocks.find((x) => "type" in x && x.type === "VB") as
-      | T.ParsedVBE
-      | undefined;
+    const phIndex = blocks.findIndex((x) => "type" in x && x.type === "PH");
+    const vbeIndex = blocks.findIndex((x) => "type" in x && x.type === "VB");
     const ba = !!kids.find((k) => k === "ba");
+    const negIndex = blocks.findIndex(
+      (x) => "type" in x && x.type === "negative" && !x.imperative
+    );
+    const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
+    const verb =
+      vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
+    const negative = negIndex !== -1;
     if (!verb || verb.type !== "VB" || verb.info.type !== "verb") {
+      return [];
+    }
+    if (
+      !negativeInPlace({
+        neg: negIndex,
+        v: vbeIndex,
+        phIndex: phIndex,
+        ph,
+        kids: !!kids.length,
+      })
+    ) {
       return [];
     }
     if (verb.info.aspect === "perfective") {
@@ -77,7 +93,7 @@ export function parseVP(
         : "transitive",
       canChangeTransitivity: false,
       canChangeStatDyn: false,
-      negative: false,
+      negative,
       tense,
       canChangeVoice: true,
       isCompound: false,
@@ -508,4 +524,32 @@ function getTenseFromRootsStems(
         : "perfectiveFuture";
     }
   }
+}
+
+function negativeInPlace({
+  neg,
+  v,
+  phIndex,
+  ph,
+  kids,
+}: {
+  neg: number;
+  v: number;
+  phIndex: number;
+  ph: T.ParsedPH | undefined;
+  kids: boolean;
+}): boolean {
+  if (neg === -1) {
+    return true;
+  }
+  if (ph) {
+    if (!kids && !["و", "وا"].includes(ph.s) && neg === phIndex - 1) {
+      return true;
+    }
+    return neg === phIndex + 1;
+  }
+  if (neg < v - 1) {
+    return false;
+  }
+  return true;
 }

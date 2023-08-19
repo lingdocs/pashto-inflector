@@ -1176,6 +1176,8 @@ export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
 
 export type EquativeBlock = { type: "equative"; equative: EquativeRendered };
 
+export type NegativeBlock = { type: "negative"; imperative: boolean };
+
 export type Block = {
   key: number;
   block:
@@ -1185,14 +1187,14 @@ export type Block = {
     | Rendered<PredicateSelectionComplete>
     | Rendered<ComplementSelection>
     | Rendered<UnselectedComplementSelection>
-    | { type: "negative"; imperative: boolean }
+    | NegativeBlock
     | EquativeBlock
     | VB
     | VBE
     | VHead;
 };
 
-export type ParsedBlock = ParsedNP | ParsedPH | ParsedVBE;
+export type ParsedBlock = ParsedNP | ParsedPH | ParsedVBE | NegativeBlock;
 
 export type ParsedNP = {
   inflected: boolean;

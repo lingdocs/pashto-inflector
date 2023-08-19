@@ -17,6 +17,7 @@ const working = [
   "noun phrases (except participles)",
   "mini-pronouns for shrunken servants",
   "grammar error correction",
+  "negatives",
 ];
 
 const todo = [
@@ -42,6 +43,7 @@ const examples = [
   "د غټې ماشومې زاړه پلار ولیدم",
   "ستا پخواني ملګري مې ولیدل",
   "ما ډوډۍ خوړله",
+  "وامې نه خیست",
 ];
 
 function ParserDemo({ opts }: { opts: T.TextOptions }) {
