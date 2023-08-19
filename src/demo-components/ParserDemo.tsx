@@ -69,7 +69,7 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
       <div className="mb-2">Type a sentence to parse</div>
       <div className="small text-muted mb-2">
         <div>
-          <strong>NOT DONE:</strong> <em>sort of</em> works with:{` `}
+          <strong>NOT DONE:</strong> <em>should</em> work with:{` `}
           {working.map((x) => (
             <span className="mr-2" key={x}>
               ✅ {x}

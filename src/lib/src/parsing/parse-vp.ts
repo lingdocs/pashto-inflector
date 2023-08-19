@@ -28,11 +28,14 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // ومې لیدې
 // ویې وهم
 
+// TODO: add tests for negatives and negative order
+
 // map over transitivities, to give transitive / gramm. transitive optionns
 
 // make impossible subjects like I saw me, error
 
 // TODO: learn how to yank / use plugin for JSON neovim
+// learn to use jq to edit selected json in vim ?? COOOL
 
 // TODO: transitivity options
 
