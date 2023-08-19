@@ -29,7 +29,7 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // ویې وهم
 
 // TODO: add tests for negatives and negative order
-
+// TODO: imperfective past should also be "was going to / would have"
 // map over transitivities, to give transitive / gramm. transitive optionns
 
 // make impossible subjects like I saw me, error
