@@ -9,6 +9,8 @@ A pashto inflection, verb conjugation, and phrase-generation engine, as well as 
 
 #### [Pashto Inflector Website/Demo](https://pashto-inflector.lingdocs.com)
 
+![pashto-inflector software diagram](./diagrams/diagram-light.png)
+
 ## How it works
 
 This library uses a 3-step process to generate gramattically correct Pashto phrases. This 3-step process corresponds directly to Chomsky's tripartrite structure for tranformational generative grammars.
@@ -37,7 +39,7 @@ The dictionary entries for the words are inflected and conjugated as necessary.
 
 The inflected words are arranged into possible phrases with various options for dropping or encliticizing pronouns, and placing the negation particle in the correct place(s).
 
-![Phrase building process](./full-phrase-process.svg)
+![Phrase building process](./diagrams/full-phrase-process.svg)
 * The full process of phrase building
 
 ## Distributions

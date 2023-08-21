@@ -32,7 +32,7 @@ export function parsePH(
   // TODO: maybe it would be better to only do this splitting off of the perfect head
   // if the next thing could be a kids section
   return phs
-    .filter((p) => first.s.startsWith(p))
+    .filter((p) => first.s.startsWith(p) && first.s.length > p.length)
     .flatMap((ph) =>
       returnParseResult(
         [

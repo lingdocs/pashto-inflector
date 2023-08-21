@@ -28,6 +28,13 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // ومې لیدې
 // ویې وهم
 
+// this should also conjugate to
+//  وامې نه خیسته
+// وامې نه خیستلو
+// waa-me nú kheestulo
+// وامې نه اخیست
+// waa-me nú akheest
+
 // TODO: add tests for negatives and negative order
 // TODO: imperfective past should also be "was going to / would have"
 // map over transitivities, to give transitive / gramm. transitive optionns

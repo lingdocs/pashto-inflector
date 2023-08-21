@@ -11,6 +11,7 @@ import {
 } from "./irreg-verbs";
 
 // big problem ما سړی یوړ crashes it !!
+// BIG problem - issue with و being considered a VB for a lot of little verbs like بلل
 
 // TODO: کول verbs!
 // check that aawu stuff is working

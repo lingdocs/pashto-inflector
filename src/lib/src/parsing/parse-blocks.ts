@@ -47,6 +47,7 @@ export function parseBlocks(
   //     },
   //   ];
   // }
+  console.log({ allResults });
   return bindParseResult(allResults, (tokens, r) => {
     const errors: T.ParseError[] = [];
     if ("kids" in r) {
