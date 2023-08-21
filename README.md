@@ -9,7 +9,9 @@ A pashto inflection, verb conjugation, and phrase-generation engine, as well as 
 
 #### [Pashto Inflector Website/Demo](https://pashto-inflector.lingdocs.com)
 
-![pashto-inflector software diagram](./diagrams/diagram-light.png)
+<p align="center">
+    <img src="./diagrams/diagram-light.png" />
+</p>
 
 ## How it works
 
