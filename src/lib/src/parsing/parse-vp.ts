@@ -21,6 +21,8 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // وامې نه اخیست
 // waa-me nú akheest
 
+// TODO: WHY IS NETLIFY TESTING FAILING - getting a different version of tlul
+
 // map over transitivities, to give transitive / gramm. transitive optionns
 
 // TODO: learn how to yank / use plugin for JSON neovim

@@ -1,109 +1,13 @@
 import * as T from "../../../types";
+import { wordQuery } from "./lookup";
 
-export const raatlul = {
-  entry: {
-    ts: 1527815216,
-    i: 6926,
-    p: "راتلل",
-    f: "raatlúl",
-    g: "raatlul",
-    e: "to come",
-    r: 4,
-    c: "v. intrans.",
-    psp: "راځ",
-    psf: "raadz",
-    ssp: "راش",
-    ssf: "ráash",
-    prp: "راغلل",
-    prf: "ráaghlul",
-    pprtp: "راغلی",
-    pprtf: "raaghúlay",
-    tppp: "راغی",
-    tppf: "ráaghay",
-    noOo: true,
-    separationAtP: 2,
-    separationAtF: 3,
-    ec: "come,comes,coming,came,come",
-  },
-} as T.VerbEntry;
+export const raatlul = wordQuery("راتلل", "verb");
 
-export const tlul = {
-  entry: {
-    ts: 1527815348,
-    i: 3820,
-    p: "تلل",
-    f: "tlul",
-    g: "tlul",
-    e: "to go",
-    r: 4,
-    c: "v. intrans.",
-    psp: "ځ",
-    psf: "dz",
-    ssp: "لاړ ش",
-    ssf: "láaR sh",
-    prp: "لاړل",
-    prf: "láaRul",
-    tppp: "لاړ",
-    tppf: "laaR",
-    separationAtP: 2,
-    separationAtF: 3,
-    ec: "go,goes,going,went,gone",
-  },
-} as T.VerbEntry;
+export const tlul = wordQuery("tlul", "verb");
 
-export const wartlul = {
-  entry: {
-    ts: 1585228579997,
-    i: 14924,
-    p: "ورتلل",
-    f: "wărtlul",
-    g: "wartlul",
-    e: "to come / go over to (third person or place)",
-    r: 4,
-    c: "v. intrans.",
-    psp: "ورځ",
-    psf: "wărdz",
-    ssp: "ورش",
-    ssf: "wársh",
-    prp: "ورغلل",
-    prf: "wárghlul",
-    pprtp: "ورغلی",
-    pprtf: "wărghúlay",
-    tppp: "ورغی",
-    tppf: "wărghay",
-    noOo: true,
-    separationAtP: 2,
-    separationAtF: 3,
-    ec: "come,comes,coming,came,come",
-  },
-} as T.VerbEntry;
+export const wartlul = wordQuery("ورتلل", "verb");
 
-export const dartlul = {
-  entry: {
-    ts: 1585228551150,
-    i: 6320,
-    p: "درتلل",
-    f: "dărtlul",
-    g: "dartlul",
-    e: "to come (to you / second person)",
-    r: 3,
-    c: "v. intrans.",
-    psp: "درځ",
-    psf: "dărdz",
-    ssp: "درش",
-    ssf: "dársh",
-    prp: "درغلل",
-    prf: "dárghlul",
-    pprtp: "درغلی",
-    pprtf: "dărghúlay",
-    tppp: "درغی",
-    tppf: "dărghay",
-    noOo: true,
-    separationAtP: 2,
-    separationAtF: 3,
-    ec: "come,comes,coming,came,come",
-  },
-} as T.VerbEntry;
+export const dartlul = wordQuery("درتلل", "verb") as T.VerbEntry;
 
 export const kedulStat = {
   entry: {
