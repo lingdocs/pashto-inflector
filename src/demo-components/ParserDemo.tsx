@@ -44,6 +44,7 @@ const examples = [
   "ستا پخواني ملګري مې ولیدل",
   "ما ډوډۍ خوړله",
   "وامې نه خیست",
+  "وبه مې وینې",
 ];
 
 function ParserDemo({ opts }: { opts: T.TextOptions }) {
