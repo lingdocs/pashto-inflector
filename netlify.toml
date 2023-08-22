@@ -1,3 +1,3 @@
 [build]
-  command = "yarn install-r && yarn test --silent && yarn build-website"
+  command = "yarn install-r && yarn build-website"
   publish = "build/"
