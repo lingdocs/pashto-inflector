@@ -1,5 +1,4 @@
 import * as T from "../../../types";
-import { fmapParseResult } from "../fp-ps";
 import { parseKidsSection } from "./parse-kids-section";
 import { parseNeg } from "./parse-negative";
 import { parseNP } from "./parse-np";
@@ -21,22 +20,22 @@ export function parseBlocks(
     return returnParseResult(tokens, { blocks, kids });
   }
   const prevPh: T.ParsedPH | undefined = blocks.find(
-    (b): b is T.ParsedPH => "type" in b && b.type === "PH"
+    (b): b is T.ParsedPH => b.type === "PH"
   );
   const vbExists = blocks.some((b) => "type" in b && b.type === "VB");
-  const np = prevPh ? [] : fmapParseResult((x) => [x], parseNP(tokens, lookup));
+  const np = prevPh ? [] : parseNP(tokens, lookup);
   // UHOH... This could cause double paths ... maybe don't parse the PH in the parse VB!
-  const ph =
-    vbExists || prevPh ? [] : fmapParseResult((x) => [x], parsePH(tokens));
-  const vb = fmapParseResult(
-    ([ph, v]) => (ph ? [ph, v] : [v]),
-    parseVerb(tokens, verbLookup)
-  );
-  const neg = fmapParseResult((x) => [x], parseNeg(tokens));
+  const ph = vbExists || prevPh ? [] : parsePH(tokens);
+  const vb = parseVerb(tokens, verbLookup);
+  const neg = parseNeg(tokens);
   const kidsR = parseKidsSection(tokens, []);
-  const allResults = [...np, ...ph, ...neg, ...vb, ...kidsR] as T.ParseResult<
-    T.ParsedBlock[] | { kids: T.ParsedKid[] }
-  >[];
+  const allResults: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
+    ...np,
+    ...ph,
+    ...neg,
+    ...vb,
+    ...kidsR,
+  ];
   // TODO: is this necessary?
   // if (!allResults.length) {
   //   return [
@@ -47,10 +46,9 @@ export function parseBlocks(
   //     },
   //   ];
   // }
-  console.log({ allResults });
   return bindParseResult(allResults, (tokens, r) => {
     const errors: T.ParseError[] = [];
-    if ("kids" in r) {
+    if (r.type === "kids") {
       return {
         next: parseBlocks(tokens, lookup, verbLookup, blocks, [
           ...kids,
@@ -62,23 +60,21 @@ export function parseBlocks(
             : [],
       };
     }
-    if (prevPh && r.some((x) => "type" in x && x.type === "PH")) {
+    if (prevPh && r.type === "PH") {
       return [];
     }
-    const vb = r.find((x): x is T.ParsedVBE => "type" in x && x.type === "VB");
-    if (!phMatches(prevPh, vb)) {
-      return [];
+    // TODO: will have to handle welded
+    if (r.type === "VB") {
+      if (!phMatches(prevPh, r)) {
+        return [];
+      }
     }
     // don't allow two negatives
-    if (
-      "type" in r[0] &&
-      r[0].type === "negative" &&
-      blocks.some((b) => "type" in b && b.type === "negative")
-    ) {
+    if (r.type === "negative" && blocks.some((b) => b.type === "negative")) {
       return [];
     }
     return {
-      next: parseBlocks(tokens, lookup, verbLookup, [...blocks, ...r], kids),
+      next: parseBlocks(tokens, lookup, verbLookup, [...blocks, r], kids),
       errors,
     };
   });

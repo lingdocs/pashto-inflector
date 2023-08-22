@@ -15,7 +15,10 @@ import {
 } from "./src/verb-info";
 import { makeVPSelectionState } from "./src/phrase-building/verb-selection";
 import { vpsReducer } from "./src/phrase-building/vps-reducer";
-import { isPastTense } from "./src/phrase-building/vp-tools";
+import {
+  isPastTense,
+  isInvalidSubjObjCombo,
+} from "./src/phrase-building/vp-tools";
 import { getInflectionPattern } from "./src/inflection-pattern";
 import { makePsString, removeFVarients } from "./src/accent-and-ps-utils";
 
@@ -45,12 +48,7 @@ import {
   standardizePhonetics,
 } from "./src/standardize-pashto";
 import { phoneticsToDiacritics } from "./src/phonetics-to-diacritics";
-import {
-  randomPerson,
-  isInvalidSubjObjCombo,
-  randomSubjObj,
-  getEnglishVerb,
-} from "./src/np-tools";
+import { randomPerson, randomSubjObj, getEnglishVerb } from "./src/np-tools";
 import {
   getEnglishFromRendered,
   getPashtoFromRendered,

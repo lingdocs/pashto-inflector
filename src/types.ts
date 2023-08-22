@@ -1196,7 +1196,13 @@ export type Block = {
 
 export type ParsedBlock = ParsedNP | ParsedPH | ParsedVBE | NegativeBlock;
 
+export type ParsedKidsSection = {
+  type: "kids";
+  kids: ParsedKid[];
+};
+
 export type ParsedNP = {
+  type: "NP";
   inflected: boolean;
   selection: NPSelection;
 };

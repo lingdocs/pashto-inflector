@@ -5,14 +5,18 @@ import { bindParseResult, returnParseResult } from "./utils";
 export function parseKidsSection(
   tokens: Readonly<T.Token[]>,
   prevKids: T.ParsedKid[]
-): T.ParseResult<{ kids: T.ParsedKid[] }>[] {
+): T.ParseResult<T.ParsedKidsSection>[] {
   if (tokens.length === 0) {
-    return prevKids.length ? returnParseResult(tokens, { kids: prevKids }) : [];
+    return prevKids.length
+      ? returnParseResult(tokens, { type: "kids", kids: prevKids })
+      : [];
   }
   const parsedKid = parseKid(tokens);
   // TODO: is this even necessary ??
   if (!parsedKid.length) {
-    return prevKids.length ? returnParseResult(tokens, { kids: prevKids }) : [];
+    return prevKids.length
+      ? returnParseResult(tokens, { type: "kids", kids: prevKids })
+      : [];
   }
   return bindParseResult(parsedKid, (tokens, r) => {
     // return parseKidsSection(tokens, [...prevKids, r]);

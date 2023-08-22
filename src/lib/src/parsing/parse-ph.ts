@@ -18,7 +18,7 @@ const phs = [
 
 export function parsePH(
   tokens: Readonly<T.Token[]>
-): T.ParseResult<{ type: "PH"; s: string }>[] {
+): T.ParseResult<T.ParsedPH>[] {
   if (tokens.length === 0) {
     return [];
   }

@@ -4,29 +4,15 @@ import {
   makeObjectSelectionComplete,
   makeSubjectSelectionComplete,
 } from "../phrase-building/blocks-utils";
-import { getPersonFromNP, isPastTense } from "../phrase-building/vp-tools";
+import {
+  getPersonFromNP,
+  isInvalidSubjObjCombo,
+  isPastTense,
+} from "../phrase-building/vp-tools";
 import { parseBlocks } from "./parse-blocks";
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // to hide equatives type-doubling issue
-
-// demo
-
-// ماشوم
-// ماشومان
-// خوږ
-// masc plur
-
-// past tense
-// ماشومانو ښځه ولیدله
-// ماشومانو ښځه ولیدله
-
-// cool examples:
-// زه ماشوم وهم
-// وهلم // خواږه
-
-// ومې لیدې
-// ویې وهم
 
 // this should also conjugate to
 //  وامې نه خیسته
@@ -35,18 +21,10 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // وامې نه اخیست
 // waa-me nú akheest
 
-// TODO: add tests for negatives and negative order
-// TODO: imperfective past should also be "was going to / would have"
 // map over transitivities, to give transitive / gramm. transitive optionns
-
-// make impossible subjects like I saw me, error
 
 // TODO: learn how to yank / use plugin for JSON neovim
 // learn to use jq to edit selected json in vim ?? COOOL
-
-// TODO: transitivity options
-
-// TODO: the و is really making it slow down... why?
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -58,11 +36,11 @@ export function parseVP(
   }
   const blocks = parseBlocks(tokens, lookup, verbLookup, [], []);
   return bindParseResult(blocks, (tokens, { blocks, kids }) => {
-    const phIndex = blocks.findIndex((x) => "type" in x && x.type === "PH");
-    const vbeIndex = blocks.findIndex((x) => "type" in x && x.type === "VB");
+    const phIndex = blocks.findIndex((x) => x.type === "PH");
+    const vbeIndex = blocks.findIndex((x) => x.type === "VB");
     const ba = !!kids.find((k) => k === "ba");
     const negIndex = blocks.findIndex(
-      (x) => "type" in x && x.type === "negative" && !x.imperative
+      (x) => x.type === "negative" && !x.imperative
     );
     const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
     const verb =
@@ -110,10 +88,7 @@ export function parseVP(
       voice: "active",
     };
 
-    const nps = blocks.filter(
-      (x): x is { inflected: boolean; selection: T.NPSelection } =>
-        "inflected" in x
-    );
+    const nps = blocks.filter((x): x is T.ParsedNP => x.type === "NP");
     // TODO: check that verb and PH match
     if (verb.info.verb.entry.c.includes("intrans")) {
       const errors: T.ParseError[] = [];
@@ -258,7 +233,9 @@ export function parseVP(
                 shrinkServant: true,
               },
             } as T.VPSelectionComplete,
-            errors
+            pronounConflictInBlocks(blocks)
+              ? [...errors, { message: "invalid subject/object combo" }]
+              : errors
           )
         );
       }
@@ -357,7 +334,9 @@ export function parseVP(
               externalComplement: undefined,
               form,
             } as T.VPSelectionComplete,
-            errors,
+            errors: pronounConflictInBlocks(blocks)
+              ? [...errors, { message: "invalid subject/object combo" }]
+              : errors,
           }));
         });
       } else {
@@ -369,6 +348,16 @@ export function parseVP(
             ] as const
           ).flatMap(([s, o, flip]) => {
             const errors: T.ParseError[] = [];
+            if (
+              isInvalidSubjObjCombo(
+                getPersonFromNP(s.selection),
+                getPersonFromNP(o.selection)
+              )
+            ) {
+              errors.push({
+                message: "invalid subject/object combo",
+              });
+            }
             if (!s.inflected) {
               errors.push({
                 message:
@@ -422,6 +411,16 @@ export function parseVP(
             ] as const
           ).flatMap(([s, o, flip]) => {
             const errors: T.ParseError[] = [];
+            if (
+              isInvalidSubjObjCombo(
+                getPersonFromNP(s.selection),
+                getPersonFromNP(o.selection)
+              )
+            ) {
+              errors.push({
+                message: "invalid subject/object combo",
+              });
+            }
             if (isFirstOrSecondPersPronoun(o.selection)) {
               if (!o.inflected) {
                 errors.push({
@@ -562,4 +561,17 @@ function negativeInPlace({
     return false;
   }
   return true;
+}
+
+function pronounConflictInBlocks(blocks: T.VPSBlockComplete[]): boolean {
+  const subj = blocks.find((b) => b.block.type === "subjectSelection")
+    ?.block as T.SubjectSelectionComplete;
+  const obj = blocks.find((b) => b.block.type === "objectSelection")
+    ?.block as T.ObjectSelectionComplete;
+  const subjPerson = getPersonFromNP(subj.selection);
+  const objPerson = getPersonFromNP(obj.selection);
+  if (objPerson === undefined) {
+    return false;
+  }
+  return isInvalidSubjObjCombo(subjPerson, objPerson);
 }

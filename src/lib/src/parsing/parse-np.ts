@@ -21,11 +21,9 @@ export function parseNP(
           inflected: boolean;
           selection: T.NounSelection;
         }
-  ): {
-    inflected: boolean;
-    selection: T.NPSelection;
-  } {
+  ): T.ParsedNP {
     return {
+      type: "NP",
       inflected: a.inflected,
       selection: {
         type: "NP",
