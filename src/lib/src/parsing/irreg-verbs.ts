@@ -7,7 +7,7 @@ export const tlul = wordQuery("tlul", "verb");
 
 export const wartlul = wordQuery("ورتلل", "verb");
 
-export const dartlul = wordQuery("درتلل", "verb") as T.VerbEntry;
+export const dartlul = wordQuery("درتلل", "verb");
 
 export const kedulStat = {
   entry: {

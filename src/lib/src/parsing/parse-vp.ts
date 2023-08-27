@@ -21,7 +21,7 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 // وامې نه اخیست
 // waa-me nú akheest
 
-// TODO: WHY IS NETLIFY TESTING FAILING - getting a different version of tlul
+// TODO: word query for kawul/kedul/stat/dyn
 
 // map over transitivities, to give transitive / gramm. transitive optionns
 

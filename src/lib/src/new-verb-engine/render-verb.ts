@@ -5,7 +5,7 @@ import {
   personNumber,
   personToGenNum,
 } from "../misc-helpers";
-import { fmapSingleOrLengthOpts } from "../fp-ps";
+import { applySingleOrLengthOpts, fmapSingleOrLengthOpts } from "../fp-ps";
 import {
   concatPsString,
   getLength,
@@ -269,41 +269,31 @@ function addEnding({
     vb: T.VBBasic,
     end: T.SingleOrLengthOpts<T.PsString[]>
   ): T.VBBasic {
+    // exceptional ending for راتلل, ورتلل, درتلل
     if ("long" in vb.ps) {
+      // TODO: do we need a more thorough check?
       if (vb.ps.short[0].f === "ghl" && pastThird && basicForm) {
         return {
           ...vb,
           ps: [{ p: "غی", f: "ghay" }],
         };
       }
-      const endLong = getLength(end, "long");
-      const endShort = getLength(end, "short");
-      // TODO: this is hacky
-      return {
-        ...vb,
-        ps: {
-          long: verbEndingConcat(vb.ps.long, endLong),
-          short:
-            pastThird && basicForm
-              ? ensure3rdPast(vb.ps.short, endShort, verb, aspect)
-              : verbEndingConcat(vb.ps.short, endShort),
-          ...(vb.ps.mini
-            ? {
-                mini: verbEndingConcat(vb.ps.mini, endShort),
-              }
-            : {}),
-        },
-      };
     }
-    /* istanbul ignore next */
-    if ("long" in end) {
-      throw new Error(
-        "should not be using verb stems with long and short endings"
-      );
-    }
+
+    const endShort = getLength(end, "short");
     return {
       ...vb,
-      ps: verbEndingConcat(vb.ps, end),
+      ps: applySingleOrLengthOpts(
+        {
+          long: (ps) => verbEndingConcat(ps, getLength(end, "long")),
+          short: (ps) =>
+            pastThird && basicForm
+              ? ensure3rdPast(ps, endShort, verb, aspect)
+              : verbEndingConcat(ps, endShort),
+          mini: (ps) => verbEndingConcat(ps, endShort),
+        },
+        vb.ps
+      ),
     };
   }
 }

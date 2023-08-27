@@ -53,11 +53,11 @@ export function fmapParseResult<A extends object, B extends object>(
   }));
 }
 
-export function fmapSingleOrLengthOpts<A extends object, B extends object>(
+export function fmapSingleOrLengthOpts<A, B>(
   f: (x: A) => B,
   x: T.SingleOrLengthOpts<A>
 ): T.SingleOrLengthOpts<B> {
-  if ("long" in x) {
+  if (x && typeof x === "object" && "long" in x) {
     return {
       long: f(x.long),
       short: f(x.short),
@@ -69,6 +69,42 @@ export function fmapSingleOrLengthOpts<A extends object, B extends object>(
     };
   } else {
     return f(x);
+  }
+}
+
+export function pureSingleOrLengthOpts<A>(a: A): T.SingleOrLengthOpts<A> {
+  return a;
+}
+
+/**
+ * like and applicative <*> operator for SingleOrLengthOpts
+ *
+ * applies the appropriate length function for each type of given length, otherwise applies
+ * the long version as the default
+ *
+ * allows us to put transformation functions in the SingleOrLengthOpts data structure
+ * instead of
+ */
+export function applySingleOrLengthOpts<A, B>(
+  f: T.SingleOrLengthOpts<(a: A) => B>,
+  a: T.SingleOrLengthOpts<A>
+): T.SingleOrLengthOpts<B> {
+  if (f && "long" in f) {
+    if (a && typeof a === "object" && "long" in a) {
+      return {
+        long: fmapSingleOrLengthOpts(f.long, a.long) as B,
+        short: fmapSingleOrLengthOpts(f.short, a.short) as B,
+        ...(a.mini
+          ? {
+              mini: fmapSingleOrLengthOpts(f.mini || f.short, a.mini) as B,
+            }
+          : {}),
+      };
+    } else {
+      return fmapSingleOrLengthOpts(f.long, a);
+    }
+  } else {
+    return fmapSingleOrLengthOpts(f, a);
   }
 }
 
