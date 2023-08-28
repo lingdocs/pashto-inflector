@@ -1,14 +1,11 @@
 import * as T from "../../../types";
-import { verbLookup } from "./lookup";
+import { verbLookup, lookup, participleLookup } from "./lookup";
 import { parseNP } from "./parse-np";
 import { parseVP } from "./parse-vp";
 
 // شو should not be sheyaano !!
 
-export function parsePhrase(
-  s: T.Token[],
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]
-): {
+export function parsePhrase(s: T.Token[]): {
   success: (
     | {
         inflected: boolean;
@@ -20,9 +17,11 @@ export function parsePhrase(
   errors: string[];
 } {
   const res = [
-    ...parseNP(s, lookup).filter(({ tokens }) => !tokens.length),
+    ...parseNP(s, lookup, participleLookup).filter(
+      ({ tokens }) => !tokens.length
+    ),
     // ...parseVerb(s, verbLookup),
-    ...parseVP(s, lookup, verbLookup),
+    ...parseVP(s, lookup, verbLookup, participleLookup),
   ];
 
   const success = res.map((x) => x.body);

@@ -19,6 +19,7 @@ const contractions: [string[], T.Person[]][] = [
 export function parsePossesor(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
+  participleLookup: (s: string) => T.VerbEntry[],
   prevPossesor: T.PossesorSelection | undefined
 ): T.ParseResult<T.PossesorSelection>[] {
   if (tokens.length === 0) {
@@ -42,14 +43,14 @@ export function parsePossesor(
       ? [{ message: "a pronoun cannot have a possesor" }]
       : [];
     return contractions
-      .flatMap((p) => parsePossesor(rest, lookup, p))
+      .flatMap((p) => parsePossesor(rest, lookup, participleLookup, p))
       .map((x) => ({
         ...x,
         errors: [...errors, ...x.errors],
       }));
   }
   if (first.s === "د") {
-    const np = parseNP(rest, lookup);
+    const np = parseNP(rest, lookup, participleLookup);
     return bindParseResult(np, (tokens, body) => {
       const possesor: T.PossesorSelection = {
         shrunken: false,
@@ -62,7 +63,12 @@ export function parsePossesor(
             [{ message: `possesor should be inflected` }]
           : [],
         // add and check error - can't add possesor to pronoun
-        next: parsePossesor(tokens, lookup, addPoss(prevPossesor, possesor)),
+        next: parsePossesor(
+          tokens,
+          lookup,
+          participleLookup,
+          addPoss(prevPossesor, possesor)
+        ),
       };
     });
   }

@@ -5,7 +5,7 @@ import {
   makeNounSelection,
   makePronounSelection,
 } from "../phrase-building/make-selections";
-import { lookup, wordQuery } from "./lookup";
+import { lookup, participleLookup, wordQuery } from "./lookup";
 import { parsePossesor } from "./parse-possesor";
 import { tokenizer } from "./tokenizer";
 import { isCompleteResult } from "./utils";
@@ -110,12 +110,12 @@ const tests: {
 test("parse possesor", () => {
   tests.forEach(({ input, output }) => {
     const tokens = tokenizer(input);
-    const parsed = parsePossesor(tokens, lookup, undefined);
+    const parsed = parsePossesor(tokens, lookup, participleLookup, undefined);
     if (output === "error") {
       expect(parsed.some((x) => x.errors.length)).toBe(true);
     } else {
       expect(
-        parsePossesor(tokens, lookup, undefined)
+        parsePossesor(tokens, lookup, participleLookup, undefined)
           .filter(isCompleteResult)
           .map((x) => x.body.np.selection)
       ).toEqual(output);

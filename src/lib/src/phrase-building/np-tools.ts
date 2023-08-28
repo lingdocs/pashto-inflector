@@ -1,6 +1,7 @@
 import { isFirstPerson, isSecondPerson } from "../misc-helpers";
 import * as T from "../../../types";
 import { concatPsString } from "../p-text-helpers";
+import { flattenLengths } from "./compile";
 
 function getBaseAndAdjectives({
   selection,
@@ -12,9 +13,9 @@ function getBaseAndAdjectives({
   }
   const adjs = "adjectives" in selection && selection.adjectives;
   if (!adjs) {
-    return selection.ps;
+    return flattenLengths(selection.ps);
   }
-  return selection.ps.map((p) =>
+  return flattenLengths(selection.ps).map((p) =>
     concatPsString(
       adjs.reduce(
         (accum, curr) =>
@@ -61,9 +62,9 @@ function contractPronoun(
   n: T.Rendered<T.PronounSelection>
 ): T.PsString | undefined {
   return isFirstPerson(n.person)
-    ? concatPsString({ p: "ز", f: "z" }, n.ps[0])
+    ? concatPsString({ p: "ز", f: "z" }, flattenLengths(n.ps)[0])
     : isSecondPerson(n.person)
-    ? concatPsString({ p: "س", f: "s" }, n.ps[0])
+    ? concatPsString({ p: "س", f: "s" }, flattenLengths(n.ps)[0])
     : undefined;
 }
 

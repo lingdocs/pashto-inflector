@@ -327,7 +327,7 @@ function getPsFromPiece(
           false
         );
       }
-      return piece.block.selection.ps;
+      return flattenLengths(piece.block.selection.ps);
     }
     // welded
     return getPsFromWelded(piece.block);

@@ -8,7 +8,10 @@ import shuffleArray from "../../../lib/src/shuffle-array";
 import InlinePs from "../InlinePs";
 import { psStringEquals } from "../../../lib/src/p-text-helpers";
 import { renderVP } from "../../../lib/src/phrase-building/render-vp";
-import { compileVP } from "../../../lib/src/phrase-building/compile";
+import {
+  compileVP,
+  flattenLengths,
+} from "../../../lib/src/phrase-building/compile";
 import { getRandomTense } from "./TensePicker";
 import {
   getTenseFromVerbSelection,
@@ -386,7 +389,9 @@ function QuizNPDisplay({
         <div className="text-centered" style={{ fontSize: "large" }}>
           {stage === "blanks" && (
             <div>
-              <InlinePs opts={opts}>{children.selection.ps[0]}</InlinePs>
+              <InlinePs opts={opts}>
+                {flattenLengths(children.selection.ps)[0]}
+              </InlinePs>
             </div>
           )}
           <div>{children.selection.e}</div>

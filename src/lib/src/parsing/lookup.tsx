@@ -5,6 +5,7 @@ import { isAdjectiveEntry, isNounEntry } from "../type-predicates";
 import { removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import { splitVarients, undoAaXuPattern } from "../p-text-helpers";
 import { arraysHaveCommon } from "../misc-helpers";
+import { shortVerbEndConsonant } from "./misc";
 
 export function lookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   const [key, value] = Object.entries(s)[0];
@@ -39,6 +40,23 @@ export function shouldCheckTpp(s: string): boolean {
     ["ست", "ښت"].includes(s.slice(-2)) ||
     ["ښود"].includes(s.slice(-3))
   );
+}
+
+export function participleLookup(input: string): T.VerbEntry[] {
+  if (input.endsWith("ل")) {
+    return verbs.filter((e) => e.entry.p === input);
+  }
+  // TODO: short forms
+  if (input.endsWith("و")) {
+    const s = input.slice(0, -1);
+    return [
+      ...verbs.filter((e) => e.entry.p === s),
+      ...(shortVerbEndConsonant.includes(s[s.length - 1])
+        ? verbs.filter((e) => e.entry.p === s + "ل")
+        : []),
+    ];
+  }
+  return [];
 }
 
 export function verbLookup(input: string): T.VerbEntry[] {

@@ -3,7 +3,7 @@ import {
   makeNounSelection,
 } from "../phrase-building/make-selections";
 import * as T from "../../../types";
-import { lookup, wordQuery } from "./lookup";
+import { lookup, participleLookup, wordQuery } from "./lookup";
 import { parseNoun } from "./parse-noun";
 import { tokenizer } from "./tokenizer";
 import { isCompleteResult } from "./utils";
@@ -41,7 +41,7 @@ const nabee = wordQuery("نبي", "noun");
 const lafz = wordQuery("لفظ", "noun");
 
 // TODO: test for adjective errors etc
-
+// TODO: زړو should not be hearts
 // bundled plural
 
 const tests: {
@@ -1371,7 +1371,9 @@ describe("parsing nouns", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup).map(({ body }) => body);
+        const res = parseNoun(tokens, lookup, participleLookup).map(
+          ({ body }) => body
+        );
         expect(res).toEqual(output);
       });
     });
@@ -1503,7 +1505,7 @@ describe("parsing nouns with adjectives", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup)
+        const res = parseNoun(tokens, lookup, participleLookup)
           .filter(isCompleteResult)
           .map(({ body }) => body);
         expect(res).toEqual(output);

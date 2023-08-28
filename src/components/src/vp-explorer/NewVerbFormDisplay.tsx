@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import ButtonSelect from "../ButtonSelect";
-import { combineIntoText } from "../../../lib/src/phrase-building/compile";
+import {
+  combineIntoText,
+  flattenLengths,
+} from "../../../lib/src/phrase-building/compile";
 import { insertNegative } from "../../../lib/src/phrase-building/render-vp";
 import * as T from "../../../types";
 import TableCell from "../TableCell";
@@ -327,7 +330,9 @@ function AgreementInfo({
       </div>
       {transitivity === "transitive" && past && objNP && (
         <div>
-          <InlinePs opts={opts}>{objNP.selection.ps[0]}</InlinePs>
+          <InlinePs opts={opts}>
+            {flattenLengths(objNP.selection.ps)[0]}
+          </InlinePs>
           {` `}({printGenNum(personToGenNum(objNP.selection.person))})
         </div>
       )}

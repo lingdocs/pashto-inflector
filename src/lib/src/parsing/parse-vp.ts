@@ -31,12 +31,20 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  verbLookup: (s: string) => T.VerbEntry[]
+  verbLookup: (s: string) => T.VerbEntry[],
+  participleLookup: (s: string) => T.VerbEntry[]
 ): T.ParseResult<T.VPSelectionComplete>[] {
   if (tokens.length === 0) {
     return [];
   }
-  const blocks = parseBlocks(tokens, lookup, verbLookup, [], []);
+  const blocks = parseBlocks(
+    tokens,
+    lookup,
+    verbLookup,
+    participleLookup,
+    [],
+    []
+  );
   return bindParseResult(blocks, (tokens, { blocks, kids }) => {
     const phIndex = blocks.findIndex((x) => x.type === "PH");
     const vbeIndex = blocks.findIndex((x) => x.type === "VB");

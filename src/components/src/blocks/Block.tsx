@@ -10,6 +10,7 @@ import { useState } from "react";
 import { getLength } from "../../../lib/src/p-text-helpers";
 import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
 import { negativeParticle } from "../../../lib/src/grammar-units";
+import { flattenLengths } from "../../library";
 
 function Block({
   opts,
@@ -493,7 +494,7 @@ function ComplementBlock({
   }) {
     return (
       <div className="text-center">
-        <Border>{adv.ps[0][script]}</Border>
+        <Border>{flattenLengths(adv.ps)[0][script]}</Border>
         <div>Loc. Adv.</div>
         <SubText>{adv.e}</SubText>
       </div>
@@ -614,7 +615,7 @@ function CompNounBlock({
         extraClassName={`!inside && hasPossesor ? "pt-2" : ""`}
         padding={"1rem"}
       >
-        {noun.ps[0][script]}
+        {flattenLengths(noun.ps)[0][script]}
       </Border>
       <div>Comp. Noun</div>
       <SubText>{noun.e}</SubText>
@@ -656,7 +657,7 @@ export function NPBlock({
     </Adjectives>,
     <div className={np.selection.adjectives?.length ? "mx-1" : ""}>
       {" "}
-      {np.selection.ps[0][script]}
+      {flattenLengths(np.selection.ps)[0][script]}
     </div>,
   ];
   const el = script === "p" ? elements.reverse() : elements;

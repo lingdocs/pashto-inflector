@@ -10,6 +10,7 @@ export function parseBlocks(
   tokens: Readonly<T.Token[]>,
   lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
   verbLookup: (s: string) => T.VerbEntry[],
+  participleLookup: (s: string) => T.VerbEntry[],
   blocks: T.ParsedBlock[],
   kids: T.ParsedKid[]
 ): T.ParseResult<{
@@ -23,8 +24,7 @@ export function parseBlocks(
     (b): b is T.ParsedPH => b.type === "PH"
   );
   const vbExists = blocks.some((b) => "type" in b && b.type === "VB");
-  const np = prevPh ? [] : parseNP(tokens, lookup);
-  // UHOH... This could cause double paths ... maybe don't parse the PH in the parse VB!
+  const np = prevPh ? [] : parseNP(tokens, lookup, participleLookup);
   const ph = vbExists || prevPh ? [] : parsePH(tokens);
   const vb = parseVerb(tokens, verbLookup);
   const neg = parseNeg(tokens);
@@ -50,10 +50,14 @@ export function parseBlocks(
     const errors: T.ParseError[] = [];
     if (r.type === "kids") {
       return {
-        next: parseBlocks(tokens, lookup, verbLookup, blocks, [
-          ...kids,
-          ...r.kids,
-        ]),
+        next: parseBlocks(
+          tokens,
+          lookup,
+          verbLookup,
+          participleLookup,
+          blocks,
+          [...kids, ...r.kids]
+        ),
         errors:
           blocks.length !== 1
             ? [{ message: "kids' section out of place" }]
@@ -74,7 +78,14 @@ export function parseBlocks(
       return [];
     }
     return {
-      next: parseBlocks(tokens, lookup, verbLookup, [...blocks, r], kids),
+      next: parseBlocks(
+        tokens,
+        lookup,
+        verbLookup,
+        participleLookup,
+        [...blocks, r],
+        kids
+      ),
       errors,
     };
   });

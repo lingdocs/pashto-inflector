@@ -9,6 +9,7 @@ import {
   tlul,
   wartlul,
 } from "./irreg-verbs";
+import { shortVerbEndConsonant } from "./misc";
 
 // big problem ما سړی یوړ crashes it !!
 // BIG problem - issue with و being considered a VB for a lot of little verbs like بلل
@@ -194,7 +195,7 @@ function matchVerbs(
   }
   const hamzaEnd = s.at(-1) === "ه";
   const oEnd = s.at(-1) === "و";
-  const abruptEnd = ["د", "ت", "ړ"].includes(s.slice(-1));
+  const abruptEnd = shortVerbEndConsonant.includes(s.slice(-1));
   const tppMatches = {
     imperfective: entries.filter(
       ({ entry: e }) =>

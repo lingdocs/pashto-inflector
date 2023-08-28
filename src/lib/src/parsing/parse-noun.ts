@@ -16,12 +16,13 @@ type NounResult = { inflected: boolean; selection: T.NounSelection };
 
 export function parseNoun(
   tokens: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[]
+  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
+  pariticipleLookup: (s: string) => T.VerbEntry[]
 ): T.ParseResult<NounResult>[] {
   if (tokens.length === 0) {
     return [];
   }
-  const possesor = parsePossesor(tokens, lookup, undefined);
+  const possesor = parsePossesor(tokens, lookup, pariticipleLookup, undefined);
   if (possesor.length) {
     return bindParseResult(possesor, (tokens, p) => {
       return parseNounAfterPossesor(tokens, lookup, p, []);

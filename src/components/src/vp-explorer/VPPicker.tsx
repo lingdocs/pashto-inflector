@@ -421,7 +421,6 @@ function isGenStatCompNoun(
     | undefined
 ) {
   if (!block) return false;
-  console.log({ block });
   if (
     block.type === "objectSelection" &&
     typeof block.selection === "object" &&

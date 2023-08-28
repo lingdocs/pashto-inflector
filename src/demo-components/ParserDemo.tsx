@@ -1,7 +1,6 @@
 import { useState } from "react";
 import * as T from "../types";
 import { parsePhrase } from "../lib/src/parsing/parse-phrase";
-import { lookup } from "../lib/src/parsing/lookup";
 import { tokenizer } from "../lib/src/parsing/tokenizer";
 import {
   CompiledPTextDisplay,
@@ -14,15 +13,15 @@ const working = [
   "limited demo vocab",
   "phrases with simple verbs",
   "basic verb tenses",
-  "noun phrases (except participles)",
+  "noun phrases",
   "mini-pronouns for shrunken servants",
   "grammar error correction",
   "negatives",
 ];
 
 const todo = [
-  "participles",
   "compound verbs",
+  "adjectival participles",
   "adverbial phrases",
   "relative clauses",
   "equative verbs",
@@ -60,7 +59,7 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
       setErrors([]);
       return;
     }
-    const { success, errors } = parsePhrase(tokenizer(value), lookup);
+    const { success, errors } = parsePhrase(tokenizer(value));
     setText(value);
     setErrors(errors);
     setResult(success);
