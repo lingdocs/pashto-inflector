@@ -14,6 +14,7 @@ const phs = [
   "را",
   "ور",
   "پرا",
+  "لا",
 ];
 
 export function parsePH(

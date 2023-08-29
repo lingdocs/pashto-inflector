@@ -3,7 +3,7 @@ import {
   makeNounSelection,
 } from "../phrase-building/make-selections";
 import * as T from "../../../types";
-import { lookup, participleLookup, wordQuery } from "./lookup";
+import { lookup, wordQuery } from "./lookup";
 import { parseNoun } from "./parse-noun";
 import { tokenizer } from "./tokenizer";
 import { isCompleteResult } from "./utils";
@@ -1371,9 +1371,7 @@ describe("parsing nouns", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup, participleLookup).map(
-          ({ body }) => body
-        );
+        const res = parseNoun(tokens, lookup).map(({ body }) => body);
         expect(res).toEqual(output);
       });
     });
@@ -1505,7 +1503,7 @@ describe("parsing nouns with adjectives", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup, participleLookup)
+        const res = parseNoun(tokens, lookup)
           .filter(isCompleteResult)
           .map(({ body }) => body);
         expect(res).toEqual(output);

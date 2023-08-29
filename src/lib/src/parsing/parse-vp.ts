@@ -12,6 +12,7 @@ import {
 import { parseBlocks } from "./parse-blocks";
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
+import { LookupFunction } from "./lookup";
 // to hide equatives type-doubling issue
 
 // this should also conjugate to
@@ -30,21 +31,12 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  verbLookup: (s: string) => T.VerbEntry[],
-  participleLookup: (s: string) => T.VerbEntry[]
+  lookup: LookupFunction
 ): T.ParseResult<T.VPSelectionComplete>[] {
   if (tokens.length === 0) {
     return [];
   }
-  const blocks = parseBlocks(
-    tokens,
-    lookup,
-    verbLookup,
-    participleLookup,
-    [],
-    []
-  );
+  const blocks = parseBlocks(tokens, lookup, [], []);
   return bindParseResult(blocks, (tokens, { blocks, kids }) => {
     const phIndex = blocks.findIndex((x) => x.type === "PH");
     const vbeIndex = blocks.findIndex((x) => x.type === "VB");

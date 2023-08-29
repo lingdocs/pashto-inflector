@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import { LookupFunction } from "./lookup";
 import { parseNP } from "./parse-np";
 import { bindParseResult } from "./utils";
 // TODO: maybe contractions should just be male to cut down on the
@@ -18,8 +19,7 @@ const contractions: [string[], T.Person[]][] = [
 
 export function parsePossesor(
   tokens: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  participleLookup: (s: string) => T.VerbEntry[],
+  lookup: LookupFunction,
   prevPossesor: T.PossesorSelection | undefined
 ): T.ParseResult<T.PossesorSelection>[] {
   if (tokens.length === 0) {
@@ -43,14 +43,14 @@ export function parsePossesor(
       ? [{ message: "a pronoun cannot have a possesor" }]
       : [];
     return contractions
-      .flatMap((p) => parsePossesor(rest, lookup, participleLookup, p))
+      .flatMap((p) => parsePossesor(rest, lookup, p))
       .map((x) => ({
         ...x,
         errors: [...errors, ...x.errors],
       }));
   }
   if (first.s === "د") {
-    const np = parseNP(rest, lookup, participleLookup);
+    const np = parseNP(rest, lookup);
     return bindParseResult(np, (tokens, body) => {
       const possesor: T.PossesorSelection = {
         shrunken: false,
@@ -63,12 +63,7 @@ export function parsePossesor(
             [{ message: `possesor should be inflected` }]
           : [],
         // add and check error - can't add possesor to pronoun
-        next: parsePossesor(
-          tokens,
-          lookup,
-          participleLookup,
-          addPoss(prevPossesor, possesor)
-        ),
+        next: parsePossesor(tokens, lookup, addPoss(prevPossesor, possesor)),
       };
     });
   }

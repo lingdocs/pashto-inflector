@@ -13,7 +13,7 @@ import {
 } from "../type-predicates";
 import { shortVerbEndConsonant } from "../parsing/misc";
 import { removeL } from "../new-verb-engine/rs-helpers";
-import { applySingleOrLengthOpts, fmapSingleOrLengthOpts } from "../fp-ps";
+import { applySingleOrLengthOpts } from "../fp-ps";
 import { accentOnNFromEnd } from "../accent-helpers";
 
 // TODO: can have subject and objects in possesors!!

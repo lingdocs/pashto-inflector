@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import { LookupFunction } from "./lookup";
 import { parseKidsSection } from "./parse-kids-section";
 import { parseNeg } from "./parse-negative";
 import { parseNP } from "./parse-np";
@@ -8,9 +9,7 @@ import { bindParseResult, returnParseResult } from "./utils";
 
 export function parseBlocks(
   tokens: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  verbLookup: (s: string) => T.VerbEntry[],
-  participleLookup: (s: string) => T.VerbEntry[],
+  lookup: LookupFunction,
   blocks: T.ParsedBlock[],
   kids: T.ParsedKid[]
 ): T.ParseResult<{
@@ -24,9 +23,9 @@ export function parseBlocks(
     (b): b is T.ParsedPH => b.type === "PH"
   );
   const vbExists = blocks.some((b) => "type" in b && b.type === "VB");
-  const np = prevPh ? [] : parseNP(tokens, lookup, participleLookup);
+  const np = prevPh ? [] : parseNP(tokens, lookup);
   const ph = vbExists || prevPh ? [] : parsePH(tokens);
-  const vb = parseVerb(tokens, verbLookup);
+  const vb = parseVerb(tokens, lookup);
   const neg = parseNeg(tokens);
   const kidsR = parseKidsSection(tokens, []);
   const allResults: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
@@ -50,14 +49,7 @@ export function parseBlocks(
     const errors: T.ParseError[] = [];
     if (r.type === "kids") {
       return {
-        next: parseBlocks(
-          tokens,
-          lookup,
-          verbLookup,
-          participleLookup,
-          blocks,
-          [...kids, ...r.kids]
-        ),
+        next: parseBlocks(tokens, lookup, blocks, [...kids, ...r.kids]),
         errors:
           blocks.length !== 1
             ? [{ message: "kids' section out of place" }]
@@ -78,14 +70,7 @@ export function parseBlocks(
       return [];
     }
     return {
-      next: parseBlocks(
-        tokens,
-        lookup,
-        verbLookup,
-        participleLookup,
-        [...blocks, r],
-        kids
-      ),
+      next: parseBlocks(tokens, lookup, [...blocks, r], kids),
       errors,
     };
   });

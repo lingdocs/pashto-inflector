@@ -87,6 +87,9 @@ export function accentFSylsOnNFromEnd(
   if (typeof syls === "string") {
     return accentFSylsOnNFromEnd(splitUpSyllables(syls), n);
   }
+  if (syls.length === 0) {
+    return "";
+  }
   return [
     ...syls.slice(0, syls.length - (n + 1)), // before accent
     accentLetter(syls[syls.length - (n + 1)]), // syllable to be accented
@@ -114,6 +117,9 @@ const accentReplacer = [
 ];
 
 export function accentLetter(s: string): string {
+  if (!s) {
+    console.log("will crash", s);
+  }
   return s.replace(/a|ă|e|i|o|u|U/, (match) => {
     const r = accentReplacer.find((x) => x.vowel === match);
     /* istanbul ignore next */

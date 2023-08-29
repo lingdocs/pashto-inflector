@@ -1,5 +1,5 @@
 import * as T from "../../../types";
-import { verbLookup, lookup, participleLookup } from "./lookup";
+import { lookup } from "./lookup";
 import { parseNP } from "./parse-np";
 import { parseVP } from "./parse-vp";
 
@@ -17,11 +17,9 @@ export function parsePhrase(s: T.Token[]): {
   errors: string[];
 } {
   const res = [
-    ...parseNP(s, lookup, participleLookup).filter(
-      ({ tokens }) => !tokens.length
-    ),
+    ...parseNP(s, lookup).filter(({ tokens }) => !tokens.length),
     // ...parseVerb(s, verbLookup),
-    ...parseVP(s, lookup, verbLookup, participleLookup),
+    ...parseVP(s, lookup),
   ];
 
   const success = res.map((x) => x.body);

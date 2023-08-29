@@ -130,20 +130,26 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
           <NPDisplay NP={res.selection} inflected={res.inflected} opts={opts} />
         ) : "verb" in res ? (
           (() => {
-            const rendered = renderVP(res);
-            const compiled = compileVP(rendered, res.form);
-            return (
-              <div>
-                <CompiledPTextDisplay compiled={compiled} opts={opts} />
-                {compiled.e && (
-                  <div className={`text-muted mt-2 text-center`}>
-                    {compiled.e.map((e, i) => (
-                      <div key={i}>{e}</div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
+            try {
+              const rendered = renderVP(res);
+              const compiled = compileVP(rendered, res.form);
+              return (
+                <div>
+                  <CompiledPTextDisplay compiled={compiled} opts={opts} />
+                  {compiled.e && (
+                    <div className={`text-muted mt-2 text-center`}>
+                      {compiled.e.map((e, i) => (
+                        <div key={i}>{e}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            } catch (e) {
+              console.error(e);
+              console.log({ res });
+              return <div>ERROR</div>;
+            }
           })()
         ) : (
           <samp>

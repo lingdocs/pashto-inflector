@@ -3,11 +3,11 @@ import { parsePronoun } from "./parse-pronoun";
 import { parseNoun } from "./parse-noun";
 import { fmapParseResult } from "../fp-ps";
 import { parseParticiple } from "./parse-participle";
+import { LookupFunction } from "./lookup";
 
 export function parseNP(
   s: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  participleLookup: (input: string) => T.VerbEntry[]
+  lookup: LookupFunction
 ): T.ParseResult<T.ParsedNP>[] {
   if (s.length === 0) {
     return [];
@@ -40,7 +40,7 @@ export function parseNP(
 
   return fmapParseResult(makeNPSl, [
     ...parsePronoun(s),
-    ...parseNoun(s, lookup, participleLookup),
-    ...parseParticiple(s, lookup, participleLookup),
+    ...parseNoun(s, lookup),
+    ...parseParticiple(s, lookup),
   ]);
 }

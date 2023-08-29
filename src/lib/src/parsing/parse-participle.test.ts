@@ -4,7 +4,7 @@ import {
   makePossesorSelection,
 } from "../phrase-building/make-selections";
 import * as T from "../../../types";
-import { lookup, participleLookup, wordQuery } from "./lookup";
+import { lookup, wordQuery } from "./lookup";
 import { tokenizer } from "./tokenizer";
 import { parseParticiple } from "./parse-participle";
 
@@ -123,9 +123,7 @@ describe("parsing participles", () => {
     test(label, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseParticiple(tokens, lookup, participleLookup).map(
-          ({ body }) => body
-        );
+        const res = parseParticiple(tokens, lookup).map(({ body }) => body);
         expect(res).toEqual(output);
       });
     });

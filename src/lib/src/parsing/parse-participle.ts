@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import { LookupFunction } from "./lookup";
 import { parsePossesor } from "./parse-possesor";
 import { bindParseResult } from "./utils";
 
@@ -9,25 +10,24 @@ type ParticipleResult = {
 
 export function parseParticiple(
   tokens: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  participleLookup: (s: string) => T.VerbEntry[]
+  lookup: LookupFunction
 ): T.ParseResult<ParticipleResult>[] {
   if (tokens.length === 0) {
     return [];
   }
-  const possesor = parsePossesor(tokens, lookup, participleLookup, undefined);
+  const possesor = parsePossesor(tokens, lookup, undefined);
   if (possesor.length) {
     return bindParseResult(possesor, (tokens, p) => {
-      return parseParticipleAfterPossesor(tokens, participleLookup, p);
+      return parseParticipleAfterPossesor(tokens, lookup, p);
     });
   }
-  return parseParticipleAfterPossesor(tokens, participleLookup, undefined);
+  return parseParticipleAfterPossesor(tokens, lookup, undefined);
 }
 
 // TODO: should have adverbs with participle
 function parseParticipleAfterPossesor(
   tokens: Readonly<T.Token[]>,
-  participleLookup: (s: string) => T.VerbEntry[],
+  lookup: LookupFunction,
   possesor: T.PossesorSelection | undefined
 ): T.ParseResult<ParticipleResult>[] {
   if (tokens.length === 0) {
@@ -38,7 +38,7 @@ function parseParticipleAfterPossesor(
     return [];
   }
   const inflected = first.s.endsWith("و");
-  const matches = participleLookup(first.s);
+  const matches = lookup(first.s, "participle");
   return matches.map<T.ParseResult<ParticipleResult>>((verb) => ({
     tokens: rest,
     body: {

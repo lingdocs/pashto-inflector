@@ -7,7 +7,33 @@ import { splitVarients, undoAaXuPattern } from "../p-text-helpers";
 import { arraysHaveCommon } from "../misc-helpers";
 import { shortVerbEndConsonant } from "./misc";
 
-export function lookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
+export type LookupFunction = typeof lookup;
+
+export function lookup(
+  s: Partial<T.DictionaryEntry>,
+  type: "nounAdj"
+): T.DictionaryEntry[];
+export function lookup(s: string, type: "verb" | "participle"): T.VerbEntry[];
+export function lookup(
+  s: string | Partial<T.DictionaryEntry>,
+  type: "nounAdj" | "verb" | "participle"
+): T.DictionaryEntry[] | T.VerbEntry[] {
+  if (type === "nounAdj") {
+    if (typeof s !== "object") {
+      throw new Error("invalid query for noun / adj lookup");
+    }
+    return nounAdjLookup(s);
+  }
+  if (typeof s === "object") {
+    throw new Error("invalid query");
+  }
+  if (type === "verb") {
+    return verbLookup(s);
+  }
+  return participleLookup(s);
+}
+
+function nounAdjLookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   const [key, value] = Object.entries(s)[0];
   // TODO: could make this more efficient - merging ppp and app queries?
   if (key === "ppp") {
@@ -42,7 +68,7 @@ export function shouldCheckTpp(s: string): boolean {
   );
 }
 
-export function participleLookup(input: string): T.VerbEntry[] {
+function participleLookup(input: string): T.VerbEntry[] {
   if (input.endsWith("ل")) {
     return verbs.filter((e) => e.entry.p === input);
   }
@@ -59,7 +85,7 @@ export function participleLookup(input: string): T.VerbEntry[] {
   return [];
 }
 
-export function verbLookup(input: string): T.VerbEntry[] {
+function verbLookup(input: string): T.VerbEntry[] {
   // TODO:
   // only look up forms if there's an ending
   // or is third person thing

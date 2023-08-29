@@ -9,7 +9,7 @@ import {
   makeNounSelection,
   makePronounSelection,
 } from "../phrase-building/make-selections";
-import { lookup, participleLookup, verbLookup, wordQuery } from "./lookup";
+import { lookup, wordQuery } from "./lookup";
 import { parseVP } from "./parse-vp";
 import { tokenizer } from "./tokenizer";
 import { tlul } from "./irreg-verbs";
@@ -1382,7 +1382,7 @@ tests.forEach(({ label, cases }) => {
   test(label, () => {
     cases.forEach(({ input, output, error }) => {
       const tokens = tokenizer(input);
-      const parsed = parseVP(tokens, lookup, verbLookup, participleLookup);
+      const parsed = parseVP(tokens, lookup);
       if (error) {
         expect(parsed.filter((x) => x.errors.length).length).toBeTruthy();
       } else {

@@ -9,6 +9,7 @@ import {
   tlul,
   wartlul,
 } from "./irreg-verbs";
+import { LookupFunction } from "./lookup";
 import { shortVerbEndConsonant } from "./misc";
 
 // big problem ما سړی یوړ crashes it !!
@@ -20,9 +21,11 @@ import { shortVerbEndConsonant } from "./misc";
 // check څاته
 // laaRa shum etc
 
+// TODO: هغه لاړ
+
 export function parseVerb(
   tokens: Readonly<T.Token[]>,
-  verbLookup: (s: string) => T.VerbEntry[]
+  lookup: LookupFunction
 ): T.ParseResult<T.ParsedVBE>[] {
   if (tokens.length === 0) {
     return [];
@@ -39,7 +42,7 @@ export function parseVerb(
   const people = getVerbEnding(first.s);
   // First do rough verb lookup, grab wide pool of possible verbs (low searching complexity for fast lookup)
   // TODO: can optimize this to not have to look for possible stems/roots if none
-  const verbs = verbLookup(first.s);
+  const verbs = lookup(first.s, "verb");
   // if (first.s === "سم") {
   //   console.log({ verbs: JSON.stringify(verbs) });
   // }
@@ -197,15 +200,26 @@ function matchVerbs(
   const oEnd = s.at(-1) === "و";
   const abruptEnd = shortVerbEndConsonant.includes(s.slice(-1));
   const tppMatches = {
-    imperfective: entries.filter(
-      ({ entry: e }) =>
-        !e.c.includes("comp") &&
-        (isInVarients(e.tppp, s) ||
-          (oEnd && [e.p, e.p.slice(0, -1)].includes(base)) ||
-          (lastVowelNotA(e.g.slice(0, -2)) &&
-            (hamzaEnd ? base : abruptEnd ? s : "") === e.p.slice(0, -1)))
+    imperfective: entries.reduce<T.VerbEntry[]>((acc, entry) => {
+      const e = entry.entry;
+      if (e.c.includes("comp")) {
+        return acc;
+      }
+      if (!e.prp && isInVarients(e.tppp, s)) {
+        return [...acc, entry];
+      }
+      if (oEnd && matchShortOrLong(base, e.p)) {
+        return [...acc, entry];
+      }
+      if (
+        lastVowelNotA(e.g.slice(0, -2)) &&
+        (hamzaEnd ? base : abruptEnd ? s : "XX") === e.p.slice(0, -1)
+      ) {
+        return [...acc, entry];
+      }
       // TODO: if check for modified aaXu thing!
-    ),
+      return acc;
+    }, []),
     perfective: entries.reduce<T.VerbEntry[]>((acc, entry) => {
       const e = entry.entry;
       if (e.c.includes("comp")) {
@@ -243,10 +257,12 @@ function matchVerbs(
           }
         }
       }
-      if (isInVarients(e.tppp, s)) {
-        return [...acc, entry];
-      } else if (isInVarients(e.tppp, "ا" + s)) {
-        return [...acc, entry];
+      if (!e.separationAtP) {
+        if (isInVarients(e.tppp, s)) {
+          return [...acc, entry];
+        } else if (isInVarients(e.tppp, "ا" + s)) {
+          return [...acc, entry];
+        }
       }
       return acc;
     }, []),

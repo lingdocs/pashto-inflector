@@ -8,6 +8,7 @@ import {
   isUnisexNounEntry,
 } from "../type-predicates";
 import { getInflectionQueries } from "./inflection-query";
+import { LookupFunction } from "./lookup";
 import { parseAdjective } from "./parse-adjective";
 import { parsePossesor } from "./parse-possesor";
 import { bindParseResult } from "./utils";
@@ -16,13 +17,12 @@ type NounResult = { inflected: boolean; selection: T.NounSelection };
 
 export function parseNoun(
   tokens: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
-  pariticipleLookup: (s: string) => T.VerbEntry[]
+  lookup: LookupFunction
 ): T.ParseResult<NounResult>[] {
   if (tokens.length === 0) {
     return [];
   }
-  const possesor = parsePossesor(tokens, lookup, pariticipleLookup, undefined);
+  const possesor = parsePossesor(tokens, lookup, undefined);
   if (possesor.length) {
     return bindParseResult(possesor, (tokens, p) => {
       return parseNounAfterPossesor(tokens, lookup, p, []);
@@ -33,7 +33,7 @@ export function parseNoun(
 
 function parseNounAfterPossesor(
   tokens: Readonly<T.Token[]>,
-  lookup: (s: Partial<T.DictionaryEntry>) => T.DictionaryEntry[],
+  lookup: LookupFunction,
   possesor: T.PossesorSelection | undefined,
   adjectives: {
     inflection: (0 | 1 | 2)[];
@@ -55,7 +55,7 @@ function parseNounAfterPossesor(
 
   const w: ReturnType<typeof parseNoun> = [];
   searches.forEach(({ search, details }) => {
-    const nounEntries = lookup(search).filter(isNounEntry);
+    const nounEntries = lookup(search, "nounAdj").filter(isNounEntry);
     details.forEach((deets) => {
       const fittingEntries = nounEntries.filter(deets.predicate);
       fittingEntries.forEach((entry) => {

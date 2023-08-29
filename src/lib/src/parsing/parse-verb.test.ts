@@ -8,10 +8,10 @@ import {
   wartlul,
   raatlul,
 } from "./irreg-verbs";
-import { verbLookup, wordQuery } from "./lookup";
+import { lookup, wordQuery } from "./lookup";
 import { parseVerb } from "./parse-verb";
 import { tokenizer } from "./tokenizer";
-import { removeKeys } from "./utils";
+import { getPeople, removeKeys } from "./utils";
 
 const wahul = wordQuery("وهل", "verb");
 const leekul = wordQuery("لیکل", "verb");
@@ -616,6 +616,18 @@ const tests: {
         ],
       },
       {
+        input: "لووت",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: alwatul,
+          },
+        ],
+      },
+      {
         input: "سم",
         output: [
           {
@@ -626,6 +638,53 @@ const tests: {
             verb: wurul,
           },
         ],
+      },
+      {
+        input: "ړلم",
+        output: [
+          {
+            root: {
+              persons: getPeople(1, "sing"),
+              aspects: ["perfective"],
+            },
+            verb: wurul,
+          },
+          {
+            root: {
+              persons: getPeople(1, "sing"),
+              aspects: ["perfective"],
+            },
+            verb: tlul,
+          },
+        ],
+      },
+      {
+        input: "ړ",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: wurul,
+          },
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"],
+            },
+            verb: tlul,
+          },
+        ],
+      },
+      // should not match with the prefix for perfective
+      {
+        input: "یوړله",
+        output: [],
+      },
+      {
+        input: "یوړ",
+        output: [],
       },
     ],
   },
@@ -930,7 +989,7 @@ tests.forEach(({ label, cases }) => {
   test(label, () => {
     cases.forEach(({ input, output }) => {
       const tokens = tokenizer(input);
-      const vbs = parseVerb(tokens, verbLookup).map((r) => r.body);
+      const vbs = parseVerb(tokens, lookup).map((r) => r.body);
       const madeVbsS = output.reduce<T.ParsedVBE[]>((acc, o) => {
         return [
           ...acc,

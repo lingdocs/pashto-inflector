@@ -1031,7 +1031,9 @@ export type Rendered<
       type: "undefined";
       ps: PsString;
     }
-  : ReplaceKey<
+  : // TODO: this will be a problem (removing the change gender etc)
+    // if we want to make the sentence diagram interactive
+    ReplaceKey<
       Omit<
         T,
         | "changeGender"
@@ -1043,7 +1045,7 @@ export type Rendered<
       "e",
       string
     > & {
-      ps: PsString[];
+      ps: SingleOrLengthOpts<PsString[]>;
       e?: string;
       inflected: boolean;
       person: Person;
