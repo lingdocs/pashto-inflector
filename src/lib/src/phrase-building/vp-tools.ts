@@ -361,3 +361,22 @@ export function ensure2ndPersSubjPronounAndNoConflict(
   }
   throw new Error("error ensuring compatible VPSelection for imperative verb");
 }
+
+export function ensureNoHangingR(b: T.Block[]): T.Block[] {
+  return b.map((x) =>
+    x.block.type === "VB" &&
+    "short" in x.block.ps &&
+    x.block.ps.short.find((x) => x.p === "ړ")
+      ? {
+          ...x,
+          block: {
+            ...x.block,
+            ps: {
+              ...x.block.ps,
+              short: x.block.ps.short.filter((ps) => ps.p !== "ړ"),
+            },
+          },
+        }
+      : x
+  );
+}

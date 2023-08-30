@@ -8,7 +8,9 @@ import {
 import { applySingleOrLengthOpts, fmapSingleOrLengthOpts } from "../fp-ps";
 import {
   concatPsString,
+  endsInConsonant,
   getLength,
+  lastVowelNotAorO,
   splitPsByVarients,
 } from "../p-text-helpers";
 import {
@@ -116,7 +118,8 @@ const formulas: Record<
   },
 };
 
-// TODO: dynamic and stative compounds
+// TODO: is وخوته masc ok ??
+// TODO: what to do with khatu, khot, khotu - bi-directional
 export function renderVerb({
   verb,
   tense,
@@ -375,17 +378,40 @@ function ensure3rdPast(
     const tpps = splitPsByVarients(
       makePsString(verb.entry.tppp, verb.entry.tppf)
     );
-    return tpps.map(({ p, f }) => {
-      const tip = removeAccents(
-        verb.entry.separationAtP !== undefined
+    if (verb.entry.p === "وړل" && aspect === "perfective") {
+      return [
+        { p: "ړ", f: "R" },
+        { p: "ړ", f: "Ru" },
+        { p: "وړ", f: "wuR" },
+        { p: "وړه", f: "wRu" },
+      ];
+    }
+    return tpps
+      .flatMap(({ p, f }) => {
+        if (p.endsWith("ووړ")) {
+          return [
+            { p, f },
+            { p: p.slice(0, -2) + "ړه", f: f.slice(0, -2) + "Ru" },
+          ];
+        }
+        return [{ p, f }];
+      })
+      .map(({ p, f }) =>
+        verb.entry.separationAtP !== undefined && aspect === "perfective"
           ? makePsString(
               p.slice(verb.entry.separationAtP),
               f.slice(verb.entry.separationAtF)
             )
           : makePsString(p, f)
+      )
+      .flatMap((ps) =>
+        endsInConsonant(ps) && lastVowelNotAorO(ps.f)
+          ? [ps, concatPsString(ps, { p: "ه", f: "u" })]
+          : [ps]
+      )
+      .map((ps) =>
+        aspect === "imperfective" ? accentOnNFromEnd(ps, 0) : removeAccents(ps)
       );
-      return aspect === "imperfective" ? accentOnNFromEnd(tip, 0) : tip;
-    });
     // if it ends in a consonant, the special form will also have another
     // variation ending with a ه - u
     // const endsInAConsonant = (pashtoConsonants.includes(tip.p.slice(-1)) || tip.f.slice(-1) === "w");

@@ -1,7 +1,7 @@
 import * as T from "../../../types";
 import { mapVerbRenderedOutput } from "../fp-ps";
 import { removeAccents } from "../accent-helpers";
-import { getPersonFromNP, isPastTense } from "./vp-tools";
+import { ensureNoHangingR, getPersonFromNP, isPastTense } from "./vp-tools";
 import { isImperativeTense, isPattern4Entry } from "../type-predicates";
 import { renderVerb } from "../new-verb-engine/render-verb";
 import { renderEnglishVPBase } from "./english-vp-rendering";
@@ -20,6 +20,9 @@ import {
 } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
 import { statVerb } from "../new-verb-engine/roots-and-stems";
+
+// TODO: Issue with yo me R -- both in rendering (what to do - یوړ مې)
+// and in parsing!
 
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const subject = getSubjectSelection(VP.blocks).selection;
@@ -170,25 +173,6 @@ export function insertNegative(
   } else {
     return [insertFromEnd(blocksNoAccentA, neg, 1)];
   }
-}
-
-function ensureNoHangingR(b: T.Block[]): T.Block[] {
-  return b.map((x) =>
-    x.block.type === "VB" &&
-    "short" in x.block.ps &&
-    x.block.ps.short.find((x) => x.p === "ړ")
-      ? {
-          ...x,
-          block: {
-            ...x.block,
-            ps: {
-              ...x.block.ps,
-              short: x.block.ps.short.filter((ps) => ps.p !== "ړ"),
-            },
-          },
-        }
-      : x
-  );
 }
 
 function swapEndingBlocks<X>(arr: X[], n: number = 1): X[] {

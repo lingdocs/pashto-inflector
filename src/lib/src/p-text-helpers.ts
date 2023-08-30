@@ -1250,3 +1250,13 @@ export function lastVowelNotA(g: string): boolean {
   }
   return matches[matches.length - 1] !== "a";
 }
+
+export function lastVowelNotAorO(g: string): boolean {
+  const matches = g.match(/ee|aa|i|u|o|oo|U|e|a/g);
+  if (!matches) {
+    return true;
+  }
+  return (
+    matches[matches.length - 1] !== "a" && matches[matches.length - 1] !== "o"
+  );
+}

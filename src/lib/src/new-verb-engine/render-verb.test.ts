@@ -97,6 +97,9 @@ const sturayKawul = wordQuery("ستړی کول", "verb");
 const raawrul = wordQuery("راوړل", "verb");
 const ooPh: T.PH = { type: "PH", ps: { p: "و", f: "óo" } };
 
+// TODO: test all cases of یوړ یوړه یووړ یووړه
+// and then parsing of all those!!
+
 const tests: {
   label: string;
   cases: {
@@ -1115,6 +1118,7 @@ test("special endings", () => {
                 { p: "خوت", f: "khot" },
                 // // TODO: is this even right?
                 // { p: "خوته", f: "khotu" },
+                // { p: "خته", f: "khatu" }, ???
                 // { p: "خوتو", f: "khoto" },
               ],
             },
@@ -1142,8 +1146,7 @@ test("special endings", () => {
               short: [
                 { p: "لید", f: "léed" },
                 // // TODO: is this even right?
-                // { p: "خوته", f: "khotu" },
-                // { p: "خوتو", f: "khoto" },
+                { p: "لیده", f: "leedú" },
               ],
             },
             person: 4,
@@ -1167,12 +1170,41 @@ test("special endings", () => {
             type: "VB",
             ps: {
               long: [{ p: "وړلو", f: "wRulo" }],
-              short: [{ p: "ووړ", f: "woR" }],
+              short: [
+                { p: "ووړ", f: "woR" },
+                { p: "وړه", f: "wRu" },
+              ],
             },
             person: 4,
             info: {
               type: "verb",
               aspect: "perfective",
+              base: "root",
+              verb: raawrul,
+            },
+          },
+        ],
+      ],
+    },
+    {
+      verb: raawrul,
+      tense: "imperfectivePast",
+      result: [
+        [],
+        [
+          {
+            type: "VB",
+            ps: {
+              long: [{ p: "راوړلو", f: "raawRúlo" }],
+              short: [
+                { p: "راووړ", f: "raawóR" },
+                { p: "راوړه", f: "raawRú" },
+              ],
+            },
+            person: 4,
+            info: {
+              type: "verb",
+              aspect: "imperfective",
               base: "root",
               verb: raawrul,
             },
