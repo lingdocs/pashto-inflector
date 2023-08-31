@@ -298,12 +298,23 @@ export function parseVP(
                 });
               }
             }
-          } else if (np.inflected) {
-            errors.push({
-              message: !isPast
-                ? "object of a past tense transitive verb should not be inflected"
-                : "subject of a non-past tense transitive verb should not be inflected",
-            });
+          } else {
+            if (np.inflected) {
+              errors.push({
+                message: !isPast
+                  ? "object of a past tense transitive verb should not be inflected"
+                  : "subject of a non-past tense transitive verb should not be inflected",
+              });
+            }
+            if (getPersonFromNP(king) !== verb.person) {
+              errors.push({
+                message: `${
+                  isPast ? "past tense" : "non-past tense"
+                } transitive verb must agree agree with ${
+                  isPast ? "obect" : "subject"
+                }`,
+              });
+            }
           }
           const blocksOps: T.VPSBlockComplete[][] = servants.map((servant) =>
             !isPast

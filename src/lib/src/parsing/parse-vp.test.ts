@@ -949,6 +949,11 @@ const tests: {
           })
         ),
       },
+      {
+        input: "سړي مې واهه",
+        output: [],
+        error: true,
+      },
     ],
   },
   {
