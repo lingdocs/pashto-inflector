@@ -29,6 +29,8 @@ import { LookupFunction } from "./lookup";
 // TODO: learn how to yank / use plugin for JSON neovim
 // learn to use jq to edit selected json in vim ?? COOOL
 
+// TODO: test grammatically transitive stuff
+
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   lookup: LookupFunction
@@ -74,42 +76,78 @@ export function parseVP(
     }
     const tense = getTenseFromRootsStems(ba, verb.info.base, verb.info.aspect);
     const isPast = isPastTense(tense);
+    const transitivities = getTransitivities(verb.info.verb);
+    const results: T.ParseResult<T.VPSelectionComplete>[] = [];
+    // eww... pretty imperative way of doing this...
+    for (let transitivity of transitivities) {
+      const v: T.VerbSelectionComplete = {
+        type: "verb",
+        verb: verb.info.verb,
+        transitivity,
+        canChangeTransitivity: false,
+        canChangeStatDyn: false,
+        negative,
+        tense,
+        canChangeVoice: true,
+        isCompound: false,
+        voice: "active",
+      };
 
-    const v: T.VerbSelectionComplete = {
-      type: "verb",
-      verb: verb.info.verb,
-      transitivity: verb.info.verb.entry.c.includes("intrans")
-        ? "intransitive"
-        : "transitive",
-      canChangeTransitivity: false,
-      canChangeStatDyn: false,
-      negative,
-      tense,
-      canChangeVoice: true,
-      isCompound: false,
-      voice: "active",
-    };
-
-    const nps = blocks.filter((x): x is T.ParsedNP => x.type === "NP");
-    // TODO: check that verb and PH match
-    if (verb.info.verb.entry.c.includes("intrans")) {
-      const errors: T.ParseError[] = [];
-      if (getMiniPronouns(kids).length) {
-        errors.push({
-          message: "unknown mini-pronoun",
-        });
-      }
-      if (nps.length > 1) {
-        return [];
-      }
-      if (nps.length === 0) {
+      const nps = blocks.filter((x): x is T.ParsedNP => x.type === "NP");
+      if (transitivity === "intransitive") {
+        const errors: T.ParseError[] = [];
+        if (getMiniPronouns(kids).length) {
+          errors.push({
+            message: "unknown mini-pronoun",
+          });
+        }
+        if (nps.length > 1) {
+          continue;
+        }
+        if (nps.length === 0) {
+          const blocks: T.VPSBlockComplete[] = [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete({
+                type: "NP",
+                selection: makePronounSelection(verb.person),
+              }),
+            },
+            {
+              key: 2,
+              block: {
+                type: "objectSelection",
+                selection: "none",
+              },
+            },
+          ];
+          results.push({
+            tokens,
+            body: {
+              blocks,
+              verb: v,
+              externalComplement: undefined,
+              form: {
+                removeKing: true,
+                shrinkServant: false,
+              },
+            } as T.VPSelectionComplete,
+            errors,
+          });
+          continue;
+        }
+        if (getPersonFromNP(nps[0].selection) !== verb.person) {
+          errors.push({ message: "subject must agree with intransitive verb" });
+        }
+        if (nps[0].inflected) {
+          errors.push({
+            message: "subject of intransitive verb must not be inflected",
+          });
+        }
         const blocks: T.VPSBlockComplete[] = [
           {
             key: 1,
-            block: makeSubjectSelectionComplete({
-              type: "NP",
-              selection: makePronounSelection(verb.person),
-            }),
+            block: makeSubjectSelectionComplete(nps[0].selection),
           },
           {
             key: 2,
@@ -119,292 +157,437 @@ export function parseVP(
             },
           },
         ];
-        return returnParseResult(
+        results.push({
           tokens,
-          {
+          body: {
             blocks,
             verb: v,
             externalComplement: undefined,
             form: {
-              removeKing: true,
+              removeKing: false,
               shrinkServant: false,
             },
           } as T.VPSelectionComplete,
-          errors
-        );
-      }
-      if (getPersonFromNP(nps[0].selection) !== verb.person) {
-        errors.push({ message: "subject must agree with intransitive verb" });
-      }
-      if (nps[0].inflected) {
-        errors.push({
-          message: "subject of intransitive verb must not be inflected",
+          errors,
         });
-      }
-      const blocks: T.VPSBlockComplete[] = [
-        {
-          key: 1,
-          block: makeSubjectSelectionComplete(nps[0].selection),
-        },
-        {
-          key: 2,
-          block: {
-            type: "objectSelection",
-            selection: "none",
-          },
-        },
-      ];
-      return returnParseResult(
-        tokens,
-        {
-          blocks,
-          verb: v,
-          externalComplement: undefined,
-          form: {
-            removeKing: false,
-            shrinkServant: false,
-          },
-        } as T.VPSelectionComplete,
-        errors
-      );
-    } else {
-      // transitive
-      if (nps.length > 2) {
-        return [];
-      }
-      if (nps.length === 0) {
-        // present:
-        //  - no king (subject)
-        //  - servant (object) is shrunken
-        // past:
-        //  - no king (object)
-        //  - servant (subject) is shrunken
-        const errors: T.ParseError[] = [];
-        const miniPronouns = getMiniPronouns(kids);
-        if (miniPronouns.length > 1) {
-          errors.push({
-            message: "unknown mini-pronoun in kid's section",
-          });
+        continue;
+      } else if (transitivity === "transitive") {
+        // transitive
+        if (nps.length > 2) {
+          continue;
         }
-        const blockOpts: T.VPSBlockComplete[][] = getPeopleFromMiniPronouns(
-          miniPronouns
-        ).map((person) =>
-          !isPast
-            ? [
-                {
-                  key: 1,
-                  block: makeSubjectSelectionComplete({
-                    type: "NP",
-                    selection: makePronounSelection(verb.person),
-                  }),
-                },
-                {
-                  key: 2,
-                  block: makeObjectSelectionComplete({
-                    type: "NP",
-                    selection: makePronounSelection(person),
-                  }),
-                },
-              ]
-            : [
-                {
-                  key: 1,
-                  block: makeSubjectSelectionComplete({
-                    type: "NP",
-                    selection: makePronounSelection(person),
-                  }),
-                },
-                {
-                  key: 2,
-                  block: makeObjectSelectionComplete({
-                    type: "NP",
-                    selection: makePronounSelection(verb.person),
-                  }),
-                },
-              ]
-        );
-        return blockOpts.flatMap((blocks) =>
-          returnParseResult(
-            tokens,
-            {
-              blocks,
-              verb: v,
-              externalComplement: undefined,
-              form: {
-                removeKing: true,
-                shrinkServant: true,
-              },
-            } as T.VPSelectionComplete,
-            pronounConflictInBlocks(blocks)
-              ? [...errors, { message: "invalid subject/object combo" }]
-              : errors
-          )
-        );
-      }
-      if (nps.length === 1) {
-        const np = nps[0];
-        // possibilities
-        // present:
-        //  - no king (np is servant)
-        //  - shrunken servant (np is king)
-        // past:
-        //  - no king (np is servant)
-        //  - shrunken servant (np is king)
-        return (
-          [
-            {
-              removeKing: true,
-              shrinkServant: false,
-            },
-            {
-              removeKing: false,
-              shrinkServant: true,
-            },
-          ] as const
-        ).flatMap((form) => {
+        if (nps.length === 0) {
+          // present:
+          //  - no king (subject)
+          //  - servant (object) is shrunken
+          // past:
+          //  - no king (object)
+          //  - servant (subject) is shrunken
           const errors: T.ParseError[] = [];
-          const king: T.NPSelection = form.removeKing
-            ? {
-                type: "NP",
-                selection: makePronounSelection(verb.person),
-              }
-            : np.selection;
-          const servants: T.NPSelection[] = form.shrinkServant
-            ? getPeopleFromMiniPronouns(kids).map((person) => ({
-                type: "NP",
-                selection: makePronounSelection(person),
-              }))
-            : [np.selection];
-          // check for vp structure errors
-          if (form.removeKing) {
-            if (getMiniPronouns(kids).length) {
-              errors.push({
-                message: "unknown mini-pronoun in kid's section",
-              });
-            }
-            if (!isPast) {
-              if (isFirstOrSecondPersPronoun(np.selection))
-                if (!np.inflected) {
-                  errors.push({
-                    message:
-                      "first or second pronoun object of non-past transitive verb must be inflected",
-                  });
-                }
-            } else {
-              if (!np.inflected) {
-                errors.push({
-                  message:
-                    "object of non-past transitive verb must not be inflected",
-                });
-              }
-            }
-          } else {
-            if (np.inflected) {
-              errors.push({
-                message: !isPast
-                  ? "object of a past tense transitive verb should not be inflected"
-                  : "subject of a non-past tense transitive verb should not be inflected",
-              });
-            }
-            if (getPersonFromNP(king) !== verb.person) {
-              errors.push({
-                message: `${
-                  isPast ? "past tense" : "non-past tense"
-                } transitive verb must agree agree with ${
-                  isPast ? "obect" : "subject"
-                }`,
-              });
-            }
+          const miniPronouns = getMiniPronouns(kids);
+          if (miniPronouns.length > 1) {
+            errors.push({
+              message: "unknown mini-pronoun in kid's section",
+            });
           }
-          const blocksOps: T.VPSBlockComplete[][] = servants.map((servant) =>
+          const blockOpts: T.VPSBlockComplete[][] = getPeopleFromMiniPronouns(
+            miniPronouns
+          ).map((person) =>
             !isPast
               ? [
                   {
                     key: 1,
-                    block: makeSubjectSelectionComplete(king),
+                    block: makeSubjectSelectionComplete({
+                      type: "NP",
+                      selection: makePronounSelection(verb.person),
+                    }),
                   },
                   {
                     key: 2,
-                    block: makeObjectSelectionComplete(servant),
+                    block: makeObjectSelectionComplete({
+                      type: "NP",
+                      selection: makePronounSelection(person),
+                    }),
                   },
                 ]
               : [
                   {
                     key: 1,
-                    block: makeSubjectSelectionComplete(servant),
+                    block: makeSubjectSelectionComplete({
+                      type: "NP",
+                      selection: makePronounSelection(person),
+                    }),
                   },
                   {
                     key: 2,
-                    block: makeObjectSelectionComplete(king),
+                    block: makeObjectSelectionComplete({
+                      type: "NP",
+                      selection: makePronounSelection(verb.person),
+                    }),
                   },
                 ]
           );
-          return blocksOps.map((blocks) => ({
+          const toAdd = blockOpts.flatMap((blocks) =>
+            returnParseResult(
+              tokens,
+              {
+                blocks,
+                verb: v,
+                externalComplement: undefined,
+                form: {
+                  removeKing: true,
+                  shrinkServant: true,
+                },
+              } as T.VPSelectionComplete,
+              pronounConflictInBlocks(blocks)
+                ? [...errors, { message: "invalid subject/object combo" }]
+                : errors
+            )
+          );
+          toAdd.forEach((r) => results.push(r));
+          continue;
+        }
+        if (nps.length === 1) {
+          const np = nps[0];
+          // possibilities
+          // present:
+          //  - no king (np is servant)
+          //  - shrunken servant (np is king)
+          // past:
+          //  - no king (np is servant)
+          //  - shrunken servant (np is king)
+          const res = (
+            [
+              {
+                removeKing: true,
+                shrinkServant: false,
+              },
+              {
+                removeKing: false,
+                shrinkServant: true,
+              },
+            ] as const
+          ).flatMap((form) => {
+            const errors: T.ParseError[] = [];
+            const king: T.NPSelection = form.removeKing
+              ? {
+                  type: "NP",
+                  selection: makePronounSelection(verb.person),
+                }
+              : np.selection;
+            const servants: T.NPSelection[] = form.shrinkServant
+              ? getPeopleFromMiniPronouns(kids).map((person) => ({
+                  type: "NP",
+                  selection: makePronounSelection(person),
+                }))
+              : [np.selection];
+            // check for vp structure errors
+            if (form.removeKing) {
+              if (getMiniPronouns(kids).length) {
+                errors.push({
+                  message: "unknown mini-pronoun in kid's section",
+                });
+              }
+              if (!isPast) {
+                if (isFirstOrSecondPersPronoun(np.selection))
+                  if (!np.inflected) {
+                    errors.push({
+                      message:
+                        "first or second pronoun object of non-past transitive verb must be inflected",
+                    });
+                  }
+              } else {
+                if (!np.inflected) {
+                  errors.push({
+                    message:
+                      "object of non-past transitive verb must not be inflected",
+                  });
+                }
+              }
+            } else {
+              if (np.inflected) {
+                errors.push({
+                  message: !isPast
+                    ? "object of a past tense transitive verb should not be inflected"
+                    : "subject of a non-past tense transitive verb should not be inflected",
+                });
+              }
+              if (getPersonFromNP(king) !== verb.person) {
+                errors.push({
+                  message: `${
+                    isPast ? "past tense" : "non-past tense"
+                  } transitive verb must agree agree with ${
+                    isPast ? "obect" : "subject"
+                  }`,
+                });
+              }
+            }
+            const blocksOps: T.VPSBlockComplete[][] = servants.map((servant) =>
+              !isPast
+                ? [
+                    {
+                      key: 1,
+                      block: makeSubjectSelectionComplete(king),
+                    },
+                    {
+                      key: 2,
+                      block: makeObjectSelectionComplete(servant),
+                    },
+                  ]
+                : [
+                    {
+                      key: 1,
+                      block: makeSubjectSelectionComplete(servant),
+                    },
+                    {
+                      key: 2,
+                      block: makeObjectSelectionComplete(king),
+                    },
+                  ]
+            );
+            return blocksOps.map((blocks) => ({
+              tokens,
+              body: {
+                blocks,
+                verb: v,
+                externalComplement: undefined,
+                form,
+              } as T.VPSelectionComplete,
+              errors: pronounConflictInBlocks(blocks)
+                ? [...errors, { message: "invalid subject/object combo" }]
+                : errors,
+            }));
+          });
+          res.forEach((r) => results.push(r));
+          continue;
+        } else {
+          if (isPast) {
+            const res = (
+              [
+                [nps[0], nps[1], false],
+                [nps[1], nps[0], true],
+              ] as const
+            ).flatMap(([s, o, flip]) => {
+              const errors: T.ParseError[] = [];
+              if (
+                isInvalidSubjObjCombo(
+                  getPersonFromNP(s.selection),
+                  getPersonFromNP(o.selection)
+                )
+              ) {
+                errors.push({
+                  message: "invalid subject/object combo",
+                });
+              }
+              if (!s.inflected) {
+                errors.push({
+                  message:
+                    "subject of transitive past tense verb must be inflected",
+                });
+              }
+              if (o.inflected) {
+                errors.push({
+                  message:
+                    "object of past tense transitive verb must not be inflected",
+                });
+              }
+              if (getPersonFromNP(o.selection) !== verb.person) {
+                errors.push({
+                  message:
+                    "past tense transitive verb must agree with the object",
+                });
+              }
+              let blocks: T.VPSBlockComplete[] = [
+                {
+                  key: 1,
+                  block: makeSubjectSelectionComplete(s.selection),
+                },
+                {
+                  key: 2,
+                  block: makeObjectSelectionComplete(o.selection),
+                },
+              ];
+              if (flip) {
+                blocks = blocks.reverse();
+              }
+              return returnParseResult(
+                tokens,
+                {
+                  blocks,
+                  verb: v,
+                  externalComplement: undefined,
+                  form: {
+                    removeKing: false,
+                    shrinkServant: false,
+                  },
+                } as T.VPSelectionComplete,
+                errors
+              );
+            });
+            res.forEach((r) => results.push(r));
+            continue;
+          } else {
+            const res = (
+              [
+                [nps[0], nps[1], false],
+                [nps[1], nps[0], true],
+              ] as const
+            ).flatMap(([s, o, flip]) => {
+              const errors: T.ParseError[] = [];
+              if (
+                isInvalidSubjObjCombo(
+                  getPersonFromNP(s.selection),
+                  getPersonFromNP(o.selection)
+                )
+              ) {
+                errors.push({
+                  message: "invalid subject/object combo",
+                });
+              }
+              if (isFirstOrSecondPersPronoun(o.selection)) {
+                if (!o.inflected) {
+                  errors.push({
+                    message:
+                      "object of transitive non-past tense verb must be inflected when it's a first or second person pronoun",
+                  });
+                }
+              } else {
+                if (o.inflected) {
+                  errors.push({
+                    message:
+                      "object of transitive non-past tense verb must not be inflected",
+                  });
+                }
+              }
+              if (s.inflected) {
+                errors.push({
+                  message:
+                    "subject of transitive non-past tense verb must not be inflected",
+                });
+              }
+              if (getPersonFromNP(s.selection) !== verb.person) {
+                errors.push({
+                  message:
+                    "non-past tense transitive verb must agree with the subject",
+                });
+              }
+              let blocks: T.VPSBlockComplete[] = [
+                {
+                  key: 1,
+                  block: makeSubjectSelectionComplete(s.selection),
+                },
+                {
+                  key: 2,
+                  block: makeObjectSelectionComplete(o.selection),
+                },
+              ];
+              if (flip) {
+                blocks = blocks.reverse();
+              }
+              return returnParseResult(
+                tokens,
+                {
+                  blocks,
+                  verb: v,
+                  externalComplement: undefined,
+                  form: {
+                    removeKing: false,
+                    shrinkServant: false,
+                  },
+                } as T.VPSelectionComplete,
+                errors
+              );
+            });
+            res.forEach((r) => results.push(r));
+            continue;
+          }
+        }
+      } else {
+        // grammatically transitive
+        const errors: T.ParseError[] = [];
+        if (nps.length === 1) {
+          if (getMiniPronouns(kids).length) {
+            errors.push({
+              message: "unknown mini-pronoun",
+            });
+          }
+          if (verb.person !== T.Person.ThirdPlurMale) {
+            errors.push({
+              message:
+                "grammatically transitive verb must be 3rd pers. masc. plur.",
+            });
+          }
+          if (!nps[0].inflected) {
+            errors.push({
+              message:
+                "subject of grammatically transitive verb must be inflected",
+            });
+          }
+          const blocks: T.VPSBlockComplete[] = [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete(nps[0].selection),
+            },
+            {
+              key: 2,
+              block: {
+                type: "objectSelection",
+                selection: T.Person.ThirdPlurMale,
+              },
+            },
+          ];
+          results.push({
             tokens,
             body: {
               blocks,
               verb: v,
               externalComplement: undefined,
-              form,
+              form: {
+                removeKing: false,
+                shrinkServant: false,
+              },
             } as T.VPSelectionComplete,
-            errors: pronounConflictInBlocks(blocks)
-              ? [...errors, { message: "invalid subject/object combo" }]
-              : errors,
-          }));
-        });
-      } else {
-        if (isPast) {
-          return (
-            [
-              [nps[0], nps[1], false],
-              [nps[1], nps[0], true],
-            ] as const
-          ).flatMap(([s, o, flip]) => {
-            const errors: T.ParseError[] = [];
-            if (
-              isInvalidSubjObjCombo(
-                getPersonFromNP(s.selection),
-                getPersonFromNP(o.selection)
-              )
-            ) {
-              errors.push({
-                message: "invalid subject/object combo",
-              });
-            }
-            if (!s.inflected) {
-              errors.push({
-                message:
-                  "subject of transitive past tense verb must be inflected",
-              });
-            }
-            if (o.inflected) {
-              errors.push({
-                message:
-                  "object of past tense transitive verb must not be inflected",
-              });
-            }
-            if (getPersonFromNP(o.selection) !== verb.person) {
-              errors.push({
-                message:
-                  "past tense transitive verb must agree with the object",
-              });
-            }
-            let blocks: T.VPSBlockComplete[] = [
+            errors,
+          });
+          continue;
+        } else if (nps.length === 0) {
+          const miniPronouns = getMiniPronouns(kids);
+          if (miniPronouns.length > 1) {
+            errors.push({
+              message: "unknown mini-pronoun",
+            });
+          }
+          if (miniPronouns.length === 0) {
+            errors.push({
+              message: "subject required for grammatically transitive verb",
+            });
+          }
+          if (verb.person !== T.Person.ThirdPlurMale) {
+            errors.push({
+              message:
+                "grammatically transitive verb must be 3rd pers. masc. plur.",
+            });
+          }
+          getPeopleFromMiniPronouns(kids).forEach((person) => {
+            const blocks: T.VPSBlockComplete[] = [
               {
                 key: 1,
-                block: makeSubjectSelectionComplete(s.selection),
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(person),
+                }),
               },
               {
                 key: 2,
-                block: makeObjectSelectionComplete(o.selection),
+                block: {
+                  type: "objectSelection",
+                  selection: T.Person.ThirdPlurMale,
+                },
               },
             ];
-            if (flip) {
-              blocks = blocks.reverse();
-            }
-            return returnParseResult(
+            results.push({
               tokens,
-              {
+              body: {
                 blocks,
                 verb: v,
                 externalComplement: undefined,
@@ -413,84 +596,16 @@ export function parseVP(
                   shrinkServant: false,
                 },
               } as T.VPSelectionComplete,
-              errors
-            );
+              errors,
+            });
           });
+          continue;
         } else {
-          return (
-            [
-              [nps[0], nps[1], false],
-              [nps[1], nps[0], true],
-            ] as const
-          ).flatMap(([s, o, flip]) => {
-            const errors: T.ParseError[] = [];
-            if (
-              isInvalidSubjObjCombo(
-                getPersonFromNP(s.selection),
-                getPersonFromNP(o.selection)
-              )
-            ) {
-              errors.push({
-                message: "invalid subject/object combo",
-              });
-            }
-            if (isFirstOrSecondPersPronoun(o.selection)) {
-              if (!o.inflected) {
-                errors.push({
-                  message:
-                    "object of transitive non-past tense verb must be inflected when it's a first or second person pronoun",
-                });
-              }
-            } else {
-              if (o.inflected) {
-                errors.push({
-                  message:
-                    "object of transitive non-past tense verb must not be inflected",
-                });
-              }
-            }
-            if (s.inflected) {
-              errors.push({
-                message:
-                  "subject of transitive non-past tense verb must not be inflected",
-              });
-            }
-            if (getPersonFromNP(s.selection) !== verb.person) {
-              errors.push({
-                message:
-                  "non-past tense transitive verb must agree with the subject",
-              });
-            }
-            let blocks: T.VPSBlockComplete[] = [
-              {
-                key: 1,
-                block: makeSubjectSelectionComplete(s.selection),
-              },
-              {
-                key: 2,
-                block: makeObjectSelectionComplete(o.selection),
-              },
-            ];
-            if (flip) {
-              blocks = blocks.reverse();
-            }
-            return returnParseResult(
-              tokens,
-              {
-                blocks,
-                verb: v,
-                externalComplement: undefined,
-                form: {
-                  removeKing: false,
-                  shrinkServant: false,
-                },
-              } as T.VPSelectionComplete,
-              errors
-            );
-          });
+          continue;
         }
       }
     }
+    return results;
   });
 }
 
@@ -587,4 +702,19 @@ function pronounConflictInBlocks(blocks: T.VPSBlockComplete[]): boolean {
     return false;
   }
   return isInvalidSubjObjCombo(subjPerson, objPerson);
+}
+
+function getTransitivities(v: T.VerbEntry): T.Transitivity[] {
+  const transitivities: T.Transitivity[] = [];
+  const opts = v.entry.c.split("/");
+  opts.forEach((opt) => {
+    if (opt.includes("gramm. trans")) {
+      transitivities.push("grammatically transitive");
+    } else if (opt.includes("intran")) {
+      transitivities.push("intransitive");
+    } else if (opt.includes("trans")) {
+      transitivities.push("transitive");
+    }
+  });
+  return transitivities;
 }
