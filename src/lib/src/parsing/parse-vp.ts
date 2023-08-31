@@ -593,7 +593,7 @@ export function parseVP(
                 externalComplement: undefined,
                 form: {
                   removeKing: false,
-                  shrinkServant: false,
+                  shrinkServant: true,
                 },
               } as T.VPSelectionComplete,
               errors,
