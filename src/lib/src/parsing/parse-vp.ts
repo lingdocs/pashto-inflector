@@ -24,8 +24,6 @@ import { LookupFunction } from "./lookup";
 
 // TODO: word query for kawul/kedul/stat/dyn
 
-// map over transitivities, to give transitive / gramm. transitive optionns
-
 // TODO: learn how to yank / use plugin for JSON neovim
 // learn to use jq to edit selected json in vim ?? COOOL
 
@@ -42,54 +40,79 @@ export function parseVP(
   }
   const blocks = parseBlocks(tokens, lookup, [], []);
   return bindParseResult(blocks, (tokens, { blocks, kids }) => {
-    const phIndex = blocks.findIndex((x) => x.type === "PH");
-    const vbeIndex = blocks.findIndex((x) => x.type === "VB");
     const ba = !!kids.find((k) => k === "ba");
-    const negIndex = blocks.findIndex(
-      (x) => x.type === "negative" && !x.imperative
-    );
-    const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
-    const verb =
-      vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
-    const negative = negIndex !== -1;
-    if (!verb || verb.type !== "VB" || verb.info.type !== "verb") {
-      return [];
-    }
-    // TODO: check for either VBE or Equative and VBP
-    if (
-      !negativeInPlace({
-        neg: negIndex,
-        v: vbeIndex,
-        phIndex: phIndex,
-        ph,
-        kids: !!kids.length,
-      })
-    ) {
-      return [];
-    }
-    if (verb.info.aspect === "perfective") {
-      if (!ph) {
-        return [];
-      }
-    } else {
-      if (ph) {
-        return [];
-      }
-    }
-    const tense = getTenseFromRootsStems(ba, verb.info.base, verb.info.aspect);
-    const transitivities = getTransitivities(verb.info.verb);
-    const nps = blocks.filter((x): x is T.ParsedNP => x.type === "NP");
     const miniPronouns = getMiniPronouns(kids);
-    return finishPossibleVPSs({
+    const nps = blocks.filter((x): x is T.ParsedNP => x.type === "NP");
+    const tenses = getTenses(blocks, ba, !!kids.length);
+    // TODO get errors from the get tenses (perfect verbs not agreeing)
+    return tenses.flatMap(({ tense, person, transitivities, negative, verb }) =>
+      finishPossibleVPSs({
+        tense,
+        transitivities,
+        nps,
+        miniPronouns,
+        tokens,
+        negative,
+        verb,
+        person,
+      })
+    );
+  });
+}
+
+function getTenses(
+  blocks: T.ParsedBlock[],
+  ba: boolean,
+  hasKids: boolean
+): {
+  tense: T.VerbTense;
+  person: T.Person;
+  transitivities: T.Transitivity[];
+  negative: boolean;
+  verb: T.VerbEntry;
+}[] {
+  const negIndex = blocks.findIndex(
+    (x) => x.type === "negative" && !x.imperative
+  );
+  const negative = negIndex !== -1;
+  const phIndex = blocks.findIndex((x) => x.type === "PH");
+  const vbeIndex = blocks.findIndex((x) => x.type === "VB");
+  const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
+  const verb = vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
+  if (!verb || verb.type !== "VB" || verb.info.type !== "verb") {
+    return [];
+  }
+  if (
+    !negativeInPlace({
+      neg: negIndex,
+      v: vbeIndex,
+      phIndex: phIndex,
+      ph,
+      kids: hasKids,
+    })
+  ) {
+    return [];
+  }
+  if (verb.info.aspect === "perfective") {
+    if (!ph) {
+      return [];
+    }
+  } else {
+    if (ph) {
+      return [];
+    }
+  }
+  const tense = getTenseFromRootsStems(ba, verb.info.base, verb.info.aspect);
+  const transitivities = getTransitivities(verb.info.verb);
+  return [
+    {
       tense,
       transitivities,
-      nps,
-      miniPronouns,
-      tokens,
       negative,
-      verb,
-    });
-  });
+      person: verb.person,
+      verb: verb.info.verb,
+    },
+  ];
 }
 
 function finishPossibleVPSs({
@@ -100,6 +123,7 @@ function finishPossibleVPSs({
   negative,
   verb,
   tokens,
+  person,
 }: {
   tense: T.VerbTense;
   transitivities: T.Transitivity[];
@@ -107,17 +131,15 @@ function finishPossibleVPSs({
   miniPronouns: T.ParsedMiniPronoun[];
   tokens: Readonly<T.Token[]>;
   negative: boolean;
-  verb: T.ParsedVBE;
+  verb: T.VerbEntry;
+  person: T.Person;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   const isPast = isPastTense(tense);
   return transitivities.flatMap<T.ParseResult<T.VPSelectionComplete>>(
     (transitivity): T.ParseResult<T.VPSelectionComplete>[] => {
-      if (verb.info.type === "equative") {
-        return [];
-      }
       const v: T.VerbSelectionComplete = {
         type: "verb",
-        verb: verb.info.verb,
+        verb,
         transitivity,
         canChangeTransitivity: false,
         canChangeStatDyn: false,
@@ -133,7 +155,7 @@ function finishPossibleVPSs({
           nps,
           tokens,
           v,
-          verbPerson: verb.person,
+          person,
         });
       } else if (transitivity === "transitive") {
         return finishTransitive({
@@ -141,7 +163,7 @@ function finishPossibleVPSs({
           nps,
           tokens,
           v,
-          verbPerson: verb.person,
+          person,
           isPast,
         });
       } else {
@@ -150,7 +172,7 @@ function finishPossibleVPSs({
           nps,
           tokens,
           v,
-          verbPerson: verb.person,
+          person,
           isPast,
         });
       }
@@ -163,13 +185,13 @@ function finishIntransitive({
   nps,
   tokens,
   v,
-  verbPerson,
+  person,
 }: {
   miniPronouns: T.ParsedMiniPronoun[];
   nps: T.ParsedNP[];
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
-  verbPerson: T.Person;
+  person: T.Person;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   const errors: T.ParseError[] = [];
   if (miniPronouns.length) {
@@ -186,7 +208,7 @@ function finishIntransitive({
         key: 1,
         block: makeSubjectSelectionComplete({
           type: "NP",
-          selection: makePronounSelection(verbPerson),
+          selection: makePronounSelection(person),
         }),
       },
       {
@@ -213,7 +235,7 @@ function finishIntransitive({
       },
     ];
   }
-  if (getPersonFromNP(nps[0].selection) !== verbPerson) {
+  if (getPersonFromNP(nps[0].selection) !== person) {
     errors.push({ message: "subject must agree with intransitive verb" });
   }
   if (nps[0].inflected) {
@@ -256,14 +278,14 @@ function finishTransitive({
   nps,
   tokens,
   v,
-  verbPerson,
+  person,
   isPast,
 }: {
   miniPronouns: T.ParsedMiniPronoun[];
   nps: T.ParsedNP[];
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
-  verbPerson: T.Person;
+  person: T.Person;
   isPast: boolean;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   // transitive
@@ -285,21 +307,21 @@ function finishTransitive({
     }
     const blockOpts: T.VPSBlockComplete[][] = getPeopleFromMiniPronouns(
       miniPronouns
-    ).map((person) =>
+    ).map((servantPerson) =>
       !isPast
         ? [
             {
               key: 1,
               block: makeSubjectSelectionComplete({
                 type: "NP",
-                selection: makePronounSelection(verbPerson),
+                selection: makePronounSelection(person),
               }),
             },
             {
               key: 2,
               block: makeObjectSelectionComplete({
                 type: "NP",
-                selection: makePronounSelection(person),
+                selection: makePronounSelection(servantPerson),
               }),
             },
           ]
@@ -308,14 +330,14 @@ function finishTransitive({
               key: 1,
               block: makeSubjectSelectionComplete({
                 type: "NP",
-                selection: makePronounSelection(person),
+                selection: makePronounSelection(servantPerson),
               }),
             },
             {
               key: 2,
               block: makeObjectSelectionComplete({
                 type: "NP",
-                selection: makePronounSelection(verbPerson),
+                selection: makePronounSelection(person),
               }),
             },
           ]
@@ -363,7 +385,7 @@ function finishTransitive({
       const king: T.NPSelection = form.removeKing
         ? {
             type: "NP",
-            selection: makePronounSelection(verbPerson),
+            selection: makePronounSelection(person),
           }
         : np.selection;
       const servants: T.NPSelection[] = form.shrinkServant
@@ -403,7 +425,7 @@ function finishTransitive({
               : "subject of a non-past tense transitive verb should not be inflected",
           });
         }
-        if (getPersonFromNP(king) !== verbPerson) {
+        if (getPersonFromNP(king) !== person) {
           errors.push({
             message: `${
               isPast ? "past tense" : "non-past tense"
@@ -479,7 +501,7 @@ function finishTransitive({
               "object of past tense transitive verb must not be inflected",
           });
         }
-        if (getPersonFromNP(o.selection) !== verbPerson) {
+        if (getPersonFromNP(o.selection) !== person) {
           errors.push({
             message: "past tense transitive verb must agree with the object",
           });
@@ -550,7 +572,7 @@ function finishTransitive({
               "subject of transitive non-past tense verb must not be inflected",
           });
         }
-        if (getPersonFromNP(s.selection) !== verbPerson) {
+        if (getPersonFromNP(s.selection) !== person) {
           errors.push({
             message:
               "non-past tense transitive verb must agree with the subject",
@@ -592,14 +614,14 @@ function finishGrammaticallyTransitive({
   nps,
   tokens,
   v,
-  verbPerson,
+  person,
   isPast,
 }: {
   miniPronouns: T.ParsedMiniPronoun[];
   nps: T.ParsedNP[];
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
-  verbPerson: T.Person;
+  person: T.Person;
   isPast: boolean;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   const errors: T.ParseError[] = [];
@@ -610,7 +632,7 @@ function finishGrammaticallyTransitive({
           message: "unknown mini-pronoun",
         });
       }
-      if (verbPerson !== T.Person.ThirdPlurMale) {
+      if (person !== T.Person.ThirdPlurMale) {
         errors.push({
           message:
             "grammatically transitive verb must be 3rd pers. masc. plur.",
@@ -661,7 +683,7 @@ function finishGrammaticallyTransitive({
           message: "subject required for grammatically transitive verb",
         });
       }
-      if (verbPerson !== T.Person.ThirdPlurMale) {
+      if (person !== T.Person.ThirdPlurMale) {
         errors.push({
           message:
             "grammatically transitive verb must be 3rd pers. masc. plur.",
@@ -708,7 +730,7 @@ function finishGrammaticallyTransitive({
     }
     if (nps.length === 1) {
       const subj = nps[0];
-      if (verbPerson !== getPersonFromNP(subj.selection)) {
+      if (person !== getPersonFromNP(subj.selection)) {
         errors.push({
           message: "non-past verb must agree with subject",
         });
@@ -758,7 +780,7 @@ function finishGrammaticallyTransitive({
           key: 1,
           block: makeSubjectSelectionComplete({
             type: "NP",
-            selection: makePronounSelection(verbPerson),
+            selection: makePronounSelection(person),
           }),
         },
         {
