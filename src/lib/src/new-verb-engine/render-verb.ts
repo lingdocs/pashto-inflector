@@ -377,6 +377,8 @@ function ensure3rdPast(
   if (verb.entry.tppp && verb.entry.tppf) {
     const tpps = splitPsByVarients(
       makePsString(verb.entry.tppp, verb.entry.tppf)
+    ).map((ps) =>
+      !verb.entry.sepOo && aspect === "perfective" ? takeOffAaStart(ps) : ps
     );
     if (verb.entry.p === "وړل" && aspect === "perfective") {
       return [
@@ -444,4 +446,24 @@ function removeAbility(
   tense: T.VerbTense | T.AbilityTense | T.ImperativeTense
 ): T.VerbTense | T.ImperativeTense {
   return tense.replace("Modal", "") as T.VerbTense | T.ImperativeTense;
+}
+
+function takeOffAaStart(ps: T.PsString): T.PsString {
+  if (!["ا", "آ"].includes(ps.p[0])) {
+    return ps;
+  }
+  // TODO handle more than just the starting aa
+  if (["aa", "áa"].includes(ps.f.slice(0, 2))) {
+    return {
+      p: ps.p.slice(1),
+      f: ps.f.slice(2),
+    };
+  }
+  if (["a", "á"].includes(ps.f[0])) {
+    return {
+      p: ps.p.slice(1),
+      f: ps.f.slice(1),
+    };
+  }
+  return ps;
 }

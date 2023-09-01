@@ -80,6 +80,7 @@ const kedulDyn = vEntry({
   separationAtP: 1,
   separationAtF: 2,
 });
+const ahkeestul = wordQuery("اخیستل", "verb");
 const wahul = wordQuery("وهل", "verb");
 const achawul = wordQuery("اچول", "verb");
 const ganul = wordQuery("ګڼل", "verb");
@@ -284,6 +285,44 @@ const tests: {
                   aspect: "perfective",
                   base: "root",
                   verb: wahul,
+                },
+              },
+            ],
+          ],
+        },
+      },
+      {
+        input: {
+          verb: ahkeestul,
+          tense: "perfectivePast",
+          subject: T.Person.FirstSingMale,
+          object: T.Person.ThirdSingMale,
+          voice: "active",
+          negative: false,
+        },
+        output: {
+          hasBa: false,
+          vbs: [
+            [{ type: "PH", ps: { p: "وا", f: "wáa" } }],
+            [
+              {
+                type: "VB",
+                ps: {
+                  long: [{ p: "خیستلو", f: "kheestulo" }],
+                  short: [
+                    { p: "خیست", f: "kheest" },
+                    {
+                      p: "خیسته",
+                      f: "kheestu",
+                    },
+                  ],
+                },
+                person: T.Person.ThirdSingMale,
+                info: {
+                  type: "verb",
+                  aspect: "perfective",
+                  base: "root",
+                  verb: ahkeestul,
                 },
               },
             ],

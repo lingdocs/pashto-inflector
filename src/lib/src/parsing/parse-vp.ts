@@ -30,6 +30,8 @@ import { LookupFunction } from "./lookup";
 // learn to use jq to edit selected json in vim ?? COOOL
 
 // TODO: test grammatically transitive stuff
+// test bo ba ye dzee
+// test raaba ye wree
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
