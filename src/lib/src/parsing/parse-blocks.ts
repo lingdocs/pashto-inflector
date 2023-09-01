@@ -1,8 +1,10 @@
 import * as T from "../../../types";
 import { LookupFunction } from "./lookup";
+import { parseEquative } from "./parse-equative";
 import { parseKidsSection } from "./parse-kids-section";
 import { parseNeg } from "./parse-negative";
 import { parseNP } from "./parse-np";
+import { parsePastPart } from "./parse-past-part";
 import { parsePH } from "./parse-ph";
 import { parseVerb } from "./parse-verb";
 import { bindParseResult, returnParseResult } from "./utils";
@@ -26,6 +28,8 @@ export function parseBlocks(
   const np = prevPh ? [] : parseNP(tokens, lookup);
   const ph = vbExists || prevPh ? [] : parsePH(tokens);
   const vb = parseVerb(tokens, lookup);
+  const vbp = parsePastPart(tokens, lookup);
+  const eq = parseEquative(tokens);
   const neg = parseNeg(tokens);
   const kidsR = parseKidsSection(tokens, []);
   const allResults: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
@@ -33,6 +37,8 @@ export function parseBlocks(
     ...ph,
     ...neg,
     ...vb,
+    ...vbp,
+    ...eq,
     ...kidsR,
   ];
   // TODO: is this necessary?
@@ -76,7 +82,10 @@ export function parseBlocks(
   });
 }
 
-function phMatches(ph: T.ParsedPH | undefined, vb: T.ParsedVBE | undefined) {
+function phMatches(
+  ph: T.ParsedPH | undefined,
+  vb: T.ParsedVBE | T.ParsedVBP | undefined
+) {
   if (!ph) {
     return true;
   }

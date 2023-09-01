@@ -22,6 +22,7 @@ const leedul = wordQuery("لیدل", "verb");
 const kenaastul = wordQuery("کېناستل", "verb");
 const wurul = wordQuery("وړل", "verb");
 const akheestul = wordQuery("اخیستل", "verb");
+const khandul = wordQuery("خندل", "verb");
 
 const tests: {
   label: string;
@@ -48,6 +49,11 @@ const tests: {
       },
       {
         input: "ما ځم",
+        output: [],
+        error: true,
+      },
+      {
+        input: "تلم مې",
         output: [],
         error: true,
       },
@@ -1381,6 +1387,258 @@ const tests: {
       },
     ],
   },
+  {
+    label: "grammatically transitive",
+    cases: [
+      {
+        input: "زه خاندم",
+        output: getPeople(1, "sing").map<T.VPSelectionComplete>((person) => ({
+          blocks: [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete({
+                type: "NP",
+                selection: makePronounSelection(person),
+              }),
+            },
+            {
+              key: 2,
+              block: {
+                type: "objectSelection",
+                selection: T.Person.ThirdPlurMale,
+              },
+            },
+          ],
+          verb: {
+            type: "verb",
+            verb: khandul,
+            transitivity: "grammatically transitive",
+            canChangeTransitivity: false,
+            canChangeStatDyn: false,
+            negative: false,
+            tense: "presentVerb",
+            canChangeVoice: true,
+            isCompound: false,
+            voice: "active",
+          },
+          externalComplement: undefined,
+          form: {
+            removeKing: false,
+            shrinkServant: false,
+          },
+        })),
+      },
+      {
+        input: "خاندم",
+        output: getPeople(1, "sing").map<T.VPSelectionComplete>((person) => ({
+          blocks: [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete({
+                type: "NP",
+                selection: makePronounSelection(person),
+              }),
+            },
+            {
+              key: 2,
+              block: {
+                type: "objectSelection",
+                selection: T.Person.ThirdPlurMale,
+              },
+            },
+          ],
+          verb: {
+            type: "verb",
+            verb: khandul,
+            transitivity: "grammatically transitive",
+            canChangeTransitivity: false,
+            canChangeStatDyn: false,
+            negative: false,
+            tense: "presentVerb",
+            canChangeVoice: true,
+            isCompound: false,
+            voice: "active",
+          },
+          externalComplement: undefined,
+          form: {
+            removeKing: true,
+            shrinkServant: false,
+          },
+        })),
+      },
+      {
+        input: "ما خندل",
+        output: getPeople(1, "sing").map<T.VPSelectionComplete>((person) => ({
+          blocks: [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete({
+                type: "NP",
+                selection: makePronounSelection(person),
+              }),
+            },
+            {
+              key: 2,
+              block: {
+                type: "objectSelection",
+                selection: T.Person.ThirdPlurMale,
+              },
+            },
+          ],
+          verb: {
+            type: "verb",
+            verb: khandul,
+            transitivity: "grammatically transitive",
+            canChangeTransitivity: false,
+            canChangeStatDyn: false,
+            negative: false,
+            tense: "imperfectivePast",
+            canChangeVoice: true,
+            isCompound: false,
+            voice: "active",
+          },
+          externalComplement: undefined,
+          form: {
+            removeKing: false,
+            shrinkServant: false,
+          },
+        })),
+      },
+      {
+        input: "خندل مې",
+        output: getPeople(1, "sing").map<T.VPSelectionComplete>((person) => ({
+          blocks: [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete({
+                type: "NP",
+                selection: makePronounSelection(person),
+              }),
+            },
+            {
+              key: 2,
+              block: {
+                type: "objectSelection",
+                selection: T.Person.ThirdPlurMale,
+              },
+            },
+          ],
+          verb: {
+            type: "verb",
+            verb: khandul,
+            transitivity: "grammatically transitive",
+            canChangeTransitivity: false,
+            canChangeStatDyn: false,
+            negative: false,
+            tense: "imperfectivePast",
+            canChangeVoice: true,
+            isCompound: false,
+            voice: "active",
+          },
+          externalComplement: undefined,
+          form: {
+            removeKing: false,
+            shrinkServant: true,
+          },
+        })),
+      },
+      {
+        input: "خندل",
+        output: [],
+      },
+      {
+        input: "خاندم مې",
+        output: [],
+        error: true,
+      },
+      {
+        input: "زه وینم",
+        output: getPeople(1, "sing").map<T.VPSelectionComplete>((person) => ({
+          blocks: [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete({
+                type: "NP",
+                selection: makePronounSelection(person),
+              }),
+            },
+            {
+              key: 2,
+              block: {
+                type: "objectSelection",
+                selection: T.Person.ThirdPlurMale,
+              },
+            },
+          ],
+          verb: {
+            type: "verb",
+            verb: leedul,
+            transitivity: "grammatically transitive",
+            canChangeTransitivity: false,
+            canChangeStatDyn: false,
+            negative: false,
+            tense: "presentVerb",
+            canChangeVoice: true,
+            isCompound: false,
+            voice: "active",
+          },
+          externalComplement: undefined,
+          form: {
+            removeKing: false,
+            shrinkServant: false,
+          },
+        })),
+      },
+      {
+        input: "ما ولیدل",
+        output: getPeople(1, "sing").flatMap<T.VPSelectionComplete>((person) =>
+          (
+            ["transitive", "grammatically transitive"] as const
+          ).map<T.VPSelectionComplete>((transitivity) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(person),
+                }),
+              },
+              {
+                key: 2,
+                block:
+                  transitivity === "grammatically transitive"
+                    ? {
+                        type: "objectSelection",
+                        selection: T.Person.ThirdPlurMale,
+                      }
+                    : makeObjectSelectionComplete({
+                        type: "NP",
+                        selection: makePronounSelection(T.Person.ThirdPlurMale),
+                      }),
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: leedul,
+              transitivity,
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense: "perfectivePast",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: transitivity === "transitive",
+              shrinkServant: false,
+            },
+          }))
+        ),
+      },
+    ],
+  },
 ];
 
 tests.forEach(({ label, cases }) => {
@@ -1394,6 +1652,7 @@ tests.forEach(({ label, cases }) => {
         expect(parsed.map((p) => removeKeys(p.body))).toIncludeSameMembers(
           removeKeys(output)
         );
+        expect(parsed.every((p) => p.errors.length === 0)).toBe(true);
       }
     });
   });

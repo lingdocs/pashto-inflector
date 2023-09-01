@@ -726,9 +726,7 @@ export type EquativeTenseWithoutBa =
   | "subjunctive"
   | "habitual"
   | "past"
-  | "wouldBe"
-  | "pastSubjunctive"
-  | "wouldHaveBeen";
+  | "pastSubjunctive";
 export type PerfectTense = `${EquativeTense}Perfect`;
 export type AbilityTense = `${VerbTense}Modal`;
 export type ImperativeTense = `${Aspect}Imperative`;
@@ -1196,7 +1194,12 @@ export type Block = {
     | VHead;
 };
 
-export type ParsedBlock = ParsedNP | ParsedPH | ParsedVBE | NegativeBlock;
+export type ParsedBlock =
+  | ParsedNP
+  | ParsedPH
+  | ParsedVBE
+  | ParsedVBP
+  | NegativeBlock;
 
 export type ParsedKidsSection = {
   type: "kids";
@@ -1213,6 +1216,7 @@ export type ParsedPH = {
   s: string;
 };
 export type ParsedVBE = Omit<VBE, "ps">;
+export type ParsedVBP = Omit<VBP, "ps">;
 
 export type Kid = {
   key: number;
