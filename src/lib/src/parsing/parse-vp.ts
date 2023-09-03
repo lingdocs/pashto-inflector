@@ -13,6 +13,8 @@ import { parseBlocks } from "./parse-blocks";
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { LookupFunction } from "./lookup";
+import { personToGenNum } from "../misc-helpers";
+import { equals } from "rambda";
 // to hide equatives type-doubling issue
 
 // this should also conjugate to
@@ -30,6 +32,10 @@ import { LookupFunction } from "./lookup";
 // TODO: test grammatically transitive stuff
 // test bo ba ye dzee
 // test raaba ye wree
+
+// TODO: somehow make sure ALL BLOCKS ARE USED UP
+// so we don't get something like ښځو زه خوړلې یم with a hanging
+// یم not used
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -65,7 +71,7 @@ function getTenses(
   ba: boolean,
   hasKids: boolean
 ): {
-  tense: T.VerbTense;
+  tense: T.VerbTense | T.PerfectTense;
   person: T.Person;
   transitivities: T.Transitivity[];
   negative: boolean;
@@ -79,7 +85,7 @@ function getTenses(
   const vbeIndex = blocks.findIndex((x) => x.type === "VB");
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
   const verb = vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
-  if (!verb || verb.type !== "VB" || verb.info.type !== "verb") {
+  if (!verb || verb.type !== "VB") {
     return [];
   }
   if (
@@ -93,26 +99,53 @@ function getTenses(
   ) {
     return [];
   }
-  if (verb.info.aspect === "perfective") {
-    if (!ph) {
-      return [];
+  if (verb.info.type === "verb") {
+    if (verb.info.aspect === "perfective") {
+      if (!ph) {
+        return [];
+      }
+    } else {
+      if (ph) {
+        return [];
+      }
     }
+    const tense = getTenseFromRootsStems(ba, verb.info.base, verb.info.aspect);
+    const transitivities = getTransitivities(verb.info.verb);
+    return [
+      {
+        tense,
+        transitivities,
+        negative,
+        person: verb.person,
+        verb: verb.info.verb,
+      },
+    ];
   } else {
-    if (ph) {
+    // perfect
+    const pPart = blocks.find(
+      (x) => x.type === "VB" && x.info.type === "ppart"
+    ) as T.ParsedVBP | undefined;
+    const equative = blocks.find(
+      (x) => x.type === "VB" && x.info.type === "equative"
+    ) as T.ParsedVBE | undefined;
+    if (!pPart || pPart.info.type === "ability" || !equative) {
       return [];
     }
+    const equativeGenNum = personToGenNum(equative.person);
+    if (!equals(equativeGenNum, pPart.info.genNum)) {
+      return [];
+    }
+    const transitivities = getTransitivities(pPart.info.verb);
+    return [
+      {
+        tense: "presentPerfect",
+        transitivities,
+        negative,
+        person: equative.person,
+        verb: pPart.info.verb,
+      },
+    ];
   }
-  const tense = getTenseFromRootsStems(ba, verb.info.base, verb.info.aspect);
-  const transitivities = getTransitivities(verb.info.verb);
-  return [
-    {
-      tense,
-      transitivities,
-      negative,
-      person: verb.person,
-      verb: verb.info.verb,
-    },
-  ];
 }
 
 function finishPossibleVPSs({
@@ -125,7 +158,7 @@ function finishPossibleVPSs({
   tokens,
   person,
 }: {
-  tense: T.VerbTense;
+  tense: T.VerbTense | T.PerfectTense;
   transitivities: T.Transitivity[];
   nps: T.ParsedNP[];
   miniPronouns: T.ParsedMiniPronoun[];

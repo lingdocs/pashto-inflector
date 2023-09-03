@@ -66,7 +66,7 @@ export function parseBlocks(
       return [];
     }
     // TODO: will have to handle welded
-    if (r.type === "VB") {
+    if (r.type === "VB" && r.info.type !== "ppart") {
       if (!phMatches(prevPh, r)) {
         return [];
       }

@@ -1,4 +1,8 @@
 import * as T from "../../../types";
+import { getPeople, returnParseResultS } from "./utils";
+
+const allThird = getPeople(3, "both");
+const allPeople: T.Person[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export function parseEquative(
   tokens: Readonly<T.Token[]>
@@ -7,100 +11,74 @@ export function parseEquative(
     return [];
   }
   const [{ s }, ...rest] = tokens;
-  const match = table.find((x) => x.ps.includes(s));
-  if (!match) {
+  function eqMaker(
+    people: T.Person[],
+    tenses: T.EquativeTenseWithoutBa[]
+  ): T.ParseResult<T.ParsedVBE>[] {
+    return tenses.flatMap((tense) =>
+      people.map((person) => returnParseResultS(rest, makeEqVBE(tense, person)))
+    );
+  }
+  if (s === "دي") {
+    return eqMaker(allThird, ["present"]);
+  }
+  if (s === "وي") {
+    return eqMaker(allThird, ["habitual", "subjunctive"]);
+  }
+  if (s === "دی") {
+    return eqMaker([T.Person.ThirdSingMale], ["present"]);
+  }
+  if (s === "ده") {
+    return eqMaker([T.Person.ThirdSingFemale], ["present"]);
+  }
+  if (["وای", "وی"].includes(s)) {
+    return eqMaker(allPeople, ["pastSubjunctive"]);
+  }
+  if (s === "ول") {
+    return eqMaker([T.Person.ThirdPlurMale], ["past"]);
+  }
+  const persons = getEqEndingPersons(s[s.length - 1]);
+  if (!persons.length) {
     return [];
   }
-  return match.people.flatMap((person) =>
-    match.tenses.map((tense) => ({
-      tokens: rest,
-      body: {
-        type: "VB",
-        info: {
-          type: "equative",
-          tense,
-        },
-        person,
-      },
-      errors: [],
-    }))
-  );
+  if (s.length === 2 && s.startsWith("ی")) {
+    return eqMaker(persons, ["present", "habitual"]);
+  }
+  if (s.length === 3 && s.startsWith("ول")) {
+    return eqMaker(persons, ["past"]);
+  }
+  if (s.length === 2 && s.startsWith("و")) {
+    return eqMaker(persons, ["past", "subjunctive"]);
+  }
+  return [];
 }
 
-// TODO: NOT COMPLETE / CORRECT
-const table: {
-  ps: string[];
-  tenses: T.EquativeTenseWithoutBa[];
-  people: T.Person[];
-}[] = [
-  {
-    ps: ["یم"],
-    tenses: ["present", "habitual"],
-    people: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
-  },
-  {
-    ps: ["یې"],
-    tenses: ["present", "habitual"],
-    people: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
-  },
-  {
-    ps: ["یو"],
-    tenses: ["present", "habitual"],
-    people: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
-  },
-  {
-    ps: ["یئ"],
-    tenses: ["present", "habitual"],
-    people: [T.Person.SecondPlurMale, T.Person.SecondPlurFemale],
-  },
-  {
-    ps: ["وم"],
-    tenses: ["subjunctive", "past"],
-    people: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
-  },
-  {
-    ps: ["وې"],
-    tenses: ["subjunctive", "past"],
-    people: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
-  },
-  {
-    ps: ["وو"],
-    tenses: ["subjunctive", "past"],
-    people: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
-  },
-  {
-    ps: ["وئ"],
-    tenses: ["subjunctive", "past"],
-    people: [T.Person.SecondPlurMale, T.Person.SecondPlurFemale],
-  },
-  {
-    ps: ["دی"],
-    tenses: ["present"],
-    people: [T.Person.ThirdSingMale],
-  },
-  {
-    ps: ["ده"],
-    tenses: ["present"],
-    people: [T.Person.ThirdSingFemale],
-  },
-  {
-    ps: ["دي"],
-    tenses: ["present"],
-    people: [T.Person.ThirdPlurMale, T.Person.ThirdPlurFemale],
-  },
-  {
-    ps: ["وي"],
-    tenses: ["habitual"],
-    people: [
-      T.Person.ThirdSingMale,
-      T.Person.ThirdSingFemale,
-      T.Person.ThirdPlurMale,
-      T.Person.ThirdPlurFemale,
-    ],
-  },
-  {
-    ps: ["وای", "وی"],
-    tenses: ["pastSubjunctive"],
-    people: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-  },
-];
+function getEqEndingPersons(s: string): T.Person[] {
+  if (s === "م") {
+    return getPeople(1, "sing");
+  }
+  if (s === "ې") {
+    return getPeople(2, "sing");
+  }
+  if (s === "و") {
+    return getPeople(1, "pl");
+  }
+  if (s === "ئ") {
+    return getPeople(2, "pl");
+  }
+  return [];
+}
+
+function makeEqVBE(
+  tense: T.EquativeTenseWithoutBa,
+  person: T.Person
+): T.ParsedVBE {
+  return {
+    type: "VB",
+    info: {
+      type: "equative",
+      tense,
+    },
+    person,
+  };
+}
