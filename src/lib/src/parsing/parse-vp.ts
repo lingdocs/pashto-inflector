@@ -17,13 +17,6 @@ import { personToGenNum } from "../misc-helpers";
 import { equals } from "rambda";
 // to hide equatives type-doubling issue
 
-// this should also conjugate to
-//  وامې نه خیسته
-// وامې نه خیستلو
-// waa-me nú kheestulo
-// وامې نه اخیست
-// waa-me nú akheest
-
 // TODO: word query for kawul/kedul/stat/dyn
 
 // TODO: learn how to yank / use plugin for JSON neovim
@@ -36,6 +29,9 @@ import { equals } from "rambda";
 // TODO: somehow make sure ALL BLOCKS ARE USED UP
 // so we don't get something like ښځو زه خوړلې یم with a hanging
 // یم not used
+
+// TODO: way to get an error message for past participle and equative
+// not matching up
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,

@@ -1199,6 +1199,7 @@ export type ParsedBlock =
   | ParsedPH
   | ParsedVBE
   | ParsedVBP
+  | APSelection
   | NegativeBlock;
 
 export type ParsedKidsSection = {

@@ -1,5 +1,6 @@
 import * as T from "../../../types";
 import { LookupFunction } from "./lookup";
+import { parseAP } from "./parse-ap";
 import { parseEquative } from "./parse-equative";
 import { parseKidsSection } from "./parse-kids-section";
 import { parseNeg } from "./parse-negative";
@@ -25,21 +26,16 @@ export function parseBlocks(
     (b): b is T.ParsedPH => b.type === "PH"
   );
   const vbExists = blocks.some((b) => "type" in b && b.type === "VB");
-  const np = prevPh ? [] : parseNP(tokens, lookup);
-  const ph = vbExists || prevPh ? [] : parsePH(tokens);
-  const vb = parseVerb(tokens, lookup);
-  const vbp = parsePastPart(tokens, lookup);
-  const eq = parseEquative(tokens);
-  const neg = parseNeg(tokens);
-  const kidsR = parseKidsSection(tokens, []);
+
   const allResults: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
-    ...np,
-    ...ph,
-    ...neg,
-    ...vb,
-    ...vbp,
-    ...eq,
-    ...kidsR,
+    ...(prevPh ? [] : parseAP(tokens, lookup)),
+    ...(prevPh ? [] : parseNP(tokens, lookup)),
+    ...(vbExists || prevPh ? [] : parsePH(tokens)),
+    ...parseVerb(tokens, lookup),
+    ...parsePastPart(tokens, lookup),
+    ...parseEquative(tokens),
+    ...parseNeg(tokens),
+    ...parseKidsSection(tokens, []),
   ];
   // TODO: is this necessary?
   // if (!allResults.length) {

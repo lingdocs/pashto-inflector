@@ -12,9 +12,6 @@ import {
 import { LookupFunction } from "./lookup";
 import { shortVerbEndConsonant } from "./misc";
 
-// big problem ما سړی یوړ crashes it !!
-// BIG problem - issue with و being considered a VB for a lot of little verbs like بلل
-
 // TODO: کول verbs!
 // check that aawu stuff is working
 // check oo`azmooy -
@@ -102,6 +99,9 @@ function matchVerbs(
             }
           }
         } else if (e.psp) {
+          if (hasBreakawayAlef(e) && startsWithAleph(base)) {
+            return acc;
+          }
           if (e.separationAtP) {
             const bRest = e.psp.slice(e.separationAtP);
             if (bRest === base) {
@@ -117,6 +117,8 @@ function matchVerbs(
               return [...acc, entry];
             }
           }
+        } else if (hasBreakawayAlef(e) && startsWithAleph(base)) {
+          return acc;
         } else if (e.c.includes("intrans.")) {
           const miniRoot = e.p !== "کېدل" && e.p.slice(0, -3);
           const miniRootEg = miniRoot + "ېږ";
@@ -169,6 +171,8 @@ function matchVerbs(
           if (matchShortOrLong(base, bRest)) {
             return [...acc, entry];
           }
+        } else if (hasBreakawayAlef(e) && startsWithAleph(base) && !e.prp) {
+          return acc;
         } else {
           const p = e.prp || e.p;
           if (matchShortOrLong(base, p) || matchShortOrLong("ا" + base, p)) {
@@ -245,6 +249,9 @@ function matchVerbs(
           }
         }
       } else if (!e.prp) {
+        if (hasBreakawayAlef(e) && startsWithAleph(base)) {
+          return acc;
+        }
         if (oEnd) {
           if ([e.p, e.p.slice(0, -1)].includes(base)) {
             return [...acc, entry];
@@ -394,4 +401,12 @@ function parseIrregularVerb(s: string): T.ParsedVBE[] {
     ];
   }
   return [];
+}
+
+function hasBreakawayAlef(e: T.VerbDictionaryEntry): boolean {
+  return !e.sepOo && ["ا", "آ"].includes(e.p[0]);
+}
+
+function startsWithAleph(base: string): boolean {
+  return ["ا", "آ"].includes(base[0]);
 }

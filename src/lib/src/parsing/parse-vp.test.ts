@@ -86,6 +86,10 @@ const tests: {
         output: [],
         error: true,
       },
+      {
+        input: "ما وانه اخیست",
+        output: [],
+      },
     ],
   },
   {
@@ -1005,129 +1009,129 @@ const tests: {
           }))
         ),
       },
-      // {
-      //   input: "ودې وینم",
-      //   output: getPeople(2, "sing").flatMap((objectPerson) =>
-      //     getPeople(1, "sing").map<T.VPSelectionComplete>((subjectPerson) => ({
-      //       blocks: [
-      //         {
-      //           key: 1,
-      //           block: makeSubjectSelectionComplete({
-      //             type: "NP",
-      //             selection: makePronounSelection(subjectPerson),
-      //           }),
-      //         },
-      //         {
-      //           key: 2,
-      //           block: makeObjectSelectionComplete({
-      //             type: "NP",
-      //             selection: makePronounSelection(objectPerson),
-      //           }),
-      //         },
-      //       ],
-      //       verb: {
-      //         type: "verb",
-      //         verb: leedul,
-      //         transitivity: "transitive",
-      //         canChangeTransitivity: false,
-      //         canChangeStatDyn: false,
-      //         negative: false,
-      //         tense: "subjunctiveVerb",
-      //         canChangeVoice: true,
-      //         isCompound: false,
-      //         voice: "active",
-      //       },
-      //       externalComplement: undefined,
-      //       form: {
-      //         removeKing: true,
-      //         shrinkServant: true,
-      //       },
-      //     }))
-      //   ),
-      // },
-      // {
-      //   input: "وینم به دې",
-      //   output: getPeople(2, "sing").flatMap((objectPerson) =>
-      //     getPeople(1, "sing").map<T.VPSelectionComplete>((subjectPerson) => ({
-      //       blocks: [
-      //         {
-      //           key: 1,
-      //           block: makeSubjectSelectionComplete({
-      //             type: "NP",
-      //             selection: makePronounSelection(subjectPerson),
-      //           }),
-      //         },
-      //         {
-      //           key: 2,
-      //           block: makeObjectSelectionComplete({
-      //             type: "NP",
-      //             selection: makePronounSelection(objectPerson),
-      //           }),
-      //         },
-      //       ],
-      //       verb: {
-      //         type: "verb",
-      //         verb: leedul,
-      //         transitivity: "transitive",
-      //         canChangeTransitivity: false,
-      //         canChangeStatDyn: false,
-      //         negative: false,
-      //         tense: "imperfectiveFuture",
-      //         canChangeVoice: true,
-      //         isCompound: false,
-      //         voice: "active",
-      //       },
-      //       externalComplement: undefined,
-      //       form: {
-      //         removeKing: true,
-      //         shrinkServant: true,
-      //       },
-      //     }))
-      //   ),
-      // },
-      // {
-      //   input: "یو به مې ړلې",
-      //   output: [...getPeople(2, "sing"), T.Person.ThirdPlurFemale].flatMap(
-      //     (objectPerson) =>
-      //       getPeople(1, "sing").map<T.VPSelectionComplete>(
-      //         (subjectPerson) => ({
-      //           blocks: [
-      //             {
-      //               key: 1,
-      //               block: makeSubjectSelectionComplete({
-      //                 type: "NP",
-      //                 selection: makePronounSelection(subjectPerson),
-      //               }),
-      //             },
-      //             {
-      //               key: 2,
-      //               block: makeObjectSelectionComplete({
-      //                 type: "NP",
-      //                 selection: makePronounSelection(objectPerson),
-      //               }),
-      //             },
-      //           ],
-      //           verb: {
-      //             type: "verb",
-      //             verb: wurul,
-      //             transitivity: "transitive",
-      //             canChangeTransitivity: false,
-      //             canChangeStatDyn: false,
-      //             negative: false,
-      //             tense: "habitualPerfectivePast",
-      //             canChangeVoice: true,
-      //             isCompound: false,
-      //             voice: "active",
-      //           },
-      //           externalComplement: undefined,
-      //           form: {
-      //             removeKing: true,
-      //             shrinkServant: true,
-      //           },
-      //         })
-      //       )
-      //   ),
-      // },
+      {
+        input: "ودې وینم",
+        output: getPeople(2, "sing").flatMap((objectPerson) =>
+          getPeople(1, "sing").map<T.VPSelectionComplete>((subjectPerson) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(subjectPerson),
+                }),
+              },
+              {
+                key: 2,
+                block: makeObjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(objectPerson),
+                }),
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: leedul,
+              transitivity: "transitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense: "subjunctiveVerb",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: true,
+              shrinkServant: true,
+            },
+          }))
+        ),
+      },
+      {
+        input: "وینم به دې",
+        output: getPeople(2, "sing").flatMap((objectPerson) =>
+          getPeople(1, "sing").map<T.VPSelectionComplete>((subjectPerson) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(subjectPerson),
+                }),
+              },
+              {
+                key: 2,
+                block: makeObjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(objectPerson),
+                }),
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: leedul,
+              transitivity: "transitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense: "imperfectiveFuture",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: true,
+              shrinkServant: true,
+            },
+          }))
+        ),
+      },
+      {
+        input: "یو به مې ړلې",
+        output: [...getPeople(2, "sing"), T.Person.ThirdPlurFemale].flatMap(
+          (objectPerson) =>
+            getPeople(1, "sing").map<T.VPSelectionComplete>(
+              (subjectPerson) => ({
+                blocks: [
+                  {
+                    key: 1,
+                    block: makeSubjectSelectionComplete({
+                      type: "NP",
+                      selection: makePronounSelection(subjectPerson),
+                    }),
+                  },
+                  {
+                    key: 2,
+                    block: makeObjectSelectionComplete({
+                      type: "NP",
+                      selection: makePronounSelection(objectPerson),
+                    }),
+                  },
+                ],
+                verb: {
+                  type: "verb",
+                  verb: wurul,
+                  transitivity: "transitive",
+                  canChangeTransitivity: false,
+                  canChangeStatDyn: false,
+                  negative: false,
+                  tense: "habitualPerfectivePast",
+                  canChangeVoice: true,
+                  isCompound: false,
+                  voice: "active",
+                },
+                externalComplement: undefined,
+                form: {
+                  removeKing: true,
+                  shrinkServant: true,
+                },
+              })
+            )
+        ),
+      },
     ],
   },
   {

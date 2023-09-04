@@ -16,7 +16,7 @@ export function parsePastPart(
   }
   // TODO: ALSO HANDLE SHORT FORMS
   const wOutEnd = s.slice(0, -1);
-  const matches = lookup(wOutEnd, "participle");
+  const matches = lookup(wOutEnd, "pPart");
   const genNums = endingGenderNum(ending);
   return matches
     .flatMap<T.ParsedVBP>((verb) =>

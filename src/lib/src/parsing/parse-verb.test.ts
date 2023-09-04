@@ -31,7 +31,8 @@ const akheestul = wordQuery("اخیستل", "verb");
 const alwatul = wordQuery("الوتل", "verb");
 // const dartlul = wordQuery("درتلل", "verb")
 
-// todo alwatul waalwatul akhistul azmoyul etc
+// TODO: azmoyul etc
+// TODO: cleaner and more thorough handling of ا seperating verbs ee - wee etc
 
 const tests: {
   label: string;
@@ -394,7 +395,7 @@ const tests: {
           {
             root: {
               persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
-              aspects: ["imperfective", "perfective"],
+              aspects: ["imperfective"],
             },
             verb: akheestul,
           },
@@ -419,7 +420,7 @@ const tests: {
           {
             stem: {
               persons: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
-              aspects: ["imperfective", "perfective"],
+              aspects: ["imperfective"],
             },
             verb: alwatul,
           },

@@ -1,11 +1,16 @@
 import nounsAdjs from "../../../nouns-adjs";
 import verbs from "../../../verbs";
 import * as T from "../../../types";
-import { isAdjectiveEntry, isNounEntry } from "../type-predicates";
+import {
+  isAdjectiveEntry,
+  isAdverbEntry,
+  isNounEntry,
+} from "../type-predicates";
 import { removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import { splitVarients, undoAaXuPattern } from "../p-text-helpers";
 import { arraysHaveCommon } from "../misc-helpers";
 import { shortVerbEndConsonant } from "./misc";
+import { kawulDyn, kawulStat, kedulDyn, kedulStat, tlul } from "./irreg-verbs";
 
 export type LookupFunction = typeof lookup;
 
@@ -13,11 +18,13 @@ export function lookup(
   s: Partial<T.DictionaryEntry>,
   type: "nounAdj"
 ): T.DictionaryEntry[];
+export function lookup(s: string, type: "adverb"): T.AdverbEntry[];
+export function lookup(s: string, type: "pPart"): T.VerbEntry[];
 export function lookup(s: string, type: "verb" | "participle"): T.VerbEntry[];
 export function lookup(
   s: string | Partial<T.DictionaryEntry>,
-  type: "nounAdj" | "verb" | "participle"
-): T.DictionaryEntry[] | T.VerbEntry[] {
+  type: "nounAdj" | "verb" | "participle" | "pPart" | "adverb"
+): T.DictionaryEntry[] | T.VerbEntry[] | T.AdverbEntry[] {
   if (type === "nounAdj") {
     if (typeof s !== "object") {
       throw new Error("invalid query for noun / adj lookup");
@@ -29,6 +36,12 @@ export function lookup(
   }
   if (type === "verb") {
     return verbLookup(s);
+  }
+  if (type === "pPart") {
+    return pPartLookup(s);
+  }
+  if (type === "adverb") {
+    return adverbLookup(s);
   }
   return participleLookup(s);
 }
@@ -60,6 +73,12 @@ function nounAdjLookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   return nounsAdjs.filter((e) => e[key] === value) as T.DictionaryEntry[];
 }
 
+function adverbLookup(s: string): T.AdverbEntry[] {
+  return nounsAdjs.filter(
+    (a) => isAdverbEntry(a) && a.p === s
+  ) as T.AdverbEntry[];
+}
+
 export function shouldCheckTpp(s: string): boolean {
   return (
     ["د", "ړ", "ت", "ځ", "و", "ډ", "ڼ", "ن", "ه"].includes(s.slice(-1)) ||
@@ -81,6 +100,27 @@ function participleLookup(input: string): T.VerbEntry[] {
         ? verbs.filter((e) => e.entry.p === s + "ل")
         : []),
     ];
+  }
+  return [];
+}
+
+function pPartLookup(input: string): T.VerbEntry[] {
+  if (input === "کړ") {
+    return [kawulStat, kawulDyn];
+  }
+  if (input === "شو") {
+    return [kedulStat, kedulDyn];
+  }
+  if (input === "تل") {
+    // TODO: is also ورتلل، راتلل، درتلل like this?
+    return [tlul];
+  }
+  if (["ست", "ښت"].includes(input.slice(-2))) {
+    const p = input + "ل";
+    return verbs.filter((e) => e.entry.p === p);
+  }
+  if (input.at(-1) === "ل") {
+    return verbs.filter((e) => e.entry.p === input);
   }
   return [];
 }
