@@ -22,9 +22,7 @@ export function parsePhrase(s: T.Token[]): {
     ...parseVP(s, lookup),
   ];
 
-  console.log({ res });
   const success = res.filter((x) => !x.tokens.length).map((x) => x.body);
-  console.log({ success });
   return {
     success,
     errors: [

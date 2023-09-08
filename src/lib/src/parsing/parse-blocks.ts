@@ -8,7 +8,13 @@ import { parseNP } from "./parse-np";
 import { parsePastPart } from "./parse-past-part";
 import { parsePH } from "./parse-ph";
 import { parseVerb } from "./parse-verb";
-import { bindParseResult, returnParseResult } from "./utils";
+import {
+  bindParseResult,
+  returnParseResult,
+  isParsedVBE,
+  isParsedVBP,
+  startsVerbSection,
+} from "./utils";
 
 export function parseBlocks(
   tokens: Readonly<T.Token[]>,
@@ -22,19 +28,13 @@ export function parseBlocks(
   if (tokens.length === 0) {
     return returnParseResult(tokens, { blocks, kids });
   }
-  const inPreVerbSection = blocks.every(
-    (b) =>
-      b.type !== "PH" &&
-      b.type !== "VB" &&
-      b.type !== "welded" &&
-      b.type !== "negative"
-  );
+  const inVerbSection = blocks.some(startsVerbSection);
   const prevPh: T.ParsedPH | undefined = blocks.find(
     (b): b is T.ParsedPH => b.type === "PH"
   );
 
   const allBlocks: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
-    ...(inPreVerbSection
+    ...(!inVerbSection
       ? [...parseAP(tokens, lookup), ...parseNP(tokens, lookup)]
       : []),
     // ensure at most one of each PH, VBE, VBP
@@ -107,18 +107,4 @@ function getPhFromVerb(v: T.VerbEntry, base: "root" | "stem"): string {
     return "وا";
   }
   return "و";
-}
-
-function isParsedVBP(b: T.ParsedBlock): boolean {
-  return (
-    (b.type === "VB" || b.type === "welded") &&
-    (b.info.type === "ability" || b.info.type === "ppart")
-  );
-}
-
-function isParsedVBE(b: T.ParsedBlock): boolean {
-  return (
-    (b.type === "VB" || b.type === "welded") &&
-    (b.info.type === "verb" || b.info.type === "equative")
-  );
 }

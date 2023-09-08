@@ -133,3 +133,42 @@ export function getPeople(
     ? people.filter((p) => p > 5)
     : people;
 }
+
+export function isPH(b: T.ParsedBlock): b is T.ParsedPH {
+  return b.type === "PH";
+}
+
+export function isNeg(b: T.ParsedBlock): b is T.NegativeBlock {
+  return b.type === "negative";
+}
+
+export function isOoPh(b: T.ParsedBlock): b is T.ParsedPH {
+  return b.type === "PH" && ["و", "وا"].includes(b.s);
+}
+
+export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedPH {
+  return b.type === "PH" && !["و", "وا"].includes(b.s);
+}
+
+export function isParsedVBP(b: T.ParsedBlock): b is T.ParsedVBP {
+  return (
+    (b.type === "VB" || b.type === "welded") &&
+    (b.info.type === "ability" || b.info.type === "ppart")
+  );
+}
+
+export function isParsedVBE(b: T.ParsedBlock): b is T.ParsedVBE {
+  return (
+    (b.type === "VB" || b.type === "welded") &&
+    (b.info.type === "verb" || b.info.type === "equative")
+  );
+}
+
+export function startsVerbSection(b: T.ParsedBlock): boolean {
+  return (
+    b.type === "PH" ||
+    b.type === "VB" ||
+    b.type === "welded" ||
+    b.type === "negative"
+  );
+}

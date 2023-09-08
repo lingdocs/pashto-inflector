@@ -1,5 +1,14 @@
 import * as T from "../../../types";
-import { bindParseResult, returnParseResult } from "./utils";
+import {
+  bindParseResult,
+  isNeg,
+  isNonOoPh,
+  isPH,
+  isParsedVBE,
+  isParsedVBP,
+  returnParseResult,
+  startsVerbSection,
+} from "./utils";
 import {
   makeObjectSelectionComplete,
   makeSubjectSelectionComplete,
@@ -14,7 +23,7 @@ import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { LookupFunction } from "./lookup";
 import { personToGenNum } from "../misc-helpers";
-import { equals } from "rambda";
+import { equals, zip } from "rambda";
 // to hide equatives type-doubling issue
 
 // TODO: word query for kawul/kedul/stat/dyn
@@ -80,20 +89,13 @@ function getTenses(
   const negative = negIndex !== -1;
   const phIndex = blocks.findIndex((x) => x.type === "PH");
   const vbeIndex = blocks.findIndex((x) => x.type === "VB");
+  const verbSection = blocks.findIndex(startsVerbSection);
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
   const verb = vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
   if (!verb || verb.type !== "VB") {
     return [];
   }
-  if (
-    !negativeInPlace({
-      neg: negIndex,
-      v: vbeIndex,
-      phIndex: phIndex,
-      ph,
-      kids: hasKids,
-    })
-  ) {
+  if (!verbSectionOK(blocks.slice(verbSection))) {
     return [];
   }
   if (verb.info.type === "verb") {
@@ -895,41 +897,25 @@ function getTenseFromRootsStems(
   }
 }
 
-// possible neg setups
-// NEG VBE
-// PH NEG VBE
-// NEG (Non-و PH) VBE
-
-// (PH) NEG VBE VBP
-// (PH) VBP NEG VBE
-// (with non-و negative things?)
-
-function negativeInPlace({
-  neg,
-  v,
-  phIndex,
-  ph,
-  kids,
-}: {
-  neg: number;
-  v: number;
-  phIndex: number;
-  ph: T.ParsedPH | undefined;
-  kids: boolean;
-}): boolean {
-  if (neg === -1) {
-    return true;
-  }
-  if (ph) {
-    if (!kids && !["و", "وا"].includes(ph.s) && neg === phIndex - 1) {
-      return true;
-    }
-    return neg === phIndex + 1;
-  }
-  if (neg < v - 1) {
-    return false;
-  }
-  return true;
+function verbSectionOK(blocks: T.ParsedBlock[]): boolean {
+  const possibilites = [
+    [isParsedVBE],
+    [isNeg, isParsedVBE],
+    [isPH, isParsedVBE],
+    [isPH, isNeg, isParsedVBE],
+    [isNeg, isNonOoPh, isParsedVBE],
+    [isParsedVBP, isParsedVBE],
+    [isNeg, isParsedVBE, isParsedVBP],
+    [isParsedVBP, isNeg, isParsedVBE],
+    // could be more clever with optional isPH here
+    [isPH, isParsedVBP, isParsedVBE],
+    [isPH, isNeg, isParsedVBE, isParsedVBP],
+    [isPH, isParsedVBP, isNeg, isParsedVBE],
+  ];
+  return possibilites.some(
+    (ps) =>
+      ps.length === blocks.length && zip(ps, blocks).every(([p, b]) => p(b))
+  );
 }
 
 function pronounConflictInBlocks(blocks: T.VPSBlockComplete[]): boolean {
