@@ -23,7 +23,6 @@ import { equals } from "rambda";
 // learn to use jq to edit selected json in vim ?? COOOL
 
 // TODO: test grammatically transitive stuff
-// test bo ba ye dzee
 // test raaba ye wree
 
 // TODO: somehow make sure ALL BLOCKS ARE USED UP
@@ -32,6 +31,8 @@ import { equals } from "rambda";
 
 // TODO: way to get an error message for past participle and equative
 // not matching up
+
+// TODO: negative with perfect forms
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -893,6 +894,15 @@ function getTenseFromRootsStems(
     }
   }
 }
+
+// possible neg setups
+// NEG VBE
+// PH NEG VBE
+// NEG (Non-و PH) VBE
+
+// (PH) NEG VBE VBP
+// (PH) VBP NEG VBE
+// (with non-و negative things?)
 
 function negativeInPlace({
   neg,

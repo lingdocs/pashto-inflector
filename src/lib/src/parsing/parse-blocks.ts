@@ -22,31 +22,31 @@ export function parseBlocks(
   if (tokens.length === 0) {
     return returnParseResult(tokens, { blocks, kids });
   }
+  const inPreVerbSection = blocks.every(
+    (b) =>
+      b.type !== "PH" &&
+      b.type !== "VB" &&
+      b.type !== "welded" &&
+      b.type !== "negative"
+  );
   const prevPh: T.ParsedPH | undefined = blocks.find(
     (b): b is T.ParsedPH => b.type === "PH"
   );
-  const vbExists = blocks.some((b) => "type" in b && b.type === "VB");
 
-  const allResults: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
-    ...(prevPh ? [] : parseAP(tokens, lookup)),
-    ...(prevPh ? [] : parseNP(tokens, lookup)),
-    ...(vbExists || prevPh ? [] : parsePH(tokens)),
-    ...parseVerb(tokens, lookup),
-    ...parsePastPart(tokens, lookup),
-    ...parseEquative(tokens),
-    ...parseNeg(tokens),
+  const allBlocks: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
+    ...(inPreVerbSection
+      ? [...parseAP(tokens, lookup), ...parseNP(tokens, lookup)]
+      : []),
+    // ensure at most one of each PH, VBE, VBP
+    ...(prevPh ? [] : parsePH(tokens)),
+    ...(blocks.some(isParsedVBE)
+      ? []
+      : [...parseVerb(tokens, lookup), ...parseEquative(tokens)]),
+    ...(blocks.some(isParsedVBP) ? [] : parsePastPart(tokens, lookup)),
+    ...(blocks.some((b) => b.type === "negative") ? [] : parseNeg(tokens)),
     ...parseKidsSection(tokens, []),
   ];
-  // TODO: is this necessary?
-  // if (!allResults.length) {
-  //   return [
-  //     {
-  //       tokens,
-  //       body: { blocks, kids },
-  //       errors: [],
-  //     },
-  //   ];
-  // }
+  const allResults = [...allBlocks, ...parseKidsSection(tokens, [])];
   return bindParseResult(allResults, (tokens, r) => {
     const errors: T.ParseError[] = [];
     if (r.type === "kids") {
@@ -107,4 +107,18 @@ function getPhFromVerb(v: T.VerbEntry, base: "root" | "stem"): string {
     return "وا";
   }
   return "و";
+}
+
+function isParsedVBP(b: T.ParsedBlock): boolean {
+  return (
+    (b.type === "VB" || b.type === "welded") &&
+    (b.info.type === "ability" || b.info.type === "ppart")
+  );
+}
+
+function isParsedVBE(b: T.ParsedBlock): boolean {
+  return (
+    (b.type === "VB" || b.type === "welded") &&
+    (b.info.type === "verb" || b.info.type === "equative")
+  );
 }
