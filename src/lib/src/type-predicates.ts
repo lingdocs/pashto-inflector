@@ -3,6 +3,17 @@ import { pashtoConsonants } from "./pashto-consonants";
 import { endsWith } from "./p-text-helpers";
 import { countSyllables } from "./accent-helpers";
 
+const verbTenses: T.VerbTense[] = [
+  "presentVerb",
+  "subjunctiveVerb",
+  "perfectiveFuture",
+  "imperfectiveFuture",
+  "perfectivePast",
+  "imperfectivePast",
+  "habitualPerfectivePast",
+  "habitualImperfectivePast",
+];
+
 export function isTlulVerb(e: T.VerbEntry | T.VerbDictionaryEntry): boolean {
   const entry = "entry" in e ? e.entry : e;
   return (
@@ -276,16 +287,6 @@ export function isPerfectTense(tense: T.Tense): tense is T.PerfectTense {
 }
 
 export function isVerbTense(tense: T.Tense): tense is T.VerbTense {
-  const verbTenses: T.VerbTense[] = [
-    "presentVerb",
-    "subjunctiveVerb",
-    "perfectiveFuture",
-    "imperfectiveFuture",
-    "perfectivePast",
-    "imperfectivePast",
-    "habitualPerfectivePast",
-    "habitualImperfectivePast",
-  ];
   return verbTenses.some((x) => x === tense);
 }
 

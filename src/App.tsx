@@ -138,7 +138,7 @@ function App() {
             showing={showing === "parser"}
             handleChange={() => handleHiderClick("parser")}
           >
-            <ParserDemo opts={textOptions} />
+            <ParserDemo opts={textOptions} entryFeeder={entryFeeder} />
           </Hider>
         </div>
       </main>

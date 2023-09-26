@@ -2,12 +2,9 @@ import { useState } from "react";
 import * as T from "../types";
 import { parsePhrase } from "../lib/src/parsing/parse-phrase";
 import { tokenizer } from "../lib/src/parsing/tokenizer";
-import {
-  CompiledPTextDisplay,
-  NPDisplay,
-  compileVP,
-  renderVP,
-} from "../components/library";
+import { NPDisplay } from "../components/library";
+import EditableVP from "../components/src/vp-explorer/EditableVP";
+import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
 
 const working = [
   "limited demo vocab",
@@ -46,7 +43,13 @@ const examples = [
   "وبه مې وینې",
 ];
 
-function ParserDemo({ opts }: { opts: T.TextOptions }) {
+function ParserDemo({
+  opts,
+  entryFeeder,
+}: {
+  opts: T.TextOptions;
+  entryFeeder: T.EntryFeeder;
+}) {
   const [text, setText] = useState<string>("");
   const [result, setResult] = useState<
     ReturnType<typeof parsePhrase>["success"]
@@ -129,29 +132,37 @@ function ParserDemo({ opts }: { opts: T.TextOptions }) {
         "inflected" in res ? (
           <NPDisplay NP={res.selection} inflected={res.inflected} opts={opts} />
         ) : "verb" in res ? (
-          (() => {
-            try {
-              const rendered = renderVP(res);
-              const compiled = compileVP(rendered, res.form);
-              return (
-                <div>
-                  <CompiledPTextDisplay compiled={compiled} opts={opts} />
-                  {compiled.e && (
-                    <div className={`text-muted mt-2 text-center`}>
-                      {compiled.e.map((e, i) => (
-                        <div key={i}>{e}</div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            } catch (e) {
-              console.error(e);
-              console.log({ res });
-              return <div>ERROR</div>;
-            }
-          })()
+          <EditableVP
+            opts={opts}
+            entryFeeder={entryFeeder}
+            formChoice={false}
+            allVariations={true}
+          >
+            {uncompleteVPSelection(res)}
+          </EditableVP>
         ) : (
+          // (() => {
+          //   try {
+          //     const rendered = renderVP(res);
+          //     const compiled = compileVP(rendered, res.form);
+          //     return (
+          //       <div>
+          //         <CompiledPTextDisplay compiled={compiled} opts={opts} />
+          //         {compiled.e && (
+          //           <div className={`text-muted mt-2 text-center`}>
+          //             {compiled.e.map((e, i) => (
+          //               <div key={i}>{e}</div>
+          //             ))}
+          //           </div>
+          //         )}
+          //       </div>
+          //     );
+          //   } catch (e) {
+          //     console.error(e);
+          //     console.log({ res });
+          //     return <div>ERROR</div>;
+          //   }
+          // })()
           <samp>
             <pre>{JSON.stringify(res, null, "  ")}</pre>
           </samp>

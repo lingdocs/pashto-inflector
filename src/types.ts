@@ -787,7 +787,7 @@ export type VerbFormName =
 
 export type VerbSelectionComplete = Omit<
   VerbSelection,
-  "object" | "verbTense" | "perfectTense" | "imperativeTense" | "tenseCategory"
+  "verbTense" | "perfectTense" | "imperativeTense" | "tenseCategory"
 > & {
   tense: VerbFormName;
 };

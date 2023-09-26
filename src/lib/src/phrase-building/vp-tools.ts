@@ -1,6 +1,10 @@
 import * as T from "../../../types";
 import { concatPsString, psRemove, psStringEquals } from "../p-text-helpers";
-import { isPerfectTense } from "../type-predicates";
+import {
+  isImperativeTense,
+  isPerfectTense,
+  isVerbTense,
+} from "../type-predicates";
 import * as grammarUnits from "../grammar-units";
 import { isSecondPerson, randomNumber } from "../misc-helpers";
 import {
@@ -275,6 +279,36 @@ export function completeVPSelection(
     ...vps,
     verb,
     blocks: vps.blocks,
+  };
+}
+
+export function uncompleteVPSelection(
+  vps: T.VPSelectionComplete
+): T.VPSelectionState {
+  const tense = vps.verb.tense;
+  const tenseCategory = isVerbTense(tense)
+    ? "basic"
+    : isPerfectTense(tense)
+    ? "perfect"
+    : isImperativeTense(tense)
+    ? "modal"
+    : "imperative";
+  return {
+    ...vps,
+    verb: {
+      ...vps.verb,
+      verbTense:
+        tenseCategory === "basic" ? (tense as T.VerbTense) : "presentVerb",
+      perfectTense:
+        tenseCategory === "perfect"
+          ? (tense as T.PerfectTense)
+          : "presentPerfect",
+      imperativeTense:
+        tenseCategory === "imperative"
+          ? (tense as T.ImperativeTense)
+          : "imperfectiveImperative",
+      tenseCategory,
+    },
   };
 }
 
