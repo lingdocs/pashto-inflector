@@ -90,6 +90,10 @@ const tests: {
         input: "ما وانه اخیست",
         output: [],
       },
+      {
+        input: "ما سړی نه دي لیدلی",
+        output: [],
+      },
     ],
   },
   {

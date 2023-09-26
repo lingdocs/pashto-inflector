@@ -20,7 +20,10 @@ export function parseEquative(
     );
   }
   if (s === "دي") {
-    return eqMaker(allThird, ["present"]);
+    return eqMaker(
+      [T.Person.ThirdPlurMale, T.Person.ThirdPlurFemale],
+      ["present"]
+    );
   }
   if (s === "وي") {
     return eqMaker(allThird, ["habitual", "subjunctive"]);

@@ -28,15 +28,8 @@ import { equals, zip } from "rambda";
 
 // TODO: word query for kawul/kedul/stat/dyn
 
-// TODO: learn how to yank / use plugin for JSON neovim
-// learn to use jq to edit selected json in vim ?? COOOL
-
 // TODO: test grammatically transitive stuff
 // test raaba ye wree
-
-// TODO: somehow make sure ALL BLOCKS ARE USED UP
-// so we don't get something like ښځو زه خوړلې یم with a hanging
-// یم not used
 
 // TODO: way to get an error message for past participle and equative
 // not matching up
@@ -55,7 +48,13 @@ export function parseVP(
     const ba = !!kids.find((k) => k === "ba");
     const miniPronouns = getMiniPronouns(kids);
     const nps = blocks.filter((x): x is T.ParsedNP => x.type === "NP");
-    const tenses = getTenses(blocks, ba, !!kids.length);
+    const verbSection = blocks.findIndex(startsVerbSection);
+    // TODO: would be nice if this could pass error messages about the
+    // negative being out of place etc
+    if (!verbSectionOK(blocks.slice(verbSection))) {
+      return [];
+    }
+    const tenses = getTenses(blocks, ba);
     // TODO get errors from the get tenses (perfect verbs not agreeing)
     return tenses.flatMap(({ tense, person, transitivities, negative, verb }) =>
       finishPossibleVPSs({
@@ -74,8 +73,7 @@ export function parseVP(
 
 function getTenses(
   blocks: T.ParsedBlock[],
-  ba: boolean,
-  hasKids: boolean
+  ba: boolean
 ): {
   tense: T.VerbTense | T.PerfectTense;
   person: T.Person;
@@ -89,13 +87,9 @@ function getTenses(
   const negative = negIndex !== -1;
   const phIndex = blocks.findIndex((x) => x.type === "PH");
   const vbeIndex = blocks.findIndex((x) => x.type === "VB");
-  const verbSection = blocks.findIndex(startsVerbSection);
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
   const verb = vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
   if (!verb || verb.type !== "VB") {
-    return [];
-  }
-  if (!verbSectionOK(blocks.slice(verbSection))) {
     return [];
   }
   if (verb.info.type === "verb") {
@@ -127,7 +121,12 @@ function getTenses(
     const equative = blocks.find(
       (x) => x.type === "VB" && x.info.type === "equative"
     ) as T.ParsedVBE | undefined;
-    if (!pPart || pPart.info.type === "ability" || !equative) {
+    if (
+      !pPart ||
+      pPart.info.type === "ability" ||
+      !equative ||
+      equative.info.type !== "equative"
+    ) {
       return [];
     }
     const equativeGenNum = personToGenNum(equative.person);
@@ -135,9 +134,13 @@ function getTenses(
       return [];
     }
     const transitivities = getTransitivities(pPart.info.verb);
+    const tense = getPerfectTense(ba, equative.info.tense);
+    if (!tense) {
+      return [];
+    }
     return [
       {
-        tense: "presentPerfect",
+        tense,
         transitivities,
         negative,
         person: equative.person,
@@ -944,4 +947,33 @@ function getTransitivities(v: T.VerbEntry): T.Transitivity[] {
     }
   });
   return transitivities;
+}
+
+function getPerfectTense(
+  ba: boolean,
+  tense: T.EquativeTenseWithoutBa
+): T.PerfectTense | undefined {
+  const et = getEquativeTense(ba, tense);
+  if (!et) return undefined;
+  return `${et}Perfect`;
+}
+
+function getEquativeTense(
+  ba: boolean,
+  tense: T.EquativeTenseWithoutBa
+): T.EquativeTense | undefined {
+  if (ba) {
+    if (tense === "habitual") {
+      return "future";
+    }
+    if (tense === "past") {
+      return "wouldBe";
+    }
+    if (tense === "pastSubjunctive") {
+      return "wouldHaveBeen";
+    }
+    // illegal use of ba
+    return undefined;
+  }
+  return tense;
 }
