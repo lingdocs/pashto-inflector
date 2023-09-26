@@ -47,7 +47,9 @@ export function parseVP(
   return bindParseResult(blocks, (tokens, { blocks, kids }) => {
     const ba = !!kids.find((k) => k === "ba");
     const miniPronouns = getMiniPronouns(kids);
-    const nps = blocks.filter((x): x is T.ParsedNP => x.type === "NP");
+    const npsAndAps = blocks.filter(
+      (x): x is T.ParsedNP | T.APSelection => x.type === "NP" || x.type === "AP"
+    );
     const verbSection = blocks.findIndex(startsVerbSection);
     // TODO: would be nice if this could pass error messages about the
     // negative being out of place etc
@@ -60,7 +62,7 @@ export function parseVP(
       finishPossibleVPSs({
         tense,
         transitivities,
-        nps,
+        npsAndAps,
         miniPronouns,
         tokens,
         negative,
@@ -153,7 +155,7 @@ function getTenses(
 function finishPossibleVPSs({
   tense,
   transitivities,
-  nps,
+  npsAndAps,
   miniPronouns,
   negative,
   verb,
@@ -162,7 +164,7 @@ function finishPossibleVPSs({
 }: {
   tense: T.VerbTense | T.PerfectTense;
   transitivities: T.Transitivity[];
-  nps: T.ParsedNP[];
+  npsAndAps: (T.ParsedNP | T.APSelection)[];
   miniPronouns: T.ParsedMiniPronoun[];
   tokens: Readonly<T.Token[]>;
   negative: boolean;
@@ -187,7 +189,7 @@ function finishPossibleVPSs({
       if (transitivity === "intransitive") {
         return finishIntransitive({
           miniPronouns,
-          nps,
+          npsAndAps,
           tokens,
           v,
           person,
@@ -195,7 +197,7 @@ function finishPossibleVPSs({
       } else if (transitivity === "transitive") {
         return finishTransitive({
           miniPronouns,
-          nps,
+          npsAndAps,
           tokens,
           v,
           person,
@@ -204,7 +206,7 @@ function finishPossibleVPSs({
       } else {
         return finishGrammaticallyTransitive({
           miniPronouns,
-          nps,
+          npsAndAps,
           tokens,
           v,
           person,
@@ -217,13 +219,13 @@ function finishPossibleVPSs({
 
 function finishIntransitive({
   miniPronouns,
-  nps,
+  npsAndAps,
   tokens,
   v,
   person,
 }: {
   miniPronouns: T.ParsedMiniPronoun[];
-  nps: T.ParsedNP[];
+  npsAndAps: (T.ParsedNP | T.APSelection)[];
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
   person: T.Person;
@@ -234,20 +236,22 @@ function finishIntransitive({
       message: "unknown mini-pronoun",
     });
   }
+  const nps = npsAndAps.filter((x): x is T.ParsedNP => x.type === "NP");
   if (nps.length > 1) {
     return [];
   }
   if (nps.length === 0) {
     const blocks: T.VPSBlockComplete[] = [
+      ...mapOutnpsAndAps([], npsAndAps),
       {
-        key: 1,
+        key: 3456,
         block: makeSubjectSelectionComplete({
           type: "NP",
           selection: makePronounSelection(person),
         }),
       },
       {
-        key: 2,
+        key: 2345,
         block: {
           type: "objectSelection",
           selection: "none",
@@ -279,18 +283,16 @@ function finishIntransitive({
     });
   }
   const blocks: T.VPSBlockComplete[] = [
+    ...mapOutnpsAndAps(["S"], npsAndAps),
     {
-      key: 1,
-      block: makeSubjectSelectionComplete(nps[0].selection),
-    },
-    {
-      key: 2,
+      key: 2345,
       block: {
         type: "objectSelection",
         selection: "none",
       },
     },
   ];
+
   return [
     {
       tokens,
@@ -310,19 +312,20 @@ function finishIntransitive({
 
 function finishTransitive({
   miniPronouns,
-  nps,
+  npsAndAps,
   tokens,
   v,
   person,
   isPast,
 }: {
   miniPronouns: T.ParsedMiniPronoun[];
-  nps: T.ParsedNP[];
+  npsAndAps: (T.ParsedNP | T.APSelection)[];
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
   person: T.Person;
   isPast: boolean;
 }): T.ParseResult<T.VPSelectionComplete>[] {
+  const nps = npsAndAps.filter((x): x is T.ParsedNP => x.type === "NP");
   // transitive
   if (nps.length > 2) {
     return [];
@@ -345,6 +348,7 @@ function finishTransitive({
     ).map((servantPerson) =>
       !isPast
         ? [
+            ...mapOutnpsAndAps([], npsAndAps),
             {
               key: 1,
               block: makeSubjectSelectionComplete({
@@ -361,6 +365,7 @@ function finishTransitive({
             },
           ]
         : [
+            ...mapOutnpsAndAps([], npsAndAps),
             {
               key: 1,
               block: makeSubjectSelectionComplete({
@@ -395,6 +400,7 @@ function finishTransitive({
       )
     );
   }
+  // TODO: allow APs for this
   if (nps.length === 1) {
     const np = nps[0];
     // possibilities
@@ -646,19 +652,20 @@ function finishTransitive({
 
 function finishGrammaticallyTransitive({
   miniPronouns,
-  nps,
+  npsAndAps,
   tokens,
   v,
   person,
   isPast,
 }: {
   miniPronouns: T.ParsedMiniPronoun[];
-  nps: T.ParsedNP[];
+  npsAndAps: (T.ParsedNP | T.APSelection)[];
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
   person: T.Person;
   isPast: boolean;
 }): T.ParseResult<T.VPSelectionComplete>[] {
+  const nps = npsAndAps.filter((x): x is T.ParsedNP => x.type === "NP");
   const errors: T.ParseError[] = [];
   if (isPast) {
     if (nps.length === 1) {
@@ -680,12 +687,9 @@ function finishGrammaticallyTransitive({
         });
       }
       const blocks: T.VPSBlockComplete[] = [
+        ...mapOutnpsAndAps(["S"], npsAndAps),
         {
-          key: 1,
-          block: makeSubjectSelectionComplete(nps[0].selection),
-        },
-        {
-          key: 2,
+          key: 2345,
           block: {
             type: "objectSelection",
             selection: T.Person.ThirdPlurMale,
@@ -726,15 +730,16 @@ function finishGrammaticallyTransitive({
       }
       return getPeopleFromMiniPronouns(miniPronouns).map((person) => {
         const blocks: T.VPSBlockComplete[] = [
+          ...mapOutnpsAndAps([], npsAndAps),
           {
-            key: 1,
+            key: 2345,
             block: makeSubjectSelectionComplete({
               type: "NP",
               selection: makePronounSelection(person),
             }),
           },
           {
-            key: 2,
+            key: 3456,
             block: {
               type: "objectSelection",
               selection: T.Person.ThirdPlurMale,
@@ -777,12 +782,9 @@ function finishGrammaticallyTransitive({
         });
       }
       const blocks: T.VPSBlockComplete[] = [
+        ...mapOutnpsAndAps(["S"], npsAndAps),
         {
-          key: 1,
-          block: makeSubjectSelectionComplete(nps[0].selection),
-        },
-        {
-          key: 2,
+          key: 2345,
           block: {
             type: "objectSelection",
             selection: T.Person.ThirdPlurMale,
@@ -811,15 +813,16 @@ function finishGrammaticallyTransitive({
         });
       }
       const blocks: T.VPSBlockComplete[] = [
+        ...mapOutnpsAndAps([], npsAndAps),
         {
-          key: 1,
+          key: 1234,
           block: makeSubjectSelectionComplete({
             type: "NP",
             selection: makePronounSelection(person),
           }),
         },
         {
-          key: 2,
+          key: 2345,
           block: {
             type: "objectSelection",
             selection: T.Person.ThirdPlurMale,
@@ -976,4 +979,30 @@ function getEquativeTense(
     return undefined;
   }
   return tense;
+}
+
+function mapOutnpsAndAps(
+  npOrder: ("S" | "O")[],
+  blocks: (T.APSelection | T.ParsedNP)[]
+): T.VPSBlockComplete[] {
+  const queue = [...npOrder];
+  return blocks.map((x, i): T.VPSBlockComplete => {
+    if (x.type === "NP") {
+      const c = queue.shift();
+      if (!c) {
+        throw new Error("invalid NP order in parsing");
+      }
+      return {
+        key: i,
+        block: (c === "S"
+          ? makeSubjectSelectionComplete
+          : makeObjectSelectionComplete)(x.selection),
+      };
+    } else {
+      return {
+        key: i,
+        block: x,
+      };
+    }
+  });
 }
