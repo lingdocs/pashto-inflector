@@ -50,7 +50,7 @@ export function parsePossesor(
       }));
   }
   if (first.s === "د") {
-    const np = parseNP(rest, lookup);
+    const np = parseNP(rest, lookup, undefined);
     return bindParseResult(np, (tokens, body) => {
       const possesor: T.PossesorSelection = {
         shrunken: false,

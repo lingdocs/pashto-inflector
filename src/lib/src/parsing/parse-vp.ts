@@ -28,13 +28,10 @@ import { equals, zip } from "rambda";
 
 // TODO: word query for kawul/kedul/stat/dyn
 
-// TODO: test grammatically transitive stuff
-// test raaba ye wree
+// TODO: test all types with pronouns
 
 // TODO: way to get an error message for past participle and equative
 // not matching up
-
-// TODO: negative with perfect forms
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -400,7 +397,6 @@ function finishTransitive({
       )
     );
   }
-  // TODO: allow APs for this
   if (nps.length === 1) {
     const np = nps[0];
     // possibilities
@@ -476,27 +472,39 @@ function finishTransitive({
           });
         }
       }
-      const blocksOps: T.VPSBlockComplete[][] = servants.map((servant) =>
-        !isPast
+      const blocksOps: T.VPSBlockComplete[][] = servants.map<
+        T.VPSBlockComplete[]
+      >((servant) =>
+        !isPast && form.removeKing
           ? [
               {
-                key: 1,
+                key: 2345,
                 block: makeSubjectSelectionComplete(king),
               },
+              ...mapOutnpsAndAps(["O"], npsAndAps),
+            ]
+          : !isPast && form.shrinkServant
+          ? [
+              ...mapOutnpsAndAps(["S"], npsAndAps),
               {
-                key: 2,
+                key: 2345,
                 block: makeObjectSelectionComplete(servant),
+              },
+            ]
+          : isPast && form.removeKing
+          ? [
+              ...mapOutnpsAndAps(["S"], npsAndAps),
+              {
+                key: 2345,
+                block: makeObjectSelectionComplete(king),
               },
             ]
           : [
               {
-                key: 1,
+                key: 2345,
                 block: makeSubjectSelectionComplete(servant),
               },
-              {
-                key: 2,
-                block: makeObjectSelectionComplete(king),
-              },
+              ...mapOutnpsAndAps(["O"], npsAndAps),
             ]
       );
       return blocksOps.map((blocks) => ({
@@ -547,23 +555,10 @@ function finishTransitive({
             message: "past tense transitive verb must agree with the object",
           });
         }
-        let blocks: T.VPSBlockComplete[] = [
-          {
-            key: 1,
-            block: makeSubjectSelectionComplete(s.selection),
-          },
-          {
-            key: 2,
-            block: makeObjectSelectionComplete(o.selection),
-          },
-        ];
-        if (flip) {
-          blocks = blocks.reverse();
-        }
         return returnParseResult(
           tokens,
           {
-            blocks,
+            blocks: mapOutnpsAndAps(!flip ? ["S", "O"] : ["O", "S"], npsAndAps),
             verb: v,
             externalComplement: undefined,
             form: {
@@ -619,23 +614,10 @@ function finishTransitive({
               "non-past tense transitive verb must agree with the subject",
           });
         }
-        let blocks: T.VPSBlockComplete[] = [
-          {
-            key: 1,
-            block: makeSubjectSelectionComplete(s.selection),
-          },
-          {
-            key: 2,
-            block: makeObjectSelectionComplete(o.selection),
-          },
-        ];
-        if (flip) {
-          blocks = blocks.reverse();
-        }
         return returnParseResult(
           tokens,
           {
-            blocks,
+            blocks: mapOutnpsAndAps(!flip ? ["S", "O"] : ["O", "S"], npsAndAps),
             verb: v,
             externalComplement: undefined,
             form: {

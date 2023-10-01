@@ -10,28 +10,11 @@ import {
 import { getInflectionQueries } from "./inflection-query";
 import { LookupFunction } from "./lookup";
 import { parseAdjective } from "./parse-adjective";
-import { parsePossesor } from "./parse-possesor";
 import { bindParseResult } from "./utils";
 
 type NounResult = { inflected: boolean; selection: T.NounSelection };
 
 export function parseNoun(
-  tokens: Readonly<T.Token[]>,
-  lookup: LookupFunction
-): T.ParseResult<NounResult>[] {
-  if (tokens.length === 0) {
-    return [];
-  }
-  const possesor = parsePossesor(tokens, lookup, undefined);
-  if (possesor.length) {
-    return bindParseResult(possesor, (tokens, p) => {
-      return parseNounAfterPossesor(tokens, lookup, p, []);
-    });
-  }
-  return parseNounAfterPossesor(tokens, lookup, undefined, []);
-}
-
-function parseNounAfterPossesor(
   tokens: Readonly<T.Token[]>,
   lookup: LookupFunction,
   possesor: T.PossesorSelection | undefined,
@@ -48,7 +31,7 @@ function parseNounAfterPossesor(
   // TODO: add recognition of او between adjectives
   const adjRes = parseAdjective(tokens, lookup);
   const withAdj = bindParseResult(adjRes, (tkns, adj) =>
-    parseNounAfterPossesor(tkns, lookup, possesor, [...adjectives, adj])
+    parseNoun(tkns, lookup, possesor, [...adjectives, adj])
   );
   const [first, ...rest] = tokens;
   const searches = getInflectionQueries(first.s, true);
@@ -113,7 +96,7 @@ function parseNounAfterPossesor(
 }
 
 function adjsMatch(
-  adjectives: Parameters<typeof parseNounAfterPossesor>[3],
+  adjectives: Parameters<typeof parseNoun>[3],
   gender: T.Gender,
   inf: 0 | 1 | 2,
   plural: boolean | undefined

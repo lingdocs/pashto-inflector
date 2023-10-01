@@ -6,7 +6,7 @@ import {
 import * as T from "../../../types";
 import { lookup, wordQuery } from "./lookup";
 import { tokenizer } from "./tokenizer";
-import { parseParticiple } from "./parse-participle";
+import { parseNPAP } from "./parse-npap";
 
 const leedul = wordQuery("لیدل", "verb");
 const akheestul = wordQuery("اخیستل", "verb");
@@ -113,6 +113,20 @@ const tests: {
           },
         ],
       },
+      {
+        input: "د سړي لیدو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeParticipleSelection(leedul),
+              possesor: makePossesorSelection(
+                makeNounSelection(saray, undefined)
+              ),
+            },
+          },
+        ],
+      },
     ],
   },
 ];
@@ -123,8 +137,19 @@ describe("parsing participles", () => {
     test(label, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseParticiple(tokens, lookup).map(({ body }) => body);
-        expect(res).toEqual(output);
+        const res = parseNPAP(tokens, lookup).map(({ body }) => body);
+        expect(res).toEqual(
+          output.map(
+            (x): T.ParsedNP => ({
+              type: "NP",
+              inflected: x.inflected,
+              selection: {
+                type: "NP",
+                selection: x.selection,
+              },
+            })
+          )
+        );
       });
     });
   });

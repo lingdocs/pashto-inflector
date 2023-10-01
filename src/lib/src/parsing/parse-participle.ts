@@ -1,31 +1,13 @@
 import * as T from "../../../types";
 import { LookupFunction } from "./lookup";
-import { parsePossesor } from "./parse-possesor";
-import { bindParseResult } from "./utils";
 
 type ParticipleResult = {
   inflected: boolean;
   selection: T.ParticipleSelection;
 };
 
-export function parseParticiple(
-  tokens: Readonly<T.Token[]>,
-  lookup: LookupFunction
-): T.ParseResult<ParticipleResult>[] {
-  if (tokens.length === 0) {
-    return [];
-  }
-  const possesor = parsePossesor(tokens, lookup, undefined);
-  if (possesor.length) {
-    return bindParseResult(possesor, (tokens, p) => {
-      return parseParticipleAfterPossesor(tokens, lookup, p);
-    });
-  }
-  return parseParticipleAfterPossesor(tokens, lookup, undefined);
-}
-
 // TODO: should have adverbs with participle
-function parseParticipleAfterPossesor(
+export function parseParticiple(
   tokens: Readonly<T.Token[]>,
   lookup: LookupFunction,
   possesor: T.PossesorSelection | undefined

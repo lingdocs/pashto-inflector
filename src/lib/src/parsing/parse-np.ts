@@ -7,7 +7,8 @@ import { LookupFunction } from "./lookup";
 
 export function parseNP(
   s: Readonly<T.Token[]>,
-  lookup: LookupFunction
+  lookup: LookupFunction,
+  possesor: T.PossesorSelection | undefined
 ): T.ParseResult<T.ParsedNP>[] {
   if (s.length === 0) {
     return [];
@@ -39,8 +40,8 @@ export function parseNP(
   }
 
   return fmapParseResult(makeNPSl, [
-    ...parsePronoun(s),
-    ...parseNoun(s, lookup),
-    ...parseParticiple(s, lookup),
+    ...(!possesor ? parsePronoun(s) : []),
+    ...parseNoun(s, lookup, possesor, []),
+    ...parseParticiple(s, lookup, possesor),
   ]);
 }

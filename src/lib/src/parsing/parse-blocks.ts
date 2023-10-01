@@ -1,10 +1,9 @@
 import * as T from "../../../types";
 import { LookupFunction } from "./lookup";
-import { parseAP } from "./parse-ap";
 import { parseEquative } from "./parse-equative";
 import { parseKidsSection } from "./parse-kids-section";
 import { parseNeg } from "./parse-negative";
-import { parseNP } from "./parse-np";
+import { parseNPAP } from "./parse-npap";
 import { parsePastPart } from "./parse-past-part";
 import { parsePH } from "./parse-ph";
 import { parseVerb } from "./parse-verb";
@@ -34,9 +33,7 @@ export function parseBlocks(
   );
 
   const allBlocks: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
-    ...(!inVerbSection
-      ? [...parseAP(tokens, lookup), ...parseNP(tokens, lookup)]
-      : []),
+    ...(!inVerbSection ? parseNPAP(tokens, lookup) : []),
     // ensure at most one of each PH, VBE, VBP
     ...(prevPh ? [] : parsePH(tokens)),
     ...(blocks.some(isParsedVBE)

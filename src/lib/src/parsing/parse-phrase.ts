@@ -1,6 +1,5 @@
 import * as T from "../../../types";
 import { lookup } from "./lookup";
-import { parseNP } from "./parse-np";
 import { parseVP } from "./parse-vp";
 
 // شو should not be sheyaano !!
@@ -17,7 +16,7 @@ export function parsePhrase(s: T.Token[]): {
   errors: string[];
 } {
   const res = [
-    ...parseNP(s, lookup).filter(({ tokens }) => !tokens.length),
+    // ...parseNP(s, lookup).filter(({ tokens }) => !tokens.length),
     // ...parseVerb(s, verbLookup),
     ...parseVP(s, lookup),
   ];

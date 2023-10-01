@@ -1371,7 +1371,9 @@ describe("parsing nouns", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup).map(({ body }) => body);
+        const res = parseNoun(tokens, lookup, undefined, []).map(
+          ({ body }) => body
+        );
         expect(res).toEqual(output);
       });
     });
@@ -1503,7 +1505,7 @@ describe("parsing nouns with adjectives", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup)
+        const res = parseNoun(tokens, lookup, undefined, [])
           .filter(isCompleteResult)
           .map(({ body }) => body);
         expect(res).toEqual(output);
