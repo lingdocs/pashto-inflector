@@ -21,6 +21,7 @@ const maashoom = wordQuery("ماشوم", "noun");
 const leedul = wordQuery("لیدل", "verb");
 const kenaastul = wordQuery("کېناستل", "verb");
 const wurul = wordQuery("وړل", "verb");
+const wahul = wordQuery("وهل", "verb");
 const akheestul = wordQuery("اخیستل", "verb");
 const khandul = wordQuery("خندل", "verb");
 
@@ -28,6 +29,7 @@ const khandul = wordQuery("خندل", "verb");
 
 const tests: {
   label: string;
+  ignoreAPs?: boolean;
   cases: {
     input: string;
     output: T.VPSelectionComplete[];
@@ -1142,9 +1144,52 @@ const tests: {
   },
   {
     label: "negatives and ordering",
+    ignoreAPs: true,
     cases: [
       {
-        input: "سړی تا نه ویني",
+        input: "سړی تا نه وهي",
+        output: [...getPeople(2, "sing")].flatMap((objectPerson) => ({
+          blocks: [
+            {
+              key: 1,
+              block: makeSubjectSelectionComplete({
+                type: "NP",
+                selection: makeNounSelection(sarey, undefined),
+              }),
+            },
+            {
+              key: 2,
+              block: makeObjectSelectionComplete({
+                type: "NP",
+                selection: makePronounSelection(objectPerson),
+              }),
+            },
+          ],
+          verb: {
+            type: "verb",
+            verb: wahul,
+            transitivity: "transitive",
+            canChangeTransitivity: false,
+            canChangeStatDyn: false,
+            negative: true,
+            tense: "presentVerb",
+            canChangeVoice: true,
+            isCompound: false,
+            voice: "active",
+          },
+          externalComplement: undefined,
+          form: {
+            removeKing: false,
+            shrinkServant: false,
+          },
+        })),
+      },
+      {
+        input: "سړی نه تا ویني",
+        output: [],
+      },
+      {
+        input: "سړی تا ونه ویني",
         output: [...getPeople(2, "sing")].flatMap((objectPerson) => ({
           blocks: [
             {
@@ -1169,7 +1214,7 @@ const tests: {
             canChangeTransitivity: false,
             canChangeStatDyn: false,
             negative: true,
-            tense: "presentVerb",
+            tense: "subjunctiveVerb",
             canChangeVoice: true,
             isCompound: false,
             voice: "active",
@@ -1181,180 +1226,138 @@ const tests: {
           },
         })),
       },
-      // {
-      //   input: "سړی نه تا ویني",
-      //   output: [],
-      // },
-      // {
-      //   input: "سړی تا ونه ویني",
-      //   output: [...getPeople(2, "sing")].flatMap((objectPerson) => ({
-      //     blocks: [
-      //       {
-      //         key: 1,
-      //         block: makeSubjectSelectionComplete({
-      //           type: "NP",
-      //           selection: makeNounSelection(sarey, undefined),
-      //         }),
-      //       },
-      //       {
-      //         key: 2,
-      //         block: makeObjectSelectionComplete({
-      //           type: "NP",
-      //           selection: makePronounSelection(objectPerson),
-      //         }),
-      //       },
-      //     ],
-      //     verb: {
-      //       type: "verb",
-      //       verb: leedul,
-      //       transitivity: "transitive",
-      //       canChangeTransitivity: false,
-      //       canChangeStatDyn: false,
-      //       negative: true,
-      //       tense: "subjunctiveVerb",
-      //       canChangeVoice: true,
-      //       isCompound: false,
-      //       voice: "active",
-      //     },
-      //     externalComplement: undefined,
-      //     form: {
-      //       removeKing: false,
-      //       shrinkServant: false,
-      //     },
-      //   })),
-      // },
-      // // with regular و or وا perfective heads, the negative needs to be behind the perfective head
-      // {
-      //   input: "سړی تا نه وویني",
-      //   output: [],
-      // },
-      // {
-      //   input: "سړي وانه خیستله",
-      //   output: [
-      //     {
-      //       blocks: [
-      //         {
-      //           key: 1,
-      //           block: makeSubjectSelectionComplete({
-      //             type: "NP",
-      //             selection: makeNounSelection(sarey, undefined),
-      //           }),
-      //         },
-      //         {
-      //           key: 2,
-      //           block: makeObjectSelectionComplete({
-      //             type: "NP",
-      //             selection: makePronounSelection(T.Person.ThirdSingFemale),
-      //           }),
-      //         },
-      //       ],
-      //       verb: {
-      //         type: "verb",
-      //         verb: akheestul,
-      //         transitivity: "transitive",
-      //         canChangeTransitivity: false,
-      //         canChangeStatDyn: false,
-      //         negative: true,
-      //         tense: "perfectivePast",
-      //         canChangeVoice: true,
-      //         isCompound: false,
-      //         voice: "active",
-      //       },
-      //       externalComplement: undefined,
-      //       form: {
-      //         removeKing: true,
-      //         shrinkServant: false,
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   input: "سړي نه واخیستله",
-      //   output: [],
-      // },
+      // with regular و or وا perfective heads, the negative needs to be behind the perfective head
+      {
+        input: "سړی تا نه وویني",
+        output: [],
+      },
+      {
+        input: "سړي وانه خیستله",
+        output: [
+          {
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makeNounSelection(sarey, undefined),
+                }),
+              },
+              {
+                key: 2,
+                block: makeObjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(T.Person.ThirdSingFemale),
+                }),
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: akheestul,
+              transitivity: "transitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: true,
+              tense: "perfectivePast",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: true,
+              shrinkServant: false,
+            },
+          },
+        ],
+      },
+      {
+        input: "سړي نه واخیستله",
+        output: [],
+      },
       // // but for other perfective heads, the negative can go before or after
-      // {
-      //   input: "زه نه کېنم",
-      //   output: getPeople(1, "sing").flatMap((subjectPerson) =>
-      //     (
-      //       ["presentVerb", "subjunctiveVerb"] as const
-      //     ).map<T.VPSelectionComplete>((tense) => ({
-      //       blocks: [
-      //         {
-      //           key: 1,
-      //           block: makeSubjectSelectionComplete({
-      //             type: "NP",
-      //             selection: makePronounSelection(subjectPerson),
-      //           }),
-      //         },
-      //         {
-      //           key: 2,
-      //           block: {
-      //             type: "objectSelection",
-      //             selection: "none",
-      //           },
-      //         },
-      //       ],
-      //       verb: {
-      //         type: "verb",
-      //         verb: kenaastul,
-      //         transitivity: "intransitive",
-      //         canChangeTransitivity: false,
-      //         canChangeStatDyn: false,
-      //         negative: true,
-      //         tense,
-      //         canChangeVoice: true,
-      //         isCompound: false,
-      //         voice: "active",
-      //       },
-      //       externalComplement: undefined,
-      //       form: {
-      //         removeKing: false,
-      //         shrinkServant: false,
-      //       },
-      //     }))
-      //   ),
-      // },
-      // {
-      //   input: "زه کېنه نم",
-      //   output: getPeople(1, "sing").map<T.VPSelectionComplete>(
-      //     (subjectPerson) => ({
-      //       blocks: [
-      //         {
-      //           key: 1,
-      //           block: makeSubjectSelectionComplete({
-      //             type: "NP",
-      //             selection: makePronounSelection(subjectPerson),
-      //           }),
-      //         },
-      //         {
-      //           key: 2,
-      //           block: {
-      //             type: "objectSelection",
-      //             selection: "none",
-      //           },
-      //         },
-      //       ],
-      //       verb: {
-      //         type: "verb",
-      //         verb: kenaastul,
-      //         transitivity: "intransitive",
-      //         canChangeTransitivity: false,
-      //         canChangeStatDyn: false,
-      //         negative: true,
-      //         tense: "subjunctiveVerb",
-      //         canChangeVoice: true,
-      //         isCompound: false,
-      //         voice: "active",
-      //       },
-      //       externalComplement: undefined,
-      //       form: {
-      //         removeKing: false,
-      //         shrinkServant: false,
-      //       },
-      //     })
-      //   ),
-      // },
+      {
+        input: "زه نه کېنم",
+        output: getPeople(1, "sing").flatMap((subjectPerson) =>
+          (
+            ["presentVerb", "subjunctiveVerb"] as const
+          ).map<T.VPSelectionComplete>((tense) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(subjectPerson),
+                }),
+              },
+              {
+                key: 2,
+                block: {
+                  type: "objectSelection",
+                  selection: "none",
+                },
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: kenaastul,
+              transitivity: "intransitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: true,
+              tense,
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: false,
+              shrinkServant: false,
+            },
+          }))
+        ),
+      },
+      {
+        input: "زه کېنه نم",
+        output: getPeople(1, "sing").map<T.VPSelectionComplete>(
+          (subjectPerson) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(subjectPerson),
+                }),
+              },
+              {
+                key: 2,
+                block: {
+                  type: "objectSelection",
+                  selection: "none",
+                },
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: kenaastul,
+              transitivity: "intransitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: true,
+              tense: "subjunctiveVerb",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: false,
+              shrinkServant: false,
+            },
+          })
+        ),
+      },
     ],
   },
   {
@@ -1651,11 +1654,13 @@ const tests: {
   },
 ];
 
-tests.forEach(({ label, cases }) => {
+tests.forEach(({ label, cases, ignoreAPs }) => {
   test(label, () => {
     cases.forEach(({ input, output, error }) => {
       const tokens = tokenizer(input);
-      const parsed = parseVP(tokens, lookup);
+      const parsed = parseVP(tokens, lookup).filter(
+        ignoreAPs ? hasNoAps : (x) => x
+      );
       if (error) {
         expect(parsed.filter((x) => x.errors.length).length).toBeTruthy();
       } else {
@@ -1667,3 +1672,7 @@ tests.forEach(({ label, cases }) => {
     });
   });
 });
+
+function hasNoAps(r: T.ParseResult<T.VPSelectionComplete>): boolean {
+  return !r.body.blocks.some((b) => b.block.type === "AP");
+}
