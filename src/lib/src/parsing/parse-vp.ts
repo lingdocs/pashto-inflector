@@ -42,7 +42,7 @@ export function parseVP(
   }
   const blocks = parseBlocks(tokens, lookup, [], []);
   return bindParseResult(blocks, (tokens, { blocks, kids }) => {
-    const ba = !!kids.find((k) => k === "ba");
+    const ba = kids.some((k) => k === "ba");
     const miniPronouns = getMiniPronouns(kids);
     const npsAndAps = blocks.filter(
       (x): x is T.ParsedNP | T.APSelection => x.type === "NP" || x.type === "AP"

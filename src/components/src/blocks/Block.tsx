@@ -584,7 +584,7 @@ function Sandwich({
               : undefined}
           </Possesors>
           <div className="mr-2 ml-1 mb-1">
-            <strong>{sandwich.before ? sandwich.before.f : ""}</strong>
+            <strong>{sandwich.before ? sandwich.before[script] : ""}</strong>
           </div>
           <div>
             <NPBlock opts={opts} inside script={script}>
@@ -592,7 +592,7 @@ function Sandwich({
             </NPBlock>
           </div>
           <div className="ml-2 mr-1 mb-1">
-            <strong>{sandwich.after ? sandwich.after.f : ""}</strong>
+            <strong>{sandwich.after ? sandwich.after[script] : ""}</strong>
           </div>
         </div>
       </Border>
