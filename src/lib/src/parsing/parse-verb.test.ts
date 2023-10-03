@@ -33,6 +33,7 @@ const alwatul = wordQuery("الوتل", "verb");
 
 // TODO: azmoyul etc
 // TODO: cleaner and more thorough handling of ا seperating verbs ee - wee etc
+// TODO: test imperatives
 
 const tests: {
   label: string;
@@ -44,6 +45,10 @@ const tests: {
         aspects: T.Aspect[];
       };
       stem?: {
+        persons: T.Person[];
+        aspects: T.Aspect[];
+      };
+      imperative?: {
         persons: T.Person[];
         aspects: T.Aspect[];
       };
@@ -191,11 +196,30 @@ const tests: {
               persons: [T.Person.SecondPlurMale, T.Person.SecondPlurFemale],
               aspects: ["imperfective", "perfective"],
             },
+            imperative: {
+              persons: getPeople(2, "pl"),
+              aspects: ["imperfective", "perfective"],
+            },
             verb: manul,
           },
         ],
       },
-
+      {
+        input: "منه",
+        output: [
+          {
+            imperative: {
+              persons: getPeople(2, "sing"),
+              aspects: ["imperfective", "perfective"],
+            },
+            root: {
+              persons: [T.Person.ThirdSingFemale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: manul,
+          },
+        ],
+      },
       {
         input: "منلم",
         output: [
@@ -258,6 +282,10 @@ const tests: {
               persons: [T.Person.SecondPlurMale, T.Person.SecondPlurFemale],
               aspects: ["imperfective", "perfective"],
             },
+            imperative: {
+              persons: getPeople(2, "pl"),
+              aspects: ["imperfective", "perfective"],
+            },
             verb: rasedul,
           },
         ],
@@ -309,7 +337,6 @@ const tests: {
           },
         ],
       },
-
       {
         input: "خورې",
         output: [
@@ -322,7 +349,6 @@ const tests: {
           },
         ],
       },
-
       {
         input: "خوړي",
         output: [],
@@ -351,7 +377,6 @@ const tests: {
           },
         ],
       },
-
       {
         input: "کوت",
         output: [
@@ -376,7 +401,6 @@ const tests: {
           },
         ],
       },
-
       {
         input: "خلم",
         output: [
@@ -401,7 +425,6 @@ const tests: {
           },
         ],
       },
-
       {
         input: "خیستلم",
         output: [
@@ -426,7 +449,6 @@ const tests: {
           },
         ],
       },
-
       {
         input: "لوځې",
         output: [
@@ -913,7 +935,6 @@ const tests: {
           },
         ],
       },
-
       // TODO: It would probably be more effecient just to return the kedul verb options
       // and then when we put things together with the perfective head parsed they could
       // become raatlul etc...
@@ -994,7 +1015,7 @@ tests.forEach(({ label, cases }) => {
       const madeVbsS = output.reduce<T.ParsedVBE[]>((acc, o) => {
         return [
           ...acc,
-          ...(["root", "stem"] as const).flatMap((base) =>
+          ...(["root", "stem", "imperative"] as const).flatMap((base) =>
             (o[base]?.aspects || []).flatMap((aspect) =>
               (o[base]?.persons || []).flatMap<T.ParsedVBE>((person) => [
                 {
@@ -1003,8 +1024,13 @@ tests.forEach(({ label, cases }) => {
                   info: {
                     type: "verb" as const,
                     aspect,
-                    base,
+                    base: base === "imperative" ? "stem" : base,
                     verb: o.verb,
+                    ...(base === "imperative"
+                      ? {
+                          imperative: true,
+                        }
+                      : {}),
                   },
                 },
               ])

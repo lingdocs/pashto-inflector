@@ -1257,6 +1257,7 @@ export type VBE = VB & {
         aspect: Aspect;
         base: "stem" | "root";
         verb: VerbEntry;
+        imperative?: true;
         abilityAux?: boolean;
       };
 };

@@ -10,6 +10,7 @@ import {
   startsVerbSection,
 } from "./utils";
 import {
+  getSubjectSelection,
   makeObjectSelectionComplete,
   makeSubjectSelectionComplete,
 } from "../phrase-building/blocks-utils";
@@ -22,8 +23,10 @@ import { parseBlocks } from "./parse-blocks";
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { LookupFunction } from "./lookup";
-import { personToGenNum } from "../misc-helpers";
+import { isSecondPerson, personToGenNum } from "../misc-helpers";
 import { equals, zip } from "rambda";
+import { isPrimitive } from "util";
+import { isImperativeTense } from "../type-predicates";
 // to hide equatives type-doubling issue
 
 // TODO: word query for kawul/kedul/stat/dyn
@@ -74,16 +77,16 @@ function getTenses(
   blocks: T.ParsedBlock[],
   ba: boolean
 ): {
-  tense: T.VerbTense | T.PerfectTense;
+  tense: T.VerbTense | T.PerfectTense | T.ImperativeTense;
   person: T.Person;
   transitivities: T.Transitivity[];
   negative: boolean;
   verb: T.VerbEntry;
 }[] {
-  const negIndex = blocks.findIndex(
-    (x) => x.type === "negative" && !x.imperative
-  );
-  const negative = negIndex !== -1;
+  const negIndex = blocks.findIndex((x) => x.type === "negative");
+  const negative: T.NegativeBlock | undefined = blocks[negIndex] as
+    | T.NegativeBlock
+    | undefined;
   const phIndex = blocks.findIndex((x) => x.type === "PH");
   const vbeIndex = blocks.findIndex((x) => x.type === "VB");
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
@@ -101,13 +104,28 @@ function getTenses(
         return [];
       }
     }
-    const tense = getTenseFromRootsStems(ba, verb.info.base, verb.info.aspect);
+    const tense = getTenseFromRootsStems(
+      ba,
+      verb.info.base,
+      verb.info.aspect,
+      !!negative,
+      verb.info.imperative
+    );
+    if (!tense) {
+      return [];
+    }
     const transitivities = getTransitivities(verb.info.verb);
+    if (verb.info.imperative && negative && !negative.imperative) {
+      return [];
+    }
+    if (!verb.info.imperative && negative && negative.imperative) {
+      return [];
+    }
     return [
       {
         tense,
         transitivities,
-        negative,
+        negative: !!negative,
         person: verb.person,
         verb: verb.info.verb,
       },
@@ -141,7 +159,7 @@ function getTenses(
       {
         tense,
         transitivities,
-        negative,
+        negative: !!negative,
         person: equative.person,
         verb: pPart.info.verb,
       },
@@ -159,7 +177,7 @@ function finishPossibleVPSs({
   tokens,
   person,
 }: {
-  tense: T.VerbTense | T.PerfectTense;
+  tense: T.VerbTense | T.PerfectTense | T.ImperativeTense;
   transitivities: T.Transitivity[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   miniPronouns: T.ParsedMiniPronoun[];
@@ -169,49 +187,63 @@ function finishPossibleVPSs({
   person: T.Person;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   const isPast = isPastTense(tense);
-  return transitivities.flatMap<T.ParseResult<T.VPSelectionComplete>>(
-    (transitivity): T.ParseResult<T.VPSelectionComplete>[] => {
-      const v: T.VerbSelectionComplete = {
-        type: "verb",
-        verb,
-        transitivity,
-        canChangeTransitivity: false,
-        canChangeStatDyn: false,
-        negative,
-        tense,
-        canChangeVoice: true,
-        isCompound: false,
-        voice: "active",
-      };
-      if (transitivity === "intransitive") {
-        return finishIntransitive({
-          miniPronouns,
-          npsAndAps,
-          tokens,
-          v,
-          person,
-        });
-      } else if (transitivity === "transitive") {
-        return finishTransitive({
-          miniPronouns,
-          npsAndAps,
-          tokens,
-          v,
-          person,
-          isPast,
-        });
-      } else {
-        return finishGrammaticallyTransitive({
-          miniPronouns,
-          npsAndAps,
-          tokens,
-          v,
-          person,
-          isPast,
-        });
+  return transitivities
+    .flatMap<T.ParseResult<T.VPSelectionComplete>>(
+      (transitivity): T.ParseResult<T.VPSelectionComplete>[] => {
+        const v: T.VerbSelectionComplete = {
+          type: "verb",
+          verb,
+          transitivity,
+          canChangeTransitivity: false,
+          canChangeStatDyn: false,
+          negative,
+          tense,
+          canChangeVoice: true,
+          isCompound: false,
+          voice: "active",
+        };
+        if (transitivity === "intransitive") {
+          return finishIntransitive({
+            miniPronouns,
+            npsAndAps,
+            tokens,
+            v,
+            person,
+          });
+        } else if (transitivity === "transitive") {
+          return finishTransitive({
+            miniPronouns,
+            npsAndAps,
+            tokens,
+            v,
+            person,
+            isPast,
+          });
+        } else {
+          return finishGrammaticallyTransitive({
+            miniPronouns,
+            npsAndAps,
+            tokens,
+            v,
+            person,
+            isPast,
+          });
+        }
       }
-    }
+    )
+    .filter(checkImperative2ndPers);
+}
+
+function checkImperative2ndPers({
+  body: vps,
+}: T.ParseResult<T.VPSelectionComplete>): boolean {
+  if (!isImperativeTense(vps.verb.tense)) {
+    return true;
+  }
+  const subjectPerson = getPersonFromNP(
+    getSubjectSelection(vps.blocks).selection
   );
+  return isSecondPerson(subjectPerson);
 }
 
 function finishIntransitive({
@@ -271,8 +303,9 @@ function finishIntransitive({
       },
     ];
   }
-  if (getPersonFromNP(nps[0].selection) !== person) {
-    errors.push({ message: "subject must agree with intransitive verb" });
+  const subjectPerson = getPersonFromNP(nps[0].selection);
+  if (isImperativeTense(v.tense) && !isSecondPerson(subjectPerson)) {
+    return [];
   }
   if (nps[0].inflected) {
     errors.push({
@@ -864,8 +897,21 @@ function getPeopleFromMiniPronouns(kids: T.ParsedKid[]): T.Person[] {
 function getTenseFromRootsStems(
   hasBa: boolean,
   base: "root" | "stem",
-  aspect: T.Aspect
-): T.VerbTense {
+  aspect: T.Aspect,
+  negative: boolean,
+  imperative?: true
+): T.VerbTense | T.ImperativeTense | undefined {
+  if (imperative) {
+    if (base === "root") {
+      return undefined;
+    }
+    if (hasBa) {
+      return undefined;
+    }
+    return aspect === "imperfective" || negative
+      ? "imperfectiveImperative"
+      : "perfectiveImperative";
+  }
   if (!hasBa) {
     if (base === "root") {
       return aspect === "perfective" ? "perfectivePast" : "imperfectivePast";

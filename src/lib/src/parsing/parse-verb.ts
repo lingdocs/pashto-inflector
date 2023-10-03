@@ -36,7 +36,9 @@ export function parseVerb(
       errors: [],
     }));
   }
-  const people = getVerbEnding(first.s);
+  const ending = first.s.at(-1) || "";
+  const people = getVerbEnding(ending);
+  const imperativePeople = getImperativeVerbEnding(ending);
   // First do rough verb lookup, grab wide pool of possible verbs (low searching complexity for fast lookup)
   // TODO: can optimize this to not have to look for possible stems/roots if none
   const verbs = lookup(first.s, "verb");
@@ -44,7 +46,7 @@ export function parseVerb(
   //   console.log({ verbs: JSON.stringify(verbs) });
   // }
   // Then find out which ones match exactly and how
-  return matchVerbs(first.s, verbs, people).map((body) => ({
+  return matchVerbs(first.s, verbs, people, imperativePeople).map((body) => ({
     tokens: rest,
     body,
     errors: [],
@@ -57,7 +59,8 @@ function matchVerbs(
   people: {
     root: T.Person[];
     stem: T.Person[];
-  }
+  },
+  imperativePeople: T.Person[]
 ): T.ParsedVBE[] {
   const w: T.ParsedVBE[] = [];
   const lEnding = s.endsWith("ل");
@@ -65,7 +68,7 @@ function matchVerbs(
   const matchShortOrLong = (b: string, x: string) => {
     return b === x || (!lEnding && b === x.slice(0, -1));
   };
-  if (people.stem.length) {
+  if (people.stem.length || imperativePeople.length) {
     const stemMatches = {
       imperfective: entries.filter(({ entry: e }) => {
         if (e.c.includes("comp")) {
@@ -149,6 +152,19 @@ function matchVerbs(
               aspect: aspect as T.Aspect,
               base: "stem",
               verb: removeFVarientsFromVerb(verb),
+            },
+          });
+        });
+        imperativePeople.forEach((person) => {
+          w.push({
+            type: "VB",
+            person,
+            info: {
+              type: "verb",
+              aspect: aspect as T.Aspect,
+              base: "stem",
+              verb: removeFVarientsFromVerb(verb),
+              imperative: true,
             },
           });
         });
@@ -291,16 +307,26 @@ function matchVerbs(
   return w;
 }
 
-function getVerbEnding(p: string): {
-  root: T.Person[];
+function getImperativeVerbEnding(e: string): T.Person[] {
+  if (e === "ه") {
+    return [T.Person.SecondSingMale, T.Person.SecondSingFemale];
+  }
+  if (e === "ئ") {
+    return [T.Person.SecondPlurMale, T.Person.SecondPlurFemale];
+  }
+  return [];
+}
+
+function getVerbEnding(e: string): {
   stem: T.Person[];
+  root: T.Person[];
 } {
-  if (p.endsWith("م")) {
+  if (e === "م") {
     return {
       root: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
       stem: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
     };
-  } else if (p.endsWith("ې")) {
+  } else if (e === "ې") {
     return {
       root: [
         T.Person.SecondSingMale,
@@ -309,7 +335,7 @@ function getVerbEnding(p: string): {
       ],
       stem: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
     };
-  } else if (p.endsWith("ي")) {
+  } else if (e === "ي") {
     return {
       stem: [
         T.Person.ThirdSingMale,
@@ -319,22 +345,22 @@ function getVerbEnding(p: string): {
       ],
       root: [],
     };
-  } else if (p.endsWith("و")) {
+  } else if (e === "و") {
     return {
       root: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
       stem: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
     };
-  } else if (p.endsWith("ئ")) {
+  } else if (e === "ئ") {
     return {
       root: [T.Person.SecondPlurMale, T.Person.SecondPlurFemale],
       stem: [T.Person.SecondPlurMale, T.Person.SecondPlurFemale],
     };
-  } else if (p.endsWith("ه")) {
+  } else if (e === "ه") {
     return {
       root: [T.Person.ThirdSingFemale],
       stem: [],
     };
-  } else if (p.endsWith("ل")) {
+  } else if (e === "ل") {
     return {
       root: [T.Person.ThirdPlurMale],
       stem: [],

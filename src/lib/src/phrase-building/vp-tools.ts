@@ -291,8 +291,8 @@ export function uncompleteVPSelection(
     : isPerfectTense(tense)
     ? "perfect"
     : isImperativeTense(tense)
-    ? "modal"
-    : "imperative";
+    ? "imperative"
+    : "modal";
   return {
     ...vps,
     verb: {
