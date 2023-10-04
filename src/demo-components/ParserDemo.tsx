@@ -14,6 +14,8 @@ const working = [
   "mini-pronouns for shrunken servants",
   "grammar error correction",
   "negatives",
+  "imperative verbs",
+  "perfect tenses",
 ];
 
 const todo = [
@@ -22,9 +24,7 @@ const todo = [
   "adverbial phrases",
   "relative clauses",
   "equative verbs",
-  "perfect tenses",
   "ability verbs",
-  "imperative verbs",
   "passive verbs",
   "quantifiers",
   "demonstrative pronouns",

@@ -25,7 +25,6 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { LookupFunction } from "./lookup";
 import { isSecondPerson, personToGenNum } from "../misc-helpers";
 import { equals, zip } from "rambda";
-import { isPrimitive } from "util";
 import { isImperativeTense } from "../type-predicates";
 // to hide equatives type-doubling issue
 
