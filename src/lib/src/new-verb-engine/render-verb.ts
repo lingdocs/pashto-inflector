@@ -272,13 +272,23 @@ function addEnding({
     vb: T.VBBasic,
     end: T.SingleOrLengthOpts<T.PsString[]>
   ): T.VBBasic {
-    // exceptional ending for راتلل, ورتلل, درتلل
     if ("long" in vb.ps) {
+      // exceptional ending for راتلل, ورتلل, درتلل
       // TODO: do we need a more thorough check?
       if (vb.ps.short[0].f === "ghl" && pastThird && basicForm) {
         return {
           ...vb,
           ps: [{ p: "غی", f: "ghay" }],
+        };
+      }
+      // exceptional ending for شو
+      if (vb.ps.short[0].f === "shw" && pastThird) {
+        return {
+          ...vb,
+          ps: {
+            short: [{ p: "شو", f: "sho" }],
+            long: [{ p: "شولو", f: "shwulo" }],
+          },
         };
       }
     }
