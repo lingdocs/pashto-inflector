@@ -13,7 +13,7 @@ module.exports = [
   { ts: 1527821744, e: "cook, chef" }, // آشپز - aashpáz
   { ts: 1527812461, e: "hero, brave" }, // اتل - atul
   { ts: 1527821649, e: "impressive, effective, influencing" }, // اثرناک - asarnáak
-  { ts: 1527818704, e: "wide, spacious, extensive" }, // ارت - arát
+  { ts: 1573663943732, e: "wide, spacious, extensive" }, // ارت - arát
   { ts: 1578340121962, e: "free, independant" }, // ازاد - azáad
   { ts: 1527819418, e: "independant, autonomous" }, // خپلواک - khpulwaak
   { ts: 1527817146, e: "resident; settled" }, // استوګن - astogan

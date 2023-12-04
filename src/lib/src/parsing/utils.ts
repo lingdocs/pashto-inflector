@@ -117,7 +117,9 @@ export function isCompleteResult<C extends object>(
 
 export function removeKeys(a: any): any {
   return JSON.parse(
-    JSON.stringify(a, (k, v) => (k === "i" || k === "key" ? undefined : v))
+    JSON.stringify(a, (k, v) =>
+      k === "i" || k === "a" || k === "key" ? undefined : v
+    )
   );
 }
 
