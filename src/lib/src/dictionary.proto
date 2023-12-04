@@ -46,6 +46,7 @@ message Entry {
     bool diacExcept = 34;
     string ec = 35;
     string ep = 36;
+    int32 a = 37;
 }
 
 message Dictionary {

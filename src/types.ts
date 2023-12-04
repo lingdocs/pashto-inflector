@@ -149,6 +149,9 @@ export type DictionaryEntry = {
   ec?: string;
   /** the English partical of a English phrasal verb - or the english irregular plural of a noun */
   ep?: string;
+
+  /** If there is a recording [TS NUMBER].mp3 available for this entry, marked true with a 1  */
+  a?: number;
 };
 
 export type DictionaryEntryNoFVars = DictionaryEntry & {
