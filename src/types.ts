@@ -215,6 +215,7 @@ export const dictionaryEntryNumberFields = [
   "l",
   "separationAtP",
   "separationAtF",
+  "a",
 ] as const;
 export type DictionaryEntryBooleanField =
   (typeof dictionaryEntryBooleanFields)[number];
