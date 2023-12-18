@@ -226,6 +226,22 @@ export const dynamicAuxVerbs: Array<{
   },
   {
     entry: {
+      ts: 1527812627,
+      i: 9994,
+      p: "غوښتل",
+      f: "ghwUxtúl, ghwuxtúl, ghoxtúl",
+      g: "ghwUxtul,ghwuxtul,ghoxtul",
+      e: "to want, to request",
+      r: 4,
+      c: "v. trans.",
+      psp: "غواړ",
+      psf: "ghwaaR",
+      ec: "want",
+      a: 1,
+    },
+  },
+  {
+    entry: {
       ts: 1527811868,
       p: "غښتل",
       f: "ghuxtul",
