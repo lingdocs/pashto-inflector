@@ -57,12 +57,17 @@ export const dynamicAuxVerbs: Array<{
   {
     entry: {
       ts: 1527813914,
+      i: 15179,
       p: "ورکول",
       f: "wărkawul",
-      g: "",
-      e: "to give (to him, her, them, others)",
+      g: "warkawul",
+      e: "to give (to him/her/it - towards third person)",
+      r: 4,
       c: "v. trans.",
-      i: 12350,
+      pprtp: "ورکړی",
+      pprtf: "wărkúRay",
+      ec: "give,gives,giving,gave,given",
+      a: 1,
     },
   },
   {

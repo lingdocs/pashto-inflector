@@ -1142,7 +1142,7 @@ function getDynamicAuxVerb(entry: T.DictionaryEntryNoFVars): {
   const auxWordResult = dynamicAuxVerbs.find((a) => a.entry.p === auxWord);
   /* istanbul ignore next */
   if (!auxWordResult) {
-    throw new Error("unknown auxilary verb for dynamic compound");
+    throw new Error(`unknown auxilary verb ${auxWord} for dynamic compound`);
   }
   return {
     entry: removeFVarients(auxWordResult.entry),
