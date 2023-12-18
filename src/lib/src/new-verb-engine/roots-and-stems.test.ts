@@ -768,7 +768,10 @@ describe("perfective stems", () => {
                 type: "NComp",
                 comp: {
                   type: "AdjComp",
-                  ps: { p: "خفه", f: "khufa" },
+                  ps: {
+                    p: "خفه",
+                    f: "khufá",
+                  },
                   gender: "fem",
                   number: "plural",
                 },
