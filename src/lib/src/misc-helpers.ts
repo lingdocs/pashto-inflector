@@ -310,6 +310,9 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
     if (s === "be") {
       return ["am", "is", "being", "was", "been"];
     }
+    if (s === "give") {
+      return ["give", "gives", "giving", "gave", "gave"];
+    }
     if (s.slice(-1) === "y" && !isVowel(s.slice(-2)[0])) {
       const b = s.slice(0, -1);
       return [`${s}`, `${b}ies`, `${s}ing`, `${b}ied`, `${b}ied`];
