@@ -547,4 +547,17 @@ export const dynamicAuxVerbs: Array<{
       noOo: true,
     },
   },
+  {
+    entry: {
+      ts: 1527812458,
+      i: 567,
+      p: "استول",
+      f: "astawul",
+      g: "astawul",
+      e: "to send",
+      r: 4,
+      c: "v. trans.",
+      ec: "send,sends,sending,sent,sent",
+    },
+  },
 ];
