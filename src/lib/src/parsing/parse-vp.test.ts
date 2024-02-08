@@ -259,6 +259,11 @@ const tests: {
           },
         ],
       },
+      {
+        input: "ماشوم ځې",
+        output: [],
+        error: true,
+      },
     ],
   },
   {
