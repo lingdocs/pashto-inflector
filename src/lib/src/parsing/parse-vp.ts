@@ -29,9 +29,6 @@ import { isSecondPerson, personToGenNum } from "../misc-helpers";
 import { equals, zip } from "rambda";
 import { isImperativeTense } from "../type-predicates";
 // to hide equatives type-doubling issue
-// TODO: THESE SHOULD ERROR!!
-// ماشومانې لاړل
-// ماشومان لاړلې
 
 // TODO: problem with 3rd pers seng verb endings اواز مې دې واورېده
 
@@ -322,6 +319,11 @@ function finishIntransitive({
   if (nps[0].inflected) {
     errors.push({
       message: "subject of intransitive verb must not be inflected",
+    });
+  }
+  if (subjectPerson !== person) {
+    errors.push({
+      message: "subject and verb must agree for intransitive verb",
     });
   }
   const blocks: T.VPSBlockComplete[] = [
