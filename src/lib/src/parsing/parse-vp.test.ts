@@ -13,7 +13,7 @@ import { lookup, wordQuery } from "./lookup";
 import { parseVP } from "./parse-vp";
 import { tokenizer } from "./tokenizer";
 import { tlul } from "./irreg-verbs";
-import { getPeople, removeKeys } from "./utils";
+import { addShrunkenPossesor, getPeople, removeKeys } from "./utils";
 
 const sarey = wordQuery("سړی", "noun");
 const rasedul = wordQuery("رسېدل", "verb");
@@ -890,47 +890,95 @@ const tests: {
         ],
       },
       {
-        input: "سړی یې وویني",
-        output: getPeople(3, "both").map((person) => ({
-          blocks: [
-            {
-              key: 1,
-              block: makeSubjectSelectionComplete({
-                type: "NP",
-                selection: makeNounSelection(sarey, undefined),
-              }),
+        input: "سړی یې ووهي",
+        output: [
+          ...getPeople(3, "both").map<T.VPSelectionComplete>((person) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete({
+                  type: "NP",
+                  selection: makeNounSelection(sarey, undefined),
+                }),
+              },
+              {
+                key: 1,
+                block: makeObjectSelectionComplete({
+                  type: "NP",
+                  selection: makePronounSelection(person),
+                }),
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: wahul,
+              transitivity: "transitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense: "subjunctiveVerb",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
             },
-            {
-              key: 1,
-              block: makeObjectSelectionComplete({
-                type: "NP",
-                selection: makePronounSelection(person),
-              }),
+            externalComplement: undefined,
+            form: {
+              removeKing: false,
+              shrinkServant: true,
             },
-          ],
-          verb: {
-            type: "verb",
-            verb: leedul,
-            transitivity: "transitive",
-            canChangeTransitivity: false,
-            canChangeStatDyn: false,
-            negative: false,
-            tense: "subjunctiveVerb",
-            canChangeVoice: true,
-            isCompound: false,
-            voice: "active",
-          },
-          externalComplement: undefined,
-          form: {
-            removeKing: false,
-            shrinkServant: true,
-          },
-        })),
+          })),
+          ...getPeople(3, "both").flatMap<T.VPSelectionComplete>((person) =>
+            getPeople(3, "both").map<T.VPSelectionComplete>((person2) => ({
+              blocks: [
+                {
+                  key: 1,
+                  block: makeSubjectSelectionComplete({
+                    type: "NP",
+                    selection: makePronounSelection(person),
+                  }),
+                },
+                {
+                  key: 1,
+                  block: makeObjectSelectionComplete(
+                    addShrunkenPossesor(
+                      {
+                        type: "NP",
+                        selection: makeNounSelection(sarey, undefined),
+                      },
+                      person2
+                    )
+                  ),
+                },
+              ],
+              verb: {
+                type: "verb",
+                verb: wahul,
+                transitivity: "transitive",
+                canChangeTransitivity: false,
+                canChangeStatDyn: false,
+                negative: false,
+                tense: "subjunctiveVerb",
+                canChangeVoice: true,
+                isCompound: false,
+                voice: "active",
+              },
+              externalComplement: undefined,
+              form: {
+                removeKing: true,
+                shrinkServant: false,
+              },
+            }))
+          ),
+        ],
       },
       {
         input: "سړی مو ویني",
-        output: [...getPeople(1, "pl"), ...getPeople(2, "pl")].map(
-          (person) => ({
+        output: [
+          // the man sees you/us
+          ...[
+            ...getPeople(1, "pl"),
+            ...getPeople(2, "pl"),
+          ].map<T.VPSelectionComplete>((person) => ({
             blocks: [
               {
                 key: 1,
@@ -964,13 +1012,98 @@ const tests: {
               removeKing: false,
               shrinkServant: true,
             },
-          })
-        ),
-      },
-      {
-        input: "سړي مې واهه",
-        output: [],
-        error: true,
+          })),
+          // your/our man sees
+          ...[
+            ...getPeople(1, "pl"),
+            ...getPeople(2, "pl"),
+          ].map<T.VPSelectionComplete>((person) => ({
+            blocks: [
+              {
+                key: 1,
+                block: makeSubjectSelectionComplete(
+                  addShrunkenPossesor(
+                    {
+                      type: "NP",
+                      selection: makeNounSelection(sarey, undefined),
+                    },
+                    person
+                  )
+                ),
+              },
+              {
+                key: 1,
+                block: {
+                  type: "objectSelection",
+                  selection: T.Person.ThirdPlurMale,
+                },
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: leedul,
+              transitivity: "grammatically transitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense: "presentVerb",
+              canChangeVoice: true,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: undefined,
+            form: {
+              removeKing: false,
+              shrinkServant: false,
+            },
+          })),
+          // they/he sees your/our man
+          ...[
+            ...getPeople(1, "pl"),
+            ...getPeople(2, "pl"),
+          ].flatMap<T.VPSelectionComplete>((possPers) =>
+            getPeople(3, "both").map<T.VPSelectionComplete>((subjPers) => ({
+              blocks: [
+                {
+                  key: 1,
+                  block: makeSubjectSelectionComplete({
+                    type: "NP",
+                    selection: makePronounSelection(subjPers),
+                  }),
+                },
+                {
+                  key: 1,
+                  block: makeObjectSelectionComplete(
+                    addShrunkenPossesor(
+                      {
+                        type: "NP",
+                        selection: makeNounSelection(sarey, undefined),
+                      },
+                      possPers
+                    )
+                  ),
+                },
+              ],
+              verb: {
+                type: "verb",
+                verb: leedul,
+                transitivity: "transitive",
+                canChangeTransitivity: false,
+                canChangeStatDyn: false,
+                negative: false,
+                tense: "presentVerb",
+                canChangeVoice: true,
+                isCompound: false,
+                voice: "active",
+              },
+              externalComplement: undefined,
+              form: {
+                removeKing: true,
+                shrinkServant: false,
+              },
+            }))
+          ),
+        ],
       },
     ],
   },

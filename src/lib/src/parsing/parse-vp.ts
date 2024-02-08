@@ -1,6 +1,8 @@
 import * as T from "../../../types";
 import {
+  addShrunkenPossesor,
   bindParseResult,
+  canTakeShrunkenPossesor,
   isNeg,
   isNonOoPh,
   isPH,
@@ -27,6 +29,11 @@ import { isSecondPerson, personToGenNum } from "../misc-helpers";
 import { equals, zip } from "rambda";
 import { isImperativeTense } from "../type-predicates";
 // to hide equatives type-doubling issue
+// TODO: THESE SHOULD ERROR!!
+// ماشومانې لاړل
+// ماشومان لاړلې
+
+// TODO: problem with 3rd pers seng verb endings اواز مې دې واورېده
 
 // TODO: word query for kawul/kedul/stat/dyn
 
@@ -43,33 +50,39 @@ export function parseVP(
     return [];
   }
   const blocks = parseBlocks(tokens, lookup, [], []);
-  return bindParseResult(blocks, (tokens, { blocks, kids }) => {
-    const ba = kids.some((k) => k === "ba");
-    const miniPronouns = getMiniPronouns(kids);
-    const npsAndAps = blocks.filter(
-      (x): x is T.ParsedNP | T.APSelection => x.type === "NP" || x.type === "AP"
-    );
-    const verbSection = blocks.findIndex(startsVerbSection);
-    // TODO: would be nice if this could pass error messages about the
-    // negative being out of place etc
-    if (!verbSectionOK(blocks.slice(verbSection))) {
-      return [];
+  const blocksWPossPossibilities = createPossesivePossibilities(blocks);
+  return bindParseResult(
+    blocksWPossPossibilities,
+    (tokens, { blocks, kids }) => {
+      const ba = kids.some((k) => k === "ba");
+      const miniPronouns = getMiniPronouns(kids);
+      const npsAndAps = blocks.filter(
+        (x): x is T.ParsedNP | T.APSelection =>
+          x.type === "NP" || x.type === "AP"
+      );
+      const verbSection = blocks.findIndex(startsVerbSection);
+      // TODO: would be nice if this could pass error messages about the
+      // negative being out of place etc
+      if (!verbSectionOK(blocks.slice(verbSection))) {
+        return [];
+      }
+      const tenses = getTenses(blocks, ba);
+      // TODO get errors from the get tenses (perfect verbs not agreeing)
+      return tenses.flatMap(
+        ({ tense, person, transitivities, negative, verb }) =>
+          finishPossibleVPSs({
+            tense,
+            transitivities,
+            npsAndAps,
+            miniPronouns,
+            tokens,
+            negative,
+            verb,
+            person,
+          })
+      );
     }
-    const tenses = getTenses(blocks, ba);
-    // TODO get errors from the get tenses (perfect verbs not agreeing)
-    return tenses.flatMap(({ tense, person, transitivities, negative, verb }) =>
-      finishPossibleVPSs({
-        tense,
-        transitivities,
-        npsAndAps,
-        miniPronouns,
-        tokens,
-        negative,
-        verb,
-        person,
-      })
-    );
-  });
+  );
 }
 
 function getTenses(
@@ -487,6 +500,9 @@ function finishTransitive({
           }
         }
       } else {
+        if (miniPronouns.length > 1) {
+          errors.push({ message: "unknown mini-pronoun" });
+        }
         if (np.inflected) {
           errors.push({
             message: !isPast
@@ -553,6 +569,9 @@ function finishTransitive({
       }));
     });
   } else {
+    const miniPronErrors: T.ParseError[] = miniPronouns.length
+      ? [{ message: "unknown mini-pronoun" }]
+      : [];
     if (isPast) {
       return (
         [
@@ -598,7 +617,7 @@ function finishTransitive({
               shrinkServant: false,
             },
           } as T.VPSelectionComplete,
-          errors
+          [...miniPronErrors, ...errors]
         );
       });
     } else {
@@ -657,7 +676,7 @@ function finishTransitive({
               shrinkServant: false,
             },
           } as T.VPSelectionComplete,
-          errors
+          [...miniPronErrors, ...errors]
         );
       });
     }
@@ -1030,6 +1049,140 @@ function mapOutnpsAndAps(
         key: i,
         block: x,
       };
+    }
+  });
+}
+
+function createPossesivePossibilities(
+  blocks: T.ParseResult<{
+    kids: T.ParsedKid[];
+    blocks: T.ParsedBlock[];
+  }>[]
+): T.ParseResult<{
+  kids: T.ParsedKid[];
+  blocks: T.ParsedBlock[];
+}>[] {
+  // Case 1: no mini pronouns
+  // Case 2: 1 mini pronoun
+  //  - don't use any as possesive
+  // Case 3: 2 mini pronouns
+  //  - don't use any as possesive
+  //  - use first as possesive
+  //  - use second as possesive
+  //  - use both as possesive
+  function pullOutMiniPronoun(
+    body: {
+      kids: T.ParsedKid[];
+      blocks: T.ParsedBlock[];
+    },
+    pos: 0 | 1
+  ): {
+    adjusted: {
+      kids: T.ParsedKid[];
+      blocks: T.ParsedBlock[];
+    };
+    miniPronoun: T.ParsedMiniPronoun;
+  } {
+    const miniPronoun = getMiniPronouns(body.kids)[pos];
+    if (!miniPronoun) {
+      throw new Error("tried to pull out non-existent mini-pronoun");
+    }
+    return {
+      miniPronoun,
+      adjusted: {
+        kids: body.kids.filter((x) => x !== miniPronoun),
+        blocks: body.blocks,
+      },
+    };
+  }
+  function spreadOutPoss(
+    body: {
+      kids: T.ParsedKid[];
+      blocks: T.ParsedBlock[];
+    },
+    pos: 0 | 1
+  ): {
+    kids: T.ParsedKid[];
+    blocks: T.ParsedBlock[];
+  }[] {
+    const { miniPronoun, adjusted } = pullOutMiniPronoun(body, pos);
+    const people = getPeopleFromMiniPronouns([miniPronoun]);
+    // TODO: turn into reduce?
+    // TODO: allow possesives for sandwiches
+    return adjusted.blocks
+      .flatMap((x, i) => {
+        if (
+          (x.type === "NP" && canTakeShrunkenPossesor(x.selection)) ||
+          (x.type === "AP" && canTakeShrunkenPossesor(x))
+        ) {
+          return addPossesiveAtIndex(people, adjusted.blocks, i);
+        } else {
+          return [];
+        }
+      })
+      .map((xb) => ({
+        kids: adjusted.kids,
+        blocks: xb,
+      }));
+  }
+  function addPossesiveAtIndex(
+    people: T.Person[],
+    blocks: T.ParsedBlock[],
+    i: number
+  ): T.ParsedBlock[][] {
+    return people.map((person) => {
+      return blocks.map((x, j) => {
+        if (i !== j) return x;
+        // TODO: this is redundant ?
+        if (x.type === "NP" && canTakeShrunkenPossesor(x.selection)) {
+          return {
+            ...x,
+            selection: addShrunkenPossesor(x.selection, person),
+          };
+        } else if (x.type === "AP" && canTakeShrunkenPossesor(x)) {
+          return addShrunkenPossesor(x, person);
+        } else {
+          throw new Error(
+            "improper index for adding possesor - addPossesiveAtIndex"
+          );
+        }
+      });
+    });
+  }
+  return blocks.flatMap((b) => {
+    const miniPronouns = getMiniPronouns(b.body.kids);
+    if (miniPronouns.length === 0) {
+      return [
+        {
+          tokens: b.tokens,
+          body: b.body,
+          errors: b.errors,
+        },
+      ];
+    } else if (miniPronouns.length === 1) {
+      const withFirstMiniAsPossesive = spreadOutPoss(b.body, 0);
+      return [b.body, ...withFirstMiniAsPossesive].map((x) => ({
+        tokens: b.tokens,
+        body: x,
+        errors: b.errors,
+      }));
+    } else {
+      const withFirstMiniAsPossesive = spreadOutPoss(b.body, 0);
+      const withSecondMiniAsPossesive = spreadOutPoss(b.body, 1);
+      return [
+        // using none of the mini-pronouns as possesives
+        b.body,
+        // using the first mini-pronoun as a possesive
+        ...withFirstMiniAsPossesive,
+        // using the second mini-pronoun as a prossesive
+        ...withSecondMiniAsPossesive,
+        // using both mini pronouns as possesives
+        ...withFirstMiniAsPossesive.flatMap((x) => spreadOutPoss(x, 0)),
+      ].map((x) => ({
+        tokens: b.tokens,
+        body: x,
+        errors: b.errors,
+      }));
     }
   });
 }

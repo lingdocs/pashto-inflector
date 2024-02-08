@@ -252,7 +252,7 @@ function pronounPossEng(p: T.Person): string {
   if (p === T.Person.ThirdSingFemale) {
     return "her/its";
   }
-  return `their ${gend(p)}`;
+  return `their (${gend(p)})`;
 }
 
 export function getEnglishFromRendered(

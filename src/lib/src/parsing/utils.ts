@@ -174,3 +174,61 @@ export function startsVerbSection(b: T.ParsedBlock): boolean {
     b.type === "negative"
   );
 }
+
+export function canTakeShrunkenPossesor(
+  block: T.NPSelection | T.APSelection
+): boolean {
+  if (block.type === "NP") {
+    return block.selection.type !== "pronoun" && !block.selection.possesor;
+  }
+  if (block.selection.type === "sandwich") {
+    return canTakeShrunkenPossesor(block.selection.inside);
+  }
+  return false;
+}
+
+export function addShrunkenPossesor(
+  b: T.NPSelection,
+  person: T.Person
+): T.NPSelection;
+export function addShrunkenPossesor(
+  b: T.APSelection,
+  person: T.Person
+): T.APSelection;
+export function addShrunkenPossesor(
+  b: T.NPSelection | T.APSelection,
+  person: T.Person
+): T.NPSelection | T.APSelection {
+  if (b.selection.type === "adverb" || b.selection.type === "pronoun") {
+    throw new Error("cannot add shrunken possesor");
+  }
+  if (b.type === "AP") {
+    return {
+      ...b,
+      selection: {
+        ...b.selection,
+        inside: addShrunkenPossesor(b.selection.inside, person),
+      },
+    };
+  }
+  if (b.selection.possesor) {
+    throw new Error("cannot add another possesor");
+  }
+  return {
+    ...b,
+    selection: {
+      ...b.selection,
+      possesor: {
+        shrunken: true,
+        np: {
+          type: "NP",
+          selection: {
+            type: "pronoun",
+            distance: "far",
+            person,
+          },
+        },
+      },
+    },
+  };
+}
