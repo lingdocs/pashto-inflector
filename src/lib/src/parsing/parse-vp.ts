@@ -47,9 +47,8 @@ export function parseVP(
     return [];
   }
   const blocks = parseBlocks(tokens, lookup, [], []);
-  const blocksWPossPossibilities = createPossesivePossibilities(blocks);
   return bindParseResult(
-    blocksWPossPossibilities,
+    createPossesivePossibilities(blocks),
     (tokens, { blocks, kids }) => {
       const ba = kids.some((k) => k === "ba");
       const miniPronouns = getMiniPronouns(kids);
@@ -1055,6 +1054,26 @@ function mapOutnpsAndAps(
   });
 }
 
+/**
+ * Given a set of blocks and kids, produces all possible arrangements
+ * with the mini-pronouns being used as possesives, or not
+ *
+ * Case 1: no mini pronouns
+ *  1. return as is
+ *
+ * Case 2: one mini pronoun
+ *  1. don't use any as possesive
+ *  2. use the mini pronoun as a possesive (in all possible places)
+ *
+ * Case 3: two mini pronouns
+ *  1. don't use any as possesive
+ *  2. use first as possesive
+ *  3. use second as possesive
+ *  4. use both as possesives
+ *
+ * @param blocks
+ * @returns
+ */
 function createPossesivePossibilities(
   blocks: T.ParseResult<{
     kids: T.ParsedKid[];
@@ -1064,14 +1083,6 @@ function createPossesivePossibilities(
   kids: T.ParsedKid[];
   blocks: T.ParsedBlock[];
 }>[] {
-  // Case 1: no mini pronouns
-  // Case 2: 1 mini pronoun
-  //  - don't use any as possesive
-  // Case 3: 2 mini pronouns
-  //  - don't use any as possesive
-  //  - use first as possesive
-  //  - use second as possesive
-  //  - use both as possesive
   function pullOutMiniPronoun(
     body: {
       kids: T.ParsedKid[];

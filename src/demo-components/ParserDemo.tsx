@@ -11,7 +11,7 @@ const working = [
   "phrases with simple verbs",
   "basic verb tenses",
   "noun phrases",
-  "mini-pronouns for shrunken servants",
+  "mini-pronouns",
   "grammar error correction",
   "negatives",
   "imperative verbs",
@@ -21,14 +21,12 @@ const working = [
 const todo = [
   "compound verbs",
   "adjectival participles",
-  "adverbial phrases",
   "relative clauses",
   "equative verbs",
   "ability verbs",
   "passive verbs",
   "quantifiers",
   "demonstrative pronouns",
-  "mini-pronouns for possesives",
   "approximate spelling",
 ];
 
@@ -38,7 +36,7 @@ const examples = [
   "یو به مې ړلې",
   "د غټې ماشومې زاړه پلار ولیدم",
   "ستا پخواني ملګري مې ولیدل",
-  "پرون مې ولیدې",
+  "پرون مې دې ملګرې ولیده",
   "ما ډوډۍ خوړله",
   "وامې نه خیست",
   "وبه مې وینې",
