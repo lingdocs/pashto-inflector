@@ -30,7 +30,7 @@ import { equals, zip } from "rambda";
 import { isImperativeTense } from "../type-predicates";
 // to hide equatives type-doubling issue
 
-// TODO: problem with 3rd pers seng verb endings اواز مې دې واورېده
+// TODO: problem with 3rd pers sing verb endings اواز مې دې واورېده
 
 // TODO: word query for kawul/kedul/stat/dyn
 
@@ -1165,13 +1165,7 @@ function createPossesivePossibilities(
   return blocks.flatMap((b) => {
     const miniPronouns = getMiniPronouns(b.body.kids);
     if (miniPronouns.length === 0) {
-      return [
-        {
-          tokens: b.tokens,
-          body: b.body,
-          errors: b.errors,
-        },
-      ];
+      return b;
     } else if (miniPronouns.length === 1) {
       const withFirstMiniAsPossesive = spreadOutPoss(b.body, 0);
       return [b.body, ...withFirstMiniAsPossesive].map((x) => ({
