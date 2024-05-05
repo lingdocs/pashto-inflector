@@ -1,6 +1,6 @@
 {
   "name": "pashto-inflector",
-  "version": "7.0.9",
+  "version": "7.0.11",
   "author": "lingdocs.com",
   "description": "A Pashto inflection and verb conjugation engine, inculding React components for displaying Pashto text, inflections, and conjugations",
   "homepage": "https://verbs.lingdocs.com",

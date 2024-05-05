@@ -1,7 +1,7 @@
 import * as T from "../../../types";
 import { lookup, wordQuery } from "./lookup";
 import { tokenizer } from "./tokenizer";
-import { parsePastPart } from "./parse-past-part";
+import { parseVBP } from "./parse-vbp";
 import { kawulDyn, kawulStat, kedulDyn, kedulStat } from "./irreg-verbs";
 
 const leedul = wordQuery("لیدل", "verb");
@@ -178,7 +178,7 @@ describe("parsing past participles", () => {
     test(label, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parsePastPart(tokens, lookup).map(({ body }) => body);
+        const res = parseVBP(tokens, lookup).map(({ body }) => body);
         expect(res).toEqual(output);
       });
     });

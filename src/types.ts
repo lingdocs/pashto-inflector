@@ -868,6 +868,14 @@ export type PossesorSelection = {
   np: NPSelection;
 };
 
+export type Noun = {
+  entry: NounEntry;
+  gender: Gender;
+  number: "sing" | "plur";
+  adjectives: AdjectiveSelection[];
+  possesor: undefined | Noun;
+};
+
 // TODO require/import Person and PsString
 export type NounSelection = {
   type: "noun";

@@ -62,6 +62,18 @@ export function bindParseResult<C, D>(
   return cleanOutResults(nextPossibilities);
 }
 
+export function returnParseResults<D>(
+  tokens: Readonly<T.Token[]>,
+  body: D[],
+  errors?: T.ParseError[]
+): T.ParseResult<D>[] {
+  return body.map<T.ParseResult<D>>((b) => ({
+    tokens,
+    body: b,
+    errors: errors || [],
+  }));
+}
+
 export function returnParseResultS<D>(
   tokens: Readonly<T.Token[]>,
   body: D,

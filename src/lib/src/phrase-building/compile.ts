@@ -34,6 +34,8 @@ type BlankoutOptions = {
   predicate?: boolean;
 };
 
+// TODO: Should there be a way to get length options on compiled VP ?
+
 // function compilePs({ blocks, kids, verb: { head, rest }, VP }: CompilePsInput): T.SingleOrLengthOpts<T.PsString[]> {
 //     if ("long" in rest) {
 //         return {
@@ -87,13 +89,13 @@ export function compileVP(
 export function compileVP(
   VP: T.VPRendered,
   form: T.FormVersion,
-  combineLengths: true,
+  combineLengths: boolean,
   blankOut?: BlankoutOptions
 ): { ps: T.PsString[]; e?: string[] };
 export function compileVP(
   VP: T.VPRendered,
   form: T.FormVersion,
-  combineLengths?: true,
+  combineLengths?: boolean,
   blankOut?: BlankoutOptions
 ): { ps: T.SingleOrLengthOpts<T.PsString[]>; e?: string[] } {
   // const verb = getVerbFromBlocks(VP.blocks).block;

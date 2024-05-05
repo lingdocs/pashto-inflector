@@ -9,7 +9,7 @@ import {
   raatlul,
 } from "./irreg-verbs";
 import { lookup, wordQuery } from "./lookup";
-import { parseVerb } from "./parse-verb";
+import { parseVBE } from "./parse-vbe";
 import { tokenizer } from "./tokenizer";
 import { getPeople, removeKeys } from "./utils";
 
@@ -935,9 +935,6 @@ const tests: {
           },
         ],
       },
-      // TODO: It would probably be more effecient just to return the kedul verb options
-      // and then when we put things together with the perfective head parsed they could
-      // become raatlul etc...
       {
         input: "شي",
         output: [
@@ -965,42 +962,6 @@ const tests: {
             },
             verb: kedulStat,
           },
-          {
-            stem: {
-              persons: [
-                T.Person.ThirdSingMale,
-                T.Person.ThirdSingFemale,
-                T.Person.ThirdPlurMale,
-                T.Person.ThirdPlurFemale,
-              ],
-              aspects: ["perfective"],
-            },
-            verb: raatlul,
-          },
-          {
-            stem: {
-              persons: [
-                T.Person.ThirdSingMale,
-                T.Person.ThirdSingFemale,
-                T.Person.ThirdPlurMale,
-                T.Person.ThirdPlurFemale,
-              ],
-              aspects: ["perfective"],
-            },
-            verb: dartlul,
-          },
-          {
-            stem: {
-              persons: [
-                T.Person.ThirdSingMale,
-                T.Person.ThirdSingFemale,
-                T.Person.ThirdPlurMale,
-                T.Person.ThirdPlurFemale,
-              ],
-              aspects: ["perfective"],
-            },
-            verb: wartlul,
-          },
         ],
       },
     ],
@@ -1011,7 +972,7 @@ tests.forEach(({ label, cases }) => {
   test(label, () => {
     cases.forEach(({ input, output }) => {
       const tokens = tokenizer(input);
-      const vbs = parseVerb(tokens, lookup).map((r) => r.body);
+      const vbs = parseVBE(tokens, lookup).map((r) => r.body);
       const madeVbsS = output.reduce<T.ParsedVBE[]>((acc, o) => {
         return [
           ...acc,

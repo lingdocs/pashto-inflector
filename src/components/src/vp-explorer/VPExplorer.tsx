@@ -10,7 +10,10 @@ import { completeVPSelection } from "../../../lib/src/phrase-building/vp-tools";
 import VPExplorerQuiz from "./VPExplorerQuiz";
 // @ts-ignore
 import LZString from "lz-string";
-import { vpsReducer } from "../../../lib/src/phrase-building/vps-reducer";
+import {
+  VpsReducerAction,
+  vpsReducer,
+} from "../../../lib/src/phrase-building/vps-reducer";
 import { getObjectSelection } from "../../../lib/src/phrase-building/blocks-utils";
 import VPPicker from "./VPPicker";
 import AllTensesDisplay from "./AllTensesDisplay";
@@ -34,6 +37,7 @@ function VPExplorer(props: {
   handleLinkClick: ((ts: number) => void) | "none";
   entryFeeder: T.EntryFeeder;
   onlyPhrases?: boolean;
+  eventEmitter?: (e: string) => void;
 }) {
   const [vps, adjustVps] = useStickyReducer(
     vpsReducer,
@@ -85,7 +89,7 @@ function VPExplorer(props: {
     const VPSFromUrl = getVPSFromUrl();
     if (VPSFromUrl) {
       setMode("phrases");
-      adjustVps({
+      eventWrapper(adjustVps)({
         type: "load vps",
         payload: VPSFromUrl,
       });
@@ -93,7 +97,15 @@ function VPExplorer(props: {
     // eslint-disable-next-line
   }, []);
   function handleSubjObjSwap() {
-    adjustVps({ type: "swap subj/obj" });
+    eventWrapper(adjustVps)({ type: "swap subj/obj" });
+  }
+  function eventWrapper(f: (a: VpsReducerAction) => void) {
+    return function (action: VpsReducerAction) {
+      if (props.eventEmitter) {
+        props.eventEmitter(`VP exlorer ${props.verb.entry.p}`);
+      }
+      return f(action);
+    };
   }
   function quizLock<T>(f: T) {
     if (mode === "quiz") {
@@ -105,7 +117,7 @@ function VPExplorer(props: {
     return f;
   }
   function handleSetForm(form: T.FormVersion) {
-    adjustVps({
+    eventWrapper(adjustVps)({
       type: "set form",
       payload: form,
     });
@@ -134,7 +146,7 @@ function VPExplorer(props: {
     <div className="mt-3" style={{ maxWidth: "950px" }}>
       <VerbPicker
         vps={vps}
-        onChange={quizLock(adjustVps)}
+        onChange={quizLock(eventWrapper(adjustVps))}
         opts={props.opts}
         handleLinkClick={props.handleLinkClick}
       />
@@ -190,13 +202,19 @@ function VPExplorer(props: {
         <VPPicker
           opts={props.opts}
           entryFeeder={props.entryFeeder}
-          onChange={(payload) => adjustVps({ type: "load vps", payload })}
+          onChange={(payload) =>
+            eventWrapper(adjustVps)({ type: "load vps", payload })
+          }
           vps={vps}
         />
       )}
       {mode !== "phrases" && (
         <div className="my-2">
-          <TensePicker vps={vps} onChange={adjustVps} mode={mode} />
+          <TensePicker
+            vps={vps}
+            onChange={eventWrapper(adjustVps)}
+            mode={mode}
+          />
         </div>
       )}
       {mode === "phrases" && (
@@ -207,7 +225,7 @@ function VPExplorer(props: {
           object={object}
           VS={vps.verb}
           opts={props.opts}
-          onChange={adjustVps}
+          onChange={eventWrapper(adjustVps)}
         />
       )}
       {mode === "quiz" && <VPExplorerQuiz opts={props.opts} vps={vps} />}

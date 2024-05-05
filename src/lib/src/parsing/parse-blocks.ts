@@ -4,9 +4,9 @@ import { parseEquative } from "./parse-equative";
 import { parseKidsSection } from "./parse-kids-section";
 import { parseNeg } from "./parse-negative";
 import { parseNPAP } from "./parse-npap";
-import { parsePastPart } from "./parse-past-part";
+import { parseVBP } from "./parse-vbp";
 import { parsePH } from "./parse-ph";
-import { parseVerb } from "./parse-verb";
+import { parseVBE } from "./parse-vbe";
 import {
   bindParseResult,
   returnParseResult,
@@ -14,6 +14,7 @@ import {
   isParsedVBP,
   startsVerbSection,
 } from "./utils";
+import { isKedulStatEntry } from "./parse-verb-helpers";
 
 export function parseBlocks(
   tokens: Readonly<T.Token[]>,
@@ -32,14 +33,15 @@ export function parseBlocks(
     (b): b is T.ParsedPH => b.type === "PH"
   );
 
+  // TOOD: rather parse VBP / VBE
   const allBlocks: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
     ...(!inVerbSection ? parseNPAP(tokens, lookup) : []),
     // ensure at most one of each PH, VBE, VBP
     ...(prevPh ? [] : parsePH(tokens)),
     ...(blocks.some(isParsedVBE)
       ? []
-      : [...parseVerb(tokens, lookup), ...parseEquative(tokens)]),
-    ...(blocks.some(isParsedVBP) ? [] : parsePastPart(tokens, lookup)),
+      : [...parseVBE(tokens, lookup), ...parseEquative(tokens)]),
+    ...(blocks.some(isParsedVBP) ? [] : parseVBP(tokens, lookup)),
     ...(blocks.some((b) => b.type === "negative") ? [] : parseNeg(tokens)),
     ...parseKidsSection(tokens, []),
   ];
@@ -82,10 +84,22 @@ function phMatches(
   if (!ph) {
     return true;
   }
+
   if (!vb) {
     return true;
   }
   if (vb.info.type !== "verb") {
+    return false;
+  }
+  if (["را", "در", "ور"].includes(ph?.s)) {
+    if (
+      isKedulStatEntry(vb.info.verb.entry) &&
+      vb.info.base === "stem" &&
+      vb.info.aspect === "perfective"
+    ) {
+      return true;
+    }
+    // TODO: handle را غل etc! ? or is
     return false;
   }
   const verbPh = getPhFromVerb(vb.info.verb, vb.info.base);

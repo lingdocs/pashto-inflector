@@ -104,6 +104,7 @@ function getTenses(
   }
   if (verb.info.type === "verb") {
     if (verb.info.aspect === "perfective") {
+      // TODO: handle kedul sh perfective
       if (!ph) {
         return [];
       }

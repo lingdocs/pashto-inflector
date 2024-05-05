@@ -1,26 +1,22 @@
 import * as T from "../../../types";
 import { removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import { isInVarients, lastVowelNotA } from "../p-text-helpers";
-import {
-  dartlul,
-  kedulDyn,
-  kedulStat,
-  raatlul,
-  tlul,
-  wartlul,
-} from "./irreg-verbs";
+import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
 import { LookupFunction } from "./lookup";
 import { shortVerbEndConsonant } from "./misc";
+import { parseKedul } from "./parse-kedul";
+import { getVerbEnding } from "./parse-verb-helpers";
 
 // TODO: کول verbs!
 // check that aawu stuff is working
 // check oo`azmooy -
 // check څاته
 // laaRa shum etc
-
+// TODO: proper use of perfective with sh
+// TODO: use of raa, dar, war with sh
 // TODO: هغه لاړ
 
-export function parseVerb(
+export function parseVBE(
   tokens: Readonly<T.Token[]>,
   lookup: LookupFunction
 ): T.ParseResult<T.ParsedVBE>[] {
@@ -36,6 +32,7 @@ export function parseVerb(
       errors: [],
     }));
   }
+  const kedulStat = parseKedul(tokens);
   const ending = first.s.at(-1) || "";
   const people = getVerbEnding(ending);
   const imperativePeople = getImperativeVerbEnding(ending);
@@ -46,11 +43,14 @@ export function parseVerb(
   //   console.log({ verbs: JSON.stringify(verbs) });
   // }
   // Then find out which ones match exactly and how
-  return matchVerbs(first.s, verbs, people, imperativePeople).map((body) => ({
-    tokens: rest,
-    body,
-    errors: [],
-  }));
+  return [
+    ...kedulStat,
+    ...matchVerbs(first.s, verbs, people, imperativePeople).map((body) => ({
+      tokens: rest,
+      body,
+      errors: [],
+    })),
+  ];
 }
 
 function matchVerbs(
@@ -65,6 +65,9 @@ function matchVerbs(
   const w: T.ParsedVBE[] = [];
   const lEnding = s.endsWith("ل");
   const base = s.endsWith("ل") ? s : s.slice(0, -1);
+  if (["کېږ", "کېد", "ش", "شو", "شول"].includes(base)) {
+    return [];
+  }
   const matchShortOrLong = (b: string, x: string) => {
     return b === x || (!lEnding && b === x.slice(0, -1));
   };
@@ -317,61 +320,6 @@ function getImperativeVerbEnding(e: string): T.Person[] {
   return [];
 }
 
-function getVerbEnding(e: string): {
-  stem: T.Person[];
-  root: T.Person[];
-} {
-  if (e === "م") {
-    return {
-      root: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
-      stem: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
-    };
-  } else if (e === "ې") {
-    return {
-      root: [
-        T.Person.SecondSingMale,
-        T.Person.SecondSingFemale,
-        T.Person.ThirdPlurFemale,
-      ],
-      stem: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
-    };
-  } else if (e === "ي") {
-    return {
-      stem: [
-        T.Person.ThirdSingMale,
-        T.Person.ThirdSingFemale,
-        T.Person.ThirdPlurMale,
-        T.Person.ThirdPlurFemale,
-      ],
-      root: [],
-    };
-  } else if (e === "و") {
-    return {
-      root: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
-      stem: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
-    };
-  } else if (e === "ئ") {
-    return {
-      root: [T.Person.SecondPlurMale, T.Person.SecondPlurFemale],
-      stem: [T.Person.SecondPlurMale, T.Person.SecondPlurFemale],
-    };
-  } else if (e === "ه") {
-    return {
-      root: [T.Person.ThirdSingFemale],
-      stem: [],
-    };
-  } else if (e === "ل") {
-    return {
-      root: [T.Person.ThirdPlurMale],
-      stem: [],
-    };
-  }
-  return {
-    root: [],
-    stem: [],
-  };
-}
-
 // TODO: could handle all sh- verbs for efficiencies sake
 function parseIrregularVerb(s: string): T.ParsedVBE[] {
   if (["ته", "راته", "ورته", "درته"].includes(s)) {
@@ -392,38 +340,6 @@ function parseIrregularVerb(s: string): T.ParsedVBE[] {
         },
         person: T.Person.ThirdSingMale,
       },
-    ];
-  }
-  if (s === "شو") {
-    return [
-      ...[
-        T.Person.ThirdSingMale,
-        T.Person.FirstPlurMale,
-        T.Person.FirstPlurFemale,
-      ].flatMap((person) =>
-        [kedulStat, kedulDyn].map<T.ParsedVBE>((verb) => ({
-          type: "VB",
-          info: {
-            aspect: "perfective",
-            base: "root",
-            type: "verb",
-            verb,
-          },
-          person,
-        }))
-      ),
-      ...[T.Person.FirstPlurMale, T.Person.FirstPlurFemale].flatMap((person) =>
-        [kedulStat, kedulDyn].map<T.ParsedVBE>((verb) => ({
-          type: "VB",
-          info: {
-            aspect: "perfective",
-            base: "stem",
-            type: "verb",
-            verb,
-          },
-          person,
-        }))
-      ),
     ];
   }
   return [];

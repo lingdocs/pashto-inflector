@@ -2,13 +2,23 @@ import * as T from "../../../types";
 import { LookupFunction } from "./lookup";
 import { returnParseResult } from "./utils";
 
-export function parsePastPart(
+export function parseVBP(
   tokens: Readonly<T.Token[]>,
   lookup: LookupFunction
 ): T.ParseResult<T.ParsedVBP>[] {
   if (tokens.length === 0) {
     return [];
   }
+  return [
+    ...parsePastPart(tokens, lookup),
+    // ...parseAbility(tokens),
+  ];
+}
+
+function parsePastPart(
+  tokens: Readonly<T.Token[]>,
+  lookup: LookupFunction
+): T.ParseResult<T.ParsedVBP>[] {
   const [{ s }, ...rest] = tokens;
   const ending: "ی" | "ي" | "ې" = s.at(-1) as "ی" | "ي" | "ې";
   if (!ending || !["ی", "ي", "ې"].includes(ending)) {
@@ -31,6 +41,34 @@ export function parsePastPart(
     )
     .flatMap((m) => returnParseResult(rest, m));
 }
+
+// function parseAbility(
+//   tokens: Readonly<T.Token[]>,
+//   lookup: LookupFunction
+// ): T.ParseResult<T.ParsedVBP>[] {
+//   // TODO: keday
+//   if (tokens.length === 0) {
+//     return [];
+//   }
+//   const [{ s }, ...rest] = tokens;
+//   const start = s.endsWith("ای")
+//     ? s.slice(0, -2)
+//     : s.endsWith("ی")
+//     ? s.slice(0, 1)
+//     : "";
+//   if (!start) return [];
+//   const matches = lookup(start, "ability");
+//   return matches
+//     .map<T.ParsedVBP>((verb) => ({
+//       type: "VB",
+//       info: {
+//         type: "ability",
+//         verb,
+//         aspect: "perfective", // TODO GET ASPECT!!
+//       },
+//     }))
+//     .flatMap((m) => returnParseResult(rest, m));
+// }
 
 function endingGenderNum(ending: "ی" | "ي" | "ې"): T.GenderNumber[] {
   if (ending === "ی") {
