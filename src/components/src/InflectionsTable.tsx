@@ -108,9 +108,7 @@ const InflectionTable = ({
             : ["Plural", "2nd Inf."]
           ).map((title, i) => (
             <tr key={title}>
-              <th scope="row" style={{ textAlign: "left" }}>
-                {title}
-              </th>
+              <th scope="row">{title}</th>
               {"masc" in inf && (
                 <TableCell
                   item={inf.masc[i]}
