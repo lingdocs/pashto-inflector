@@ -94,7 +94,7 @@ const adjectives: {
           [{ p: "وروستی", f: "wroostáy" }],
           [{ p: "وروستي", f: "wroostée" }],
           [
-            { p: "وروستیو", f: "wroostíyo" },
+            { p: "وروستیو", f: "wroostúyo" },
             { p: "وروستو", f: "wroostó" },
           ],
         ],
@@ -102,7 +102,7 @@ const adjectives: {
           [{ p: "وروستۍ", f: "wroostúy" }],
           [{ p: "وروستۍ", f: "wroostúy" }],
           [
-            { p: "وروستیو", f: "wroostíyo" },
+            { p: "وروستیو", f: "wroostúyo" },
             { p: "وروستو", f: "wroostó" },
           ],
         ],
@@ -453,7 +453,7 @@ const nouns: {
           [{ p: "ترورزی", f: "trorzáy" }],
           [{ p: "ترورزي", f: "trorzée" }],
           [
-            { p: "ترورزیو", f: "trorzíyo" },
+            { p: "ترورزیو", f: "trorzúyo" },
             { p: "ترورزو", f: "trorzó" },
           ],
         ],
@@ -461,7 +461,7 @@ const nouns: {
           [{ p: "ترورزۍ", f: "trorzúy" }],
           [{ p: "ترورزۍ", f: "trorzúy" }],
           [
-            { p: "ترورزیو", f: "trorzíyo" },
+            { p: "ترورزیو", f: "trorzúyo" },
             { p: "ترورزو", f: "trorzó" },
           ],
         ],
@@ -530,7 +530,7 @@ const nouns: {
           [{ p: "پلوی", f: "palawáy" }],
           [{ p: "پلوي", f: "palawée" }],
           [
-            { p: "پلویو", f: "palawíyo" },
+            { p: "پلویو", f: "palawúyo" },
             { p: "پلوو", f: "palawó" },
           ],
         ],
@@ -538,7 +538,7 @@ const nouns: {
           [{ p: "پلوۍ", f: "palawúy" }],
           [{ p: "پلوۍ", f: "palawúy" }],
           [
-            { p: "پلویو", f: "palawíyo" },
+            { p: "پلویو", f: "palawúyo" },
             { p: "پلوو", f: "palawó" },
           ],
         ],
@@ -573,7 +573,7 @@ const nouns: {
           [{ p: "سړی", f: "saRáy" }],
           [{ p: "سړي", f: "saRée" }],
           [
-            { p: "سړیو", f: "saRíyo" },
+            { p: "سړیو", f: "saRúyo" },
             { p: "سړو", f: "saRó" },
           ],
         ],
@@ -598,7 +598,7 @@ const nouns: {
           [{ p: "سیلانی", f: "saylaanáy" }],
           [{ p: "سیلاني", f: "saylaanée" }],
           [
-            { p: "سیلانیو", f: "saylaaníyo" },
+            { p: "سیلانیو", f: "saylaanúyo" },
             { p: "سیلانو", f: "saylaanó" },
           ],
         ],
@@ -628,7 +628,7 @@ const nouns: {
           [{ p: "ترېلی", f: "treláy" }],
           [{ p: "ترېلي", f: "trelée" }],
           [
-            { p: "ترېلیو", f: "trelíyo" },
+            { p: "ترېلیو", f: "trelúyo" },
             { p: "ترېلو", f: "treló" },
           ],
         ],
@@ -1407,7 +1407,7 @@ const nouns: {
           [{ p: "کرسۍ", f: "kUrsúy" }],
           [{ p: "کرسۍ", f: "kUrsúy" }],
           [
-            { p: "کرسیو", f: "kUrsíyo" },
+            { p: "کرسیو", f: "kUrsúyo" },
             { p: "کرسو", f: "kUrsó" },
           ],
         ],
