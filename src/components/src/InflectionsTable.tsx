@@ -39,43 +39,94 @@ import { isPluralInflections } from "../../lib/src/p-text-helpers";
 //     </>;
 // }
 
-const InflectionTable = ({ inf, textOptions, hideTitle }: {
-    inf: T.Inflections | T.PluralInflections,
-    textOptions: T.TextOptions,
-    hideTitle?: boolean,
+const InflectionTable = ({
+  inf,
+  textOptions,
+  hideTitle,
+}: {
+  inf: T.Inflections | T.PluralInflections;
+  textOptions: T.TextOptions;
+  hideTitle?: boolean;
 }) => {
-    // const [showingExplanation, setShowingExplanation] = useState(false);
-    /* istanbul ignore next */ // Insanely can't see the modal to close it
-    // const handleCloseExplanation = () => setShowingExplanation(false);
-    // const handleShowExplanation = () => setShowingExplanation(true);
-    const isPluralInfs = isPluralInflections(inf);
-    return (
-        <div className={!hideTitle ? "" : "mt-4"}>
-            {!hideTitle && <div style={{ display: "flex", justifyContent: !isPluralInfs ? "space-between" : "left" }}>
-                {!isPluralInfs && <h5>Inflections</h5>}
-                {/* {!isPluralInfs && <div className="clickable mr-2" onClick={handleShowExplanation} data-testid="help-button">
+  // const [showingExplanation, setShowingExplanation] = useState(false);
+  /* istanbul ignore next */ // Insanely can't see the modal to close it
+  // const handleCloseExplanation = () => setShowingExplanation(false);
+  // const handleShowExplanation = () => setShowingExplanation(true);
+  const isPluralInfs = isPluralInflections(inf);
+  return (
+    <div className={!hideTitle ? "" : "mt-4"}>
+      {!hideTitle && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: !isPluralInfs ? "space-between" : "left",
+          }}
+        >
+          {!isPluralInfs && <h5>Inflections</h5>}
+          {/* {!isPluralInfs && <div className="clickable mr-2" onClick={handleShowExplanation} data-testid="help-button">
                     <i className={`fa fa-question-circle`}></i>
                 </div>} */}
-            </div>}
-            <table className="table" style={{ tableLayout: "fixed" }}>
-                <thead>
-                    <tr>
-                        <th scope="col" style={{ width: "3.5rem" }}></th>
-                        {"masc" in inf && <th scope="col" style={{ maxWidth: "10rem", textAlign: "left" }}>Masculine</th>}
-                        {"fem" in inf && <th scope="col" style={{ maxWidth: "10rem", textAlign: "left" }}>Feminine</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {(!isPluralInfs ? ["Plain", "1st", "2nd"] : ["Plural", "2nd Inf."]).map((title, i) => (
-                        <tr key={title}>
-                            <th scope="row">{title}</th>
-                            {"masc" in inf && <TableCell item={inf.masc[i]} textOptions={textOptions} />}
-                            {"fem" in inf && <TableCell item={inf.fem[i]} textOptions={textOptions} />}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            {/* {(!hideTitle && !isPluralInfs) && <Modal show={showingExplanation} onHide={handleCloseExplanation}>
+        </div>
+      )}
+      <table
+        className="table"
+        style={{ tableLayout: "fixed", textAlign: "center" }}
+      >
+        <thead>
+          <tr>
+            <th scope="col" style={{ width: "3.5rem" }}></th>
+            {"masc" in inf && (
+              <th
+                scope="col"
+                style={{
+                  maxWidth: "10rem",
+                  textAlign: "center",
+                  borderLeft: "1px solid #dee2e6",
+                  ...("fem" in inf
+                    ? {
+                        borderRight: "1px solid #dee2e6",
+                      }
+                    : {}),
+                }}
+              >
+                Masculine
+              </th>
+            )}
+            {"fem" in inf && (
+              <th
+                scope="col"
+                style={{ maxWidth: "10rem", textAlign: "center" }}
+              >
+                Feminine
+              </th>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {(!isPluralInfs
+            ? ["Plain", "1st", "2nd"]
+            : ["Plural", "2nd Inf."]
+          ).map((title, i) => (
+            <tr key={title}>
+              <th scope="row" style={{ textAlign: "left" }}>
+                {title}
+              </th>
+              {"masc" in inf && (
+                <TableCell
+                  item={inf.masc[i]}
+                  textOptions={textOptions}
+                  colSpan={"fem" in inf && i === 2 ? 2 : 1}
+                  center
+                />
+              )}
+              {"fem" in inf && i < 2 && (
+                <TableCell item={inf.fem[i]} textOptions={textOptions} center />
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {/* {(!hideTitle && !isPluralInfs) && <Modal show={showingExplanation} onHide={handleCloseExplanation}>
                 <Modal.Header closeButton>
                 <Modal.Title>About {isPluralInfs ? "Inflections" : "Arabic Plural"}</Modal.Title>
                 </Modal.Header>
@@ -86,8 +137,8 @@ const InflectionTable = ({ inf, textOptions, hideTitle }: {
                     </button>
                 </Modal.Footer>
             </Modal>} */}
-        </div>
-    );
+    </div>
+  );
 };
 
 export default InflectionTable;

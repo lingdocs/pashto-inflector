@@ -16,10 +16,11 @@ import useStickyState from "./components/src/useStickyState";
 import EPExplorer from "./components/src/ep-explorer/EPExplorer";
 import VPBuilderDemo from "./demo-components/VPBuilderDemo";
 import { entryFeeder } from "./demo-components/entryFeeder";
-import { Hider } from "./components/library";
+import { Hider, inflectWord } from "./components/library";
 import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
 import ParserDemo from "./demo-components/ParserDemo";
+// import InflectionTable from "./components/src/InflectionsTable";
 
 function App() {
   const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(
@@ -38,6 +39,18 @@ function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  const infout = inflectWord({
+    ts: 1527815306,
+    i: 9623,
+    p: "ستړی",
+    f: "stúRay",
+    g: "stuRay",
+    e: "tired",
+    r: 4,
+    c: "adj. / adv.",
+    a: 1,
+  });
 
   return (
     <>
@@ -97,6 +110,13 @@ function App() {
               on GitHub
             </p>
           </div>
+          {/* for testing inflection table */}
+          {/* {typeof infout === "object" && infout.inflections && (
+            <InflectionTable
+              inf={infout.inflections}
+              textOptions={textOptions}
+            />
+          )} */}
           <h2 className="mb-3">Demos:</h2>
           <Hider
             label="Verb Conjugation / Verb Phrase Engine"

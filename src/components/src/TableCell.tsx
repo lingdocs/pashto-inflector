@@ -24,11 +24,13 @@ function TableCell({
   textOptions,
   center,
   noBorder,
+  colSpan,
 }: {
   item: T.PsString[];
   textOptions: T.TextOptions;
   center?: boolean;
   noBorder?: boolean;
+  colSpan?: 1 | 2;
 }) {
   const [version, setVersion] = useState(0);
   useEffect(() => setVersion(0), [item]);
@@ -37,7 +39,12 @@ function TableCell({
   }
   const w = item[version] || item[0];
   return (
-    <td style={{ ...(noBorder ? { border: "none" } : {}) }}>
+    <td
+      colSpan={colSpan || 1}
+      style={{
+        ...(noBorder ? { border: "none" } : { border: "2px solid #dee2e6" }),
+      }}
+    >
       <div
         style={{
           display: "flex",
