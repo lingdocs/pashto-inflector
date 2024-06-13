@@ -443,7 +443,10 @@ function inflectRegularInanEeFem(p: string, f: string): T.Inflections {
     fem: [
       [{ p, f }],
       [{ p: `${baseP}ۍ`, f: `${baseF}úy` }],
-      [{ p: `${baseP}یو`, f: `${baseF}úyo` }],
+      [
+        { p: `${baseP}یو`, f: `${baseF}úyo` },
+        { p: `${baseP}و`, f: `${baseF}ó` },
+      ],
     ],
   };
 }
