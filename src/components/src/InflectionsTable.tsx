@@ -53,6 +53,7 @@ const InflectionTable = ({
   // const handleCloseExplanation = () => setShowingExplanation(false);
   // const handleShowExplanation = () => setShowingExplanation(true);
   const isPluralInfs = isPluralInflections(inf);
+  console.log({ inf });
   return (
     <div className={!hideTitle ? "" : "mt-4"}>
       {!hideTitle && (
@@ -117,7 +118,7 @@ const InflectionTable = ({
                   center
                 />
               )}
-              {"fem" in inf && i < 2 && (
+              {"fem" in inf && (!("masc" in inf) || i < 2) && (
                 <TableCell item={inf.fem[i]} textOptions={textOptions} center />
               )}
             </tr>

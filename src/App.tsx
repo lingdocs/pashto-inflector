@@ -16,11 +16,11 @@ import useStickyState from "./components/src/useStickyState";
 import EPExplorer from "./components/src/ep-explorer/EPExplorer";
 import VPBuilderDemo from "./demo-components/VPBuilderDemo";
 import { entryFeeder } from "./demo-components/entryFeeder";
-import { Hider, inflectWord } from "./components/library";
+import Hider from "./components/src/Hider";
 import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
 import ParserDemo from "./demo-components/ParserDemo";
-// import InflectionTable from "./components/src/InflectionsTable";
+import InflectionTable from "./components/src/InflectionsTable";
 
 function App() {
   const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(
@@ -40,17 +40,16 @@ function App() {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  const infout = inflectWord({
-    ts: 1527815306,
-    i: 9623,
-    p: "ستړی",
-    f: "stúRay",
-    g: "stuRay",
-    e: "tired",
-    r: 4,
-    c: "adj. / adv.",
-    a: 1,
-  });
+  // const infout = inflectWord({
+  //   ts: 1527814202,
+  //   i: 12761,
+  //   p: "کرسي",
+  //   f: "kUrsee",
+  //   g: "kUrsee",
+  //   e: "chair, seat, stool",
+  //   r: 3,
+  //   c: "n. f.",
+  // });
 
   return (
     <>
