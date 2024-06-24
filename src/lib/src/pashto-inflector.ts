@@ -541,6 +541,23 @@ function makePlural(
     if (w.c.includes("n. m.")) return { plural: { masc: plural } };
     if (w.c.includes("n. f.")) return { plural: { fem: plural } };
   }
+  // exception for mUláa
+  if (w.f === "mUláa" || w.f === "mUlaa") {
+    return {
+      plural: {
+        masc: [
+          [
+            { p: "ملایان", f: "mUlaayáan" },
+            { p: "ملاګان", f: "mUlaagáan" },
+          ],
+          [
+            { p: "ملایانو", f: "mUlaayáano" },
+            { p: "ملاګانو", f: "mUlaagáano" },
+          ],
+        ],
+      },
+    };
+  }
   const arabicPlural = makeArabicPlural(w);
   const pashtoPlural = makePashtoPlural(w);
   const bundledPlural = makeBundledPlural(w);
@@ -619,6 +636,8 @@ function makePlural(
     };
   }
   function addLongVowelSuffix(gender: "masc" | "fem"): T.PluralInflectionSet {
+    if (pashtoPlural) {
+    }
     const base = removeEndTick(makePsString(w.p, w.f));
     const baseWOutAccents = removeAccents(base);
     const space =
@@ -630,7 +649,6 @@ function makePlural(
       ]);
     } else {
       return addSecondInf([
-        concatPsString(baseWOutAccents, space, { p: "یان", f: "yáan" }),
         concatPsString(baseWOutAccents, space, { p: "ګان", f: "gáan" }),
       ]);
     }
@@ -663,11 +681,12 @@ function makePlural(
     : w.c?.includes("n. f.")
     ? "fem noun"
     : "other";
-  if (pashtoPlural)
+  if (pashtoPlural) {
     return {
       plural: pashtoPlural,
       arabicPlural,
     };
+  }
   if (type === "unisex noun") {
     // doesn't need to be labelled anim - because it's only with animate nouns that you get the unisex - I THINK
     if (endsInConsonant(w) && !w.infap) {

@@ -850,15 +850,38 @@ const nouns: {
       },
     },
   },
-  // masculine ending in a vowel
+  // masculine ending in a vowe
+  {
+    in: {
+      ts: 1527816446,
+      i: 12568,
+      p: "کاکا",
+      f: "kaakáa",
+      g: "kaakaa",
+      e: "paternal uncle, term of address for elderly man",
+      r: 4,
+      c: "n. m. anim.",
+      a: 1,
+    },
+    out: {
+      plural: {
+        masc: [
+          [{ p: "کاکاګان", f: "kaakaagáan" }],
+          [{ p: "کاکاګانو", f: "kaakaagáano" }],
+        ],
+      },
+    },
+  },
   {
     in: {
       ts: 1527815484,
       i: 13069,
       p: "ملا",
-      f: "mUllaa",
-      g: "mUllaa",
+      f: "mUláa",
+      g: "mUláa",
       e: "mullah, priest",
+      ppp: "ملایان",
+      ppf: "mUlaayáan",
       r: 4,
       c: "n. m.",
     },
@@ -866,12 +889,12 @@ const nouns: {
       plural: {
         masc: [
           [
-            { p: "ملایان", f: "mUllaayáan" },
-            { p: "ملاګان", f: "mUllaagáan" },
+            { p: "ملایان", f: "mUlaayáan" },
+            { p: "ملاګان", f: "mUlaagáan" },
           ],
           [
-            { p: "ملایانو", f: "mUllaayáano" },
-            { p: "ملاګانو", f: "mUllaagáano" },
+            { p: "ملایانو", f: "mUlaayáano" },
+            { p: "ملاګانو", f: "mUlaagáano" },
           ],
         ],
       },
