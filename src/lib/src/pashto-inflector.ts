@@ -607,9 +607,6 @@ function makePlural(
         { p: "یان", f: "iyáan" },
         gender === "fem" ? { p: "ې", f: "e" } : ""
       ),
-      ...(gender === "fem"
-        ? [concatPsString(base, { p: "یګانې", f: "eegáane" })]
-        : []),
     ];
     return [
       firstInf,

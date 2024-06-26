@@ -1394,14 +1394,8 @@ const nouns: {
     out: {
       plural: {
         fem: [
-          [
-            { p: "دوستیانې", f: "dostiyáane" },
-            { p: "دوستیګانې", f: "dosteegáane" },
-          ],
-          [
-            { p: "دوستیانو", f: "dostiyáano" },
-            { p: "دوستیګانو", f: "dosteegáano" },
-          ],
+          [{ p: "دوستیانې", f: "dostiyáane" }],
+          [{ p: "دوستیانو", f: "dostiyáano" }],
         ],
       },
       inflections: {
