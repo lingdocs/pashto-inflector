@@ -53,7 +53,6 @@ const InflectionTable = ({
   // const handleCloseExplanation = () => setShowingExplanation(false);
   // const handleShowExplanation = () => setShowingExplanation(true);
   const isPluralInfs = isPluralInflections(inf);
-  console.log({ inf });
   return (
     <div className={!hideTitle ? "" : "mt-4"}>
       {!hideTitle && (
