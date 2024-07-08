@@ -752,7 +752,10 @@ function makePlural(
       },
     };
   }
-  if (type === "fem noun" && endsWith({ p: "ي" }, w)) {
+  if (
+    type === "fem noun" &&
+    (endsWith({ p: "ي" }, w) || (endsWith({ p: "ۍ" }, w) && anim))
+  ) {
     return {
       arabicPlural,
       plural: {

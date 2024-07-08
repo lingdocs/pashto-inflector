@@ -1434,6 +1434,36 @@ const nouns: {
       },
     },
   },
+  {
+    in: {
+      ts: 1527823526,
+      i: 12229,
+      p: "قاضۍ",
+      f: "qaazúy",
+      g: "kaazuy",
+      e: "female judge",
+      r: 4,
+      c: "n. f. anim.",
+    },
+    out: {
+      inflections: {
+        fem: [
+          [{ p: "قاضۍ", f: "qaazúy" }],
+          [{ p: "قاضۍ", f: "qaazúy" }],
+          [
+            { p: "قاضیو", f: "qaazúyo" },
+            { p: "قاضو", f: "qaazó" },
+          ],
+        ],
+      },
+      plural: {
+        fem: [
+          [{ p: "قاضیانې", f: "qaaziyáane" }],
+          [{ p: "قاضیانو", f: "qaaziyáano" }],
+        ],
+      },
+    },
+  },
   // Feminine regular ending in ا
   {
     in: {
