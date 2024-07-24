@@ -15,10 +15,13 @@ import {
   endsInConsonant,
   endsInAaOrOo,
   addOEnding,
-  endsInShwa,
   splitPsByVarients,
   removeEndTick,
   endsWith,
+  concatPlurals,
+  hasShwaEnding,
+  mapPsString,
+  endsInTob,
 } from "./p-text-helpers";
 import { makePsString, removeFVarients } from "./accent-and-ps-utils";
 import {
@@ -30,7 +33,13 @@ import {
   splitUpSyllables,
 } from "./accent-helpers";
 import * as T from "../../types";
-import { fmapSingleOrLengthOpts } from "./fp-ps";
+import { applyPsString, fmapSingleOrLengthOpts } from "./fp-ps";
+import { getVocatives } from "./vocatives";
+import {
+  isAdjectiveEntry,
+  isNumberEntry,
+  isPattern1Entry,
+} from "./type-predicates";
 
 const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
 const endingInHayOrAynRegex = /[^ا][هع]$/;
@@ -42,14 +51,24 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
   const w = removeFVarients(word);
   if (w.c?.includes("doub.")) {
     const words = splitDoubleWord(w);
-    const inflected = words.map((x) =>
-      ensureUnisexInflections(inflectWord(x), x)
-    );
+    // TODO: Make this work for non-unisex double words
+    //  Right now this an extremely bad and complex way to do this
+    //   with ensureUnisexInflections
+    const inflected = words.map((x) => {
+      const res = inflectWord(x);
+      return ensureUnisexInflections(res, x);
+    });
+    const vocatives = inflected
+      .map((x) => "vocative" in x && x.vocative)
+      .filter((x) => x) as T.PluralInflections[];
     return {
       inflections: concatInflections(
         inflected[0].inflections,
         inflected[1].inflections
       ) as T.UnisexInflections,
+      ...(vocatives.length
+        ? { vocative: concatPlurals(vocatives[0], vocatives[1]) }
+        : {}),
     };
   }
   if (w.c && w.c.includes("pl.")) {
@@ -57,7 +76,7 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
   }
   if (
     w.c &&
-    (w.c.includes("adj.") || w.c.includes("unisex") || w.c.includes("num"))
+    (isAdjectiveEntry(word) || w.c.includes("unisex") || isNumberEntry(word))
   ) {
     return handleUnisexWord(w);
   }
@@ -77,6 +96,7 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // TODO: !!! Handle weird endings / symbols ' etc.
   const pEnd = word.p.slice(-1);
   const plurals = makePlural(word);
+  const vocative = getVocatives(word);
   if (word.noInf) {
     return !plurals ? false : { ...plurals };
   }
@@ -86,21 +106,28 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
         { p: word.infap, f: word.infaf },
         { p: word.infbp, f: word.infbf },
       ]),
+      vocative,
       ...plurals,
     };
   }
   if (pEnd === "ی" && word.f.slice(-2) === "ay") {
-    return { inflections: inflectRegularYayUnisex(word.p, word.f), ...plurals };
+    return {
+      inflections: inflectRegularYayUnisex(word.p, word.f),
+      vocative,
+      ...plurals,
+    };
   }
   if (pEnd === "ه" && word.g.slice(-1) === "u") {
     return {
       inflections: inflectRegularShwaEndingUnisex(word.p, word.f),
+      vocative,
       ...plurals,
     };
   }
   if (pEnd === "ی" && word.f.slice(-2) === "áy") {
     return {
       inflections: inflectEmphasizedYayUnisex(word.p, word.f),
+      vocative,
       ...plurals,
     };
   }
@@ -113,6 +140,7 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   ) {
     return {
       inflections: inflectConsonantEndingUnisex(word.p, word.f),
+      vocative,
       ...plurals,
     };
   }
@@ -134,6 +162,7 @@ function handleMascNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // Get last letter of Pashto and last two letters of phonetics
   // TODO: !!! Handle weird endings / symbols ' etc.
   const plurals = makePlural(w);
+  const vocative = getVocatives(w);
   if (w.noInf) {
     return !plurals ? false : { ...plurals };
   }
@@ -145,22 +174,42 @@ function handleMascNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
         { p: w.infap, f: w.infaf },
         { p: w.infbp, f: w.infbf },
       ]),
+      vocative,
       ...plurals,
     };
   }
-  const isTobEnding =
-    w.p.slice(-3) === "توب" &&
-    ["tób", "tob"].includes(w.f.slice(-3)) &&
-    w.p.length > 3;
-  if (isTobEnding) {
-    return { inflections: inflectTobMasc(w.p, w.f), ...plurals };
+  if (endsInTob(w)) {
+    return { inflections: inflectTobMasc(w.p, w.f), vocative, ...plurals };
+  }
+  // TODO: stopgap before refactoring
+  // @ts-ignore
+  if (isPattern1Entry(w)) {
+    return {
+      inflections: {
+        masc: inflectPattern1Masc(
+          // @ts-ignore
+          makePsString(w.p, w.f)
+        ),
+      },
+      vocative,
+      ...plurals,
+    };
+  }
+  if (
+    pEnd === "ی" &&
+    (fEnd === "áy" || (fEnd === "ay" && countSyllables(w) === 1))
+  ) {
+    const inflections = inflectRegularEmphasizedYayMasc(w.p, w.f);
+    return {
+      inflections,
+      vocative,
+      ...plurals,
+    };
   }
   if (pEnd === "ی" && fEnd === "ay") {
-    return { inflections: inflectRegularYayMasc(w.p, w.f), ...plurals };
-  }
-  if (pEnd === "ی" && fEnd === "áy") {
     return {
-      inflections: inflectRegularEmphasizedYayMasc(w.p, w.f),
+      inflections: inflectRegularYayMasc(w.p, w.f),
+      vocative,
       ...plurals,
     };
   }
@@ -173,17 +222,22 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   const c = word.c || "";
   const animate = c.includes("anim.");
   const pEnd = word.p.slice(-1);
-
+  const vocative = getVocatives(word);
   const plurals = makePlural(word);
   if (word.noInf) {
     return !plurals ? false : { ...plurals };
   }
 
   if (endingInHayOrAynRegex.test(word.p) && endingInSingleARegex.test(word.f)) {
-    return { inflections: inflectRegularAFem(word.p, word.f), ...plurals };
+    return {
+      inflections: inflectRegularAFem(word.p, word.f),
+      vocative,
+      ...plurals,
+    };
   }
   if (word.p.slice(-1) === "ح" && endingInSingleARegex.test(word.f)) {
     return {
+      vocative,
       inflections: inflectRegularAWithHimPEnding(word.p, word.f),
       ...plurals,
     };
@@ -194,20 +248,38 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
     !animate
   ) {
     return {
+      vocative,
       inflections: inflectRegularInanMissingAFem(word.p, word.f),
       ...plurals,
     };
   }
   if (pEnd === "ي" && !animate) {
-    return { inflections: inflectRegularInanEeFem(word.p, word.f), ...plurals };
+    return {
+      inflections: inflectRegularInanEeFem(word.p, word.f),
+      vocative,
+      ...plurals,
+    };
   }
   if (pEnd === "ۍ") {
-    return { inflections: inflectRegularUyFem(word.p, word.f), ...plurals };
+    return {
+      inflections: inflectRegularUyFem(word.p, word.f),
+      vocative,
+      ...plurals,
+    };
   }
   // if (endingInAlefRegex.test(word.p)) {
   //   return { inflections: inflectRegularAaFem(word.p, f) };
   // }
-  return plurals ? { ...plurals } : false;
+  return plurals || vocative
+    ? {
+        ...(plurals ? plurals : {}),
+        ...(vocative
+          ? {
+              vocative,
+            }
+          : {}),
+      }
+    : false;
 }
 
 // LEVEL 3 FUNCTIONS
@@ -309,6 +381,20 @@ function inflectEmphasizedYayUnisex(p: string, f: string): T.UnisexInflections {
   };
 }
 
+function inflectPattern1Masc(e: T.PsString): T.InflectionSet {
+  const shwaEnding = hasShwaEnding(e);
+  const base = applyPsString(
+    {
+      f: (x) => (countSyllables(e) === 1 ? accentFSylsOnNFromEnd(x, 0) : x),
+    },
+    mapPsString((x: string): string => (shwaEnding ? x.slice(0, -1) : x), e)
+  );
+  if (e.f.endsWith("ú")) {
+    return [[e], [e], [{ p: `${base.p}و`, f: `${base.f}ó` }]];
+  }
+  return [[e], [e], [{ p: `${base.p}و`, f: `${base.f}o` }]];
+}
+
 function inflectConsonantEndingUnisex(
   p: string,
   f: string
@@ -344,13 +430,14 @@ function inflectRegularYayMasc(p: string, f: string): T.Inflections {
 }
 
 function inflectTobMasc(p: string, f: string): T.Inflections {
-  const baseP = p.slice(0, -3);
-  const baseF = f.slice(0, -3);
+  const base = removeAccents(
+    mapPsString((x) => x.slice(0, -3), makePsString(p, f))
+  );
   return {
     masc: [
       [{ p, f }],
-      [{ p: `${baseP}تابه`, f: `${baseF}taabu` }],
-      [{ p: `${baseP}تبو`, f: `${baseF}tabo` }],
+      [{ p: `${base.p}تابه`, f: `${base.f}taabú` }],
+      [{ p: `${base.p}تبو`, f: `${base.f}tábo` }],
     ],
   };
 }
@@ -358,6 +445,19 @@ function inflectTobMasc(p: string, f: string): T.Inflections {
 function inflectRegularEmphasizedYayMasc(p: string, f: string): T.Inflections {
   const baseP = p.slice(0, -1);
   const baseF = f.slice(0, -2);
+
+  if (countSyllables(makePsString(p, f)) === 1) {
+    return {
+      masc: [
+        [{ p, f }],
+        [{ p: `${baseP}ي`, f: `${baseF}ee` }],
+        [
+          { p: `${baseP}یو`, f: `${baseF}úyo` },
+          { p: `${baseP}و`, f: `${baseF}o` },
+        ],
+      ],
+    };
+  }
   return {
     masc: [
       [{ p, f }],
@@ -576,7 +676,7 @@ function makePlural(
           )
         : w
     );
-    const base = endsInShwa(b)
+    const base = hasShwaEnding(b)
       ? makePsString(b.p.slice(0, -1), b.f.slice(0, -1))
       : b;
     return addSecondInf(
@@ -707,7 +807,7 @@ function makePlural(
   }
   if (
     type === "masc noun" &&
-    (shortSquish || ((endsInConsonant(w) || endsInShwa(w)) && !w.infap)) &&
+    (shortSquish || ((endsInConsonant(w) || hasShwaEnding(w)) && !w.infap)) &&
     w.p.slice(-3) !== "توب"
   ) {
     return {

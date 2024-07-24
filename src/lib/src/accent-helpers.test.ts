@@ -15,6 +15,7 @@ import {
   splitUpSyllables,
   hasAccents,
   countSyllables,
+  getAccentPos,
 } from "./accent-helpers";
 
 const toAccentFront = [
@@ -40,6 +41,27 @@ test(`accentOnFront should work`, () => {
   });
 });
 
+const toGetAccentPos = [
+  {
+    input: makePsString("کورنۍ", "koranúy"),
+    output: 0,
+  },
+  {
+    input: makePsString("ستړی", "stúRay"),
+    output: 1,
+  },
+  {
+    input: makePsString("لیدلی", "leedulay"),
+    output: -1,
+  },
+];
+
+test(`getAccentPos should work`, () => {
+  toGetAccentPos.forEach((item) => {
+    expect(getAccentPos(item.input)).toEqual(item.output);
+  });
+});
+
 const toAccentPastParticiple = [
   {
     input: makePsString("پرېښی", "prexay"),
@@ -59,6 +81,8 @@ test(`accentPastParticiple should work`, () => {
 
 test(`splitUpSyllables should work`, () => {
   expect(splitUpSyllables("akheestul")).toEqual(["akh", "eest", "ul"]);
+  expect(splitUpSyllables("kh")).toEqual([]);
+  expect(splitUpSyllables("x")).toEqual([]);
 });
 
 test("countSyllables", () => {
@@ -74,9 +98,19 @@ test("countSyllables", () => {
 test(`accentOnFSylsOnNFromEnd should work`, () => {
   expect(accentFSylsOnNFromEnd(["pu", "xtaa", "nu"], 0)).toBe("puxtaanú");
   expect(accentFSylsOnNFromEnd(["leed", "ul", "ay"], 1)).toBe("leedúlay");
+  expect(accentFSylsOnNFromEnd([], 0)).toBe("");
+  expect(accentFSylsOnNFromEnd("x", 0)).toBe("x");
 });
 
 test(`accentOnNFromEnd should work`, () => {
+  expect(accentOnNFromEnd({ p: "ښه", f: "xu" }, 0)).toEqual({
+    p: "ښه",
+    f: "xú",
+  });
+  expect(accentOnNFromEnd({ p: "ښ", f: "x" }, 0)).toEqual({
+    p: "ښ",
+    f: "x",
+  });
   expect(accentOnNFromEnd({ p: "پښتانه", f: "puxtaanu" }, 0)).toEqual({
     p: "پښتانه",
     f: "puxtaanú",

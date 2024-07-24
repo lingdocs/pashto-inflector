@@ -76,6 +76,42 @@ export function pureSingleOrLengthOpts<A>(a: A): T.SingleOrLengthOpts<A> {
   return a;
 }
 
+export function applyPsString(
+  f:
+    | {
+        p: (x: string) => string;
+      }
+    | {
+        f: (x: string) => string;
+      }
+    | {
+        p: (x: string) => string;
+        f: (x: string) => string;
+      },
+  x: T.PsString
+): T.PsString {
+  if ("p" in f && "f" in f) {
+    return {
+      p: f.p(x.p),
+      f: f.f(x.f),
+    };
+  }
+  if ("p" in f) {
+    return {
+      p: f.p(x.p),
+      f: x.f,
+    };
+  }
+  return {
+    p: x.p,
+    f: f.f(x.f),
+  };
+}
+
+export function mapGen<A, B>(f: (x: A) => B, x: A): B {
+  return f(x);
+}
+
 /**
  * like and applicative <*> operator for SingleOrLengthOpts
  *

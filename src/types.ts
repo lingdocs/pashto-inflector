@@ -496,15 +496,18 @@ export type InflectorOutput =
       plural?: PluralInflections;
       bundledPlural?: PluralInflections;
       inflections?: Inflections;
+      vocative?: PluralInflections;
     }
   | {
       plural: PluralInflections;
       arabicPlural?: PluralInflections;
       bundledPlural?: PluralInflections;
       inflections?: Inflections;
+      vocative?: PluralInflections;
     }
   | {
-      inflections: Inflections;
+      inflections?: Inflections;
+      vocative?: PluralInflections;
     }
   | false;
 
@@ -627,8 +630,16 @@ export type DisplayFormSubgroup = {
 
 export type AayTail = "ey" | "aay";
 
+export type InflectableEntry =
+  | NounEntry
+  | AdjectiveEntry
+  | NumberEntry
+  | AdverbEntry;
 export type NounEntry = DictionaryEntry & { c: string } & {
   __brand: "a noun entry";
+};
+export type NumberEntry = DictionaryEntry & { c: string } & {
+  __brand: "a number entry";
 };
 export type MascNounEntry = NounEntry & { __brand2: "a masc noun entry" };
 export type FemNounEntry = NounEntry & { __brand2: "a fem noun entry" };

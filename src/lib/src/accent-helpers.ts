@@ -85,7 +85,11 @@ export function accentFSylsOnNFromEnd(
   n: number
 ): string {
   if (typeof syls === "string") {
-    return accentFSylsOnNFromEnd(splitUpSyllables(syls), n);
+    const s = splitUpSyllables(syls);
+    if (s.length === 0) {
+      return syls;
+    }
+    return accentFSylsOnNFromEnd(s, n);
   }
   if (syls.length === 0) {
     return "";
@@ -100,9 +104,9 @@ export function accentFSylsOnNFromEnd(
 export function accentOnNFromEnd(ps: T.PsString, n: number): T.PsString {
   const fNoAccents = removeAccents(ps.f);
   const fSyls = splitUpSyllables(fNoAccents);
-  // TODO: enable this and fix the tests it breaks!!!
-  // don't add accent if only one syllable
-  // if (fSyls.length === 1) return makePsString(ps.p, fNoAccents);
+  if (fSyls.length === 0) {
+    return ps;
+  }
   return makePsString(ps.p, accentFSylsOnNFromEnd(fSyls, n));
 }
 
@@ -125,6 +129,26 @@ export function accentLetter(s: string): string {
     /* istanbul ignore next */
     return r?.accented || "";
   });
+}
+
+/**
+ * returns the position of an accent on a word, 0 being the last syllable
+ * -1 means there is no accent
+ *
+ * @param ps
+ */
+export function getAccentPos(ps: T.PsString): number {
+  const syls = splitUpSyllables(ps.f);
+  for (let i = 0; i < syls.length; i++) {
+    if (hasAccents(syls.at(-(i + 1)) || "")) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+export function accentIsOnEnd(ps: T.PsString): boolean {
+  return getAccentPos(ps) === 0;
 }
 
 export function accentPsSyllable(ps: T.PsString): T.PsString {

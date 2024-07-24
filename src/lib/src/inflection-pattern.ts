@@ -11,7 +11,7 @@ import {
 } from "./type-predicates";
 
 export function getInflectionPattern(
-  e: T.NounEntry | T.AdjectiveEntry
+  e: T.InflectableEntry
 ): T.InflectionPattern {
   return isPattern1Entry(e)
     ? T.InflectionPattern.Basic

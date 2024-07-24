@@ -21,7 +21,6 @@ import {
   splitDoubleWord,
   endsInConsonant,
   addOEnding,
-  endsInShwa,
   splitPsByVarients,
   endsWith,
   trimOffPs,
@@ -1594,13 +1593,6 @@ test("addOEnding", () => {
   tests.forEach((t) => {
     expect(addOEnding(t.in)).toEqual(t.out);
   });
-});
-
-test("endsInShwa", () => {
-  expect(endsInShwa({ p: "ښایسته", f: "xaaystú" })).toBe(true);
-  expect(endsInShwa({ p: "ښایسته", f: "xaaystu" })).toBe(true);
-  expect(endsInShwa({ p: "ښایسته", f: "xaaysta" })).toBe(false);
-  expect(endsInShwa({ p: "کور", f: "kor" })).toBe(false);
 });
 
 test("splitPsByVarients", () => {

@@ -563,6 +563,44 @@ export function unisexInfToObjectMatrix(
   };
 }
 
+export function concatPlurals(
+  a: T.PluralInflections,
+  b: T.PluralInflections
+): T.PluralInflections {
+  function concatPsArraysWSpace(
+    a: T.ArrayOneOrMore<T.PsString>,
+    b: T.ArrayOneOrMore<T.PsString>
+  ): T.ArrayOneOrMore<T.PsString> {
+    if (a.length !== b.length) {
+      throw new Error("arrays of plural/vocative inflections are different!");
+    }
+    return a.map((x, i) =>
+      concatPsString(x, " ", b[i])
+    ) as T.ArrayOneOrMore<T.PsString>;
+  }
+
+  function concatPluralSet(
+    a: T.PluralInflectionSet,
+    b: T.PluralInflectionSet
+  ): T.PluralInflectionSet {
+    return [concatPsArraysWSpace(a[0], b[0]), concatPsArraysWSpace(a[1], b[1])];
+  }
+  const masc =
+    "masc" in a && "masc" in b ? concatPluralSet(a.masc, b.masc) : undefined;
+  const fem =
+    "fem" in a && "fem" in b ? concatPluralSet(a.fem, b.fem) : undefined;
+  if (masc && fem) {
+    return { masc, fem };
+  }
+  if (masc) {
+    return { masc };
+  }
+  if (fem) {
+    return { fem };
+  }
+  throw new Error("error concating plural/vocative inflections for double!");
+}
+
 export function concatInflections(
   comp: T.PsString | T.SingleOrLengthOpts<T.UnisexInflections>,
   infs: T.SingleOrLengthOpts<T.UnisexInflections>
@@ -638,6 +676,10 @@ export function allOnePersonInflection(
     return block[key];
   }
   return block;
+}
+
+export function hasShwaEnding({ f }: T.PsString): boolean {
+  return f.endsWith("u") || f.endsWith("ú");
 }
 
 export function choosePersInf<T extends object>(
@@ -950,14 +992,25 @@ export function ensureUnisexInflections(
 ): {
   inflections: T.UnisexInflections;
   plural?: T.PluralInflections;
+  vocative?: T.PluralInflections;
 } {
   const ps = { p: w.p, f: w.f };
-  if (infs === false || infs.inflections === undefined) {
+  if (infs === false) {
     return {
       inflections: {
         masc: [[ps], [ps], [ps]],
         fem: [[ps], [ps], [ps]],
       },
+    };
+  }
+  if (!infs.inflections) {
+    return {
+      inflections: {
+        masc: [[ps], [ps], [ps]],
+        fem: [[ps], [ps], [ps]],
+      },
+      ...("plural" in infs ? { plural: infs.plural } : {}),
+      ...("vocative" in infs ? { vocative: infs.vocative } : {}),
     };
   }
   if (!("fem" in infs.inflections)) {
@@ -966,6 +1019,8 @@ export function ensureUnisexInflections(
         ...infs.inflections,
         fem: [[ps], [ps], [ps]],
       },
+      ...("plural" in infs ? { plural: infs.plural } : {}),
+      ...("vocative" in infs ? { vocative: infs.vocative } : {}),
     };
   }
   if (!("masc" in infs.inflections)) {
@@ -974,11 +1029,14 @@ export function ensureUnisexInflections(
         ...infs.inflections,
         masc: [[ps], [ps], [ps]],
       },
+      ...("plural" in infs ? { plural: infs.plural } : {}),
+      ...("vocative" in infs ? { vocative: infs.vocative } : {}),
     };
   }
-  // for some dumb reason have to do this for type safety
   return {
     inflections: infs.inflections,
+    ...("plural" in infs ? { plural: infs.plural } : {}),
+    ...("vocative" in infs ? { vocative: infs.vocative } : {}),
   };
 }
 
@@ -990,24 +1048,27 @@ export function endsInAaOrOo(w: T.PsString): boolean {
   );
 }
 
+export function endsInTob(ps: T.PsString): boolean {
+  return (
+    ps.p.slice(-3) === "توب" &&
+    ["tób", "tob"].includes(ps.f.slice(-3)) &&
+    ps.p.length > 3
+  );
+}
+
 export function endsInConsonant(w: T.PsString): boolean {
-  // TODO: Add reporting back that the plural ending will need a space?
-
-  function endsInLongDipthong(w: T.PsString): boolean {
-    function isLongDipthong(end: T.PsString): boolean {
-      return (
-        psStringEquals(end, { p: "ای", f: "aay" }, true) ||
-        psStringEquals(end, { p: "وی", f: "ooy" }, true)
-      );
-    }
-    const end = makePsString(w.p.slice(-2), w.f.slice(-3));
-    return isLongDipthong(end);
-  }
-
-  if (endsInLongDipthong(w)) return true;
-  // const pCons = pashtoConsonants.includes(w.p.slice(-1));
-  const fCons = phoneticsConsonants.includes(simplifyPhonetics(w.f).slice(-1));
-  return fCons;
+  return (
+    phoneticsConsonants.includes(simplifyPhonetics(w.f).slice(-1)) ||
+    endsWith(
+      [
+        { p: "ای", f: "aay" },
+        { p: "وی", f: "ooy" },
+      ],
+      w
+    ) ||
+    endsWith([{ p: "ه", f: "h" }], w) ||
+    endsWith([{ p: "و", f: "w" }], w)
+  );
 }
 
 /**
@@ -1053,23 +1114,12 @@ export function addOEnding(ps: T.PsString): T.ArrayOneOrMore<T.PsString> {
 }
 
 /**
- * Determines whether a string ends in a shwa or not
- *
- * @param w
- */
-export function endsInShwa(w: T.PsString): boolean {
-  const p = w.p.slice(-1);
-  const f = w.f.slice(-1);
-  return p === "ه" && ["u", "ú"].includes(f);
-}
-
-/**
  * applies f function to both the p and f in a PsString
  *
  */
 export function mapPsString<T>(
-  ps: T.PsString,
-  f: (s: string) => T
+  f: (s: string) => T,
+  ps: T.PsString
 ): { p: T; f: T } {
   return {
     p: f(ps.p),
@@ -1084,7 +1134,7 @@ export function mapPsString<T>(
  * @returns
  */
 export function splitPsByVarients(w: T.PsString): T.ArrayOneOrMore<T.PsString> {
-  const { p, f } = mapPsString(w, splitVarients);
+  const { p, f } = mapPsString(splitVarients, w);
   return zipWith(makePsString, p, f) as T.ArrayOneOrMore<T.PsString>;
 }
 

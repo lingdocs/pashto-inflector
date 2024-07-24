@@ -43,6 +43,10 @@ const adjectives: {
           [{ p: "زړو", f: "zaRó" }],
         ],
       },
+      vocative: {
+        masc: [[{ p: "زوړه", f: "zóRa" }], [{ p: "زړو", f: "zaRó" }]],
+        fem: [[{ p: "زړې", f: "zaRé" }], [{ p: "زړو", f: "zaRó" }]],
+      },
     },
   },
   // regular adjective ending in ی
@@ -68,6 +72,22 @@ const adjectives: {
         ],
         fem: [
           [{ p: "ستړې", f: "stúRe" }],
+          [{ p: "ستړې", f: "stúRe" }],
+          [
+            { p: "ستړیو", f: "stúRiyo" },
+            { p: "ستړو", f: "stúRo" },
+          ],
+        ],
+      },
+      vocative: {
+        masc: [
+          [{ p: "ستړیه", f: "stúRiya" }],
+          [
+            { p: "ستړیو", f: "stúRiyo" },
+            { p: "ستړو", f: "stúRo" },
+          ],
+        ],
+        fem: [
           [{ p: "ستړې", f: "stúRe" }],
           [
             { p: "ستړیو", f: "stúRiyo" },
@@ -107,6 +127,22 @@ const adjectives: {
           ],
         ],
       },
+      vocative: {
+        masc: [
+          [{ p: "وروستیه", f: "wroostúya" }],
+          [
+            { p: "وروستیو", f: "wroostúyo" },
+            { p: "وروستو", f: "wroostó" },
+          ],
+        ],
+        fem: [
+          [{ p: "وروستۍ", f: "wroostúy" }],
+          [
+            { p: "وروستیو", f: "wroostúyo" },
+            { p: "وروستو", f: "wroostó" },
+          ],
+        ],
+      },
     },
   },
   // regular adjective ending in a consonant
@@ -132,6 +168,10 @@ const adjectives: {
           [{ p: "سپکې", f: "spúke" }],
           [{ p: "سپکو", f: "spúko" }],
         ],
+      },
+      vocative: {
+        masc: [[{ p: "سپکه", f: "spúka" }], [{ p: "سپکو", f: "spúko" }]],
+        fem: [[{ p: "سپکې", f: "spúke" }], [{ p: "سپکو", f: "spúko" }]],
       },
     },
   },
@@ -159,6 +199,10 @@ const adjectives: {
           [{ p: "ارتو", f: "aráto" }],
         ],
       },
+      vocative: {
+        masc: [[{ p: "ارته", f: "aráta" }], [{ p: "ارتو", f: "aráto" }]],
+        fem: [[{ p: "ارتې", f: "aráte" }], [{ p: "ارتو", f: "aráto" }]],
+      },
     },
   },
   {
@@ -184,6 +228,10 @@ const adjectives: {
           [{ p: "لویو", f: "lóoyo" }],
         ],
       },
+      vocative: {
+        masc: [[{ p: "لویه", f: "lóoya" }], [{ p: "لویو", f: "lóoyo" }]],
+        fem: [[{ p: "لویې", f: "lóoye" }], [{ p: "لویو", f: "lóoyo" }]],
+      },
     },
   },
   {
@@ -208,6 +256,10 @@ const adjectives: {
           [{ p: "پوهې", f: "póhe" }],
           [{ p: "پوهو", f: "póho" }],
         ],
+      },
+      vocative: {
+        masc: [[{ p: "پوهه", f: "póha" }], [{ p: "پوهو", f: "póho" }]],
+        fem: [[{ p: "پوهې", f: "póhe" }], [{ p: "پوهو", f: "póho" }]],
       },
     },
   },
@@ -235,6 +287,10 @@ const adjectives: {
           [{ p: "ویدو", f: "weedó" }],
         ],
       },
+      vocative: {
+        masc: [[{ p: "ویده", f: "weedá" }], [{ p: "ویدو", f: "weedó" }]],
+        fem: [[{ p: "ویدې", f: "weedé" }], [{ p: "ویدو", f: "weedó" }]],
+      },
     },
   },
   {
@@ -259,6 +315,13 @@ const adjectives: {
           [{ p: "ښایستې", f: "xaayste" }],
           [{ p: "ښایستو", f: "xaaysto" }],
         ],
+      },
+      vocative: {
+        masc: [
+          [{ p: "ښایسته", f: "xaaysta" }],
+          [{ p: "ښایستو", f: "xaaysto" }],
+        ],
+        fem: [[{ p: "ښایستې", f: "xaayste" }], [{ p: "ښایستو", f: "xaaysto" }]],
       },
     },
   },
@@ -286,6 +349,10 @@ const adjectives: {
           [{ p: "شپږو", f: "shpúGo" }],
         ],
       },
+      vocative: {
+        masc: [[{ p: "شپږه", f: "shpúGa" }], [{ p: "شپږو", f: "shpúGo" }]],
+        fem: [[{ p: "شپږې", f: "shpúGe" }], [{ p: "شپږو", f: "shpúGo" }]],
+      },
     },
   },
   // without accents
@@ -311,6 +378,46 @@ const adjectives: {
           [{ p: "ښې", f: "xe" }],
           [{ p: "ښو", f: "xo" }],
         ],
+      },
+      vocative: {
+        masc: [[{ p: "ښه", f: "xa" }], [{ p: "ښو", f: "xo" }]],
+        fem: [[{ p: "ښې", f: "xe" }], [{ p: "ښو", f: "xo" }]],
+      },
+    },
+  },
+  // pattern 5 adjectives
+  {
+    in: {
+      ts: 1527815265,
+      i: 10891,
+      p: "شین",
+      f: "sheen",
+      g: "sheen",
+      e: "green, blue; unripe, immature; bright, sunny",
+      r: 4,
+      c: "adj.",
+      infap: "شنه",
+      infaf: "shnu",
+      infbp: "شن",
+      infbf: "shn",
+      a: 1,
+    },
+    out: {
+      inflections: {
+        masc: [
+          [{ p: "شین", f: "sheen" }],
+          [{ p: "شنه", f: "shnu" }],
+          [{ p: "شنو", f: "shno" }],
+        ],
+        fem: [
+          [{ p: "شنه", f: "shna" }],
+          [{ p: "شنې", f: "shne" }],
+          [{ p: "شنو", f: "shno" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "شنه", f: "shna" }], [{ p: "شنو", f: "shno" }]],
+        fem: [[{ p: "شنې", f: "shne" }], [{ p: "شنو", f: "shno" }]],
       },
     },
   },
@@ -363,6 +470,16 @@ const adjectives: {
           [{ p: "ګډو وډو", f: "gúDo wúDo" }],
         ],
       },
+      vocative: {
+        masc: [
+          [{ p: "ګډه وډه", f: "gúDa wúDa" }],
+          [{ p: "ګډو وډو", f: "gúDo wúDo" }],
+        ],
+        fem: [
+          [{ p: "ګډې وډې", f: "gúDe wúDe" }],
+          [{ p: "ګډو وډو", f: "gúDo wúDo" }],
+        ],
+      },
     },
   },
 ];
@@ -400,6 +517,10 @@ const nouns: {
           [{ p: "مېلمنو", f: "melmanó" }],
         ],
       },
+      vocative: {
+        masc: [[{ p: "مېلمه", f: "melmá" }], [{ p: "مېلمنو", f: "melmanó" }]],
+        fem: [[{ p: "مېلمنې", f: "melmané" }], [{ p: "مېلمنو", f: "melmanó" }]],
+      },
     },
   },
   // Unisex noun ending with ی
@@ -425,6 +546,22 @@ const nouns: {
         ],
         fem: [
           [{ p: "ملګرې", f: "malgúre" }],
+          [{ p: "ملګرې", f: "malgúre" }],
+          [
+            { p: "ملګریو", f: "malgúriyo" },
+            { p: "ملګرو", f: "malgúro" },
+          ],
+        ],
+      },
+      vocative: {
+        masc: [
+          [{ p: "ملګریه", f: "malgúriya" }],
+          [
+            { p: "ملګریو", f: "malgúriyo" },
+            { p: "ملګرو", f: "malgúro" },
+          ],
+        ],
+        fem: [
           [{ p: "ملګرې", f: "malgúre" }],
           [
             { p: "ملګریو", f: "malgúriyo" },
@@ -466,6 +603,22 @@ const nouns: {
           ],
         ],
       },
+      vocative: {
+        masc: [
+          [{ p: "ترورزیه", f: "trorzúya" }],
+          [
+            { p: "ترورزیو", f: "trorzúyo" },
+            { p: "ترورزو", f: "trorzó" },
+          ],
+        ],
+        fem: [
+          [{ p: "ترورزۍ", f: "trorzúy" }],
+          [
+            { p: "ترورزیو", f: "trorzúyo" },
+            { p: "ترورزو", f: "trorzó" },
+          ],
+        ],
+      },
       plural: {
         masc: [
           [{ p: "ترورزامن", f: "trorzaamun" }],
@@ -497,6 +650,10 @@ const nouns: {
           [{ p: "چرګې", f: "chúrge" }],
           [{ p: "چرګو", f: "chúrgo" }],
         ],
+      },
+      vocative: {
+        masc: [[{ p: "چرګه", f: "chúrga" }], [{ p: "چرګو", f: "chúrgo" }]],
+        fem: [[{ p: "چرګې", f: "chúrge" }], [{ p: "چرګو", f: "chúrgo" }]],
       },
       plural: {
         masc: [
@@ -543,6 +700,22 @@ const nouns: {
           ],
         ],
       },
+      vocative: {
+        masc: [
+          [{ p: "پلویه", f: "palawúya" }],
+          [
+            { p: "پلویو", f: "palawúyo" },
+            { p: "پلوو", f: "palawó" },
+          ],
+        ],
+        fem: [
+          [{ p: "پلوۍ", f: "palawúy" }],
+          [
+            { p: "پلویو", f: "palawúyo" },
+            { p: "پلوو", f: "palawó" },
+          ],
+        ],
+      },
       plural: {
         masc: [
           [{ p: "پلویان", f: "palawiyáan" }],
@@ -578,6 +751,16 @@ const nouns: {
           ],
         ],
       },
+      vocative: {
+        masc: [
+          [{ p: "سړیه", f: "saRúya" }],
+
+          [
+            { p: "سړیو", f: "saRúyo" },
+            { p: "سړو", f: "saRó" },
+          ],
+        ],
+      },
     },
   },
   // Masculine #3 anim
@@ -590,6 +773,7 @@ const nouns: {
       f: "saylaanáy",
       g: "saylaanay",
       e: "tourist, sightseer, visitor",
+      // only masculine here for testing purposes
       c: "n. m. anim.",
     },
     out: {
@@ -597,6 +781,15 @@ const nouns: {
         masc: [
           [{ p: "سیلانی", f: "saylaanáy" }],
           [{ p: "سیلاني", f: "saylaanée" }],
+          [
+            { p: "سیلانیو", f: "saylaanúyo" },
+            { p: "سیلانو", f: "saylaanó" },
+          ],
+        ],
+      },
+      vocative: {
+        masc: [
+          [{ p: "سیلانیه", f: "saylaanúya" }],
           [
             { p: "سیلانیو", f: "saylaanúyo" },
             { p: "سیلانو", f: "saylaanó" },
@@ -633,6 +826,15 @@ const nouns: {
           ],
         ],
       },
+      vocative: {
+        masc: [
+          [{ p: "ترېلیه", f: "trelúya" }],
+          [
+            { p: "ترېلیو", f: "trelúyo" },
+            { p: "ترېلو", f: "treló" },
+          ],
+        ],
+      },
     },
   },
   // Masculine ending in tob
@@ -641,7 +843,7 @@ const nouns: {
       i: 11998,
       ts: 1586760783536,
       p: "مشرتوب",
-      f: "mushurtob",
+      f: "mushurtób",
       g: "",
       e: "leadership, authority, presidency",
       c: "n. m.",
@@ -649,9 +851,15 @@ const nouns: {
     out: {
       inflections: {
         masc: [
-          [{ p: "مشرتوب", f: "mushurtob" }],
-          [{ p: "مشرتابه", f: "mushurtaabu" }],
-          [{ p: "مشرتبو", f: "mushurtabo" }],
+          [{ p: "مشرتوب", f: "mushurtób" }],
+          [{ p: "مشرتابه", f: "mushurtaabú" }],
+          [{ p: "مشرتبو", f: "mushurtábo" }],
+        ],
+      },
+      vocative: {
+        masc: [
+          [{ p: "مشرتوبه", f: "mushurtóba" }],
+          [{ p: "مشرتبو", f: "mushurtábo" }],
         ],
       },
     },
@@ -662,12 +870,12 @@ const nouns: {
       ts: 1527813809,
       i: 11318,
       p: "لمونځ",
-      f: "lamoondz",
-      g: "lamoondz",
+      f: "lamóondz",
+      g: "lamóondz",
       e: "Muslim ritual prayers (namaz, salah, salat)",
       c: "n. m. irreg.",
       infap: "لمانځه",
-      infaf: "lamaandzu",
+      infaf: "lamaandzú",
       infbp: "لمنځ",
       infbf: "lamandz",
       ppp: "لمونځونه",
@@ -676,8 +884,14 @@ const nouns: {
     out: {
       inflections: {
         masc: [
-          [{ p: "لمونځ", f: "lamoondz" }],
+          [{ p: "لمونځ", f: "lamóondz" }],
           [{ p: "لمانځه", f: "lamaandzú" }],
+          [{ p: "لمنځو", f: "lamandzó" }],
+        ],
+      },
+      vocative: {
+        masc: [
+          [{ p: "لمونځه", f: "lamóondza" }],
           [{ p: "لمنځو", f: "lamandzó" }],
         ],
       },
@@ -711,6 +925,9 @@ const nouns: {
           [{ p: "غره", f: "ghru" }],
           [{ p: "غرو", f: "ghro" }],
         ],
+      },
+      vocative: {
+        masc: [[{ p: "غره", f: "ghra" }], [{ p: "غرو", f: "ghro" }]],
       },
       plural: {
         masc: [[{ p: "غرونه", f: "ghróona" }], [{ p: "غرونو", f: "ghróono" }]],
@@ -748,6 +965,10 @@ const nouns: {
           [{ p: "خرې", f: "khre" }],
           [{ p: "خرو", f: "khro" }],
         ],
+      },
+      vocative: {
+        masc: [[{ p: "خره", f: "khra" }], [{ p: "خرو", f: "khro" }]],
+        fem: [[{ p: "خرې", f: "khre" }], [{ p: "خرو", f: "khro" }]],
       },
     },
   },
@@ -793,9 +1014,18 @@ const nouns: {
       g: "zRu",
       e: "heart",
       c: "n. m.",
-      noInf: true,
     },
     out: {
+      inflections: {
+        masc: [
+          [{ p: "زړه", f: "zRu" }],
+          [{ p: "زړه", f: "zRu" }],
+          [{ p: "زړو", f: "zRo" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "زړه", f: "zRa" }], [{ p: "زړو", f: "zRo" }]],
+      },
       plural: {
         masc: [[{ p: "زړونه", f: "zRóona" }], [{ p: "زړونو", f: "zRóono" }]],
       },
@@ -928,6 +1158,16 @@ const nouns: {
       i: 8640,
     },
     out: {
+      inflections: {
+        masc: [
+          [{ p: "کتاب", f: "kitaab" }],
+          [{ p: "کتاب", f: "kitaab" }],
+          [{ p: "کتابو", f: "kitaabo" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "کتابه", f: "kitaaba" }], [{ p: "کتابو", f: "kitaabo" }]],
+      },
       plural: {
         masc: [
           [{ p: "کتابونه", f: "kitaabóona" }],
@@ -952,6 +1192,16 @@ const nouns: {
       ep: "teeth",
     },
     out: {
+      inflections: {
+        masc: [
+          [{ p: "غاښ", f: "ghaax" }],
+          [{ p: "غاښ", f: "ghaax" }],
+          [{ p: "غاښو", f: "gháaxo" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "غاښه", f: "gháaxa" }], [{ p: "غاښو", f: "gháaxo" }]],
+      },
       plural: {
         masc: [
           [{ p: "غاښونه", f: "ghaaxóona" }],
@@ -976,6 +1226,16 @@ const nouns: {
       ppf: "wadóona",
     },
     out: {
+      inflections: {
+        masc: [
+          [{ p: "واده", f: "waadú" }],
+          [{ p: "واده", f: "waadú" }],
+          [{ p: "وادو", f: "waadó" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "واده", f: "waadá" }], [{ p: "وادو", f: "waadó" }]],
+      },
       plural: {
         masc: [[{ p: "ودونه", f: "wadóona" }], [{ p: "ودونو", f: "wadóono" }]],
       },
@@ -986,12 +1246,22 @@ const nouns: {
       ts: 1527817768,
       i: 9791,
       p: "کارګه",
-      f: "kaargu",
-      g: "kaargu",
+      f: "kaargú",
+      g: "kaargú",
       e: "raven, crow",
       c: "n. m. anim.",
     },
     out: {
+      inflections: {
+        masc: [
+          [{ p: "کارګه", f: "kaargú" }],
+          [{ p: "کارګه", f: "kaargú" }],
+          [{ p: "کارګو", f: "kaargó" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "کارګه", f: "kaargá" }], [{ p: "کارګو", f: "kaargó" }]],
+      },
       plural: {
         masc: [
           [{ p: "کارګان", f: "kaargáan" }],
@@ -1011,6 +1281,16 @@ const nouns: {
       c: "n. m.",
     },
     out: {
+      inflections: {
+        masc: [
+          [{ p: "لو", f: "law" }],
+          [{ p: "لو", f: "law" }],
+          [{ p: "لوو", f: "láwo" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "لوه", f: "láwa" }], [{ p: "لوو", f: "láwo" }]],
+      },
       plural: {
         masc: [[{ p: "لوونه", f: "lawóona" }], [{ p: "لوونو", f: "lawóono" }]],
       },
@@ -1025,7 +1305,7 @@ const nouns: {
     in: {
       ts: 1527812797,
       p: "ښځه",
-      f: "xudza",
+      f: "xúdza",
       g: "",
       e: "woman, wife",
       c: "n. f.",
@@ -1034,10 +1314,13 @@ const nouns: {
     out: {
       inflections: {
         fem: [
-          [{ p: "ښځه", f: "xudza" }],
-          [{ p: "ښځې", f: "xudze" }],
-          [{ p: "ښځو", f: "xudzo" }],
+          [{ p: "ښځه", f: "xúdza" }],
+          [{ p: "ښځې", f: "xúdze" }],
+          [{ p: "ښځو", f: "xúdzo" }],
         ],
+      },
+      vocative: {
+        fem: [[{ p: "ښځې", f: "xúdze" }], [{ p: "ښځو", f: "xúdzo" }]],
       },
     },
   },
@@ -1058,6 +1341,9 @@ const nouns: {
           [{ p: "ارې", f: "aré" }],
           [{ p: "ارو", f: "aró" }],
         ],
+      },
+      vocative: {
+        fem: [[{ p: "ارې", f: "aré" }], [{ p: "ارو", f: "aró" }]],
       },
     },
   },
@@ -1081,6 +1367,9 @@ const nouns: {
           [{ p: "مرجعې", f: "marje" }],
           [{ p: "مرجعو", f: "marjo" }],
         ],
+      },
+      vocative: {
+        fem: [[{ p: "مرجعې", f: "marje" }], [{ p: "مرجعو", f: "marjo" }]],
       },
       arabicPlural: {
         fem: [[{ p: "مراجع", f: "maraají'" }], [{ p: "مراجو", f: "maraajó" }]],
@@ -1106,6 +1395,9 @@ const nouns: {
           [{ p: "منبعې", f: "manbé" }],
           [{ p: "منبعو", f: "manbó" }],
         ],
+      },
+      vocative: {
+        fem: [[{ p: "منبعې", f: "manbé" }], [{ p: "منبعو", f: "manbó" }]],
       },
       arabicPlural: {
         fem: [[{ p: "منابع", f: "manaabí" }], [{ p: "منابو", f: "manaabó" }]],
@@ -1162,14 +1454,27 @@ const nouns: {
       ts: 1527816113,
       i: 3072,
       p: "تبلیغ",
-      f: "tableegh",
-      g: "tableegh",
+      f: "tabléegh",
+      g: "tabléegh",
       e: "propaganda; preaching, evangelism",
       c: "n. m.",
       app: "تبلیغات",
       apf: "tableegháat",
     },
     out: {
+      inflections: {
+        masc: [
+          [{ p: "تبلیغ", f: "tabléegh" }],
+          [{ p: "تبلیغ", f: "tabléegh" }],
+          [{ p: "تبلیغو", f: "tabléegho" }],
+        ],
+      },
+      vocative: {
+        masc: [
+          [{ p: "تبلیغه", f: "tabléegha" }],
+          [{ p: "تبلیغو", f: "tabléegho" }],
+        ],
+      },
       plural: {
         masc: [
           [{ p: "تبلیغونه", f: "tableeghóona" }],
@@ -1178,8 +1483,8 @@ const nouns: {
       },
       bundledPlural: {
         masc: [
-          [{ p: "تبلیغه", f: "tableegha" }],
-          [{ p: "تبلیغو", f: "tableegho" }],
+          [{ p: "تبلیغه", f: "tabléegha" }],
+          [{ p: "تبلیغو", f: "tabléegho" }],
         ],
       },
       arabicPlural: {
@@ -1231,6 +1536,9 @@ const nouns: {
           [{ p: "حادثو", f: "haadisó" }],
         ],
       },
+      vocative: {
+        fem: [[{ p: "حادثې", f: "haadisé" }], [{ p: "حادثو", f: "haadisó" }]],
+      },
       arabicPlural: {
         masc: [
           [
@@ -1265,6 +1573,9 @@ const nouns: {
           [{ p: "تجربو", f: "tajrabó" }],
         ],
       },
+      vocative: {
+        fem: [[{ p: "تجربې", f: "tajrabé" }], [{ p: "تجربو", f: "tajrabó" }]],
+      },
       arabicPlural: {
         masc: [
           [{ p: "تجارب", f: "tajaarib" }],
@@ -1286,6 +1597,16 @@ const nouns: {
       apf: "ahwáal",
     },
     out: {
+      inflections: {
+        masc: [
+          [{ p: "حال", f: "haal" }],
+          [{ p: "حال", f: "haal" }],
+          [{ p: "حالو", f: "háalo" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "حاله", f: "háala" }], [{ p: "حالو", f: "háalo" }]],
+      },
       plural: {
         masc: [
           [{ p: "حالونه", f: "haalóona" }],
@@ -1337,6 +1658,9 @@ const nouns: {
           [{ p: "ذبحو", f: "zabho" }],
         ],
       },
+      vocative: {
+        fem: [[{ p: "ذبحې", f: "zabhe" }], [{ p: "ذبحو", f: "zabho" }]],
+      },
     },
   },
   // Feminine inanimate regular with missing ه
@@ -1358,6 +1682,9 @@ const nouns: {
           [{ p: "لارو", f: "láaro" }],
         ],
       },
+      vocative: {
+        fem: [[{ p: "لارې", f: "láare" }], [{ p: "لارو", f: "láaro" }]],
+      },
     },
   },
   // Feminine animate ending in a consonant
@@ -1375,6 +1702,9 @@ const nouns: {
       i: 11113,
     },
     out: {
+      vocative: {
+        fem: [[{ p: "مورې", f: "móre" }], [{ p: "میندو", f: "mayndo" }]],
+      },
       plural: {
         fem: [[{ p: "میندې", f: "maynde" }], [{ p: "میندو", f: "mayndo" }]],
       },
@@ -1432,6 +1762,15 @@ const nouns: {
           ],
         ],
       },
+      vocative: {
+        fem: [
+          [{ p: "کرسۍ", f: "kUrsúy" }],
+          [
+            { p: "کرسیو", f: "kUrsúyo" },
+            { p: "کرسو", f: "kUrsó" },
+          ],
+        ],
+      },
     },
   },
   {
@@ -1449,6 +1788,15 @@ const nouns: {
       inflections: {
         fem: [
           [{ p: "قاضۍ", f: "qaazúy" }],
+          [{ p: "قاضۍ", f: "qaazúy" }],
+          [
+            { p: "قاضیو", f: "qaazúyo" },
+            { p: "قاضو", f: "qaazó" },
+          ],
+        ],
+      },
+      vocative: {
+        fem: [
           [{ p: "قاضۍ", f: "qaazúy" }],
           [
             { p: "قاضیو", f: "qaazúyo" },
@@ -1561,7 +1909,16 @@ const nouns: {
           [{ p: "شی", f: "shay" }],
           [{ p: "شي", f: "shee" }],
           [
-            { p: "شیو", f: "shiyo" },
+            { p: "شیو", f: "shúyo" },
+            { p: "شو", f: "sho" },
+          ],
+        ],
+      },
+      vocative: {
+        masc: [
+          [{ p: "شیه", f: "shúya" }],
+          [
+            { p: "شیو", f: "shúyo" },
             { p: "شو", f: "sho" },
           ],
         ],
@@ -1623,6 +1980,16 @@ const nouns: {
           [{ p: "رشوت خورو", f: "rishwat khwaró" }],
         ],
       },
+      vocative: {
+        masc: [
+          [{ p: "رشوت خوره", f: "rishwat khóra" }],
+          [{ p: "رشوت خورو", f: "rishwat khwaró" }],
+        ],
+        fem: [
+          [{ p: "رشوت خورې", f: "rishwat khwaré" }],
+          [{ p: "رشوت خورو", f: "rishwat khwaró" }],
+        ],
+      },
     },
   },
 ];
@@ -1655,7 +2022,6 @@ adjectives.forEach((word) => {
 });
 
 nouns.forEach((word) => {
-  // if (word.in.p !== "نبي") return;
   test(`${word.in.p} should inflect properly`, () => {
     expect(inflectWord(word.in)).toEqual(word.out);
   });

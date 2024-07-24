@@ -43,10 +43,12 @@ const InflectionTable = ({
   inf,
   textOptions,
   hideTitle,
+  vocative,
 }: {
   inf: T.Inflections | T.PluralInflections;
   textOptions: T.TextOptions;
   hideTitle?: boolean;
+  vocative?: boolean;
 }) => {
   // const [showingExplanation, setShowingExplanation] = useState(false);
   /* istanbul ignore next */ // Insanely can't see the modal to close it
@@ -105,6 +107,8 @@ const InflectionTable = ({
         <tbody>
           {(!isPluralInfs
             ? ["Plain", "1st", "2nd"]
+            : vocative
+            ? ["Voc.", "Plur. Voc."]
             : ["Plural", "2nd Inf."]
           ).map((title, i) => (
             <tr key={title}>

@@ -1,6 +1,6 @@
 import * as T from "../../types";
 import { pashtoConsonants } from "./pashto-consonants";
-import { endsWith } from "./p-text-helpers";
+import { endsInConsonant, endsWith, hasShwaEnding } from "./p-text-helpers";
 import { countSyllables } from "./accent-helpers";
 
 const verbTenses: T.VerbTense[] = [
@@ -61,6 +61,24 @@ export function isNounOrAdjEntry(
   return isNounEntry(e) || isAdjectiveEntry(e);
 }
 
+export function isInflectableEntry(
+  e: T.Entry | T.DictionaryEntry | T.DictionaryEntryNoFVars
+): e is T.InflectableEntry {
+  if ("entry" in e) {
+    return false;
+  }
+  return isNounEntry(e) || isAdjectiveEntry(e) || isNumberEntry(e);
+}
+
+export function isNumberEntry(
+  e: T.Entry | T.DictionaryEntry
+): e is T.NumberEntry {
+  if ("entry" in e) {
+    return false;
+  }
+  return e.c ? e.c.includes("num.") : false;
+}
+
 export function isVerbDictionaryEntry(
   e: T.DictionaryEntry | T.DictionaryEntryNoFVars
 ): e is T.VerbDictionaryEntry {
@@ -76,47 +94,41 @@ export function isVerbEntry(
   return "entry" in e && isVerbDictionaryEntry(e.entry);
 }
 
-export function isMascNounEntry(
-  e: T.NounEntry | T.AdjectiveEntry
-): e is T.MascNounEntry {
+export function isMascNounEntry(e: T.InflectableEntry): e is T.MascNounEntry {
   return !!e.c && e.c.includes("n. m.");
 }
 
-export function isFemNounEntry(
-  e: T.NounEntry | T.AdjectiveEntry
-): e is T.FemNounEntry {
+export function isFemNounEntry(e: T.InflectableEntry): e is T.FemNounEntry {
   return !!e.c && e.c.includes("n. f.");
 }
 
 export function isUnisexNounEntry(
-  e: T.NounEntry | T.AdjectiveEntry
+  e: T.InflectableEntry
 ): e is T.UnisexNounEntry {
   return isNounEntry(e) && e.c.includes("unisex");
 }
 
-export function isAnimNounEntry(
-  e: T.NounEntry | T.AdverbEntry
-): e is T.AnimNounEntry {
+export function isAnimNounEntry(e: T.InflectableEntry): e is T.AnimNounEntry {
   return e.c.includes("anim.");
 }
 
 export function isUnisexAnimNounEntry(
-  e: T.NounEntry | T.AdjectiveEntry
+  e: T.InflectableEntry
 ): e is T.UnisexAnimNounEntry {
   return isUnisexNounEntry(e) && isAnimNounEntry(e);
 }
 
 export function isAdjOrUnisexNounEntry(
-  e: T.Entry
+  e: T.Entry | T.InflectableEntry
 ): e is T.AdjectiveEntry | T.UnisexNounEntry {
   return isAdjectiveEntry(e) || (isNounEntry(e) && isUnisexNounEntry(e));
 }
 
 export function isPattern(
   p: T.InflectionPattern | "all"
-): (entry: T.NounEntry | T.AdjectiveEntry) => boolean {
+): (entry: T.InflectableEntry) => boolean {
   if (p === 0) {
-    return (e: T.NounEntry | T.AdjectiveEntry) =>
+    return (e: T.InflectableEntry) =>
       !isPattern1Entry(e) &&
       !isPattern2Entry(e) &&
       !isPattern3Entry(e) &&
@@ -151,40 +163,27 @@ export function isPattern(
  * @param e
  * @returns
  */
-export function isPattern1Entry<T extends T.NounEntry | T.AdjectiveEntry>(
+export function isPattern1Entry<T extends T.InflectableEntry>(
   e: T
 ): e is T.Pattern1Entry<T> {
   if (e.noInf) return false;
-  if (e.infap) return false;
+  if (e.infap || e.infbp) return false;
   if (isFemNounEntry(e)) {
     return (
-      endsWith(
+      (endsWith(
         [
           { p: "ه", f: "a" },
           { p: "ح", f: "a" },
+          { p: "ع", f: "a" },
+          { p: "ع", f: "a'" },
         ],
         e
-      ) ||
+      ) &&
+        !e.p.endsWith("اع")) ||
       (endsWith({ p: pashtoConsonants }, e) && !e.c.includes("anim."))
     );
   }
-  return (
-    endsWith([{ p: pashtoConsonants }], e) ||
-    endsWith(
-      [
-        { p: "ه", f: "u" },
-        { p: "ه", f: "h" },
-      ],
-      e
-    ) ||
-    endsWith(
-      [
-        { p: "ای", f: "aay" },
-        { p: "وی", f: "ooy" },
-      ],
-      e
-    )
-  );
+  return endsInConsonant(e) || hasShwaEnding(e);
 }
 
 /**
@@ -193,7 +192,7 @@ export function isPattern1Entry<T extends T.NounEntry | T.AdjectiveEntry>(
  * @param e
  * @returns T.T.T.T.
  */
-export function isPattern2Entry<T extends T.NounEntry | T.AdjectiveEntry>(
+export function isPattern2Entry<T extends T.InflectableEntry>(
   e: T
 ): e is T.Pattern2Entry<T> {
   if (e.noInf) return false;
@@ -211,7 +210,7 @@ export function isPattern2Entry<T extends T.NounEntry | T.AdjectiveEntry>(
  * @param e
  * @returns
  */
-export function isPattern3Entry<T extends T.NounEntry | T.AdjectiveEntry>(
+export function isPattern3Entry<T extends T.InflectableEntry>(
   e: T
 ): e is T.Pattern3Entry<T> {
   if (e.noInf) return false;
@@ -230,7 +229,7 @@ export function isPattern3Entry<T extends T.NounEntry | T.AdjectiveEntry>(
  * @param e
  * @returns
  */
-export function isPattern4Entry<T extends T.NounEntry | T.AdjectiveEntry>(
+export function isPattern4Entry<T extends T.InflectableEntry>(
   e: T
 ): e is T.Pattern4Entry<T> {
   if (e.noInf) return false;
@@ -247,7 +246,7 @@ export function isPattern4Entry<T extends T.NounEntry | T.AdjectiveEntry>(
  * @param e
  * @returns
  */
-export function isPattern5Entry<T extends T.NounEntry | T.AdjectiveEntry>(
+export function isPattern5Entry<T extends T.InflectableEntry>(
   e: T
 ): e is T.Pattern5Entry<T> {
   if (e.noInf) return false;
@@ -259,7 +258,7 @@ export function isPattern5Entry<T extends T.NounEntry | T.AdjectiveEntry>(
 }
 
 export function isPattern6FemEntry(
-  e: T.NounEntry | T.AdjectiveEntry
+  e: T.InflectableEntry
 ): e is T.Pattern6FemEntry<T.FemNounEntry> {
   if (!isFemNounEntry(e)) return false;
   if (e.c.includes("anim.")) return false;
