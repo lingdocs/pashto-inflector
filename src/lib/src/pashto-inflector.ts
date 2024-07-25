@@ -96,7 +96,7 @@ function handleUnisexWord(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // TODO: !!! Handle weird endings / symbols ' etc.
   const pEnd = word.p.slice(-1);
   const plurals = makePlural(word);
-  const vocative = getVocatives(word);
+  const vocative = getVocatives(word, plurals);
   if (word.noInf) {
     return !plurals ? false : { ...plurals };
   }
@@ -162,7 +162,7 @@ function handleMascNoun(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
   // Get last letter of Pashto and last two letters of phonetics
   // TODO: !!! Handle weird endings / symbols ' etc.
   const plurals = makePlural(w);
-  const vocative = getVocatives(w);
+  const vocative = getVocatives(w, plurals);
   if (w.noInf) {
     return !plurals ? false : { ...plurals };
   }
@@ -222,8 +222,8 @@ function handleFemNoun(word: T.DictionaryEntryNoFVars): T.InflectorOutput {
   const c = word.c || "";
   const animate = c.includes("anim.");
   const pEnd = word.p.slice(-1);
-  const vocative = getVocatives(word);
   const plurals = makePlural(word);
+  const vocative = getVocatives(word, plurals);
   if (word.noInf) {
     return !plurals ? false : { ...plurals };
   }
