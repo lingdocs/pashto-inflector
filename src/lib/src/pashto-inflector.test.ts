@@ -1822,6 +1822,16 @@ const nouns: {
           ],
         ],
       },
+      vocative: {
+        fem: [
+          [{ p: "دوستي", f: "dostee" }],
+          [
+            { p: "دوستیو", f: "dostúyo" },
+            { p: "دوستو", f: "dostó" },
+            { p: "دوستیانو", f: "dostiyáano" },
+          ],
+        ],
+      },
     },
   },
   // Feminine regular ending in ۍ

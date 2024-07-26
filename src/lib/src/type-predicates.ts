@@ -98,7 +98,7 @@ export function isMascNounEntry(e: T.InflectableEntry): e is T.MascNounEntry {
   return !!e.c && e.c.includes("n. m.");
 }
 
-export function isFemNounEntry(e: T.InflectableEntry): e is T.FemNounEntry {
+export function isFemNounEntry(e: T.DictionaryEntry): e is T.FemNounEntry {
   return !!e.c && e.c.includes("n. f.");
 }
 
