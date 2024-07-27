@@ -2114,7 +2114,8 @@ const others: T.DictionaryEntry[] = [
 
 adjectives.forEach((word) => {
   test(`${word.in.p} should inflect properly`, () => {
-    expect(inflectWord(word.in)).toEqual(word.out);
+    const out = inflectWord(word.in);
+    expect(out).toEqual(word.out);
   });
 });
 

@@ -14,6 +14,7 @@ import {
   hasShwaEnding,
   mapPsString,
   endsWith,
+  psStringFromEntry,
 } from "./p-text-helpers";
 import { removeDuplicates } from "./phrase-building/vp-tools";
 import {
@@ -25,6 +26,16 @@ import {
   isNounEntry,
   isNumberEntry,
 } from "./type-predicates";
+import { semigroupPsString } from "../dist/lib/src/fp-ps";
+
+const concatPs = semigroupPsString.concat;
+
+const o = { p: "و", f: "o" };
+const ó = { p: "و", f: "ó" };
+const a = { p: "ه", f: "a" };
+const á = { p: "ه", f: "á" };
+const e = { p: "ې", f: "e" };
+const é = { p: "ې", f: "é" };
 
 type Plurals =
   | {
@@ -33,11 +44,11 @@ type Plurals =
     }
   | undefined;
 
-const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
-const endingInHayOrAynRegex = /[^ا][هع]$/;
+// const endingInSingleARegex = /[^a]'?’?[aá]'?’?$/;
+// const endingInHayOrAynRegex = /[^ا][هع]$/;
 
 export function getInfsAndVocative(
-  entry: T.DictionaryEntryNoFVars,
+  entryR: T.DictionaryEntryNoFVars,
   plurals: Plurals
 ):
   | {
@@ -45,51 +56,51 @@ export function getInfsAndVocative(
       vocative?: T.PluralInflections;
     }
   | false {
-  if (!isInflectableEntry(entry)) {
+  if (!isInflectableEntry(entryR)) {
     return false;
   }
   // @ts-ignore
-  const e: T.InflectableEntry = entry as T.InflectableEntry;
-  const pattern = getInflectionPattern(e);
+  const entry: T.InflectableEntry = entryR as T.InflectableEntry;
+  const pattern = getInflectionPattern(entry);
   if (
     pattern === 0 &&
-    isFemNounEntry(e) &&
-    isAnimNounEntry(e) &&
-    endsInConsonant(e)
+    isFemNounEntry(entry) &&
+    isAnimNounEntry(entry) &&
+    endsInConsonant(entry)
   ) {
     return {
       vocative: vocFemAnimException({
-        e,
+        entry,
         plurals: genderPlural("fem", plurals),
       }),
     };
   }
   const gender: T.Gender | "unisex" =
-    isAdjOrUnisexNounEntry(e) || isNumberEntry(e)
+    isAdjOrUnisexNounEntry(entry) || isNumberEntry(entry)
       ? "unisex"
-      : isMascNounEntry(e)
+      : isMascNounEntry(entry)
       ? "masc"
       : "fem";
   if (pattern === 0) {
     return false;
   }
   if (pattern === 6) {
-    return pattern6({ e, plurals: genderPlural("fem", plurals) });
+    return pattern6({ entry, plurals: genderPlural("fem", plurals) });
   }
   const funcs = patternFuncs[pattern];
   const masc =
     gender === "unisex" || gender === "masc"
-      ? funcs.masc({ e, plurals: genderPlural("masc", plurals) })
+      ? funcs.masc({ entry, plurals: genderPlural("masc", plurals) })
       : undefined;
   const fem =
     gender === "unisex" || gender === "fem"
-      ? funcs.fem({ e, plurals: genderPlural("fem", plurals) })
+      ? funcs.fem({ entry, plurals: genderPlural("fem", plurals) })
       : undefined;
   return aggregateInfsAndVoc(masc, fem);
 }
 
 type PatternInput = {
-  e: T.DictionaryEntryNoFVars | T.NounEntry | T.InflectableEntry;
+  entry: T.DictionaryEntryNoFVars | T.NounEntry | T.InflectableEntry;
   plurals: T.PsString[];
 };
 
@@ -107,45 +118,45 @@ const patternFuncs: Record<
     fem: vocPattern1Fem,
   },
   2: {
-    masc: vocPattern2Masc,
-    fem: vocPattern2Fem,
+    masc: pattern2Masc,
+    fem: pattern2Fem,
   },
   3: {
-    masc: vocPattern3Masc,
-    fem: vocPattern3Fem,
+    masc: pattern3Masc,
+    fem: pattern3Fem,
   },
   4: {
-    masc: vocPattern4Masc,
-    fem: vocPattern4Fem,
+    masc: pattern4Masc,
+    fem: pattern4Fem,
   },
   5: {
     masc: vocPattern5Masc,
-    fem: vocPattern5Fem,
+    fem: pattern5Fem,
   },
 };
 
 function addPlurals(
-  e: T.ArrayOneOrMore<T.PsString>,
+  x: T.ArrayOneOrMore<T.PsString>,
   plurals: T.PsString[]
 ): T.ArrayOneOrMore<T.PsString> {
   if (!plurals) {
-    return e;
+    return x;
   }
-  return removeDuplicates([...e, ...plurals]) as T.ArrayOneOrMore<T.PsString>;
+  return removeDuplicates([...x, ...plurals]) as T.ArrayOneOrMore<T.PsString>;
 }
 
-function pattern6({ e, plurals }: PatternInput): {
+function pattern6({ entry, plurals }: PatternInput): {
   inflections: T.Inflections;
   vocative: T.PluralInflections;
 } {
-  const base = removeAccents({ p: e.p.slice(0, -1), f: e.f.slice(0, -2) });
+  const base = removeAccents({
+    p: entry.p.slice(0, -1),
+    f: entry.f.slice(0, -2),
+  });
   const inflections: T.InflectionSet = [
-    [{ p: e.p, f: e.f }],
-    [{ p: `${base.p}ۍ`, f: `${base.f}úy` }],
-    [
-      { p: `${base.p}یو`, f: `${base.f}úyo` },
-      { p: `${base.p}و`, f: `${base.f}ó` },
-    ],
+    [psStringFromEntry(entry)],
+    [concatPs(base, { p: "ۍ", f: "úy" })],
+    [concatPs(base, { p: "یو", f: "úyo" }), concatPs(base, ó)],
   ];
   return {
     inflections: {
@@ -158,83 +169,88 @@ function pattern6({ e, plurals }: PatternInput): {
 }
 
 function vocFemAnimException({
-  e,
+  entry,
   plurals,
 }: PatternInput): T.PluralInflections {
-  if (!e.ppp || !e.ppf) {
+  if (!entry.ppp || !entry.ppf) {
     throw new Error(
-      "plural missing for feminine animate exception noun " + e.p
+      "plural missing for feminine animate exception noun " + entry.p
     );
   }
   // TODO: HANDLE BETTER WITH PLURALS!
   const plurBase = mapPsString(
     (x) => x.slice(0, -1),
-    makePsString(e.ppp, e.ppf)
+    makePsString(entry.ppp, entry.ppf)
   );
   const base =
-    countSyllables(e) === 1 ? accentOnNFromEnd(e, 0) : makePsString(e.p, e.f);
+    countSyllables(entry) === 1
+      ? accentOnNFromEnd(entry, 0)
+      : psStringFromEntry(entry);
   return {
-    fem: [
-      [{ p: `${base.p}ې`, f: `${base.f}e` }],
-      addPlurals([{ p: `${plurBase.p}و`, f: `${plurBase.f}o` }], plurals),
-    ],
+    fem: [[concatPs(base, e)], addPlurals([concatPs(plurBase, o)], plurals)],
   };
 }
 
-function vocPattern1Masc({ e, plurals }: PatternInput): InflectionsAndVocative {
-  if (isNounEntry(e) && endsInTob(e)) {
-    const base = mapPsString((x) => x.slice(0, -3), e);
-    const second: T.ArrayOneOrMore<T.PsString> = [
-      { p: `${base.p}تبو`, f: `${base.f}tábo` },
+function vocPattern1Masc({
+  entry,
+  plurals,
+}: PatternInput): InflectionsAndVocative {
+  const plain = psStringFromEntry(entry);
+  if (isNounEntry(entry) && endsInTob(entry)) {
+    const base = mapPsString((x) => x.slice(0, -3), entry);
+    const inflections: T.InflectionSet = [
+      [plain],
+      [concatPs(base, { p: "تابه", f: "taabú" })],
+      [concatPs(base, { p: "تبو", f: "tábo" })],
     ];
     return {
-      inflections: [
-        [{ p: e.p, f: e.f }],
-        [{ p: `${base.p}تابه`, f: `${base.f}taabú` }],
-        second,
-      ],
-      vocative: [[{ p: `${e.p}ه`, f: `${e.f}a` }], addPlurals(second, plurals)],
+      inflections,
+      vocative: [[concatPs(plain, a)], addPlurals(inflections[2], plurals)],
     };
   }
-  const shwaEnding = hasShwaEnding(e);
+  const shwaEnding = hasShwaEnding(entry);
   const base = mapGen(
-    (ps) => (countSyllables(e) === 1 ? accentOnNFromEnd(ps, 0) : ps),
-    mapPsString((x: string): string => (shwaEnding ? x.slice(0, -1) : x), e)
+    (ps) => (countSyllables(entry) === 1 ? accentOnNFromEnd(ps, 0) : ps),
+    mapPsString((x: string): string => (shwaEnding ? x.slice(0, -1) : x), entry)
   );
-  if (shwaEnding && e.f.endsWith("ú")) {
-    const second: T.ArrayOneOrMore<T.PsString> = [
-      { p: `${base.p}و`, f: `${base.f}ó` },
+  if (shwaEnding && entry.f.endsWith("ú")) {
+    const inflections: T.InflectionSet = [
+      [plain],
+      [plain],
+      [concatPs(base, ó)],
     ];
     return {
-      inflections: [[{ p: e.p, f: e.f }], [{ p: e.p, f: e.f }], second],
-      vocative: [
-        [{ p: `${base.p}ه`, f: `${base.f}á` }],
-        addPlurals(second, plurals),
-      ],
+      inflections,
+      vocative: [[concatPs(base, á)], addPlurals(inflections[2], plurals)],
     };
   }
   // TODO: shouldn't this be accent-sensitive?
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}و`, f: `${base.f}o` },
-  ];
+  const inflections: T.InflectionSet = [[plain], [plain], [concatPs(base, o)]];
   return {
-    inflections: [[{ p: e.p, f: e.f }], [{ p: e.p, f: e.f }], second],
+    inflections,
     vocative: [
-      [{ p: `${base.p}ه`, f: `${base.f}a` }],
-      addPlurals(second, plurals),
+      [concatPs(base, { p: "ه", f: "a" })],
+      addPlurals(inflections[2], plurals),
     ],
   };
 }
 
 // TODO this is HUGELY repetitive refactor this!
-function vocPattern1Fem({ e, plurals }: PatternInput): InflectionsAndVocative {
-  const shwaEnding = hasShwaEnding(e);
-  const hasFemEnding = endsWith([{ p: "ه", f: "a" }], e) || shwaEnding;
+function vocPattern1Fem({
+  entry,
+  plurals,
+}: PatternInput): InflectionsAndVocative {
+  const shwaEnding = hasShwaEnding(entry);
+  const hasFemEnding = endsWith([{ p: "ه", f: "a" }], entry) || shwaEnding;
+  const endAccented = accentIsOnEnd(entry);
   const base = mapGen(
-    (ps) => (countSyllables(e) === 1 ? accentOnNFromEnd(ps, 0) : ps),
+    (ps) =>
+      countSyllables(entry) === 1 && !endAccented
+        ? accentOnNFromEnd(ps, 0)
+        : ps,
     hasFemEnding
-      ? mapPsString((x) => x.slice(0, -1), e)
-      : makePsString(e.p, e.f)
+      ? mapPsString((x) => x.slice(0, -1), entry)
+      : psStringFromEntry(entry)
   );
   if (
     endsWith(
@@ -242,291 +258,268 @@ function vocPattern1Fem({ e, plurals }: PatternInput): InflectionsAndVocative {
         { p: "ع", f: "a" },
         { p: "ع", f: "a'" },
       ],
-      e
+      entry
     ) &&
     !["ا", "ی", "ې"].includes(e.p.at(-2) || "")
   ) {
-    const base = applyPsString(
+    const base2 = applyPsString(
       {
         f: (f) => f.slice(0, f.endsWith("'") ? -2 : -1),
       },
-      e
+      entry
     );
-    if (accentIsOnEnd(e)) {
-      const second: T.ArrayOneOrMore<T.PsString> = [
-        { p: `${base.p}و`, f: `${base.f}ó` },
-      ];
+    if (endAccented) {
       const inflections: T.InflectionSet = [
-        [{ p: e.p, f: e.f }],
-        [{ p: `${base.p}ې`, f: `${base.f}é` }],
-        second,
+        [psStringFromEntry(entry)],
+        [concatPs(base2, é)],
+        [concatPs(base2, ó)],
       ];
       return {
         inflections,
-        vocative: [inflections[1], addPlurals(second, plurals)],
+        vocative: [inflections[1], addPlurals(inflections[2], plurals)],
       };
     }
-    const second: T.ArrayOneOrMore<T.PsString> = [
-      { p: `${base.p}و`, f: `${base.f}o` },
-    ];
     const inflections: T.InflectionSet = [
-      [{ p: e.p, f: e.f }],
-      [{ p: `${base.p}ې`, f: `${base.f}e` }],
-      second,
+      [psStringFromEntry(entry)],
+      [concatPs(base2, e)],
+      [concatPs(base2, o)],
     ];
     return {
       inflections,
-      vocative: [inflections[1], addPlurals(second, plurals)],
+      vocative: [inflections[1], addPlurals(inflections[2], plurals)],
     };
   }
   if (
-    endsWith([{ p: "ح", f: "a" }], e) &&
-    !["ا", "ی", "ې"].includes(e.p.at(-2) || "")
+    endsWith([{ p: "ح", f: "a" }], entry) &&
+    !["ا", "ی", "ې"].includes(entry.p.at(-2) || "")
   ) {
     const base = applyPsString(
       {
         f: (f) => f.slice(0, -1),
       },
-      e
+      entry
     );
-    if (accentIsOnEnd(e)) {
-      const second: T.ArrayOneOrMore<T.PsString> = [
-        { p: `${base.p}و`, f: `${base.f}ó` },
-      ];
+    if (accentIsOnEnd(entry)) {
       const inflections: T.InflectionSet = [
-        [{ p: e.p, f: e.f }],
-        [{ p: `${base.p}ې`, f: `${base.f}é` }],
-        second,
+        [psStringFromEntry(entry)],
+        [concatPs(base, é)],
+        [concatPs(base, ó)],
       ];
       return {
         inflections,
-        vocative: [inflections[1], addPlurals(second, plurals)],
+        vocative: [inflections[1], addPlurals(inflections[2], plurals)],
       };
     }
-    const second: T.ArrayOneOrMore<T.PsString> = [
-      { p: `${base.p}و`, f: `${base.f}o` },
-    ];
     const inflections: T.InflectionSet = [
-      [{ p: e.p, f: e.f }],
-      [{ p: `${base.p}ې`, f: `${base.f}e` }],
-      second,
+      [psStringFromEntry(entry)],
+      [concatPs(base, e)],
+      [concatPs(base, o)],
     ];
     return {
       inflections,
-      vocative: [inflections[1], addPlurals(second, plurals)],
+      vocative: [inflections[1], addPlurals(inflections[2], plurals)],
     };
   }
-  if (hasFemEnding && accentIsOnEnd(e)) {
-    const second: T.ArrayOneOrMore<T.PsString> = [
-      { p: `${base.p}و`, f: `${base.f}ó` },
-    ];
+  if (hasFemEnding && accentIsOnEnd(entry)) {
     const inflections: T.InflectionSet = [
-      [{ p: `${base.p}ه`, f: `${base.f}á` }],
-      [{ p: `${base.p}ې`, f: `${base.f}é` }],
-      second,
+      [concatPs(base, á)],
+      [concatPs(base, é)],
+      [concatPs(base, ó)],
     ];
     return {
       inflections,
-      vocative: [inflections[1], addPlurals(second, plurals)],
+      vocative: [inflections[1], addPlurals(inflections[2], plurals)],
     };
   }
-  if (isFemNounEntry(e) && endsInConsonant(e)) {
-    const baseForInf = countSyllables(e) === 1 ? accentOnNFromEnd(e, 0) : e;
-    const second: T.ArrayOneOrMore<T.PsString> = [
-      { p: `${baseForInf.p}و`, f: `${baseForInf.f}o` },
-    ];
+  if (isFemNounEntry(entry) && endsInConsonant(entry)) {
+    const baseForInf =
+      countSyllables(entry) === 1 ? accentOnNFromEnd(entry, 0) : e;
     const inflections: T.InflectionSet = [
-      [{ p: e.p, f: e.f }],
-      [{ p: `${baseForInf.p}ې`, f: `${baseForInf.f}e` }],
-      second,
+      [psStringFromEntry(entry)],
+      [concatPs(baseForInf, e)],
+      [concatPs(baseForInf, o)],
     ];
     return {
       inflections,
-      vocative: [inflections[1], addPlurals(second, plurals)],
+      vocative: [inflections[1], addPlurals(inflections[2], plurals)],
     };
   }
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}و`, f: `${base.f}o` },
-  ];
   const inflections: T.InflectionSet = [
-    [{ p: `${base.p}ه`, f: `${base.f}a` }],
-    [{ p: `${base.p}ې`, f: `${base.f}e` }],
-    second,
+    [concatPs(base, a)],
+    [concatPs(base, e)],
+    [concatPs(base, o)],
   ];
   return {
     inflections,
-    vocative: [inflections[1], addPlurals(second, plurals)],
+    vocative: [inflections[1], addPlurals(inflections[2], plurals)],
   };
 }
 
-function vocPattern2Masc({ e, plurals }: PatternInput): InflectionsAndVocative {
-  const base = makePsString(e.p.slice(0, -1), e.f.slice(0, -2));
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}یو`, f: `${base.f}iyo` },
-    { p: `${base.p}و`, f: `${base.f}o` },
+function pattern2Masc({
+  entry,
+  plurals,
+}: PatternInput): InflectionsAndVocative {
+  const base = makePsString(entry.p.slice(0, -1), entry.f.slice(0, -2));
+  const inflections: T.InflectionSet = [
+    [psStringFromEntry(entry)],
+    [concatPs(base, { p: "ي", f: "ee" })],
+    [concatPs(base, { p: "یو", f: "iyo" }), concatPs(base, { p: "و", f: "o" })],
   ];
   return {
-    inflections: [
-      [{ p: e.p, f: e.f }],
-      [{ p: `${base.p}ي`, f: `${base.f}ee` }],
-      second,
-    ],
+    inflections,
     vocative: [
-      [{ p: `${base.p}یه`, f: `${base.f}iya` }],
-      addPlurals(second, plurals),
+      [concatPs(base, { p: "یه", f: "iya" })],
+      addPlurals(inflections[2], plurals),
     ],
   };
 }
 
-function vocPattern2Fem({ e, plurals }: PatternInput): InflectionsAndVocative {
+function pattern2Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
   const base = makePsString(
-    e.p.slice(0, -1),
-    e.f.slice(0, e.f.endsWith("ay") ? -2 : -1)
+    entry.p.slice(0, -1),
+    entry.f.slice(0, entry.f.endsWith("ay") ? -2 : -1)
   );
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}یو`, f: `${base.f}iyo` },
-    { p: `${base.p}و`, f: `${base.f}o` },
-  ];
   const inflections: T.InflectionSet = [
-    [{ p: `${base.p}ې`, f: `${base.f}e` }],
-    [{ p: `${base.p}ې`, f: `${base.f}e` }],
-    second,
+    [concatPs(base, e)],
+    [concatPs(base, e)],
+    [concatPs(base, { p: "یو", f: "iyo" }), concatPs(base, o)],
   ];
   return {
     inflections,
-    vocative: [inflections[0], addPlurals(second, plurals)],
+    vocative: [inflections[1], addPlurals(inflections[2], plurals)],
   };
 }
 
-function vocPattern3Masc({ e, plurals }: PatternInput): InflectionsAndVocative {
+function pattern3Masc({
+  entry,
+  plurals,
+}: PatternInput): InflectionsAndVocative {
   const base = makePsString(
-    e.p.slice(0, -1),
+    entry.p.slice(0, -1),
     // shouldn't be accents here but remove just to be sure
-    removeAccents(e.f.slice(0, -2))
+    removeAccents(entry.f.slice(0, -2))
   );
   const baseSyls = countSyllables(base);
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}یو`, f: `${base.f}úyo` },
-    { p: `${base.p}و`, f: `${base.f}${baseSyls ? "ó" : "o"}` },
+  const inflections: T.InflectionSet = [
+    [psStringFromEntry(entry)],
+    [concatPs(base, { p: `ي`, f: baseSyls ? "ée" : "ee" })],
+    [
+      concatPs(base, { p: "یو", f: "úyo" }),
+      concatPs(base, { p: "و", f: baseSyls ? "ó" : "o" }),
+    ],
   ];
   return {
-    inflections: [
-      [{ p: e.p, f: e.f }],
-      [{ p: `${base.p}ي`, f: `${base.f}${baseSyls ? "ée" : "ee"}` }],
-      second,
-    ],
+    inflections,
     vocative: [
-      [{ p: `${base.p}یه`, f: `${base.f}úya` }],
-      addPlurals(second, plurals),
+      [concatPs(base, { p: "یه", f: "úya" })],
+      addPlurals(inflections[2], plurals),
     ],
   };
 }
 
-function vocPattern3Fem({ e, plurals }: PatternInput): InflectionsAndVocative {
+function pattern3Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
   const base = makePsString(
-    e.p.slice(0, -1),
+    entry.p.slice(0, -1),
     // shouldn't be accents here but remove just to be sure
-    removeAccents(e.f.slice(0, -2))
+    removeAccents(entry.f.slice(0, -2))
   );
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}یو`, f: `${base.f}úyo` },
-    { p: `${base.p}و`, f: `${base.f}ó` },
-  ];
+  const baseSyls = countSyllables(base);
   const plain: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}ۍ`, f: `${base.f}úy` },
-  ];
-  return {
-    inflections: [plain, plain, second],
-    vocative: [plain, addPlurals(second, plurals)],
-  };
-}
-
-function vocPattern4Masc({ e, plurals }: PatternInput): InflectionsAndVocative {
-  const base = countSyllables(e) === 1 ? accentOnNFromEnd(e, 0) : e;
-  const firstInf = accentOnNFromEnd(
-    makePsString(e.infap || "", e.infaf || ""),
-    0
-  );
-  const secondBase = makePsString(e.infbp || "", e.infbf || "");
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${secondBase.p}و`, f: `${secondBase.f}ó` },
+    concatPs(base, { p: "ۍ", f: "úy" }),
   ];
   const inflections: T.InflectionSet = [
-    [{ p: e.p, f: e.f }],
-    [firstInf],
-    second,
+    plain,
+    plain,
+    [concatPs(base, { p: "یو", f: "úyo" }), concatPs(base, baseSyls ? ó : o)],
   ];
-  if (endsInConsonant(e)) {
+  return {
+    inflections,
+    vocative: [plain, addPlurals(inflections[2], plurals)],
+  };
+}
+
+function pattern4Masc({
+  entry,
+  plurals,
+}: PatternInput): InflectionsAndVocative {
+  const base = countSyllables(entry) === 1 ? accentOnNFromEnd(entry, 0) : entry;
+  const firstInf = accentOnNFromEnd(
+    makePsString(entry.infap || "", entry.infaf || ""),
+    0
+  );
+  const secondBase = makePsString(entry.infbp || "", entry.infbf || "");
+  const inflections: T.InflectionSet = [
+    [psStringFromEntry(entry)],
+    [firstInf],
+    [concatPs(secondBase, ó)],
+  ];
+  if (endsInConsonant(entry)) {
     return {
       inflections,
-      vocative: [
-        [{ p: `${base.p}ه`, f: `${base.f}a` }],
-        addPlurals(second, plurals),
-      ],
+      vocative: [[concatPs(base, a)], addPlurals(inflections[2], plurals)],
     };
   }
   // TODO: is this even possible?
-  if (hasShwaEnding(e)) {
+  if (hasShwaEnding(entry)) {
     return {
       inflections,
       vocative: [
-        [{ p: `${base.p.slice(0, -1)}ه`, f: `${base.f.slice(0, -1)}á` }],
-        addPlurals(second, plurals),
+        [
+          concatPs(
+            mapPsString((x) => x.slice(0, -1), base),
+            á
+          ),
+        ],
+        addPlurals(inflections[2], plurals),
       ],
     };
   }
   // exception for مېلمه, کوربه
   return {
     inflections,
-    vocative: [[{ p: e.p, f: e.f }], second],
+    vocative: [[psStringFromEntry(entry)], inflections[2]],
   };
 }
 
-function vocPattern4Fem({ e, plurals }: PatternInput): InflectionsAndVocative {
-  const base = makePsString(e.infbp || "", e.infbf || "");
-  const second = addPlurals([{ p: `${base.p}و`, f: `${base.f}ó` }], plurals);
+function pattern4Fem({ entry }: PatternInput): InflectionsAndVocative {
+  const base = makePsString(entry.infbp || "", entry.infbf || "");
   const inflections: T.InflectionSet = [
-    [{ p: `${base.p}ه`, f: `${base.f}á` }],
-    [{ p: `${base.p}ې`, f: `${base.f}é` }],
-    second,
+    [concatPs(base, á)],
+    [concatPs(base, é)],
+    [concatPs(base, ó)],
   ];
   return {
     inflections,
-    vocative: [inflections[1], second],
+    vocative: [inflections[1], inflections[2]],
   };
 }
 
-function vocPattern5Masc({ e, plurals }: PatternInput): InflectionsAndVocative {
-  const base = makePsString(e.infbp || "", e.infbf || "");
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}و`, f: `${base.f}o` },
-  ];
-  return {
-    inflections: [
-      [{ p: e.p, f: e.f }],
-      [{ p: `${base.p}ه`, f: `${base.f}u` }],
-      second,
-    ],
-    vocative: [
-      [{ p: `${base.p}ه`, f: `${base.f}a` }],
-      addPlurals(second, plurals),
-    ],
-  };
-}
-
-function vocPattern5Fem({ e, plurals }: PatternInput): InflectionsAndVocative {
-  const base = makePsString(e.infbp || "", e.infbf || "");
-  const second: T.ArrayOneOrMore<T.PsString> = [
-    { p: `${base.p}و`, f: `${base.f}o` },
-  ];
+function vocPattern5Masc({
+  entry,
+  plurals,
+}: PatternInput): InflectionsAndVocative {
+  const base = makePsString(entry.infbp || "", entry.infbf || "");
   const inflections: T.InflectionSet = [
-    [{ p: `${base.p}ه`, f: `${base.f}a` }],
-    [{ p: `${base.p}ې`, f: `${base.f}e` }],
-    second,
+    [psStringFromEntry(entry)],
+    [concatPs(base, { p: "ه", f: "u" })],
+    [concatPs(base, o)],
   ];
   return {
     inflections,
-    vocative: [inflections[1], addPlurals(second, plurals)],
+    vocative: [[concatPs(base, a)], addPlurals(inflections[2], plurals)],
+  };
+}
+
+function pattern5Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
+  const base = makePsString(entry.infbp || "", entry.infbf || "");
+  const inflections: T.InflectionSet = [
+    [concatPs(base, a)],
+    [concatPs(base, e)],
+    [concatPs(base, o)],
+  ];
+  return {
+    inflections,
+    vocative: [inflections[1], addPlurals(inflections[2], plurals)],
   };
 }
 
