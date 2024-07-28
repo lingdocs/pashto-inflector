@@ -81,7 +81,6 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
     const v = e.target.value;
     const value = v === "all" ? v : (Number(v) as T.InflectionPattern);
     setPattern(value);
-    console.log({ word });
     if (word && !tp.isPattern(value)(word)) {
       setWord(undefined);
     }

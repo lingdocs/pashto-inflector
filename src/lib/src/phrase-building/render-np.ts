@@ -131,34 +131,61 @@ export function renderNounSelection(
     ps: pashto,
     e: english,
     possesor: renderPossesor(n.possesor, role),
-    demonstrative: renderDemonstrative(
-      n.demonstrative,
-      inflected && n.number === "plural"
-    ),
+    demonstrative: renderDemonstrative({
+      demonstrative: n.demonstrative,
+      inflected,
+      plural: n.number === "plural",
+      gender: n.gender,
+    }),
   };
 }
 
-function renderDemonstrative(
-  demonstrative: T.DemonstrativeSelection | undefined,
-  plurInflected: boolean
-): T.Rendered<T.DemonstrativeSelection> | undefined {
+function renderDemonstrative({
+  demonstrative,
+  inflected,
+  plural,
+  gender,
+}: {
+  demonstrative: T.DemonstrativeSelection | undefined;
+  inflected: boolean;
+  plural: boolean;
+  gender: T.Gender;
+}): T.Rendered<T.DemonstrativeSelection> | undefined {
   if (!demonstrative) {
     return undefined;
   }
+  const ps =
+    demonstrative.demonstrative === "daa"
+      ? inflected
+        ? { p: "دې", f: "de" }
+        : { p: "دا", f: "daa" }
+      : demonstrative.demonstrative === "dagha"
+      ? inflected
+        ? plural
+          ? { p: "دغو", f: "dágho" }
+          : gender === "masc"
+          ? { p: "دغه", f: "dághu" }
+          : { p: "دغې", f: "dághe" }
+        : { p: "دغه", f: "dágha" }
+      : inflected
+      ? plural
+        ? { p: "هغو", f: "hágho" }
+        : gender === "masc"
+        ? { p: "هغه", f: "hághu" }
+        : { p: "هغې", f: "hághe" }
+      : { p: "هغه", f: "hágha" };
+  const e =
+    demonstrative.demonstrative === "hagha"
+      ? plural
+        ? "those"
+        : "that"
+      : plural
+      ? "these"
+      : "this";
   return {
     ...demonstrative,
-    ps:
-      demonstrative.demonstrative === "daa"
-        ? plurInflected
-          ? { p: "دې", f: "de" }
-          : { p: "دا", f: "daa" }
-        : demonstrative.demonstrative === "dagha"
-        ? plurInflected
-          ? { p: "دغه", f: "dágha" }
-          : { p: "دغو", f: "dágho" }
-        : plurInflected
-        ? { p: "هغه", f: "hágha" }
-        : { p: "هغو", f: "hágho" },
+    ps,
+    e,
   };
 }
 

@@ -20,7 +20,7 @@ import Hider from "./components/src/Hider";
 import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
 import ParserDemo from "./demo-components/ParserDemo";
-import InflectionTable from "./components/src/InflectionsTable";
+// import InflectionTable from "./components/src/InflectionsTable";
 
 function App() {
   const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(

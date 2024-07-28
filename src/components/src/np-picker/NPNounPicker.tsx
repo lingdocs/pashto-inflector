@@ -6,6 +6,8 @@ import InlinePs from "../InlinePs";
 // import { isFemNounEntry, isPattern1Entry, isPattern2Entry, isPattern3Entry, isPattern4Entry, isPattern5Entry, isPattern6FemEntry } from "../../lib/type-predicates";
 import EntrySelect from "../EntrySelect";
 import AdjectiveManager from "./AdjectiveManager";
+import { useState } from "react";
+import DemonstrativePicker from "./DemonstrativePicker";
 
 // const filterOptions = [
 //     {
@@ -61,6 +63,8 @@ function NPNounPicker(props: {
   opts: T.TextOptions;
   phraseIsComplete: boolean;
 }) {
+  const [addingDemonstrative, setAddingDemonstrative] =
+    useState<boolean>(false);
   // const [patternFilter, setPatternFilter] = useState<FilterPattern | undefined>(undefined);
   // const [showFilter, setShowFilter] = useState<boolean>(false)
   // const nounsFiltered = props.nouns
@@ -84,7 +88,7 @@ function NPNounPicker(props: {
       });
     }
   }
-  function handleDemonstrativeUpdate(
+  function handleDemonstrativeChange(
     demonstrative: undefined | T.NounSelection["demonstrative"]
   ) {
     if (props.noun) {
@@ -96,6 +100,36 @@ function NPNounPicker(props: {
   }
   return (
     <div style={{ maxWidth: "225px", minWidth: "125px" }}>
+      {!addingDemonstrative && !props.noun?.demonstrative ? (
+        <div>
+          <span
+            className="clickable text-muted"
+            onClick={() => setAddingDemonstrative(true)}
+          >
+            + Demonstrative
+          </span>
+        </div>
+      ) : (
+        <div>
+          <div className="d-flex flex-row justify-content-between mb-1">
+            <div>{!props.noun?.demonstrative ? "Add" : ""} Demonstrative</div>
+            <div
+              className="clickable"
+              onClick={() => {
+                handleDemonstrativeChange(undefined);
+                setAddingDemonstrative(false);
+              }}
+            >
+              <i className="fas fa-trash" />
+            </div>
+          </div>
+          <DemonstrativePicker
+            demonstrative={props.noun?.demonstrative}
+            onChange={handleDemonstrativeChange}
+          />
+        </div>
+      )}
+
       {/* {showFilter && <div className="mb-2 text-center">
             <div className="d-flex flex-row justify-content-between">
                 <div className="text-small mb-1">Filter by inflection pattern</div>
@@ -113,11 +147,9 @@ function NPNounPicker(props: {
         <AdjectiveManager
           phraseIsComplete={props.phraseIsComplete}
           adjectives={props.noun?.adjectives}
-          demonstrative={props.noun.demonstrative}
           entryFeeder={props.entryFeeder}
           opts={props.opts}
           onChange={handelAdjectivesUpdate}
-          onDemonstrativeChange={handleDemonstrativeUpdate}
         />
       )}
       <div className="h6">Noun</div>

@@ -12,19 +12,26 @@ function getBaseAndAdjectives({
     return getSandwichPsBaseAndAdjectives(selection);
   }
   const adjs = "adjectives" in selection && selection.adjectives;
+  const demons = ("demonstrative" in selection &&
+    selection.demonstrative?.ps) || { p: "", f: "" };
   if (!adjs) {
-    return flattenLengths(selection.ps);
+    // TODO: does this ever get used??
+    return flattenLengths(selection.ps).map((x) => concatPsString(demons, x));
   }
+
   return flattenLengths(selection.ps).map((p) =>
     concatPsString(
+      demons,
+      // demons ? " " : "",
       adjs.reduce(
-        (accum, curr) =>
-          // TODO: with variations of adjs?
-          concatPsString(
+        (accum, curr) => {
+          // TODO: with variations of adjs? {
+          return concatPsString(
             accum,
-            accum.p === "" && accum.f === "" ? "" : " ",
+            accum.p === "" && accum.f === "" ? "" : "", //" ",
             curr.ps[0]
-          ),
+          );
+        },
         { p: "", f: "" }
       ),
       " ",
@@ -199,7 +206,10 @@ function addArticlesAndAdjs(
         ? " (f.)"
         : " (m.)"
       : "";
-    return `${articles}${adjs}${word}${genderTag}`;
+    const demonstrative = np.demonstrative ? ` ${np.demonstrative.e}` : "";
+    return `${
+      np.demonstrative ? "" : articles
+    }${demonstrative}${adjs}${word}${genderTag}`;
   } catch (e) {
     return undefined;
   }

@@ -600,6 +600,27 @@ function Sandwich({
   );
 }
 
+function Demonstrative({
+  opts,
+  script,
+  children,
+}: {
+  opts: T.TextOptions;
+  script: "p" | "f";
+  children: T.Rendered<T.DemonstrativeSelection> | undefined;
+}) {
+  if (!children) {
+    return null;
+  }
+  return (
+    <div className="text-center">
+      <Border padding={"1rem"}>{children.ps[script]}</Border>
+      <div>DEM</div>
+      <SubText>{children.e}</SubText>
+    </div>
+  );
+}
+
 function CompNounBlock({
   opts,
   noun,
@@ -612,7 +633,7 @@ function CompNounBlock({
   return (
     <div className="text-center">
       <Border
-        extraClassName={`!inside && hasPossesor ? "pt-2" : ""`}
+        // extraClassName={`${!inside && hasPossesor} ? "pt-2" : ""`}
         padding={"1rem"}
       >
         {flattenLengths(noun.ps)[0][script]}
@@ -652,6 +673,9 @@ export function NPBlock({
           </Possesors>,
         ]
       : []),
+    <Demonstrative opts={opts} script={script}>
+      {np.selection.demonstrative ? np.selection.demonstrative : undefined}
+    </Demonstrative>,
     <Adjectives opts={opts} script={script}>
       {np.selection.adjectives}
     </Adjectives>,
@@ -659,12 +683,15 @@ export function NPBlock({
       {" "}
       {flattenLengths(np.selection.ps)[0][script]}
     </div>,
-  ];
+  ].filter((x) => {
+    // @ts-ignore
+    return x !== " ";
+  });
   const el = script === "p" ? elements.reverse() : elements;
   return (
     <div className="text-center">
       <Border
-        extraClassName={`!inside && hasPossesor ? "pt-2" : ""`}
+        // extraClassName={`!inside && hasPossesor ? "pt-2" : ""`}
         padding={
           inside
             ? "0.3rem"
@@ -759,6 +786,9 @@ function Adjectives({
     return null;
   }
   const c = script === "p" ? children.reverse() : children;
+  if (c.length === 0) {
+    return null;
+  }
   return (
     <em className="mr-1">
       {c.map((a) => a.ps[0][script]).join(" ")}

@@ -1026,6 +1026,7 @@ export type Rendered<
       demonstrative: DemonstrativeSelection["demonstrative"];
       hideNoun: boolean;
       ps: PsString;
+      e: string;
     }
   : T extends ComplementSelection
   ? {
