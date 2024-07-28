@@ -26,7 +26,7 @@ import {
   isNounEntry,
   isNumberEntry,
 } from "./type-predicates";
-import { semigroupPsString } from "../dist/lib/src/fp-ps";
+import { semigroupPsString } from "../src/fp-ps";
 
 const concatPs = semigroupPsString.concat;
 
