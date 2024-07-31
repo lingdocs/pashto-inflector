@@ -12,16 +12,22 @@ function getBaseAndAdjectives({
     return getSandwichPsBaseAndAdjectives(selection);
   }
   const adjs = "adjectives" in selection && selection.adjectives;
-  const demons = ("demonstrative" in selection &&
+  const demonstrativePs = ("demonstrative" in selection &&
     selection.demonstrative?.ps) || { p: "", f: "" };
   if (!adjs) {
     // TODO: does this ever get used??
-    return flattenLengths(selection.ps).map((x) => concatPsString(demons, x));
+    return flattenLengths(selection.ps).map((x) =>
+      concatPsString(demonstrativePs, x)
+    );
+  }
+
+  if (selection.demonstrative && !selection.demonstrative.withNoun) {
+    return [demonstrativePs];
   }
 
   return flattenLengths(selection.ps).map((p) =>
     concatPsString(
-      demons,
+      demonstrativePs,
       // demons ? " " : "",
       adjs.reduce(
         (accum, curr) => {
@@ -207,9 +213,10 @@ function addArticlesAndAdjs(
         : " (m.)"
       : "";
     const demonstrative = np.demonstrative ? ` ${np.demonstrative.e}` : "";
-    return `${
-      np.demonstrative ? "" : articles
-    }${demonstrative}${adjs}${word}${genderTag}`;
+    const demWithoutNoun = np.demonstrative && !np.demonstrative.withNoun;
+    return `${np.demonstrative ? "" : articles}${demonstrative}${
+      demWithoutNoun ? ` (${(adjs + word).trim()})` : adjs + word
+    }${genderTag}`;
   } catch (e) {
     return undefined;
   }

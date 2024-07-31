@@ -99,7 +99,12 @@ function NPNounPicker(props: {
     }
   }
   return (
-    <div style={{ maxWidth: "225px", minWidth: "125px" }}>
+    <div
+      style={{
+        maxWidth: "225px",
+        minWidth: "125px",
+      }}
+    >
       {!addingDemonstrative && !props.noun?.demonstrative ? (
         <div>
           <span
@@ -143,98 +148,107 @@ function NPNounPicker(props: {
                 handleChange={setPatternFilter}
             />
         </div>} */}
-      {props.noun && (
-        <AdjectiveManager
-          phraseIsComplete={props.phraseIsComplete}
-          adjectives={props.noun?.adjectives}
-          entryFeeder={props.entryFeeder}
-          opts={props.opts}
-          onChange={handelAdjectivesUpdate}
-        />
-      )}
-      <div className="h6">Noun</div>
-      {!(
-        props.noun &&
-        (props.noun.dynamicComplement || props.noun.genStativeComplement)
-      ) ? (
-        <div>
-          <EntrySelect
-            value={props.noun?.entry}
-            entryFeeder={props.entryFeeder.nouns}
-            onChange={onEntrySelect}
-            name="Noun"
+      <div
+        style={{
+          opacity:
+            props.noun?.demonstrative && !props.noun.demonstrative.withNoun
+              ? 0.5
+              : 1,
+        }}
+      >
+        {props.noun && (
+          <AdjectiveManager
+            phraseIsComplete={props.phraseIsComplete}
+            adjectives={props.noun?.adjectives}
+            entryFeeder={props.entryFeeder}
             opts={props.opts}
+            onChange={handelAdjectivesUpdate}
           />
-        </div>
-      ) : (
-        <div>
-          {props.noun && (
+        )}
+        <div className="h6">Noun</div>
+        {!(
+          props.noun &&
+          (props.noun.dynamicComplement || props.noun.genStativeComplement)
+        ) ? (
+          <div>
+            <EntrySelect
+              value={props.noun?.entry}
+              entryFeeder={props.entryFeeder.nouns}
+              onChange={onEntrySelect}
+              name="Noun"
+              opts={props.opts}
+            />
+          </div>
+        ) : (
+          <div>
+            {props.noun && (
+              <div>
+                <div className="mb-2">
+                  Included in{" "}
+                  {props.noun.genStativeComplement ? "Gen. Stat." : "Dyn."}{" "}
+                  Compound:
+                </div>
+                <div className="mb-3 text-center">
+                  <InlinePs opts={props.opts}>
+                    {{ p: props.noun.entry.p, f: props.noun.entry.f }}
+                  </InlinePs>
+                  <div className="text-muted">{props.noun.entry.e}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {props.noun && (
+          <div className="my-2 d-flex flex-row justify-content-around align-items-center">
             <div>
-              <div className="mb-2">
-                Included in{" "}
-                {props.noun.genStativeComplement ? "Gen. Stat." : "Dyn."}{" "}
-                Compound:
-              </div>
-              <div className="mb-3 text-center">
-                <InlinePs opts={props.opts}>
-                  {{ p: props.noun.entry.p, f: props.noun.entry.f }}
-                </InlinePs>
-                <div className="text-muted">{props.noun.entry.e}</div>
-              </div>
+              {props.noun.genderCanChange ? (
+                <ButtonSelect
+                  small
+                  options={[
+                    { label: "Masc", value: "masc" },
+                    { label: "Fem", value: "fem" },
+                  ]}
+                  value={props.noun.gender}
+                  handleChange={(gender) => {
+                    if (!props.noun || !props.noun.genderCanChange) return;
+                    props.onChange({
+                      ...props.noun,
+                      gender,
+                    });
+                  }}
+                />
+              ) : props.noun.gender === "masc" ? (
+                "Masc."
+              ) : (
+                "Fem."
+              )}
             </div>
-          )}
-        </div>
-      )}
-      {props.noun && (
-        <div className="my-2 d-flex flex-row justify-content-around align-items-center">
-          <div>
-            {props.noun.genderCanChange ? (
-              <ButtonSelect
-                small
-                options={[
-                  { label: "Masc", value: "masc" },
-                  { label: "Fem", value: "fem" },
-                ]}
-                value={props.noun.gender}
-                handleChange={(gender) => {
-                  if (!props.noun || !props.noun.genderCanChange) return;
-                  props.onChange({
-                    ...props.noun,
-                    gender,
-                  });
-                }}
-              />
-            ) : props.noun.gender === "masc" ? (
-              "Masc."
-            ) : (
-              "Fem."
-            )}
+            <div>
+              {props.noun.numberCanChange ? (
+                <ButtonSelect
+                  small
+                  options={[
+                    { label: "Sing.", value: "singular" },
+                    { label: "Plur.", value: "plural" },
+                  ]}
+                  value={props.noun.number}
+                  handleChange={(number) => {
+                    if (!props.noun || !props.noun.numberCanChange) return;
+                    props.onChange({
+                      ...props.noun,
+                      number,
+                    });
+                  }}
+                />
+              ) : props.noun.number === "singular" ? (
+                "Sing."
+              ) : (
+                "Plur."
+              )}
+            </div>
           </div>
-          <div>
-            {props.noun.numberCanChange ? (
-              <ButtonSelect
-                small
-                options={[
-                  { label: "Sing.", value: "singular" },
-                  { label: "Plur.", value: "plural" },
-                ]}
-                value={props.noun.number}
-                handleChange={(number) => {
-                  if (!props.noun || !props.noun.numberCanChange) return;
-                  props.onChange({
-                    ...props.noun,
-                    number,
-                  });
-                }}
-              />
-            ) : props.noun.number === "singular" ? (
-              "Sing."
-            ) : (
-              "Plur."
-            )}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

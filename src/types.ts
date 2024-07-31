@@ -905,7 +905,7 @@ export type NounSelection = {
 export type DemonstrativeSelection = {
   type: "demonstrative";
   demonstrative: "daa" | "hagha" | "dagha";
-  hideNoun: boolean;
+  withNoun: boolean;
 };
 
 export type AdverbSelection = {
@@ -1024,7 +1024,7 @@ export type Rendered<
   ? {
       type: "demonstrative";
       demonstrative: DemonstrativeSelection["demonstrative"];
-      hideNoun: boolean;
+      withNoun: boolean;
       ps: PsString;
       e: string;
     }

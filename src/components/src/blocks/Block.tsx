@@ -663,6 +663,8 @@ export function NPBlock({
     np.selection.possesor &&
     !np.selection.possesor.shrunken
   );
+  const demWithoutNoun =
+    np.selection.demonstrative && !np.selection.demonstrative.withNoun;
   const elements = [
     ...(!inside
       ? [
@@ -676,10 +678,21 @@ export function NPBlock({
     <Demonstrative opts={opts} script={script}>
       {np.selection.demonstrative ? np.selection.demonstrative : undefined}
     </Demonstrative>,
-    <Adjectives opts={opts} script={script}>
-      {np.selection.adjectives}
-    </Adjectives>,
-    <div className={np.selection.adjectives?.length ? "mx-1" : ""}>
+    <div
+      style={{
+        opacity: demWithoutNoun ? 0.5 : 1,
+      }}
+    >
+      <Adjectives opts={opts} script={script}>
+        {np.selection.adjectives}
+      </Adjectives>
+    </div>,
+    <div
+      style={{
+        opacity: demWithoutNoun ? 0.5 : 1,
+      }}
+      className={np.selection.adjectives?.length ? "mx-1" : ""}
+    >
       {" "}
       {flattenLengths(np.selection.ps)[0][script]}
     </div>,
