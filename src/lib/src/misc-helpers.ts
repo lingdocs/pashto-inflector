@@ -40,6 +40,10 @@ export function ensureNonComboVerbInfo(i: T.VerbInfo): T.NonComboVerbInfo {
   return "stative" in i ? i.stative : "transitive" in i ? i.transitive : i;
 }
 
+export function ensureVerbConjugation(o: T.VerbOutput): T.VerbConjugation {
+  return "stative" in o ? o.stative : "transitive" in o ? o.transitive : o;
+}
+
 export function pickPersInf<T>(
   s: T.OptionalPersonInflections<T>,
   persInf: T.PersonInflectionsField

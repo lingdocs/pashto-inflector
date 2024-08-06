@@ -29,7 +29,7 @@ async function checkAll() {
         err: e.toString(),
       });
     }
-    if (tp.isVerbEntry(entry)) {
+    if (tp.isVerbDictionaryEntry(entry)) {
       const complement = entry.l
         ? entries.find((e) => e.ts === entry.l)
         : undefined;
@@ -41,6 +41,16 @@ async function checkAll() {
           err: "verb complement missing",
         });
       } else {
+        try {
+          conjugateVerb(entry, complement);
+        } catch (e) {
+          errors.push({
+            ts: entry.ts,
+            p: entry.p,
+            f: entry.f,
+            err: e,
+          });
+        }
       }
     }
   });

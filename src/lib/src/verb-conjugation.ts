@@ -40,6 +40,8 @@ import {
   chooseParticipleInflection,
   spaceInForm,
   noPersInfs,
+  ensureNonComboVerbInfo,
+  ensureVerbConjugation,
 } from "./misc-helpers";
 import * as T from "../../types";
 
@@ -74,16 +76,20 @@ export function conjugateVerb(
   if (info.type === "transitive or grammatically transitive simple") {
     return {
       info,
-      transitive: conjugateVerb(
-        { ...entry, c: entry.c ? entry.c.replace("/gramm. trans.", "") : "" },
-        dummyEntry,
-        info.transitive
-      ) as T.VerbConjugation,
-      grammaticallyTransitive: conjugateVerb(
-        { ...entry, c: entry.c ? entry.c?.replace("trans./", "") : "" },
-        dummyEntry,
-        info.grammaticallyTransitive
-      ) as T.VerbConjugation,
+      transitive: ensureVerbConjugation(
+        conjugateVerb(
+          { ...entry, c: entry.c ? entry.c.replace("/gramm. trans.", "") : "" },
+          dummyEntry,
+          info.transitive
+        )
+      ),
+      grammaticallyTransitive: ensureVerbConjugation(
+        conjugateVerb(
+          { ...entry, c: entry.c ? entry.c?.replace("trans./", "") : "" },
+          dummyEntry,
+          info.grammaticallyTransitive
+        )
+      ),
     };
   }
 
@@ -93,16 +99,20 @@ export function conjugateVerb(
   ) {
     return {
       info,
-      stative: conjugateVerb(
-        { ...entry, c: entry.c ? entry.c.replace("dyn./", "") : "" },
-        dummyEntry,
-        info.stative
-      ) as T.VerbConjugation,
-      dynamic: conjugateVerb(
-        { ...entry, c: entry.c ? entry.c.replace("/stat.", "") : "" },
-        dummyEntry,
-        info.dynamic
-      ) as T.VerbConjugation,
+      stative: ensureVerbConjugation(
+        conjugateVerb(
+          { ...entry, c: entry.c ? entry.c.replace("dyn./", "") : "" },
+          dummyEntry,
+          info.stative
+        )
+      ),
+      dynamic: ensureVerbConjugation(
+        conjugateVerb(
+          { ...entry, c: entry.c ? entry.c.replace("/stat.", "") : "" },
+          dummyEntry,
+          info.dynamic
+        )
+      ),
     };
   }
 
@@ -110,7 +120,7 @@ export function conjugateVerb(
     return conjugateDynamicCompound(info);
   }
 
-  const nonComboInfo = info as T.NonComboVerbInfo;
+  const nonComboInfo = ensureNonComboVerbInfo(info);
 
   const conjugation: T.VerbConjugation = {
     info: nonComboInfo,
@@ -121,11 +131,9 @@ export function conjugateVerb(
     perfect: makePerfectContent(nonComboInfo),
     ...("singularForm" in info
       ? {
-          singularForm: conjugateVerb(
-            entry,
-            complement,
-            info.singularForm
-          ) as T.VerbConjugation,
+          singularForm: ensureVerbConjugation(
+            conjugateVerb(entry, complement, info.singularForm)
+          ),
         }
       : {}),
     // if transitive include passive voice
@@ -153,7 +161,7 @@ function conjugateDynamicCompound(
   //     && info.auxVerb.p === "کېدل"
   // );
   const auxConj = enforceObject(
-    conjugateVerb(info.auxVerb, info.auxVerbComplement) as T.VerbConjugation,
+    ensureVerbConjugation(conjugateVerb(info.auxVerb, info.auxVerbComplement)),
     info.objComplement.person
   );
   const complement = info.objComplement.plural

@@ -45,6 +45,7 @@ import {
   getAuxTransitivity,
   chooseParticipleInflection,
   noPersInfs,
+  ensureNonComboVerbInfo,
 } from "./misc-helpers";
 import * as T from "../../types";
 import { isTlulVerb } from "./type-predicates";
@@ -283,10 +284,9 @@ function getDynamicCompoundInfo(
   const yulEnding = null;
   const objComplement = getObjComplementInfo(entry, comp, forceSingular);
   const auxVerb = getDynamicAuxVerb(entry);
-  const auxVerbInfo = getVerbInfo(
-    auxVerb.entry,
-    auxVerb.complement
-  ) as T.NonComboVerbInfo;
+  const auxVerbInfo = ensureNonComboVerbInfo(
+    getVerbInfo(auxVerb.entry, auxVerb.complement)
+  );
   const compUsed = objComplement.plural
     ? objComplement.plural
     : objComplement.entry;
