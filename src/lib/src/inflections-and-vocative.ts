@@ -66,6 +66,8 @@ export function getInfsAndVocative(
     pattern === 0 &&
     isFemNounEntry(entry) &&
     isAnimNounEntry(entry) &&
+    entry.ppp &&
+    entry.ppf &&
     endsInConsonant(entry)
   ) {
     return {
@@ -114,8 +116,8 @@ const patternFuncs: Record<
   Record<T.Gender, (inp: PatternInput) => InflectionsAndVocative>
 > = {
   1: {
-    masc: vocPattern1Masc,
-    fem: vocPattern1Fem,
+    masc: pattern1Masc,
+    fem: pattern1Fem,
   },
   2: {
     masc: pattern2Masc,
@@ -130,7 +132,7 @@ const patternFuncs: Record<
     fem: pattern4Fem,
   },
   5: {
-    masc: vocPattern5Masc,
+    masc: pattern5Masc,
     fem: pattern5Fem,
   },
 };
@@ -191,7 +193,7 @@ function vocFemAnimException({
   };
 }
 
-function vocPattern1Masc({
+function pattern1Masc({
   entry,
   plurals,
 }: PatternInput): InflectionsAndVocative {
@@ -236,10 +238,7 @@ function vocPattern1Masc({
 }
 
 // TODO this is HUGELY repetitive refactor this!
-function vocPattern1Fem({
-  entry,
-  plurals,
-}: PatternInput): InflectionsAndVocative {
+function pattern1Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
   const shwaEnding = hasShwaEnding(entry);
   const hasFemEnding = endsWith([{ p: "ه", f: "a" }], entry) || shwaEnding;
   const endAccented = accentIsOnEnd(entry);
@@ -333,7 +332,7 @@ function vocPattern1Fem({
   }
   if (isFemNounEntry(entry) && endsInConsonant(entry)) {
     const baseForInf =
-      countSyllables(entry) === 1 ? accentOnNFromEnd(entry, 0) : e;
+      countSyllables(entry) === 1 ? accentOnNFromEnd(entry, 0) : entry;
     const inflections: T.InflectionSet = [
       [psStringFromEntry(entry)],
       [concatPs(baseForInf, e)],
@@ -494,7 +493,7 @@ function pattern4Fem({ entry }: PatternInput): InflectionsAndVocative {
   };
 }
 
-function vocPattern5Masc({
+function pattern5Masc({
   entry,
   plurals,
 }: PatternInput): InflectionsAndVocative {

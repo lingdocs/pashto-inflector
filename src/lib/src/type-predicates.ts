@@ -180,7 +180,7 @@ export function isPattern1Entry<T extends T.InflectableEntry>(
         e
       ) &&
         !e.p.endsWith("اع")) ||
-      (endsWith({ p: pashtoConsonants }, e) && !e.c.includes("anim."))
+      (endsWith({ p: pashtoConsonants }, e) && !(e.ppp && e.ppf))
     );
   }
   return endsInConsonant(e) || hasShwaEnding(e);

@@ -1,0 +1,26 @@
+name: Check Inflections
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      LINGDOCS_DICTIONARY_URL: ${{ secrets.LINGDOCS_DICTIONARY_URL }}
+      LINGDOCS_NPM_TOKEN: ${{ secrets.LINGDOCS_NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: run script
+        run: |
+          yarn install
+          yarn check-all-inflections

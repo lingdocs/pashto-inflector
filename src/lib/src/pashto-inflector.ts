@@ -40,7 +40,8 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
         inflected[0].inflections,
         inflected[1].inflections
       ) as T.UnisexInflections,
-      ...(vocatives.length
+      // in case there's only one vocative check to make sure we have both
+      ...(vocatives.length === 2
         ? { vocative: concatPlurals(vocatives[0], vocatives[1]) }
         : {}),
     };

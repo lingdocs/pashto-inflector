@@ -1794,6 +1794,33 @@ const nouns: {
       },
     },
   },
+  {
+    in: {
+      ts: 1715165815298,
+      i: 17989,
+      p: "وریندار",
+      f: "wreendáar",
+      g: "wreendaar",
+      e: "brother's wife, sister-in-law (of male)",
+      r: 4,
+      c: "n. f. anim.",
+    },
+    out: {
+      inflections: {
+        fem: [
+          [{ p: "وریندار", f: "wreendáar" }],
+          [{ p: "وریندارې", f: "wreendáare" }],
+          [{ p: "وریندارو", f: "wreendáaro" }],
+        ],
+      },
+      vocative: {
+        fem: [
+          [{ p: "وریندارې", f: "wreendáare" }],
+          [{ p: "وریندارو", f: "wreendáaro" }],
+        ],
+      },
+    },
+  },
   // Feminine regular inanimate ending in ي
   {
     in: {
