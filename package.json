@@ -46,7 +46,7 @@
     "build-library": "cd src/components && rimraf dist && tsc --project lib-tsconfig.json && node post-build.cjs && cd ../lib && rimraf dist && tsc --project lib-tsconfig.json && node_modules/rollup/dist/bin/rollup -c",
     "test-ci": "npm run test -- --watchAll=false",
     "get-words": "node get-words.js",
-    "check-all-inflections": "tsx check-all-inflections.tsx"
+    "check-all-inflections": "tsx check-all-inflections.ts"
   },
   "eslintConfig": {
     "extends": [
