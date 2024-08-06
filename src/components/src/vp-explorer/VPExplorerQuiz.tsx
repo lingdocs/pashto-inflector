@@ -144,186 +144,196 @@ function VPExplorerQuiz(props: {
       });
     }
   }
-  const rendered = renderVP(quizState.vps);
-  const subject: T.Rendered<T.NPSelection> = getSubjectSelectionFromBlocks(
-    rendered.blocks
-  ).selection;
-  const object = getObjectSelectionFromBlocks(rendered.blocks).selection;
-  const { e } = compileVP(rendered, {
-    removeKing: false,
-    shrinkServant: false,
-  });
-  return (
-    <div className="mt-4">
-      <ProgressBar quizState={quizState} />
-      <div className="d-flex flex-row justify-content-around flex-wrap">
-        <div className="my-2">
-          <div className="h5 text-center">Subject</div>
-          <QuizNPDisplay opts={props.opts} stage={quizState.stage}>
-            {subject}
-          </QuizNPDisplay>
-        </div>
-        {object !== "none" && (
+  try {
+    const rendered = renderVP(quizState.vps);
+    const subject: T.Rendered<T.NPSelection> = getSubjectSelectionFromBlocks(
+      rendered.blocks
+    ).selection;
+    const object = getObjectSelectionFromBlocks(rendered.blocks).selection;
+    const { e } = compileVP(rendered, {
+      removeKing: false,
+      shrinkServant: false,
+    });
+    return (
+      <div className="mt-4">
+        <ProgressBar quizState={quizState} />
+        <div className="d-flex flex-row justify-content-around flex-wrap">
           <div className="my-2">
-            <div className="h5 text-center">Object</div>
+            <div className="h5 text-center">Subject</div>
             <QuizNPDisplay opts={props.opts} stage={quizState.stage}>
-              {object}
+              {subject}
             </QuizNPDisplay>
           </div>
-        )}
-        <div className="my-2">
-          <TensePicker
-            vpsComplete={quizState.vps}
-            onChange={() => null}
-            mode={"quiz"}
-          />
-        </div>
-      </div>
-      {e && (
-        <div className="text-center text-muted">
-          {e.map((eLine) => (
-            <div key={eLine}>{eLine}</div>
-          ))}
-        </div>
-      )}
-      <div className="text-center">
-        <div
-          style={
-            showCheck
-              ? answerFeedback
-              : ({ ...answerFeedback, opacity: 0 } as any)
-          }
-        >
-          {currentCorrectEmoji}
-        </div>
-        {quizState.qNumber === stageLength ? (
-          <div className="mt-4" style={{ animation: "fade-in 0.5s" }}>
-            <h4>👏 Congratulations</h4>
-            <p className="lead">You finished the first two levels!</p>
-            <p>There may be other levels in the future...</p>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleRestart}
-            >
-              Restart
-            </button>
-          </div>
-        ) : quizState.result === "waiting" ? (
-          quizState.stage === "multiple choice" ? (
-            <>
-              <div className="text-muted my-3">Choose a correct answer:</div>
-              {quizState.options.map((o) => (
-                <div
-                  className="pb-3"
-                  key={o.f}
-                  style={{ animation: "fade-in 0.5s" }}
-                >
-                  <button
-                    className="btn btn-answer btn-outline-secondary"
-                    onClick={() => checkAnswer(o)}
-                  >
-                    <InlinePs opts={props.opts}>{o}</InlinePs>
-                  </button>
-                </div>
-              ))}
-            </>
-          ) : (
-            <div>
-              <div className="text-muted my-3">
-                Type the <strong>verb in Pashto script</strong> to finish the
-                phrase:
-              </div>
-              <form
-                onSubmit={(e) => {
-                  if (!answerBlank) {
-                    alert("Enter the verb in Pashto script");
-                  }
-                  e.preventDefault();
-                  checkAnswer({ text: answerBlank, withBa });
-                }}
-              >
-                <div
-                  className="mb-3"
-                  style={{ maxWidth: "250px", margin: "0 auto" }}
-                >
-                  <input
-                    type="text"
-                    dir="auto"
-                    className="form-control"
-                    placeholder="type verb here"
-                    value={answerBlank}
-                    onChange={(e) => setAnswerBlank(e.target.value)}
-                  />
-                </div>
-                <div className="form-check mb-4" style={{ fontSize: "large" }}>
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={withBa}
-                    onChange={(e) => setWithBa(e.target.checked)}
-                    id="addBa"
-                  />
-                  <label
-                    className="form-check-label text-muted"
-                    htmlFor="addBa"
-                  >
-                    add <InlinePs opts={props.opts}>{baParticle}</InlinePs> in
-                    kids' section
-                  </label>
-                </div>
-                <button type="submit" className="btn btn-primary">
-                  Check
-                </button>
-              </form>
+          {object !== "none" && (
+            <div className="my-2">
+              <div className="h5 text-center">Object</div>
+              <QuizNPDisplay opts={props.opts} stage={quizState.stage}>
+                {object}
+              </QuizNPDisplay>
             </div>
-          )
-        ) : (
-          <div style={{ animation: "fade-in 0.5s" }}>
-            <div className="h4 mt-4">❌ Wrong 😭</div>
-            {quizState.stage === "multiple choice" ? (
-              <div>
-                <div className="my-4 lead">The correct answer was:</div>
-                <InlinePs opts={props.opts}>
-                  {
-                    quizState.options.find((x) =>
-                      isInAnswer(x, quizState.answer)
-                    ) as T.PsString
-                  }
-                </InlinePs>
-              </div>
-            ) : (
-              <div>
-                <div className="my-4 lead">Possible correct answers were:</div>
-                {quizState.answer.ps.map((p, i) => (
-                  <div key={i}>
-                    <InlinePs opts={props.opts}>{p}</InlinePs>
+          )}
+          <div className="my-2">
+            <TensePicker
+              vpsComplete={quizState.vps}
+              onChange={() => null}
+              mode={"quiz"}
+            />
+          </div>
+        </div>
+        {e && (
+          <div className="text-center text-muted">
+            {e.map((eLine) => (
+              <div key={eLine}>{eLine}</div>
+            ))}
+          </div>
+        )}
+        <div className="text-center">
+          <div
+            style={
+              showCheck
+                ? answerFeedback
+                : ({ ...answerFeedback, opacity: 0 } as any)
+            }
+          >
+            {currentCorrectEmoji}
+          </div>
+          {quizState.qNumber === stageLength ? (
+            <div className="mt-4" style={{ animation: "fade-in 0.5s" }}>
+              <h4>👏 Congratulations</h4>
+              <p className="lead">You finished the first two levels!</p>
+              <p>There may be other levels in the future...</p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleRestart}
+              >
+                Restart
+              </button>
+            </div>
+          ) : quizState.result === "waiting" ? (
+            quizState.stage === "multiple choice" ? (
+              <>
+                <div className="text-muted my-3">Choose a correct answer:</div>
+                {quizState.options.map((o) => (
+                  <div
+                    className="pb-3"
+                    key={o.f}
+                    style={{ animation: "fade-in 0.5s" }}
+                  >
+                    <button
+                      className="btn btn-answer btn-outline-secondary"
+                      onClick={() => checkAnswer(o)}
+                    >
+                      <InlinePs opts={props.opts}>{o}</InlinePs>
+                    </button>
                   </div>
                 ))}
-                <div className="mt-2">
-                  <strong>
-                    {"withBa" in quizState.answer && quizState.answer.withBa
-                      ? "With"
-                      : "without"}
-                  </strong>
-                  {` `}a <InlinePs opts={props.opts}>{baParticle}</InlinePs> in
-                  the phrase
+              </>
+            ) : (
+              <div>
+                <div className="text-muted my-3">
+                  Type the <strong>verb in Pashto script</strong> to finish the
+                  phrase:
                 </div>
+                <form
+                  onSubmit={(e) => {
+                    if (!answerBlank) {
+                      alert("Enter the verb in Pashto script");
+                    }
+                    e.preventDefault();
+                    checkAnswer({ text: answerBlank, withBa });
+                  }}
+                >
+                  <div
+                    className="mb-3"
+                    style={{ maxWidth: "250px", margin: "0 auto" }}
+                  >
+                    <input
+                      type="text"
+                      dir="auto"
+                      className="form-control"
+                      placeholder="type verb here"
+                      value={answerBlank}
+                      onChange={(e) => setAnswerBlank(e.target.value)}
+                    />
+                  </div>
+                  <div
+                    className="form-check mb-4"
+                    style={{ fontSize: "large" }}
+                  >
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={withBa}
+                      onChange={(e) => setWithBa(e.target.checked)}
+                      id="addBa"
+                    />
+                    <label
+                      className="form-check-label text-muted"
+                      htmlFor="addBa"
+                    >
+                      add <InlinePs opts={props.opts}>{baParticle}</InlinePs> in
+                      kids' section
+                    </label>
+                  </div>
+                  <button type="submit" className="btn btn-primary">
+                    Check
+                  </button>
+                </form>
               </div>
-            )}
-            <button
-              type="button"
-              className="btn btn-primary mt-4"
-              onClick={handleRestart}
-            >
-              Try Again
-            </button>
-          </div>
-        )}
-        <Keyframes name="fade-in" from={{ opacity: 0 }} to={{ opacity: 1 }} />
+            )
+          ) : (
+            <div style={{ animation: "fade-in 0.5s" }}>
+              <div className="h4 mt-4">❌ Wrong 😭</div>
+              {quizState.stage === "multiple choice" ? (
+                <div>
+                  <div className="my-4 lead">The correct answer was:</div>
+                  <InlinePs opts={props.opts}>
+                    {
+                      quizState.options.find((x) =>
+                        isInAnswer(x, quizState.answer)
+                      ) as T.PsString
+                    }
+                  </InlinePs>
+                </div>
+              ) : (
+                <div>
+                  <div className="my-4 lead">
+                    Possible correct answers were:
+                  </div>
+                  {quizState.answer.ps.map((p, i) => (
+                    <div key={i}>
+                      <InlinePs opts={props.opts}>{p}</InlinePs>
+                    </div>
+                  ))}
+                  <div className="mt-2">
+                    <strong>
+                      {"withBa" in quizState.answer && quizState.answer.withBa
+                        ? "With"
+                        : "without"}
+                    </strong>
+                    {` `}a <InlinePs opts={props.opts}>{baParticle}</InlinePs>{" "}
+                    in the phrase
+                  </div>
+                </div>
+              )}
+              <button
+                type="button"
+                className="btn btn-primary mt-4"
+                onClick={handleRestart}
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+          <Keyframes name="fade-in" from={{ opacity: 0 }} to={{ opacity: 1 }} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (e) {
+    console.error(e);
+    return <h4>Error conjugating verb!</h4>;
+  }
 }
 
 function blanksAnswerCorrect(

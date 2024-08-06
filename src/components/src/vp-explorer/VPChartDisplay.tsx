@@ -24,27 +24,32 @@ function ChartDisplay({
   transitivity: T.Transitivity;
   objectNP: T.NPSelection | undefined;
 }) {
-  const verbChart = buildVerbChart({
-    verb,
-    tense,
-    voice,
-    negative,
-    transitivity,
-    imperative,
-    objectNP,
-  });
-  return (
-    <div className="mb-4">
-      <NewVerbFormDisplay
-        imperative={imperative}
-        negative={negative}
-        chart={verbChart}
-        opts={opts}
-        transitivity={transitivity}
-        past={isPastTense(tense)}
-      />
-    </div>
-  );
+  try {
+    const verbChart = buildVerbChart({
+      verb,
+      tense,
+      voice,
+      negative,
+      transitivity,
+      imperative,
+      objectNP,
+    });
+    return (
+      <div className="mb-4">
+        <NewVerbFormDisplay
+          imperative={imperative}
+          negative={negative}
+          chart={verbChart}
+          opts={opts}
+          transitivity={transitivity}
+          past={isPastTense(tense)}
+        />
+      </div>
+    );
+  } catch (e) {
+    console.error(e);
+    return <h4>Error conjugating verb!</h4>;
+  }
 }
 
 export default ChartDisplay;

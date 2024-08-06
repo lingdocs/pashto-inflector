@@ -43,8 +43,8 @@ module.exports = [
   1527816945, // جوتول - to make clear, evident, apparent, explained, established
   1527816947, // جوتول - to harness, hitch up
   1527812712, // جوړول - to make, form, build, mend, fix
-  1527817455, // ځایول - to place, put, accommodate, make room for, to make fit
-  1527815074, // چاپول - to print, publish
+  1718311465186, // ځایول - to place, put, accommodate, make room for, to make fit
+  1718377727926, // چاپول - to print, publish
   1527811693, // چاغول - to fatten up, to fatten, to make stout, plump
   1527816239, // خبرول - to inform, communicate, make known, notify
   1527811395, // خپرول - to spread, disperse, open, unfold, publicize, distribute

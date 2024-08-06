@@ -72,7 +72,16 @@ function VPPicker({
   const subject = getSubjectSelection(vps.blocks).selection;
   const VPS = completeVPSelection(vps);
   const phraseIsComplete = !!VPS;
-  const rendered = VPS ? renderVP(VPS) : undefined;
+  const rendered = VPS
+    ? (() => {
+        try {
+          return renderVP(VPS);
+        } catch (e) {
+          console.error(e);
+          return undefined;
+        }
+      })()
+    : undefined;
   const servantIsShrunk = includesShrunkenServant(rendered?.kids);
   const isPast = isPastTense(
     vps.verb.tenseCategory === "perfect"
