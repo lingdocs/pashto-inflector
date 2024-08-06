@@ -22,5 +22,5 @@ jobs:
           cache: "npm"
       - name: run script
         run: |
-          yarn install
+          yarn install-r
           yarn check-all-inflections
