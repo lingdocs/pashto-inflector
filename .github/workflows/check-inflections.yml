@@ -21,6 +21,11 @@ jobs:
           node-version: 20
           cache: "yarn"
       - name: run script
+        # we need to add tsx here because there is an issue with the older version of tsx
+        # and fetching the dictionaries
+        #  the other workflows need an older version of node, and the new version of tsx
+        #  requires a newer version of node. So we have to do this to run the script with tsx
         run: |
           yarn install-r
+          yarn add tsx
           yarn check-all-inflections
