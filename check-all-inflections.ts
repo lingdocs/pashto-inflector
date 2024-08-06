@@ -1,6 +1,7 @@
 import * as T from "./src/types";
 import { inflectWord } from "./src/lib/src/pashto-inflector";
 import * as tp from "./src/lib/src/type-predicates";
+import { conjugateVerb } from "./src/lib/src/verb-conjugation";
 
 // Script to try inflecting all the words in the dictionary and make sure that
 // no errors are thrown in the process
@@ -39,6 +40,7 @@ async function checkAll() {
           f: entry.f,
           err: "verb complement missing",
         });
+      } else {
       }
     }
   });
