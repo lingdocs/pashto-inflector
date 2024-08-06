@@ -19,8 +19,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: "yarn"
       - name: Install, build, test
         run: |
           yarn install-r
           yarn build-library
+          yarn build-website
           yarn test --silent

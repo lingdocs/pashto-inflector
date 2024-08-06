@@ -13,13 +13,14 @@ jobs:
       LINGDOCS_DICTIONARY_URL: ${{ secrets.LINGDOCS_DICTIONARY_URL }}
       LINGDOCS_NPM_TOKEN: ${{ secrets.LINGDOCS_NPM_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
+          cache: "yarn"
       - name: Check if version has been updated
         id: check
-        uses: EndBug/version-check@v1
+        uses: EndBug/version-check@v2
         with:
           diff-search: true
           token: ${{ secrets.GITHUB_TOKEN }}
