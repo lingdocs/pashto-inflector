@@ -26,3 +26,4 @@ jobs:
           yarn build-library
           yarn build-website
           yarn test --silent
+          yarn check-all-inflections
