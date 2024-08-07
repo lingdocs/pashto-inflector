@@ -432,6 +432,7 @@ export function removeHeetsDet<B extends T.VPSBlock[] | T.EPSBlock[]>(
   })) as B;
 }
 
+// TODO: Could use lenses for this
 function removeHeetsDetFromBlock<
   B extends T.VPSBlock["block"] | T.EPSBlock["block"]
 >(block: B): B {
@@ -512,10 +513,7 @@ function removeHeetsFromNoun(n: T.NounSelection): T.NounSelection {
     adjectives: n.adjectives.map(removeHeetsFromAdjective),
     ...(n.determiners
       ? {
-          determiners: {
-            ...n.determiners,
-            determiners: removeHeetsFromDets(n.determiners.determiners),
-          },
+          determiners: removeHeetsFromDets(n.determiners),
         }
       : {}),
   };
@@ -532,10 +530,13 @@ function removeHeetsFromNP(np: T.NPSelection): T.NPSelection {
 }
 
 function removeHeetsFromDets(
-  dets: T.DeterminerSelection[]
-): T.DeterminerSelection[] {
+  dets: T.DeterminersSelection | undefined
+): T.DeterminersSelection | undefined {
   if (!dets) {
     return dets;
   }
-  return dets.filter((d) => d.determiner.p !== "هیڅ");
+  return {
+    ...dets,
+    determiners: dets.determiners.filter((d) => d.determiner.p !== "هیڅ"),
+  };
 }

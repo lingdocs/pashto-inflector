@@ -20,7 +20,7 @@ function getBaseWDetsAndAdjs({
   const detWOutNoun =
     "determiners" in selection &&
     selection.determiners &&
-    !selection.determiners.type;
+    !selection.determiners.withNoun;
   const adjs = (("adjectives" in selection && selection.adjectives) || []).map(
     (x) => x.ps
   );
@@ -208,10 +208,13 @@ function addArticlesAndAdjs(
         ? " (f.)"
         : " (m.)"
       : "";
+    const moreThanOneDet = (np.determiners?.determiners.length || 0) > 1;
     const determiners =
       np.determiners && np.determiners.determiners
-        ? // @ts-ignore - weird, ts is not recognizing this as rendered
-          np.determiners.determiners.map((x) => `(${x.e})`).join(" ")
+        ? np.determiners.determiners
+            // @ts-ignore - weird, ts is not recognizing this as rendered
+            .map((x) => (moreThanOneDet ? `(${x.e})` : x.e))
+            .join(" ")
         : "";
     const detsWithoutNoun = np.determiners && !np.determiners.withNoun;
     return `${np.determiners ? "" : articles}${determiners}${

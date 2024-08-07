@@ -225,11 +225,9 @@ function renderDeterminer({
         ? "such/like these"
         : "such/like this"
       : determiner.f === "daghase"
-      ? number === "plural"
-        ? "just such/just like these"
-        : "just such/just like this"
+      ? `just such/just like ${number === "plural" ? "these" : "this"}`
       : determiner.f === "hase"
-      ? `such/like ${number === "plural"} ? "those" : "that"`
+      ? `such/like ${number === "plural" ? "those" : "that"}`
       : number === "plural"
       ? "just such/just like these"
       : "just such/just like this";

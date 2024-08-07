@@ -909,18 +909,18 @@ export type DeterminersSelection = {
 };
 
 export const determiners = [
-  { p: "دا", f: "daa", type: "det" },
-  { p: "دغه", f: "dágha", type: "det" },
-  { p: "هغه", f: "hágha", type: "det" },
+  { p: "دا", f: "daa", type: "det", demonstrative: true },
+  { p: "دغه", f: "dágha", type: "det", demonstrative: true },
+  { p: "هغه", f: "hágha", type: "det", demonstrative: true },
+  { p: "کوم", f: "koom", type: "det" },
   { p: "داسې", f: "dáase", type: "det" },
   { p: "دغسې", f: "daghase", type: "det" },
   { p: "هسې", f: "hase", type: "det" },
   { p: "هغسې", f: "hagháse", type: "det" },
-  { p: "کوم", f: "koom", type: "det" },
   { p: "هر", f: "har", type: "det" },
   { p: "ټول", f: "Tol", type: "det" },
-  { p: "هیڅ", f: "heets", type: "det", noInf: true },
   { p: "بل", f: "bul", type: "det" },
+  { p: "هیڅ", f: "heets", type: "det", noInf: true },
 ] as const;
 
 export type Determiner = (typeof determiners)[number];

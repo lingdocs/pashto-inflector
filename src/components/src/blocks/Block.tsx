@@ -609,15 +609,20 @@ function Determiners({
   script: "p" | "f";
   children: T.Rendered<T.DeterminersSelection> | undefined;
 }) {
-  if (!children) {
+  if (!children || children.determiners.length === 0) {
     return null;
   }
   return (
     <div className="text-center">
-      Determiners here!
-      {/* <Border padding={"1rem"}>{children.ps[script]}</Border>
-      <div>DEM</div>
-      <SubText>{children.e}</SubText> */}
+      <div className={`d-flex flex-row${script === "p" ? "-reverse" : ""}`}>
+        {children.determiners.map((d) => (
+          <div className="mx-1">
+            <Border padding={"1rem"}>{d.ps[0][script]}</Border>
+            <div>{"demonstrative" in d.determiner ? "DEM" : "DET"}</div>
+            <SubText>{d.e}</SubText>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

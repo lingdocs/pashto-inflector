@@ -30,6 +30,7 @@ jobs:
           yarn install-r
           yarn build-library
           yarn test --silent
+          yarn check-all-inflections
           cp .npmrc src/lib
           cp .npmrc src/components
           cd src/lib

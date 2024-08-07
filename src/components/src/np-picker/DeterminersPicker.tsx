@@ -12,8 +12,14 @@ export default function DeterminersPicker({
   opts: T.TextOptions;
   negative: boolean;
 }) {
+  const hasDemonstrative =
+    determiners &&
+    determiners.determiners.some((d) => "demonstrative" in d.determiner);
   function allowed(d: T.Determiner): boolean {
     if (d.p === "هیڅ" && !negative) {
+      return false;
+    }
+    if (hasDemonstrative && "demonstrative" in d) {
       return false;
     }
     return true;
@@ -93,7 +99,7 @@ export default function DeterminersPicker({
           checked={determiners?.withNoun}
           onChange={handleWithNounChange}
           id="withNoun"
-          disabled={!determiners}
+          disabled={!hasDemonstrative}
         />
         <label className="form-check-label text-muted" htmlFor="withNoun">
           with noun
