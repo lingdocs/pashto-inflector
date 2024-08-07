@@ -5,74 +5,82 @@ import { useEffect, useState } from "react";
 import NPPicker from "./NPPicker";
 
 function SandwichPicker(props: {
-    opts: T.TextOptions,
-    onChange: (s: T.SandwichSelection<T.Sandwich> | undefined) => void,
-    sandwich: T.SandwichSelection<T.Sandwich> | undefined;
-    entryFeeder: T.EntryFeeder,
-    phraseIsComplete: boolean,
-    onExit: () => void,
+  opts: T.TextOptions;
+  onChange: (s: T.SandwichSelection<T.Sandwich> | undefined) => void;
+  sandwich: T.SandwichSelection<T.Sandwich> | undefined;
+  entryFeeder: T.EntryFeeder;
+  phraseIsComplete: boolean;
+  onExit: () => void;
+  negative: boolean;
 }) {
-    const [sandwichBase, setSandwichBase] = useState<T.Sandwich | undefined>(props.sandwich);
-    useEffect(() => {
-        setSandwichBase(props.sandwich);
-    }, [props.sandwich]);
-    function handleNounChange(n: T.NPSelection | undefined) {
-        if (!n) {
-            props.onChange(undefined);
-            return;
-        }
-        if (!sandwichBase) return;
-        props.onChange({
-            ...sandwichBase,
-            inside: n,
-        });
+  const [sandwichBase, setSandwichBase] = useState<T.Sandwich | undefined>(
+    props.sandwich
+  );
+  useEffect(() => {
+    setSandwichBase(props.sandwich);
+  }, [props.sandwich]);
+  function handleNounChange(n: T.NPSelection | undefined) {
+    if (!n) {
+      props.onChange(undefined);
+      return;
     }
-    function handleSandwichChange(s: T.Sandwich | undefined) {
-        if (!s) {
-            setSandwichBase(undefined);
-            props.onChange(undefined);
-            return;
-        }
-        setSandwichBase(s);
-        if (!props.sandwich) return;
-        props.onChange({
-            ...props.sandwich,
-            ...s,
-        });
+    if (!sandwichBase) return;
+    props.onChange({
+      ...sandwichBase,
+      inside: n,
+    });
+  }
+  function handleSandwichChange(s: T.Sandwich | undefined) {
+    if (!s) {
+      setSandwichBase(undefined);
+      props.onChange(undefined);
+      return;
     }
-    function handleExit() {
-        props.onExit();
-    }
-    return <div>
-        <div className="d-flex flex-row justify-content-between">
-            <div></div>
-            <div className="text-center">🥪 Sandwich</div>
-            <div className="clickable" onClick={handleExit}>
-                <i className="fas fa-trash" />
-            </div>
+    setSandwichBase(s);
+    if (!props.sandwich) return;
+    props.onChange({
+      ...props.sandwich,
+      ...s,
+    });
+  }
+  function handleExit() {
+    props.onExit();
+  }
+  return (
+    <div>
+      <div className="d-flex flex-row justify-content-between">
+        <div></div>
+        <div className="text-center">🥪 Sandwich</div>
+        <div className="clickable" onClick={handleExit}>
+          <i className="fas fa-trash" />
         </div>
-        <div style={{ border: "1px #6C757D solid", padding: "3px" }}>
-        {sandwichBase && <div className="mb-2" style={{ margin: "0 auto" }}>
+      </div>
+      <div style={{ border: "1px #6C757D solid", padding: "3px" }}>
+        {sandwichBase && (
+          <div className="mb-2" style={{ margin: "0 auto" }}>
             <NPPicker
-                onChange={handleNounChange}
-                np={props.sandwich ? props.sandwich.inside : undefined}
-                counterPart={undefined}
-                opts={props.opts}
-                role="object"
-                cantClear={true}
-                entryFeeder={props.entryFeeder}
-                phraseIsComplete={props.phraseIsComplete}
+              onChange={handleNounChange}
+              np={props.sandwich ? props.sandwich.inside : undefined}
+              counterPart={undefined}
+              opts={props.opts}
+              role="object"
+              cantClear={true}
+              entryFeeder={props.entryFeeder}
+              phraseIsComplete={props.phraseIsComplete}
+              negative={props.negative}
             />
-        </div>}
+          </div>
+        )}
         <SandwichSelect
-            name="sandwich"
-            opts={props.opts}
-            sandwiches={sandwiches}
-            value={sandwichBase}
-            onChange={handleSandwichChange}
+          name="sandwich"
+          opts={props.opts}
+          sandwiches={sandwiches}
+          value={sandwichBase}
+          onChange={handleSandwichChange}
         />
-        </div>
-    </div>;
+      </div>
+    </div>
+  );
 }
 
 export default SandwichPicker;

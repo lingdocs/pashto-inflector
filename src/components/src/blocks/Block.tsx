@@ -600,23 +600,24 @@ function Sandwich({
   );
 }
 
-function Demonstrative({
+function Determiners({
   opts,
   script,
   children,
 }: {
   opts: T.TextOptions;
   script: "p" | "f";
-  children: T.Rendered<T.DemonstrativeSelection> | undefined;
+  children: T.Rendered<T.DeterminersSelection> | undefined;
 }) {
   if (!children) {
     return null;
   }
   return (
     <div className="text-center">
-      <Border padding={"1rem"}>{children.ps[script]}</Border>
+      Determiners here!
+      {/* <Border padding={"1rem"}>{children.ps[script]}</Border>
       <div>DEM</div>
-      <SubText>{children.e}</SubText>
+      <SubText>{children.e}</SubText> */}
     </div>
   );
 }
@@ -663,8 +664,8 @@ export function NPBlock({
     np.selection.possesor &&
     !np.selection.possesor.shrunken
   );
-  const demWithoutNoun =
-    np.selection.demonstrative && !np.selection.demonstrative.withNoun;
+  const detsWithoutNoun =
+    np.selection.determiners && !np.selection.determiners.withNoun;
   const elements = [
     ...(!inside
       ? [
@@ -675,12 +676,12 @@ export function NPBlock({
           </Possesors>,
         ]
       : []),
-    <Demonstrative opts={opts} script={script}>
-      {np.selection.demonstrative ? np.selection.demonstrative : undefined}
-    </Demonstrative>,
+    <Determiners opts={opts} script={script}>
+      {np.selection.determiners}
+    </Determiners>,
     <div
       style={{
-        opacity: demWithoutNoun ? 0.5 : 1,
+        opacity: detsWithoutNoun ? 0.5 : 1,
       }}
     >
       <Adjectives opts={opts} script={script}>
@@ -689,7 +690,7 @@ export function NPBlock({
     </div>,
     <div
       style={{
-        opacity: demWithoutNoun ? 0.5 : 1,
+        opacity: detsWithoutNoun ? 0.5 : 1,
       }}
       className={np.selection.adjectives?.length ? "mx-1" : ""}
     >

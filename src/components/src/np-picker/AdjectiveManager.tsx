@@ -8,6 +8,7 @@ function AdjectiveManager(props: {
   opts: T.TextOptions;
   onChange: (adjs: T.AdjectiveSelection[]) => void;
   phraseIsComplete: boolean;
+  negative: boolean;
 }) {
   const [adding, setAdding] = useState<boolean>(false);
   function handleChange(i: number) {
@@ -48,6 +49,7 @@ function AdjectiveManager(props: {
             entryFeeder={props.entryFeeder}
             opts={props.opts}
             onChange={handleAddNew}
+            negative={props.negative}
           />
         </div>
       )}
@@ -70,6 +72,7 @@ function AdjectiveManager(props: {
             </div>
           </div>
           <AdjectivePicker
+            negative={props.negative}
             phraseIsComplete={props.phraseIsComplete}
             noTitle
             key={`adj${i}`}

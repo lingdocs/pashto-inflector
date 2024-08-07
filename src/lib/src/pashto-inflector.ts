@@ -23,7 +23,7 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
   // If it's a noun/adj, inflect accordingly
   // TODO: What about n. f. / adj. that end in ي ??
   const w = removeFVarients(word);
-  if (w.c?.includes("doub.")) {
+  if (word.c?.includes("doub.")) {
     const words = splitDoubleWord(w);
     // TODO: Make this work for non-unisex double words
     //  Right now this an extremely bad and complex way to do this

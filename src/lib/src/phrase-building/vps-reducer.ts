@@ -11,6 +11,7 @@ import {
   getSubjectSelection,
   insertNewAP,
   removeAP,
+  removeHeetsDet,
   setAP,
   shiftBlock,
 } from "./blocks-utils";
@@ -19,6 +20,7 @@ import {
   changeTransitivity,
   makeVPSelectionState,
 } from "./verb-selection";
+import { mapGen } from "../fp-ps";
 
 export type VpsReducerAction =
   | {
@@ -203,11 +205,13 @@ export function vpsReducer(
     }
     if (action.type === "set negativity") {
       if (!vps.verb) return vps;
+      const negative = action.payload === "true";
       return {
         ...vps,
+        blocks: !negative ? removeHeetsDet(vps.blocks) : vps.blocks,
         verb: {
           ...vps.verb,
-          negative: action.payload === "true",
+          negative,
         },
       };
     }

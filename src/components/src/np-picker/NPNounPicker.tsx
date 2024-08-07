@@ -7,7 +7,7 @@ import InlinePs from "../InlinePs";
 import EntrySelect from "../EntrySelect";
 import AdjectiveManager from "./AdjectiveManager";
 import { useState } from "react";
-import DemonstrativePicker from "./DemonstrativePicker";
+import DeterminersPicker from "./DeterminersPicker";
 
 // const filterOptions = [
 //     {
@@ -62,9 +62,9 @@ function NPNounPicker(props: {
   onChange: (p: T.NounSelection | undefined) => void;
   opts: T.TextOptions;
   phraseIsComplete: boolean;
+  negative: boolean;
 }) {
-  const [addingDemonstrative, setAddingDemonstrative] =
-    useState<boolean>(false);
+  const [addingDeterminers, setAddingDeterminers] = useState<boolean>(false);
   // const [patternFilter, setPatternFilter] = useState<FilterPattern | undefined>(undefined);
   // const [showFilter, setShowFilter] = useState<boolean>(false)
   // const nounsFiltered = props.nouns
@@ -88,13 +88,13 @@ function NPNounPicker(props: {
       });
     }
   }
-  function handleDemonstrativeChange(
-    demonstrative: undefined | T.NounSelection["demonstrative"]
+  function handleDeterminersChange(
+    determiners: undefined | T.NounSelection["determiners"]
   ) {
     if (props.noun) {
       props.onChange({
         ...props.noun,
-        demonstrative,
+        determiners,
       });
     }
   }
@@ -105,32 +105,34 @@ function NPNounPicker(props: {
         minWidth: "125px",
       }}
     >
-      {!addingDemonstrative && !props.noun?.demonstrative ? (
+      {!addingDeterminers && !props.noun?.determiners ? (
         <div>
           <span
             className="clickable text-muted"
-            onClick={() => setAddingDemonstrative(true)}
+            onClick={() => setAddingDeterminers(true)}
           >
-            + Demonstrative
+            + Determiners
           </span>
         </div>
       ) : (
         <div>
           <div className="d-flex flex-row justify-content-between mb-1">
-            <div>{!props.noun?.demonstrative ? "Add" : ""} Demonstrative</div>
+            <div>{!props.noun?.determiners ? "Add" : ""} Determiners</div>
             <div
               className="clickable"
               onClick={() => {
-                handleDemonstrativeChange(undefined);
-                setAddingDemonstrative(false);
+                handleDeterminersChange(undefined);
+                setAddingDeterminers(false);
               }}
             >
               <i className="fas fa-trash" />
             </div>
           </div>
-          <DemonstrativePicker
-            demonstrative={props.noun?.demonstrative}
-            onChange={handleDemonstrativeChange}
+          <DeterminersPicker
+            determiners={props.noun?.determiners}
+            onChange={handleDeterminersChange}
+            opts={props.opts}
+            negative={props.negative}
           />
         </div>
       )}
@@ -151,13 +153,14 @@ function NPNounPicker(props: {
       <div
         style={{
           opacity:
-            props.noun?.demonstrative && !props.noun.demonstrative.withNoun
+            props.noun?.determiners && !props.noun.determiners.withNoun
               ? 0.5
               : 1,
         }}
       >
         {props.noun && (
           <AdjectiveManager
+            negative={props.negative}
             phraseIsComplete={props.phraseIsComplete}
             adjectives={props.noun?.adjectives}
             entryFeeder={props.entryFeeder}

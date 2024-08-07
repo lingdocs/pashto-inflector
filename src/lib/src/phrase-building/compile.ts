@@ -22,7 +22,7 @@ import {
   specifyEquativeLength,
 } from "./blocks-utils";
 import { blank, kidsBlank } from "../misc-helpers";
-import { monoidPsStringWVars } from "../fp-ps";
+import { monoidPsString, monoidPsStringWVars } from "../fp-ps";
 import { concatAll } from "fp-ts/lib/Monoid";
 
 type BlankoutOptions = {
@@ -275,7 +275,7 @@ function applyBlankOut(
       return kidsBlank;
     }
     if (blankOut?.negative && "block" in x && x.block.type === "negative") {
-      return { p: "", f: "" };
+      return monoidPsString.empty;
     }
     return x;
   });
@@ -314,7 +314,7 @@ function getPsFromPiece(
     }
     if (piece.block.type === "objectSelection") {
       if (typeof piece.block.selection !== "object") {
-        return [{ p: "", f: "" }];
+        return [monoidPsString.empty];
       }
       return getPashtoFromRendered(piece.block.selection, subjectPerson);
     }

@@ -899,13 +899,35 @@ export type NounSelection = {
   genStativeComplement?: boolean;
   adjectives: AdjectiveSelection[];
   possesor: undefined | PossesorSelection;
-  demonstrative: undefined | DemonstrativeSelection;
+  determiners?: DeterminersSelection;
 };
 
-export type DemonstrativeSelection = {
-  type: "demonstrative";
-  demonstrative: "daa" | "hagha" | "dagha";
+export type DeterminersSelection = {
+  type: "determiners";
   withNoun: boolean;
+  determiners: DeterminerSelection[];
+};
+
+export const determiners = [
+  { p: "دا", f: "daa", type: "det" },
+  { p: "دغه", f: "dágha", type: "det" },
+  { p: "هغه", f: "hágha", type: "det" },
+  { p: "داسې", f: "dáase", type: "det" },
+  { p: "دغسې", f: "daghase", type: "det" },
+  { p: "هسې", f: "hase", type: "det" },
+  { p: "هغسې", f: "hagháse", type: "det" },
+  { p: "کوم", f: "koom", type: "det" },
+  { p: "هر", f: "har", type: "det" },
+  { p: "ټول", f: "Tol", type: "det" },
+  { p: "هیڅ", f: "heets", type: "det", noInf: true },
+  { p: "بل", f: "bul", type: "det" },
+] as const;
+
+export type Determiner = (typeof determiners)[number];
+
+export type DeterminerSelection = {
+  type: "determiner";
+  determiner: Determiner;
 };
 
 export type AdverbSelection = {
@@ -970,7 +992,8 @@ export type Rendered<
     | AdjectiveSelection
     | SandwichSelection<Sandwich>
     | ComplementSelection
-    | DemonstrativeSelection
+    | DeterminersSelection
+    | DeterminerSelection
     | ComplementSelection["selection"]
     | UnselectedComplementSelection
     | undefined
@@ -1020,13 +1043,21 @@ export type Rendered<
       inflected: boolean;
       person: Person;
     }
-  : T extends DemonstrativeSelection
+  : T extends DeterminersSelection
   ? {
-      type: "demonstrative";
-      demonstrative: DemonstrativeSelection["demonstrative"];
+      type: "determiners";
       withNoun: boolean;
-      ps: PsString;
+      determiners: Rendered<DeterminerSelection>[];
+    }
+  : T extends DeterminerSelection
+  ? {
+      type: "determiner";
+      determiner: DeterminerSelection["determiner"];
+      ps: PsString[];
       e: string;
+      inflected: boolean;
+      number: NounNumber;
+      gender: Gender;
     }
   : T extends ComplementSelection
   ? {
@@ -1078,7 +1109,7 @@ export type Rendered<
         shrunken: boolean;
         np: Rendered<NPSelection>;
       };
-      demonstrative?: Rendered<DemonstrativeSelection>;
+      determiners?: Rendered<DeterminersSelection>;
     };
 
 export type EPSelectionState = {

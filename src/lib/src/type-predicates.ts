@@ -62,12 +62,21 @@ export function isNounOrAdjEntry(
 }
 
 export function isInflectableEntry(
-  e: T.Entry | T.DictionaryEntry | T.DictionaryEntryNoFVars
+  e: T.Entry | T.DictionaryEntry | T.DictionaryEntryNoFVars | T.Determiner
 ): e is T.InflectableEntry {
   if ("entry" in e) {
     return false;
   }
+  if (isDeterminer(e)) {
+    return true;
+  }
   return isNounEntry(e) || isAdjectiveEntry(e) || isNumberEntry(e);
+}
+
+export function isDeterminer(
+  e: T.Entry | T.DictionaryEntry | T.Determiner
+): e is T.Determiner {
+  return "type" in e && e.type === "det";
 }
 
 export function isNumberEntry(

@@ -25,6 +25,7 @@ function NPPicker(props: {
   phraseIsComplete: boolean;
   isShrunk?: boolean;
   isRemoved?: boolean;
+  negative: boolean;
 }) {
   if (
     props.is2ndPersonPicker &&
@@ -223,6 +224,7 @@ function NPPicker(props: {
                 role="possesor"
                 opts={props.opts}
                 entryFeeder={props.entryFeeder}
+                negative={props.negative}
               />
             </div>
           )}
@@ -250,6 +252,7 @@ function NPPicker(props: {
           <NounPicker
             phraseIsComplete={props.phraseIsComplete}
             entryFeeder={props.entryFeeder}
+            negative={props.negative}
             noun={
               props.np && props.np.selection.type === "noun"
                 ? props.np.selection

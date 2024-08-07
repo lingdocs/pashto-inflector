@@ -48,7 +48,7 @@ type Plurals =
 // const endingInHayOrAynRegex = /[^ا][هع]$/;
 
 export function getInfsAndVocative(
-  entryR: T.DictionaryEntryNoFVars,
+  entryR: T.DictionaryEntryNoFVars | T.Determiner,
   plurals: Plurals
 ):
   | {

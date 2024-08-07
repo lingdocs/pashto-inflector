@@ -420,3 +420,122 @@ function arrayMove<X>(ar: X[], old_index: number, new_index: number): X[] {
   arr.splice(new_i, 0, arr.splice(old_index, 1)[0]);
   return arr;
 }
+
+// TODO: This takes 8 helper functions to recursively go down and check all determiners
+//  - is this what LENSES would help with?
+export function removeHeetsDet<B extends T.VPSBlock[] | T.EPSBlock[]>(
+  blocks: B
+): B {
+  return blocks.map<T.VPSBlock | T.EPSBlock>((x) => ({
+    key: x.key,
+    block: removeHeetsDetFromBlock(x.block),
+  })) as B;
+}
+
+function removeHeetsDetFromBlock<
+  B extends T.VPSBlock["block"] | T.EPSBlock["block"]
+>(block: B): B {
+  if (!block) {
+    return block;
+  }
+  if (block.type === "AP") {
+    return removeHeetsDetFromAP(block) as B;
+  }
+  if (block.type === "complement") {
+    return removeHeetsFromComp(block) as B;
+  }
+  return {
+    ...block,
+    selection:
+      typeof block.selection === "object"
+        ? removeHeetsFromNP(block.selection)
+        : block.selection,
+  };
+}
+
+function removeHeetsDetFromAP(ap: T.APSelection): T.APSelection {
+  if (ap.selection.type === "adverb") {
+    return ap;
+  }
+  return {
+    ...ap,
+    selection: removeHeetsFromSandwich(ap.selection),
+  };
+}
+
+function removeHeetsFromSandwich(
+  sand: T.SandwichSelection<T.Sandwich>
+): T.SandwichSelection<T.Sandwich> {
+  return {
+    ...sand,
+    inside: removeHeetsFromNP(sand.inside),
+  };
+}
+
+function removeHeetsFromAdjective(
+  adj: T.AdjectiveSelection
+): T.AdjectiveSelection {
+  return {
+    ...adj,
+    sandwich: adj.sandwich ? removeHeetsFromSandwich(adj.sandwich) : undefined,
+  };
+}
+
+function removeHeetsFromComp(
+  comp: T.ComplementSelection
+): T.ComplementSelection {
+  if (comp.selection.type === "adjective") {
+    return {
+      ...comp,
+      selection: removeHeetsFromAdjective(comp.selection),
+    };
+  }
+  if (comp.selection.type === "noun") {
+    return {
+      ...comp,
+      selection: removeHeetsFromNoun(comp.selection),
+    };
+  }
+  if (comp.selection.type === "sandwich") {
+    return {
+      ...comp,
+      selection: removeHeetsFromSandwich(comp.selection),
+    };
+  }
+  // should be only a loc. adv. left
+  return comp;
+}
+
+function removeHeetsFromNoun(n: T.NounSelection): T.NounSelection {
+  return {
+    ...n,
+    adjectives: n.adjectives.map(removeHeetsFromAdjective),
+    ...(n.determiners
+      ? {
+          determiners: {
+            ...n.determiners,
+            determiners: removeHeetsFromDets(n.determiners.determiners),
+          },
+        }
+      : {}),
+  };
+}
+
+function removeHeetsFromNP(np: T.NPSelection): T.NPSelection {
+  if (np.selection.type === "noun") {
+    return {
+      ...np,
+      selection: removeHeetsFromNoun(np.selection),
+    };
+  }
+  return np;
+}
+
+function removeHeetsFromDets(
+  dets: T.DeterminerSelection[]
+): T.DeterminerSelection[] {
+  if (!dets) {
+    return dets;
+  }
+  return dets.filter((d) => d.determiner.p !== "هیڅ");
+}

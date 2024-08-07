@@ -15,6 +15,7 @@ import { shortVerbEndConsonant } from "../parsing/misc";
 import { removeL } from "../new-verb-engine/rs-helpers";
 import { applySingleOrLengthOpts } from "../fp-ps";
 import { accentOnNFromEnd } from "../accent-helpers";
+import { getInfsAndVocative } from "../inflections-and-vocative";
 
 // TODO: can have subject and objects in possesors!!
 
@@ -115,6 +116,20 @@ export function renderNounSelection(
     return ps.length > 0 ? ps : [psStringFromEntry(n.entry)];
   })();
   const person = getPersonNumber(n.gender, n.number);
+  const determiners: T.Rendered<T.DeterminersSelection> | undefined =
+    n.determiners
+      ? {
+          ...n.determiners,
+          determiners: n.determiners.determiners.map((determiner) =>
+            renderDeterminer({
+              determiner,
+              inflected,
+              number: n.number,
+              gender: n.gender,
+            })
+          ),
+        }
+      : undefined;
   return {
     ...n,
     adjectives: n.adjectives.map((a) =>
@@ -131,62 +146,119 @@ export function renderNounSelection(
     ps: pashto,
     e: english,
     possesor: renderPossesor(n.possesor, role),
-    demonstrative: renderDemonstrative({
-      demonstrative: n.demonstrative,
-      inflected,
-      plural: n.number === "plural",
-      gender: n.gender,
-    }),
+    determiners,
   };
 }
 
-function renderDemonstrative({
-  demonstrative,
+function renderDeterminer({
+  determiner: { determiner },
   inflected,
-  plural,
+  number,
   gender,
 }: {
-  demonstrative: T.DemonstrativeSelection | undefined;
+  determiner: T.DeterminerSelection;
   inflected: boolean;
-  plural: boolean;
+  number: T.NounNumber;
   gender: T.Gender;
-}): T.Rendered<T.DemonstrativeSelection> | undefined {
-  if (!demonstrative) {
-    return undefined;
+}): T.Rendered<T.DeterminerSelection> {
+  if (determiner.p === "دا") {
+    const ps = inflected ? { p: "دې", f: "de" } : { p: "دا", f: "daa" };
+    return {
+      type: "determiner",
+      determiner,
+      inflected,
+      number,
+      gender,
+      ps: [ps],
+      e: number === "plural" ? "these" : "this",
+    };
   }
-  const ps =
-    demonstrative.demonstrative === "daa"
-      ? inflected
-        ? { p: "دې", f: "de" }
-        : { p: "دا", f: "daa" }
-      : demonstrative.demonstrative === "dagha"
-      ? inflected
-        ? plural
-          ? { p: "دغو", f: "dágho" }
-          : gender === "masc"
-          ? { p: "دغه", f: "dághu" }
-          : { p: "دغې", f: "dághe" }
-        : { p: "دغه", f: "dágha" }
-      : inflected
-      ? plural
+  if (determiner.p === "دغه") {
+    const ps = inflected
+      ? number === "plural"
+        ? { p: "دغو", f: "dágho" }
+        : gender === "masc"
+        ? { p: "دغه", f: "dághu" }
+        : { p: "دغې", f: "dághe" }
+      : { p: "دغه", f: "dágha" };
+    return {
+      type: "determiner",
+      determiner,
+      inflected,
+      number,
+      gender,
+      ps: [ps],
+      e: number === "plural" ? "these" : "this",
+    };
+  }
+  if (determiner.p === "هغه") {
+    const ps = inflected
+      ? number === "plural"
         ? { p: "هغو", f: "hágho" }
         : gender === "masc"
         ? { p: "هغه", f: "hághu" }
         : { p: "هغې", f: "hághe" }
       : { p: "هغه", f: "hágha" };
+    return {
+      type: "determiner",
+      determiner,
+      inflected,
+      number,
+      gender,
+      ps: [ps],
+      e: number === "plural" ? "those" : "that",
+    };
+  }
   const e =
-    demonstrative.demonstrative === "hagha"
-      ? plural
-        ? "those"
-        : "that"
-      : plural
-      ? "these"
-      : "this";
+    determiner.f === "Tol"
+      ? "all/the whole"
+      : determiner.f === "bul"
+      ? "other/another"
+      : determiner.f === "har"
+      ? "every/each"
+      : determiner.f === "koom"
+      ? "some/which"
+      : determiner.f === "heets"
+      ? "no"
+      : determiner.f === "dáase"
+      ? number === "plural"
+        ? "such/like these"
+        : "such/like this"
+      : determiner.f === "daghase"
+      ? number === "plural"
+        ? "just such/just like these"
+        : "just such/just like this"
+      : determiner.f === "hase"
+      ? `such/like ${number === "plural"} ? "those" : "that"`
+      : number === "plural"
+      ? "just such/just like these"
+      : "just such/just like this";
   return {
-    ...demonstrative,
-    ps,
+    type: "determiner",
+    determiner,
+    inflected,
+    number,
+    gender,
+    ps: inflectDeterminer(determiner, inflected, gender, number),
     e,
   };
+}
+
+function inflectDeterminer(
+  determiner: T.Determiner,
+  inflected: boolean,
+  gender: T.Gender,
+  number: T.NounNumber
+): T.PsString[] {
+  const infs = getInfsAndVocative(determiner, undefined);
+  if (!infs || !infs.inflections) {
+    return [{ p: determiner.p, f: determiner.f }];
+  }
+  const inf = getBasicInf(infs.inflections, gender, number, inflected);
+  if (!inf) {
+    return [{ p: determiner.p, f: determiner.f }];
+  }
+  return inf;
 }
 
 function renderPronounSelection(
@@ -267,6 +339,20 @@ function renderPossesor(
       false
     ),
   };
+}
+
+function getBasicInf(
+  infs: T.Inflections,
+  gender: T.Gender,
+  number: T.NounNumber,
+  inflected: boolean
+): T.PsString[] | false {
+  const inflectionNumber = (inflected ? 1 : 0) + (number === "plural" ? 1 : 0);
+  if (gender in infs) {
+    // @ts-ignore
+    return infs[gender][inflectionNumber];
+  }
+  return false;
 }
 
 function getInf(

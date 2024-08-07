@@ -1,38 +1,46 @@
 import * as T from "../../../types";
-import classNames from "classnames";
+import { DeterminerSelect } from "../EntrySelect";
 
-export default function DemonstrativePicker({
-  demonstrative,
+export default function DeterminersPicker({
+  determiners,
   onChange,
+  opts,
+  negative,
 }: {
-  demonstrative: T.NounSelection["demonstrative"];
-  onChange: (dem: T.NounSelection["demonstrative"]) => void;
+  determiners: T.NounSelection["determiners"];
+  onChange: (dem: T.NounSelection["determiners"]) => void;
+  opts: T.TextOptions;
+  negative: boolean;
 }) {
-  function handleDChange(d: "daa" | "hagha" | "dagha") {
-    if (!demonstrative) {
-      onChange({
-        type: "demonstrative",
-        demonstrative: d,
-        withNoun: true,
-      });
-    } else {
-      onChange({
-        ...demonstrative,
-        demonstrative: d,
-      });
+  function allowed(d: T.Determiner): boolean {
+    if (d.p === "هیڅ" && !negative) {
+      return false;
     }
+    return true;
   }
   function handleWithNounChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (demonstrative) {
+    if (determiners) {
       onChange({
-        ...demonstrative,
+        ...determiners,
         withNoun: e.target.checked,
       });
     }
   }
+  function handleDeterminerChange(value: T.Determiner[] | undefined) {
+    onChange({
+      type: "determiners",
+      withNoun: determiners ? determiners.withNoun : true,
+      determiners: value
+        ? value.map((d) => ({
+            type: "determiner",
+            determiner: d,
+          }))
+        : [],
+    });
+  }
   return (
     <div>
-      <div className="d-flex flex-row justify-content-around py-1">
+      {/* <div className="d-flex flex-row justify-content-around py-1">
         <div>
           <button
             className={classNames("btn", "btn-outline-secondary", {
@@ -62,21 +70,30 @@ export default function DemonstrativePicker({
           >
             هغه
           </button>
-        </div>
-      </div>
+        </div> 
+      </div> */}
+      <DeterminerSelect
+        determiners={T.determiners.filter(allowed)}
+        value={
+          determiners ? determiners.determiners.map((x) => x.determiner) : []
+        }
+        onChange={handleDeterminerChange}
+        name="determiner"
+        opts={opts}
+      />
       <div
         className="form-check"
         style={{
-          opacity: demonstrative ? 1 : 0.5,
+          opacity: determiners ? 1 : 0.5,
         }}
       >
         <input
           className="form-check-input"
           type="checkbox"
-          checked={demonstrative?.withNoun}
+          checked={determiners?.withNoun}
           onChange={handleWithNounChange}
           id="withNoun"
-          disabled={!demonstrative}
+          disabled={!determiners}
         />
         <label className="form-check-label text-muted" htmlFor="withNoun">
           with noun

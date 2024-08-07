@@ -163,6 +163,7 @@ function VPPicker({
               </div>
               {!block || block.type === "AP" ? (
                 <APPicker
+                  negative={vps.verb.negative}
                   phraseIsComplete={phraseIsComplete}
                   heading="AP"
                   entryFeeder={entryFeeder}
@@ -238,6 +239,7 @@ function VPPicker({
                   opts={opts}
                   isShrunk={servantIsShrunk && roles.servant === "subject"}
                   isRemoved={roles.king === "subject" && VPS?.form.removeKing}
+                  negative={VPS?.verb.negative || false}
                 />
               ) : vps.verb &&
                 block?.type === "objectSelection" &&
@@ -350,6 +352,7 @@ function VPPicker({
                       isRemoved={
                         roles.king === "object" && VPS?.form.removeKing
                       }
+                      negative={VPS?.verb.negative || false}
                     />
                   )}
                 </div>
@@ -372,6 +375,7 @@ function VPPicker({
               }
               opts={opts}
               entryFeeder={entryFeeder}
+              negative={vps.verb.negative}
             />
           </div>
         )}

@@ -5,6 +5,7 @@ import {
   personNumber,
   personToGenNum,
 } from "../misc-helpers";
+import { monoidPsString } from "../fp-ps";
 import { applySingleOrLengthOpts, fmapSingleOrLengthOpts } from "../fp-ps";
 import {
   concatPsString,
@@ -448,7 +449,7 @@ function ensure3rdPast(
   }
   const abruptEnder = ["د", "ت", "ړ"].includes(rs[0].p.slice(-1));
   // short endings like ورسېد
-  const ends = abruptEnder ? [{ p: "", f: "" }, ...ending] : ending;
+  const ends = abruptEnder ? [monoidPsString.empty, ...ending] : ending;
   return verbEndingConcat(rs, ends);
 }
 

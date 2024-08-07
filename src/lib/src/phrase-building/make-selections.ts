@@ -81,6 +81,6 @@ export function makeNounSelection(
     possesor: !complementType ? old?.possesor : undefined,
     dynamicComplement: complementType === "dynamic",
     genStativeComplement: complementType === "generative stative",
-    demonstrative: old?.demonstrative,
+    determiners: old?.determiners,
   };
 }

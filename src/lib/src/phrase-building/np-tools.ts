@@ -2,8 +2,10 @@ import { isFirstPerson, isSecondPerson } from "../misc-helpers";
 import * as T from "../../../types";
 import { concatPsString } from "../p-text-helpers";
 import { flattenLengths } from "./compile";
+import { monoidPsStringWVars } from "../fp-ps";
+import { concatAll } from "fp-ts/lib/Monoid";
 
-function getBaseAndAdjectives({
+function getBaseWDetsAndAdjs({
   selection,
 }: T.Rendered<
   T.NPSelection | T.ComplementSelection | T.APSelection
@@ -11,45 +13,39 @@ function getBaseAndAdjectives({
   if (selection.type === "sandwich") {
     return getSandwichPsBaseAndAdjectives(selection);
   }
-  const adjs = "adjectives" in selection && selection.adjectives;
-  const demonstrativePs = ("demonstrative" in selection &&
-    selection.demonstrative?.ps) || { p: "", f: "" };
-  if (!adjs) {
-    // TODO: does this ever get used??
-    return flattenLengths(selection.ps).map((x) =>
-      concatPsString(demonstrativePs, x)
-    );
-  }
-
-  if (selection.demonstrative && !selection.demonstrative.withNoun) {
-    return [demonstrativePs];
-  }
-
-  return flattenLengths(selection.ps).map((p) =>
-    concatPsString(
-      demonstrativePs,
-      // demons ? " " : "",
-      adjs.reduce(
-        (accum, curr) => {
-          // TODO: with variations of adjs? {
-          return concatPsString(
-            accum,
-            accum.p === "" && accum.f === "" ? "" : "", //" ",
-            curr.ps[0]
-          );
-        },
-        { p: "", f: "" }
-      ),
-      " ",
-      p
-    )
+  const determiners = (
+    ("determiners" in selection && selection.determiners?.determiners) ||
+    []
+  ).map((x) => x.ps);
+  const detWOutNoun =
+    "determiners" in selection &&
+    selection.determiners &&
+    !selection.determiners.type;
+  const adjs = (("adjectives" in selection && selection.adjectives) || []).map(
+    (x) => x.ps
   );
+  const base = flattenLengths(selection.ps);
+  return assemblePsWords([
+    ...determiners,
+    ...(detWOutNoun ? [] : [...adjs, base]),
+  ]);
+}
+
+// TODO: perhaps use this for more things (a simple compileIntoText ?)
+function assemblePsWords(words: T.PsString[][]): T.PsString[] {
+  return concatAll(monoidPsStringWVars)([
+    ...intersperse(words, [{ p: " ", f: " " }]),
+  ]);
+}
+
+function intersperse<T>(arr: T[], sep: T): T[] {
+  return arr.reduce((a: T[], v: T) => [...a, v, sep], []).slice(0, -1);
 }
 
 function getSandwichPsBaseAndAdjectives(
   s: T.Rendered<T.SandwichSelection<T.Sandwich>>
 ): T.PsString[] {
-  const insideBase = getBaseAndAdjectives(s.inside);
+  const insideBase = getBaseWDetsAndAdjs(s.inside);
   const willContractWithPronoun =
     s.before &&
     s.before.p === "د" &&
@@ -118,7 +114,7 @@ export function getPashtoFromRendered(
     | T.Rendered<T.APSelection>,
   subjectsPerson: false | T.Person
 ): T.PsString[] {
-  const base = getBaseAndAdjectives(b);
+  const base = getBaseWDetsAndAdjs(b);
   if (b.selection.type === "loc. adv." || b.selection.type === "adverb") {
     return base;
   }
@@ -172,7 +168,7 @@ function addPossesor(
     );
   }
   const wPossesor = existing.flatMap((ps) =>
-    getBaseAndAdjectives(owner).map((v) =>
+    getBaseWDetsAndAdjs(owner).map((v) =>
       owner.selection.type === "pronoun" &&
       subjectsPerson !== false &&
       willBeReflexive(subjectsPerson, owner.selection.person)
@@ -204,7 +200,7 @@ function addArticlesAndAdjs(
     const adjs = !np.adjectives
       ? ""
       : np.adjectives.reduce((accum, curr): string => {
-          if (!curr.e) throw new Error("no english for adjective");
+          if (!curr.e) return "ADJ";
           return accum + curr.e + " ";
         }, "");
     const genderTag = np.genderCanChange
@@ -212,10 +208,14 @@ function addArticlesAndAdjs(
         ? " (f.)"
         : " (m.)"
       : "";
-    const demonstrative = np.demonstrative ? ` ${np.demonstrative.e}` : "";
-    const demWithoutNoun = np.demonstrative && !np.demonstrative.withNoun;
-    return `${np.demonstrative ? "" : articles}${demonstrative}${
-      demWithoutNoun ? ` (${(adjs + word).trim()})` : adjs + word
+    const determiners =
+      np.determiners && np.determiners.determiners
+        ? // @ts-ignore - weird, ts is not recognizing this as rendered
+          np.determiners.determiners.map((x) => `(${x.e})`).join(" ")
+        : "";
+    const detsWithoutNoun = np.determiners && !np.determiners.withNoun;
+    return `${np.determiners ? "" : articles}${determiners}${
+      detsWithoutNoun ? ` (${(adjs + word).trim()})` : adjs + word
     }${genderTag}`;
   } catch (e) {
     return undefined;
