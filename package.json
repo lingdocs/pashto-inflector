@@ -1,7 +1,6 @@
 {
-  "name": "minrep",
-  "private": true,
-  "version": "0.0.0",
+  "name": "pashto-inflector-website",
+  "version": "7.6.0",
   "type": "module",
   "scripts": {
     "patch": "npm version patch --no-git-tag-version && cd src/lib && npm version patch --no-git-tag-version && cd ../components && npm version patch --no-git-tag-version",
