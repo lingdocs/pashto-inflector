@@ -166,7 +166,9 @@ function App() {
         show={showingTextOptions}
         onHide={() => setShowingTextOptions(false)}
       >
+        {/* @ts-expect-error strange react-bootstrap issue */}
         <Modal.Header closeButton>
+          {/* @ts-expect-error strange react-bootstrap issue */}
           <Modal.Title>Settings</Modal.Title>
         </Modal.Header>
         <Modal.Body>
