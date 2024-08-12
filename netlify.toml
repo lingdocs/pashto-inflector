@@ -1,3 +1,3 @@
 [build]
-  command = "yarn install-all && yarn test --runInBand --no-cache && yarn build-website"
+  command = "yarn install-all && yarn test && yarn build-website"
   publish = "dist/"
