@@ -105,7 +105,8 @@ export function buildVerbChart({
 
 const vIsLength =
   (length: T.Length) =>
-  ({ vbs: [ph, [v]] }: T.RenderVerbOutput): boolean => {
+  ({ vbs }: T.RenderVerbOutput): boolean => {
+    const v = vbs[1][0];
     // there are a number of parts of the verb that could be considered
     // to be length variations
     // but we will take the first main verb block as the point of length variation
@@ -140,7 +141,7 @@ function grabLength(
     }
     return {
       ...vb,
-      // @ts-ignore
+      // @ts-expect-error length will be here
       ps: vb.ps[length],
     };
   }
@@ -176,7 +177,7 @@ function pullOutLengths(
   if (hasMini) {
     wLengths.mini = [];
     ps.forEach((x) => {
-      // @ts-ignore
+      // @ts-expect-error mini is here
       wLengths.mini.push(grabLength("mini", x));
     });
   }

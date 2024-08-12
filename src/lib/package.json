@@ -2,7 +2,7 @@
   "name": "@lingdocs/inflect",
   "version": "7.5.1",
   "description": "Pashto inflector library",
-  "main": "dist/index.js",
+  "main": "dist/lib/library.js",
   "types": "dist/lib/library.d.ts",
   "repository": {
     "type": "git",
@@ -20,17 +20,14 @@
     "build": "echo \"build from repo root\""
   },
   "author": "lingdocs.com",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "dependencies": {
     "fp-ts": "^2.16.0",
-    "pbf": "^3.2.1",
+    "lokijs": "^1.5.12",
+    "micro-memoize": "^4.1.2",
     "rambda": "^7.3.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^22.0.2",
-    "@rollup/plugin-image": "^2.0.6",
-    "@rollup/plugin-node-resolve": "^14.1.0",
-    "@types/pbf": "^3.0.2",
-    "rollup": "^2.79.1"
+    "@types/lokijs": "^1.5.14"
   }
 }

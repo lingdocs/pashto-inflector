@@ -18,35 +18,24 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "echo \"build from repo root\"",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build": "echo \"build from repo root\""
   },
   "author": "lingdocs.com",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "dependencies": {
     "@formkit/auto-animate": "^1.0.0-beta.3",
-    "classnames": "^2.2.6",
+    "classnames": "^2.5.1",
     "fp-ts": "^2.16.0",
-    "jsurl2": "^2.1.0",
+    "lokijs": "^1.5.12",
     "lz-string": "^1.4.4",
-    "pbf": "^3.2.1",
+    "micro-memoize": "^4.1.2",
     "rambda": "^7.3.0",
+    "react-bootstrap": "^1.5.1",
     "react-error-boundary": "^4.0.13",
     "react-select": "^5.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.0",
-    "@storybook/addon-actions": "^6.5.16",
-    "@storybook/addon-essentials": "^6.5.16",
-    "@storybook/addon-interactions": "^6.5.16",
-    "@storybook/addon-links": "^6.5.16",
-    "@storybook/builder-webpack4": "^6.5.16",
-    "@storybook/manager-webpack4": "^6.5.16",
-    "@storybook/react": "^6.5.16",
-    "@storybook/testing-library": "^0.0.13",
-    "@types/pbf": "^3.0.2",
-    "babel-loader": "^8.3.0",
-    "fs-extra": "^10.1.0"
+    "@types/lokijs": "^1.5.14",
+    "fs-extra": "^11.2.0"
   }
 }

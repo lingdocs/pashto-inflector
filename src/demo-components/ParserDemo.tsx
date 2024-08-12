@@ -135,7 +135,6 @@ function ParserDemo({
           <EditableVP
             opts={opts}
             entryFeeder={entryFeeder}
-            formChoice={false}
             allVariations={true}
           >
             {uncompleteVPSelection(res)}

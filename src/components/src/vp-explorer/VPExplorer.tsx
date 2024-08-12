@@ -1,14 +1,13 @@
 import VerbPicker from "./VerbPicker";
 import TensePicker from "./TensePicker";
 import VPDisplay from "./VPDisplay";
-import ButtonSelect from "../ButtonSelect";
+import ButtonSelect from "../selects/ButtonSelect";
 import * as T from "../../../types";
 import useStickyState, { useStickyReducer } from "../useStickyState";
 import { makeVPSelectionState } from "../../../lib/src/phrase-building/verb-selection";
 import { useEffect, useState } from "react";
 import { completeVPSelection } from "../../../lib/src/phrase-building/vp-tools";
 import VPExplorerQuiz from "./VPExplorerQuiz";
-// @ts-ignore
 import LZString from "lz-string";
 import {
   VpsReducerAction,

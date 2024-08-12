@@ -20,7 +20,7 @@ This library uses a 3-step process to generate gramattically correct Pashto phra
 | | Pashto Inflector Function | Chomskian Grammar Level |
 |-|--------------------------| ----------------------- |
 |1.| Assemble the phrase tree | Phrase Structure Rules |
-|2.| Inflect the words in tree | Morphophonemic Rules |
+|2.| Inflect the words in tree | Morphophonemic Rules   |
 |3.| Arrange the inflected words in order | Transformational Rules |
 
 ### 1. Assemble the phrase tree

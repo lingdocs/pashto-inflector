@@ -8,7 +8,7 @@ import {
 } from "../../../lib/src/misc-helpers";
 import { useState } from "react";
 import { getLength } from "../../../lib/src/p-text-helpers";
-import { roleIcon } from "../vp-explorer/VPExplorerExplanationModal";
+import { roleIcon } from "../role-icons";
 import { negativeParticle } from "../../../lib/src/grammar-units";
 import { flattenLengths } from "../../library";
 
@@ -139,7 +139,7 @@ function Border({
 }
 
 function VBBlock({
-  opts,
+  // opts,
   block,
   script,
 }: {
@@ -286,7 +286,7 @@ function WeldedBlock({
 // }
 
 function PerfHeadBlock({
-  opts,
+  // opts,
   ps,
   script,
 }: {
@@ -319,7 +319,7 @@ function PerfHeadBlock({
 // }
 
 function NegBlock({
-  opts,
+  // opts,
   imperative,
   script,
 }: {
@@ -339,7 +339,7 @@ function NegBlock({
 }
 
 function EquativeBlock({
-  opts,
+  // opts,
   eq,
   script,
 }: {
@@ -425,7 +425,7 @@ function ObjectBlock({
 }
 
 function NCompBlock({
-  opts,
+  // opts,
   comp,
   script,
 }: {
@@ -465,7 +465,7 @@ function ComplementBlock({
   inside?: boolean;
 }) {
   function AdjectiveBlock({
-    opts,
+    // opts,
     adj,
   }: {
     opts: T.TextOptions;
@@ -486,7 +486,7 @@ function ComplementBlock({
   }
 
   function LocAdvBlock({
-    opts,
+    // opts,
     adv,
   }: {
     opts: T.TextOptions;
@@ -601,7 +601,7 @@ function Sandwich({
 }
 
 function Determiners({
-  opts,
+  // opts,
   script,
   children,
 }: {
@@ -628,7 +628,7 @@ function Determiners({
 }
 
 function CompNounBlock({
-  opts,
+  // opts,
   noun,
   script,
 }: {
@@ -703,7 +703,7 @@ export function NPBlock({
       {flattenLengths(np.selection.ps)[0][script]}
     </div>,
   ].filter((x) => {
-    // @ts-ignore
+    // @ts-expect-error yes I know
     return x !== " ";
   });
   const el = script === "p" ? elements.reverse() : elements;
@@ -793,7 +793,7 @@ function Possesors({
 }
 
 function Adjectives({
-  opts,
+  // opts,
   children,
   script,
 }: {

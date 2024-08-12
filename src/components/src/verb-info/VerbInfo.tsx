@@ -13,7 +13,7 @@ import {
   noPersInfs,
 } from "../../../lib/src/misc-helpers";
 import VerbInfoItemDisplay from "./VerbInfoItemDisplay";
-import PersonInfsPicker from "../PersInfsPicker";
+import PersonInfsPicker from "../selects/PersInfsPicker";
 import VerbTypeInfo from "./VerbTypeInfo";
 import Hider from "../Hider";
 import * as T from "../../../types";

@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
           cache: "yarn"
       - name: Check if version has been updated
         id: check
@@ -27,10 +27,10 @@ jobs:
       - name: Publish when version changed
         if: steps.check.outputs.changed == 'true'
         run: |
-          yarn install-r
-          yarn build-library
+          yarn install-all
+          yarn build-lib
+          yarn build-components
           yarn test --silent
-          yarn check-all-inflections
           cp .npmrc src/lib
           cp .npmrc src/components
           cd src/lib

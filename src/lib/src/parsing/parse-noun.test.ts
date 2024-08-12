@@ -1370,7 +1370,6 @@ const tests: {
 
 describe("parsing nouns", () => {
   tests.forEach(({ category, cases }) => {
-    // eslint-disable-next-line jest/valid-title
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
@@ -1504,7 +1503,6 @@ const adjsTests: {
 
 describe("parsing nouns with adjectives", () => {
   adjsTests.forEach(({ category, cases }) => {
-    // eslint-disable-next-line jest/valid-title
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);

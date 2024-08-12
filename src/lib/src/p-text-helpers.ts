@@ -274,7 +274,7 @@ export function ensureBaAt(
  */
 export function isAllOne(block: T.VerbBlock | T.ImperativeBlock): boolean {
   return block.reduce(
-    (isTheSame, row, i, src) =>
+    (isTheSame, row, _, src) =>
       isTheSame &&
       psStringEquals(row[0][0], src[0][0][0]) &&
       psStringEquals(row[1][0], src[1][0][0]),
@@ -468,7 +468,7 @@ export function addToForm(
         return b.map((person, persNum) =>
           person.map(
             (item, singPlur) =>
-              // @ts-ignore
+              // @ts-expect-error because
               item.reduce((vars, ps) => {
                 const varIndexes = [...Array(multiplyEachVariationBy).keys()];
                 return [
@@ -493,7 +493,6 @@ export function addToForm(
       toAdd.some(
         (element) =>
           (element !== " " && "long" in element) ||
-          // @ts-ignore
           (Array.isArray(element) && element.some((e) => "long" in e))
       );
     if (useLengthOptions) {
@@ -795,8 +794,8 @@ export function removeRetroflexR(ps: T.PsString): T.PsString {
   };
 }
 
-export function clamp(s: string, chars: number): string {
-  return `${s.slice(0, 20)}${s.length > 20 ? "..." : ""}`;
+export function clamp(s: string, chars = 20): string {
+  return `${s.slice(0, chars)}${s.length > chars ? "..." : ""}`;
 }
 
 export function addEnglish(
@@ -846,7 +845,7 @@ export function addEnglish(
     return mapVerbBlock(
       (psString, i, j) => ({
         ...psString,
-        // @ts-ignore
+        // @ts-expect-error because
         e: typeof english === "string" ? english : english[i][j],
       }),
       ps as T.VerbBlock
@@ -856,7 +855,7 @@ export function addEnglish(
     return mapImperativeBlock(
       (psString, i, j) => ({
         ...psString,
-        // @ts-ignore
+        // @ts-expect-error because
         e: typeof english === "string" ? english : english[i][j],
       }),
       ps as T.ImperativeBlock
@@ -900,10 +899,9 @@ export function removeHead(head: T.PsString, ps: T.PsString): T.PsString {
 }
 
 export function uniquePsStringArray(arr: T.PsString[]): T.PsString[] {
-  return [
-    // @ts-ignore
-    ...new Set(arr.map((o) => JSON.stringify(o))),
-  ].map((string) => JSON.parse(string)) as T.PsString[];
+  return [...new Set(arr.map((o) => JSON.stringify(o)))].map((string) =>
+    JSON.parse(string)
+  ) as T.PsString[];
 }
 
 export function splitOffLeapfrogWordFull(
@@ -1221,7 +1219,7 @@ export function endsWith(
   const f = removeFVarients(ps.f).replace(/'/g, "");
   const fEnd =
     "f" in ending
-      ? // @ts-ignore
+      ? // @ts-expect-error because
         ending.f.replace(/'/g, "")
       : undefined;
   return (

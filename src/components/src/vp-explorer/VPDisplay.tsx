@@ -11,10 +11,10 @@ import ModeSelect, {
   LengthSelect,
   Mode,
   ScriptSelect,
-} from "../DisplayModeSelect";
+} from "../selects/DisplayModeSelect";
 import { useState } from "react";
-import CompiledPTextDisplay from "../CompiledPTextDisplay";
-import RenderedBlocksDisplay from "../RenderedBlocksDisplay";
+import CompiledPTextDisplay from "../text-display/CompiledPTextDisplay";
+import RenderedBlocksDisplay from "../blocks/RenderedBlocksDisplay";
 import useStickyState from "../useStickyState";
 
 function VPDisplay({

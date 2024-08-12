@@ -1,14 +1,15 @@
 import * as T from "../../../types";
-import NPPicker from "../np-picker/NPPicker";
+import NPPicker from "../block-pickers/NPPicker";
 import EquativePicker from "./EquativePicker";
-import ButtonSelect from "../ButtonSelect";
-import ComplementPicker from "../ComplementPicker";
+import ButtonSelect from "../selects/ButtonSelect";
+import ComplementPicker from "../block-pickers/ComplementPicker";
 import epsReducer, {
   EpsReducerAction,
 } from "../../../lib/src/phrase-building/eps-reducer";
 import { useEffect, useRef } from "react";
 import { completeEPSelection } from "../../../lib/src/phrase-building/render-ep";
-import APPicker from "../../src/ap-picker/APPicker";
+import APPicker from "../block-pickers/APPicker";
+// @ts-expect-error types not working for this
 import autoAnimate from "@formkit/auto-animate";
 
 function EPPicker({
@@ -24,7 +25,9 @@ function EPPicker({
 }) {
   const parent = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    parent.current && autoAnimate(parent.current);
+    if (parent.current) {
+      autoAnimate(parent.current);
+    }
   }, [parent]);
   function adjustEps(action: EpsReducerAction) {
     onChange(epsReducer(eps, action));

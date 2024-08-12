@@ -1,5 +1,5 @@
 import * as T from "../../../types";
-import ButtonSelect from "../ButtonSelect";
+import ButtonSelect from "../selects/ButtonSelect";
 import { RootsAndStems } from "../verb-info/VerbInfo";
 import {
   getAbilityRootsAndStems,

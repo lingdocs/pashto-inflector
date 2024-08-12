@@ -20,7 +20,6 @@ import {
   changeTransitivity,
   makeVPSelectionState,
 } from "./verb-selection";
-import { mapGen } from "../fp-ps";
 
 export type VpsReducerAction =
   | {

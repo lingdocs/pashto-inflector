@@ -5,14 +5,14 @@ import { baParticle } from "../../../lib/src/grammar-units";
 import { randomSubjObj } from "../../../lib/src/np-tools";
 import { standardizePashto } from "../../../lib/src/standardize-pashto";
 import shuffleArray from "../../../lib/src/shuffle-array";
-import InlinePs from "../InlinePs";
+import InlinePs from "../text-display/InlinePs";
 import { psStringEquals } from "../../../lib/src/p-text-helpers";
 import { renderVP } from "../../../lib/src/phrase-building/render-vp";
 import {
   compileVP,
   flattenLengths,
 } from "../../../lib/src/phrase-building/compile";
-import { getRandomTense } from "./TensePicker";
+import { getRandomTense } from "./vp-explorer-util";
 import {
   getTenseFromVerbSelection,
   removeBa,
@@ -20,7 +20,7 @@ import {
 } from "../../../lib/src/phrase-building/vp-tools";
 import playAudio from "../play-audio";
 import TensePicker from "./TensePicker";
-import Keyframes from "../Keyframes";
+import Keyframes from "./Keyframes";
 import { isImperativeTense } from "../../../lib/src/type-predicates";
 import {
   adjustObjectSelection,
@@ -114,7 +114,7 @@ function VPExplorerQuiz(props: {
     const correct =
       "p" in a
         ? isInAnswer(a, quizState.answer)
-        : // @ts-ignore // TODO: CLEANUP
+        : // @ts-expect-error // TODO: CLEANUP
           blanksAnswerCorrect(a, quizState.answer);
     setAnswerBlank("");
     setWithBa(false);
@@ -190,9 +190,7 @@ function VPExplorerQuiz(props: {
         <div className="text-center">
           <div
             style={
-              showCheck
-                ? answerFeedback
-                : ({ ...answerFeedback, opacity: 0 } as any)
+              showCheck ? answerFeedback : { ...answerFeedback, opacity: 0 }
             }
           >
             {currentCorrectEmoji}
@@ -224,7 +222,7 @@ function VPExplorerQuiz(props: {
                       className="btn btn-answer btn-outline-secondary"
                       onClick={() => checkAnswer(o)}
                     >
-                      <InlinePs opts={props.opts}>{o}</InlinePs>
+                      <InlinePs opts={props.opts} ps={o} />
                     </button>
                   </div>
                 ))}
@@ -272,7 +270,7 @@ function VPExplorerQuiz(props: {
                       className="form-check-label text-muted"
                       htmlFor="addBa"
                     >
-                      add <InlinePs opts={props.opts}>{baParticle}</InlinePs> in
+                      add <InlinePs opts={props.opts} ps={baParticle} /> in
                       kids' section
                     </label>
                   </div>
@@ -288,13 +286,14 @@ function VPExplorerQuiz(props: {
               {quizState.stage === "multiple choice" ? (
                 <div>
                   <div className="my-4 lead">The correct answer was:</div>
-                  <InlinePs opts={props.opts}>
-                    {
+                  <InlinePs
+                    opts={props.opts}
+                    ps={
                       quizState.options.find((x) =>
                         isInAnswer(x, quizState.answer)
                       ) as T.PsString
                     }
-                  </InlinePs>
+                  />
                 </div>
               ) : (
                 <div>
@@ -303,7 +302,7 @@ function VPExplorerQuiz(props: {
                   </div>
                   {quizState.answer.ps.map((p, i) => (
                     <div key={i}>
-                      <InlinePs opts={props.opts}>{p}</InlinePs>
+                      <InlinePs opts={props.opts} ps={p} />
                     </div>
                   ))}
                   <div className="mt-2">
@@ -312,8 +311,8 @@ function VPExplorerQuiz(props: {
                         ? "With"
                         : "without"}
                     </strong>
-                    {` `}a <InlinePs opts={props.opts}>{baParticle}</InlinePs>{" "}
-                    in the phrase
+                    {` `}a <InlinePs opts={props.opts} ps={baParticle} /> in the
+                    phrase
                   </div>
                 </div>
               )}
@@ -399,9 +398,10 @@ function QuizNPDisplay({
         <div className="text-centered" style={{ fontSize: "large" }}>
           {stage === "blanks" && (
             <div>
-              <InlinePs opts={opts}>
-                {flattenLengths(children.selection.ps)[0]}
-              </InlinePs>
+              <InlinePs
+                opts={opts}
+                ps={flattenLengths(children.selection.ps)[0]}
+              />
             </div>
           )}
           <div>{children.selection.e}</div>
@@ -441,7 +441,6 @@ function tickQuizState(
       v = getRandomVPSelection("tenses")(
         SOSwitch ? switchSubjObj(newVps) : newVps
       );
-      // eslint-disable-next-line
     } while (wrongVpsS.find((x) => x.verb.tense === v.verb.tense));
     wrongVpsS.push(v);
   });
@@ -455,7 +454,7 @@ function tickQuizState(
     : "stage" in startingWith
     ? startingWith.stage
     : "multiple choice";
-  const blanksAnswer = getBlanksAnswer(newVps);
+  const blanksAnswer = getBlanksAnswer(/* newVps */);
   if (stage === "blanks") {
     return {
       stage,
@@ -480,7 +479,7 @@ function tickQuizState(
   return out;
 }
 
-function getBlanksAnswer(vps: T.VPSelectionComplete): {
+function getBlanksAnswer(/* vps: T.VPSelectionComplete */): {
   ps: T.PsString[];
   withBa: boolean;
 } {

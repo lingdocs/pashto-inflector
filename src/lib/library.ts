@@ -60,12 +60,6 @@ import {
   dictionaryEntryTextFields,
 } from "../types";
 import { validateEntry, standardizeEntry } from "./src/validate-entry";
-import {
-  readDictionary,
-  writeDictionary,
-  readDictionaryInfo,
-  writeDictionaryInfo,
-} from "./src/protobuf";
 import { pashtoConsonants } from "./src/pashto-consonants";
 import {
   isNounAdjOrVerb,
@@ -219,11 +213,6 @@ export {
   isPashtoScript,
   getInflectionPattern,
   entryOfFull,
-  // protobuf helpers
-  readDictionary,
-  writeDictionary,
-  readDictionaryInfo,
-  writeDictionaryInfo,
   // OTHER
   typePredicates,
   grammarUnits,

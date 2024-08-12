@@ -1,7 +1,7 @@
 import PhraseBuilder from "../components/src/vp-explorer/VPExplorer";
 import * as T from "../types";
-import Pashto from "../components/src/Pashto";
-import Phonetics from "../components/src/Phonetics";
+import Pashto from "../components/src/text-display/Pashto";
+import Phonetics from "../components/src/text-display/Phonetics";
 import { getVerbInfo } from "../lib/src/verb-info";
 import verbs from "../verbs";
 import { useStickyState } from "../components/library";
@@ -45,9 +45,10 @@ function VPBuilderDemo({ opts }: { opts: T.TextOptions }) {
   //         setVerbTypesShowing([...verbTypesShowing, "simple"]);
   //     }
   // }
-  const handleVerbIndexChange = (e: any) => {
+  const handleVerbIndexChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setVerbTs(parseInt(e.target.value));
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleTypeSelection = (e: any) => {
     const type = e.target.value as VerbType;
     if (type === "dynamic compound") {
@@ -61,6 +62,7 @@ function VPBuilderDemo({ opts }: { opts: T.TextOptions }) {
     }
     setVerbTypeShowing(type);
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleTransitivitySelection = (e: any) => {
     const transitivity = e.target.value as T.Transitivity;
     if (transitivity === "grammatically transitive") {
@@ -155,9 +157,9 @@ function VPBuilderDemo({ opts }: { opts: T.TextOptions }) {
                   <div className="my-3">
                     <div>
                       <strong>
-                        <Pashto opts={opts}>{v.verb.entry}</Pashto>
+                        <Pashto opts={opts} ps={v.verb.entry} />
                         {` `}-{` `}
-                        <Phonetics opts={opts}>{v.verb.entry}</Phonetics>
+                        <Phonetics opts={opts} ps={v.verb.entry} />
                       </strong>
                       {` `}
                       <em>{v.verb.entry.c}</em>

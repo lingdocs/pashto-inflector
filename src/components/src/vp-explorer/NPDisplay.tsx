@@ -1,7 +1,7 @@
 import * as T from "../../../types";
-import ModeSelect, { Mode, ScriptSelect } from "../DisplayModeSelect";
+import ModeSelect, { Mode, ScriptSelect } from "../selects/DisplayModeSelect";
 import { useState } from "react";
-import CompiledPTextDisplay from "../CompiledPTextDisplay";
+import CompiledPTextDisplay from "../text-display/CompiledPTextDisplay";
 import useStickyState from "../useStickyState";
 import {
   getEnglishFromRendered,

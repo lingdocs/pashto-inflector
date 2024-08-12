@@ -69,7 +69,7 @@ function nounAdjLookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
           .includes(value as string)
     );
   }
-  // @ts-ignore
+  // @ts-expect-error because
   return nounsAdjs.filter((e) => e[key] === value) as T.DictionaryEntry[];
 }
 

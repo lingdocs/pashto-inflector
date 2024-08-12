@@ -13,7 +13,7 @@ export function EditIcon() {
 function EditableVP({
   children,
   opts,
-  formChoice,
+  // formChoice,
   noEdit,
   length,
   mode,
@@ -23,7 +23,7 @@ function EditableVP({
 }: {
   children: T.VPSelectionState;
   opts: T.TextOptions;
-  formChoice?: boolean;
+  // formChoice?: boolean;
   noEdit?: boolean;
   length?: "long" | "short";
   mode?: "text" | "blocks";

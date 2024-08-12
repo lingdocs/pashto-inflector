@@ -7,11 +7,11 @@
  */
 
 import { useEffect, useState } from "react";
-import PersonInfsPicker from "./PersInfsPicker";
-import InflectionsTable from "./InflectionsTable";
-import SingleItemDisplay from "./SingleItemDisplay";
-import ButtonSelect from "./ButtonSelect";
-import VerbTable from "./VerbTable";
+import PersonInfsPicker from "./selects/PersInfsPicker";
+import InflectionsTable from "./tables/InflectionsTable";
+import SingleItemDisplay from "./text-display/SingleItemDisplay";
+import ButtonSelect from "./selects/ButtonSelect";
+import VerbTable from "./tables/VerbTable";
 import {
   getEnglishPersonInfo,
   isSentenceForm,

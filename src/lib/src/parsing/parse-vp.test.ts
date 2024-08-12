@@ -1,5 +1,3 @@
-/* eslint-disable jest/no-conditional-expect */
-/* eslint-disable jest/valid-title */
 import * as T from "../../../types";
 import {
   makeObjectSelectionComplete,

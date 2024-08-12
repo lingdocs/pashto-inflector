@@ -1,80 +1,81 @@
-/**
- * Copyright (c) 2021 lingdocs.com
- *
- * This source code is licensed under the GPL3 license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-import InflectionsTable from "./src/InflectionsTable";
-import Pashto from "./src/Pashto";
-import Phonetics from "./src/Phonetics";
-import InlinePs from "./src/InlinePs";
-import ButtonSelect from "./src/ButtonSelect";
-import VerbFormDisplay from "./src/VerbFormDisplay";
-import VerbTable from "./src/VerbTable";
-import EPDisplay from "./src/ep-explorer/EPDisplay";
-import Examples from "./src/Examples";
+import Pashto from "./src/text-display/Pashto";
+import Phonetics from "./src/text-display/Phonetics";
+import InlinePs from "./src/text-display/InlinePs";
+import Examples from "./src/text-display/Examples";
+import CompiledPTextDisplay from "./src/text-display/CompiledPTextDisplay";
+import ButtonSelect from "./src/selects/ButtonSelect";
+import EntrySelect from "./src/selects/EntrySelect";
+import PersonSelection from "./src/selects/PersonSelection";
 import Hider from "./src/Hider";
-import EntrySelect from "./src/EntrySelect";
+import InflectionsTable from "./src/tables/InflectionsTable";
+import VerbTable from "./src/tables/VerbTable";
+import useStickyState from "./src/useStickyState";
+import NPPicker from "./src/block-pickers/NPPicker";
+import SandwichPicker from "./src/block-pickers/SandwichPicker";
+import VerbFromDisplay from "./src/VerbFormDisplay";
+import Block from "./src/blocks/Block";
 import VerbInfo, { RootsAndStems } from "./src/verb-info/VerbInfo";
 import VPExplorer from "./src/vp-explorer/VPExplorer";
-import { makeVPSelectionState } from "../lib/src/phrase-building/verb-selection";
-import { vpsReducer } from "../lib/src/phrase-building/vps-reducer";
-import type { VpsReducerAction as VpsA } from "../lib/src/phrase-building/vps-reducer";
-import useStickyState from "./src/useStickyState";
-import Block, { NPBlock, APBlock } from "./src/blocks/Block";
-import { roleIcon } from "./src/vp-explorer/VPExplorerExplanationModal";
-import CompiledPTextDisplay from "./src/CompiledPTextDisplay";
-import RenderedBlocksDisplay from "./src/RenderedBlocksDisplay";
-import NPPicker from "./src/np-picker/NPPicker";
-import EPPicker from "./src/ep-explorer/EPPicker";
 import EPExplorer from "./src/ep-explorer/EPExplorer";
-import APPicker from "./src/ap-picker/APPicker";
+import playAudio from "./src/play-audio";
+import { roleIcon } from "./src/role-icons";
+import { vpsReducer } from "../lib/src/phrase-building/vps-reducer";
+import type { VpsReducerAction } from "../lib/src/phrase-building/vps-reducer";
+import { makeVPSelectionState } from "../lib/src/phrase-building/verb-selection";
+
+import APPicker from "./src/block-pickers/APPicker";
 import VPDisplay from "./src/vp-explorer/VPDisplay";
 import VPPicker from "./src/vp-explorer/VPPicker";
 import NPDisplay from "./src/vp-explorer/NPDisplay";
-import HumanReadableInflectionPattern from "./src/HumanReadableInflectionPattern";
-import { psJSXMap } from "./src/jsx-map";
+import HumanReadableInflectionPattern from "./src/tables/HumanReadableInflectionPattern";
+import { psJSXMap } from "./src/text-display/jsx-map";
 import genderColors from "./src/gender-colors";
 
 // this library also includes everything from the core inflect library
 export * from "../lib/library";
 
 export {
-    useStickyState,
-    roleIcon,
-    vpsReducer,
-    makeVPSelectionState,
-    EPExplorer,
-    VPExplorer,
-    Examples,
-    VerbFormDisplay,
-    VerbTable,
-    VerbInfo,
-    RootsAndStems,
-    InflectionsTable,
-    Pashto,
-    Phonetics,
-    InlinePs,
-    ButtonSelect,
-    Hider,
-    EntrySelect,
-    NPPicker,
-    APPicker,
-    NPBlock,
-    APBlock,
-    Block,
-    EPDisplay,
-    VPDisplay,
-    NPDisplay,
-    EPPicker,
-    VPPicker,
-    CompiledPTextDisplay,
-    RenderedBlocksDisplay,
-    HumanReadableInflectionPattern,
-    psJSXMap,
-    genderColors,
-}
+  // text-display
+  InlinePs,
+  Pashto,
+  Phonetics,
+  CompiledPTextDisplay,
+  Examples,
 
-export type VpsReducerAction = VpsA;
+  // selects
+  ButtonSelect,
+  EntrySelect,
+  PersonSelection,
+
+  // tables
+  InflectionsTable,
+  VerbTable,
+
+  // block-pickers
+  APPicker,
+  NPPicker,
+  SandwichPicker,
+
+  // blocks
+  Block,
+
+  // misc
+  Hider,
+  useStickyState,
+  VerbFromDisplay,
+  VerbInfo,
+  VPExplorer,
+  EPExplorer,
+  playAudio,
+  roleIcon,
+  vpsReducer,
+  VpsReducerAction,
+  makeVPSelectionState,
+  RootsAndStems,
+  VPDisplay,
+  VPPicker,
+  NPDisplay,
+  HumanReadableInflectionPattern,
+  psJSXMap,
+  genderColors,
+};

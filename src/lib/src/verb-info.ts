@@ -78,12 +78,12 @@ export function getVerbInfo(
     return {
       type: "transitive or grammatically transitive simple",
       transitive: getVerbInfo(
-        // @ts-ignore (will have entry.c)
+        // @ts-expect-error (will have entry.c)
         { ...entry, c: entry.c.replace("trans./gramm. trans.", "trans.") }
       ) as T.SimpleVerbInfo,
       grammaticallyTransitive: getVerbInfo({
         ...entry,
-        // @ts-ignore (will have entry.c)
+        // @ts-expect-error (will have entry.c)
         c: entry.c.replace("trans./gramm. trans.", "gramm. trans."),
       }) as T.SimpleVerbInfo,
     };
@@ -101,12 +101,12 @@ export function getVerbInfo(
         type: "dynamic or stative compound",
         transitivity,
         dynamic: getDynamicCompoundInfo(
-          // @ts-ignore (will have entry.c)
+          // @ts-expect-error (will have entry.c)
           { ...entry, c: entry.c.replace("dyn./stat.", "dyn.") },
           complement
         ),
         stative: getVerbInfo(
-          // @ts-ignore (will have entry.c)
+          // @ts-expect-error (will have entry.c)
           { ...entry, c: entry.c.replace("dyn./stat.", "stat.") },
           complement
         ) as T.StativeCompoundVerbInfo,
@@ -117,12 +117,12 @@ export function getVerbInfo(
         type: "dynamic or generative stative compound",
         transitivity,
         dynamic: getDynamicCompoundInfo(
-          // @ts-ignore (will have entry.c)
+          // @ts-expect-error (will have entry.c)
           { ...entry, c: entry.c.replace("gen. stat./dyn.", "dyn.") },
           complement
         ),
         stative: getGenerativeStativeCompoundVerbInfo(
-          // @ts-ignore (will have entry.c)
+          // @ts-expect-error (will have entry.c)
           { ...entry, c: entry.c.replace("gen. stat./dyn.", "gen. stat.") },
           complement
         ),
@@ -691,15 +691,15 @@ function getVerbStems(
     }
     const lastPCharacters = root.imperfective.long.p.slice(-3);
     return (
-      // @ts-ignore - will always have a entry.c if we get to this point
+      // @ts-expect-error will always have a entry.c if we get to this point
       entry.c.includes("intrans.") && lastPCharacters === "ېدل"
     );
   }
   function makeIntransImperfectiveStem() {
     const long = {
-      // @ts-ignore
+      // @ts-expect-error because
       p: root.imperfective.long.p.slice(0, -2) + "ږ",
-      // @ts-ignore
+      // @ts-expect-error because
       f: root.imperfective.long.f.slice(0, -4) + "éG",
     };
     if (entry.shortIntrans) {
@@ -817,7 +817,7 @@ function splitPerfective(
     return undefined;
   }
   if ("mascSing" in perfective) {
-    // @ts-ignore
+    // @ts-expect-error because
     return {
       mascSing: splitPerfective(
         perfective.mascSing,
@@ -847,7 +847,6 @@ function splitPerfective(
   }
   if ("long" in perfective) {
     return {
-      // @ts-ignore
       short: splitPerfective(
         perfective.short,
         pSplit,
@@ -861,7 +860,7 @@ function splitPerfective(
       ...("mini" in perfective
         ? {
             mini: splitPerfective(
-              // @ts-ignore
+              // @ts-expect-error because
               perfective.mini,
               pSplit,
               fSplit,
@@ -1226,12 +1225,14 @@ export function getAbilityRootsAndStems(
       info.transitivity === "intransitive") ||
     isTlulVerb(info.entry);
   const roots = getAbilityRoots(info.root, isIntransitiveStativeCompound);
-  return addAbilityHelperRootsAndStems(roots, isIntransitiveStativeCompound);
+  return addAbilityHelperRootsAndStems(
+    roots /* isIntransitiveStativeCompound */
+  );
 }
 
 function addAbilityHelperRootsAndStems(
-  roots: T.VerbRootSet,
-  isIntransitiveStativeCompound: boolean
+  roots: T.VerbRootSet
+  // isIntransitiveStativeCompound: boolean
 ): T.AbilityRootsAndStems {
   function addAbilityHelperToRoot(
     r: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
@@ -1392,7 +1393,7 @@ function getPassiveStemPerfectiveSplit(
   }
   return [
     si[0],
-    // @ts-ignore
+    // @ts-expect-error because
     concatPsString(si[1], " ", stativeAux.intransitive.info.stem.perfective),
   ];
 }
@@ -1430,7 +1431,7 @@ function getPassiveRootPerfectiveSplit(
       concatPsString(
         si[1],
         " ",
-        // @ts-ignore
+        // @ts-expect-error because
         stativeAux.intransitive.info.root.perfective.short
       ),
     ],
@@ -1439,7 +1440,7 @@ function getPassiveRootPerfectiveSplit(
       concatPsString(
         si[1],
         " ",
-        // @ts-ignore
+        // @ts-expect-error because
         stativeAux.intransitive.info.root.perfective.long
       ),
     ],
@@ -1571,7 +1572,7 @@ function getPassivePastParticiple(
     };
   }
   const r = withTails ? concatPsString(root, passiveRootTail) : root;
-  // @ts-ignore
+  // @ts-expect-error because
   return concatPsString(
     removeAccents(getLong(r)),
     " ",
@@ -1628,14 +1629,13 @@ function getPassiveRootAspect(
     long: concatPsString(
       rootR,
       " ",
-      // @ts-ignore
+      // @ts-expect-error because
       stativeAux.intransitive.info.root[aspect].long
     ),
-    // @ts-ignore
     short: concatPsString(
       rootR,
       " ",
-      // @ts-ignore
+      // @ts-expect-error because
       stativeAux.intransitive.info.root[aspect].short
     ),
   };

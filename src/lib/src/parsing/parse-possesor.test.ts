@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-conditional-expect */
 import * as T from "../../../types";
 import {
   makeAdjectiveSelection,

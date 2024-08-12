@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import * as T from "../types";
-import InlinePs from "../components/src/InlinePs";
-import EntrySelect from "../components/src/EntrySelect";
+import InlinePs from "../components/src/text-display/InlinePs";
+import EntrySelect from "../components/src/selects/EntrySelect";
 import * as tp from "../lib/src/type-predicates";
 import nounsAdjsUnsafe from "../nouns-adjs";
 import { inflectWord } from "../lib/src/pashto-inflector";
 import { getInflectionPattern } from "../lib/src/inflection-pattern";
-import InflectionsTable from "../components/src/InflectionsTable";
-import HumanReadableInflectionPattern from "../components/src/HumanReadableInflectionPattern";
+import InflectionsTable from "../components/src/tables/InflectionsTable";
+import HumanReadableInflectionPattern from "../components/src/tables/HumanReadableInflectionPattern";
 import leftChevron from "./chevron_left-24px.svg";
 import rightChevron from "./chevron_right-24px.svg";
 const chevStyle = {
@@ -45,7 +45,7 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
       value: 2,
       label: (
         <>
-          unstressed <InlinePs opts={opts}>{{ p: "ی", f: "ay" }}</InlinePs>
+          unstressed <InlinePs opts={opts} ps={{ p: "ی", f: "ay" }} />
         </>
       ),
     },
@@ -53,7 +53,7 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
       value: 3,
       label: (
         <>
-          stressed <InlinePs opts={opts}>{{ p: "ی", f: "áy" }}</InlinePs>
+          stressed <InlinePs opts={opts} ps={{ p: "ی", f: "áy" }} />
         </>
       ),
     },
@@ -69,7 +69,7 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
       value: 6,
       label: (
         <>
-          fem. inan. <InlinePs opts={opts}>{{ p: "ي", f: "ee" }}</InlinePs>
+          fem. inan. <InlinePs opts={opts} ps={{ p: "ي", f: "ee" }} />
         </>
       ),
     },
@@ -109,6 +109,7 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
       return inflectWord(word);
     } catch (e) {
       console.error("error inflecting entry", word);
+      console.error(e);
       return false;
     }
   })();
@@ -158,7 +159,7 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
                 onChange={setWord}
                 opts={opts}
                 name="word-select"
-                // @ts-ignore
+                // @ts-expect-error it's good
                 style={{ width: "18rem" }}
               />
               <div

@@ -133,7 +133,6 @@ const tests: {
 
 describe("parsing participles", () => {
   tests.forEach(({ label, cases }) => {
-    // eslint-disable-next-line jest/valid-title
     test(label, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);

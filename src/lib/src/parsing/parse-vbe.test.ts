@@ -1,4 +1,3 @@
-/* eslint-disable jest/valid-title */
 import * as T from "../../../types";
 import {
   dartlul,
@@ -16,7 +15,7 @@ import { getPeople, removeKeys } from "./utils";
 const wahul = wordQuery("وهل", "verb");
 const leekul = wordQuery("لیکل", "verb");
 const manul = wordQuery("منل", "verb");
-const gaalul = wordQuery("ګالل", "verb");
+// const gaalul = wordQuery("ګالل", "verb");
 const rasedul = wordQuery("رسېدل", "verb");
 const leedul = wordQuery("لیدل", "verb");
 const khorul = wordQuery("خوړل", "verb");

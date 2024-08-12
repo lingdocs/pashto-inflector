@@ -1,28 +1,24 @@
 import { useEffect, useState } from "react";
-import ButtonSelect from "../ButtonSelect";
+import ButtonSelect from "../selects/ButtonSelect";
 import {
   combineIntoText,
   flattenLengths,
 } from "../../../lib/src/phrase-building/compile";
 import { insertNegative } from "../../../lib/src/phrase-building/render-vp";
 import * as T from "../../../types";
-import TableCell from "../TableCell";
+import TableCell from "../tables/TableCell";
 import { choosePersInf, getLength } from "../../../lib/src/p-text-helpers";
 import genderColors from "../gender-colors";
 import { eqPsStringWVars } from "../../../lib/src/fp-ps";
-import PersInfsPicker from "../PersInfsPicker";
+import PersInfsPicker from "../selects/PersInfsPicker";
 import "./form-display.css";
 import {
   makeBlock,
   makeKid,
 } from "../../../lib/src/phrase-building/blocks-utils";
-import InlinePs from "../InlinePs";
+import InlinePs from "../text-display/InlinePs";
 import { personToGenNum } from "../../../lib/src/misc-helpers";
-
-export const roleIcon = {
-  king: <i className="mx-1 fas fa-crown" />,
-  servant: <i className="mx-1 fas fa-male" />,
-};
+import { roleIcon } from "./../role-icons";
 
 function VerbChartDisplay({
   chart,
@@ -330,9 +326,7 @@ function AgreementInfo({
       </div>
       {transitivity === "transitive" && past && objNP && (
         <div>
-          <InlinePs opts={opts}>
-            {flattenLengths(objNP.selection.ps)[0]}
-          </InlinePs>
+          <InlinePs opts={opts} ps={flattenLengths(objNP.selection.ps)[0]} />
           {` `}({printGenNum(personToGenNum(objNP.selection.person))})
         </div>
       )}

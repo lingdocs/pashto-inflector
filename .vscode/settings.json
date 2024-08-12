@@ -1,8 +1,5 @@
 {
   "typescript.preferences.autoImportFileExcludePatterns": [
-    "../../library.ts"
-  ],
-  "cSpell.words": [
-    "کارخانه"
+    "library.ts"
   ],
 }

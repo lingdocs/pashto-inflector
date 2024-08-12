@@ -2,7 +2,6 @@ import * as T from "./src/types";
 import { inflectWord } from "./src/lib/src/pashto-inflector";
 import * as tp from "./src/lib/src/type-predicates";
 import { conjugateVerb } from "./src/lib/src/verb-conjugation";
-import fetch from "node-fetch";
 
 // Script to try inflecting all the words in the dictionary and make sure that
 // no errors are thrown in the process
@@ -15,8 +14,8 @@ type InflectionError = {
 };
 
 async function checkAll() {
+  console.log("Checking inflection functions on all dictionary words");
   const res = await fetch(process.env.LINGDOCS_DICTIONARY_URL);
-  // @ts-ignore
   const { entries }: T.Dictionary = await res.json();
   const errors: InflectionError[] = [];
 

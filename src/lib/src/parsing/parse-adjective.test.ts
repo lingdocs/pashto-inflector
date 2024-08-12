@@ -255,13 +255,13 @@ const tests: {
 
 describe("parsing adjectives", () => {
   tests.forEach(({ category, cases }) => {
-    // eslint-disable-next-line jest/valid-title
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
         const possibilities = parseAdjective(tokens, lookup).map((x) => x.body);
         expect(
           possibilities.map((x) => {
+            // eslint-disable-next-line
             const { given, ...rest } = x;
             return rest;
           })

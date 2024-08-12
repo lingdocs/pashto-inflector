@@ -1,4 +1,4 @@
-import Examples from "../components/src/Examples";
+import Examples from "../components/src/text-display/Examples";
 import * as T from "../types";
 
 const spellingOptions: {

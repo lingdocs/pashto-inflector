@@ -1,4 +1,4 @@
-import NPPicker, { shrunkenBackground } from "../../src/np-picker/NPPicker";
+import NPPicker, { shrunkenBackground } from "../block-pickers/NPPicker";
 import TensePicker from "./TensePicker";
 import * as T from "../../../types";
 import {
@@ -14,10 +14,9 @@ import {
   completeVPSelection,
   isPastTense,
 } from "../../../lib/src/phrase-building/vp-tools";
-import VPExplorerExplanationModal, {
-  roleIcon,
-} from "./VPExplorerExplanationModal";
-import APPicker from "../../src/ap-picker/APPicker";
+import { roleIcon } from "../role-icons";
+import VPExplorerExplanationModal from "./VPExplorerExplanationModal";
+import APPicker from "../block-pickers/APPicker";
 // import autoAnimate from "@formkit/auto-animate";
 import {
   getObjectSelection,
@@ -25,7 +24,7 @@ import {
   includesShrunkenServant,
   isNoObject,
 } from "../../../lib/src/phrase-building/blocks-utils";
-import ComplementPicker from "../ComplementPicker";
+import ComplementPicker from "../block-pickers/ComplementPicker";
 import {
   vpsReducer,
   VpsReducerAction,
@@ -46,10 +45,9 @@ function VPPicker({
   // useEffect(() => {
   //     parent.current && autoAnimate(parent.current);
   // }, [parent]);
-  const [showingExplanation, setShowingExplanation] =
-    useState<{ role: "servant" | "king"; item: "subject" | "object" } | false>(
-      false
-    );
+  const [showingExplanation, setShowingExplanation] = useState<
+    { role: "servant" | "king"; item: "subject" | "object" } | false
+  >(false);
   function adjustVps(action: VpsReducerAction) {
     onChange(vpsReducer(vps, action));
   }

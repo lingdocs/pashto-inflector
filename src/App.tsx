@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from "react";
 
-import ButtonSelect from "./components/src/ButtonSelect";
+import ButtonSelect from "./components/src/selects/ButtonSelect";
 import { Modal } from "react-bootstrap";
 import * as T from "./types";
 import defualtTextOptions from "./lib/src/default-text-options";
@@ -36,6 +36,7 @@ function App() {
   function handleHiderClick(label: string) {
     setShowing((os) => (os === label ? "" : label));
   }
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);

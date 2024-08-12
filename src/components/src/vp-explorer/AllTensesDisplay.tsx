@@ -9,7 +9,7 @@ import Hider from "../Hider";
 import * as T from "../../../types";
 import useStickyState from "../useStickyState";
 import { isImperativeTense } from "../../../lib/src/type-predicates";
-import ButtonSelect from "../ButtonSelect";
+import ButtonSelect from "../selects/ButtonSelect";
 import { VpsReducerAction } from "../../../lib/src/phrase-building/vps-reducer";
 import { useState } from "react";
 import { statVerb } from "../../../lib/src/new-verb-engine/roots-and-stems";

@@ -1,4 +1,3 @@
-/* eslint-disable jest/valid-title */
 import * as T from "../../../types";
 import { parseKedul } from "./parse-kedul";
 import { kedulDyn, kedulStat } from "./irreg-verbs";

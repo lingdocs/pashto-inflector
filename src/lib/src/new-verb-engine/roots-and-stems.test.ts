@@ -1,4 +1,3 @@
-/* eslint-disable jest/valid-title */
 import * as T from "../../../types";
 import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import { vEntry } from "./rs-helpers";
@@ -64,35 +63,35 @@ const kedulStat = vEntry({
   noOo: true,
   ec: "become",
 });
-const kedulDyn = vEntry({
-  ts: 1527812754,
-  i: 11101,
-  p: "کېدل",
-  f: "kedul",
-  g: "kedul",
-  e: "to happen, occur",
-  r: 2,
-  c: "v. intrans.",
-  ssp: "وش",
-  ssf: "óosh",
-  prp: "وشول",
-  prf: "óoshwul",
-  pprtp: "شوی",
-  pprtf: "shúway",
-  diacExcept: true,
-  ec: "happen",
-  separationAtP: 1,
-  separationAtF: 2,
-});
+// const kedulDyn = vEntry({
+//   ts: 1527812754,
+//   i: 11101,
+//   p: "کېدل",
+//   f: "kedul",
+//   g: "kedul",
+//   e: "to happen, occur",
+//   r: 2,
+//   c: "v. intrans.",
+//   ssp: "وش",
+//   ssf: "óosh",
+//   prp: "وشول",
+//   prf: "óoshwul",
+//   pprtp: "شوی",
+//   pprtf: "shúway",
+//   diacExcept: true,
+//   ec: "happen",
+//   separationAtP: 1,
+//   separationAtF: 2,
+// });
 const raatlul = wordQuery("راتلل", "verb");
-const wartlul = wordQuery("ورتلل", "verb");
+// const wartlul = wordQuery("ورتلل", "verb");
 const osedul = wordQuery("اوسېدل", "verb");
 const awuxtul = wordQuery("اوښتل", "verb");
 const khorul = wordQuery("خوړل", "verb");
 const azmoyul = wordQuery("ازمویل", "verb");
 const khatul = wordQuery("ختل", "verb");
 const rasedul = wordQuery("رسېدل", "verb");
-const weshul = wordQuery("وېشل", "verb");
+// const weshul = wordQuery("وېشل", "verb");
 const watul = wordQuery("وتل", "verb");
 const wurul = wordQuery("وړل", "verb");
 const kexodul = wordQuery("کېښودل", "verb");

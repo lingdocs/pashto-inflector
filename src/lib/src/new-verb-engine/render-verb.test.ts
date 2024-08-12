@@ -1,4 +1,3 @@
-/* eslint-disable jest/valid-title */
 import { renderVerb } from "./render-verb";
 import { vEntry } from "./rs-helpers";
 import { wordQuery } from "../parsing/lookup";
@@ -60,26 +59,26 @@ const kedulStat = vEntry({
   noOo: true,
   ec: "become",
 });
-const kedulDyn = vEntry({
-  ts: 1527812754,
-  i: 11101,
-  p: "کېدل",
-  f: "kedul",
-  g: "kedul",
-  e: "to happen, occur",
-  r: 2,
-  c: "v. intrans.",
-  ssp: "وش",
-  ssf: "óosh",
-  prp: "وشول",
-  prf: "óoshwul",
-  pprtp: "شوی",
-  pprtf: "shúway",
-  diacExcept: true,
-  ec: "happen",
-  separationAtP: 1,
-  separationAtF: 2,
-});
+// const kedulDyn = vEntry({
+//   ts: 1527812754,
+//   i: 11101,
+//   p: "کېدل",
+//   f: "kedul",
+//   g: "kedul",
+//   e: "to happen, occur",
+//   r: 2,
+//   c: "v. intrans.",
+//   ssp: "وش",
+//   ssf: "óosh",
+//   prp: "وشول",
+//   prf: "óoshwul",
+//   pprtp: "شوی",
+//   pprtf: "shúway",
+//   diacExcept: true,
+//   ec: "happen",
+//   separationAtP: 1,
+//   separationAtF: 2,
+// });
 const ahkeestul = wordQuery("اخیستل", "verb");
 const wahul = wordQuery("وهل", "verb");
 const achawul = wordQuery("اچول", "verb");
