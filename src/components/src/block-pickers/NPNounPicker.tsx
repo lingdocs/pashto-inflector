@@ -136,7 +136,6 @@ function NPNounPicker(props: {
           />
         </div>
       )}
-
       {/* {showFilter && <div className="mb-2 text-center">
             <div className="d-flex flex-row justify-content-between">
                 <div className="text-small mb-1">Filter by inflection pattern</div>
