@@ -17,7 +17,7 @@ export class DictionaryDb {
   private ready = false;
 
   // eslint-disable-next-line
-  public collection: Collection<any>;
+  public collection: Collection<any> | undefined;
 
   constructor(options: {
     url: string;
@@ -82,6 +82,9 @@ export class DictionaryDb {
 
   private async addDictionaryToLoki(dictionary: T.Dictionary): Promise<"done"> {
     return await new Promise((resolve: (value: "done") => void, reject) => {
+      if (!this.collection) {
+        reject("dictionary not initialized");
+      }
       // Add it to Lokijs
       this.collection = this.lokidb.addCollection(
         this.dictionaryCollectionName,
@@ -201,8 +204,10 @@ export class DictionaryDb {
       notifyUpdateComing();
       this.ready = false;
       localStorage.removeItem(this.dictionaryInfoLocalStorageKey);
-      this.collection.clear();
-      this.lokidb.removeCollection(this.dictionaryCollectionName);
+      if (this.collection) {
+        this.collection.clear();
+        this.lokidb.removeCollection(this.dictionaryCollectionName);
+      }
       await (async () => {
         return new Promise((resolve: (value: "done") => void) => {
           this.lokidb.saveDatabase(() => {
@@ -225,7 +230,7 @@ export class DictionaryDb {
    */
   // TODO: not working in app usage now now with new 'this' issues
   public findOneByTs(ts: number): T.DictionaryEntry | undefined {
-    if (!this.ready) {
+    if (!this.ready || !this.collection) {
       return undefined;
     }
     const res = this.collection.by("ts", ts);

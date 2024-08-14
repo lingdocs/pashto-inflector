@@ -14,6 +14,9 @@ const dictDb = new DictionaryDb({
 });
 
 function queryP(p: string): T.DictionaryEntry[] {
+  if (!dictDb.collection) {
+    return [];
+  }
   return dictDb.collection.find({ p });
 }
 const memoizedQueryP = queryP;
