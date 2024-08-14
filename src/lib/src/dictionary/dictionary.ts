@@ -9,8 +9,8 @@ const dictionaryInfoUrl = `${dictionaryBaseUrl}/dictionary-info`;
 const dictDb = new DictionaryDb({
   url: dictionaryUrl,
   infoUrl: dictionaryInfoUrl,
-  collectionName: "inflector-dict",
-  infoLocalStorageKey: "inflector-dict",
+  collectionName: "inflector-dict5",
+  infoLocalStorageKey: "inflector-dict5",
 });
 
 function queryP(p: string): T.DictionaryEntry[] {

@@ -16,7 +16,7 @@ export class DictionaryDb {
   // state
   private ready = false;
 
-  // @ts-expect-error because
+  // eslint-disable-next-line
   public collection: Collection<any>;
 
   constructor(options: {
@@ -76,7 +76,7 @@ export class DictionaryDb {
   }
 
   private async downloadDictionaryInfo(): Promise<T.DictionaryInfo> {
-    const res = await fetch(this.dictionaryInfoUrl);
+    const res = await fetch(this.dictionaryInfoUrl + ".json");
     return (await res.json()) as T.DictionaryInfo;
   }
 
@@ -93,7 +93,7 @@ export class DictionaryDb {
         }
       );
       this.collection.insert(dictionary.entries);
-      this.lokidb.saveDatabase((err: any) => {
+      this.lokidb.saveDatabase((err) => {
         /* istanbul ignore next */
         if (err) {
           console.error("error saving database: " + err);

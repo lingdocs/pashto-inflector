@@ -1,12 +1,11 @@
 {
   "name": "pashto-inflector-website",
-  "version": "7.6.3",
+  "version": "7.6.5",
   "type": "module",
   "scripts": {
     "patch": "npm version patch --no-git-tag-version && cd src/lib && npm version patch --no-git-tag-version && cd ../components && npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version && cd src/lib && npm version minor --no-git-tag-version && cd ../components && npm version minor --no-git-tag-version",
     "major": "npm version major --no-git-tag-version && cd src/lib && npm version major --no-git-tag-version && cd ../components && npm version major --no-git-tag-version",
-    "preinstall": "echo '*** Be sure to use 'yarn install-all' not 'yarn install' ***!'",
     "dev": "vite",
     "lint": "eslint .",
     "test": "jest",
@@ -14,16 +13,17 @@
     "install-all": "yarn install && node get-words.cjs && cd src/lib && yarn install && cd ../components && yarn install",
     "build-website": "tsc -b && vite build",
     "build-components": "rm -rf src/components/dist && tsc --project src/components/tsconfig.json && cd src/components && node post-build.cjs",
-    "build-lib": "rm -rf src/lib/dist && tsc --project src/lib/tsconfig.json",
+    "build-lib": "rm -rf src/lib/dist && tsc --project src/lib/tsconfig.json && tsup src/lib/library.ts --format cjs && mv dist/library.cjs src/lib/dist/lib",
     "get-words": "node get-words.cjs",
     "check-all-inflections": "tsx check-all-inflections.ts"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "@fortawesome/fontawesome-free": "^5.15.2",
     "bootstrap": "4.6.1",
+    "react": "^18.3.1",
     "react-bootstrap": "1.5.1",
-    "@fortawesome/fontawesome-free": "^5.15.2"
+    "react-dom": "^18.3.1",
+    "tsup": "^8.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -39,6 +39,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-extended": "^4.0.2",
     "ts-jest": "^29.2.4",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.17.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.0",

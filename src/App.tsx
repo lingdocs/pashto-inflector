@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useState } from "react";
-
+import { dictionary } from "./lib/src/dictionary/dictionary";
 import ButtonSelect from "./components/src/selects/ButtonSelect";
 import { Modal } from "react-bootstrap";
 import * as T from "./types";
@@ -31,11 +31,23 @@ function App() {
     defualtTextOptions,
     "textOpts1"
   );
+  const [dictionaryReady, setDictionaryIsReady] = useState<boolean>(false);
   const [theme, setTheme] = useStickyState<"light" | "dark">("light", "theme1");
   const [showing, setShowing] = useState<string>("");
   function handleHiderClick(label: string) {
     setShowing((os) => (os === label ? "" : label));
   }
+
+  useEffect(() => {
+    console.log("WILL INIT");
+    dictionary
+      .initialize()
+      .then(() => {
+        console.log("DONE INIT");
+        setDictionaryIsReady(true);
+      })
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -87,6 +99,7 @@ function App() {
             <h1 className="display-4 mt-2">
               <code>Pashto Inflector</code>
             </h1>
+            {dictionaryReady && <div>READY</div>}
             <p
               className="lead my-3"
               style={{ maxWidth: "600px", margin: "0 auto" }}
