@@ -477,7 +477,8 @@ export type InflectionSet = ArrayFixed<ArrayOneOrMore<PsString>, 3>;
 // Plural and Second Inflection
 export type PluralInflectionSet = ArrayFixed<ArrayOneOrMore<PsString>, 2>;
 
-export type Gender = "masc" | "fem";
+export const genders = ["masc", "fem"] as const;
+export type Gender = (typeof genders)[number];
 
 export type UnisexSet<T> = Record<Gender, T>;
 export type GenderedSet<T> =
@@ -634,7 +635,8 @@ export type InflectableEntry =
   | NounEntry
   | AdjectiveEntry
   | NumberEntry
-  | AdverbEntry;
+  | AdverbEntry
+  | DeterminerEntry;
 export type NounEntry = DictionaryEntry & { c: string } & {
   __brand: "a noun entry";
 };
@@ -652,6 +654,9 @@ export type UnisexAnimNounEntry = UnisexNounEntry & {
 };
 export type AdverbEntry = DictionaryEntry & { c: string } & {
   __brand: "an adverb entry";
+};
+export type DeterminerEntry = DictionaryEntry & { c: string } & {
+  __brand: "a determiner entry";
 };
 export type LocativeAdverbEntry = AdverbEntry & {
   __brand2: "a locative adverb entry";
@@ -1232,6 +1237,21 @@ export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
 export type EquativeBlock = { type: "equative"; equative: EquativeRendered };
 
 export type NegativeBlock = { type: "negative"; imperative: boolean };
+
+export type InflectableBaseParse<E extends InflectableEntry> = {
+  inflection: (0 | 1 | 2)[];
+  gender: Gender[];
+  given: string;
+  entry: E;
+};
+
+export type ParsedNounWord<N extends NounEntry> = {
+  inflected: boolean;
+  plural: boolean;
+  gender: Gender;
+  given: string;
+  entry: N;
+};
 
 export type Block = {
   key: number;

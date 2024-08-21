@@ -1,10 +1,13 @@
 import { useState } from "react";
 import * as T from "../types";
-import { parsePhrase } from "../lib/src/parsing/parse-phrase";
+// import { parsePhrase } from "../lib/src/parsing/parse-phrase";
 import { tokenizer } from "../lib/src/parsing/tokenizer";
-import { NPDisplay } from "../components/library";
-import EditableVP from "../components/src/vp-explorer/EditableVP";
-import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
+// import { NPDisplay } from "../components/library";
+// import EditableVP from "../components/src/vp-explorer/EditableVP";
+// import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
+import { DictionaryAPI } from "../lib/src/dictionary/dictionary";
+import { parseNoun } from "../lib/src/parsing/parse-noun-new";
+import { JsonEditor } from "json-edit-react";
 
 const working = [
   "limited demo vocab",
@@ -44,16 +47,17 @@ const examples = [
 ];
 
 function ParserDemo({
-  opts,
-  entryFeeder,
+  // opts,
+  // entryFeeder,
+  dictionary,
 }: {
   opts: T.TextOptions;
   entryFeeder: T.EntryFeeder;
+  dictionary: DictionaryAPI;
 }) {
   const [text, setText] = useState<string>("");
-  const [result, setResult] = useState<
-    ReturnType<typeof parsePhrase>["success"]
-  >([]);
+  const [result, setResult] = useState<any[]>([]);
+  // ReturnType<typeof parsePhrase>["success"]
   const [errors, setErrors] = useState<string[]>([]);
   function handleInput(value: string) {
     if (!value) {
@@ -62,7 +66,11 @@ function ParserDemo({
       setErrors([]);
       return;
     }
-    const { success, errors } = parsePhrase(tokenizer(value));
+    const res = parseNoun(tokenizer(value), dictionary, undefined, []);
+    const success = res.filter((x) => !x.tokens.length).map((x) => x.body);
+    const errors = [
+      ...new Set(res.flatMap(({ errors }) => errors.map((e) => e.message))),
+    ];
     setText(value);
     setErrors(errors);
     setResult(success);
@@ -127,8 +135,8 @@ function ParserDemo({
           <div className="text-center">Did you mean:</div>
         </>
       )}
-
-      {result.map((res) =>
+      <JsonEditor data={result} />
+      {/* {result.map((res) =>
         "inflected" in res ? (
           <NPDisplay NP={res.selection} inflected={res.inflected} opts={opts} />
         ) : "verb" in res ? (
@@ -166,7 +174,7 @@ function ParserDemo({
             <pre>{JSON.stringify(res, null, "  ")}</pre>
           </samp>
         )
-      )}
+      )} */}
       <details>
         <summary>AST</summary>
         <samp>

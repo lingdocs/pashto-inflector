@@ -1772,7 +1772,6 @@ const nouns: {
     },
   },
   // Feminine animate ending in a consonant
-  // TODO: ALLOW FOR MULTIPLE PLURAL POSSIBILITIES میندې, میېنې etc.
   {
     in: {
       ts: 1527812928,
@@ -1780,17 +1779,32 @@ const nouns: {
       f: "mor",
       g: "",
       e: "mother, mom",
-      c: "n. f. anim.",
-      ppp: "میندې",
-      ppf: "maynde",
+      c: "n. f. anim. fam.",
+      ppp: "میندې, میېندې",
+      ppf: "maynde, myende",
       i: 11113,
     },
     out: {
       vocative: {
-        fem: [[{ p: "مورې", f: "móre" }], [{ p: "میندو", f: "mayndo" }]],
+        fem: [
+          [{ p: "مورې", f: "móre" }],
+          [
+            { p: "میندو", f: "mayndo" },
+            { p: "میېندو", f: "myendo" },
+          ],
+        ],
       },
       plural: {
-        fem: [[{ p: "میندې", f: "maynde" }], [{ p: "میندو", f: "mayndo" }]],
+        fem: [
+          [
+            { p: "میندې", f: "maynde" },
+            { p: "میېندې", f: "myende" },
+          ],
+          [
+            { p: "میندو", f: "mayndo" },
+            { p: "میېندو", f: "myendo" },
+          ],
+        ],
       },
     },
   },
@@ -2061,7 +2075,6 @@ const nouns: {
       },
     },
   },
-  // TODO: Plaar plaroona paaraan - wrooNa
   // Word with no inflections
   {
     in: {
@@ -2116,6 +2129,79 @@ const nouns: {
       },
     },
   },
+  // masc familial word
+  {
+    in: {
+      i: 3205,
+      ts: 1527815177,
+      p: "پلار",
+      f: "plaar",
+      g: "plaar",
+      e: "father",
+      r: 4,
+      a: 1,
+      c: "n. m. anim. fam.",
+      ppp: "پلرونه",
+      ppf: "plaróona",
+    },
+    out: {
+      plural: {
+        masc: [
+          [{ p: "پلرونه", f: "plaróona" }],
+          [{ p: "پلرونو", f: "plaróono" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "پلاره", f: "pláara" }], [{ p: "پلرونو", f: "plaróono" }]],
+      },
+    },
+  },
+  // Determiner
+  {
+    in: {
+      i: 13415,
+      ts: 1527813602,
+      p: "کوم",
+      f: "koom",
+      g: "koom",
+      e: "which, that, any, some, (a) certain",
+      r: 4,
+      a: 1,
+      c: "det.",
+    },
+    out: {
+      inflections: {
+        masc: [
+          [{ p: "کوم", f: "koom" }],
+          [{ p: "کوم", f: "koom" }],
+          [{ p: "کومو", f: "kóomo" }],
+        ],
+        fem: [
+          [{ p: "کومه", f: "kóoma" }],
+          [{ p: "کومې", f: "kóome" }],
+          [{ p: "کومو", f: "kóomo" }],
+        ],
+      },
+      vocative: {
+        masc: [[{ p: "کومه", f: "kóoma" }], [{ p: "کومو", f: "kóomo" }]],
+        fem: [[{ p: "کومې", f: "kóome" }], [{ p: "کومو", f: "kóomo" }]],
+      },
+    },
+  },
+  {
+    in: {
+      i: 17677,
+      ts: 1586519006879,
+      p: "هیڅ",
+      f: "heets, hits",
+      g: "heets,hits",
+      e: "negative determiner, used for nothing, never, no, none etc. (used with negative phrases)",
+      r: 4,
+      c: "det. / adv.",
+      noInf: true,
+    },
+    out: false,
+  },
 ];
 
 const others: T.DictionaryEntry[] = [
@@ -2148,7 +2234,8 @@ adjectives.forEach((word) => {
 
 nouns.forEach((word) => {
   test(`${word.in.p} should inflect properly`, () => {
-    expect(inflectWord(word.in)).toEqual(word.out);
+    const res = inflectWord(word.in);
+    expect(res).toEqual(word.out);
   });
 });
 

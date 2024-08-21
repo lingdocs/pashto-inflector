@@ -19,7 +19,7 @@ import { entryFeeder } from "./demo-components/entryFeeder";
 import Hider from "./components/src/Hider";
 import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
-import ParserDemo from "./demo-components/ParserDemo";
+// import ParserDemo from "./demo-components/ParserDemo";
 // import InflectionTable from "./components/src/InflectionsTable";
 
 function App() {
@@ -31,7 +31,6 @@ function App() {
     defualtTextOptions,
     "textOpts1"
   );
-  const [dictionaryReady, setDictionaryIsReady] = useState<boolean>(false);
   const [theme, setTheme] = useStickyState<"light" | "dark">("light", "theme1");
   const [showing, setShowing] = useState<string>("");
   function handleHiderClick(label: string) {
@@ -39,14 +38,14 @@ function App() {
   }
 
   useEffect(() => {
-    console.log("WILL INIT");
     dictionary
       .initialize()
-      .then(() => {
-        console.log("DONE INIT");
-        setDictionaryIsReady(true);
-      })
-      .catch(console.error);
+      .catch(console.error)
+      .then((res) => {
+        if (res && res.response === "loaded from saved") {
+          dictionary.update();
+        }
+      });
   }, []);
 
   useEffect(() => {
@@ -99,7 +98,6 @@ function App() {
             <h1 className="display-4 mt-2">
               <code>Pashto Inflector</code>
             </h1>
-            {dictionaryReady && <div>READY</div>}
             <p
               className="lead my-3"
               style={{ maxWidth: "600px", margin: "0 auto" }}
@@ -165,14 +163,18 @@ function App() {
           >
             <SpellingDemo opts={textOptions} onChange={setTextOptions} />
           </Hider>
-          <Hider
+          {/* <Hider
             label="Parser (🚧 IN PROGRESS 🚧)"
             hLevel={3}
             showing={showing === "parser"}
             handleChange={() => handleHiderClick("parser")}
           >
-            <ParserDemo opts={textOptions} entryFeeder={entryFeeder} />
-          </Hider>
+            <ParserDemo
+              opts={textOptions}
+              entryFeeder={entryFeeder}
+              dictionary={dictionary}
+            />
+          </Hider> */}
         </div>
       </main>
       <Modal

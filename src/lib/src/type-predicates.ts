@@ -48,6 +48,13 @@ export function isAdverbEntry(
   return !!e.c?.includes("adv.");
 }
 
+export function isDeterminerEntry(
+  e: T.Entry | T.DictionaryEntry
+): e is T.DeterminerEntry {
+  if ("entry" in e) return false;
+  return !!e.c?.includes("det.");
+}
+
 export function isLocativeAdverbEntry(
   e: T.Entry | T.DictionaryEntry
 ): e is T.LocativeAdverbEntry {
@@ -70,7 +77,12 @@ export function isInflectableEntry(
   if (isDeterminer(e)) {
     return true;
   }
-  return isNounEntry(e) || isAdjectiveEntry(e) || isNumberEntry(e);
+  return (
+    isNounEntry(e) ||
+    isAdjectiveEntry(e) ||
+    isNumberEntry(e) ||
+    isDeterminerEntry(e)
+  );
 }
 
 export function isDeterminer(
@@ -103,7 +115,9 @@ export function isVerbEntry(
   return "entry" in e && isVerbDictionaryEntry(e.entry);
 }
 
-export function isMascNounEntry(e: T.InflectableEntry): e is T.MascNounEntry {
+export function isMascNounEntry(
+  e: T.InflectableEntry | T.DictionaryEntry
+): e is T.MascNounEntry {
   return !!e.c && e.c.includes("n. m.");
 }
 
@@ -112,7 +126,7 @@ export function isFemNounEntry(e: T.DictionaryEntry): e is T.FemNounEntry {
 }
 
 export function isUnisexNounEntry(
-  e: T.InflectableEntry
+  e: T.InflectableEntry | T.DictionaryEntry
 ): e is T.UnisexNounEntry {
   return isNounEntry(e) && e.c.includes("unisex");
 }
@@ -122,7 +136,7 @@ export function isAnimNounEntry(e: T.InflectableEntry): e is T.AnimNounEntry {
 }
 
 export function isUnisexAnimNounEntry(
-  e: T.InflectableEntry
+  e: T.InflectableEntry | T.DictionaryEntry
 ): e is T.UnisexAnimNounEntry {
   return isUnisexNounEntry(e) && isAnimNounEntry(e);
 }
@@ -137,13 +151,7 @@ export function isPattern(
   p: T.InflectionPattern | "all"
 ): (entry: T.InflectableEntry) => boolean {
   if (p === 0) {
-    return (e: T.InflectableEntry) =>
-      !isPattern1Entry(e) &&
-      !isPattern2Entry(e) &&
-      !isPattern3Entry(e) &&
-      !isPattern4Entry(e) &&
-      !isPattern5Entry(e) &&
-      !isPattern6FemEntry(e);
+    return isNonInflectingEntry;
   }
   if (p === 1) {
     return isPattern1Entry;
@@ -166,6 +174,21 @@ export function isPattern(
   return () => true;
 }
 
+export function isNonInflectingEntry<T extends T.InflectableEntry>(
+  e: T
+): e is T.NonInflecting<T> {
+  if (e.noInf) return true;
+  return (
+    !isPattern1Entry(e) &&
+    !isPattern2Entry(e) &&
+    !isPattern3Entry(e) &&
+    !isPattern4Entry(e) &&
+    !isPattern5Entry(e) &&
+    !isPattern6FemEntry(e) &&
+    (!isNounEntry(e) || !isPluralNounEntry(e))
+  );
+}
+
 /**
  * shows if a noun/adjective has the basic (consonant / ه) inflection pattern
  *
@@ -177,6 +200,10 @@ export function isPattern1Entry<T extends T.InflectableEntry>(
 ): e is T.Pattern1Entry<T> {
   if (e.noInf) return false;
   if (e.infap || e.infbp) return false;
+  // family words like خور زوی etc with special plural don't follow pattern #1
+  if (e.c.includes("fam.")) {
+    return false;
+  }
   if (isFemNounEntry(e)) {
     return (
       (endsWith(
@@ -189,7 +216,7 @@ export function isPattern1Entry<T extends T.InflectableEntry>(
         e
       ) &&
         !e.p.endsWith("اع")) ||
-      (endsWith({ p: pashtoConsonants }, e) && !(e.ppp && e.ppf))
+      endsWith({ p: pashtoConsonants }, e)
     );
   }
   return endsInConsonant(e) || hasShwaEnding(e);
@@ -267,7 +294,7 @@ export function isPattern5Entry<T extends T.InflectableEntry>(
 }
 
 export function isPattern6FemEntry(
-  e: T.InflectableEntry
+  e: T.InflectableEntry | T.DictionaryEntry
 ): e is T.Pattern6FemEntry<T.FemNounEntry> {
   if (!isFemNounEntry(e)) return false;
   if (e.c.includes("anim.")) return false;

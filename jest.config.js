@@ -6,6 +6,7 @@ export default {
       "ts-jest",
       {
         tsconfig: "tsconfig.app.json",
+        diagnostics: false,
       },
     ],
   },

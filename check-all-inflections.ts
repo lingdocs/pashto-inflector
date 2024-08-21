@@ -15,7 +15,7 @@ type InflectionError = {
 
 async function checkAll() {
   console.log("Checking inflection functions on all dictionary words");
-  const res = await fetch(process.env.LINGDOCS_DICTIONARY_URL);
+  const res = await fetch(process.env.LINGDOCS_DICTIONARY_URL + ".json");
   const { entries }: T.Dictionary = await res.json();
   const errors: InflectionError[] = [];
 

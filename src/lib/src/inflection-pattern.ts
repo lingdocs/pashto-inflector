@@ -13,6 +13,7 @@ import {
 export function getInflectionPattern(
   e: T.InflectableEntry
 ): T.InflectionPattern {
+  if (e.noInf) return 0;
   return isPattern1Entry(e)
     ? T.InflectionPattern.Basic
     : isPattern2Entry(e)

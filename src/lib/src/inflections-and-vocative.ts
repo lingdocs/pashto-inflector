@@ -20,6 +20,7 @@ import { removeDuplicates } from "./phrase-building/vp-tools";
 import {
   isAdjOrUnisexNounEntry,
   isAnimNounEntry,
+  isDeterminerEntry,
   isFemNounEntry,
   isInflectableEntry,
   isMascNounEntry,
@@ -59,7 +60,6 @@ export function getInfsAndVocative(
   if (!isInflectableEntry(entryR)) {
     return false;
   }
-  // @ts-ignore
   const entry: T.InflectableEntry = entryR as T.InflectableEntry;
   const pattern = getInflectionPattern(entry);
   if (
@@ -77,8 +77,15 @@ export function getInfsAndVocative(
       }),
     };
   }
+  if ("c" in entry && entry.c?.includes("fam.") && isMascNounEntry(entry)) {
+    return {
+      vocative: familialMascVocative(entry, plurals),
+    };
+  }
   const gender: T.Gender | "unisex" =
-    isAdjOrUnisexNounEntry(entry) || isNumberEntry(entry)
+    isAdjOrUnisexNounEntry(entry) ||
+    isNumberEntry(entry) ||
+    isDeterminerEntry(entry)
       ? "unisex"
       : isMascNounEntry(entry)
       ? "masc"
@@ -99,6 +106,20 @@ export function getInfsAndVocative(
       ? funcs.fem({ entry, plurals: genderPlural("fem", plurals) })
       : undefined;
   return aggregateInfsAndVoc(masc, fem);
+}
+
+function familialMascVocative(
+  entry: T.MascNounEntry,
+  plurals: Plurals
+): T.PluralInflections | undefined {
+  if (endsInConsonant(entry) || hasShwaEnding(entry)) {
+    const plr = genderPlural("masc", plurals);
+    const { vocative } = pattern1Masc({ entry, plurals: plr });
+    return {
+      masc: [vocative[0], plr] as T.PluralInflectionSet,
+    };
+  }
+  return undefined;
 }
 
 type PatternInput = {
@@ -179,17 +200,12 @@ function vocFemAnimException({
       "plural missing for feminine animate exception noun " + entry.p
     );
   }
-  // TODO: HANDLE BETTER WITH PLURALS!
-  const plurBase = mapPsString(
-    (x) => x.slice(0, -1),
-    makePsString(entry.ppp, entry.ppf)
-  );
   const base =
     countSyllables(entry) === 1
       ? accentOnNFromEnd(entry, 0)
       : psStringFromEntry(entry);
   return {
-    fem: [[concatPs(base, e)], addPlurals([concatPs(plurBase, o)], plurals)],
+    fem: [[concatPs(base, e)], plurals as T.ArrayOneOrMore<T.PsString>],
   };
 }
 

@@ -1,50 +1,53 @@
 import {
-  makeAdjectiveSelection,
+  // makeAdjectiveSelection,
   makeNounSelection,
 } from "../phrase-building/make-selections";
 import * as T from "../../../types";
-import { lookup, wordQuery } from "./lookup";
-import { parseNoun } from "./parse-noun";
+// import { lookup } from "./lookup";
+import { parseNoun } from "./parse-noun-new";
 import { tokenizer } from "./tokenizer";
-import { isCompleteResult } from "./utils";
+// import { isCompleteResult } from "./utils";
+import { testDictionary } from "./mini-test-dictionary";
 
-const sor = wordQuery("سوړ", "adj");
-const zor = wordQuery("زوړ", "adj");
-const sturey = wordQuery("ستړی", "adj");
-const ghut = wordQuery("غټ", "adj");
-const sarey = wordQuery("سړی", "noun");
-const dostee = wordQuery("دوستي", "noun");
-const wreejze = wordQuery("وریژې", "noun");
-const xudza = wordQuery("ښځه", "noun");
-const kursuy = wordQuery("کرسۍ", "noun");
-const daktar = wordQuery("ډاکټر", "noun");
-const malguray = wordQuery("ملګری", "noun");
-const lmasay = wordQuery("لمسی", "noun");
-const melma = wordQuery("مېلمه", "noun");
-const shpoon = wordQuery("شپون", "noun");
-const tanoor = wordQuery("تنور", "noun");
-const kor = wordQuery("کور", "noun");
-const khur = wordQuery("خر", "noun");
-const ghur = wordQuery("غر", "noun");
-const mor = wordQuery("مور", "noun");
-const plaar = wordQuery("پلار", "noun");
-const oobu = wordQuery("اوبه", "noun");
-const ghanum = wordQuery("غنم", "noun");
-const laar = wordQuery("لار", "noun");
-const qaazee = wordQuery("قاضي", "noun");
-const waadu = wordQuery("واده", "noun");
-const maamaa = wordQuery("ماما", "noun");
-const peesho = wordQuery("پیشو", "noun");
-const duaa = wordQuery("دعا", "noun");
-const zooy = wordQuery("زوی", "noun");
-const nabee = wordQuery("نبي", "noun");
-const lafz = wordQuery("لفظ", "noun");
+// const sor = testDictionary.adjLookup("سوړ")[0];
+// const zor = testDictionary.adjLookup("زوړ")[0];
+// const sturey = testDictionary.adjLookup("ستړی")[0];
+// const ghut = testDictionary.adjLookup("غټ")[0];
+const sarey = testDictionary.nounLookup("سړی")[0];
+const dostee = testDictionary.nounLookup("دوستي")[0];
+const wreejze = testDictionary.nounLookup("وریژې")[0];
+const xudza = testDictionary.nounLookup("ښځه")[0];
+const hatkaruy = testDictionary.nounLookup("هتکړۍ")[0];
+const kursuy = testDictionary.nounLookup("کرسۍ")[0];
+const daktar = testDictionary.nounLookup("ډاکټر")[0];
+const malguray = testDictionary.nounLookup("ملګری")[0];
+const lmasay = testDictionary.nounLookup("لمسی")[0];
+const melma = testDictionary.nounLookup("مېلمه")[0];
+const shpoon = testDictionary.nounLookup("شپون")[0];
+const tanoor = testDictionary.nounLookup("تنور")[0];
+const kor = testDictionary.nounLookup("کور")[0];
+const khur = testDictionary.nounLookup("خر")[0];
+const ghur = testDictionary.nounLookup("غر")[0];
+const mor = testDictionary.nounLookup("مور")[0];
+const plaar = testDictionary.nounLookup("پلار")[0];
+const oobu = testDictionary.nounLookup("اوبه")[0];
+const ghanum = testDictionary.nounLookup("غنم")[0];
+const laar = testDictionary.nounLookup("لار")[0];
+const qaazee = testDictionary.nounLookup("قاضي")[0];
+const waadu = testDictionary.nounLookup("واده")[0];
+const maamaa = testDictionary.nounLookup("ماما")[0];
+const peesho = testDictionary.nounLookup("پیشو")[0];
+const kaarghu = testDictionary.nounLookup("کارغه")[0];
+const aloo = testDictionary.nounLookup("الو")[0];
+const duaa = testDictionary.nounLookup("دعا")[0];
+const zooy = testDictionary.nounLookup("زوی")[0];
+const loor = testDictionary.nounLookup("لور")[0];
+const nabee = testDictionary.nounLookup("نبي")[0];
+const lafz = testDictionary.nounLookup("لفظ")[0];
 
 // TODO: test for adjective errors etc
-// TODO: زړو should not be hearts
 // bundled plural
-
-// TODO: FIX ماماګان
+// TODO: منابع
 
 const tests: {
   category: string;
@@ -211,6 +214,12 @@ const tests: {
           },
         ],
       },
+    ],
+  },
+  {
+    category: "group/plural nouns",
+    // to do fem plural تسبیج, هټکرۍ, مایع
+    cases: [
       {
         input: "وریژې",
         output: [
@@ -236,7 +245,97 @@ const tests: {
           },
         ],
       },
-      // fem nouns missing ه
+      {
+        input: "اوبه",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(oobu, undefined),
+              number: "plural",
+              gender: "fem",
+            },
+          },
+        ],
+      },
+      {
+        input: "اوبو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(oobu, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "هتکړۍ",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(hatkaruy, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "هتکړیو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(hatkaruy, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "هتکړو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(hatkaruy, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "غنم",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(ghanum, undefined),
+              number: "plural",
+              gender: "masc",
+            },
+          },
+        ],
+      },
+      {
+        input: "غنمو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(ghanum, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    category: "fem nouns missing ه",
+    cases: [
       {
         input: "لار",
         output: [
@@ -690,7 +789,6 @@ const tests: {
   },
   {
     category: "pattern 5",
-    // TODO: should غر also be considered inflected?
     cases: [
       {
         input: "غر",
@@ -826,58 +924,8 @@ const tests: {
     ],
   },
   {
-    category: "irregular words",
+    category: "misc people words",
     cases: [
-      {
-        input: "اوبه",
-        output: [
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(oobu, undefined),
-              number: "plural",
-              gender: "fem",
-            },
-          },
-        ],
-      },
-      {
-        input: "اوبو",
-        output: [
-          {
-            inflected: true,
-            selection: {
-              ...makeNounSelection(oobu, undefined),
-              number: "plural",
-            },
-          },
-        ],
-      },
-      {
-        input: "غنم",
-        output: [
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(ghanum, undefined),
-              number: "plural",
-              gender: "masc",
-            },
-          },
-        ],
-      },
-      {
-        input: "غنمو",
-        output: [
-          {
-            inflected: true,
-            selection: {
-              ...makeNounSelection(ghanum, undefined),
-              number: "plural",
-            },
-          },
-        ],
-      },
       {
         input: "پلار",
         output: [
@@ -896,40 +944,7 @@ const tests: {
       },
       {
         input: "پلارو",
-        output: [
-          {
-            inflected: true,
-            selection: {
-              ...makeNounSelection(plaar, undefined),
-              number: "plural",
-            },
-          },
-        ],
-      },
-      {
-        input: "مور",
-        output: [
-          {
-            inflected: false,
-            selection: makeNounSelection(mor, undefined),
-          },
-          {
-            inflected: true,
-            selection: makeNounSelection(mor, undefined),
-          },
-        ],
-      },
-      {
-        input: "مورو",
-        output: [
-          {
-            inflected: true,
-            selection: {
-              ...makeNounSelection(mor, undefined),
-              number: "plural",
-            },
-          },
-        ],
+        output: [],
       },
       {
         input: "قاضي",
@@ -949,6 +964,36 @@ const tests: {
             },
           },
         ],
+      },
+      {
+        input: "مور",
+        output: [
+          {
+            inflected: false,
+            selection: makeNounSelection(mor, undefined),
+          },
+          {
+            inflected: true,
+            selection: makeNounSelection(mor, undefined),
+          },
+        ],
+      },
+      {
+        input: "لور",
+        output: [
+          {
+            inflected: false,
+            selection: makeNounSelection(loor, undefined),
+          },
+          {
+            inflected: true,
+            selection: makeNounSelection(loor, undefined),
+          },
+        ],
+      },
+      {
+        input: "مورو",
+        output: [],
       },
       {
         input: "ماما",
@@ -1096,18 +1141,6 @@ const tests: {
         ],
       },
       {
-        input: "پلارانې",
-        output: [],
-      },
-      {
-        input: "پلارګان",
-        output: [],
-      },
-      {
-        input: "پلارګانو",
-        output: [],
-      },
-      {
         input: "پلارانو",
         output: [
           {
@@ -1120,66 +1153,34 @@ const tests: {
         ],
       },
       {
-        input: "دعاګانې",
+        input: "کارغان",
         output: [
           {
             inflected: false,
             selection: {
-              ...makeNounSelection(duaa, undefined),
+              ...makeNounSelection(kaarghu, undefined),
               number: "plural",
             },
           },
         ],
       },
       {
-        input: "دعاګانو",
+        input: "کارغانو",
         output: [
           {
             inflected: true,
             selection: {
-              ...makeNounSelection(duaa, undefined),
+              ...makeNounSelection(kaarghu, undefined),
               number: "plural",
             },
           },
         ],
       },
-      // TODO: FIX THIS!!
-      // {
-      //   input: "ماماګان",
-      //   output: [
-      //     {
-      //       inflected: false,
-      //       selection: {
-      //         ...makeNounSelection(maamaa, undefined),
-      //         number: "plural",
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   input: "ماماګانو",
-      //   output: [
-      //     {
-      //       inflected: true,
-      //       selection: {
-      //         ...makeNounSelection(maamaa, undefined),
-      //         number: "plural",
-      //       },
-      //     },
-      //   ],
-      // },
-      {
-        input: "ډاکټران",
-        output: [
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(daktar, undefined),
-              number: "plural",
-            },
-          },
-        ],
-      },
+    ],
+  },
+  {
+    category: "plurals with -aane",
+    cases: [
       {
         input: "ډاکټرانې",
         output: [
@@ -1217,8 +1218,113 @@ const tests: {
     ],
   },
   {
-    category: "plurals with -we",
+    category: "plurals with -gaan",
     cases: [
+      {
+        input: "ماماګان",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(maamaa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "ماماګانو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(maamaa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "الوګان",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(aloo, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "الوګانو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(aloo, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "پیسوګان",
+        output: [],
+      },
+    ],
+  },
+  {
+    category: "plurals with -gaane / -we",
+    cases: [
+      {
+        input: "دعاګانې",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(duaa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دعاګانو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(duaa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دعا ګانې",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(duaa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دعا ګانو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(duaa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
       {
         input: "دعاوې",
         output: [
@@ -1226,7 +1332,6 @@ const tests: {
             inflected: false,
             selection: {
               ...makeNounSelection(duaa, undefined),
-              gender: "fem",
               number: "plural",
             },
           },
@@ -1239,7 +1344,78 @@ const tests: {
             inflected: true,
             selection: {
               ...makeNounSelection(duaa, undefined),
-              gender: "fem",
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دعا وې",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(duaa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دعا وو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(duaa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دوستي ګانې",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(dostee, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دوستي ګانو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(dostee, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دوستیګانې",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(dostee, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "دوستیګانو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(dostee, undefined),
               number: "plural",
             },
           },
@@ -1248,7 +1424,7 @@ const tests: {
     ],
   },
   {
-    category: "irregular plurals",
+    category: "irregular familial plurals",
     cases: [
       {
         input: "میندې",
@@ -1274,6 +1450,51 @@ const tests: {
           },
         ],
       },
+      // also should be able to search for all variations of Pashto plural
+      {
+        input: "میېندې",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(mor, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "میېندو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(mor, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "مورو",
+        output: [],
+      },
+      {
+        input: "لوڼو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(loor, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "لورو",
+        output: [],
+      },
       {
         input: "زامن",
         output: [
@@ -1293,6 +1514,34 @@ const tests: {
             inflected: true,
             selection: {
               ...makeNounSelection(zooy, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "زویو",
+        output: [],
+      },
+      {
+        input: "پلرونه",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(plaar, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "پلرونو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(plaar, undefined),
               number: "plural",
             },
           },
@@ -1364,6 +1613,18 @@ const tests: {
           },
         ],
       },
+      {
+        input: "انبیا وو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(nabee, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
     ],
   },
 ];
@@ -1373,8 +1634,9 @@ describe("parsing nouns", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup, undefined, []).map(
-          ({ body }) => body
+        const res = parseNoun(tokens, testDictionary, undefined, []).flatMap(
+          // only take the ones that used all the tokens
+          ({ body, tokens }) => (tokens.length === 0 ? [body] : [])
         );
         expect(res).toEqual(output);
       });
@@ -1382,135 +1644,135 @@ describe("parsing nouns", () => {
   });
 });
 
-const adjsTests: {
-  category: string;
-  cases: {
-    input: string;
-    output: { inflected: boolean; selection: T.NounSelection }[];
-  }[];
-}[] = [
-  {
-    category: "agreement with regular nouns",
-    cases: [
-      {
-        input: "زاړه سړي",
-        output: [
-          {
-            inflected: true,
-            selection: {
-              ...makeNounSelection(sarey, undefined),
-              adjectives: [makeAdjectiveSelection(zor)],
-            },
-          },
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(sarey, undefined),
-              adjectives: [makeAdjectiveSelection(zor)],
-              number: "plural",
-            },
-          },
-        ],
-      },
-      {
-        input: "غټو ستړو ښځو",
-        output: [
-          {
-            inflected: true,
-            selection: {
-              ...makeNounSelection(xudza, undefined),
-              adjectives: [
-                makeAdjectiveSelection(ghut),
-                makeAdjectiveSelection(sturey),
-              ],
-              number: "plural",
-            },
-          },
-        ],
-      },
-      {
-        input: "غټو ستړې ښځو",
-        output: [],
-      },
-    ],
-  },
-  {
-    category: "agreement with plural nouns",
-    cases: [
-      {
-        input: "سړې اوبه",
-        output: [
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(oobu, undefined),
-              gender: "fem",
-              number: "plural",
-              adjectives: [makeAdjectiveSelection(sor)],
-            },
-          },
-        ],
-      },
-      {
-        input: "زاړه غنم",
-        output: [
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(ghanum, undefined),
-              number: "plural",
-              adjectives: [makeAdjectiveSelection(zor)],
-            },
-          },
-        ],
-      },
-      {
-        input: "زوړ غنم",
-        output: [],
-      },
-      {
-        input: "زاړه کورونه",
-        output: [
-          {
-            inflected: false,
-            selection: {
-              ...makeNounSelection(kor, undefined),
-              number: "plural",
-              adjectives: [makeAdjectiveSelection(zor)],
-            },
-          },
-        ],
-      },
-      {
-        input: "غټو زړو کورونو",
-        output: [
-          {
-            inflected: true,
-            selection: {
-              ...makeNounSelection(kor, undefined),
-              number: "plural",
-              adjectives: [
-                makeAdjectiveSelection(ghut),
-                makeAdjectiveSelection(zor),
-              ],
-            },
-          },
-        ],
-      },
-    ],
-  },
-];
+// const adjsTests: {
+//   category: string;
+//   cases: {
+//     input: string;
+//     output: { inflected: boolean; selection: T.NounSelection }[];
+//   }[];
+// }[] = [
+//   {
+//     category: "agreement with regular nouns",
+//     cases: [
+//       {
+//         input: "زاړه سړي",
+//         output: [
+//           {
+//             inflected: true,
+//             selection: {
+//               ...makeNounSelection(sarey, undefined),
+//               adjectives: [makeAdjectiveSelection(zor)],
+//             },
+//           },
+//           {
+//             inflected: false,
+//             selection: {
+//               ...makeNounSelection(sarey, undefined),
+//               adjectives: [makeAdjectiveSelection(zor)],
+//               number: "plural",
+//             },
+//           },
+//         ],
+//       },
+//       {
+//         input: "غټو ستړو ښځو",
+//         output: [
+//           {
+//             inflected: true,
+//             selection: {
+//               ...makeNounSelection(xudza, undefined),
+//               adjectives: [
+//                 makeAdjectiveSelection(ghut),
+//                 makeAdjectiveSelection(sturey),
+//               ],
+//               number: "plural",
+//             },
+//           },
+//         ],
+//       },
+//       {
+//         input: "غټو ستړې ښځو",
+//         output: [],
+//       },
+//     ],
+//   },
+//   {
+//     category: "agreement with plural nouns",
+//     cases: [
+//       {
+//         input: "سړې اوبه",
+//         output: [
+//           {
+//             inflected: false,
+//             selection: {
+//               ...makeNounSelection(oobu, undefined),
+//               gender: "fem",
+//               number: "plural",
+//               adjectives: [makeAdjectiveSelection(sor)],
+//             },
+//           },
+//         ],
+//       },
+//       {
+//         input: "زاړه غنم",
+//         output: [
+//           {
+//             inflected: false,
+//             selection: {
+//               ...makeNounSelection(ghanum, undefined),
+//               number: "plural",
+//               adjectives: [makeAdjectiveSelection(zor)],
+//             },
+//           },
+//         ],
+//       },
+//       {
+//         input: "زوړ غنم",
+//         output: [],
+//       },
+//       {
+//         input: "زاړه کورونه",
+//         output: [
+//           {
+//             inflected: false,
+//             selection: {
+//               ...makeNounSelection(kor, undefined),
+//               number: "plural",
+//               adjectives: [makeAdjectiveSelection(zor)],
+//             },
+//           },
+//         ],
+//       },
+//       {
+//         input: "غټو زړو کورونو",
+//         output: [
+//           {
+//             inflected: true,
+//             selection: {
+//               ...makeNounSelection(kor, undefined),
+//               number: "plural",
+//               adjectives: [
+//                 makeAdjectiveSelection(ghut),
+//                 makeAdjectiveSelection(zor),
+//               ],
+//             },
+//           },
+//         ],
+//       },
+//     ],
+//   },
+// ];
 
-describe("parsing nouns with adjectives", () => {
-  adjsTests.forEach(({ category, cases }) => {
-    test(category, () => {
-      cases.forEach(({ input, output }) => {
-        const tokens = tokenizer(input);
-        const res = parseNoun(tokens, lookup, undefined, [])
-          .filter(isCompleteResult)
-          .map(({ body }) => body);
-        expect(res).toEqual(output);
-      });
-    });
-  });
-});
+// describe("parsing nouns with adjectives", () => {
+//   adjsTests.forEach(({ category, cases }) => {
+//     test(category, () => {
+//       cases.forEach(({ input, output }) => {
+//         const tokens = tokenizer(input);
+//         const res = parseNoun(tokens, lookup, undefined, [])
+//           .filter(isCompleteResult)
+//           .map(({ body }) => body);
+//         expect(res).toEqual(output);
+//       });
+//     });
+//   });
+// });

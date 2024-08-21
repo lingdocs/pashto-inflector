@@ -2700,6 +2700,14 @@ json-buffer@3.0.1:
   resolved "https://registry.npmjs.org/json-buffer/-/json-buffer-3.0.1.tgz"
   integrity sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==
 
+json-edit-react@^1.15.7:
+  version "1.15.7"
+  resolved "https://registry.npmjs.org/json-edit-react/-/json-edit-react-1.15.7.tgz"
+  integrity sha512-PMw7FSTVrY23m5tdwDFxqjVL4OHyR/zSkPIu1BhKVJofW+l0I93moevs7CWTD+3ZWA/m8OtKpxYV3CQ30OlNJA==
+  dependencies:
+    object-property-assigner "^1.3.0"
+    object-property-extractor "^1.0.11"
+
 json-parse-even-better-errors@^2.3.0:
   version "2.3.1"
   resolved "https://registry.npmjs.org/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz"
@@ -2948,6 +2956,16 @@ object-assign@^4.0.1, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz"
   integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
+
+object-property-assigner@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/object-property-assigner/-/object-property-assigner-1.3.0.tgz"
+  integrity sha512-19A0RsC9rP9klCKHDPL/MeERxeopV9wyMNfP+eD2uKOafzLjF+OUEN4FoP6RAlCFHmerBPJ4ohNv/WrgaNpeIA==
+
+object-property-extractor@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.npmjs.org/object-property-extractor/-/object-property-extractor-1.0.11.tgz"
+  integrity sha512-VnDQcyN0FTXZ0hMZS/CTb2QkIssZ9XKB8zlf5rnFh1HjFQX1P73EHawavSztBOiPDGqAPNXebv4agjhF9eACAw==
 
 once@^1.3.0:
   version "1.4.0"
@@ -3265,7 +3283,7 @@ react-transition-group@^4.4.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react@^18.3.1, react@>=0.14.0, react@>=15.0.0, react@>=16.3.0, react@>=16.3.2, react@>=16.6.0, react@>=16.8.0:
+react@^18.3.1, react@>=0.14.0, react@>=15.0.0, react@>=16.0.0, react@>=16.3.0, react@>=16.3.2, react@>=16.6.0, react@>=16.8.0:
   version "18.3.1"
   resolved "https://registry.npmjs.org/react/-/react-18.3.1.tgz"
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==

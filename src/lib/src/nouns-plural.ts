@@ -183,8 +183,6 @@ export function makePlural(
     };
   }
   function addLongVowelSuffix(gender: "masc" | "fem"): T.PluralInflectionSet {
-    if (pashtoPlural) {
-    }
     const base = removeEndTick(makePsString(w.p, w.f));
     const baseWOutAccents = removeAccents(base);
     const space =

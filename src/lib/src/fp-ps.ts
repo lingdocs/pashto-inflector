@@ -53,6 +53,20 @@ export function fmapParseResult<A extends object, B extends object>(
   }));
 }
 
+export function fFlatMapParseResult<A extends object, B extends object>(
+  f: (x: A) => B[],
+  x: T.ParseResult<A>[]
+): T.ParseResult<B>[] {
+  return x.flatMap<T.ParseResult<B>>((xi) => {
+    const bodies = f(xi.body);
+    return bodies.map((body) => ({
+      tokens: xi.tokens,
+      body,
+      errors: xi.errors,
+    }));
+  });
+}
+
 export function fmapSingleOrLengthOpts<A, B>(
   f: (x: A) => B,
   x: T.SingleOrLengthOpts<A>
@@ -215,4 +229,36 @@ export function mapVerbRenderedOutput(
     }
     return fmapVB(v);
   }
+}
+
+/**
+ * a type predicate OR combinator
+ */
+export function orTp<A, B extends A, C extends A>(
+  f: (x: A) => x is B,
+  g: (x: A) => x is C
+): (x: A) => x is B | C {
+  return (x: A) => f(x) || g(x);
+}
+
+/**
+ * a type predicate AND combinator
+ */
+export function andTp<A, B extends A, C extends A>(
+  f: (x: A) => x is B,
+  g: (x: A) => x is C
+): (x: A) => x is B & C {
+  return (x: A) => f(x) && g(x);
+}
+
+/**
+ * a type predicate successive AND combinator
+ * the second predicate is based on the first predicate
+ * being true and narrows the type further
+ */
+export function andSuccTp<A, B extends A, C extends B>(
+  f: (x: A) => x is B,
+  g: (x: B) => x is C
+): (x: A) => x is B & C {
+  return (x: A) => f(x) && g(x);
 }
