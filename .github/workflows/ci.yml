@@ -23,6 +23,7 @@ jobs:
       - name: Install, build, test
         run: |
           yarn install-all
+          yarn get-words
           yarn build-lib
           yarn build-components
           yarn build-website

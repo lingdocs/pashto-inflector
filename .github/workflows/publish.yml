@@ -28,6 +28,7 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: |
           yarn install-all
+          yarn get-words
           yarn build-lib
           yarn build-components
           yarn test --silent
