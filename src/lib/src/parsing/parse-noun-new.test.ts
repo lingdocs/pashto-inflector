@@ -44,10 +44,12 @@ const zooy = testDictionary.nounLookup("زوی")[0];
 const loor = testDictionary.nounLookup("لور")[0];
 const nabee = testDictionary.nounLookup("نبي")[0];
 const lafz = testDictionary.nounLookup("لفظ")[0];
+const fatha = testDictionary.nounLookup("فتح")[0];
+const nafa = testDictionary.nounLookup("نفع")[0];
+const tajraba = testDictionary.nounLookup("تجربه")[0];
 
 // TODO: test for adjective errors etc
 // bundled plural
-// TODO: منابع
 
 const tests: {
   category: string;
@@ -209,6 +211,93 @@ const tests: {
             inflected: true,
             selection: {
               ...makeNounSelection(xudza, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    category: "pattern 1 fem nouns with ح ه etc",
+    cases: [
+      {
+        input: "فتح",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(fatha, undefined),
+            },
+          },
+        ],
+      },
+      {
+        input: "فتحې",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(fatha, undefined),
+            },
+          },
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(fatha, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "فتحو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(fatha, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "نفع",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(nafa, undefined),
+            },
+          },
+        ],
+      },
+      {
+        input: "نفعې",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(nafa, undefined),
+            },
+          },
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(nafa, undefined),
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "نفعو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(nafa, undefined),
               number: "plural",
             },
           },
@@ -1621,6 +1710,19 @@ const tests: {
             selection: {
               ...makeNounSelection(nabee, undefined),
               number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "تجارب",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(tajraba, undefined),
+              number: "plural",
+              gender: "masc",
             },
           },
         ],

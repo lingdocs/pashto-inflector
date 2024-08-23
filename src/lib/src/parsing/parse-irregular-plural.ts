@@ -1,5 +1,6 @@
 import * as T from "../../../types";
 import { DictionaryAPI } from "../dictionary/dictionary";
+import { endsInConsonant } from "../p-text-helpers";
 import * as tp from "../type-predicates";
 import { returnParseResults } from "./utils";
 
@@ -16,7 +17,10 @@ export function parseIrregularPlural(
     .filter(tp.isNounEntry)
     .map<T.ParsedNounWord<T.NounEntry>>((entry) => ({
       entry,
-      gender: tp.isFemNounEntry(entry) ? "fem" : "masc",
+      gender:
+        tp.isFemNounEntry(entry) && !hasMasculineArabicPlural(entry)
+          ? "fem"
+          : "masc",
       inflected: false,
       given: first.s,
       plural: true,
@@ -74,4 +78,9 @@ export function parseIrregularPlural(
     ]),
     ...inflectedAfterLongSep,
   ];
+}
+
+function hasMasculineArabicPlural(e: T.FemNounEntry): boolean {
+  if (!e.app || !e.apf) return false;
+  return endsInConsonant({ p: e.app, f: e.apf });
 }

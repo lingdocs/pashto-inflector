@@ -67,7 +67,7 @@ function parsePattern1(
     dictionary
       .queryP(p)
       .filter(andSuccTp(tp.isFemNounEntry, tp.isPattern1Entry));
-  const plain = first.s.endsWith("ه")
+  const plain = ["ه", "ع"].some((v) => first.s.endsWith(v))
     ? p1Lookup(first.s).map<FemNounBaseParse>((entry) => ({
         inflection: [0],
         gender: ["fem"],
@@ -84,12 +84,21 @@ function parsePattern1(
       }))
     : [];
   const inflected = first.s.endsWith("ې")
-    ? p1Lookup(first.s.slice(0, -1) + "ه").map<FemNounBaseParse>((entry) => ({
-        inflection: [1],
-        gender: ["fem"],
-        entry,
-        given: first.s,
-      }))
+    ? (() => {
+        const base = first.s.slice(0, -1);
+        const lookups = [
+          ...p1Lookup(base + "ه"),
+          ...(["ح", "ع"].some((v) => first.s.at(-2) === v)
+            ? p1Lookup(base)
+            : []),
+        ];
+        return lookups.map<FemNounBaseParse>((entry) => ({
+          inflection: [1],
+          gender: ["fem"],
+          entry,
+          given: first.s,
+        }));
+      })()
     : [];
   const doubleInflected = first.s.endsWith("و")
     ? p1Lookup(first.s.slice(0, -1) + "ه").map<FemNounBaseParse>((entry) => ({
