@@ -1238,12 +1238,35 @@ export type EquativeBlock = { type: "equative"; equative: EquativeRendered };
 
 export type NegativeBlock = { type: "negative"; imperative: boolean };
 
-export type InflectableBaseParse<E extends InflectableEntry> = {
+export type InflectableBaseParse<
+  E extends InflectableEntry | AdjectiveSelection | DeterminerSelection
+> = {
   inflection: (0 | 1 | 2)[];
   gender: Gender[];
   given: string;
-  entry: E;
+  selection: E;
 };
+
+export type DictionaryAPI = {
+  initialize: () => Promise<{
+    response: "loaded first time" | "loaded from saved";
+    dictionaryInfo: DictionaryInfo;
+  }>;
+  update: () => Promise<{
+    response: "no need for update" | "updated" | "unable to check";
+    dictionaryInfo: DictionaryInfo;
+  }>;
+  queryP: (p: string) => DictionaryEntry[];
+  adjLookup: (p: string) => AdjectiveEntry[];
+  nounLookup: (p: string) => NounEntry[];
+  otherLookup: (key: keyof DictionaryEntry, p: string) => DictionaryEntry[];
+  specialPluralLookup: (p: string) => NounEntry[];
+};
+
+export type Parser<R> = (
+  tokens: Readonly<Token[]>,
+  dictionary: DictionaryAPI
+) => ParseResult<R>[];
 
 export type ParsedNounWord<N extends NounEntry> = {
   inflected: boolean;

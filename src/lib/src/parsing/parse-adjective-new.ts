@@ -1,5 +1,4 @@
 import * as T from "../../../types";
-import { DictionaryAPI } from "../dictionary/dictionary";
 import { fmapParseResult } from "../fp-ps";
 import { makeAdjectiveSelection } from "../phrase-building/make-selections";
 import * as tp from "../type-predicates";
@@ -7,13 +6,8 @@ import { parseInflectableWord } from "./parse-inflectable-word";
 
 export function parseAdjective(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
-): T.ParseResult<{
-  inflection: (0 | 1 | 2)[];
-  gender: T.Gender[];
-  given: string;
-  selection: T.AdjectiveSelection;
-}>[] {
+  dictionary: T.DictionaryAPI
+): T.ParseResult<T.InflectableBaseParse<T.AdjectiveSelection>>[] {
   if (tokens.length === 0) {
     return [];
   }
@@ -27,7 +21,7 @@ export function parseAdjective(
       inflection: r.inflection,
       gender: r.gender,
       given: r.given,
-      selection: makeAdjectiveSelection(r.entry as T.AdjectiveEntry),
+      selection: makeAdjectiveSelection(r.selection as T.AdjectiveEntry),
     }),
     adjectives
   );

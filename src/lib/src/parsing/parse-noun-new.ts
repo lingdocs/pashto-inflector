@@ -1,67 +1,96 @@
 import * as T from "../../../types";
-import { DictionaryAPI } from "../dictionary/dictionary";
 import { makeNounSelection } from "../phrase-building/make-selections";
 import { parseAdjective } from "./parse-adjective-new";
+import { parseDeterminer } from "./parse-determiner";
 import { parseNounWord } from "./parse-noun-word";
-import { bindParseResult } from "./utils";
+import { bindParseResult, parserCombMany, toParseError } from "./utils";
 
 type NounResult = { inflected: boolean; selection: T.NounSelection };
 
-// ISSUES - fem nouns like ښځه کتابچه not working
-// زاړه مېلمانه adjective agreement problem
-
 export function parseNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI,
-  possesor: T.PossesorSelection | undefined,
-  adjectives: {
-    inflection: (0 | 1 | 2)[];
-    gender: T.Gender[];
-    given: string;
-    selection: T.AdjectiveSelection;
-  }[]
+  dictionary: T.DictionaryAPI,
+  possesor: T.PossesorSelection | undefined
 ): T.ParseResult<NounResult>[] {
   if (tokens.length === 0) {
     return [];
   }
+  const detRes = parserCombMany(parseDeterminer)(tokens, dictionary);
   // TODO: add recognition of او between adjectives
-  const withAdj = bindParseResult(
-    parseAdjective(tokens, dictionary),
-    (tkns, adj) => parseNoun(tkns, dictionary, possesor, [...adjectives, adj])
-  );
-  const nounWord = parseNounWord(tokens, dictionary);
-  // fit together with nouns
-  const nouns = bindParseResult(nounWord, (tkns, nr) => {
-    const { error: adjErrors } = adjsMatch(
-      adjectives,
-      nr.gender,
-      nr.inflected ? 1 : 0,
-      nr.plural
-    );
-    const s = makeNounSelection(nr.entry, undefined);
-    const body: NounResult = {
-      inflected: nr.inflected,
-      selection: {
-        ...s,
-        gender: nr.gender,
-        number: nr.plural ? "plural" : "singular",
-        adjectives: adjectives.map((a) => a.selection),
-        possesor,
-      },
-    };
-    return [
-      {
-        body,
-        tokens: tkns,
-        errors: adjErrors.map((x) => ({ message: x })),
-      },
-    ];
+  return bindParseResult(detRes, (t, determiners) => {
+    const adjRes = parserCombMany(parseAdjective)(t, dictionary);
+    return bindParseResult(adjRes, (tk, adjectives) => {
+      const nounWord = parseNounWord(tk, dictionary);
+      return bindParseResult(nounWord, (tkns, nr) => {
+        const { error: adjErrors } = adjDetsMatch(
+          adjectives,
+          nr.gender,
+          nr.inflected ? 1 : 0,
+          nr.plural
+        );
+        const { error: detErrors } = adjDetsMatch(
+          determiners,
+          nr.gender,
+          nr.inflected ? 1 : 0,
+          nr.plural
+        );
+        const dupErrors = checkForDeterminerDuplicates(determiners);
+        const s = makeNounSelection(nr.entry, undefined);
+        const body: NounResult = {
+          inflected: nr.inflected,
+          selection: {
+            ...s,
+            gender: nr.gender,
+            number: nr.plural ? "plural" : "singular",
+            adjectives: adjectives.map((a) => a.selection),
+            determiners: determiners.length
+              ? {
+                  type: "determiners",
+                  withNoun: true,
+                  determiners: determiners.map((d) => d.selection),
+                }
+              : undefined,
+            possesor,
+          },
+        };
+        return [
+          {
+            body,
+            tokens: tkns,
+            errors: [
+              ...detErrors.map(toParseError),
+              ...dupErrors.map(toParseError),
+              ...adjErrors.map(toParseError),
+            ],
+          },
+        ];
+      });
+    });
   });
-  return [...nouns, ...withAdj];
 }
 
-function adjsMatch(
-  adjectives: Parameters<typeof parseNoun>[3],
+function checkForDeterminerDuplicates(
+  determiners: T.InflectableBaseParse<T.DeterminerSelection>[]
+): string[] {
+  // from https://flexiple.com/javascript/find-duplicates-javascript-array
+  const array = determiners.map((d) => d.selection.determiner.p);
+  const duplicates: string[] = [];
+  for (let i = 0; i < array.length; i++) {
+    for (let j = i + 1; j < array.length; j++) {
+      if (array[i] === array[j]) {
+        if (!duplicates.includes(array[i])) {
+          duplicates.push(array[i]);
+        }
+      }
+    }
+  }
+  return duplicates.map((x) => `duplicate ${x} determiner`);
+}
+
+function adjDetsMatch(
+  adjectives: T.InflectableBaseParse<
+    T.AdjectiveSelection | T.DeterminerSelection
+  >[],
   gender: T.Gender,
   inf: 0 | 1 | 2,
   plural: boolean | undefined
@@ -76,14 +105,17 @@ function adjsMatch(
     return {
       ok: false,
       error: unmatching.map((x) => {
-        const adjText =
-          x.given === x.selection.entry.p
-            ? x.given
-            : `${x.given} (${x.selection.entry.p})`;
+        const p =
+          x.selection.type === "adjective"
+            ? x.selection.entry.p
+            : x.selection.determiner.p;
+        const adjText = x.given === p ? x.given : `${x.given} (${p})`;
         const inflectionIssue = !x.inflection.some((x) => x === inflection)
           ? ` should be ${showInflection(inflection)}`
           : ``;
-        return `Adjective agreement error: ${adjText} should be ${inflectionIssue} ${gender}.`;
+        return `${
+          x.selection.type === "adjective" ? "Adjective" : "Determiner"
+        } agreement error: ${adjText} should be ${inflectionIssue} ${gender}.`;
       }),
     };
   } else {

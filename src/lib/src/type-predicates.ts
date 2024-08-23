@@ -121,8 +121,10 @@ export function isMascNounEntry(
   return !!e.c && e.c.includes("n. m.");
 }
 
-export function isFemNounEntry(e: T.DictionaryEntry): e is T.FemNounEntry {
-  return !!e.c && e.c.includes("n. f.");
+export function isFemNounEntry(
+  e: T.DictionaryEntry | T.Determiner
+): e is T.FemNounEntry {
+  return "c" in e && !!e.c && e.c.includes("n. f.");
 }
 
 export function isUnisexNounEntry(
@@ -195,13 +197,13 @@ export function isNonInflectingEntry<T extends T.InflectableEntry>(
  * @param e
  * @returns
  */
-export function isPattern1Entry<T extends T.InflectableEntry>(
+export function isPattern1Entry<T extends T.InflectableEntry | T.Determiner>(
   e: T
 ): e is T.Pattern1Entry<T> {
-  if (e.noInf) return false;
-  if (e.infap || e.infbp) return false;
+  if ("noInf" in e && e.noInf) return false;
+  if (("infap" in e && e.infap) || ("infbp" in e && e.infbp)) return false;
   // family words like خور زوی etc with special plural don't follow pattern #1
-  if (e.c.includes("fam.")) {
+  if ("c" in e && e.c.includes("fam.")) {
     return false;
   }
   if (isFemNounEntry(e)) {

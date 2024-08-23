@@ -5,9 +5,11 @@ import { tokenizer } from "../lib/src/parsing/tokenizer";
 // import { NPDisplay } from "../components/library";
 // import EditableVP from "../components/src/vp-explorer/EditableVP";
 // import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
-import { DictionaryAPI } from "../lib/src/dictionary/dictionary";
 import { parseNoun } from "../lib/src/parsing/parse-noun-new";
 import { JsonEditor } from "json-edit-react";
+import { renderNounSelection } from "../lib/src/phrase-building/render-np";
+import { NPBlock } from "../components/src/blocks/Block";
+import { getEnglishFromRendered } from "../lib/src/phrase-building/np-tools";
 
 const working = [
   "limited demo vocab",
@@ -47,16 +49,18 @@ const examples = [
 ];
 
 function ParserDemo({
-  // opts,
+  opts,
   // entryFeeder,
   dictionary,
 }: {
   opts: T.TextOptions;
   entryFeeder: T.EntryFeeder;
-  dictionary: DictionaryAPI;
+  dictionary: T.DictionaryAPI;
 }) {
   const [text, setText] = useState<string>("");
-  const [result, setResult] = useState<any[]>([]);
+  const [result, setResult] = useState<
+    ReturnType<typeof parseNoun>[number]["body"][]
+  >([]);
   // ReturnType<typeof parsePhrase>["success"]
   const [errors, setErrors] = useState<string[]>([]);
   function handleInput(value: string) {
@@ -66,8 +70,10 @@ function ParserDemo({
       setErrors([]);
       return;
     }
-    const res = parseNoun(tokenizer(value), dictionary, undefined, []);
-    const success = res.filter((x) => !x.tokens.length).map((x) => x.body);
+    const res = parseNoun(tokenizer(value), dictionary, undefined);
+    const success: ReturnType<typeof parseNoun>[number]["body"][] = res
+      .filter((x) => !x.tokens.length)
+      .map((x) => x.body);
     const errors = [
       ...new Set(res.flatMap(({ errors }) => errors.map((e) => e.message))),
     ];
@@ -135,6 +141,29 @@ function ParserDemo({
           <div className="text-center">Did you mean:</div>
         </>
       )}
+      {result.map((r) => {
+        try {
+          const renderedNP: T.Rendered<T.NPSelection> = {
+            type: "NP",
+            selection: renderNounSelection(r.selection, r.inflected, "none"),
+          };
+          return (
+            <>
+              {r.inflected ? "INFLECTED" : "PLAIN"}
+              <NPBlock
+                opts={opts}
+                script="p"
+                english={getEnglishFromRendered(renderedNP)}
+              >
+                {renderedNP}
+              </NPBlock>
+            </>
+          );
+        } catch (e) {
+          console.error(e);
+          return <div>ERROR RENDERING</div>;
+        }
+      })}
       <JsonEditor data={result} />
       {/* {result.map((res) =>
         "inflected" in res ? (

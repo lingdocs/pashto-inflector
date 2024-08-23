@@ -1,12 +1,11 @@
 import * as T from "../../../types";
-import { DictionaryAPI } from "../dictionary/dictionary";
 import { endsInConsonant } from "../p-text-helpers";
 import * as tp from "../type-predicates";
 import { returnParseResults } from "./utils";
 
 export function parseIrregularPlural(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
   if (tokens.length === 0) {
     return [];

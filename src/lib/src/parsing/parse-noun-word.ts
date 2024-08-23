@@ -1,5 +1,4 @@
 import * as T from "../../../types";
-import { DictionaryAPI } from "../dictionary/dictionary";
 import { fFlatMapParseResult } from "../fp-ps";
 import { getInflectionPattern } from "../inflection-pattern";
 import { makeNounSelection } from "../phrase-building/make-selections";
@@ -8,11 +7,12 @@ import { parseInflectableWord } from "./parse-inflectable-word";
 import { parseFemNoun } from "./parse-fem-noun";
 import { parsePluralEndingNoun } from "./parse-plural-ending-noun";
 import { parseIrregularPlural } from "./parse-irregular-plural";
+import { parserCombOr } from "./utils";
 
-export function parseNounWord(
+export const parseNounWord: T.Parser<T.ParsedNounWord<T.NounEntry>> = (
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
-): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
+  dictionary: T.DictionaryAPI
+) => {
   if (tokens.length === 0) {
     return [];
   }
@@ -25,10 +25,12 @@ export function parseNounWord(
   );
   return [
     ...withoutPluralEndings,
-    ...parsePluralEndingNoun(tokens, dictionary),
-    ...parseIrregularPlural(tokens, dictionary),
+    ...parserCombOr([parsePluralEndingNoun, parseIrregularPlural])(
+      tokens,
+      dictionary
+    ),
   ];
-}
+};
 
 function inflectableBaseParseToNounWordResults<N extends T.NounEntry>(
   wr: T.InflectableBaseParse<N>
@@ -46,17 +48,17 @@ function inflectableBaseParseToNounWordResults<N extends T.NounEntry>(
   }
   const possibleGenders = gendersWorkWithSelection(
     wr.gender,
-    makeNounSelection(wr.entry, undefined)
+    makeNounSelection(wr.selection, undefined)
   );
   return possibleGenders.flatMap((gender) =>
     wr.inflection.flatMap((inflection) =>
-      convertInflection(inflection, wr.entry, gender).flatMap(
+      convertInflection(inflection, wr.selection, gender).flatMap(
         ({ inflected, number }) => ({
           inflected,
           plural: number === "plural",
           gender,
           given: wr.given,
-          entry: wr.entry,
+          entry: wr.selection,
         })
       )
     )

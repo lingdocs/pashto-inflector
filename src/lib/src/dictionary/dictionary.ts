@@ -53,17 +53,7 @@ function specialPluralLookup(p: string): T.NounEntry[] {
     .filter(tp.isNounEntry);
 }
 
-export type DictionaryAPI = {
-  initialize: () => ReturnType<typeof dictDb.initialize>;
-  update: () => ReturnType<typeof dictDb.updateDictionary>;
-  queryP: (p: string) => T.DictionaryEntry[];
-  adjLookup: (p: string) => T.AdjectiveEntry[];
-  nounLookup: (p: string) => T.NounEntry[];
-  otherLookup: (key: keyof T.DictionaryEntry, p: string) => T.DictionaryEntry[];
-  specialPluralLookup: (p: string) => T.NounEntry[];
-};
-
-export const dictionary: DictionaryAPI = {
+export const dictionary: T.DictionaryAPI = {
   initialize: async () => await dictDb.initialize(),
   update: async () => await dictDb.updateDictionary(() => null),
   queryP: memoizedQueryP,

@@ -121,6 +121,48 @@ export function cleanOutResults<C>(
   return Array.from(new Set(errorsCulled.map(JSON.stringify))).map(JSON.parse);
 }
 
+export type Parser<R> = (
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI
+) => T.ParseResult<R>[];
+
+export function parserCombOr<R>(parsers: Parser<R>[]) {
+  return (tokens: Readonly<T.Token[]>, dictionary: T.DictionaryAPI) =>
+    parsers.flatMap((p) => p(tokens, dictionary));
+}
+
+/**
+ * A parser combinator to take a parser and make it run as many times as possible
+ * for each success, it will also return an option as if it failed, to allow for
+ * the words to be considered something else.
+ *
+ * @param parser
+ * @returns
+ */
+export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
+  const r: Parser<R[]> = (
+    tokens: Readonly<T.Token[]>,
+    dictionary: T.DictionaryAPI
+  ) => {
+    function go(acc: R[], t: Readonly<T.Token[]>): T.ParseResult<R[]>[] {
+      const one = parser(t, dictionary);
+      if (one.length === 0) {
+        return returnParseResult(t, acc);
+      }
+      return bindParseResult(one, (tkns, o) => {
+        return [
+          ...go([...acc, o], tkns),
+          // also have a result where the next token is NOT
+          // considered a success
+          ...returnParseResult(t, acc),
+        ];
+      });
+    }
+    return go([], tokens);
+  };
+  return r;
+}
+
 export function isCompleteResult<C extends object>(
   r: T.ParseResult<C>
 ): boolean {
@@ -243,4 +285,8 @@ export function addShrunkenPossesor(
       },
     },
   };
+}
+
+export function toParseError(message: string): T.ParseError {
+  return { message };
 }

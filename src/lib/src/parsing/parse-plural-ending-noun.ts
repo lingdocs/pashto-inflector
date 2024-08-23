@@ -1,5 +1,4 @@
 import * as T from "../../../types";
-import { DictionaryAPI } from "../dictionary/dictionary";
 import {
   endsInAaOrOo,
   endsInConsonant,
@@ -11,7 +10,7 @@ import { returnParseResults } from "./utils";
 
 export function parsePluralEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
   if (tokens.length === 0) {
     return [];
@@ -32,7 +31,7 @@ export function parsePluralEndingNoun(
 
 // function parseSpecialPlural(
 //   tokens: Readonly<T.Token[]>,
-//   dictionary: DictionaryAPI
+//   dictionary: T.DictionaryAPI
 // ): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
 //   if (tokens.length === 0) {
 //     return [];
@@ -90,7 +89,7 @@ export function parsePluralEndingNoun(
 
 function parseOonaEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
   if (tokens.length === 0) {
     return [];
@@ -132,7 +131,7 @@ function parseOonaEndingNoun(
 
 function parseAanEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
   if (tokens.length === 0) {
     return [];
@@ -206,7 +205,7 @@ function parseAanEndingNoun(
 
 function parseAaneEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
   if (tokens.length === 0) {
     return [];
@@ -233,7 +232,7 @@ function parseAaneEndingNoun(
 
 function parseGaanEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
   if (tokens.length === 0) {
     return [];
@@ -309,7 +308,7 @@ function parseGaanEndingNoun(
 
 function parseGaaneEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.FemNounEntry>>[] {
   if (tokens.length === 0) {
     return [];
@@ -413,7 +412,7 @@ function parseGaaneEndingNoun(
 
 function parseWeEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.FemNounEntry>>[] {
   if (tokens.length === 0) {
     return [];
@@ -489,7 +488,7 @@ function parseWeEndingNoun(
 
 function parseIYaanEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
   if (tokens.length === 0) {
     return [];
@@ -563,7 +562,7 @@ function parseIYaanEndingNoun(
 
 function parseIYaaneEndingNoun(
   tokens: Readonly<T.Token[]>,
-  dictionary: DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry | T.FemNounEntry>>[] {
   if (tokens.length === 0) {
     return [];

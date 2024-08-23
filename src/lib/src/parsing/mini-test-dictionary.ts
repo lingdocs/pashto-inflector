@@ -1,5 +1,4 @@
 import * as T from "../../../types";
-import type { DictionaryAPI } from "../dictionary/dictionary";
 import { isAdjectiveEntry, isNounEntry } from "../type-predicates";
 import { entries } from "../../../../vocab/mini-dict-entries";
 
@@ -26,7 +25,7 @@ function specialPluralLookup(p: string): T.NounEntry[] {
   ) as T.NounEntry[];
 }
 
-export const testDictionary: DictionaryAPI = {
+export const testDictionary: T.DictionaryAPI = {
   // @ts-expect-error we won't mock the initialization
   initialize: async () => 0,
   // @ts-expect-error not perfect mocking because won't need that

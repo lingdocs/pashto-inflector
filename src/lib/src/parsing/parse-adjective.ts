@@ -7,12 +7,7 @@ import { LookupFunction } from "./lookup";
 export function parseAdjective(
   tokens: Readonly<T.Token[]>,
   lookup: LookupFunction
-): T.ParseResult<{
-  inflection: (0 | 1 | 2)[];
-  gender: T.Gender[];
-  given: string;
-  selection: T.AdjectiveSelection;
-}>[] {
+): T.ParseResult<T.InflectableBaseParse<T.AdjectiveSelection>>[] {
   const w: ReturnType<typeof parseAdjective> = [];
   if (tokens.length === 0) {
     return [];
