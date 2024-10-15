@@ -24,7 +24,6 @@ import {
 import { parseBlocks } from "./parse-blocks";
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
-import { LookupFunction } from "./lookup";
 import { isSecondPerson, personToGenNum } from "../misc-helpers";
 import { equals, zip } from "rambda";
 import { isImperativeTense } from "../type-predicates";
@@ -41,12 +40,12 @@ import { isImperativeTense } from "../type-predicates";
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
-  lookup: LookupFunction
+  dictionary: T.DictionaryAPI
 ): T.ParseResult<T.VPSelectionComplete>[] {
   if (tokens.length === 0) {
     return [];
   }
-  const blocks = parseBlocks(tokens, lookup, [], []);
+  const blocks = parseBlocks(tokens, dictionary, [], []);
   return bindParseResult(
     createPossesivePossibilities(blocks),
     (tokens, { blocks, kids }) => {
@@ -892,7 +891,7 @@ function getMiniPronouns(kids: T.ParsedKid[]): T.ParsedMiniPronoun[] {
 
 function getPeopleFromMiniPronouns(kids: T.ParsedKid[]): T.Person[] {
   const p: T.Person[] = [];
-  for (let k of kids) {
+  for (const k of kids) {
     if (k === "me") {
       p.push(T.Person.FirstSingMale);
       p.push(T.Person.FirstSingFemale);

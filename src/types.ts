@@ -1259,8 +1259,13 @@ export type DictionaryAPI = {
   queryP: (p: string) => DictionaryEntry[];
   adjLookup: (p: string) => AdjectiveEntry[];
   nounLookup: (p: string) => NounEntry[];
-  otherLookup: (key: keyof DictionaryEntry, p: string) => DictionaryEntry[];
+  otherLookup: (
+    key: keyof DictionaryEntry,
+    p: string,
+    regex?: boolean
+  ) => DictionaryEntry[];
   specialPluralLookup: (p: string) => NounEntry[];
+  verbEntryLookup: (p: string) => VerbEntry[];
 };
 
 export type Parser<R> = (

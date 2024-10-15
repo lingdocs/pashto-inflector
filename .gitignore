@@ -11,6 +11,7 @@ lerna-debug.log*
 src/verbs.ts
 src/nouns-adjs.ts
 vocab/mini-dict-entries.ts
+src/lib/src/parsing/split-verbs.ts
 
 # testing
 /coverage

@@ -1,12 +1,11 @@
 import * as T from "../../../types";
-import { LookupFunction } from "./lookup";
 import { parseEquative } from "./parse-equative";
 import { parseKidsSection } from "./parse-kids-section";
 import { parseNeg } from "./parse-negative";
 import { parseNPAP } from "./parse-npap";
 import { parseVBP } from "./parse-vbp";
 import { parsePH } from "./parse-ph";
-import { parseVBE } from "./parse-vbe";
+import { parseVBE } from "./parse-vbe-new";
 import {
   bindParseResult,
   returnParseResult,
@@ -18,7 +17,7 @@ import { isKedulStatEntry } from "./parse-verb-helpers";
 
 export function parseBlocks(
   tokens: Readonly<T.Token[]>,
-  lookup: LookupFunction,
+  dicitonary: T.DictionaryAPI,
   blocks: T.ParsedBlock[],
   kids: T.ParsedKid[]
 ): T.ParseResult<{
@@ -35,13 +34,13 @@ export function parseBlocks(
 
   // TOOD: rather parse VBP / VBE
   const allBlocks: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
-    ...(!inVerbSection ? parseNPAP(tokens, lookup) : []),
+    ...(!inVerbSection ? parseNPAP(tokens, dicitonary) : []),
     // ensure at most one of each PH, VBE, VBP
     ...(prevPh ? [] : parsePH(tokens)),
     ...(blocks.some(isParsedVBE)
       ? []
-      : [...parseVBE(tokens, lookup), ...parseEquative(tokens)]),
-    ...(blocks.some(isParsedVBP) ? [] : parseVBP(tokens, lookup)),
+      : [...parseVBE(tokens, dicitonary), ...parseEquative(tokens)]),
+    ...(blocks.some(isParsedVBP) ? [] : parseVBP(tokens, dicitonary)),
     ...(blocks.some((b) => b.type === "negative") ? [] : parseNeg(tokens)),
     ...parseKidsSection(tokens, []),
   ];
@@ -50,7 +49,7 @@ export function parseBlocks(
     const errors: T.ParseError[] = [];
     if (r.type === "kids") {
       return {
-        next: parseBlocks(tokens, lookup, blocks, [...kids, ...r.kids]),
+        next: parseBlocks(tokens, dicitonary, blocks, [...kids, ...r.kids]),
         errors:
           blocks.length !== 1
             ? [{ message: "kids' section out of place" }]
@@ -71,7 +70,7 @@ export function parseBlocks(
       return [];
     }
     return {
-      next: parseBlocks(tokens, lookup, [...blocks, r], kids),
+      next: parseBlocks(tokens, dicitonary, [...blocks, r], kids),
       errors,
     };
   });

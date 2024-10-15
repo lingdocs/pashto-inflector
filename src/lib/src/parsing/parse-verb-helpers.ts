@@ -4,6 +4,10 @@ export function isKedulStatEntry(v: T.VerbDictionaryEntry): boolean {
   return v.p === "کېدل" && v.e === "to become _____";
 }
 
+/**
+ * gets the possible people for stem and root endings
+ * but DOES NOT INCLUDE short third pers masc sing
+ */
 export function getVerbEnding(e: string): {
   stem: T.Person[];
   root: T.Person[];
@@ -34,7 +38,11 @@ export function getVerbEnding(e: string): {
     };
   } else if (e === "و") {
     return {
-      root: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
+      root: [
+        T.Person.FirstPlurMale,
+        T.Person.FirstPlurFemale,
+        T.Person.ThirdSingMale,
+      ],
       stem: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
     };
   } else if (e === "ئ") {

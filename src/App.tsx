@@ -19,7 +19,7 @@ import { entryFeeder } from "./demo-components/entryFeeder";
 import Hider from "./components/src/Hider";
 import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
-// import ParserDemo from "./demo-components/ParserDemo";
+import ParserDemo from "./demo-components/ParserDemo";
 // import InflectionTable from "./components/src/InflectionsTable";
 
 function App() {
@@ -163,7 +163,7 @@ function App() {
           >
             <SpellingDemo opts={textOptions} onChange={setTextOptions} />
           </Hider>
-          {/* <Hider
+          <Hider
             label="Parser (🚧 IN PROGRESS 🚧)"
             hLevel={3}
             showing={showing === "parser"}
@@ -174,7 +174,7 @@ function App() {
               entryFeeder={entryFeeder}
               dictionary={dictionary}
             />
-          </Hider> */}
+          </Hider>
         </div>
       </main>
       <Modal

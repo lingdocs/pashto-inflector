@@ -3,7 +3,12 @@ import { makeNounSelection } from "../phrase-building/make-selections";
 import { parseAdjective } from "./parse-adjective-new";
 import { parseDeterminer } from "./parse-determiner";
 import { parseNounWord } from "./parse-noun-word";
-import { bindParseResult, parserCombMany, toParseError } from "./utils";
+import {
+  bindParseResult,
+  parserCombMany,
+  parserCombSucc3,
+  toParseError,
+} from "./utils";
 
 type NounResult = { inflected: boolean; selection: T.NounSelection };
 
@@ -15,57 +20,54 @@ export function parseNoun(
   if (tokens.length === 0) {
     return [];
   }
-  const detRes = parserCombMany(parseDeterminer)(tokens, dictionary);
-  // TODO: add recognition of او between adjectives
-  return bindParseResult(detRes, (t, determiners) => {
-    const adjRes = parserCombMany(parseAdjective)(t, dictionary);
-    return bindParseResult(adjRes, (tk, adjectives) => {
-      const nounWord = parseNounWord(tk, dictionary);
-      return bindParseResult(nounWord, (tkns, nr) => {
-        const { error: adjErrors } = adjDetsMatch(
-          adjectives,
-          nr.gender,
-          nr.inflected ? 1 : 0,
-          nr.plural
-        );
-        const { error: detErrors } = adjDetsMatch(
-          determiners,
-          nr.gender,
-          nr.inflected ? 1 : 0,
-          nr.plural
-        );
-        const dupErrors = checkForDeterminerDuplicates(determiners);
-        const s = makeNounSelection(nr.entry, undefined);
-        const body: NounResult = {
-          inflected: nr.inflected,
-          selection: {
-            ...s,
-            gender: nr.gender,
-            number: nr.plural ? "plural" : "singular",
-            adjectives: adjectives.map((a) => a.selection),
-            determiners: determiners.length
-              ? {
-                  type: "determiners",
-                  withNoun: true,
-                  determiners: determiners.map((d) => d.selection),
-                }
-              : undefined,
-            possesor,
-          },
-        };
-        return [
-          {
-            body,
-            tokens: tkns,
-            errors: [
-              ...detErrors.map(toParseError),
-              ...dupErrors.map(toParseError),
-              ...adjErrors.map(toParseError),
-            ],
-          },
-        ];
-      });
-    });
+  const res = parserCombSucc3([
+    parserCombMany(parseDeterminer),
+    parserCombMany(parseAdjective),
+    parseNounWord,
+  ])(tokens, dictionary);
+  return bindParseResult(res, (tkns, [determiners, adjectives, nounWord]) => {
+    const { error: adjErrors } = adjDetsMatch(
+      adjectives,
+      nounWord.gender,
+      nounWord.inflected ? 1 : 0,
+      nounWord.plural
+    );
+    const { error: detErrors } = adjDetsMatch(
+      determiners,
+      nounWord.gender,
+      nounWord.inflected ? 1 : 0,
+      nounWord.plural
+    );
+    const dupErrors = checkForDeterminerDuplicates(determiners);
+    const s = makeNounSelection(nounWord.entry, undefined);
+    const body: NounResult = {
+      inflected: nounWord.inflected,
+      selection: {
+        ...s,
+        gender: nounWord.gender,
+        number: nounWord.plural ? "plural" : "singular",
+        adjectives: adjectives.map((a) => a.selection),
+        determiners: determiners.length
+          ? {
+              type: "determiners",
+              withNoun: true,
+              determiners: determiners.map((d) => d.selection),
+            }
+          : undefined,
+        possesor,
+      },
+    };
+    return [
+      {
+        body,
+        tokens: tkns,
+        errors: [
+          ...detErrors.map(toParseError),
+          ...dupErrors.map(toParseError),
+          ...adjErrors.map(toParseError),
+        ],
+      },
+    ];
   });
 }
 

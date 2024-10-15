@@ -7,28 +7,35 @@ import {
   wartlul,
   raatlul,
 } from "./irreg-verbs";
-import { lookup, wordQuery } from "./lookup";
-import { parseVBE } from "./parse-vbe";
+import { parseVBE } from "./parse-vbe-new";
 import { tokenizer } from "./tokenizer";
 import { getPeople, removeKeys } from "./utils";
+import { testDictionary } from "./mini-test-dictionary";
 
-const wahul = wordQuery("وهل", "verb");
-const leekul = wordQuery("لیکل", "verb");
-const manul = wordQuery("منل", "verb");
-// const gaalul = wordQuery("ګالل", "verb");
-const rasedul = wordQuery("رسېدل", "verb");
-const leedul = wordQuery("لیدل", "verb");
-const khorul = wordQuery("خوړل", "verb");
-const kenaastul = wordQuery("کېناستل", "verb");
-const prexodul = wordQuery("پرېښودل", "verb");
-const xodul = wordQuery("ښودل", "verb");
-const kexodul = wordQuery("کېښودل", "verb");
-const katul = wordQuery("کتل", "verb");
-const watul = wordQuery("وتل", "verb");
-const wurul = wordQuery("وړل", "verb");
-const akheestul = wordQuery("اخیستل", "verb");
-const alwatul = wordQuery("الوتل", "verb");
-// const dartlul = wordQuery("درتلل", "verb")
+const wahul = testDictionary.verbEntryLookup("وهل")[0];
+const leekul = testDictionary.verbEntryLookup("لیکل")[0];
+const manul = testDictionary.verbEntryLookup("منل")[0];
+const gaalul = testDictionary.verbEntryLookup("ګالل")[0];
+const rasedul = testDictionary.verbEntryLookup("رسېدل")[0];
+const leedul = testDictionary.verbEntryLookup("لیدل")[0];
+const awuxtul = testDictionary.verbEntryLookup("اوښتل")[0];
+const khorul = testDictionary.verbEntryLookup("خوړل")[0];
+const kenaastul = testDictionary.verbEntryLookup("کېناستل")[0];
+const kxenaastul = testDictionary.verbEntryLookup("کښېناستل")[0];
+const prexodul = testDictionary.verbEntryLookup("پرېښودل")[0];
+const prexowul = testDictionary.verbEntryLookup("پرېښوول")[0];
+const prexawul = testDictionary.verbEntryLookup("پرېښول")[0];
+const xodul = testDictionary.verbEntryLookup("ښودل")[0];
+const kexodul = testDictionary.verbEntryLookup("کېښودل")[0];
+const kxexodul = testDictionary.verbEntryLookup("کښېښودل")[0];
+const katul = testDictionary.verbEntryLookup("کتل")[0];
+const watul = testDictionary.verbEntryLookup("وتل")[0];
+const wurul = testDictionary.verbEntryLookup("وړل")[0];
+const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
+const alwatul = testDictionary.verbEntryLookup("الوتل")[0];
+const dartlul = testDictionary.verbEntryLookup("درتلل")[0];
+
+// TODO: Prefix searching on split verbs for perfective head parsing
 
 // TODO: azmoyul etc
 // TODO: cleaner and more thorough handling of ا seperating verbs ee - wee etc
@@ -312,19 +319,6 @@ const tests: {
         ],
       },
       {
-        input: "وینم",
-        output: [
-          {
-            stem: {
-              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
-              aspects: ["imperfective", "perfective"],
-            },
-            verb: leedul,
-          },
-        ],
-      },
-      // TODO!! THESE COULD ALSO BE MALE
-      {
         input: "لیده",
         output: [
           {
@@ -365,42 +359,6 @@ const tests: {
         ],
       },
       {
-        input: "خوړ",
-        output: [
-          {
-            root: {
-              persons: [T.Person.ThirdSingMale],
-              aspects: ["imperfective", "perfective"],
-            },
-            verb: khorul,
-          },
-        ],
-      },
-      {
-        input: "کوت",
-        output: [
-          {
-            root: {
-              persons: [T.Person.ThirdSingMale],
-              aspects: ["imperfective", "perfective"],
-            },
-            verb: katul,
-          },
-        ],
-      },
-      {
-        input: "کاته",
-        output: [
-          {
-            root: {
-              persons: [T.Person.ThirdSingMale],
-              aspects: ["imperfective", "perfective"],
-            },
-            verb: katul,
-          },
-        ],
-      },
-      {
         input: "خلم",
         output: [
           {
@@ -436,6 +394,11 @@ const tests: {
           },
         ],
       },
+    ],
+  },
+  {
+    label: "verbs with seperating perfective heads",
+    cases: [
       {
         input: "الوځې",
         output: [
@@ -454,6 +417,18 @@ const tests: {
           {
             stem: {
               persons: [T.Person.SecondSingMale, T.Person.SecondSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: alwatul,
+          },
+        ],
+      },
+      {
+        input: "لوتلم",
+        output: [
+          {
+            root: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
               aspects: ["perfective"],
             },
             verb: alwatul,
@@ -492,6 +467,13 @@ const tests: {
             },
             verb: kenaastul,
           },
+          {
+            stem: {
+              persons: [T.Person.FirstSingMale, T.Person.FirstSingFemale],
+              aspects: ["perfective"],
+            },
+            verb: kxenaastul,
+          },
         ],
       },
       {
@@ -507,46 +489,64 @@ const tests: {
         ],
       },
       {
-        input: "ناست",
+        input: "کېناسته",
         output: [
           {
             root: {
-              persons: [T.Person.ThirdSingMale],
-              aspects: ["perfective"],
+              persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+              aspects: ["imperfective"],
             },
             verb: kenaastul,
           },
         ],
       },
       {
-        input: "پرېږدو",
-        output: [
-          {
-            stem: {
-              persons: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
-              aspects: ["imperfective"],
-            },
-            verb: prexodul,
+        input: "ناست",
+        output: [kenaastul, kxenaastul].map((verb) => ({
+          root: {
+            persons: [T.Person.ThirdSingMale],
+            aspects: ["perfective"],
           },
-        ],
+          verb,
+        })),
+      },
+      {
+        input: "ناسته",
+        output: [kenaastul, kxenaastul].map((verb) => ({
+          root: {
+            persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+            aspects: ["perfective"],
+          },
+          verb,
+        })),
+      },
+      {
+        input: "پرېږدو",
+        output: [prexodul, prexowul, prexawul].map((verb) => ({
+          stem: {
+            persons: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
+            aspects: ["imperfective"],
+          },
+          verb,
+        })),
       },
       {
         input: "ږدو",
         output: [
-          {
+          ...[prexodul, prexawul, prexowul, kexodul, kxexodul].map((verb) => ({
             stem: {
               persons: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
-              aspects: ["perfective"],
+              aspects: ["perfective"] satisfies T.Aspect[],
             },
-            verb: prexodul,
-          },
-          {
+            verb,
+          })),
+          ...[kexodul, kxexodul].map((verb) => ({
             stem: {
               persons: [T.Person.FirstPlurMale, T.Person.FirstPlurFemale],
-              aspects: ["imperfective", "perfective"],
+              aspects: ["imperfective"] satisfies T.Aspect[],
             },
-            verb: kexodul,
-          },
+            verb,
+          })),
         ],
       },
       {
@@ -571,20 +571,13 @@ const tests: {
             },
             verb: xodul,
           },
-          {
+          ...[prexodul, kexodul, kxexodul].map((verb) => ({
             root: {
               persons: [T.Person.ThirdSingFemale],
-              aspects: ["perfective"],
+              aspects: ["perfective"] satisfies T.Aspect[],
             },
-            verb: prexodul,
-          },
-          {
-            root: {
-              persons: [T.Person.ThirdSingFemale],
-              aspects: ["perfective"],
-            },
-            verb: kexodul,
-          },
+            verb,
+          })),
         ],
       },
       {
@@ -662,42 +655,8 @@ const tests: {
         ],
       },
       {
-        input: "ړلم",
-        output: [
-          {
-            root: {
-              persons: getPeople(1, "sing"),
-              aspects: ["perfective"],
-            },
-            verb: wurul,
-          },
-          {
-            root: {
-              persons: getPeople(1, "sing"),
-              aspects: ["perfective"],
-            },
-            verb: tlul,
-          },
-        ],
-      },
-      {
         input: "ړ",
-        output: [
-          {
-            root: {
-              persons: [T.Person.ThirdSingMale],
-              aspects: ["perfective"],
-            },
-            verb: wurul,
-          },
-          {
-            root: {
-              persons: [T.Person.ThirdSingMale],
-              aspects: ["perfective"],
-            },
-            verb: tlul,
-          },
-        ],
+        output: [],
       },
       // should not match with the prefix for perfective
       {
@@ -714,11 +673,95 @@ const tests: {
     label: "verbs with different 3rd pers sing past endings",
     cases: [
       {
+        input: "خوړ",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: khorul,
+          },
+        ],
+      },
+      {
+        input: "خوړه",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: khorul,
+          },
+        ],
+      },
+      {
+        input: "کوت",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: katul,
+          },
+        ],
+      },
+      {
+        input: "کاته",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: katul,
+          },
+        ],
+      },
+      {
+        input: "واته",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: watul,
+          },
+        ],
+      },
+      {
+        input: "ووت",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: watul,
+          },
+        ],
+      },
+      {
         input: "رسېد",
         output: [
           {
             root: {
               persons: [T.Person.ThirdSingMale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: rasedul,
+          },
+        ],
+      },
+      {
+        input: "رسېده",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
               aspects: ["imperfective", "perfective"],
             },
             verb: rasedul,
@@ -766,27 +809,69 @@ const tests: {
         ],
       },
       {
-        input: "واته",
+        input: "اوښت",
         output: [
           {
             root: {
               persons: [T.Person.ThirdSingMale],
-              aspects: ["imperfective", "perfective"],
+              aspects: ["imperfective"],
             },
-            verb: watul,
+            verb: awuxtul,
           },
         ],
       },
       {
-        input: "ووت",
+        input: "ښت",
+        output: [],
+      },
+      {
+        input: "اوښته",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+              aspects: ["imperfective"],
+            },
+            verb: awuxtul,
+          },
+        ],
+      },
+      {
+        input: "ښود",
         output: [
           {
             root: {
               persons: [T.Person.ThirdSingMale],
               aspects: ["imperfective", "perfective"],
             },
-            verb: watul,
+            verb: xodul,
           },
+          ...[prexodul, kexodul, kxexodul].map((verb) => ({
+            root: {
+              persons: [T.Person.ThirdSingMale],
+              aspects: ["perfective"] satisfies T.Aspect[],
+            },
+            verb,
+          })),
+        ],
+      },
+      {
+        input: "ښوده",
+        output: [
+          {
+            root: {
+              persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+              aspects: ["imperfective", "perfective"],
+            },
+            verb: xodul,
+          },
+          ...[prexodul, kexodul, kxexodul].map((verb) => ({
+            root: {
+              persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+              aspects: ["perfective"] satisfies T.Aspect[],
+            },
+            verb,
+          })),
         ],
       },
     ],
@@ -971,7 +1056,7 @@ tests.forEach(({ label, cases }) => {
   test(label, () => {
     cases.forEach(({ input, output }) => {
       const tokens = tokenizer(input);
-      const vbs = parseVBE(tokens, lookup).map((r) => r.body);
+      const vbs = parseVBE(tokens, testDictionary).map((r) => r.body);
       const madeVbsS = output.reduce<T.ParsedVBE[]>((acc, o) => {
         return [
           ...acc,

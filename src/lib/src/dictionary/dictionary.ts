@@ -19,7 +19,19 @@ function queryP(p: string): T.DictionaryEntry[] {
   }
   return dictDb.collection.find({ p });
 }
-const memoizedQueryP = queryP;
+const memoizedQueryP = memoize(queryP);
+
+function queryTs(ts: number): T.DictionaryEntry {
+  if (!dictDb.collection) {
+    throw new Error("dictionary not initialized yet");
+  }
+  const res = dictDb.findOneByTs(ts);
+  if (!res) {
+    throw new Error("complement link broken");
+  }
+  return res;
+}
+const memoizedQueryTs = memoize(queryTs);
 
 function adjLookup(p: string): T.AdjectiveEntry[] {
   const res = memoizedQueryP(p);
@@ -33,24 +45,49 @@ function nounLookup(p: string): T.NounEntry[] {
 
 function otherLookup(
   key: keyof T.DictionaryEntry,
-  p: string
+  p: string,
+  regex?: boolean
 ): T.DictionaryEntry[] {
   if (!dictDb.collection) {
     return [];
   }
-  return dictDb.collection.find({ [key]: p });
+  return dictDb.collection.find({ [key]: regex ? variationRegex(p) : p });
 }
 
 function specialPluralLookup(p: string): T.NounEntry[] {
   if (!dictDb.collection) {
     return [];
   }
-  const regex = new RegExp(`(^|\\s|,)${p}($|,)`);
+  const regex = variationRegex(p);
   return dictDb.collection
     .find({
-      $or: [{ ppp: { $regex: regex } }, { app: { $regex: regex } }],
+      $or: [{ ppp: regex }, { app: regex }],
     })
     .filter(tp.isNounEntry);
+}
+
+function verbEntryLookup(p: string): T.VerbEntry[] {
+  if (!dictDb.collection) {
+    return [];
+  }
+  return memoizedQueryP(p)
+    .filter(tp.isVerbDictionaryEntry)
+    .map((entry) =>
+      entry.l
+        ? {
+            entry,
+            complement: memoizedQueryTs(entry.l),
+          }
+        : { entry }
+    );
+}
+
+/**
+ * creates a RegEx mongo query to search for a variation in a certain field
+ * ie. to search for کاته in کوت, کاته
+ */
+function variationRegex(p: string): { $regex: RegExp } {
+  return { $regex: new RegExp(`(^|\\s|,)${p}($|,)`) };
 }
 
 export const dictionary: T.DictionaryAPI = {
@@ -61,4 +98,5 @@ export const dictionary: T.DictionaryAPI = {
   nounLookup: memoize(nounLookup),
   otherLookup: memoize(otherLookup),
   specialPluralLookup: memoize(specialPluralLookup),
+  verbEntryLookup: memoize(verbEntryLookup),
 };

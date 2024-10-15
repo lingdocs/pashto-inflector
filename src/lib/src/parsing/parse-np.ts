@@ -1,13 +1,12 @@
 import * as T from "../../../types";
 import { parsePronoun } from "./parse-pronoun";
-import { parseNoun } from "./parse-noun";
+import { parseNoun } from "./parse-noun-new";
 import { fmapParseResult } from "../fp-ps";
 import { parseParticiple } from "./parse-participle";
-import { LookupFunction } from "./lookup";
 
 export function parseNP(
   s: Readonly<T.Token[]>,
-  lookup: LookupFunction,
+  dicitonary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined
 ): T.ParseResult<T.ParsedNP>[] {
   if (s.length === 0) {
@@ -41,7 +40,7 @@ export function parseNP(
 
   return fmapParseResult(makeNPSl, [
     ...(!possesor ? parsePronoun(s) : []),
-    ...parseNoun(s, lookup, possesor, []),
-    ...parseParticiple(s, lookup, possesor),
+    ...parseNoun(s, dicitonary, possesor),
+    ...parseParticiple(s, dicitonary, possesor),
   ]);
 }

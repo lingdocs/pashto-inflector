@@ -3,13 +3,18 @@ import * as T from "../types";
 // import { parsePhrase } from "../lib/src/parsing/parse-phrase";
 import { tokenizer } from "../lib/src/parsing/tokenizer";
 // import { NPDisplay } from "../components/library";
-// import EditableVP from "../components/src/vp-explorer/EditableVP";
-// import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
-import { parseNoun } from "../lib/src/parsing/parse-noun-new";
+import EditableVP from "../components/src/vp-explorer/EditableVP";
+import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
+// import { parseNoun } from "../lib/src/parsing/parse-noun-new";
 import { JsonEditor } from "json-edit-react";
-import { renderNounSelection } from "../lib/src/phrase-building/render-np";
-import { NPBlock } from "../components/src/blocks/Block";
-import { getEnglishFromRendered } from "../lib/src/phrase-building/np-tools";
+// import { renderNounSelection } from "../lib/src/phrase-building/render-np";
+// import { NPBlock } from "../components/src/blocks/Block";
+// import { getEnglishFromRendered } from "../lib/src/phrase-building/np-tools";
+import { parsePhrase } from "../lib/src/parsing/parse-phrase";
+//import { renderVP } from "../lib/src/phrase-building/render-vp";
+// import VPDisplay from "../components/src/vp-explorer/VPDisplay";
+import { entryFeeder } from "./entryFeeder";
+import { removeRedundantVPSs } from "../lib/src/phrase-building/remove-redundant";
 
 const working = [
   "limited demo vocab",
@@ -59,7 +64,7 @@ function ParserDemo({
 }) {
   const [text, setText] = useState<string>("");
   const [result, setResult] = useState<
-    ReturnType<typeof parseNoun>[number]["body"][]
+    ReturnType<typeof parsePhrase>["success"]
   >([]);
   // ReturnType<typeof parsePhrase>["success"]
   const [errors, setErrors] = useState<string[]>([]);
@@ -70,16 +75,10 @@ function ParserDemo({
       setErrors([]);
       return;
     }
-    const res = parseNoun(tokenizer(value), dictionary, undefined);
-    const success: ReturnType<typeof parseNoun>[number]["body"][] = res
-      .filter((x) => !x.tokens.length)
-      .map((x) => x.body);
-    const errors = [
-      ...new Set(res.flatMap(({ errors }) => errors.map((e) => e.message))),
-    ];
+    const res = parsePhrase(tokenizer(value), dictionary);
     setText(value);
-    setErrors(errors);
-    setResult(success);
+    setErrors(res.errors);
+    setResult(removeRedundantVPSs(res.success));
   }
   return (
     <div className="mt-3" style={{ marginBottom: "1000px" }}>
@@ -141,34 +140,8 @@ function ParserDemo({
           <div className="text-center">Did you mean:</div>
         </>
       )}
-      {result.map((r) => {
-        try {
-          const renderedNP: T.Rendered<T.NPSelection> = {
-            type: "NP",
-            selection: renderNounSelection(r.selection, r.inflected, "none"),
-          };
-          return (
-            <>
-              {r.inflected ? "INFLECTED" : "PLAIN"}
-              <NPBlock
-                opts={opts}
-                script="p"
-                english={getEnglishFromRendered(renderedNP)}
-              >
-                {renderedNP}
-              </NPBlock>
-            </>
-          );
-        } catch (e) {
-          console.error(e);
-          return <div>ERROR RENDERING</div>;
-        }
-      })}
-      <JsonEditor data={result} />
-      {/* {result.map((res) =>
-        "inflected" in res ? (
-          <NPDisplay NP={res.selection} inflected={res.inflected} opts={opts} />
-        ) : "verb" in res ? (
+      {result.map((res) => (
+        <>
           <EditableVP
             opts={opts}
             entryFeeder={entryFeeder}
@@ -176,42 +149,76 @@ function ParserDemo({
           >
             {uncompleteVPSelection(res)}
           </EditableVP>
-        ) : (
-          // (() => {
-          //   try {
-          //     const rendered = renderVP(res);
-          //     const compiled = compileVP(rendered, res.form);
-          //     return (
-          //       <div>
-          //         <CompiledPTextDisplay compiled={compiled} opts={opts} />
-          //         {compiled.e && (
-          //           <div className={`text-muted mt-2 text-center`}>
-          //             {compiled.e.map((e, i) => (
-          //               <div key={i}>{e}</div>
-          //             ))}
-          //           </div>
-          //         )}
-          //       </div>
-          //     );
-          //   } catch (e) {
-          //     console.error(e);
-          //     console.log({ res });
-          //     return <div>ERROR</div>;
-          //   }
-          // })()
-          <samp>
-            <pre>{JSON.stringify(res, null, "  ")}</pre>
-          </samp>
-        )
-      )} */}
-      <details>
-        <summary>AST</summary>
-        <samp>
-          <pre>{JSON.stringify(result, null, "  ")}</pre>
-        </samp>
-      </details>
+          <details>
+            <summary>AST</summary>
+            <JsonEditor data={res} />
+          </details>
+        </>
+      ))}
     </div>
   );
 }
 
 export default ParserDemo;
+
+// {/* {result.map((res) =>
+// "inflected" in res ? (
+//   <NPDisplay NP={res.selection} inflected={res.inflected} opts={opts} />
+// ) : "verb" in res ? (
+//   <EditableVP
+//     opts={opts}
+//     entryFeeder={entryFeeder}
+//     allVariations={true}
+//   >
+//     {uncompleteVPSelection(res)}
+//   </EditableVP>
+// ) : (
+// (() => {
+//   try {
+//     const rendered = renderVP(res);
+//     const compiled = compileVP(rendered, res.form);
+//     return (
+//       <div>
+//         <CompiledPTextDisplay compiled={compiled} opts={opts} />
+//         {compiled.e && (
+//           <div className={`text-muted mt-2 text-center`}>
+//             {compiled.e.map((e, i) => (
+//               <div key={i}>{e}</div>
+//             ))}
+//           </div>
+//         )}
+//       </div>
+//     );
+//   } catch (e) {
+//     console.error(e);
+//     console.log({ res });
+//     return <div>ERROR</div>;
+//   }
+// })()
+//     <samp>
+//       <pre>{JSON.stringify(res, null, "  ")}</pre>
+//     </samp>
+//   )
+// )} */}
+
+// try {
+//   const renderedNP: T.Rendered<T.NPSelection> = {
+//     type: "NP",
+//     selection: renderNounSelection(r.selection, r.inflected, "none"),
+//   };
+//   return (
+//     <>
+//       {r.inflected ? "INFLECTED" : "PLAIN"}
+//       <NPBlock
+//         opts={opts}
+//         script="p"
+//         english={getEnglishFromRendered(renderedNP)}
+//       >
+//         {renderedNP}
+//       </NPBlock>
+//     </>
+//   );
+// } catch (e) {
+//   console.error(e);
+//   return <div>ERROR RENDERING</div>;
+// }

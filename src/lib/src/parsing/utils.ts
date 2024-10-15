@@ -163,6 +163,38 @@ export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
   return r;
 }
 
+export function parserCombSucc2<A, B>(
+  parsers: [Parser<A>, Parser<B>]
+): Parser<[A, B]> {
+  return function (
+    tokens: Readonly<T.Token[]>,
+    dictionary: T.DictionaryAPI
+  ): T.ParseResult<[A, B]>[] {
+    return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
+      bindParseResult(parsers[1](t, dictionary), (tk, b) =>
+        returnParseResult(tk, [a, b])
+      )
+    );
+  };
+}
+
+export function parserCombSucc3<A, B, C>(
+  parsers: [Parser<A>, Parser<B>, Parser<C>]
+): Parser<[A, B, C]> {
+  return function (
+    tokens: Readonly<T.Token[]>,
+    dictionary: T.DictionaryAPI
+  ): T.ParseResult<[A, B, C]>[] {
+    return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
+      bindParseResult(parsers[1](t, dictionary), (tk, b) =>
+        bindParseResult(parsers[2](tk, dictionary), (tkn, c) =>
+          returnParseResult(tkn, [a, b, c])
+        )
+      )
+    );
+  };
+}
+
 export function isCompleteResult<C extends object>(
   r: T.ParseResult<C>
 ): boolean {

@@ -4,16 +4,16 @@ import {
   makeNounSelection,
   makePronounSelection,
 } from "../phrase-building/make-selections";
-import { lookup, wordQuery } from "./lookup";
 import { parsePossesor } from "./parse-possesor";
 import { tokenizer } from "./tokenizer";
 import { isCompleteResult } from "./utils";
+import { testDictionary as dictionary } from "./mini-test-dictionary";
 
-const sturey = wordQuery("ستړی", "adj");
-const sarey = wordQuery("سړی", "noun");
-const maashoom = wordQuery("ماشوم", "noun");
-const malguray = wordQuery("ملګری", "noun");
-const plaar = wordQuery("پلار", "noun");
+const sturey = dictionary.adjLookup("ستړی")[0];
+const sarey = dictionary.nounLookup("سړی")[0];
+const maashoom = dictionary.nounLookup("ماشوم")[0];
+const malguray = dictionary.nounLookup("ملګری")[0];
+const plaar = dictionary.nounLookup("پلار")[0];
 
 const tests: {
   input: string;
@@ -109,12 +109,12 @@ const tests: {
 test("parse possesor", () => {
   tests.forEach(({ input, output }) => {
     const tokens = tokenizer(input);
-    const parsed = parsePossesor(tokens, lookup, undefined);
+    const parsed = parsePossesor(tokens, dictionary, undefined);
     if (output === "error") {
       expect(parsed.some((x) => x.errors.length)).toBe(true);
     } else {
       expect(
-        parsePossesor(tokens, lookup, undefined)
+        parsePossesor(tokens, dictionary, undefined)
           .filter(isCompleteResult)
           .map((x) => x.body.np.selection)
       ).toEqual(output);

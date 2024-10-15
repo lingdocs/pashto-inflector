@@ -1736,7 +1736,7 @@ describe("parsing nouns", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, testDictionary, undefined, []).flatMap(
+        const res = parseNoun(tokens, testDictionary, undefined).flatMap(
           // only take the ones that used all the tokens
           ({ body, tokens }) => (tokens.length === 0 ? [body] : [])
         );

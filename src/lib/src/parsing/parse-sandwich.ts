@@ -1,5 +1,4 @@
 import * as T from "../../../types";
-import { LookupFunction } from "./lookup";
 import { sandwiches } from "../sandwiches";
 import { parseNP } from "./parse-np";
 import { bindParseResult } from "./utils";
@@ -14,7 +13,7 @@ import { bindParseResult } from "./utils";
 
 export function parseSandwich(
   s: Readonly<T.Token[]>,
-  lookup: LookupFunction,
+  dictionary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined
 ): T.ParseResult<T.SandwichSelection<T.Sandwich>>[] {
   if (s.length === 0) {
@@ -27,7 +26,7 @@ export function parseSandwich(
     (x) => x.before && x.before.p === first.s
   );
   // TODO: this could be be really repetitive...
-  const nps = parseNP(startMatches.length ? rest : s, lookup, possesor);
+  const nps = parseNP(startMatches.length ? rest : s, dictionary, possesor);
   return bindParseResult(nps, (tokens, np) => {
     if (!tokens.length) {
       return [];

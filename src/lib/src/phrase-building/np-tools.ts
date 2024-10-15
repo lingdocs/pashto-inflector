@@ -214,7 +214,7 @@ function addArticlesAndAdjs(
         ? np.determiners.determiners
             // @ts-ignore - weird, ts is not recognizing this as rendered
             .map((x) => (moreThanOneDet ? `(${x.e})` : x.e))
-            .join(" ")
+            .join(" ") + " "
         : "";
     const detsWithoutNoun = np.determiners && !np.determiners.withNoun;
     return `${np.determiners ? "" : articles}${determiners}${
