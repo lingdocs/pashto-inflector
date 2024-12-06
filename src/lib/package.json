@@ -1,6 +1,6 @@
 {
   "name": "@lingdocs/inflect",
-  "version": "7.7.3",
+  "version": "7.7.4",
   "description": "Pashto inflector library",
   "main": "dist/lib/library.cjs",
   "module": "dist/lib/library.js",

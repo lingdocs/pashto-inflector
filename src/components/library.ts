@@ -13,7 +13,7 @@ import useStickyState from "./src/useStickyState";
 import NPPicker from "./src/block-pickers/NPPicker";
 import SandwichPicker from "./src/block-pickers/SandwichPicker";
 import VerbFromDisplay from "./src/VerbFormDisplay";
-import Block from "./src/blocks/Block";
+import Block, { NPBlock, APBlock } from "./src/blocks/Block";
 import VerbInfo, { RootsAndStems } from "./src/verb-info/VerbInfo";
 import VPExplorer from "./src/vp-explorer/VPExplorer";
 import EPExplorer from "./src/ep-explorer/EPExplorer";
@@ -25,7 +25,9 @@ import { makeVPSelectionState } from "../lib/src/phrase-building/verb-selection"
 
 import APPicker from "./src/block-pickers/APPicker";
 import VPDisplay from "./src/vp-explorer/VPDisplay";
+import EPDisplay from "./src/ep-explorer/EPDisplay";
 import VPPicker from "./src/vp-explorer/VPPicker";
+import EPPicker from "./src/ep-explorer/EPPicker";
 import NPDisplay from "./src/vp-explorer/NPDisplay";
 import HumanReadableInflectionPattern from "./src/tables/HumanReadableInflectionPattern";
 import { psJSXMap } from "./src/text-display/jsx-map";
@@ -58,6 +60,8 @@ export {
 
   // blocks
   Block,
+  NPBlock,
+  APBlock,
 
   // misc
   Hider,
@@ -73,7 +77,9 @@ export {
   makeVPSelectionState,
   RootsAndStems,
   VPDisplay,
+  EPDisplay,
   VPPicker,
+  EPPicker,
   NPDisplay,
   HumanReadableInflectionPattern,
   psJSXMap,
