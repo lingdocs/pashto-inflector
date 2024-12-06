@@ -8,6 +8,8 @@ import * as tp from "../type-predicates";
 import memoize from "micro-memoize";
 import { pashtoConsonants } from "../pashto-consonants";
 
+// TODO: و ارزول
+
 // TODO: کول verbs!
 // check that aawu stuff is working
 // check oo`azmooy -

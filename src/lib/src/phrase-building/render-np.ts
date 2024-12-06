@@ -178,7 +178,7 @@ function renderDeterminer({
       ? number === "plural"
         ? { p: "دغو", f: "dágho" }
         : gender === "masc"
-        ? { p: "دغه", f: "dághu" }
+        ? { p: "دغه", f: "dágha" }
         : { p: "دغې", f: "dághe" }
       : { p: "دغه", f: "dágha" };
     return {
@@ -196,7 +196,7 @@ function renderDeterminer({
       ? number === "plural"
         ? { p: "هغو", f: "hágho" }
         : gender === "masc"
-        ? { p: "هغه", f: "hághu" }
+        ? { p: "هغه", f: "hágha" }
         : { p: "هغې", f: "hághe" }
       : { p: "هغه", f: "hágha" };
     return {
