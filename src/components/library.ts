@@ -12,7 +12,7 @@ import VerbTable from "./src/tables/VerbTable";
 import useStickyState from "./src/useStickyState";
 import NPPicker from "./src/block-pickers/NPPicker";
 import SandwichPicker from "./src/block-pickers/SandwichPicker";
-import VerbFromDisplay from "./src/VerbFormDisplay";
+import VerbFormDisplay from "./src/VerbFormDisplay";
 import Block, { NPBlock, APBlock } from "./src/blocks/Block";
 import VerbInfo, { RootsAndStems } from "./src/verb-info/VerbInfo";
 import VPExplorer from "./src/vp-explorer/VPExplorer";
@@ -66,7 +66,7 @@ export {
   // misc
   Hider,
   useStickyState,
-  VerbFromDisplay,
+  VerbFormDisplay,
   VerbInfo,
   VPExplorer,
   EPExplorer,
