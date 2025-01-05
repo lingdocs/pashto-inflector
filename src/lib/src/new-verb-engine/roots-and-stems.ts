@@ -30,6 +30,7 @@ import {
   makeComplement,
   vTransitivity,
   isKedul,
+  addOptionalTailsToPassive,
 } from "./rs-helpers";
 import { inflectPattern3 } from "./new-inflectors";
 import { fmapSingleOrLengthOpts } from "../fp-ps";
@@ -458,7 +459,7 @@ function getPassiveRs(
   genderNumber: T.GenderNumber
 ): [[] | [T.VHead], [T.VB]] {
   const [vHead, [basicRoot]] = getRoot(verb, genderNumber, aspect);
-  const longRoot = getLongVB(basicRoot);
+  const longRoot = addOptionalTailsToPassive(getLongVB(basicRoot), aspect);
   const kedulVba = getRootStem({
     verb: statVerb.intransitive,
     aspect,

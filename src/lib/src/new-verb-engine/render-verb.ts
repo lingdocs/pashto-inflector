@@ -150,7 +150,6 @@ export function renderVerb({
   const transitive = object !== undefined;
   const king = transitive && isPast ? object : subject;
   const base = isPast ? "root" : "stem";
-
   // #1 get the appropriate root / stem
   const [vHead, rest] = getRootStem({
     verb,

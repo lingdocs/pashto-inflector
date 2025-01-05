@@ -209,15 +209,16 @@ export function tlulPerfectiveStem(person: {
   ];
 }
 
+export const abilityEnding: T.PsString[] = [
+  { p: "ی", f: "ay" },
+  { p: "ای", f: "aay" },
+];
+
 export function addAbilityEnding(
   vb: T.VB,
   verb: T.VerbEntry,
   aspect: T.Aspect
 ): T.VBP {
-  const abilityEnding: T.PsString[] = [
-    { p: "ی", f: "ay" },
-    { p: "ای", f: "aay" },
-  ];
   if (vb.type === "welded") {
     return {
       ...vb,
@@ -299,6 +300,23 @@ export function possiblePPartLengths(vba: T.VBNoLenghts<T.VB>): T.VB {
     };
   }
   return vba;
+}
+
+export function addOptionalTailsToPassive(
+  vb: T.VBNoLenghts<T.VB>,
+  aspect: T.Aspect
+): T.VBNoLenghts<T.VB> {
+  if (aspect !== "perfective" || vb.type !== "VB" || vb.ps[0].p !== "کړل") {
+    return vb;
+  }
+  return {
+    ...vb,
+    ps: [
+      ...vb.ps,
+      ...verbEndingConcat(vb.ps, abilityEnding),
+      ...verbEndingConcat([{ p: "کړ", f: "kR" }], abilityEnding),
+    ],
+  };
 }
 
 export function getLongVB(vb: T.VB): T.VBNoLenghts<T.VB> {

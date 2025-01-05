@@ -2251,8 +2251,27 @@ describe("passive roots and stems", () => {
           type: "welded",
           left: {
             type: "VB",
-            ps: [{ p: "کړل", f: "kRul" }],
+            ps: [
+              { p: "کړل", f: "kRul" },
+              {
+                f: "kRulay",
+                p: "کړلی",
+              },
+              {
+                f: "kRulaay",
+                p: "کړلای",
+              },
+              {
+                f: "kRay",
+                p: "کړی",
+              },
+              {
+                f: "kRaay",
+                p: "کړای",
+              },
+            ],
           },
+
           right: {
             type: "VB",
             ps: {
