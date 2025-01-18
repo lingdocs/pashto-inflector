@@ -15,6 +15,7 @@ import {
   removeAccents,
 } from "./accent-helpers";
 import * as T from "../../types";
+import { isMascNounEntry, isPattern1Entry } from "./type-predicates";
 
 function makePashtoPlural(
   word: T.DictionaryEntryNoFVars
@@ -35,19 +36,20 @@ function makePashtoPlural(
 }
 
 function makeBundledPlural(
-  word: T.DictionaryEntryNoFVars
+  word: T.DictionaryEntry
 ): T.PluralInflections | undefined {
-  if (!endsInConsonant(word) || !word.c?.includes("n.")) {
+  if (isMascNounEntry(word) && isPattern1Entry(word) && endsInConsonant(word)) {
+    const w = makePsString(word.p, word.f);
+    const base = countSyllables(w) === 1 ? accentOnNFromEnd(w, 0) : w;
+    return {
+      masc: [
+        [concatPsString(base, { p: "ه", f: "a" })],
+        [concatPsString(base, { p: "و", f: "o" })],
+      ],
+    };
+  } else {
     return undefined;
   }
-  const w = makePsString(word.p, word.f);
-  const base = countSyllables(w) === 1 ? accentOnNFromEnd(w, 0) : w;
-  return {
-    masc: [
-      [concatPsString(base, { p: "ه", f: "a" })],
-      [concatPsString(base, { p: "و", f: "o" })],
-    ],
-  };
 }
 
 function makeArabicPlural(

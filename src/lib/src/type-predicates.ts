@@ -29,7 +29,9 @@ export function isKawulVerb(e: T.VerbEntry | T.VerbDictionaryEntry): boolean {
   return ["کول", "راکول", "درکول", "ورکول"].includes(entry.p);
 }
 
-export function isNounEntry(e: T.Entry | T.DictionaryEntry): e is T.NounEntry {
+export function isNounEntry(
+  e: T.Entry | T.DictionaryEntry | T.DictionaryEntryNoFVars
+): e is T.NounEntry {
   if ("entry" in e) return false;
   return !!(e.c && (e.c.includes("n. m.") || e.c.includes("n. f.")));
 }
@@ -116,7 +118,7 @@ export function isVerbEntry(
 }
 
 export function isMascNounEntry(
-  e: T.InflectableEntry | T.DictionaryEntry
+  e: T.InflectableEntry | T.DictionaryEntry | T.DictionaryEntryNoFVars
 ): e is T.MascNounEntry {
   return !!e.c && e.c.includes("n. m.");
 }

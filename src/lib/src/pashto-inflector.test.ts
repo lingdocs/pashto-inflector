@@ -957,9 +957,6 @@ const nouns: {
       plural: {
         masc: [[{ p: "غرونه", f: "ghróona" }], [{ p: "غرونو", f: "ghróono" }]],
       },
-      bundledPlural: {
-        masc: [[{ p: "غره", f: "ghára" }], [{ p: "غرو", f: "gháro" }]],
-      },
     },
   },
   // should NOT do the oona plural with the squish nouns, when thay're animate
