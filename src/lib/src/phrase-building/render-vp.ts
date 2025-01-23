@@ -242,7 +242,8 @@ function renderVPBlocks(
             false,
             "subject",
             config.king === "subject" ? "king" : "servant",
-            false
+            false,
+            "no"
           ),
         }),
       ];
@@ -264,7 +265,8 @@ function renderVPBlocks(
         true,
         "object",
         config.king === "object" ? "king" : "servant",
-        false
+        false,
+        "no"
       );
       return [
         ...blocks,

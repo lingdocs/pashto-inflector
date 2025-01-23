@@ -61,7 +61,8 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): {
                 false,
                 "subject",
                 "king",
-                false
+                false,
+                "no"
               )
             : // we won't have an unselected complement in the EP - TODO: make safer?
               (renderComplementSelection(
@@ -172,7 +173,8 @@ function renderEPSBlocks(blocks: T.EPSBlockComplete[]): T.Block[] {
         false,
         "subject",
         "none",
-        false
+        false,
+        "no"
       ),
     });
   });

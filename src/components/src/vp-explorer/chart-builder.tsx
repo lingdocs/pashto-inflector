@@ -34,7 +34,7 @@ export function buildVerbChart({
     : ([...Array(12).keys()] as T.Person[]);
   const isPast = isPastTense(tense);
   const objNP: T.Rendered<T.NPSelection> | undefined = objectNP
-    ? renderNPSelection(objectNP, false, false, "object", "none", false)
+    ? renderNPSelection(objectNP, false, false, "object", "none", false, "no")
     : undefined;
   function conjugateAllPers(
     p?: T.Person

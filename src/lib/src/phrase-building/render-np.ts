@@ -16,6 +16,7 @@ import { removeL } from "../new-verb-engine/rs-helpers";
 import { applySingleOrLengthOpts } from "../fp-ps";
 import { accentOnNFromEnd } from "../accent-helpers";
 import { getInfsAndVocative } from "../inflections-and-vocative";
+import { addMayo, mayoOnWord } from "./mayo-utils";
 
 // TODO: can have subject and objects in possesors!!
 
@@ -30,7 +31,8 @@ export function renderNPSelection(
   inflectEnglish: boolean,
   role: "subject",
   soRole: "servant" | "king" | "none",
-  isPuSandwich: boolean
+  isPuSandwich: boolean,
+  isMayoSandwich: "req" | "opt" | "no"
 ): T.Rendered<T.NPSelection>;
 export function renderNPSelection(
   NP: T.NPSelection,
@@ -38,7 +40,8 @@ export function renderNPSelection(
   inflectEnglish: boolean,
   role: "object",
   soRole: "servant" | "king" | "none",
-  isPuSandwich: boolean
+  isPuSandwich: boolean,
+  isMayoSandwich: "req" | "opt" | "no"
 ): T.Rendered<T.NPSelection>;
 export function renderNPSelection(
   NP: T.NPSelection,
@@ -46,7 +49,8 @@ export function renderNPSelection(
   inflectEnglish: boolean,
   role: "subject" | "object",
   soRole: "servant" | "king" | "none",
-  isPuSandwich: boolean
+  isPuSandwich: boolean,
+  isMayoSandwich: "req" | "opt" | "no"
 ): T.Rendered<T.NPSelection> {
   if (typeof NP !== "object") {
     if (role !== "object") {
@@ -62,7 +66,8 @@ export function renderNPSelection(
         inflected,
         soRole,
         undefined,
-        isPuSandwich
+        isPuSandwich,
+        isMayoSandwich
       ),
     };
   }
@@ -91,14 +96,20 @@ export function renderNounSelection(
   inflected: boolean,
   role: "servant" | "king" | "none",
   noArticles?: true | "noArticles",
-  isPuSandwich?: boolean
+  isPuSandwich?: boolean,
+  isMayoSandwich?: "req" | "opt" | "no"
 ): T.Rendered<T.NounSelection> {
   const english = getEnglishFromNoun(n.entry, n.number, noArticles);
+  const isPattern1 = isPattern1Entry(n.entry);
   const nounInflects =
-    inflected &&
-    !(isPuSandwich && isPattern1Entry(n.entry) && n.number === "singular");
+    inflected && !(isPuSandwich && isPattern1 && n.number === "singular");
+  const mayo = mayoOnWord(isMayoSandwich, n.entry, n.gender, n.number);
   const pashto = ((): T.PsString[] => {
+    if (mayo !== "no") {
+      return addMayo(n.entry, mayo === "req");
+    }
     const infs = inflectWord(n.entry);
+    // TODO: get optional mayo
     const ps =
       n.number === "singular"
         ? getInf(infs, "inflections", n.gender, false, nounInflects)
@@ -137,7 +148,11 @@ export function renderNounSelection(
         a,
         person,
         inflected,
-        isPuSandwich && n.number === "singular"
+        isPuSandwich && n.number === "singular" ? true : false,
+        // TODO: This is not the best because the variations of optional and inflecting adjectives in the
+        // sandwich aren't fully accurate - but to get the variations properly we need to think of a way
+        // for the adjective and noun rendering / compiling to talk to each other better
+        mayo === "opt" ? "no" : mayo
       )
     ),
     person,
@@ -334,7 +349,8 @@ function renderPossesor(
       possesorRole === "subj/obj" ? true : false,
       "subject",
       possesorRole === "subj/obj" ? "none" : possesorRole,
-      false
+      false,
+      "no"
     ),
   };
 }
@@ -347,7 +363,7 @@ function getBasicInf(
 ): T.PsString[] | false {
   const inflectionNumber = (inflected ? 1 : 0) + (number === "plural" ? 1 : 0);
   if (gender in infs) {
-    // @ts-ignore
+    // @ts-expect-error - bexpect-error - because
     return infs[gender][inflectionNumber];
   }
   return false;
@@ -361,18 +377,17 @@ function getInf(
   inflected: boolean
 ): T.PsString[] {
   // TODO: make this safe!!
-  // @ts-ignore
   if (
     infs &&
     t in infs &&
-    // @ts-ignore
+    // @ts-expect-error - because
     infs[t] !== undefined &&
-    // @ts-ignore
+    // @ts-expect-error - because
     gender in infs[t] &&
-    // @ts-ignore
+    // @ts-expect-error - because
     infs[t][gender] !== undefined
   ) {
-    // @ts-ignore
+    // @ts-expect-error - because
     const iset = infs[t][gender] as T.InflectionSet;
     const inflectionNumber =
       (inflected ? 1 : 0) + (t === "inflections" && plural ? 1 : 0);

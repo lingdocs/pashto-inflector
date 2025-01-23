@@ -1187,6 +1187,7 @@ export type Sandwich = {
   type: "sandwich";
   before: PsString | undefined;
   after: PsString | undefined;
+  mayo: boolean;
   e: string;
 };
 

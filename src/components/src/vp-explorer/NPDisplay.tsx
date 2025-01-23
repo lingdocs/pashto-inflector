@@ -38,7 +38,8 @@ function NPDisplay({
     false,
     "subject",
     "none",
-    false
+    false,
+    "no"
   );
   const english = getEnglishFromRendered(rendered);
   const pashto = getPashtoFromRendered(rendered, false);
