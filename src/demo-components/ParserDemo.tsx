@@ -26,6 +26,7 @@ const working = [
   "negatives",
   "imperative verbs",
   "perfect tenses",
+  "demonstrative pronouns",
 ];
 
 const todo = [
@@ -36,7 +37,6 @@ const todo = [
   "ability verbs",
   "passive verbs",
   "quantifiers",
-  "demonstrative pronouns",
   "approximate spelling",
 ];
 
