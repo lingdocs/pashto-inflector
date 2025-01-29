@@ -7,6 +7,7 @@ import { entries as splitVerbEntries } from "./split-verbs";
 import * as tp from "../type-predicates";
 import memoize from "micro-memoize";
 import { pashtoConsonants } from "../pashto-consonants";
+import { getImperativeVerbEnding } from "./misc";
 
 // TODO: و ارزول
 
@@ -341,16 +342,6 @@ function findPerfectiveRoot(
     base: "root",
     verb,
   }));
-}
-
-function getImperativeVerbEnding(e: string): T.Person[] {
-  if (e === "ه") {
-    return [T.Person.SecondSingMale, T.Person.SecondSingFemale];
-  }
-  if (e === "ئ") {
-    return [T.Person.SecondPlurMale, T.Person.SecondPlurFemale];
-  }
-  return [];
 }
 
 // TODO: could handle all sh- verbs for efficiencies sake

@@ -128,14 +128,13 @@ function getTenses(
       return [];
     }
     const transitivities = getTransitivities(verb.info.verb);
-    console.log({ tense, transitivities });
     if (verb.info.imperative && negative && !negative.imperative) {
       return [];
     }
     if (!verb.info.imperative && negative && negative.imperative) {
       return [];
     }
-    const verbEntry = checkForTlulCombos(verb, ph, tense);
+    const verbEntry = checkForTlulCombos(verb, ph);
     if (!verbEntry) return [];
     return [
       {
@@ -185,8 +184,7 @@ function getTenses(
 
 function checkForTlulCombos(
   verb: T.ParsedVBE,
-  ph: T.ParsedPH | undefined,
-  tense: T.VerbTense | "perfectiveImperative" | "imperfectiveImperative"
+  ph: T.ParsedPH | undefined
 ): T.VerbEntry | undefined {
   if (verb.info.type === "equative") {
     throw new Error("should not be equative here");
@@ -194,7 +192,8 @@ function checkForTlulCombos(
   if (
     isKedulStatEntry(verb.info.verb.entry) &&
     ph &&
-    (tense === "subjunctiveVerb" || tense === "perfectiveImperative")
+    verb.info.aspect === "perfective" &&
+    verb.info.base === "stem"
   ) {
     const personsFromLar = personsFromPattern1("لاړ", ph.s);
     if (personsFromLar.includes(verb.person)) {

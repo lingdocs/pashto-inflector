@@ -2,6 +2,7 @@ import * as T from "../../../types";
 import { getVerbEnding } from "./parse-verb-helpers";
 import { kedulDyn, kedulStat } from "./irreg-verbs";
 import { returnParseResults } from "./utils";
+import { getImperativeVerbEnding } from "./misc";
 
 export function parseKedul(
   tokens: Readonly<T.Token[]>
@@ -10,6 +11,7 @@ export function parseKedul(
   const start = first.s.slice(0, -1);
   const ending = first.s.at(-1) || "";
   const people = getVerbEnding(ending);
+  const imperativePeople = getImperativeVerbEnding(ending);
   if (first.s === "شو") {
     return returnParseResults<T.ParsedVBE>(rest, [
       ...[
@@ -97,31 +99,56 @@ export function parseKedul(
     );
   }
   if (start === "ش") {
-    return returnParseResults<T.ParsedVBE>(
-      rest,
-      people.stem.flatMap<T.ParsedVBE>((person) => [
-        {
-          type: "VB",
-          info: {
-            aspect: "perfective",
-            base: "stem",
-            type: "verb",
-            verb: kedulStat,
-          },
-          person,
+    const imperative = imperativePeople.flatMap<T.ParsedVBE>((person) => [
+      {
+        type: "VB",
+        info: {
+          aspect: "perfective",
+          base: "stem",
+          type: "verb",
+          imperative: true,
+          verb: kedulStat,
         },
-        {
-          type: "VB",
-          info: {
-            aspect: "perfective",
-            base: "stem",
-            type: "verb",
-            verb: kedulDyn,
-          },
-          person,
+        person,
+      },
+      {
+        type: "VB",
+        info: {
+          aspect: "perfective",
+          base: "stem",
+          type: "verb",
+          imperative: true,
+          verb: kedulDyn,
         },
-      ])
-    );
+        person,
+      },
+    ]);
+    const nonImperative = people.stem.flatMap<T.ParsedVBE>((person) => [
+      {
+        type: "VB",
+        info: {
+          aspect: "perfective",
+          base: "stem",
+          type: "verb",
+          verb: kedulStat,
+        },
+        person,
+      },
+      {
+        type: "VB",
+        info: {
+          aspect: "perfective",
+          base: "stem",
+          type: "verb",
+          verb: kedulDyn,
+        },
+        person,
+      },
+    ]);
+    return returnParseResults<T.ParsedVBE>(rest, [
+      ...nonImperative,
+      ...imperative,
+    ]);
   }
   if (start === "شو" || (start === "شول" && ending !== "ل")) {
     return returnParseResults<T.ParsedVBE>(

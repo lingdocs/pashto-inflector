@@ -128,6 +128,62 @@ const tests: {
           },
         ]),
       },
+      {
+        input: "شه",
+        output: getPeople(2, "sing").flatMap<T.ParsedVBE>((person) => [
+          {
+            type: "VB",
+            info: {
+              aspect: "perfective",
+              base: "stem",
+              type: "verb",
+              imperative: true,
+              verb: kedulStat,
+            },
+            person,
+          },
+          {
+            type: "VB",
+            info: {
+              aspect: "perfective",
+              base: "stem",
+              type: "verb",
+              imperative: true,
+              verb: kedulDyn,
+            },
+            person,
+          },
+        ]),
+      },
+      {
+        input: "شئ",
+        output: getPeople(2, "pl").flatMap<T.ParsedVBE>((person) =>
+          [true, false].flatMap<T.ParsedVBE>((imperative) => [
+            {
+              type: "VB",
+              info: {
+                aspect: "perfective",
+                base: "stem",
+                type: "verb",
+                imperative: imperative || undefined,
+                verb: kedulStat,
+              },
+              person,
+            },
+            {
+              type: "VB",
+              info: {
+                aspect: "perfective",
+                base: "stem",
+                type: "verb",
+                imperative: imperative || undefined,
+                verb: kedulDyn,
+              },
+              person,
+            },
+          ])
+        ),
+      },
     ],
   },
   {
