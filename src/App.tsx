@@ -20,6 +20,7 @@ import Hider from "./components/src/Hider";
 import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
 import ParserDemo from "./demo-components/ParserDemo";
+import TextDisplayDemo from "./demo-components/TextDisplayDemo";
 // import InflectionTable from "./components/src/InflectionsTable";
 
 function App() {
@@ -38,7 +39,6 @@ function App() {
   }
 
   useEffect(() => {
-    console.log("Will load dictionary");
     dictionary
       .initialize()
       .catch(console.error)
@@ -176,6 +176,14 @@ function App() {
               entryFeeder={entryFeeder}
               dictionary={dictionary}
             />
+          </Hider>
+          <Hider
+            label="Pashto Text Display"
+            hLevel={3}
+            showing={showing === "text-display"}
+            handleChange={() => handleHiderClick("text-display")}
+          >
+            <TextDisplayDemo opts={textOptions} />
           </Hider>
         </div>
       </main>

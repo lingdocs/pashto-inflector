@@ -10,8 +10,10 @@ import Pashto from "./Pashto";
 import Phonetics from "./Phonetics";
 import * as T from "../../../types";
 import { ReactNode } from "react";
+import { addErrorToPs } from "./utils";
+import psmd from "./psmd";
 
-type PsStringWSub = T.PsString & { sub?: ReactNode };
+type PsStringWSub = T.PsString & { sub?: ReactNode; error?: boolean };
 
 function EnglishContent({
   children,
@@ -34,36 +36,49 @@ function EnglishContent({
   );
 }
 
+type ExampleContent = T.PsJSX | PsStringWSub;
+type SingleOrArray<T> = T | T[];
+
 function Examples(
   props: (
     | {
-        ex: T.PsJSX | T.PsJSX[] | PsStringWSub | PsStringWSub[];
+        ex: SingleOrArray<ExampleContent>;
       }
     | {
-        children: T.PsJSX | T.PsJSX[] | PsStringWSub | PsStringWSub[];
+        children: SingleOrArray<ExampleContent>;
       }
   ) & {
     opts: T.TextOptions;
     lineHeight?: 0 | 1 | 2 | 3 | 4;
+    md?: boolean;
   }
 ) {
   const examples = "children" in props ? props.children : props.ex;
-  const Example = ({ children: text }: { children: PsStringWSub }) => (
-    <div
-      className={
-        props.lineHeight !== undefined ? `mb-${props.lineHeight}` : `mt-1 mb-3`
-      }
-    >
-      <div>
-        <Pashto opts={props.opts} ps={text} />
+  const Example = ({ children: text }: { children: ExampleContent }) => {
+    const psA = "error" in text && text.error ? addErrorToPs(text) : text;
+    // @ts-expect-error - bad ts
+    const psB = props.md ? psmd(psA) : psA;
+    return (
+      <div
+        className={
+          props.lineHeight !== undefined
+            ? `mb-${props.lineHeight}`
+            : `mt-1 mb-3`
+        }
+      >
+        <div>
+          <Pashto opts={props.opts} ps={psB} />
+        </div>
+        <div>
+          <Phonetics opts={props.opts} ps={psB} />
+        </div>
+        {psB.e && <EnglishContent>{psB.e}</EnglishContent>}
+        {"sub" in psB && psB.sub && (
+          <div className="small text-muted">{psB.sub}</div>
+        )}
       </div>
-      <div>
-        <Phonetics opts={props.opts} ps={text} />
-      </div>
-      {text.e && <EnglishContent>{text.e}</EnglishContent>}
-      {text.sub && <div className="small text-muted">{text.sub}</div>}
-    </div>
-  );
+    );
+  };
   return Array.isArray(examples) ? (
     <div>
       {examples.map((example, i) => (

@@ -9,19 +9,24 @@
 import Pashto from "./Pashto";
 import Phonetics from "./Phonetics";
 import * as T from "../../../types";
+import { addErrorToPs } from "./utils";
 
 const InlinePs = ({
   ps,
   opts,
+  error,
 }: {
   ps: T.PsString | (T.PsJSX & { e?: string });
   opts: T.TextOptions;
+  error?: boolean;
 }) => {
+  const isError = error || ("error" in ps && ps.error);
+  const psA = isError ? addErrorToPs(ps) : ps;
   return (
     <span>
-      <Pashto opts={opts} ps={ps} />
+      <Pashto opts={opts} ps={psA} />
       {opts.phonetics !== "none" && " - "}
-      <Phonetics opts={opts} ps={ps} />
+      <Phonetics opts={opts} ps={psA} />
       {ps.e && <span className="text-muted"> ({ps.e})</span>}
     </span>
   );

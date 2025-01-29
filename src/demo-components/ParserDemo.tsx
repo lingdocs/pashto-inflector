@@ -17,7 +17,6 @@ import { entryFeeder } from "./entryFeeder";
 import { removeRedundantVPSs } from "../lib/src/phrase-building/remove-redundant";
 
 const working = [
-  "limited demo vocab",
   "phrases with simple verbs",
   "basic verb tenses",
   "noun phrases",

@@ -1115,11 +1115,12 @@ export function addOEnding(ps: T.PsString): T.ArrayOneOrMore<T.PsString> {
  * applies f function to both the p and f in a PsString
  *
  */
-export function mapPsString<T>(
+export function mapPsString<T, P extends T.PsString>(
   f: (s: string) => T,
-  ps: T.PsString
-): { p: T; f: T } {
+  ps: P
+): Omit<P, "p" | "f"> & { p: T; f: T } {
   return {
+    ...ps,
     p: f(ps.p),
     f: f(ps.f),
   };

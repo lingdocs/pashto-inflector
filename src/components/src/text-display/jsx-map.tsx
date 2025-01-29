@@ -8,6 +8,46 @@
 
 import * as T from "../../../types";
 
+export function psJSXMap2<T>(
+  ps: T.PsJSX,
+  f: (s: string) => T,
+  onlyPf?: boolean
+) {
+  return {
+    p: jsxMap(ps.p, f),
+    f: jsxMap(ps.f, f),
+    ...(ps.e
+      ? {
+          e: onlyPf ? ps.e : jsxMap(ps.e, f),
+        }
+      : {}),
+    ...(ps.sub
+      ? {
+          e: onlyPf ? ps.sub : jsxMap(ps.sub, f),
+        }
+      : {}),
+  };
+}
+
+function jsxMap<T>(j: JSX.Element | string, f: (s: string) => T): JSX.Element {
+  if (typeof j === "string") {
+    return f(j) as JSX.Element;
+  }
+  const ch = j.props.children;
+  return {
+    ...j,
+    props: {
+      ...j.props,
+      children:
+        typeof ch === "string"
+          ? f(ch)
+          : Array.isArray(ch)
+          ? ch.map((x) => jsxMap(x, f))
+          : jsxMap(ch, f),
+    },
+  };
+}
+
 /**
  * Allows PsString transforming methods to be applied to a Pashto/Phonetics set of JSX elements
  * outputs a single part of the pair (p or f) with the transform function applied to all the text

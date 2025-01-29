@@ -20,6 +20,7 @@ export type PsJSX = {
   p: JSX.Element;
   f: JSX.Element;
   e?: JSX.Element | string;
+  sub?: JSX.Element | string;
 };
 
 export type PsWord = PsString & {
