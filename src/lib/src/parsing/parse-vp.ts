@@ -27,6 +27,9 @@ import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { isSecondPerson, personToGenNum } from "../misc-helpers";
 import { equals, zip } from "rambda";
 import { isImperativeTense } from "../type-predicates";
+import { isKedulStatEntry } from "./parse-verb-helpers";
+import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
+import { personsFromPattern1 } from "./parse-noun-word";
 // to hide equatives type-doubling issue
 
 // TODO: problem with 3rd pers sing verb endings اواز مې دې واورېده
@@ -34,6 +37,8 @@ import { isImperativeTense } from "../type-predicates";
 // TODO: word query for kawul/kedul/stat/dyn
 
 // TODO: test all types with pronouns
+// TODO: راشم ورشم درشم
+// TODO: لاړ شه لاړې شئ imperatives
 
 // TODO: way to get an error message for past participle and equative
 // not matching up
@@ -123,19 +128,22 @@ function getTenses(
       return [];
     }
     const transitivities = getTransitivities(verb.info.verb);
+    console.log({ tense, transitivities });
     if (verb.info.imperative && negative && !negative.imperative) {
       return [];
     }
     if (!verb.info.imperative && negative && negative.imperative) {
       return [];
     }
+    const verbEntry = checkForTlulCombos(verb, ph, tense);
+    if (!verbEntry) return [];
     return [
       {
         tense,
         transitivities,
         negative: !!negative,
         person: verb.person,
-        verb: verb.info.verb,
+        verb: verbEntry,
       },
     ];
   } else {
@@ -173,6 +181,38 @@ function getTenses(
       },
     ];
   }
+}
+
+function checkForTlulCombos(
+  verb: T.ParsedVBE,
+  ph: T.ParsedPH | undefined,
+  tense: T.VerbTense | "perfectiveImperative" | "imperfectiveImperative"
+): T.VerbEntry | undefined {
+  if (verb.info.type === "equative") {
+    throw new Error("should not be equative here");
+  }
+  if (
+    isKedulStatEntry(verb.info.verb.entry) &&
+    ph &&
+    (tense === "subjunctiveVerb" || tense === "perfectiveImperative")
+  ) {
+    const personsFromLar = personsFromPattern1("لاړ", ph.s);
+    if (personsFromLar.includes(verb.person)) {
+      return tlul;
+    }
+    if (ph.s === "را") {
+      return raatlul;
+    }
+    if (ph.s === "در") {
+      return dartlul;
+    }
+    if (ph.s === "ور") {
+      return wartlul;
+    }
+    // TODO: probably better to check this elsewhere because it wil stop other uses of to become
+    return undefined;
+  }
+  return verb.info.verb;
 }
 
 function finishPossibleVPSs({

@@ -85,6 +85,7 @@ function phMatches(
   }
 
   if (!vb) {
+    // TODO: Is this right??
     return true;
   }
   if (vb.info.type !== "verb") {
@@ -100,6 +101,15 @@ function phMatches(
     }
     // TODO: handle را غل etc! ? or is
     return false;
+  }
+  if (["لاړ", "لاړه", "لاړې"].includes(ph?.s)) {
+    if (
+      isKedulStatEntry(vb.info.verb.entry) &&
+      vb.info.base === "stem" &&
+      vb.info.aspect === "perfective"
+    ) {
+      return true;
+    }
   }
   const verbPh = getPhFromVerb(vb.info.verb, vb.info.base);
   return verbPh === ph.s;

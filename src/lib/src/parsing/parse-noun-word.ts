@@ -117,3 +117,31 @@ function convertInflection(
     },
   ];
 }
+
+export function personsFromPattern1(base: string, r: string): T.Person[] {
+  if (r === base) {
+    return [
+      T.Person.FirstSingMale,
+      T.Person.SecondSingMale,
+      T.Person.ThirdSingMale,
+      T.Person.FirstPlurMale,
+      T.Person.SecondPlurMale,
+      T.Person.ThirdPlurMale,
+    ];
+  }
+  if (`${base}ه` === r) {
+    return [
+      T.Person.FirstSingFemale,
+      T.Person.SecondSingFemale,
+      T.Person.ThirdSingFemale,
+    ];
+  }
+  if (`${base}ې` === r) {
+    return [
+      T.Person.FirstPlurFemale,
+      T.Person.SecondPlurFemale,
+      T.Person.ThirdPlurFemale,
+    ];
+  }
+  return [];
+}
