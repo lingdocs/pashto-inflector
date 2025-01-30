@@ -16,9 +16,6 @@ import { getImperativeVerbEnding } from "./misc";
 // check oo`azmooy -
 //  TODO: proper use of sepOo (hasBreakawayAleph) when checking for perfective roots/stems
 // check څاته
-// laaRa shum etc
-// TODO: proper use of perfective with sh
-// TODO: use of raa, dar, war with sh
 // TODO: هغه لاړ
 // TODO: don't have کول کېدل in split-verbs
 
