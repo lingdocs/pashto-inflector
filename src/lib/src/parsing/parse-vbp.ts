@@ -1,23 +1,25 @@
 import * as T from "../../../types";
 import { returnParseResult } from "./utils";
-import { findPerfectiveRoot, findImperfectiveRoot } from "./parse-vbe-new";
+import { findRoot } from "./stem-root-finding";
 
 export function parseVBP(
   tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI,
+  ph: T.ParsedPH | undefined
 ): T.ParseResult<T.ParsedVBP>[] {
   if (tokens.length === 0) {
     return [];
   }
   return [
-    ...parsePastPart(tokens, dictionary),
-    ...parseAbility(tokens, dictionary),
+    ...(!ph ? parsePastPart(tokens, dictionary) : []),
+    ...parseAbility(tokens, dictionary, ph),
   ];
 }
 
 function parseAbility(
   tokens: Readonly<T.Token[]>,
-  dicitonary: T.DictionaryAPI
+  dicitonary: T.DictionaryAPI,
+  ph: T.ParsedPH | undefined
 ): T.ParseResult<T.ParsedVBP>[] {
   // TODO: keday
   if (tokens.length === 0) {
@@ -30,11 +32,7 @@ function parseAbility(
     ? s.slice(0, -1)
     : "";
   if (!start) return [];
-  return [
-    // TODO: prob remove that last true - allow for searching of short forms of ability
-    ...findImperfectiveRoot(start, dicitonary, true),
-    ...findPerfectiveRoot(start, dicitonary, true),
-  ]
+  return findRoot(ph)(start, dicitonary)
     .map<T.ParsedVBP>((root) => ({
       type: "VB",
       info: {

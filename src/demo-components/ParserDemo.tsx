@@ -26,6 +26,7 @@ const working = [
   "imperative verbs",
   "perfect tenses",
   "demonstrative pronouns",
+  "ability verbs",
 ];
 
 const todo = [
@@ -33,7 +34,6 @@ const todo = [
   "adjectival participles",
   "relative clauses",
   "equative verbs",
-  "ability verbs",
   "passive verbs",
   "quantifiers",
   "approximate spelling",
@@ -51,6 +51,8 @@ const examples = [
   "وبه مې وینې",
   "راشه",
   "ستا د زاړه پلار د پخواني ملګري کور نه به نه ځم",
+  "زه تا لیدلای شم",
+  "کور ته به دې راتلی شوم",
 ];
 
 function ParserDemo({
@@ -67,6 +69,8 @@ function ParserDemo({
     ReturnType<typeof parsePhrase>["success"]
   >([]);
   // ReturnType<typeof parsePhrase>["success"]
+  // TODO: don't reparse every keystroke, wait till typing stops
+  // https://stackoverflow.com/questions/42217121/how-to-start-search-only-when-user-stops-typing
   const [errors, setErrors] = useState<string[]>([]);
   function handleInput(value: string) {
     if (!value) {

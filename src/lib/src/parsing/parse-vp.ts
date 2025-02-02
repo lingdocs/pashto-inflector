@@ -43,10 +43,17 @@ import { personsFromPattern1 } from "./parse-noun-word";
 // TODO: way to get an error message for past participle and equative
 // not matching up
 
-// TODO: parse short ability VBPs
 // TODO: kenaastulay shum should be imperfective AND perfective
 // TODO: why are some ability verbs coming out double??
-// TODO: Transitive ability not working!
+// TOOD: how to handle the roots and stems lookup for ability - with things like بوتلل
+
+// TODO: This is erroring ماشومه دې ونه وهلی شم
+// TODO: ستا کور ته ونه رسېدلی شولې - thinks it's a tree, ونه
+// TODO: This parses extra options with demonstratives کور ته دې بوتلی شم
+
+// TODO: وایې نه خیستلی شو doesn't work
+
+// FOR display - Verb blocks should display VBP - VBE somehow
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -148,9 +155,11 @@ function getTenses(
     if (!tense && !abilityTense) {
       return [];
     }
-    const transitivities = getTransitivities(verb.info.verb);
-    // TODO: do this with ability?
-    const verbEntry = checkForTlulCombos(verb, ph);
+    const transitivities =
+      abilityTense && vbp
+        ? getTransitivities(vbp.info.verb)
+        : getTransitivities(verb.info.verb);
+    const verbEntry = vbp ? vbp.info.verb : checkForTlulCombos(verb, ph);
     if (!verbEntry) return [];
     if (abilityTense) {
       if (!vbp) {
@@ -222,12 +231,19 @@ function checkForTlulCombos(
   if (verb.info.type === "equative") {
     throw new Error("should not be equative here");
   }
-  if (
-    isKedulStatEntry(verb.info.verb.entry) &&
-    ph &&
-    verb.info.aspect === "perfective" &&
-    verb.info.base === "stem"
-  ) {
+  if (!ph) {
+    return verb.info.verb;
+  }
+  if (["را", "ور", "در"].includes(ph.s) || ph.s.startsWith("لاړ")) {
+    if (
+      !(
+        isKedulStatEntry(verb.info.verb.entry) &&
+        verb.info.aspect === "perfective" &&
+        verb.info.base === "stem"
+      )
+    ) {
+      return undefined;
+    }
     const personsFromLar = personsFromPattern1("لاړ", ph.s);
     if (personsFromLar.includes(verb.person)) {
       return tlul;
@@ -241,7 +257,6 @@ function checkForTlulCombos(
     if (ph.s === "ور") {
       return wartlul;
     }
-    // TODO: probably better to check this elsewhere because it wil stop other uses of to become
     return undefined;
   }
   return verb.info.verb;
