@@ -43,7 +43,6 @@ function App() {
       .initialize()
       .catch(console.error)
       .then((res) => {
-        console.log({ res });
         if (res && res.response === "loaded from saved") {
           dictionary.update();
         }

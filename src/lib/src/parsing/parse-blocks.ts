@@ -31,8 +31,8 @@ export function parseBlocks(
   const prevPh: T.ParsedPH | undefined = blocks.find(
     (b): b is T.ParsedPH => b.type === "PH"
   );
+  const hasVBP = blocks.some(isParsedVBP);
 
-  // TOOD: rather parse VBP / VBE
   const allBlocks: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
     ...(!inVerbSection ? parseNPAP(tokens, dicitonary) : []),
     // ensure at most one of each PH, VBE, VBP
@@ -40,7 +40,7 @@ export function parseBlocks(
     ...(blocks.some(isParsedVBE)
       ? []
       : [...parseVBE(tokens, dicitonary), ...parseEquative(tokens)]),
-    ...(blocks.some(isParsedVBP) ? [] : parseVBP(tokens, dicitonary)),
+    ...(hasVBP ? [] : parseVBP(tokens, dicitonary)),
     ...(blocks.some((b) => b.type === "negative") ? [] : parseNeg(tokens)),
     ...parseKidsSection(tokens, []),
   ];
@@ -60,7 +60,7 @@ export function parseBlocks(
       return [];
     }
     // TODO: will have to handle welded
-    if (r.type === "VB" && r.info.type !== "ppart") {
+    if (r.type === "VB" && !hasVBP && r.info.type !== "ppart") {
       if (!phMatches(prevPh, r)) {
         return [];
       }
@@ -88,30 +88,36 @@ function phMatches(
     // TODO: Is this right??
     return true;
   }
-  if (vb.info.type !== "verb") {
+  if (vb.info.type !== "verb" && vb.info.type !== "ability") {
     return false;
   }
-  if (["را", "در", "ور"].includes(ph?.s)) {
-    if (
-      isKedulStatEntry(vb.info.verb.entry) &&
-      vb.info.base === "stem" &&
-      vb.info.aspect === "perfective"
-    ) {
-      return true;
+  // TODO: Ability on wartlay shum etc.
+  if (vb.info.type === "verb") {
+    if (["را", "در", "ور"].includes(ph?.s)) {
+      if (
+        isKedulStatEntry(vb.info.verb.entry) &&
+        vb.info.base === "stem" &&
+        vb.info.aspect === "perfective"
+      ) {
+        return true;
+      }
+      // TODO: handle را غل etc! ? or is
+      return false;
     }
-    // TODO: handle را غل etc! ? or is
-    return false;
-  }
-  if (["لاړ", "لاړه", "لاړې"].includes(ph?.s)) {
-    if (
-      isKedulStatEntry(vb.info.verb.entry) &&
-      vb.info.base === "stem" &&
-      vb.info.aspect === "perfective"
-    ) {
-      return true;
+    if (["لاړ", "لاړه", "لاړې"].includes(ph?.s)) {
+      if (
+        isKedulStatEntry(vb.info.verb.entry) &&
+        vb.info.base === "stem" &&
+        vb.info.aspect === "perfective"
+      ) {
+        return true;
+      }
     }
   }
-  const verbPh = getPhFromVerb(vb.info.verb, vb.info.base);
+  const verbPh = getPhFromVerb(
+    vb.info.verb,
+    vb.info.type === "ability" ? "root" : vb.info.base
+  );
   return verbPh === ph.s;
 }
 

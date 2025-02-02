@@ -293,14 +293,15 @@ function regStemSearch(s: string, dicitonary: T.DictionaryAPI): T.VerbEntry[] {
   return [...regTrans, ...regIntrans];
 }
 
-function findImperfectiveRoot(
+export function findImperfectiveRoot(
   s: string,
-  dicitonary: T.DictionaryAPI
+  dicitonary: T.DictionaryAPI,
+  noExtraL?: boolean
 ): RootInfo[] {
   if (["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
     return [];
   }
-  const reg = [s, s + "ل"]
+  const reg = (noExtraL ? [s] : [s, s + "ل"])
     .flatMap(dicitonary.verbEntryLookup)
     .filter((e) => !e.entry.c.includes("comp"));
   return reg.map((verb) => ({
@@ -319,14 +320,15 @@ const rootSplitLookup = memoize((s: string) =>
   )
 );
 
-function findPerfectiveRoot(
+export function findPerfectiveRoot(
   s: string,
-  dicitonary: T.DictionaryAPI
+  dicitonary: T.DictionaryAPI,
+  noExtraL?: boolean
 ): RootInfo[] {
   if (startsWithAleph(s) || ["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
     return [];
   }
-  const reg = [s, s + "ل"]
+  const reg = (noExtraL ? [s] : [s, s + "ل"])
     .flatMap(withAlefAdded)
     .flatMap(dicitonary.verbEntryLookup)
     .filter(

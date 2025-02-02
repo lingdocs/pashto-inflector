@@ -43,6 +43,11 @@ import { personsFromPattern1 } from "./parse-noun-word";
 // TODO: way to get an error message for past participle and equative
 // not matching up
 
+// TODO: parse short ability VBPs
+// TODO: kenaastulay shum should be imperfective AND perfective
+// TODO: why are some ability verbs coming out double??
+// TODO: Transitive ability not working!
+
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI
@@ -89,53 +94,81 @@ function getTenses(
   blocks: T.ParsedBlock[],
   ba: boolean
 ): {
-  tense: T.VerbTense | T.PerfectTense | T.ImperativeTense;
+  tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
   person: T.Person;
   transitivities: T.Transitivity[];
   negative: boolean;
   verb: T.VerbEntry;
 }[] {
+  // TODO: this should be replaced with tagging in objects
+  function isVBP(x: T.ParsedVBE | T.ParsedVBP): x is T.ParsedVBP {
+    return x.info.type === "ability" || x.info.type === "ppart";
+  }
   const negIndex = blocks.findIndex((x) => x.type === "negative");
   const negative: T.NegativeBlock | undefined = blocks[negIndex] as
     | T.NegativeBlock
     | undefined;
   const phIndex = blocks.findIndex((x) => x.type === "PH");
-  const vbeIndex = blocks.findIndex((x) => x.type === "VB");
+  // TODO: would be nicer if there were clear taggin gfor "VBP" vs "VBE" !!
+  const vbeIndex = blocks.findIndex((x) => x.type === "VB" && !isVBP(x));
+  const vbpIndex = blocks.findIndex((x) => x.type === "VB" && isVBP(x));
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
   const verb = vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
+  const vbp = vbpIndex !== -1 ? (blocks[vbpIndex] as T.ParsedVBP) : undefined;
   if (!verb || verb.type !== "VB") {
     return [];
   }
   if (verb.info.type === "verb") {
-    if (verb.info.aspect === "perfective") {
-      // TODO: handle kedul sh perfective
-      if (!ph) {
-        return [];
-      }
-    } else {
-      if (ph) {
-        return [];
-      }
+    if (!verb.info.imperative && negative && negative.imperative) {
+      // TODO: return errors here
+      return [];
     }
-    const tense = getTenseFromRootsStems(
-      ba,
-      verb.info.base,
-      verb.info.aspect,
-      !!negative,
-      verb.info.imperative
-    );
-    if (!tense) {
+    const abilityTense = getAbilityTense(ba, verb, vbp);
+    if (vbp && !abilityTense) {
+      return [];
+    }
+    const aspect =
+      abilityTense && vbp && vbp.info.type === "ability"
+        ? vbp.info.aspect
+        : verb.info.aspect;
+    if (aspect === "perfective") {
+      if (!ph) return [];
+    } else {
+      if (ph) return [];
+    }
+    const tense = abilityTense
+      ? undefined
+      : getTenseFromRootsStems(
+          ba,
+          verb.info.base,
+          verb.info.aspect,
+          !!negative,
+          verb.info.imperative
+        );
+    if (!tense && !abilityTense) {
       return [];
     }
     const transitivities = getTransitivities(verb.info.verb);
-    if (verb.info.imperative && negative && !negative.imperative) {
-      return [];
-    }
-    if (!verb.info.imperative && negative && negative.imperative) {
-      return [];
-    }
+    // TODO: do this with ability?
     const verbEntry = checkForTlulCombos(verb, ph);
     if (!verbEntry) return [];
+    if (abilityTense) {
+      if (!vbp) {
+        throw new Error("VBP should exist in ability verb");
+      }
+      return [
+        {
+          tense: abilityTense,
+          transitivities,
+          negative: !!negative,
+          person: verb.person,
+          verb: vbp.info.verb,
+        },
+      ];
+    }
+    if (!tense) {
+      return [];
+    }
     return [
       {
         tense,
@@ -224,7 +257,7 @@ function finishPossibleVPSs({
   tokens,
   person,
 }: {
-  tense: T.VerbTense | T.PerfectTense | T.ImperativeTense;
+  tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
   transitivities: T.Transitivity[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   miniPronouns: T.ParsedMiniPronoun[];
@@ -245,7 +278,7 @@ function finishPossibleVPSs({
           canChangeStatDyn: false,
           negative,
           tense,
-          canChangeVoice: true,
+          canChangeVoice: transitivity === "transitive",
           isCompound: false,
           voice: "active",
         };
@@ -952,24 +985,30 @@ function getPeopleFromMiniPronouns(kids: T.ParsedKid[]): T.Person[] {
   return p;
 }
 
-function getTenseFromRootsStems(
+function getAbilityTense(
   hasBa: boolean,
-  base: "root" | "stem",
-  aspect: T.Aspect,
-  negative: boolean,
-  imperative?: true
-): T.VerbTense | T.ImperativeTense | undefined {
-  if (imperative) {
-    if (base === "root") {
-      return undefined;
-    }
-    if (hasBa) {
-      return undefined;
-    }
-    return aspect === "imperfective" || negative
-      ? "imperfectiveImperative"
-      : "perfectiveImperative";
+  vbe: T.ParsedVBE,
+  vbp: T.ParsedVBP | undefined
+): T.AbilityTense | undefined {
+  if (vbe.info.type === "equative") {
+    return undefined;
   }
+  if (!vbp || vbp.info.type !== "ability") {
+    return undefined;
+  }
+  if (!isKedulStatEntry(vbe.info.verb.entry)) {
+    return undefined;
+  }
+  const aspect = vbp.info.aspect;
+  const base = vbe.info.base;
+  return `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`;
+}
+
+function tenseFromAspectBaseBa(
+  aspect: T.Aspect,
+  base: "root" | "stem",
+  hasBa: boolean
+): T.VerbTense {
   if (!hasBa) {
     if (base === "root") {
       return aspect === "perfective" ? "perfectivePast" : "imperfectivePast";
@@ -987,6 +1026,27 @@ function getTenseFromRootsStems(
         : "perfectiveFuture";
     }
   }
+}
+
+function getTenseFromRootsStems(
+  hasBa: boolean,
+  base: "root" | "stem",
+  aspect: T.Aspect,
+  negative: boolean,
+  imperative: boolean | undefined
+): T.VerbTense | T.ImperativeTense | undefined {
+  if (imperative) {
+    if (base === "root") {
+      return undefined;
+    }
+    if (hasBa) {
+      return undefined;
+    }
+    return aspect === "imperfective" || negative
+      ? "imperfectiveImperative"
+      : "perfectiveImperative";
+  }
+  return tenseFromAspectBaseBa(aspect, base, hasBa);
 }
 
 function verbSectionOK(blocks: T.ParsedBlock[]): boolean {

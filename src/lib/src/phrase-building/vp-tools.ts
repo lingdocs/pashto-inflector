@@ -298,7 +298,11 @@ export function uncompleteVPSelection(
     verb: {
       ...vps.verb,
       verbTense:
-        tenseCategory === "basic" ? (tense as T.VerbTense) : "presentVerb",
+        tenseCategory === "basic"
+          ? (tense as T.VerbTense)
+          : tenseCategory === "modal"
+          ? (tense.slice(0, -5) as T.VerbTense)
+          : "presentVerb",
       perfectTense:
         tenseCategory === "perfect"
           ? (tense as T.PerfectTense)

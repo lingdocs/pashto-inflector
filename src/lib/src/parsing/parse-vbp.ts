@@ -1,6 +1,6 @@
 import * as T from "../../../types";
 import { returnParseResult } from "./utils";
-// import { returnParseResult } from "./utils";
+import { findPerfectiveRoot, findImperfectiveRoot } from "./parse-vbe-new";
 
 export function parseVBP(
   tokens: Readonly<T.Token[]>,
@@ -11,8 +11,39 @@ export function parseVBP(
   }
   return [
     ...parsePastPart(tokens, dictionary),
-    // ...parseAbility(tokens),
+    ...parseAbility(tokens, dictionary),
   ];
+}
+
+function parseAbility(
+  tokens: Readonly<T.Token[]>,
+  dicitonary: T.DictionaryAPI
+): T.ParseResult<T.ParsedVBP>[] {
+  // TODO: keday
+  if (tokens.length === 0) {
+    return [];
+  }
+  const [{ s }, ...rest] = tokens;
+  const start = s.endsWith("ای")
+    ? s.slice(0, -2)
+    : s.endsWith("ی")
+    ? s.slice(0, -1)
+    : "";
+  if (!start) return [];
+  return [
+    // TODO: prob remove that last true - allow for searching of short forms of ability
+    ...findImperfectiveRoot(start, dicitonary, true),
+    ...findPerfectiveRoot(start, dicitonary, true),
+  ]
+    .map<T.ParsedVBP>((root) => ({
+      type: "VB",
+      info: {
+        type: "ability",
+        verb: root.verb,
+        aspect: root.aspect,
+      },
+    }))
+    .flatMap((m) => returnParseResult(rest, m));
 }
 
 function parsePastPart(
@@ -63,31 +94,3 @@ function endingGenNum(s: "ی" | "ې" | "ي"): T.GenderNumber[] {
   }
   throw new Error("invalid participle tail input");
 }
-
-// function parseAbility(
-//   tokens: Readonly<T.Token[]>,
-//   lookup: LookupFunction
-// ): T.ParseResult<T.ParsedVBP>[] {
-//   // TODO: keday
-//   if (tokens.length === 0) {
-//     return [];
-//   }
-//   const [{ s }, ...rest] = tokens;
-//   const start = s.endsWith("ای")
-//     ? s.slice(0, -2)
-//     : s.endsWith("ی")
-//     ? s.slice(0, 1)
-//     : "";
-//   if (!start) return [];
-//   const matches = lookup(start, "ability");
-//   return matches
-//     .map<T.ParsedVBP>((verb) => ({
-//       type: "VB",
-//       info: {
-//         type: "ability",
-//         verb,
-//         aspect: "perfective", // TODO GET ASPECT!!
-//       },
-//     }))
-//     .flatMap((m) => returnParseResult(rest, m));
-// }
