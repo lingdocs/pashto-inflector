@@ -8,13 +8,13 @@
 
 * {
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+        Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 :root {
     --secondary: #00c1fc;
     --primary: #ffda54;
-    
+
     /* change with theme */
     --theme-shade: #fefefe;
     --close: #f5f5f5;
@@ -23,7 +23,7 @@
     --farther: #555;
     --farthest: #333;
     --high-contrast: #444;
-    
+
     --input-bg: #fafafa;
 }
 
@@ -35,7 +35,7 @@
     --farther: #bbb;
     --farthest: #999;
     --high-contrast: #cfcfcf;
-    
+
     --input-bg: #ccc;
 }
 
@@ -50,6 +50,15 @@
 body {
     background-color: var(--theme-shade);
     color: var(--high-contrast);
+}
+
+.form-control.is-waiting {
+    /* border-color: #28a745; */
+    padding-right: calc(1.5em + 0.75rem) !important;
+    background-image: url("data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22iso-8859-1%22%3F%3E%0A%3C%21--%20Uploaded%20to%3A%20SVG%20Repo%2C%20www.svgrepo.com%2C%20Generator%3A%20SVG%20Repo%20Mixer%20Tools%20--%3E%0A%3Csvg%20fill%3D%22%23000000%22%20height%3D%22800px%22%20width%3D%22800px%22%20version%3D%221.1%22%20id%3D%22Capa_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20%0A%09%20viewBox%3D%220%200%2032.055%2032.055%22%20xml%3Aspace%3D%22preserve%22%3E%0A%3Cg%3E%0A%09%3Cpath%20d%3D%22M3.968%2C12.061C1.775%2C12.061%2C0%2C13.835%2C0%2C16.027c0%2C2.192%2C1.773%2C3.967%2C3.968%2C3.967c2.189%2C0%2C3.966-1.772%2C3.966-3.967%0A%09%09C7.934%2C13.835%2C6.157%2C12.061%2C3.968%2C12.061z%20M16.233%2C12.061c-2.188%2C0-3.968%2C1.773-3.968%2C3.965c0%2C2.192%2C1.778%2C3.967%2C3.968%2C3.967%0A%09%09s3.97-1.772%2C3.97-3.967C20.201%2C13.835%2C18.423%2C12.061%2C16.233%2C12.061z%20M28.09%2C12.061c-2.192%2C0-3.969%2C1.774-3.969%2C3.967%0A%09%09c0%2C2.19%2C1.774%2C3.965%2C3.969%2C3.965c2.188%2C0%2C3.965-1.772%2C3.965-3.965S30.278%2C12.061%2C28.09%2C12.061z%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 
 .block-border {
@@ -94,13 +103,15 @@ hr {
     background-color: var(--closer) !important;
     color: var(--high-contrast);
 }
+
 .bg-white {
     background-color: var(--theme-shade) !important;
 }
 
 /* TODO: better handling of modals across light and dark modes */
-.modal-body, .modal-title {
-    color:#1d1f25;
+.modal-body,
+.modal-title {
+    color: #1d1f25;
 }
 
 .table {
@@ -143,8 +154,8 @@ kbd {
     border-radius: 3px;
     border: 1px solid #b4b4b4;
     box-shadow: 0 1px 1px rgba(0, 0, 0,
-    .2), 0 2px 0 0 rgba(255, 255, 255,
-    .7) inset;
+            .2), 0 2px 0 0 rgba(255, 255, 255,
+            .7) inset;
     color: #333;
     display: inline-block;
     font-size: .85em;
@@ -246,6 +257,7 @@ input {
     text-decoration: none;
     color: var(--farther);
 }
+
 .clickable:hover {
     color: var(--farther);
 }
@@ -257,19 +269,20 @@ input {
     border-radius: 0;
     border-color: var(--farther);
 }
+
 .clear-search-button:hover {
     color: #555;
 }
 
 .btn.bg-white:active,
 .btn.bg-white:hover {
-    color: #555 !important; 
+    color: #555 !important;
 }
 
 .btn-group.full-width {
     display: flex;
 }
-  
+
 .full-width .btn {
     flex: 1;
 }

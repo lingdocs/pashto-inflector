@@ -15,6 +15,7 @@ import { parsePhrase } from "../lib/src/parsing/parse-phrase";
 // import VPDisplay from "../components/src/vp-explorer/VPDisplay";
 import { entryFeeder } from "./entryFeeder";
 import { removeRedundantVPSs } from "../lib/src/phrase-building/remove-redundant";
+import { useDebouncedCallback } from "use-debounce";
 
 const working = [
   "phrases with simple verbs",
@@ -68,21 +69,30 @@ function ParserDemo({
   const [result, setResult] = useState<
     ReturnType<typeof parsePhrase>["success"]
   >([]);
-  // ReturnType<typeof parsePhrase>["success"]
-  // TODO: don't reparse every keystroke, wait till typing stops
-  // https://stackoverflow.com/questions/42217121/how-to-start-search-only-when-user-stops-typing
   const [errors, setErrors] = useState<string[]>([]);
+  const [noneFound, setNoneFound] = useState<boolean>(false);
+  const debounced = useDebouncedCallback(async (value: string) => {
+    setText(value);
+    await waitforme(100);
+    const res = parsePhrase(tokenizer(value), dictionary);
+    setErrors(res.errors);
+    const r = removeRedundantVPSs(res.success);
+    if (!r.length) setNoneFound(true);
+    setResult(r);
+  }, 200);
   function handleInput(value: string) {
     if (!value) {
       setText("");
       setResult([]);
       setErrors([]);
+      setNoneFound(false);
       return;
     }
-    const res = parsePhrase(tokenizer(value), dictionary);
     setText(value);
-    setErrors(res.errors);
-    setResult(removeRedundantVPSs(res.success));
+    setResult([]);
+    setErrors([]);
+    setNoneFound(false);
+    debounced(value);
   }
   return (
     <div className="mt-3" style={{ marginBottom: "1000px" }}>
@@ -114,11 +124,13 @@ function ParserDemo({
         <input
           dir="rtl"
           className={`form-control ${
-            text && (errors.length || !result.length)
+            !text
+              ? ""
+              : text && (errors.length || noneFound)
               ? "is-invalid"
               : result.length
               ? "is-valid"
-              : ""
+              : "is-waiting"
           }`}
           type="text"
           value={text}
@@ -226,3 +238,11 @@ export default ParserDemo;
 //   console.error(e);
 //   return <div>ERROR RENDERING</div>;
 // }
+
+function waitforme(millisec: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve("");
+    }, millisec);
+  });
+}

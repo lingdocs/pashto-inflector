@@ -37,9 +37,6 @@ import { personsFromPattern1 } from "./parse-noun-word";
 // TODO: word query for kawul/kedul/stat/dyn
 
 // TODO: test all types with pronouns
-// TODO: راشم ورشم درشم
-// TODO: لاړ شه لاړې شئ imperatives
-
 // TODO: way to get an error message for past participle and equative
 // not matching up
 
@@ -52,6 +49,7 @@ import { personsFromPattern1 } from "./parse-noun-word";
 // TODO: This parses extra options with demonstratives کور ته دې بوتلی شم
 
 // TODO: وایې نه خیستلی شو doesn't work
+// TODO: ستا د زاړه پلار سره یې کور ته ځم doesn't work
 
 // FOR display - Verb blocks should display VBP - VBE somehow
 
@@ -107,10 +105,6 @@ function getTenses(
   negative: boolean;
   verb: T.VerbEntry;
 }[] {
-  // TODO: this should be replaced with tagging in objects
-  function isVBP(x: T.ParsedVBE | T.ParsedVBP): x is T.ParsedVBP {
-    return x.info.type === "ability" || x.info.type === "ppart";
-  }
   const negIndex = blocks.findIndex((x) => x.type === "negative");
   const negative: T.NegativeBlock | undefined = blocks[negIndex] as
     | T.NegativeBlock
@@ -1306,4 +1300,9 @@ function createPossesivePossibilities(
       }));
     }
   });
+}
+
+// TODO: this should be replaced with tagging in objects
+function isVBP(x: T.ParsedVBE | T.ParsedVBP): x is T.ParsedVBP {
+  return x.info.type === "ability" || x.info.type === "ppart";
 }
