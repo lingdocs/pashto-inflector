@@ -6,9 +6,9 @@ import { returnParseResult } from "./utils";
 export const parseDeterminer: T.Parser<
   T.InflectableBaseParse<T.DeterminerSelection>
 > = (
-  tokens: Readonly<T.Token[]>,
+  tokens: Readonly<T.Token[]>
   // eslint-disable-next-line
-  dictionary: T.DictionaryAPI
+  // dictionary: T.DictionaryAPI
 ) => {
   if (tokens.length === 0) {
     return [];
