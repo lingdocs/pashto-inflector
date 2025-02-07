@@ -73,12 +73,14 @@ function ParserDemo({
   const [noneFound, setNoneFound] = useState<boolean>(false);
   const debounced = useDebouncedCallback(async (value: string) => {
     setText(value);
-    await waitforme(100);
-    const res = parsePhrase(tokenizer(value), dictionary);
-    setErrors(res.errors);
-    const r = removeRedundantVPSs(res.success);
-    if (!r.length) setNoneFound(true);
-    setResult(r);
+    if (value.length > 1) {
+      await waitforme(100);
+      const res = parsePhrase(tokenizer(value), dictionary);
+      setErrors(res.errors);
+      const r = removeRedundantVPSs(res.success);
+      if (!r.length) setNoneFound(true);
+      setResult(r);
+    }
   }, 200);
   function handleInput(value: string) {
     if (!value) {
@@ -86,6 +88,7 @@ function ParserDemo({
       setResult([]);
       setErrors([]);
       setNoneFound(false);
+      debounced("");
       return;
     }
     setText(value);

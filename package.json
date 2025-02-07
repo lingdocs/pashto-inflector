@@ -1,6 +1,6 @@
 {
   "name": "pashto-inflector-website",
-  "version": "7.8.1",
+  "version": "7.8.2",
   "type": "module",
   "scripts": {
     "patch": "npm version patch --no-git-tag-version && cd src/lib && npm version patch --no-git-tag-version && cd ../components && npm version patch --no-git-tag-version",

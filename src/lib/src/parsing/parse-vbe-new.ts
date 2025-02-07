@@ -22,6 +22,7 @@ import {
 //  TODO: proper use of sepOo (hasBreakawayAleph) when checking for perfective roots/stems
 // check څاته
 // TODO: هغه لاړ
+// TODO: لاړې etc - check if botlul etc bo-ba-de-dzee is working
 // TODO: don't have کول کېدل in split-verbs
 
 export function parseVBE(

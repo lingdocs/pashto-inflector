@@ -91,7 +91,9 @@ function VPExplorerQuiz(props: {
 }) {
   const [quizState, setQuizState] = useState<QuizState | "loading">("loading");
   const [showCheck, setShowCheck] = useState<boolean>(false);
+  // @ts-expect-error - in progress
   const [answerBlank, setAnswerBlank] = useState<string>("");
+  // @ts-expect-error - in progress
   const [withBa, setWithBa] = useState<boolean>(false);
   const [currentCorrectEmoji, setCurrentCorrectEmoji] = useState<string>(
     randFromArray(correctEmoji)
@@ -228,8 +230,10 @@ function VPExplorerQuiz(props: {
                 ))}
               </>
             ) : (
-              <div>
-                <div className="text-muted my-3">
+              <div className="my-4">
+                <h4>👷 Stage 2 is under rennovation 🚧 </h4>
+                <p>Check back later...</p>
+                {/* <div className="text-muted my-3">
                   Type the <strong>verb in Pashto script</strong> to finish the
                   phrase:
                 </div>
@@ -277,7 +281,7 @@ function VPExplorerQuiz(props: {
                   <button type="submit" className="btn btn-primary">
                     Check
                   </button>
-                </form>
+                </form> */}
               </div>
             )
           ) : (
@@ -468,6 +472,7 @@ function tickQuizState(
   const wrongAnswers = wrongVpsS.map(makeRes);
   const allAnswers = shuffleArray([...wrongAnswers, answer]);
   const options = allAnswers.map(getOptionFromResult);
+  console.log({ allAnswers, options });
   const out: QuizState = {
     stage,
     qNumber: beatFirstStage ? 0 : qNumber,
@@ -484,13 +489,17 @@ function getBlanksAnswer(/* vps: T.VPSelectionComplete */): {
   withBa: boolean;
 } {
   // TODO: !!!
-  // const { verb, perfectiveHead } = getVerbAndHeadFromBlocks(renderVP(vps).blocks);
-  // const ps = flattenLengths(verb.block.ps).map(x => {
-  //     const y = removeBa(x);
-  //     if (perfectiveHead) {
-  //         return concatPsString(perfectiveHead.ps, y);
-  //     }
-  //     return y;
+  // const blocks = renderVP(vps).blocks[0];
+  // const phIndex = blocks.findIndex((x) => x.block.type === "PH");
+  // const ph: T.PH | undefined = phIndex !== -1 ? (blocks[phIndex].block as T.PH) : undefined;
+  // const vbeIndex = blocks.findIndex((x) => x.block.type === "VB");
+  // const verb: T.VBE | undefined = vbeIndex !== -1 ? (blocks[vbeIndex].block as T.VBE) : undefined;
+  // const ps = flattenLengths(verb.).map((x) => {
+  //   const y = removeBa(x);
+  //   if (perfectiveHead) {
+  //     return concatPsString(perfectiveHead.ps, y);
+  //   }
+  //   return y;
   // });
   return {
     ps: [{ p: "TOOD", f: "TODO" }],
