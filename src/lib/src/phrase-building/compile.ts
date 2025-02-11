@@ -101,6 +101,7 @@ export function compileVP(
   // const verb = getVerbFromBlocks(VP.blocks).block;
   const psResult = compileVPPs(VP.blocks, VP.kids, form, VP.king, blankOut);
   return {
+    // TODO: unneccessary because the lengths are already flattened
     ps: combineLengths ? flattenLengths(psResult) : psResult,
     // TODO: English doesn't quite work for dynamic compounds in passive voice
     e: /* (verb.voice === "passive" && VP.isCompound === "dynamic") ? undefined : */ compileEnglishVP(
@@ -218,19 +219,17 @@ export function combineIntoText(
   blankOut?: BlankoutOptions
 ): T.PsString[] {
   return removeDuplicates(
-    piecesWVars
-      .map((pieces) => {
-        const psVarsBlocks = getPsVarsBlocks(
-          applyBlankOut(pieces, blankOut),
-          subjectPerson
-        );
-        return concatAll(monoidPsStringWVars)(psVarsBlocks);
-      })
-      .flat()
+    piecesWVars.flatMap((pieces) => {
+      const psVarsBlocks = getPsVarsBlocks(
+        applyBlankOut(pieces, blankOut),
+        subjectPerson
+      );
+      return concatAll(monoidPsStringWVars)(psVarsBlocks);
+    })
   );
 }
 
-function getPsVarsBlocks(
+export function getPsVarsBlocks(
   pieces: (T.Block | T.Kid | T.PsString)[],
   subjectPerson: T.Person
 ): T.PsString[][] {

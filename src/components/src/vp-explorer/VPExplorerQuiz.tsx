@@ -11,9 +11,11 @@ import { renderVP } from "../../../lib/src/phrase-building/render-vp";
 import {
   compileVP,
   flattenLengths,
+  getPsVarsBlocks,
 } from "../../../lib/src/phrase-building/compile";
 import { getRandomTense } from "./vp-explorer-util";
 import {
+  getPersonFromNP,
   getTenseFromVerbSelection,
   removeBa,
   switchSubjObj,
@@ -30,6 +32,8 @@ import {
   getSubjectSelectionFromBlocks,
   getSubjectSelection,
 } from "../../../lib/src/phrase-building/blocks-utils";
+import { concatAll } from "fp-ts/lib/Monoid";
+import { monoidPsStringWVars } from "../../../lib/src/fp-ps";
 
 const correctEmoji = [
   "✅",
@@ -91,9 +95,7 @@ function VPExplorerQuiz(props: {
 }) {
   const [quizState, setQuizState] = useState<QuizState | "loading">("loading");
   const [showCheck, setShowCheck] = useState<boolean>(false);
-  // @ts-expect-error - in progress
   const [answerBlank, setAnswerBlank] = useState<string>("");
-  // @ts-expect-error - in progress
   const [withBa, setWithBa] = useState<boolean>(false);
   const [currentCorrectEmoji, setCurrentCorrectEmoji] = useState<string>(
     randFromArray(correctEmoji)
@@ -231,9 +233,7 @@ function VPExplorerQuiz(props: {
               </>
             ) : (
               <div className="my-4">
-                <h4>👷 Stage 2 is under rennovation 🚧 </h4>
-                <p>Check back later...</p>
-                {/* <div className="text-muted my-3">
+                <div className="text-muted my-3">
                   Type the <strong>verb in Pashto script</strong> to finish the
                   phrase:
                 </div>
@@ -281,7 +281,7 @@ function VPExplorerQuiz(props: {
                   <button type="submit" className="btn btn-primary">
                     Check
                   </button>
-                </form> */}
+                </form>
               </div>
             )
           ) : (
@@ -458,7 +458,7 @@ function tickQuizState(
     : "stage" in startingWith
     ? startingWith.stage
     : "multiple choice";
-  const blanksAnswer = getBlanksAnswer(/* newVps */);
+  const blanksAnswer = getBlanksAnswer(newVps);
   if (stage === "blanks") {
     return {
       stage,
@@ -472,7 +472,6 @@ function tickQuizState(
   const wrongAnswers = wrongVpsS.map(makeRes);
   const allAnswers = shuffleArray([...wrongAnswers, answer]);
   const options = allAnswers.map(getOptionFromResult);
-  console.log({ allAnswers, options });
   const out: QuizState = {
     stage,
     qNumber: beatFirstStage ? 0 : qNumber,
@@ -484,27 +483,33 @@ function tickQuizState(
   return out;
 }
 
-function getBlanksAnswer(/* vps: T.VPSelectionComplete */): {
+function getBlanksAnswer(vps: T.VPSelectionComplete): {
   ps: T.PsString[];
   withBa: boolean;
 } {
-  // TODO: !!!
-  // const blocks = renderVP(vps).blocks[0];
-  // const phIndex = blocks.findIndex((x) => x.block.type === "PH");
-  // const ph: T.PH | undefined = phIndex !== -1 ? (blocks[phIndex].block as T.PH) : undefined;
-  // const vbeIndex = blocks.findIndex((x) => x.block.type === "VB");
-  // const verb: T.VBE | undefined = vbeIndex !== -1 ? (blocks[vbeIndex].block as T.VBE) : undefined;
-  // const ps = flattenLengths(verb.).map((x) => {
-  //   const y = removeBa(x);
-  //   if (perfectiveHead) {
-  //     return concatPsString(perfectiveHead.ps, y);
-  //   }
-  //   return y;
-  // });
+  const rendered = renderVP(vps);
+  const blocks = rendered.blocks.map((x) => x.filter(isInVerbSection));
+  const subjectPerson = getPersonFromNP(
+    getSubjectSelectionFromBlocks(rendered.blocks).selection
+  );
+  const withBa = rendered.kids.some((x) => x.kid.type === "ba");
+  const psVarsBlocks = blocks.flatMap((x) => getPsVarsBlocks(x, subjectPerson));
+
+  const ps = concatAll(monoidPsStringWVars)(psVarsBlocks);
   return {
-    ps: [{ p: "TOOD", f: "TODO" }],
-    withBa: false, // verb.block.hasBa,
+    ps,
+    withBa,
   };
+}
+
+function isInVerbSection(b: T.Block): boolean {
+  return (
+    b.block.type === "VB" ||
+    b.block.type === "PH" ||
+    b.block.type === "NComp" ||
+    b.block.type === "negative" ||
+    b.block.type === "welded"
+  );
 }
 
 function isInAnswer(
