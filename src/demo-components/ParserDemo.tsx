@@ -76,10 +76,10 @@ function ParserDemo({
     if (value.length > 1) {
       await waitforme(100);
       const res = parsePhrase(tokenizer(value), dictionary);
-      setErrors(res.errors);
       const r = removeRedundantVPSs(res.success);
       if (!r.length) setNoneFound(true);
       setResult(r);
+      setErrors(res.errors);
     }
   }, 200);
   function handleInput(value: string) {
