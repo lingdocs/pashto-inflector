@@ -1,6 +1,7 @@
 import { Eq, struct } from "fp-ts/Eq";
 import { Semigroup } from "fp-ts/Semigroup";
 import { Monoid } from "fp-ts/Monoid";
+import { concatAll } from "fp-ts/lib/Monoid";
 import * as S from "fp-ts/string";
 import * as T from "../../types";
 
@@ -27,6 +28,20 @@ export const semigroupPsString: Semigroup<T.PsString> = {
     p: x.p + y.p,
     f: x.f + y.f,
   }),
+};
+
+export const semigroupInflectionSet: Semigroup<T.InflectionSet> = {
+  concat: (x, y) =>
+    y.map((yy: T.ArrayOneOrMore<T.PsString>, i) =>
+      concatAll(monoidPsStringWVars)([x[i], [{ p: " ", f: " " }], yy])
+    ) as T.ArrayFixed<T.ArrayOneOrMore<T.PsString>, 3>,
+};
+
+export const semigroupPluralInflectionSet: Semigroup<T.PluralInflectionSet> = {
+  concat: (x, y) =>
+    y.map((yy: T.ArrayOneOrMore<T.PsString>, i) =>
+      concatAll(monoidPsStringWVars)([x[i], [{ p: " ", f: " " }], yy])
+    ) as T.ArrayFixed<T.ArrayOneOrMore<T.PsString>, 2>,
 };
 
 export const monoidPsString: Monoid<T.PsString> = {

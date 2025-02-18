@@ -446,42 +446,6 @@ const adjectives: {
     },
     out: false,
   },
-  // double adjective
-  {
-    in: {
-      ts: 123,
-      p: "ګډ وډ",
-      f: "guD wuD",
-      g: "guDwuD",
-      e: "mixed up",
-      c: "adj. doub.",
-      i: 1,
-    },
-    out: {
-      inflections: {
-        masc: [
-          [{ p: "ګډ وډ", f: "guD wuD" }],
-          [{ p: "ګډ وډ", f: "guD wuD" }],
-          [{ p: "ګډو وډو", f: "gúDo wúDo" }],
-        ],
-        fem: [
-          [{ p: "ګډه وډه", f: "gúDa wúDa" }],
-          [{ p: "ګډې وډې", f: "gúDe wúDe" }],
-          [{ p: "ګډو وډو", f: "gúDo wúDo" }],
-        ],
-      },
-      vocative: {
-        masc: [
-          [{ p: "ګډه وډه", f: "gúDa wúDa" }],
-          [{ p: "ګډو وډو", f: "gúDo wúDo" }],
-        ],
-        fem: [
-          [{ p: "ګډې وډې", f: "gúDe wúDe" }],
-          [{ p: "ګډو وډو", f: "gúDo wúDo" }],
-        ],
-      },
-    },
-  },
 ];
 
 const nouns: {
@@ -2201,6 +2165,111 @@ const nouns: {
   },
 ];
 
+const doubles: {
+  in: T.DictionaryEntry;
+  out: T.InflectorOutput;
+}[] = [
+  // double adjective
+  {
+    in: {
+      ts: 123,
+      p: "ګډ وډ",
+      f: "guD wuD",
+      g: "guDwuD",
+      e: "mixed up",
+      c: "adj. doub.",
+      i: 1,
+    },
+    out: {
+      inflections: {
+        masc: [
+          [{ p: "ګډ وډ", f: "guD wuD" }],
+          [{ p: "ګډ وډ", f: "guD wuD" }],
+          [{ p: "ګډو وډو", f: "gúDo wúDo" }],
+        ],
+        fem: [
+          [{ p: "ګډه وډه", f: "gúDa wúDa" }],
+          [{ p: "ګډې وډې", f: "gúDe wúDe" }],
+          [{ p: "ګډو وډو", f: "gúDo wúDo" }],
+        ],
+      },
+      // vocative: {
+      //   masc: [
+      //     [{ p: "ګډه وډه", f: "gúDa wúDa" }],
+      //     [{ p: "ګډو وډو", f: "gúDo wúDo" }],
+      //   ],
+      //   fem: [
+      //     [{ p: "ګډې وډې", f: "gúDe wúDe" }],
+      //     [{ p: "ګډو وډو", f: "gúDo wúDo" }],
+      //   ],
+      // },
+    },
+  },
+  // With double-word inflection
+  {
+    in: {
+      ts: 1527822866,
+      p: "لویه وچه",
+      f: "looya wucha",
+      e: "continent",
+      r: 4,
+      c: "n. f. doub.",
+      a: 2,
+      i: 14705,
+      g: "looyawucha",
+    },
+    out: {
+      inflections: {
+        fem: [
+          [{ p: "لویه وچه", f: "looya wucha" }],
+          [{ p: "لویې وچې", f: "looye wuche" }],
+          [{ p: "لویو وچو", f: "looyo wucho" }],
+        ],
+      },
+      // vocative: {
+      //   fem: [
+      //     [{ p: "لویې وچې", f: "looye wuche" }],
+      //     [{ p: "لویو وچو", f: "looyo wucho" }],
+      //   ],
+      // },
+    },
+  },
+  {
+    in: {
+      ts: 1527822866,
+      p: "وچ لرګی",
+      f: "wuch largáy",
+      e: "dry wood",
+      r: 4,
+      c: "n. m. doub.",
+      a: 2,
+      i: 14705,
+      g: "looyawucha",
+    },
+    out: {
+      inflections: {
+        masc: [
+          [{ p: "وچ لرګی", f: "wuch largáy" }],
+          [{ p: "وچ لرګي", f: "wuch largée" }],
+          [
+            { p: "وچو لرګیو", f: "wúcho largúyo" },
+            { p: "وچو لرګو", f: "wúcho largó" },
+          ],
+        ],
+      },
+      // vocative: {
+      //   masc: [
+      //     [{ p: "وچه لرګیه", f: "wúcha largúya" }],
+      //     [
+      //       { p: "وچو لرګیو", f: "wúcho largúyo" },
+      //       { p: "وچو لرګو", f: "wúcho largó" },
+      //     ],
+      //   ],
+      // },
+    },
+  },
+];
+
 const others: T.DictionaryEntry[] = [
   {
     ts: 1527812612,
@@ -2233,6 +2302,12 @@ nouns.forEach((word) => {
   test(`${word.in.p} should inflect properly`, () => {
     const res = inflectWord(word.in);
     expect(res).toEqual(word.out);
+  });
+});
+
+doubles.forEach((word) => {
+  test(`${word.in.p} should handle double inflections ok`, () => {
+    expect(inflectWord(word.in)).toEqual(word.out);
   });
 });
 

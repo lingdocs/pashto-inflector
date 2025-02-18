@@ -6,17 +6,13 @@
  *
  */
 
-import {
-  concatInflections,
-  splitDoubleWord,
-  ensureUnisexInflections,
-  concatPlurals,
-} from "./p-text-helpers";
+import { splitDoubleWord } from "./p-text-helpers";
 import { makePsString, removeFVarients } from "./accent-and-ps-utils";
 import { removeAccents } from "./accent-helpers";
 import * as T from "../../types";
 import { getInfsAndVocative } from "./inflections-and-vocative";
 import { fmapSingleOrLengthOpts } from "./fp-ps";
+import { joinInflectorOutputs } from "./inflection-joiner";
 import { makePlural } from "./nouns-plural";
 
 export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
@@ -24,27 +20,11 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
   // TODO: What about n. f. / adj. that end in ي ??
   const w = removeFVarients(word);
   if (word.c?.includes("doub.")) {
-    const words = splitDoubleWord(w);
-    // TODO: Make this work for non-unisex double words
-    //  Right now this an extremely bad and complex way to do this
-    //   with ensureUnisexInflections
-    const inflected = words.map((x) => {
-      const res = inflectWord(x);
-      return ensureUnisexInflections(res, x);
-    });
-    const vocatives = inflected
-      .map((x) => "vocative" in x && x.vocative)
-      .filter((x) => x) as T.PluralInflections[];
-    return {
-      inflections: concatInflections(
-        inflected[0].inflections,
-        inflected[1].inflections
-      ) as T.UnisexInflections,
-      // in case there's only one vocative check to make sure we have both
-      ...(vocatives.length === 2
-        ? { vocative: concatPlurals(vocatives[0], vocatives[1]) }
-        : {}),
-    };
+    const words = splitDoubleWord(w).map((x) => ({
+      inflected: inflectWord(x),
+      orig: x,
+    }));
+    return joinInflectorOutputs(words);
   }
   if (w.c && w.c.includes("pl.")) {
     return handlePluralNounOrAdj(w);

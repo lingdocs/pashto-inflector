@@ -178,7 +178,7 @@ export function splitDoubleWord(
       ...w,
       p: pSplit[0],
       f: fSplit[0],
-      c,
+      c: c,
     },
     {
       ...w,
