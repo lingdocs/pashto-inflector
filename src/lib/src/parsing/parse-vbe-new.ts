@@ -1,6 +1,5 @@
 import * as T from "../../../types";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
-import { parseKedul } from "./parse-kedul";
 import { getVerbEnding } from "./parse-verb-helpers";
 import { returnParseResults } from "./utils";
 import * as tp from "../type-predicates";
@@ -13,6 +12,7 @@ import {
   withAlephAdded,
   RootInfo,
 } from "./stem-root-finding";
+import { parseKawulKedul } from "./parse-kawul-kedul";
 
 // TODO: و ارزول
 
@@ -40,8 +40,8 @@ export function parseVBE(
   if (irregResults.length) {
     return returnParseResults(rest, irregResults);
   }
-  const kedulStat = parseKedul(tokens);
-  // TODO: parseKawul
+  const kawulKedul = parseKawulKedul(tokens);
+  // TODO: AFTER THIS MAKE SURE WE DON'T PARSE ANY KAWUL/KEDUL VERBS!
   // then prevent the other things from using kawul / kedul
   const ending = first.s.at(-1) || "";
   const base = ending === "ل" ? first.s : first.s.slice(0, -1);
@@ -80,7 +80,7 @@ export function parseVBE(
     }),
     ...specialThirdPersMascSingForm(base, ending, dictionary, ph),
   ]);
-  return [...kedulStat, ...stemRes, ...rootRes];
+  return [...kawulKedul, ...stemRes, ...rootRes];
 }
 
 function specialThirdPersMascSingForm(
