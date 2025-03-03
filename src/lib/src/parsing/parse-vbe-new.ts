@@ -25,6 +25,8 @@ import {
 // TODO: لاړې etc - check if botlul etc bo-ba-de-dzee is working
 // TODO: don't have کول کېدل in split-verbs
 
+// پوښتنه وشوه - shouldn't also parse as پوښتنه شوه
+
 export function parseVBE(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
@@ -39,6 +41,8 @@ export function parseVBE(
     return returnParseResults(rest, irregResults);
   }
   const kedulStat = parseKedul(tokens);
+  // TODO: parseKawul
+  // then prevent the other things from using kawul / kedul
   const ending = first.s.at(-1) || "";
   const base = ending === "ل" ? first.s : first.s.slice(0, -1);
   const { stem, root } = getVerbEnding(ending);

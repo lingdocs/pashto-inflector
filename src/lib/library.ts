@@ -109,6 +109,7 @@ import {
 } from "./src/phrase-building/compile";
 import { isPashtoScript } from "./src/is-pashto";
 import { renderAPSelection } from "./src/phrase-building/render-ap";
+import { sandwiches } from "./src/sandwiches";
 import { renderSandwich } from "./src/phrase-building/render-sandwich";
 import {
   humanReadableVerbForm,
@@ -221,6 +222,7 @@ export {
   dictionaryEntryTextFields,
   dictionaryEntryNumberFields,
   dictionaryEntryBooleanFields,
+  sandwiches,
   // TYPES
   Types,
 };
