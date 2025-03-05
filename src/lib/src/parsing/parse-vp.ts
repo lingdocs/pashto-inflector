@@ -362,9 +362,9 @@ function checkForDynamicCompound(dictionary: T.DictionaryAPI) {
     if (!dynAuxVerb) {
       return vps;
     }
-    const dynCompoundVerbs = dictionary.verbEntryLookupByL(
-      object.selection.selection.entry.ts
-    );
+    const dynCompoundVerbs = dictionary
+      .verbEntryLookupByL(object.selection.selection.entry.ts)
+      .filter((e) => e.entry.c.includes("dyn."));
     if (!dynCompoundVerbs.length) {
       return vps;
     }
