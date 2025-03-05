@@ -12,6 +12,7 @@ import {
   startsVerbSection,
 } from "./utils";
 import {
+  getObjectSelection,
   getSubjectSelection,
   makeObjectSelectionComplete,
   makeSubjectSelectionComplete,
@@ -30,6 +31,8 @@ import { isImperativeTense } from "../type-predicates";
 import { isKedulStatEntry } from "./parse-verb-helpers";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
 import { personsFromPattern1 } from "./parse-noun-word";
+import { fmapParseResult } from "../fp-ps";
+import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 // to hide equatives type-doubling issue
 
 // TODO: problem with 3rd pers sing verb endings اواز مې دې واورېده
@@ -89,6 +92,7 @@ export function parseVP(
             negative,
             verb,
             person,
+            dictionary,
           })
       );
     }
@@ -265,6 +269,7 @@ function finishPossibleVPSs({
   verb,
   tokens,
   person,
+  dictionary,
 }: {
   tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
   transitivities: T.Transitivity[];
@@ -274,6 +279,7 @@ function finishPossibleVPSs({
   negative: boolean;
   verb: T.VerbEntry;
   person: T.Person;
+  dictionary: T.DictionaryAPI;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   const isPast = isPastTense(tense);
   return transitivities
@@ -300,14 +306,17 @@ function finishPossibleVPSs({
             person,
           });
         } else if (transitivity === "transitive") {
-          return finishTransitive({
-            miniPronouns,
-            npsAndAps,
-            tokens,
-            v,
-            person,
-            isPast,
-          });
+          return fmapParseResult(
+            checkForDynamicCompound(dictionary),
+            finishTransitive({
+              miniPronouns,
+              npsAndAps,
+              tokens,
+              v,
+              person,
+              isPast,
+            })
+          );
         } else {
           return finishGrammaticallyTransitive({
             miniPronouns,
@@ -321,6 +330,72 @@ function finishPossibleVPSs({
       }
     )
     .filter(checkImperative2ndPers);
+}
+
+function checkForDynamicCompound(dictionary: T.DictionaryAPI) {
+  return (vps: T.VPSelectionComplete): T.VPSelectionComplete => {
+    if (vps.verb.transitivity !== "transitive") {
+      return vps;
+    }
+    const object: T.ObjectSelection | undefined = getObjectSelection(
+      vps.blocks
+    );
+    if (
+      !object ||
+      typeof object.selection !== "object" ||
+      object.selection.selection.type !== "noun"
+    ) {
+      return vps;
+    }
+    const dynAuxVerb = dynamicAuxVerbs.find(
+      (v) => v.entry.p === vps.verb.verb.entry.p
+    ) as T.VerbEntryNoFVars | undefined;
+    if (!dynAuxVerb) {
+      return vps;
+    }
+    const dynCompoundVerbs = dictionary.verbEntryLookupByL(
+      object.selection.selection.entry.ts
+    );
+    if (!dynCompoundVerbs.length) {
+      return vps;
+    }
+    const dynCompoundVerb = dynCompoundVerbs[0];
+    return {
+      ...vps,
+      // TODO: could be more efficient by getting index first
+      blocks: vps.blocks.map(markObjAsDynamicComplement),
+      verb: {
+        ...vps.verb,
+        verb: dynCompoundVerb,
+        dynAuxVerb,
+        isCompound: "dynamic",
+      },
+    };
+  };
+}
+
+function markObjAsDynamicComplement(b: T.VPSBlockComplete): T.VPSBlockComplete {
+  if (
+    b.block.type === "objectSelection" &&
+    typeof b.block.selection === "object" &&
+    b.block.selection.selection.type === "noun"
+  ) {
+    // TODO: some lense work would be nice here instead of having to do all this
+    return {
+      ...b,
+      block: {
+        ...b.block,
+        selection: {
+          ...b.block.selection,
+          selection: {
+            ...b.block.selection.selection,
+            dynamicComplement: true,
+          },
+        },
+      },
+    };
+  }
+  return b;
 }
 
 function checkImperative2ndPers({

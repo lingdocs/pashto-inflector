@@ -9,8 +9,8 @@ const dictionaryInfoUrl = `${dictionaryBaseUrl}/dictionary-info`;
 const dictDb = new DictionaryDb({
   url: dictionaryUrl,
   infoUrl: dictionaryInfoUrl,
-  collectionName: "inflector-dict8",
-  infoLocalStorageKey: "inflector-dict8",
+  collectionName: "inflector-dict9",
+  infoLocalStorageKey: "inflector-dict9",
 });
 
 function queryP(p: string): T.DictionaryEntry[] {
@@ -70,16 +70,28 @@ function verbEntryLookup(p: string): T.VerbEntry[] {
   if (!dictDb.collection) {
     return [];
   }
-  return memoizedQueryP(p)
-    .filter(tp.isVerbDictionaryEntry)
-    .map((entry) =>
-      entry.l
-        ? {
-            entry,
-            complement: memoizedQueryTs(entry.l),
-          }
-        : { entry }
-    );
+  return memoizedQueryP(p).flatMap(finishVerbEntryLookup);
+}
+
+function finishVerbEntryLookup(entry: T.DictionaryEntry): T.VerbEntry[] {
+  if (!tp.isVerbDictionaryEntry(entry)) {
+    return [];
+  }
+  return entry.l
+    ? [
+        {
+          entry,
+          complement: memoizedQueryTs(entry.l),
+        },
+      ]
+    : [{ entry }];
+}
+
+function verbEntryLookupByLFunction(ts: number): T.VerbEntry[] {
+  if (!dictDb.collection) {
+    return [];
+  }
+  return dictDb.collection.find({ l: ts }).flatMap(finishVerbEntryLookup);
 }
 
 /**
@@ -99,4 +111,5 @@ export const dictionary: T.DictionaryAPI = {
   otherLookup: memoize(otherLookup),
   specialPluralLookup: memoize(specialPluralLookup),
   verbEntryLookup: memoize(verbEntryLookup),
+  verbEntryLookupByL: memoize(verbEntryLookupByLFunction),
 };

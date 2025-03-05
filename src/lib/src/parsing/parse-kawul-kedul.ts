@@ -4,42 +4,56 @@ import { kawulStat, kawulDyn, kedulStat, kedulDyn } from "./irreg-verbs";
 import { returnParseResults } from "./utils";
 import { getImperativeVerbEnding } from "./misc";
 
+// TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat
+
 const getForm =
+  (hasPh: boolean) =>
   (kawulKedul: "kawul" | "kedul") =>
   (aspect: T.Aspect) =>
   (base: "stem" | "root") =>
-  (person: T.Person): T.ParsedVBE[] =>
-    (kawulKedul === "kawul"
-      ? [kawulStat, kawulDyn]
-      : [kedulStat, kedulDyn]
-    ).map((verb) => ({
-      type: "VB",
-      info: {
-        aspect,
-        base,
-        type: "verb",
-        verb,
-      },
-      person,
-    }));
+  (person: T.Person): T.ParsedVBE[] => {
+    return validAuxVerbs(kawulKedul, hasPh, aspect).map((verb) => {
+      return {
+        type: "VB",
+        info: {
+          aspect,
+          base,
+          type: "verb",
+          verb,
+        },
+        person,
+      };
+    });
+  };
 
 export function parseKawulKedul(
-  tokens: Readonly<T.Token[]>
+  tokens: Readonly<T.Token[]>,
+  ph: T.ParsedPH | undefined
 ): T.ParseResult<T.ParsedVBE>[] {
   const [first, ...rest] = tokens;
   if (first.s[0] !== "ک" && first.s[0] !== "ش") {
     return [];
   }
+  if (ph && ph.s !== "و") {
+    return [];
+  }
   const start = first.s.slice(0, -1);
   const ending = first.s.at(-1) || "";
+  const getF = getForm(!!ph);
   const oneBase =
     (kawulKedul: "kawul" | "kedul") =>
     (base: "root" | "stem") =>
     (aspect: T.Aspect) =>
     (people: T.Person[]) => {
+      if (aspect === "imperfective" && ph) {
+        return [];
+      }
+      if (aspect === "perfective" && !ph) {
+        return [];
+      }
       return returnParseResults<T.ParsedVBE>(
         rest,
-        people.flatMap(getForm(kawulKedul)(aspect)(base))
+        people.flatMap(getF(kawulKedul)(aspect)(base))
       );
     };
   const rootAndStem =
@@ -50,10 +64,10 @@ export function parseKawulKedul(
       imperativePeople: ReturnType<typeof getImperativeVerbEnding>;
     }) => {
       return returnParseResults<T.ParsedVBE>(rest, [
-        ...people.people.stem.flatMap(getForm(kawulKedul)(aspect)("stem")),
-        ...people.people.root.flatMap(getForm(kawulKedul)(aspect)("root")),
+        ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
+        ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
         ...people.imperativePeople.flatMap<T.ParsedVBE>((person) =>
-          getForm(kawulKedul)(aspect)("stem")(person).map((x) => ({
+          getF(kawulKedul)(aspect)("stem")(person).map((x) => ({
             ...x,
             imperative: true,
           }))
@@ -107,7 +121,7 @@ export function parseKawulKedul(
     const imperative = returnParseResults(
       rest,
       imperativePeople
-        .flatMap(getForm("kedul")("imperfective")("stem"))
+        .flatMap(getF("kedul")("imperfective")("stem"))
         .map<T.ParsedVBE>((v) => ({ ...v, imperative: true }))
     );
     return [
@@ -122,7 +136,7 @@ export function parseKawulKedul(
     const imperative = returnParseResults(
       rest,
       imperativePeople
-        .flatMap(getForm("kedul")("perfective")("stem"))
+        .flatMap(getF("kedul")("perfective")("stem"))
         .map<T.ParsedVBE>((v) => ({ ...v, imperative: true }))
     );
     return [
@@ -152,4 +166,26 @@ function removePeople(
     stem: people.stem.filter((p) => !peopleToRemove.stem.includes(p)),
     root: people.root.filter((p) => !peopleToRemove.root.includes(p)),
   };
+}
+
+function validAuxVerbs(
+  kawulKedul: "kawul" | "kedul",
+  hasPh: boolean,
+  aspect: T.Aspect
+): T.VerbEntry[] {
+  if (aspect === "imperfective" && !hasPh) {
+    return kawulKedul === "kawul"
+      ? [kawulStat, kawulDyn]
+      : [kedulStat, kedulDyn];
+  }
+  if (aspect === "perfective" && !hasPh) {
+    return kawulKedul === "kawul" ? [kawulStat] : [kedulStat];
+  }
+  if (aspect === "imperfective" && hasPh) {
+    return [];
+  }
+  if (aspect === "perfective" && hasPh) {
+    return kawulKedul === "kawul" ? [kawulDyn] : [kedulDyn];
+  }
+  throw new Error("should be unreachable");
 }

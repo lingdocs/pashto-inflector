@@ -40,7 +40,10 @@ export function parseVBE(
   if (irregResults.length) {
     return returnParseResults(rest, irregResults);
   }
-  const kawulKedul = parseKawulKedul(tokens);
+  const kawulKedul = parseKawulKedul(tokens, ph);
+  if (kawulKedul.length) {
+    return kawulKedul;
+  }
   // TODO: AFTER THIS MAKE SURE WE DON'T PARSE ANY KAWUL/KEDUL VERBS!
   // then prevent the other things from using kawul / kedul
   const ending = first.s.at(-1) || "";
@@ -198,7 +201,6 @@ function thirdPersSingMascShortFromRoot(
   return [];
 }
 
-// TODO: could handle all sh- verbs for efficiencies sake
 function parseIrregularVerb(s: string): T.ParsedVBE[] {
   if (["ته", "راته", "ورته", "درته"].includes(s)) {
     return [

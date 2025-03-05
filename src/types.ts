@@ -1268,6 +1268,7 @@ export type DictionaryAPI = {
   ) => DictionaryEntry[];
   specialPluralLookup: (p: string) => NounEntry[];
   verbEntryLookup: (p: string) => VerbEntry[];
+  verbEntryLookupByL: (ts: number) => VerbEntry[];
 };
 
 export type Parser<R> = (
