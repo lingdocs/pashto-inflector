@@ -53,6 +53,14 @@ import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 
 // TODO: وایې نه خیستلی شو doesn't work
 // TODO: ستا د زاړه پلار سره یې کور ته ځم doesn't work
+// TODO: BIG ISSUE WITH THE WAY WE HANDLE PH and VBP - order
+//  زه کور نه شم لیدلی
+// زه کور ونه شم لیدلی
+// TODO: also sentences like this
+// why doesn't this work
+//  because of my ph handling with block parsing and order!
+///    "زه منډې وهلی نه شولم"
+///   زه منډې ونه شم وهلی
 
 // FOR display - Verb blocks should display VBP - VBE somehow
 
@@ -141,6 +149,7 @@ function getTenses(
     } else {
       if (ph) return [];
     }
+
     const tense = abilityTense
       ? undefined
       : getTenseFromRootsStems(

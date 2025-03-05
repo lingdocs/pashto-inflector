@@ -7,12 +7,12 @@ import { getImperativeVerbEnding } from "./misc";
 // TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat
 
 const getForm =
-  (hasPh: boolean) =>
+  (ph: T.ParsedPH | undefined) =>
   (kawulKedul: "kawul" | "kedul") =>
   (aspect: T.Aspect) =>
   (base: "stem" | "root") =>
   (person: T.Person): T.ParsedVBE[] => {
-    return validAuxVerbs(kawulKedul, hasPh, aspect).map((verb) => {
+    return validVerbs(kawulKedul, ph, aspect, base).map((verb) => {
       return {
         type: "VB",
         info: {
@@ -34,23 +34,17 @@ export function parseKawulKedul(
   if (first.s[0] !== "ک" && first.s[0] !== "ش") {
     return [];
   }
-  if (ph && ph.s !== "و") {
+  if (ph && !["و", "را", "در", "ور"].includes(ph.s)) {
     return [];
   }
   const start = first.s.slice(0, -1);
   const ending = first.s.at(-1) || "";
-  const getF = getForm(!!ph);
+  const getF = getForm(ph);
   const oneBase =
     (kawulKedul: "kawul" | "kedul") =>
     (base: "root" | "stem") =>
     (aspect: T.Aspect) =>
     (people: T.Person[]) => {
-      if (aspect === "imperfective" && ph) {
-        return [];
-      }
-      if (aspect === "perfective" && !ph) {
-        return [];
-      }
       return returnParseResults<T.ParsedVBE>(
         rest,
         people.flatMap(getF(kawulKedul)(aspect)(base))
@@ -67,10 +61,7 @@ export function parseKawulKedul(
         ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
         ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
         ...people.imperativePeople.flatMap<T.ParsedVBE>((person) =>
-          getF(kawulKedul)(aspect)("stem")(person).map((x) => ({
-            ...x,
-            imperative: true,
-          }))
+          getF(kawulKedul)(aspect)("stem")(person).map(addImperative)
         ),
       ]);
     };
@@ -122,7 +113,7 @@ export function parseKawulKedul(
       rest,
       imperativePeople
         .flatMap(getF("kedul")("imperfective")("stem"))
-        .map<T.ParsedVBE>((v) => ({ ...v, imperative: true }))
+        .map(addImperative)
     );
     return [
       ...oneBase("kedul")("stem")("imperfective")(people.stem),
@@ -137,7 +128,7 @@ export function parseKawulKedul(
       rest,
       imperativePeople
         .flatMap(getF("kedul")("perfective")("stem"))
-        .map<T.ParsedVBE>((v) => ({ ...v, imperative: true }))
+        .map(addImperative)
     );
     return [
       ...oneBase("kedul")("stem")("perfective")(people.stem),
@@ -168,23 +159,40 @@ function removePeople(
   };
 }
 
-function validAuxVerbs(
+function addImperative(v: T.ParsedVBE): T.ParsedVBE {
+  if (v.info.type === "equative") {
+    throw new Error("tried to make an imperative verb equative");
+  }
+  return {
+    ...v,
+    info: {
+      ...v.info,
+      imperative: true,
+    },
+  };
+}
+
+function validVerbs(
   kawulKedul: "kawul" | "kedul",
-  hasPh: boolean,
-  aspect: T.Aspect
+  ph: T.ParsedPH | undefined,
+  aspect: T.Aspect,
+  base: "root" | "stem"
 ): T.VerbEntry[] {
-  if (aspect === "imperfective" && !hasPh) {
+  if (aspect === "imperfective" && !ph) {
     return kawulKedul === "kawul"
       ? [kawulStat, kawulDyn]
       : [kedulStat, kedulDyn];
   }
-  if (aspect === "perfective" && !hasPh) {
+  if (aspect === "perfective" && !ph) {
     return kawulKedul === "kawul" ? [kawulStat] : [kedulStat];
   }
-  if (aspect === "imperfective" && hasPh) {
+  if (aspect === "imperfective" && ph) {
     return [];
   }
-  if (aspect === "perfective" && hasPh) {
+  if (aspect === "perfective" && ph) {
+    if (ph.s !== "و") {
+      return base === "stem" && kawulKedul === "kedul" ? [kedulStat] : [];
+    }
     return kawulKedul === "kawul" ? [kawulDyn] : [kedulDyn];
   }
   throw new Error("should be unreachable");

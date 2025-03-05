@@ -30,6 +30,7 @@ import { parseKawulKedul } from "./parse-kawul-kedul";
 export function parseVBE(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
+  // defined as undefined if there a VBP because the VBP will use the ph
   ph: T.ParsedPH | undefined
 ): T.ParseResult<T.ParsedVBE>[] {
   if (tokens.length === 0) {
@@ -83,7 +84,7 @@ export function parseVBE(
     }),
     ...specialThirdPersMascSingForm(base, ending, dictionary, ph),
   ]);
-  return [...kawulKedul, ...stemRes, ...rootRes];
+  return [...stemRes, ...rootRes];
 }
 
 function specialThirdPersMascSingForm(

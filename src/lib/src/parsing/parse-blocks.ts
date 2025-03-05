@@ -30,19 +30,21 @@ export function parseBlocks(
   const ph: T.ParsedPH | undefined = blocks.find(
     (b): b is T.ParsedPH => b.type === "PH"
   );
+  const hasVBP = blocks.some(isParsedVBP);
+  const hasNeg = blocks.some((b) => b.type === "negative");
   const allResults: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
     // Parse NP/APs until we get to verb section
     ...(!inVerbSection ? parseNPAP(tokens, dicitonary) : []),
     // Ensure no duplicates of verb section components
     ...(ph ? [] : parsePH(tokens)),
+    ...(hasVBP ? [] : parseVBP(tokens, dicitonary, ph)),
     ...(blocks.some(isParsedVBE)
       ? []
       : [
-          ...parseVBE(tokens, dicitonary, ph),
+          ...parseVBE(tokens, dicitonary, hasVBP ? undefined : ph),
           ...(ph ? [] : parseEquative(tokens)),
         ]),
-    ...(blocks.some(isParsedVBP) ? [] : parseVBP(tokens, dicitonary, ph)),
-    ...(blocks.some((b) => b.type === "negative") ? [] : parseNeg(tokens)),
+    ...(hasNeg ? [] : parseNeg(tokens)),
     // Try parsing kids section at every point (for erroring kids section being in wrong place)
     ...parseKidsSection(tokens, []),
   ];

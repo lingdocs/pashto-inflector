@@ -1,7 +1,7 @@
 import * as T from "../../../types";
 
 export function isKedulStatEntry(v: T.VerbDictionaryEntry): boolean {
-  return v.p === "کېدل" && v.e === "to become _____";
+  return v.p === "کېدل" && v.e.startsWith("to bec");
 }
 
 /**

@@ -28,10 +28,11 @@ const working = [
   "perfect tenses",
   "demonstrative pronouns",
   "ability verbs",
+  "dynamic compound verbs",
 ];
 
 const todo = [
-  "compound verbs",
+  "stative compound verbs",
   "adjectival participles",
   "relative clauses",
   "equative verbs",
@@ -55,6 +56,8 @@ const examples = [
   "زه تا لیدلای شم",
   "کور ته به دې راتلی شوم",
   "پرون مې دې په کور کې ملګرې ولیده",
+  "زه منډې ووهلی شم",
+  "زه منډې وهلی نه شولم",
 ];
 
 function ParserDemo({
