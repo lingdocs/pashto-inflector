@@ -4,6 +4,10 @@ export function isKedulStatEntry(v: T.VerbDictionaryEntry): boolean {
   return v.p === "کېدل" && v.e.startsWith("to bec");
 }
 
+export function isKedulDynEntry(v: T.VerbDictionaryEntry): boolean {
+  return v.p === "کېدل" && v.e.startsWith("to hap");
+}
+
 /**
  * gets the possible people for stem and root endings
  * but DOES NOT INCLUDE short third pers masc sing

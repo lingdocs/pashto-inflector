@@ -41,7 +41,7 @@ export function parseVBE(
   if (irregResults.length) {
     return returnParseResults(rest, irregResults);
   }
-  const kawulKedul = parseKawulKedul(tokens, ph);
+  const kawulKedul = parseKawulKedul(tokens, !!(ph && ph.s === "و"));
   if (kawulKedul.length) {
     return kawulKedul;
   }

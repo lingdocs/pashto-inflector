@@ -31,13 +31,11 @@ import { isImperativeTense } from "../type-predicates";
 import { isKedulStatEntry } from "./parse-verb-helpers";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
 import { personsFromPattern1 } from "./parse-noun-word";
-import { fmapParseResult } from "../fp-ps";
+import { fFlatMapParseResult } from "../fp-ps";
 import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 // to hide equatives type-doubling issue
 
 // TODO: problem with 3rd pers sing verb endings اواز مې دې واورېده
-
-// TODO: word query for kawul/kedul/stat/dyn
 
 // TODO: test all types with pronouns
 // TODO: way to get an error message for past participle and equative
@@ -47,20 +45,7 @@ import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 // TODO: why are some ability verbs coming out double??
 // TOOD: how to handle the roots and stems lookup for ability - with things like بوتلل
 
-// TODO: This is erroring ماشومه دې ونه وهلی شم
-// TODO: ستا کور ته ونه رسېدلی شولې - thinks it's a tree, ونه
 // TODO: This parses extra options with demonstratives کور ته دې بوتلی شم
-
-// TODO: وایې نه خیستلی شو doesn't work
-// TODO: ستا د زاړه پلار سره یې کور ته ځم doesn't work
-// TODO: BIG ISSUE WITH THE WAY WE HANDLE PH and VBP - order
-//  زه کور نه شم لیدلی
-// زه کور ونه شم لیدلی
-// TODO: also sentences like this
-// why doesn't this work
-//  because of my ph handling with block parsing and order!
-///    "زه منډې وهلی نه شولم"
-///   زه منډې ونه شم وهلی
 
 // FOR display - Verb blocks should display VBP - VBE somehow
 
@@ -140,12 +125,12 @@ function getTenses(
     if (vbp && !abilityTense) {
       return [];
     }
-    const aspect =
-      abilityTense && vbp && vbp.info.type === "ability"
-        ? vbp.info.aspect
-        : verb.info.aspect;
+    const mainV =
+      abilityTense && vbp && vbp.info.type === "ability" ? vbp.info : verb.info;
+    const aspect = mainV.aspect;
     if (aspect === "perfective") {
-      if (!ph) return [];
+      if (!ph && mainV.type !== "verb" && isKedulStatEntry(mainV.verb.entry))
+        return [];
     } else {
       if (ph) return [];
     }
@@ -315,7 +300,7 @@ function finishPossibleVPSs({
             person,
           });
         } else if (transitivity === "transitive") {
-          return fmapParseResult(
+          return fFlatMapParseResult(
             checkForDynamicCompound(dictionary),
             finishTransitive({
               miniPronouns,
@@ -341,10 +326,15 @@ function finishPossibleVPSs({
     .filter(checkImperative2ndPers);
 }
 
+/**
+ * This returns multiple possibilities because for example
+ * ماشوم وهل - could mean adopt (?) (dyn compound) or to hit a child
+ * (simple verb وهل)
+ */
 function checkForDynamicCompound(dictionary: T.DictionaryAPI) {
-  return (vps: T.VPSelectionComplete): T.VPSelectionComplete => {
+  return (vps: T.VPSelectionComplete): T.VPSelectionComplete[] => {
     if (vps.verb.transitivity !== "transitive") {
-      return vps;
+      return [vps];
     }
     const object: T.ObjectSelection | undefined = getObjectSelection(
       vps.blocks
@@ -354,32 +344,35 @@ function checkForDynamicCompound(dictionary: T.DictionaryAPI) {
       typeof object.selection !== "object" ||
       object.selection.selection.type !== "noun"
     ) {
-      return vps;
+      return [vps];
     }
     const dynAuxVerb = dynamicAuxVerbs.find(
       (v) => v.entry.p === vps.verb.verb.entry.p
     ) as T.VerbEntryNoFVars | undefined;
     if (!dynAuxVerb) {
-      return vps;
+      return [vps];
     }
     const dynCompoundVerbs = dictionary
       .verbEntryLookupByL(object.selection.selection.entry.ts)
       .filter((e) => e.entry.c.includes("dyn."));
     if (!dynCompoundVerbs.length) {
-      return vps;
+      return [vps];
     }
     const dynCompoundVerb = dynCompoundVerbs[0];
-    return {
-      ...vps,
-      // TODO: could be more efficient by getting index first
-      blocks: vps.blocks.map(markObjAsDynamicComplement),
-      verb: {
-        ...vps.verb,
-        verb: dynCompoundVerb,
-        dynAuxVerb,
-        isCompound: "dynamic",
+    return [
+      {
+        ...vps,
+        // TODO: could be more efficient by getting index first
+        blocks: vps.blocks.map(markObjAsDynamicComplement),
+        verb: {
+          ...vps.verb,
+          verb: dynCompoundVerb,
+          dynAuxVerb,
+          isCompound: "dynamic",
+        },
       },
-    };
+      vps,
+    ];
   };
 }
 
