@@ -38,6 +38,7 @@ const tests: {
       {
         ...makeNounSelection(malguray, undefined),
         possesor: {
+          type: "possesor",
           shrunken: false,
           np: {
             type: "NP",

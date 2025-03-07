@@ -881,6 +881,7 @@ export type NPType = "noun" | "pronoun" | "participle";
 export type ObjectNP = "none" | Person.ThirdPlurMale;
 
 export type PossesorSelection = {
+  type: "possesor";
   shrunken: boolean;
   np: NPSelection;
 };
@@ -977,6 +978,7 @@ export type FormVersion = { removeKing: boolean; shrinkServant: boolean };
 // TODO: rendered should would for rendering T.PossesorSelection etc
 // look recursively down on something
 export type RenderedPossesorSelection = {
+  type: "possesor";
   np: Rendered<NPSelection>;
   shrunken: boolean;
 };
@@ -1018,6 +1020,8 @@ export type Rendered<
       type: "complement";
       selection: Rendered<ComplementSelection["selection"]>;
     }
+  : T extends PossesorSelection
+  ? RenderedPossesorSelection
   : T extends UnselectedComplementSelection
   ? {
       type: "complement";
@@ -1064,11 +1068,6 @@ export type Rendered<
       inflected: boolean;
       number: NounNumber;
       gender: Gender;
-    }
-  : T extends ComplementSelection
-  ? {
-      type: "complement";
-      selection: Rendered<ComplementSelection["selection"]>;
     }
   : T extends SubjectSelectionComplete
   ? {
@@ -1169,7 +1168,8 @@ export type ComplementType =
   | "adjective"
   | "loc. adv."
   | "sandwich"
-  | "comp. noun";
+  | "comp. noun"
+  | "possesor";
 
 export type SandwichSelection<S extends Sandwich> = S & {
   inside: NPSelection;
@@ -1181,7 +1181,8 @@ export type ComplementSelection = {
     | AdjectiveSelection
     | LocativeAdverbSelection
     | SandwichSelection<Sandwich>
-    | NounSelection;
+    | NounSelection
+    | PossesorSelection;
 };
 
 export type Sandwich = {

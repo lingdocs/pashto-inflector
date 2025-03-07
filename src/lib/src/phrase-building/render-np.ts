@@ -331,7 +331,7 @@ function renderParticipleSelection(
   };
 }
 
-function renderPossesor(
+export function renderPossesor(
   possesor: T.PossesorSelection | undefined,
   possesorRole: "servant" | "king" | "none" | "subj/obj"
 ): T.RenderedPossesorSelection | undefined {
@@ -342,6 +342,7 @@ function renderPossesor(
     isAnimNounEntry(possesor.np.selection.entry) &&
     isPattern5Entry(possesor.np.selection.entry);
   return {
+    type: "possesor",
     shrunken: possesor.shrunken,
     np: renderNPSelection(
       possesor.np,

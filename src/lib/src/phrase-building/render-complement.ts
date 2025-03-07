@@ -1,5 +1,5 @@
 import * as T from "../../../types";
-import { renderNounSelection } from "./render-np";
+import { renderNounSelection, renderPossesor } from "./render-np";
 import { renderAdjectiveSelection } from "./render-adj";
 import { renderSandwich } from "./render-sandwich";
 import { renderLocativeAdverbSelection } from "./render-ap";
@@ -40,6 +40,16 @@ export function renderComplementSelection(
         false,
         "no"
       ),
+    };
+  }
+  if (s.selection.type === "possesor") {
+    const selection = renderPossesor(s.selection, "none");
+    if (!selection) {
+      throw new Error("Error rendering complement possesive");
+    }
+    return {
+      type: "complement",
+      selection,
     };
   }
   // if (s.selection.type === "noun") {

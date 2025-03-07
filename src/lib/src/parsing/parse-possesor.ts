@@ -52,6 +52,7 @@ export function parsePossesor(
     const np = parseNP(rest, dictionary, undefined);
     return bindParseResult(np, (tokens, body) => {
       const possesor: T.PossesorSelection = {
+        type: "possesor",
         shrunken: false,
         np: body.selection,
       };
@@ -75,6 +76,7 @@ export function parsePossesor(
       {
         tokens: rest,
         body: {
+          type: "possesor",
           shrunken: false,
           np: {
             type: "NP",
@@ -127,6 +129,7 @@ function parseContractions({ s }: T.Token): T.PossesorSelection[] {
     return [];
   }
   return c[1].map((person) => ({
+    type: "possesor",
     shrunken: false,
     np: {
       type: "NP",

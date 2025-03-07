@@ -93,6 +93,7 @@ function NPPicker(props: {
     }
     const isNewPosesser = checkForNewPossesor(p, props.np.selection.possesor);
     const possesor: T.PossesorSelection = {
+      type: "possesor",
       np: p,
       shrunken:
         !isNewPosesser && props.np.selection.possesor
@@ -321,6 +322,7 @@ function ensureSingleShrink(
       selection: {
         ...n.selection,
         possesor: {
+          type: "possesor",
           shrunken: false,
           np: keepNewShrink(old.selection.possesor.np, n.selection.possesor.np),
         },
@@ -335,6 +337,7 @@ function ensureSingleShrink(
       selection: {
         ...n.selection,
         possesor: {
+          type: "possesor",
           shrunken: false,
           np: removeShrinks(n.selection.possesor.np),
         },

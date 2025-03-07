@@ -519,11 +519,18 @@ function ComplementBlock({
             </>
           )}
         </div>
-      ) : (
+      ) : comp.type === "sandwich" ? (
         <div>
           <Sandwich opts={opts} sandwich={comp} script={script} />
           <div>Sandwich</div>
           <SubText>{comp.e}</SubText>
+        </div>
+      ) : (
+        <div>
+          {" "}
+          <Possesors opts={opts} script={script}>
+            {comp}
+          </Possesors>
         </div>
       )}
     </div>

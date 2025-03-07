@@ -3,11 +3,13 @@ import * as T from "../../../types";
 import AdjectivePicker from "./AdjectivePicker";
 import LocativeAdverbPicker from "./LocativeAdverbPicker";
 import SandwichPicker from "./SandwichPicker";
+import NPPicker from "./NPPicker";
 const compTypes: T.ComplementType[] = [
   "adjective",
   "loc. adv.",
   "sandwich",
   "comp. noun",
+  "possesor",
 ];
 
 function selectionTypeToCompType(
@@ -48,6 +50,22 @@ function ComplementPicker(props: {
   function handleSandwichExit() {
     setCompType(undefined);
     props.onChange(undefined);
+  }
+  function handlePossesiveChange(p: T.NPSelection | undefined) {
+    if (!p) {
+      props.onChange(undefined);
+    }
+    if (p) {
+      props.onChange({
+        type: "complement",
+        selection: {
+          type: "possesor",
+          np: p,
+          shrunken: false,
+        },
+      });
+      return;
+    }
   }
   const clearButton =
     compType && !props.cantClear ? (
@@ -143,6 +161,22 @@ function ComplementPicker(props: {
           <div style={{ maxWidth: "9rem" }}>
             Sorry, can't choose complement nouns yet 🚧
           </div>
+        ) : compType === "possesor" ? (
+          <NPPicker
+            phraseIsComplete={props.phraseIsComplete}
+            onChange={handlePossesiveChange}
+            counterPart={undefined}
+            cantClear
+            np={
+              props.comp?.selection.type === "possesor"
+                ? props.comp.selection.np
+                : undefined
+            }
+            role="possesor"
+            opts={props.opts}
+            entryFeeder={props.entryFeeder}
+            negative={props.negative}
+          />
         ) : null}
       </div>
     </>

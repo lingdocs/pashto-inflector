@@ -328,6 +328,10 @@ function getPsFromPiece(
           false
         );
       }
+      if (piece.block.selection.type === "possesor") {
+        const b: T.RenderedPossesorSelection = piece.block.selection;
+        return getPashtoFromRendered(b, false);
+      }
       return flattenLengths(piece.block.selection.ps);
     }
     // welded
@@ -377,6 +381,12 @@ function getEngComplement(blocks: T.Block[][]): string | undefined {
   }
   if (comp.selection.type === "sandwich") {
     return getEnglishFromRendered({ type: "AP", selection: comp.selection });
+  }
+  if (comp.selection.type === "possesor") {
+    return getEnglishFromRendered({
+      type: "complement",
+      selection: comp.selection,
+    });
   }
   return comp.selection.e;
 }

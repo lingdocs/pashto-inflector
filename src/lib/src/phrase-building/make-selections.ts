@@ -35,6 +35,7 @@ export function makePossesorSelection(
   np: T.NPSelection["selection"]
 ): T.PossesorSelection {
   return {
+    type: "possesor",
     shrunken: false,
     np: {
       type: "NP",

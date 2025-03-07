@@ -133,8 +133,8 @@ function EPDisplay({
               : ""}{" "}
             is <strong>the action/idea</strong> of
             {` `}"
-            {renderedPredicate.selection.e
-              ? renderedPredicate.selection.e
+            {"e" in renderedPredicate.selection
+              ? renderedPredicate.selection?.e
               : "the particple"}
             ".
           </p>

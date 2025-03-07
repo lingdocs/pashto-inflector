@@ -37,7 +37,7 @@ export function bindParseResult<C, D>(
     ? (() => {
         const resArr: T.ParseResult<C>[] = [];
         previous.filter((item) => {
-          var i = resArr.findIndex(
+          const i = resArr.findIndex(
             (x) => x.tokens.length === item.tokens.length
           );
           if (i <= -1) {
@@ -111,13 +111,13 @@ export function cleanOutResults<C>(
     return results;
   }
   let min = Infinity;
-  for (let a of results) {
+  for (const a of results) {
     if (a.errors.length < min) {
       min = a.errors.length;
     }
   }
   const errorsCulled = results.filter((x) => x.errors.length === min);
-  // @ts-ignore
+  // @ts-expect-error - bc
   return Array.from(new Set(errorsCulled.map(JSON.stringify))).map(JSON.parse);
 }
 
@@ -305,6 +305,7 @@ export function addShrunkenPossesor(
     selection: {
       ...b.selection,
       possesor: {
+        type: "possesor",
         shrunken: true,
         np: {
           type: "NP",

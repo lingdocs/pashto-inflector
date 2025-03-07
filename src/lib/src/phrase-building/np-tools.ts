@@ -24,7 +24,10 @@ function getBaseWDetsAndAdjs({
   const adjs = (("adjectives" in selection && selection.adjectives) || []).map(
     (x) => x.ps
   );
-  const base = flattenLengths(selection.ps);
+  const base =
+    selection.type === "possesor"
+      ? [{ p: "", f: "" }]
+      : flattenLengths(selection.ps);
   return assemblePsWords([
     ...determiners,
     ...(detWOutNoun ? [] : [...adjs, base]),
@@ -111,9 +114,17 @@ export function getPashtoFromRendered(
   b:
     | T.Rendered<T.NPSelection>
     | T.Rendered<T.ComplementSelection>
+    | T.RenderedPossesorSelection
     | T.Rendered<T.APSelection>,
   subjectsPerson: false | T.Person
 ): T.PsString[] {
+  if (b.type === "possesor") {
+    return addPossesor(b.np, [{ p: "", f: "" }], false);
+  }
+  // for predicate possesor
+  if (b.selection.type === "possesor") {
+    return addPossesor(b.selection.np, [{ p: "", f: "" }], false);
+  }
   const base = getBaseWDetsAndAdjs(b);
   if (b.selection.type === "loc. adv." || b.selection.type === "adverb") {
     return base;
@@ -150,7 +161,7 @@ export function getPashtoFromRendered(
         )
       : base;
   }
-  if (trimmed.selection.possesor) {
+  if ("possesor" in trimmed.selection && trimmed.selection.possesor) {
     return addPossesor(trimmed.selection.possesor.np, base, subjectsPerson);
   }
   return base;
@@ -212,7 +223,7 @@ function addArticlesAndAdjs(
     const determiners =
       np.determiners && np.determiners.determiners
         ? np.determiners.determiners
-            // @ts-ignore - weird, ts is not recognizing this as rendered
+            // @ts-expect-error - weird, ts not recognizing as rendered
             .map((x) => (moreThanOneDet ? `(${x.e})` : x.e))
             .join(" ") + " "
         : "";
@@ -221,58 +232,78 @@ function addArticlesAndAdjs(
       detsWithoutNoun ? ` (${(adjs + word).trim()})` : adjs + word
     }${genderTag}`;
   } catch (e) {
+    console.error(e);
     return undefined;
   }
 }
 
-function addPossesors(
+// TODO: DOES THE ENGLISH POSSESIVE WORK RIGHT RECURSIVELY HERE ?!?!
+function addPossesorsEng(
   possesor: T.Rendered<T.NPSelection> | undefined,
   base: string | undefined,
-  type: "noun" | "participle"
+  type: "noun" | "participle" | "complement"
 ): string | undefined {
   function removeArticles(s: string): string {
     return s.replace("(the) ", "").replace("(a/the) ", "");
   }
-  if (!base) return undefined;
+  if (!base && type !== "complement") return undefined;
   if (!possesor) return base;
   if (possesor.selection.type === "pronoun") {
-    return type === "noun"
-      ? `${pronounPossEng(possesor.selection.person)} ${removeArticles(base)}`
-      : `(${pronounPossEng(possesor.selection.person)}) ${removeArticles(
-          base
-        )} (${possesor.selection.e})`;
+    if (type === "noun" && base) {
+      return `${pronounPossEng(
+        possesor.selection.person,
+        false
+      )} ${removeArticles(base)}`;
+    }
+    if (type === "participle" && base) {
+      return `(${pronounPossEng(
+        possesor.selection.person,
+        false
+      )}) ${removeArticles(base)} (${possesor.selection.e})`;
+    }
+    if (type === "complement") {
+      return pronounPossEng(possesor.selection.person, true);
+    }
+    throw new Error("error handling lack of base here A");
   }
   const possesorE = getEnglishFromRendered(possesor);
   if (!possesorE) return undefined;
   const withApostrophe = `${possesorE}'${possesorE.endsWith("s") ? "" : "s"}`;
-  return type === "noun"
-    ? `${withApostrophe} ${removeArticles(base)}`
-    : `(${withApostrophe}) ${removeArticles(base)} (${possesorE})`;
+  if (type === "noun" && base) {
+    return `${withApostrophe} ${removeArticles(base)}`;
+  }
+  if (type === "participle" && base) {
+    return `(${withApostrophe}) ${removeArticles(base)} (${possesorE})`;
+  }
+  if (type === "complement") {
+    return withApostrophe;
+  }
+  throw new Error("error handling lack of base here B");
 }
 
-function pronounPossEng(p: T.Person): string {
+function pronounPossEng(p: T.Person, finalInComplement: boolean): string {
   function gend(x: T.Person): string {
     return `${x % 2 === 0 ? "m." : "f."}`;
   }
   if (p === T.Person.FirstSingMale || p === T.Person.FirstSingFemale) {
-    return `my (${gend(p)})`;
+    return `${finalInComplement ? "mine" : "my"} (${gend(p)})`;
   }
   if (p === T.Person.FirstPlurMale || p === T.Person.FirstPlurFemale) {
-    return `our (${gend(p)})`;
+    return `${finalInComplement ? "ours" : "our"} (${gend(p)})`;
   }
   if (p === T.Person.SecondSingMale || p === T.Person.SecondSingFemale) {
-    return `your (${gend(p)})`;
+    return `${finalInComplement ? "yours" : "your"} (${gend(p)})`;
   }
   if (p === T.Person.SecondPlurMale || p === T.Person.SecondPlurFemale) {
-    return `your  (${gend(p)} pl.)`;
+    return `${finalInComplement ? "yours" : "your"}  (${gend(p)} pl.)`;
   }
   if (p === T.Person.ThirdSingMale) {
     return "his/its";
   }
   if (p === T.Person.ThirdSingFemale) {
-    return "her/its";
+    return finalInComplement ? "hers" : "its";
   }
-  return `their (${gend(p)})`;
+  return `${finalInComplement ? "theirs" : "their"} (${gend(p)})`;
 }
 
 export function getEnglishFromRendered(
@@ -289,7 +320,7 @@ export function getEnglishFromRendered(
   if (r.selection.type === "sandwich") {
     return getEnglishFromRenderedSandwich(r.selection);
   }
-  if (!r.selection.e) return undefined;
+  if ("e" in r.selection && !r.selection.e) return undefined;
   if (r.selection.type === "loc. adv." || r.selection.type === "adverb") {
     return r.selection.e;
   }
@@ -300,13 +331,16 @@ export function getEnglishFromRendered(
     return r.selection.e;
   }
   if (r.selection.type === "participle") {
-    return addPossesors(
+    return addPossesorsEng(
       r.selection.possesor?.np,
       r.selection.e,
       r.selection.type
     );
   }
-  return addPossesors(
+  if (r.selection.type === "possesor") {
+    return addPossesorsEng(r.selection.np, undefined, "complement");
+  }
+  return addPossesorsEng(
     r.selection.possesor?.np,
     addArticlesAndAdjs(r.selection),
     r.selection.type
