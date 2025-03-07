@@ -101,7 +101,10 @@ export type VpsReducerAction =
     }
   | {
       type: "set externalComplement";
-      payload: T.ComplementSelection | undefined;
+      payload:
+        | T.ComplementSelection
+        | T.UnselectedComplementSelection
+        | undefined;
     };
 
 export function vpsReducer(

@@ -13,6 +13,7 @@ import {
 import {
   completeVPSelection,
   isPastTense,
+  takesExternalComplement,
 } from "../../../lib/src/phrase-building/vp-tools";
 import { roleIcon } from "../role-icons";
 import VPExplorerExplanationModal from "./VPExplorerExplanationModal";
@@ -98,6 +99,24 @@ function VPPicker({
       >
         + AP
       </div>
+      {takesExternalComplement(vps.verb.verb) === "opt" && (
+        <div
+          className="clickable h5"
+          onClick={() =>
+            adjustVps({
+              type: "set externalComplement",
+              payload: vps.externalComplement
+                ? undefined
+                : {
+                    type: "complement",
+                    selection: { type: "unselected" },
+                  },
+            })
+          }
+        >
+          {vps.externalComplement ? "-" : "+"} Complement
+        </div>
+      )}
       <div
         ref={parent}
         className="d-flex flex-row justify-content-around flex-wrap"

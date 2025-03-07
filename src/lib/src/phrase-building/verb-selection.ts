@@ -9,6 +9,7 @@ import {
   makeSubjectSelection,
   moveObjectToEnd,
 } from "./blocks-utils";
+import { takesExternalComplement } from "./vp-tools";
 
 export function makeVPSelectionState(
   verb: T.VerbEntry,
@@ -102,24 +103,15 @@ export function makeVPSelectionState(
       canChangeVoice: transitivity === "transitive",
       canChangeStatDyn: "stative" in info,
     },
-    externalComplement: takesExternalComplement(verb)
-      ? { type: "complement", selection: { type: "unselected" } }
-      : undefined,
+    externalComplement:
+      takesExternalComplement(verb) === "req"
+        ? { type: "complement", selection: { type: "unselected" } }
+        : undefined,
     form:
       os && info.type !== "dynamic compound"
         ? os.form
         : { removeKing: false, shrinkServant: false },
   };
-}
-
-function takesExternalComplement(v: T.VerbEntry): boolean {
-  if (v.entry.p === "کول" && v.entry.e.includes("to make")) {
-    return true;
-  }
-  if (v.entry.p === "کېدل" && v.entry.e.includes("to become")) {
-    return true;
-  }
-  return false;
 }
 
 export function changeStatDyn(

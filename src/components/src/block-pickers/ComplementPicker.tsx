@@ -99,7 +99,7 @@ function ComplementPicker(props: {
                 className="mr-2 btn btn-sm btn-outline-secondary"
                 onClick={() => handleCompTypeChange(cpt)}
               >
-                {cpt}
+                {fixPossSpelling(cpt)}
               </button>
             </div>
           ))}
@@ -162,25 +162,37 @@ function ComplementPicker(props: {
             Sorry, can't choose complement nouns yet 🚧
           </div>
         ) : compType === "possesor" ? (
-          <NPPicker
-            phraseIsComplete={props.phraseIsComplete}
-            onChange={handlePossesiveChange}
-            counterPart={undefined}
-            cantClear
-            np={
-              props.comp?.selection.type === "possesor"
-                ? props.comp.selection.np
-                : undefined
-            }
-            role="possesor"
-            opts={props.opts}
-            entryFeeder={props.entryFeeder}
-            negative={props.negative}
-          />
+          <div>
+            <h6 className="text-center">Possessor</h6>
+            <NPPicker
+              phraseIsComplete={props.phraseIsComplete}
+              onChange={handlePossesiveChange}
+              counterPart={undefined}
+              cantClear
+              np={
+                props.comp?.selection.type === "possesor"
+                  ? props.comp.selection.np
+                  : undefined
+              }
+              role="possesor"
+              opts={props.opts}
+              entryFeeder={props.entryFeeder}
+              negative={props.negative}
+            />
+          </div>
         ) : null}
       </div>
     </>
   );
+}
+
+// TODO: Actually fix the spelling of the ComplementType and get rid
+// of this
+function fixPossSpelling(c: T.ComplementType): string {
+  if (c === "possesor") {
+    return "possessor";
+  }
+  return c;
 }
 
 export default ComplementPicker;
