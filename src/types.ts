@@ -1185,6 +1185,16 @@ export type ComplementSelection = {
     | PossesorSelection;
 };
 
+export type ParsedComplementSelection = {
+  type: "complement";
+  selection:
+    | InflectableBaseParse<AdjectiveSelection>
+    | LocativeAdverbSelection
+    | SandwichSelection<Sandwich>
+    | NounSelection
+    | PossesorSelection;
+};
+
 export type Sandwich = {
   type: "sandwich";
   before: PsString | undefined;
@@ -1307,6 +1317,7 @@ export type ParsedBlock =
   | ParsedVBE
   | ParsedVBP
   | APSelection
+  | ParsedComplementSelection
   | NegativeBlock;
 
 export type ParsedKidsSection = {

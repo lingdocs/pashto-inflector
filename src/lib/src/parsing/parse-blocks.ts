@@ -14,10 +14,11 @@ import {
   startsVerbSection,
 } from "./utils";
 import { isKedulDynEntry, isKedulStatEntry } from "./parse-verb-helpers";
+import { parseCompliment } from "./parse-complement";
 
 export function parseBlocks(
   tokens: Readonly<T.Token[]>,
-  dicitonary: T.DictionaryAPI,
+  dictionary: T.DictionaryAPI,
   blocks: T.ParsedBlock[],
   kids: T.ParsedKid[]
 ): T.ParseResult<{
@@ -40,19 +41,23 @@ export function parseBlocks(
   const hasVBP = vbpIndex !== -1;
   const vbeIndex = blocks.findIndex(isParsedVBE);
   const hasVBE = vbeIndex !== -1;
+  const hasComplement = blocks.some((b) => b.type === "complement");
   const hasNeg = blocks.some((b) => b.type === "negative");
   const allResults: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
     // Parse NP/APs until we get to verb section
-    ...(!inVerbSection ? parseNPAP(tokens, dicitonary) : []),
+    ...(!inVerbSection ? parseNPAP(tokens, dictionary) : []),
+    ...(!hasComplement && !ph && !hasVBE && !hasVBP
+      ? parseCompliment(tokens, dictionary)
+      : []),
     // Ensure no duplicates of verb section components
     ...(ph ? [] : parsePH(tokens)),
-    ...(hasVBP ? [] : parseVBP(tokens, dicitonary, ph)),
+    ...(hasVBP ? [] : parseVBP(tokens, dictionary, ph)),
     ...(hasVBE
       ? []
       : [
           ...parseVBE(
             tokens,
-            dicitonary,
+            dictionary,
             hasVBP
               ? // incase of [PH] + [VBP] before, PH was used up by [VBP]
                 undefined
@@ -68,7 +73,7 @@ export function parseBlocks(
     const errors: T.ParseError[] = [];
     if (r.type === "kids") {
       return {
-        next: parseBlocks(tokens, dicitonary, blocks, [...kids, ...r.kids]),
+        next: parseBlocks(tokens, dictionary, blocks, [...kids, ...r.kids]),
         errors:
           blocks.length !== 1
             ? [{ message: "kids' section out of place" }]
@@ -76,7 +81,7 @@ export function parseBlocks(
       };
     }
     return {
-      next: parseBlocks(tokens, dicitonary, [...blocks, r], kids),
+      next: parseBlocks(tokens, dictionary, [...blocks, r], kids),
       errors,
     };
   });

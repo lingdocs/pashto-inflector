@@ -21,6 +21,7 @@ import {
   getPersonFromNP,
   isInvalidSubjObjCombo,
   isPastTense,
+  takesExternalComplement,
 } from "../phrase-building/vp-tools";
 import { parseBlocks } from "./parse-blocks";
 import { makePronounSelection } from "../phrase-building/make-selections";
@@ -47,6 +48,9 @@ import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 
 // TODO: This parses extra options with demonstratives کور ته دې بوتلی شم
 
+// TODO: What about complements like "زه ستا ملګری شوم"
+//   - allow for reg nouns with possessives for complements?
+
 // FOR display - Verb blocks should display VBP - VBE somehow
 
 export function parseVP(
@@ -66,10 +70,11 @@ export function parseVP(
         (x): x is T.ParsedNP | T.APSelection =>
           x.type === "NP" || x.type === "AP"
       );
-      const verbSection = blocks.findIndex(startsVerbSection);
+      const exComplement = blocks.find((b) => b.type === "complement");
+      const verbSectionBoundary = blocks.findIndex(startsVerbSection);
       // TODO: would be nice if this could pass error messages about the
       // negative being out of place etc
-      if (!verbSectionOK(blocks.slice(verbSection))) {
+      if (!verbSectionOK(blocks.slice(verbSectionBoundary))) {
         return [];
       }
       const tenses = getTenses(blocks, ba);
@@ -80,6 +85,7 @@ export function parseVP(
             tense,
             transitivities,
             npsAndAps,
+            exComplement,
             miniPronouns,
             tokens,
             negative,
@@ -258,6 +264,7 @@ function finishPossibleVPSs({
   tense,
   transitivities,
   npsAndAps,
+  exComplement,
   miniPronouns,
   negative,
   verb,
@@ -268,6 +275,7 @@ function finishPossibleVPSs({
   tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
   transitivities: T.Transitivity[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
+  exComplement: T.ParsedComplementSelection | undefined;
   miniPronouns: T.ParsedMiniPronoun[];
   tokens: Readonly<T.Token[]>;
   negative: boolean;
@@ -295,6 +303,7 @@ function finishPossibleVPSs({
           return finishIntransitive({
             miniPronouns,
             npsAndAps,
+            exComplement,
             tokens,
             v,
             person,
@@ -305,6 +314,7 @@ function finishPossibleVPSs({
             finishTransitive({
               miniPronouns,
               npsAndAps,
+              exComplement,
               tokens,
               v,
               person,
@@ -415,12 +425,14 @@ function checkImperative2ndPers({
 function finishIntransitive({
   miniPronouns,
   npsAndAps,
+  exComplement,
   tokens,
   v,
   person,
 }: {
   miniPronouns: T.ParsedMiniPronoun[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
+  exComplement: T.ParsedComplementSelection | undefined;
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
   person: T.Person;
@@ -435,6 +447,15 @@ function finishIntransitive({
   if (nps.length > 1) {
     return [];
   }
+  // TODO: abstract and reuse these few lines of checking
+  const exCompStatus = takesExternalComplement(v.verb);
+  if (exCompStatus === "no" && exComplement) {
+    return [];
+  }
+  if (exCompStatus === "req" && !exComplement) {
+    return [];
+  }
+  const [externalComplement, compErrors] = checkExComp(exComplement, person);
   if (nps.length === 0) {
     const blocks: T.VPSBlockComplete[] = [
       ...mapOutnpsAndAps([], npsAndAps),
@@ -459,13 +480,13 @@ function finishIntransitive({
         body: {
           blocks,
           verb: v,
-          externalComplement: undefined,
+          externalComplement,
           form: {
             removeKing: true,
             shrinkServant: false,
           },
         } as T.VPSelectionComplete,
-        errors,
+        errors: [...errors, ...compErrors],
       },
     ];
   }
@@ -500,13 +521,13 @@ function finishIntransitive({
       body: {
         blocks,
         verb: v,
-        externalComplement: undefined,
+        externalComplement,
         form: {
           removeKing: false,
           shrinkServant: false,
         },
       } as T.VPSelectionComplete,
-      errors,
+      errors: [...errors, ...compErrors],
     },
   ];
 }
@@ -514,6 +535,7 @@ function finishIntransitive({
 function finishTransitive({
   miniPronouns,
   npsAndAps,
+  exComplement,
   tokens,
   v,
   person,
@@ -521,6 +543,7 @@ function finishTransitive({
 }: {
   miniPronouns: T.ParsedMiniPronoun[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
+  exComplement: T.ParsedComplementSelection | undefined;
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
   person: T.Person;
@@ -531,6 +554,15 @@ function finishTransitive({
   if (nps.length > 2) {
     return [];
   }
+  // TODO: abstract and reuse these few lines of checking
+  const exCompStatus = takesExternalComplement(v.verb);
+  if (exCompStatus === "no" && exComplement) {
+    return [];
+  }
+  if (exCompStatus === "req" && !exComplement) {
+    return [];
+  }
+  const [externalComplement, compErrors] = checkExComp(exComplement, person);
   if (nps.length === 0) {
     // present:
     //  - no king (subject)
@@ -589,15 +621,19 @@ function finishTransitive({
         {
           blocks,
           verb: v,
-          externalComplement: undefined,
+          externalComplement,
           form: {
             removeKing: true,
             shrinkServant: true,
           },
         } as T.VPSelectionComplete,
         pronounConflictInBlocks(blocks)
-          ? [...errors, { message: "invalid subject/object combo" }]
-          : errors
+          ? [
+              ...errors,
+              ...compErrors,
+              { message: "invalid subject/object combo" },
+            ]
+          : [...errors, ...compErrors]
       )
     );
   }
@@ -719,12 +755,16 @@ function finishTransitive({
         body: {
           blocks,
           verb: v,
-          externalComplement: undefined,
+          externalComplement,
           form,
         } as T.VPSelectionComplete,
         errors: pronounConflictInBlocks(blocks)
-          ? [...errors, { message: "invalid subject/object combo" }]
-          : errors,
+          ? [
+              ...errors,
+              ...compErrors,
+              { message: "invalid subject/object combo" },
+            ]
+          : [...errors, ...compErrors],
       }));
     });
   } else {
@@ -829,13 +869,13 @@ function finishTransitive({
           {
             blocks: mapOutnpsAndAps(!flip ? ["S", "O"] : ["O", "S"], npsAndAps),
             verb: v,
-            externalComplement: undefined,
+            externalComplement,
             form: {
               removeKing: false,
               shrinkServant: false,
             },
           } as T.VPSelectionComplete,
-          [...miniPronErrors, ...errors]
+          [...miniPronErrors, ...errors, ...compErrors]
         );
       });
     }
@@ -1382,4 +1422,21 @@ function createPossesivePossibilities(
 // TODO: this should be replaced with tagging in objects
 function isVBP(x: T.ParsedVBE | T.ParsedVBP): x is T.ParsedVBP {
   return x.info.type === "ability" || x.info.type === "ppart";
+}
+
+function checkExComp(
+  comp: T.ParsedComplementSelection | undefined,
+  person: T.Person
+): [T.ComplementSelection | undefined, T.ParseError[]] {
+  if (!comp) {
+    return [undefined, []];
+  }
+  if (!("type" in comp.selection)) {
+    // TODO: check if complement matches person
+    throw new Error("ADJECTIVE COMP CHECKING NOT IMPLEMENTED");
+    return [comp, []];
+  }
+  // @ts-expect-error - this is ok, we eliminated the adj selection thing
+  const c: T.ComplementSelection = comp;
+  return [c, []];
 }

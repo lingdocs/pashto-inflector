@@ -526,12 +526,17 @@ function ComplementBlock({
           <SubText>{comp.e}</SubText>
         </div>
       ) : (
-        <div>
-          {" "}
-          <Possesors opts={opts} script={script}>
-            {comp}
-          </Possesors>
-        </div>
+        <>
+          <Border>
+            <Possesors opts={opts} script={script} complement>
+              {comp}
+            </Possesors>
+          </Border>
+          <div>Possessive</div>
+          <SubText>
+            {getEnglishFromRendered({ type: "complement", selection: comp })}
+          </SubText>
+        </>
       )}
     </div>
   );
@@ -750,10 +755,12 @@ function Possesors({
   opts,
   children,
   script,
+  complement,
 }: {
   opts: T.TextOptions;
   children: { shrunken: boolean; np: T.Rendered<T.NPSelection> } | undefined;
   script: "p" | "f";
+  complement?: boolean;
 }) {
   if (!children) {
     return null;
@@ -767,10 +774,14 @@ function Possesors({
       className={`d-flex flex-row${
         script === "p" ? "-reverse" : ""
       } mr-1 align-items-end`}
-      style={{
-        marginBottom: "0.5rem",
-        borderBottom: "1px solid grey",
-      }}
+      style={
+        complement
+          ? {}
+          : {
+              marginBottom: "0.5rem",
+              borderBottom: "1px solid grey",
+            }
+      }
     >
       {children.np.selection.type !== "pronoun" && (
         <Possesors opts={opts} script={script}>
