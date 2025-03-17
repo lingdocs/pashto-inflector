@@ -14,19 +14,11 @@ import {
 
 export type EpsReducerAction =
   | {
-      type: "set predicate type";
-      payload: "NP" | "Complement";
-    }
-  | {
       type: "set subject";
       payload: T.NPSelection | undefined;
     }
   | {
-      type: "set predicate NP";
-      payload: T.NPSelection | undefined;
-    }
-  | {
-      type: "set predicate complement";
+      type: "set predicate";
       payload: T.ComplementSelection | undefined;
     }
   | {
@@ -68,15 +60,6 @@ export default function epsReducer(
   action: EpsReducerAction,
   sendAlert?: (msg: string) => void
 ): T.EPSelectionState {
-  if (action.type === "set predicate type") {
-    return {
-      ...eps,
-      predicate: {
-        ...eps.predicate,
-        type: action.payload,
-      },
-    };
-  }
   if (action.type === "set subject") {
     const subject = action.payload;
     if (!subject) {
@@ -87,33 +70,34 @@ export default function epsReducer(
     }
     if (
       subject.selection.type === "pronoun" &&
-      eps.predicate.type === "NP" &&
-      eps.predicate.NP?.selection.type === "noun" &&
-      isUnisexNounEntry(eps.predicate.NP.selection.entry)
+      eps.predicate &&
+      eps.predicate.selection.type === "NP" &&
+      eps.predicate.selection.selection.type === "noun" &&
+      isUnisexNounEntry(eps.predicate.selection.selection.entry)
     ) {
-      const predicate = eps.predicate.NP.selection;
-      const adjusted = {
-        ...predicate,
-        ...(predicate.numberCanChange
-          ? {
-              number: personNumber(subject.selection.person),
-            }
-          : {}),
-        ...(predicate.genderCanChange
-          ? {
-              gender: personGender(subject.selection.person),
-            }
-          : {}),
+      const predicate = eps.predicate.selection.selection;
+      const adjusted: T.NPSelection = {
+        type: "NP",
+        selection: {
+          ...predicate,
+          ...(predicate.numberCanChange
+            ? {
+                number: personNumber(subject.selection.person),
+              }
+            : {}),
+          ...(predicate.genderCanChange
+            ? {
+                gender: personGender(subject.selection.person),
+              }
+            : {}),
+        },
       };
       return {
         ...eps,
         blocks: adjustSubjectSelection(eps.blocks, subject),
         predicate: {
           ...eps.predicate,
-          NP: {
-            type: "NP",
-            selection: adjusted,
-          },
+          selection: adjusted,
         },
       };
     }
@@ -123,24 +107,22 @@ export default function epsReducer(
     };
     return subject ? ensureMiniPronounsOk(eps, n, sendAlert) : n;
   }
-  if (action.type === "set predicate NP") {
-    const selection = action.payload;
-    if (!selection) {
+  if (action.type === "set predicate") {
+    const predicate = action.payload;
+    if (!predicate) {
       return {
         ...eps,
-        predicate: {
-          ...eps.predicate,
-          NP: selection,
-        },
+        predicate: predicate,
       };
     }
     const subject = getSubjectSelection(eps.blocks).selection;
     if (
       subject?.selection.type === "pronoun" &&
-      selection.selection.type === "noun" &&
-      isUnisexNounEntry(selection.selection.entry)
+      predicate.selection.type === "NP" &&
+      predicate.selection.selection.type === "noun" &&
+      isUnisexNounEntry(predicate.selection.selection.entry)
     ) {
-      const { gender, number } = selection.selection;
+      const { gender, number } = predicate.selection.selection;
       const pronoun = subject.selection.person;
       const newPronoun = movePersonNumber(
         movePersonGender(pronoun, gender),
@@ -155,29 +137,14 @@ export default function epsReducer(
             person: newPronoun,
           },
         }),
-        predicate: {
-          ...eps.predicate,
-          NP: selection,
-        },
+        predicate: predicate,
       };
     }
     const n: T.EPSelectionState = {
       ...eps,
-      predicate: {
-        ...eps.predicate,
-        NP: selection,
-      },
+      predicate: predicate,
     };
-    return selection ? ensureMiniPronounsOk(eps, n, sendAlert) : n;
-  }
-  if (action.type === "set predicate complement") {
-    return {
-      ...eps,
-      predicate: {
-        ...eps.predicate,
-        Complement: action.payload,
-      },
-    };
+    return predicate ? ensureMiniPronounsOk(eps, n, sendAlert) : n;
   }
   if (action.type === "set omitSubject") {
     const n: T.EPSelectionState = {

@@ -710,7 +710,7 @@ export type Entry = NounEntry | AdjectiveEntry | AdverbEntry | VerbEntry;
 // TODO: make this Rendered<VPSelectionComplete> with recursive Rendered<>
 export type VPRendered = {
   type: "VPRendered";
-  king: "subject" | "object";
+  king: "subject" | "object" | "complement";
   servant: "subject" | "object" | undefined;
   isPast: boolean;
   isTransitive: boolean;
@@ -771,11 +771,6 @@ export type ObjectSelection = {
 export type SubjectSelectionComplete = {
   type: "subjectSelection";
   selection: NPSelection;
-};
-
-export type PredicateSelectionComplete = {
-  type: "predicateSelection";
-  selection: ComplementSelection | NPSelection;
 };
 
 export type ObjectSelectionComplete = {
@@ -996,10 +991,10 @@ export type Rendered<
     | APSelection["selection"]
     | SubjectSelectionComplete
     | ObjectSelectionComplete
-    | PredicateSelectionComplete
     | AdjectiveSelection
     | SandwichSelection<Sandwich>
     | ComplementSelection
+    | CompNounSelection
     | DeterminersSelection
     | DeterminerSelection
     | ComplementSelection["selection"]
@@ -1043,6 +1038,8 @@ export type Rendered<
       ps: PsString[];
       e?: string;
     }
+  : T extends CompNounSelection
+  ? { type: "comp. noun"; entry: NounEntry; ps: PsString[] }
   : T extends AdjectiveSelection
   ? {
       type: "adjective";
@@ -1079,11 +1076,6 @@ export type Rendered<
       type: "objectSelection";
       selection: Rendered<NPSelection> | Person.ThirdPlurMale | "none";
     }
-  : T extends PredicateSelectionComplete
-  ? {
-      type: "predicateSelection";
-      selection: Rendered<ComplementSelection> | Rendered<NPSelection>;
-    }
   : T extends undefined
   ? {
       type: "undefined";
@@ -1119,11 +1111,7 @@ export type Rendered<
 
 export type EPSelectionState = {
   blocks: EPSBlock[];
-  predicate: {
-    type: "NP" | "Complement";
-    NP: NPSelection | undefined;
-    Complement: ComplementSelection | undefined;
-  };
+  predicate: ComplementSelection | undefined;
   equative: EquativeSelection;
   omitSubject: boolean;
 };
@@ -1160,16 +1148,11 @@ export type EPSelectionComplete = Omit<
   "predicate" | "blocks"
 > & {
   blocks: EPSBlockComplete[];
-  predicate: PredicateSelectionComplete;
+  predicate: ComplementSelection;
   omitSubject: boolean;
 };
 
-export type ComplementType =
-  | "adjective"
-  | "loc. adv."
-  | "sandwich"
-  | "comp. noun"
-  | "possesor";
+export type ComplementType = ComplementSelection["selection"]["type"];
 
 export type SandwichSelection<S extends Sandwich> = S & {
   inside: NPSelection;
@@ -1181,8 +1164,14 @@ export type ComplementSelection = {
     | AdjectiveSelection
     | LocativeAdverbSelection
     | SandwichSelection<Sandwich>
-    | NounSelection
-    | PossesorSelection;
+    | CompNounSelection
+    | PossesorSelection
+    | NPSelection;
+};
+
+export type CompNounSelection = {
+  type: "comp. noun";
+  entry: NounEntry;
 };
 
 export type ParsedComplementSelection = {
@@ -1191,7 +1180,9 @@ export type ParsedComplementSelection = {
     | InflectableBaseParse<AdjectiveSelection>
     | LocativeAdverbSelection
     | SandwichSelection<Sandwich>
-    | NounSelection
+    // TODO: better noun chunk selection
+    // | NounSelection
+    | NPSelection
     | PossesorSelection;
 };
 
@@ -1295,15 +1286,20 @@ export type ParsedNounWord<N extends NounEntry> = {
   entry: N;
 };
 
+export type PredicateBlock = {
+  type: "predicate";
+  selection: Rendered<ComplementSelection | UnselectedComplementSelection>;
+};
+
 export type Block = {
   key: number;
   block:
     | Rendered<SubjectSelectionComplete>
     | Rendered<ObjectSelectionComplete>
     | Rendered<APSelection>
-    | Rendered<PredicateSelectionComplete>
-    | Rendered<ComplementSelection>
+    | Rendered<ComplementSelection | UnselectedComplementSelection>
     | Rendered<UnselectedComplementSelection>
+    | PredicateBlock
     | NegativeBlock
     | EquativeBlock
     | VB

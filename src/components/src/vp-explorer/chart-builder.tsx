@@ -53,6 +53,7 @@ export function buildVerbChart({
         object,
         voice,
         negative,
+        complementKing: undefined,
       });
     });
     return pullOutLengths(ps);
@@ -78,6 +79,7 @@ export function buildVerbChart({
           object: getPersonFromNP(objNP),
           voice,
           negative,
+          complementKing: undefined,
         }),
       ]),
     };
@@ -92,6 +94,7 @@ export function buildVerbChart({
           object: T.Person.ThirdPlurMale,
           voice,
           negative,
+          complementKing: undefined,
         }),
       ]),
     };

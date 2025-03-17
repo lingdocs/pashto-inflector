@@ -15,11 +15,7 @@ const epPhraseURLParam = "ep";
 
 const blankEps: T.EPSelectionState = {
   blocks: makeEPSBlocks(),
-  predicate: {
-    type: "Complement",
-    NP: undefined,
-    Complement: undefined,
-  },
+  predicate: undefined,
   equative: {
     tense: "present",
     negative: false,
@@ -40,7 +36,7 @@ function EPExplorer(props: {
   const [eps, adjustEps] = useStickyReducer(
     epsReducer,
     blankEps,
-    "EPState8",
+    "EPState9",
     flashMessage
   );
   // const [

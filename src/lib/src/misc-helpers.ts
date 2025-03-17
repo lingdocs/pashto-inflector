@@ -9,6 +9,10 @@
 import * as T from "../../types";
 import { fmapSingleOrLengthOpts } from "./fp-ps";
 
+export function assertNever(value: never, msg: string): never {
+  throw new Error(`${msg}: ` + value);
+}
+
 export const blank: T.PsString = {
   p: "_____",
   f: "_____",
@@ -48,7 +52,7 @@ export function pickPersInf<T>(
   s: T.OptionalPersonInflections<T>,
   persInf: T.PersonInflectionsField
 ): T {
-  // @ts-ignore
+  // @ts-expect-error because ok
   if ("mascSing" in s) {
     return s[persInf];
   }
@@ -181,6 +185,11 @@ export function getAuxTransitivity(
 
 export function personGender(person: T.Person): T.Gender {
   return person % 2 === 0 ? "masc" : "fem";
+}
+
+export function personPerson(person: T.Person): 1 | 2 | 3 {
+  const p = person > 5 ? person - 6 : person;
+  return (Math.floor(p / 2) + 1) as 1 | 2 | 3;
 }
 
 export function personNumber(person: T.Person): T.NounNumber {
@@ -343,7 +352,7 @@ export function chooseLength<N>(
   x: T.SingleOrLengthOpts<N>,
   length: "long" | "short"
 ): N {
-  // @ts-ignore
+  // @ts-expect-error because ok
   if ("long" in x) {
     return x[length];
   }

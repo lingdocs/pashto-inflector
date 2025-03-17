@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import { assertNever } from "../misc-helpers";
 import { getLength } from "../p-text-helpers";
 
 export function makeBlock(block: T.Block["block"], key?: number): T.Block {
@@ -13,6 +14,14 @@ export function makeKid(kid: T.Kid["kid"], key?: number): T.Kid {
     key: key === undefined ? Math.random() : key,
     kid,
   };
+}
+
+export function getComplementSelection(
+  blocks: T.VPSBlockComplete[]
+): T.ComplementSelection | undefined {
+  return blocks.find((b) => b.block.type === "complement")?.block as
+    | T.ComplementSelection
+    | undefined;
 }
 
 export function getSubjectSelection(
@@ -75,14 +84,12 @@ export function includesShrunkenServant(kids?: T.Kid[]): boolean {
   );
 }
 
-export function getPredicateSelectionFromBlocks(
-  blocks: T.Block[][]
-): T.Rendered<T.PredicateSelectionComplete> {
-  const b = blocks[0].find((f) => f.block.type === "predicateSelection");
-  if (!b || b.block.type !== "predicateSelection") {
-    throw new Error("predicateSelection not found in blocks");
+export function getPredicateBlock(blocks: T.Block[][]): T.PredicateBlock {
+  const b = blocks[0].find((f) => f.block.type === "predicate");
+  if (!b) {
+    throw new Error("predicate block not found");
   }
-  return b.block;
+  return b.block as T.PredicateBlock;
 }
 
 export function getAPsFromBlocks(
@@ -491,10 +498,10 @@ function removeHeetsFromComp(
       selection: removeHeetsFromAdjective(comp.selection),
     };
   }
-  if (comp.selection.type === "noun") {
+  if (comp.selection.type === "NP") {
     return {
       ...comp,
-      selection: removeHeetsFromNoun(comp.selection),
+      selection: removeHeetsFromNP(comp.selection),
     };
   }
   if (comp.selection.type === "sandwich") {
@@ -503,8 +510,22 @@ function removeHeetsFromComp(
       selection: removeHeetsFromSandwich(comp.selection),
     };
   }
-  // should be only a loc. adv. left
-  return comp;
+  if (comp.selection.type === "possesor") {
+    return {
+      ...comp,
+      selection: {
+        ...comp.selection,
+        np: removeHeetsFromNP(comp.selection.np),
+      },
+    };
+  }
+  if (
+    comp.selection.type === "comp. noun" ||
+    comp.selection.type === "loc. adv."
+  ) {
+    return comp;
+  }
+  assertNever(comp.selection, "unknown complement type");
 }
 
 function removeHeetsFromNoun(n: T.NounSelection): T.NounSelection {

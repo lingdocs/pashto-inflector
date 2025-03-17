@@ -45,7 +45,7 @@ export function parseBlocks(
   const hasNeg = blocks.some((b) => b.type === "negative");
   const allResults: T.ParseResult<T.ParsedBlock | T.ParsedKidsSection>[] = [
     // Parse NP/APs until we get to verb section
-    ...(!inVerbSection ? parseNPAP(tokens, dictionary) : []),
+    ...(!inVerbSection && !hasComplement ? parseNPAP(tokens, dictionary) : []),
     ...(!hasComplement && !ph && !hasVBE && !hasVBP
       ? parseCompliment(tokens, dictionary)
       : []),

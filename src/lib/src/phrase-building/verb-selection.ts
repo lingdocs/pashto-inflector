@@ -105,7 +105,10 @@ export function makeVPSelectionState(
     },
     externalComplement:
       takesExternalComplement(verb) === "req"
-        ? { type: "complement", selection: { type: "unselected" } }
+        ? os?.externalComplement ?? {
+            type: "complement",
+            selection: { type: "unselected" },
+          }
         : undefined,
     form:
       os && info.type !== "dynamic compound"

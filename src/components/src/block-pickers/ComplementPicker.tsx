@@ -10,14 +10,8 @@ const compTypes: T.ComplementType[] = [
   "sandwich",
   "comp. noun",
   "possesor",
+  "NP",
 ];
-
-function selectionTypeToCompType(
-  s: Exclude<T.ComplementType, "comp. noun"> | "noun"
-): T.ComplementType {
-  if (s === "noun") return "comp. noun";
-  return s;
-}
 
 function ComplementPicker(props: {
   phraseIsComplete: boolean;
@@ -30,14 +24,10 @@ function ComplementPicker(props: {
   negative: boolean;
 }) {
   const [compType, setCompType] = useState<T.ComplementType | undefined>(
-    props.comp ? selectionTypeToCompType(props.comp.selection.type) : undefined
+    props.comp?.selection.type
   );
   useEffect(() => {
-    setCompType(
-      props.comp
-        ? selectionTypeToCompType(props.comp.selection.type)
-        : undefined
-    );
+    setCompType(props.comp?.selection.type);
   }, [props.comp]);
   function handleClear() {
     setCompType(undefined);
@@ -180,6 +170,24 @@ function ComplementPicker(props: {
               negative={props.negative}
             />
           </div>
+        ) : compType === "NP" ? (
+          <NPPicker
+            phraseIsComplete={props.phraseIsComplete}
+            onChange={(np) =>
+              props.onChange(np && { type: "complement", selection: np })
+            }
+            counterPart={undefined}
+            cantClear
+            np={
+              props.comp?.selection.type === "NP"
+                ? props.comp.selection
+                : undefined
+            }
+            role="subject"
+            opts={props.opts}
+            entryFeeder={props.entryFeeder}
+            negative={props.negative}
+          />
         ) : null}
       </div>
     </>

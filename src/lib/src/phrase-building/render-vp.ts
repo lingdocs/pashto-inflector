@@ -20,6 +20,7 @@ import {
 } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
 import { statVerb } from "../new-verb-engine/roots-and-stems";
+import { complementTakesKingship } from "./complement-tools";
 
 // TODO: Issue with yo me R -- both in rendering (what to do - یوړ مې)
 // and in parsing!
@@ -27,11 +28,14 @@ import { statVerb } from "../new-verb-engine/roots-and-stems";
 export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const subject = getSubjectSelection(VP.blocks).selection;
   const object = getObjectSelection(VP.blocks).selection;
+  const complement = VP.externalComplement;
   // Sentence Rules Logic
   const isPast = isPastTense(VP.verb.tense);
   const isTransitive = object !== "none";
   const { king, servant } = getKingAndServant(isPast, isTransitive);
-  const kingPerson = getPersonFromNP(king === "subject" ? subject : object);
+  const kingNP = king === "subject" ? subject : object;
+  const complementKing = complementTakesKingship(kingNP, complement);
+  const kingPerson = getPersonFromNP(kingNP);
   const complementPerson = getPersonFromNP(object ? object : subject);
   // TODO: more elegant way of handling this type safety
   if (kingPerson === undefined) {
@@ -63,6 +67,9 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     tense: VP.verb.tense,
     subject: subjectPerson,
     object: objectPerson,
+    complementKing: complementKing
+      ? getPersonFromNP(complementKing)
+      : undefined,
     voice: VP.verb.voice,
     negative: VP.verb.negative,
   });
@@ -74,7 +81,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   // just enter the negative in the verb blocks
   return {
     type: "VPRendered",
-    king,
+    king: complementKing ? "complement" : king,
     servant,
     isPast,
     isTransitive,
@@ -217,7 +224,7 @@ function renderVPBlocks(
   config: {
     inflectSubject: boolean;
     inflectObject: boolean;
-    king: "subject" | "object";
+    king: "subject" | "object" | "complement";
     complementPerson: T.Person | undefined;
   }
 ): T.Block[] {

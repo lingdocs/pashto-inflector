@@ -6,7 +6,7 @@ import {
 import { compileEP } from "../../../lib/src/phrase-building/compile";
 import ButtonSelect from "../selects/ButtonSelect";
 import {
-  getPredicateSelectionFromBlocks,
+  getPredicateBlock,
   getSubjectSelection,
   getSubjectSelectionFromBlocks,
 } from "../../../lib/src/phrase-building/blocks-utils";
@@ -46,11 +46,11 @@ function EPDisplay({
   if (!EP) {
     return (
       <div className="lead text-center my-4">
-        {!subject && !eps.predicate[eps.predicate.type]
+        {!subject && !eps.predicate
           ? "Select Subject and Predicate"
-          : subject && !eps.predicate[eps.predicate.type]
+          : subject && !eps.predicate
           ? "Select Predicate"
-          : !subject && eps.predicate[eps.predicate.type]
+          : !subject && eps.predicate
           ? "Select Subject"
           : ""}
       </div>
@@ -61,9 +61,7 @@ function EPDisplay({
   const renderedSubject = getSubjectSelectionFromBlocks(
     rendered.blocks
   ).selection;
-  const renderedPredicate = getPredicateSelectionFromBlocks(
-    rendered.blocks
-  ).selection;
+  const renderedPredicate = getPredicateBlock(rendered.blocks).selection;
   return (
     <div className="text-center pt-3">
       <div className="mb-2 d-flex flex-row justify-content-between align-items-center">
@@ -121,29 +119,30 @@ function EPDisplay({
             : result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>
       )}
-      {EP.predicate.selection.selection.type === "participle" && (
-        <div
-          style={{ maxWidth: "6 00px", margin: "0 auto" }}
-          className="alert alert-warning mt-3 pt-4"
-        >
-          <p>
-            ⚠️ NOTE: This means that the subject{" "}
-            {renderedSubject.selection.e
-              ? `(${renderedSubject.selection.e})`
-              : ""}{" "}
-            is <strong>the action/idea</strong> of
-            {` `}"
-            {"e" in renderedPredicate.selection
-              ? renderedPredicate.selection?.e
-              : "the particple"}
-            ".
-          </p>
-          <p>
-            It <strong>does not</strong> mean that the subject is doing the
-            action, which is what the transaltion sounds like in English.
-          </p>
-        </div>
-      )}
+      {EP.predicate.selection.type === "NP" &&
+        EP.predicate.selection.selection.type === "participle" && (
+          <div
+            style={{ maxWidth: "6 00px", margin: "0 auto" }}
+            className="alert alert-warning mt-3 pt-4"
+          >
+            <p>
+              ⚠️ NOTE: This means that the subject{" "}
+              {renderedSubject.selection.e
+                ? `(${renderedSubject.selection.e})`
+                : ""}{" "}
+              is <strong>the action/idea</strong> of
+              {` `}"
+              {"e" in renderedPredicate.selection
+                ? renderedPredicate.selection?.e
+                : "the particple"}
+              ".
+            </p>
+            <p>
+              It <strong>does not</strong> mean that the subject is doing the
+              action, which is what the transaltion sounds like in English.
+            </p>
+          </div>
+        )}
     </div>
   );
 }

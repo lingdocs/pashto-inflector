@@ -1,9 +1,10 @@
-import { isFirstPerson, isSecondPerson } from "../misc-helpers";
+import { assertNever, isFirstPerson, isSecondPerson } from "../misc-helpers";
 import * as T from "../../../types";
 import { concatPsString } from "../p-text-helpers";
 import { flattenLengths } from "./compile";
 import { monoidPsStringWVars } from "../fp-ps";
 import { concatAll } from "fp-ts/lib/Monoid";
+import { getEnglishWord } from "../get-english-word";
 
 function getBaseWDetsAndAdjs({
   selection,
@@ -27,6 +28,8 @@ function getBaseWDetsAndAdjs({
   const base =
     selection.type === "possesor"
       ? [{ p: "", f: "" }]
+      : selection.type === "NP"
+      ? flattenLengths(selection.selection.ps)
       : flattenLengths(selection.ps);
   return assemblePsWords([
     ...determiners,
@@ -81,8 +84,36 @@ function contractPronoun(
 }
 
 function trimOffShrunkenPossesive(
-  p: T.Rendered<T.NPSelection>
-): T.Rendered<T.NPSelection> {
+  p:
+    | T.Rendered<T.NPSelection>
+    | T.Rendered<T.ComplementSelection>
+    | T.Rendered<T.APSelection>
+):
+  | T.Rendered<T.NPSelection>
+  | T.Rendered<T.ComplementSelection>
+  | T.Rendered<T.APSelection> {
+  if (p.type === "NP") {
+    return trimOffSPNP(p);
+  }
+  if (p.type === "complement") {
+    return trimOffSPComplement(p);
+  }
+  if (p.type === "AP") {
+    return trimOffSPAP(p);
+  }
+  return assertNever(p, "unknown type");
+}
+
+function trimOffSPSand(
+  p: T.Rendered<T.SandwichSelection<T.Sandwich>>
+): T.Rendered<T.SandwichSelection<T.Sandwich>> {
+  return {
+    ...p,
+    inside: trimOffSPNP(p.inside),
+  };
+}
+
+function trimOffSPNP(p: T.Rendered<T.NPSelection>): T.Rendered<T.NPSelection> {
   if (!("possesor" in p.selection)) {
     return p;
   }
@@ -104,16 +135,56 @@ function trimOffShrunkenPossesive(
       ...p.selection,
       possesor: {
         ...p.selection.possesor,
-        np: trimOffShrunkenPossesive(p.selection.possesor.np),
+        np: trimOffShrunkenPossesive(
+          p.selection.possesor.np
+        ) as T.Rendered<T.NPSelection>,
       },
     },
   };
+}
+
+function trimOffSPAP(p: T.Rendered<T.APSelection>): T.Rendered<T.APSelection> {
+  if (p.selection.type === "adverb") {
+    return p;
+  }
+  return {
+    ...p,
+    selection: trimOffSPSand(p.selection),
+  };
+}
+
+function trimOffSPComplement(
+  p: T.Rendered<T.ComplementSelection>
+): T.Rendered<T.ComplementSelection> {
+  if (p.selection.type === "NP") {
+    return {
+      ...p,
+      selection: trimOffSPNP(p.selection),
+    };
+  }
+  if (p.selection.type === "sandwich") {
+    return {
+      ...p,
+      selection: trimOffSPSand(p.selection),
+    };
+  }
+  if (p.selection.type === "possesor") {
+    return {
+      ...p,
+      selection: {
+        ...p.selection,
+        np: trimOffSPNP(p.selection.np),
+      },
+    };
+  }
+  return p;
 }
 
 export function getPashtoFromRendered(
   b:
     | T.Rendered<T.NPSelection>
     | T.Rendered<T.ComplementSelection>
+    // | T.Rendered<T.UnselectedComplementSelection>
     | T.RenderedPossesorSelection
     | T.Rendered<T.APSelection>,
   subjectsPerson: false | T.Person
@@ -124,6 +195,11 @@ export function getPashtoFromRendered(
   // for predicate possesor
   if (b.selection.type === "possesor") {
     return addPossesor(b.selection.np, [{ p: "", f: "" }], false);
+  }
+  // @ts-expect-error for some reason the type narrowing breaks when I include
+  // the UnselectedComplementSelection in the type
+  if (b.selection.type === "unselected") {
+    return [{ p: "_____", f: "_____" }];
   }
   const base = getBaseWDetsAndAdjs(b);
   if (b.selection.type === "loc. adv." || b.selection.type === "adverb") {
@@ -142,17 +218,9 @@ export function getPashtoFromRendered(
       sandwichPs.flatMap((s) => concatPsString(s, " ", p))
     );
   }
-  const trimmed =
-    b.selection.type === "sandwich"
-      ? {
-          type: b.type,
-          selection: {
-            ...b.selection,
-            inside: trimOffShrunkenPossesive(b.selection.inside),
-          },
-        }
-      : trimOffShrunkenPossesive({ type: "NP", selection: b.selection });
-  if (trimmed.selection.type === "sandwich") {
+  const trimmed = trimOffShrunkenPossesive(b);
+
+  if ("selection" in trimmed && trimmed.selection.type === "sandwich") {
     return trimmed.selection.inside.selection.possesor
       ? addPossesor(
           trimmed.selection.inside.selection.possesor.np,
@@ -310,6 +378,7 @@ export function getEnglishFromRendered(
   r: T.Rendered<
     | T.NPSelection
     | T.ComplementSelection
+    | T.UnselectedComplementSelection
     | T.APSelection
     | T.SandwichSelection<T.Sandwich>
   >
@@ -340,11 +409,34 @@ export function getEnglishFromRendered(
   if (r.selection.type === "possesor") {
     return addPossesorsEng(r.selection.np, undefined, "complement");
   }
-  return addPossesorsEng(
-    r.selection.possesor?.np,
-    addArticlesAndAdjs(r.selection),
-    r.selection.type
-  );
+  if (r.selection.type === "comp. noun") {
+    const e = getEnglishWord(r.selection.entry);
+    return addPossesorsEng(
+      undefined,
+      // TODO: better handling of,
+      typeof e === "object" ? e.singular || "___" : e,
+      "noun"
+    );
+  }
+  if (r.selection.type === "NP") {
+    // TODO: is this correct ???
+    if (r.selection.selection.type === "noun") {
+      return addPossesorsEng(
+        r.selection.selection.possesor?.np,
+        addArticlesAndAdjs(r.selection.selection),
+        "noun"
+      );
+    }
+    return getEnglishFromRendered(r.selection);
+  }
+  if (r.selection.type === "noun") {
+    return addPossesorsEng(
+      r.selection.possesor?.np,
+      addArticlesAndAdjs(r.selection),
+      "noun"
+    );
+  }
+  throw new Error("unknown type for get English from rendered");
 }
 
 function getEnglishFromRenderedSandwich(

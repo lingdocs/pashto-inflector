@@ -1,8 +1,9 @@
 import * as T from "../../../types";
-import { renderNounSelection, renderPossesor } from "./render-np";
+import { renderNPSelection, renderPossesor } from "./render-np";
 import { renderAdjectiveSelection } from "./render-adj";
 import { renderSandwich } from "./render-sandwich";
 import { renderLocativeAdverbSelection } from "./render-ap";
+import { removeFVarients } from "../accent-and-ps-utils";
 
 export function renderComplementSelection(
   s: T.ComplementSelection | T.UnselectedComplementSelection,
@@ -27,6 +28,7 @@ export function renderComplementSelection(
   if (s.selection.type === "loc. adv.") {
     return {
       type: "complement",
+      // TODO: person should affect this as well!
       selection: renderLocativeAdverbSelection(s.selection),
     };
   }
@@ -52,9 +54,29 @@ export function renderComplementSelection(
       selection,
     };
   }
-  // if (s.selection.type === "noun") {
-  return {
-    type: "complement",
-    selection: renderNounSelection(s.selection, false, "none", "noArticles"),
-  };
+  if (s.selection.type === "comp. noun") {
+    return {
+      type: "complement",
+      selection: {
+        type: "comp. noun",
+        entry: s.selection.entry,
+        ps: [removeFVarients(s.selection.entry)],
+      },
+    };
+  }
+  if (s.selection.type === "NP") {
+    return {
+      type: "complement",
+      selection: renderNPSelection(
+        s.selection,
+        false,
+        false,
+        "subject",
+        "none",
+        false,
+        "no"
+      ),
+    };
+  }
+  throw new Error("unknown complement type for rendering");
 }

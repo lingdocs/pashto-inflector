@@ -15,15 +15,16 @@ import {
   getAPsFromBlocks,
   getComplementFromBlocks,
   getObjectSelectionFromBlocks,
-  getPredicateSelectionFromBlocks,
+  getPredicateBlock,
   getSubjectSelectionFromBlocks,
   hasEquativeWithLengths,
   isRenderedVerbB,
   specifyEquativeLength,
 } from "./blocks-utils";
-import { blank, kidsBlank } from "../misc-helpers";
+import { assertNever, blank, kidsBlank } from "../misc-helpers";
 import { monoidPsString, monoidPsStringWVars } from "../fp-ps";
 import { concatAll } from "fp-ts/lib/Monoid";
+import { getEnglishWord } from "../get-english-word";
 
 type BlankoutOptions = {
   equative?: boolean;
@@ -114,7 +115,7 @@ function compileVPPs(
   blocks: T.Block[][],
   kids: T.Kid[],
   form: T.FormVersion,
-  king: "subject" | "object",
+  king: "subject" | "object" | "complement",
   blankOut?: BlankoutOptions
 ): T.PsString[] {
   const subjectPerson =
@@ -168,7 +169,7 @@ function compileEPPs(
 export function filterForVisibleBlocksVP(
   blocks: T.Block[][],
   form: T.FormVersion,
-  king: "subject" | "object"
+  king: "subject" | "object" | "complement"
 ): T.Block[][] {
   const servant = king === "object" ? "subject" : "object";
   return blocks.map((blks) =>
@@ -264,9 +265,7 @@ function applyBlankOut(
     if (
       (blankOut.equative && "block" in x && x.block.type === "equative") ||
       (blankOut.verb && "block" in x && isRenderedVerbB(x)) ||
-      (blankOut?.predicate &&
-        "block" in x &&
-        x.block.type === "predicateSelection")
+      (blankOut?.predicate && "block" in x && x.block.type === "predicate")
     ) {
       return blank;
     }
@@ -296,11 +295,20 @@ function getPsFromPiece(
       // length will already be specified in compileEPPs - this is just for type safety
       return getLong(piece.block.equative.ps);
     }
-    if (
-      piece.block.type === "subjectSelection" ||
-      piece.block.type === "predicateSelection"
-    ) {
+    if (piece.block.type === "subjectSelection") {
       return getPashtoFromRendered(piece.block.selection, subjectPerson);
+    }
+    if (piece.block.type === "predicate") {
+      const b:
+        | T.Rendered<T.ComplementSelection>
+        | T.Rendered<T.UnselectedComplementSelection> = piece.block.selection;
+      if (b.selection.type === "unselected") {
+        return [{ p: "_____", f: "_____" }];
+      }
+      // CRAZY WHY DOESN'T TYPE NARROWING WORK HERE
+      // @ts-expect-error - bad type narrowing
+      const c: T.Rendered<T.ComplementSelection> = b;
+      return getPashtoFromRendered(c, subjectPerson);
     }
     if (piece.block.type === "AP") {
       return getPashtoFromRendered(piece.block, subjectPerson);
@@ -332,10 +340,19 @@ function getPsFromPiece(
         const b: T.RenderedPossesorSelection = piece.block.selection;
         return getPashtoFromRendered(b, false);
       }
+      if (piece.block.selection.type === "unselected") {
+        return [{ p: "_____", f: "_____" }];
+      }
+      if (piece.block.selection.type === "NP") {
+        return getPashtoFromRendered(piece.block.selection, false);
+      }
       return flattenLengths(piece.block.selection.ps);
     }
-    // welded
-    return getPsFromWelded(piece.block);
+    if (piece.block.type === "welded") {
+      // welded
+      return getPsFromWelded(piece.block);
+    }
+    assertNever(piece.block, "unknown complement type");
   }
   if ("kid" in piece) {
     if (piece.kid.type === "ba") {
@@ -382,11 +399,14 @@ function getEngComplement(blocks: T.Block[][]): string | undefined {
   if (comp.selection.type === "sandwich") {
     return getEnglishFromRendered({ type: "AP", selection: comp.selection });
   }
-  if (comp.selection.type === "possesor") {
+  if (comp.selection.type === "possesor" || comp.selection.type === "NP") {
     return getEnglishFromRendered({
       type: "complement",
       selection: comp.selection,
     });
+  }
+  if (comp.selection.type === "comp. noun") {
+    return `${getEnglishWord(comp.selection.entry)} compl.`;
   }
   return comp.selection.e;
 }
@@ -471,7 +491,7 @@ function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
     return e.replace("$SUBJ", subject).replace("$PRED", predicate || "") + APs;
   }
   const engSubjR = getSubjectSelectionFromBlocks(EP.blocks).selection;
-  const engPredR = getPredicateSelectionFromBlocks(EP.blocks).selection;
+  const engPredR = getPredicateBlock(EP.blocks).selection;
   const engSubj = getEnglishFromRendered(engSubjR);
   const engPred = getEnglishFromRendered(engPredR);
   const engAPs = getEngAPs(EP.blocks);

@@ -420,7 +420,7 @@ export function ensureNoHangingR(b: T.Block[]): T.Block[] {
 }
 
 export function takesExternalComplement(v: T.VerbEntry): "req" | "opt" | "no" {
-  if (v.entry.c.includes("w compl.")) {
+  if (v.entry.c.includes("w. compl.")) {
     return "req";
   }
   if (v.entry.c.includes("opt. compl.")) {

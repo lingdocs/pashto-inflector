@@ -18,7 +18,7 @@ export const kedulStat = {
     g: "kedul",
     e: "to become _____",
     r: 2,
-    c: "v. intrans. w compl.",
+    c: "v. intrans. w. compl.",
     ssp: "ش",
     ssf: "sh",
     prp: "شول",

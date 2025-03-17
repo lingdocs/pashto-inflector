@@ -11,6 +11,7 @@ import { getLength } from "../../../lib/src/p-text-helpers";
 import { roleIcon } from "../role-icons";
 import { negativeParticle } from "../../../lib/src/grammar-units";
 import { flattenLengths } from "../../library";
+import { removeFVarients } from "../../../lib/src/accent-and-ps-utils";
 
 function Block({
   opts,
@@ -20,7 +21,7 @@ function Block({
 }: {
   opts: T.TextOptions;
   block: T.Block;
-  king?: "subject" | "object" | undefined;
+  king?: "subject" | "object" | "complement" | undefined;
   script: "p" | "f";
 }) {
   if ("equative" in block.block) {
@@ -60,24 +61,18 @@ function Block({
       />
     );
   }
-  if (block.block.type === "predicateSelection") {
-    const english = getEnglishFromRendered(block.block.selection);
+  if (block.block.type === "predicate") {
     return (
       <div className="text-center">
         <div>
           <strong>Predicate</strong>
         </div>
-        {block.block.selection.type === "complement" ? (
-          <ComplementBlock
-            opts={opts}
-            comp={block.block.selection.selection}
-            script={script}
-          />
-        ) : (
-          <NPBlock opts={opts} english={english} script={script}>
-            {block.block.selection}
-          </NPBlock>
-        )}
+        <ComplementBlock
+          opts={opts}
+          comp={block.block.selection.selection}
+          script={script}
+          isKing={king === "complement"}
+        />
       </div>
     );
   }
@@ -102,6 +97,7 @@ function Block({
         opts={opts}
         comp={block.block.selection}
         script={script}
+        isKing={king === "complement"}
       />
     );
   }
@@ -455,6 +451,7 @@ function ComplementBlock({
   opts,
   comp,
   script,
+  isKing,
   inside,
 }: {
   script: "p" | "f";
@@ -463,6 +460,7 @@ function ComplementBlock({
     | T.Rendered<T.ComplementSelection["selection"]>
     | T.Rendered<T.UnselectedComplementSelection>["selection"];
   inside?: boolean;
+  isKing: boolean;
 }) {
   function AdjectiveBlock({
     // opts,
@@ -502,13 +500,13 @@ function ComplementBlock({
   }
   return (
     <div className="text-center">
-      <div>Complement</div>
+      <div>Complement {isKing && roleIcon.king}</div>
       {comp.type === "adjective" ? (
         <AdjectiveBlock opts={opts} adj={comp} />
       ) : comp.type === "loc. adv." ? (
         <LocAdvBlock opts={opts} adv={comp} />
-      ) : comp.type === "noun" ? (
-        <CompNounBlock opts={opts} noun={comp} script={script} />
+      ) : comp.type === "comp. noun" ? (
+        <CompNounBlock opts={opts} noun={comp.entry} script={script} />
       ) : comp.type === "unselected" ? (
         <div>
           <Border>____</Border>
@@ -525,7 +523,7 @@ function ComplementBlock({
           <div>Sandwich</div>
           <SubText>{comp.e}</SubText>
         </div>
-      ) : (
+      ) : comp.type === "possesor" ? (
         <>
           <Border>
             <Possesors opts={opts} script={script} complement>
@@ -537,7 +535,11 @@ function ComplementBlock({
             {getEnglishFromRendered({ type: "complement", selection: comp })}
           </SubText>
         </>
-      )}
+      ) : comp.type === "NP" ? (
+        <NPBlock script={script} opts={opts}>
+          {comp}
+        </NPBlock>
+      ) : null}
     </div>
   );
 }
@@ -645,16 +647,17 @@ function CompNounBlock({
   script,
 }: {
   opts: T.TextOptions;
-  noun: T.Rendered<T.NounSelection>;
+  noun: T.NounEntry;
   script: "p" | "f";
 }) {
+  // TODO: might have to have more than just a noun entry here
   return (
     <div className="text-center">
       <Border
         // extraClassName={`${!inside && hasPossesor} ? "pt-2" : ""`}
         padding={"1rem"}
       >
-        {flattenLengths(noun.ps)[0][script]}
+        {removeFVarients(noun)[script]}
       </Border>
       <div>Comp. Noun</div>
       <SubText>{noun.e}</SubText>

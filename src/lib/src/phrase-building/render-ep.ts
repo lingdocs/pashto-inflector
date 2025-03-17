@@ -5,6 +5,7 @@ import { renderNPSelection } from "./render-np";
 import { getPersonFromVerbForm } from "../misc-helpers";
 import { getVerbBlockPosFromPerson } from "../misc-helpers";
 import { renderAdverbSelection } from "./render-ap";
+import { complementTakesKingship } from "./complement-tools";
 import { renderSandwich } from "./render-sandwich";
 import {
   EPSBlocksAreComplete,
@@ -37,38 +38,20 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): {
 } {
   const subject = getSubjectSelection(EP.blocks).selection;
   const subjectPerson = getPersonFromNP(subject);
-  const commandingNP: T.NPSelection =
-    subject.selection.type === "pronoun"
-      ? subject
-      : EP.predicate.selection.type === "NP"
-      ? EP.predicate.selection
-      : subject;
-  const commandingPerson = getPersonFromNP(commandingNP);
+  const complementKing = complementTakesKingship(subject, EP.predicate);
+  const kingPerson = complementKing
+    ? getPersonFromNP(complementKing)
+    : subjectPerson;
   const equative: T.EquativeBlock = {
     type: "equative",
-    equative: renderEquative(EP.equative, commandingPerson),
+    equative: renderEquative(EP.equative, kingPerson),
   };
   const blocks: T.Block[][] = insertNegative(
     [
       ...renderEPSBlocks(EP.blocks),
       makeBlock({
-        type: "predicateSelection",
-        selection:
-          EP.predicate.selection.type === "NP"
-            ? renderNPSelection(
-                EP.predicate.selection,
-                false,
-                false,
-                "subject",
-                "king",
-                false,
-                "no"
-              )
-            : // we won't have an unselected complement in the EP - TODO: make safer?
-              (renderComplementSelection(
-                EP.predicate.selection,
-                commandingPerson
-              ) as T.Rendered<T.ComplementSelection>),
+        type: "predicate",
+        selection: renderComplementSelection(EP.predicate, subjectPerson),
       }),
       makeBlock(equative),
     ],
@@ -110,21 +93,13 @@ function insertNegative(blocks: T.Block[], negative: boolean): T.Block[][] {
 }
 
 function removeOrKeepSubject(
-  blocks: (
-    | T.EPSBlockComplete
-    | T.SubjectSelectionComplete
-    | T.PredicateSelectionComplete
-    | T.APSelection
-  )[],
+  blocks: (T.EPSBlockComplete | T.ComplementSelection)[],
   omitSubject: boolean
-): (
-  | T.EPSBlockComplete
-  | T.SubjectSelectionComplete
-  | T.PredicateSelectionComplete
-  | T.APSelection
-)[] {
+): (T.EPSBlockComplete | T.ComplementSelection)[] {
   if (!omitSubject) return blocks;
-  return blocks.filter((b) => !("type" in b && b.type === "subjectSelection"));
+  return blocks.filter(
+    (b) => !("block" in b && b.block.type === "subjectSelection")
+  );
 }
 
 export function getEquativeForm(tense: T.EquativeTense): {
@@ -182,13 +157,13 @@ function renderEPSBlocks(blocks: T.EPSBlockComplete[]): T.Block[] {
 
 function renderEquative(
   es: T.EquativeSelection,
-  person: T.Person
+  king: T.Person
 ): T.EquativeRendered {
   const { form, hasBa } = getEquativeForm(es.tense);
-  const ps = getPersonFromVerbForm(form, person);
+  const ps = getPersonFromVerbForm(form, king);
   return {
     ...es,
-    person,
+    person: king,
     hasBa,
     ps,
   };
@@ -281,28 +256,15 @@ export function completeEPSelection(
   if (!EPSBlocksAreComplete(eps.blocks)) {
     return undefined;
   }
-  if (eps.predicate.type === "Complement") {
-    const selection = eps.predicate.Complement;
-    if (!selection) return undefined;
-    return {
-      ...eps,
-      blocks: eps.blocks,
-      predicate: {
-        type: "predicateSelection",
-        selection,
-      },
-    };
+  if (!eps.predicate) {
+    return undefined;
   }
-  // predicate is NP
-  const selection = eps.predicate.NP;
-  if (!selection) return undefined;
+  // TODO: for some reason TypeScript needs me to do this
+  //  poor type narrowing
   return {
     ...eps,
     blocks: eps.blocks,
-    predicate: {
-      type: "predicateSelection",
-      selection,
-    },
+    predicate: eps.predicate,
   };
 }
 

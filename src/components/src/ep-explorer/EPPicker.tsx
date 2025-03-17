@@ -1,7 +1,6 @@
 import * as T from "../../../types";
 import NPPicker from "../block-pickers/NPPicker";
 import EquativePicker from "./EquativePicker";
-import ButtonSelect from "../selects/ButtonSelect";
 import ComplementPicker from "../block-pickers/ComplementPicker";
 import epsReducer, {
   EpsReducerAction,
@@ -115,48 +114,16 @@ function EPPicker({
         ))}
         <div className="my-2 card block-card p-1">
           <div className="h5 text-center">Predicate</div>
-          <div className="mb-2 text-center">
-            <ButtonSelect
-              small
-              options={[
-                { value: "NP", label: "NP" },
-                { value: "Complement", label: "Complement" },
-              ]}
-              value={eps.predicate.type}
-              handleChange={(payload) =>
-                adjustEps({ type: "set predicate type", payload })
-              }
-            />
-          </div>
-          {eps.predicate.type === "NP" ? (
-            <NPPicker
-              phraseIsComplete={phraseIsComplete}
-              entryFeeder={entryFeeder}
-              np={eps.predicate.type === "NP" ? eps.predicate.NP : undefined}
-              counterPart={undefined}
-              role="subject"
-              onChange={(payload) =>
-                adjustEps({ type: "set predicate NP", payload })
-              }
-              opts={opts}
-              negative={eps.equative.negative}
-            />
-          ) : (
-            <ComplementPicker
-              phraseIsComplete={phraseIsComplete}
-              comp={
-                eps.predicate.type === "Complement"
-                  ? eps.predicate.Complement
-                  : undefined
-              }
-              onChange={(payload) =>
-                adjustEps({ type: "set predicate complement", payload })
-              }
-              opts={opts}
-              entryFeeder={entryFeeder}
-              negative={eps.equative.negative}
-            />
-          )}
+          <ComplementPicker
+            phraseIsComplete={phraseIsComplete}
+            comp={eps.predicate}
+            onChange={(payload) =>
+              adjustEps({ type: "set predicate", payload })
+            }
+            opts={opts}
+            entryFeeder={entryFeeder}
+            negative={eps.equative.negative}
+          />
         </div>
         <div className="my-2">
           <div className="h5 text-center clickable">Equative</div>

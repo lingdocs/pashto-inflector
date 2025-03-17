@@ -121,11 +121,13 @@ const formulas: Record<
 
 // TODO: is وخوته masc ok ??
 // TODO: what to do with khatu, khot, khotu - bi-directional
+// TODO: ښکارېدل short third masc check
 export function renderVerb({
   verb,
   tense,
   subject,
   object,
+  complementKing,
   voice,
   negative,
 }: {
@@ -134,6 +136,7 @@ export function renderVerb({
   tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense; // TODO: make T.Tense
   subject: T.Person;
   object: T.Person | undefined;
+  complementKing: T.Person | undefined;
   voice: T.Voice;
 }): T.RenderVerbOutput {
   if (isPerfectTense(tense)) {
@@ -141,14 +144,14 @@ export function renderVerb({
       verb,
       tense,
       voice,
-      person: object ?? subject,
+      person: complementKing ?? object ?? subject,
     });
   }
   const { aspect, tenseC, hasBa } = formulas[removeAbility(tense)];
   const isPast = tenseC === "past";
   const type = isAbilityTense(tense) ? "ability" : "basic";
   const transitive = object !== undefined;
-  const king = transitive && isPast ? object : subject;
+  const king = complementKing ?? (transitive && isPast ? object : subject);
   const base = isPast ? "root" : "stem";
   // #1 get the appropriate root / stem
   const [vHead, rest] = getRootStem({
