@@ -8,10 +8,8 @@ export function findPossesivesToShrink(
   blocks: (
     | T.EPSBlockComplete
     | T.VPSBlockComplete
-    | T.SubjectSelectionComplete
     | T.ComplementSelection
-    | T.CompNounSelection
-    | T.APSelection
+    | T.UnselectedComplementSelection
   )[]
 ): T.MiniPronoun[] {
   return blocks.reduce((kids, item) => {
@@ -28,6 +26,9 @@ export function findPossesivesToShrink(
       return [...kids, ...findShrunkenPossInNP(block.selection.inside)];
     }
     if (block.type === "complement") {
+      if (block.selection.type === "unselected") {
+        return [];
+      }
       const toAdd =
         block.selection.type === "sandwich"
           ? findShrunkenPossInNP(block.selection.inside)

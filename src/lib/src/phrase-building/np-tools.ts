@@ -381,7 +381,7 @@ function pronounPossEng(p: T.Person, finalInComplement: boolean): string {
     return "his/its";
   }
   if (p === T.Person.ThirdSingFemale) {
-    return finalInComplement ? "hers" : "its";
+    return finalInComplement ? "hers" : "her";
   }
   return `${finalInComplement ? "theirs" : "their"} (${gend(p)})`;
 }

@@ -24,6 +24,7 @@ import { parseKawulKedul } from "./parse-kawul-kedul";
 // TODO: هغه لاړ
 // TODO: لاړې etc - check if botlul etc bo-ba-de-dzee is working
 // TODO: don't have کول کېدل in split-verbs
+// TODO: why doesn't بلله or وبلله work بلل fem sing past
 
 // پوښتنه وشوه - shouldn't also parse as پوښتنه شوه
 

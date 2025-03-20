@@ -78,7 +78,7 @@ function regStemSearch(s: string, dicitonary: T.DictionaryAPI): T.VerbEntry[] {
     .verbEntryLookup(s + "ل")
     .filter(
       (e) =>
-        !e.entry.c.includes("comp") &&
+        !e.entry.c.includes("comp.") &&
         !e.entry.ssp &&
         !e.entry.psp &&
         !e.entry.c.includes("intrans")
@@ -87,7 +87,7 @@ function regStemSearch(s: string, dicitonary: T.DictionaryAPI): T.VerbEntry[] {
     .verbEntryLookup((s.endsWith("ېږ") ? s.slice(0, -2) : s) + "ېدل")
     .filter(
       (e) =>
-        !e.entry.c.includes("comp") &&
+        !e.entry.c.includes("comp.") &&
         !e.entry.ssp &&
         !e.entry.psp &&
         e.entry.c.includes("intrans")

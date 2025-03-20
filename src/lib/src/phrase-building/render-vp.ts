@@ -87,7 +87,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     isTransitive,
     isCompound: VP.verb.isCompound,
     blocks: VBwNeg.map((VBvars) => [...firstBlocks, ...VBvars]),
-    kids: getVPKids(hasBa, VP.blocks, VP.form, king),
+    kids: getVPKids(hasBa, VP.blocks, VP.externalComplement, VP.form, king),
     englishBase: renderEnglishVPBase({
       subjectPerson,
       object:
@@ -105,6 +105,10 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
 function getVPKids(
   hasBa: boolean,
   blocks: T.VPSBlockComplete[],
+  exComplement:
+    | T.ComplementSelection
+    | T.UnselectedComplementSelection
+    | undefined,
   form: T.FormVersion,
   king: "subject" | "object"
 ): T.Kid[] {
@@ -116,9 +120,10 @@ function getVPKids(
     form.shrinkServant && servantNP
       ? makeKid(shrinkServant(servantNP))
       : undefined;
-  const shrunkenPossesives = findPossesivesToShrink(
-    removeAbbreviated(blocks, form, king)
-  ).map(makeKid);
+  const shrunkenPossesives = findPossesivesToShrink([
+    ...removeAbbreviated(blocks, form, king),
+    ...(exComplement ? [exComplement] : []),
+  ]).map(makeKid);
   return orderKids([
     ...(hasBa ? [makeKid({ type: "ba" })] : []),
     ...(shrunkenServant ? [shrunkenServant] : []),
