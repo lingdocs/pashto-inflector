@@ -29,13 +29,14 @@ const working = [
   "demonstrative pronouns",
   "ability verbs",
   "dynamic compound verbs",
+  "verbs with complements",
 ];
 
 const todo = [
+  "equative verbs",
   "stative compound verbs",
   "adjectival participles",
   "relative clauses",
-  "equative verbs",
   "passive verbs",
   "quantifiers",
   "approximate spelling",
@@ -60,6 +61,7 @@ const examples = [
   "ما منډې ونه شوې وهلی",
   "دا خبره مې سپکاوی بللی دی",
   "زه دې یې په مشکل کې ګڼم",
+  "زه مې دې په کور کې کړم",
 ];
 
 function ParserDemo({
@@ -153,8 +155,8 @@ function ParserDemo({
               <>
                 <div>possible errors:</div>
                 <ul>
-                  {errors.map((e) => (
-                    <li>{e}</li>
+                  {errors.map((e, i) => (
+                    <li key={`err ${i}`}>{e}</li>
                   ))}
                 </ul>
               </>
@@ -165,8 +167,8 @@ function ParserDemo({
           <div className="text-center">Did you mean:</div>
         </>
       )}
-      {result.map((res) => (
-        <>
+      {result.map((res, i) => (
+        <div key={`res ${i}`}>
           <EditableVP
             opts={opts}
             entryFeeder={entryFeeder}
@@ -178,7 +180,7 @@ function ParserDemo({
             <summary>AST</summary>
             <JsonEditor data={res} />
           </details>
-        </>
+        </div>
       ))}
     </div>
   );

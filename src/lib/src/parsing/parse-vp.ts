@@ -56,9 +56,8 @@ import { complementTakesKingship } from "../phrase-building/complement-tools";
 
 // TODO: زما غټه ښځه وینې - throws "complement link broken"
 // FOR display - Verb blocks should display VBP - VBE somehow
+// TODO: راشه is broken
 
-// زه مې دې په کور کې کړم
-//  should work
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI

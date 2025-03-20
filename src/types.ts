@@ -1136,11 +1136,7 @@ export type VPSBlock = {
 };
 export type VPSBlockComplete = {
   key: number;
-  block:
-    | SubjectSelectionComplete
-    | ObjectSelectionComplete
-    | APSelection
-    | ComplementSelection;
+  block: SubjectSelectionComplete | ObjectSelectionComplete | APSelection;
 };
 
 export type EPSelectionComplete = Omit<
