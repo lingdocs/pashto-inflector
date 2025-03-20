@@ -309,8 +309,10 @@ function addArticlesAndAdjs(
 function addPossesorsEng(
   possesor: T.Rendered<T.NPSelection> | undefined,
   base: string | undefined,
+  determiners: T.Rendered<T.NPSelection>["selection"]["determiners"],
   type: "noun" | "participle" | "complement"
 ): string | undefined {
+  const hasDeterminers = !!(determiners && !!determiners.determiners.length);
   function removeArticles(s: string): string {
     return s.replace("(the) ", "").replace("(a/the) ", "");
   }
@@ -318,17 +320,27 @@ function addPossesorsEng(
   if (!possesor) return base;
   if (possesor.selection.type === "pronoun") {
     if (type === "noun" && base) {
-      return `${pronounPossEng(
-        possesor.selection.person,
-        false
-      )} ${removeArticles(base)}`;
+      return hasDeterminers
+        ? `${removeArticles(base)} of ${pronounPossEng(
+            possesor.selection.person,
+            true
+          )}`
+        : `${pronounPossEng(possesor.selection.person, false)} ${removeArticles(
+            base
+          )}`;
     }
     if (type === "participle" && base) {
-      return `(${pronounPossEng(
-        possesor.selection.person,
-        false
-      )}) ${removeArticles(base)} (${possesor.selection.e})`;
+      return hasDeterminers
+        ? `${removeArticles(base)} of ${pronounPossEng(
+            possesor.selection.person,
+            true
+          )} (${possesor.selection.e})`
+        : `(${pronounPossEng(
+            possesor.selection.person,
+            false
+          )}) ${removeArticles(base)} (${possesor.selection.e})`;
     }
+    // TODO: ????
     if (type === "complement") {
       return pronounPossEng(possesor.selection.person, true);
     }
@@ -403,11 +415,12 @@ export function getEnglishFromRendered(
     return addPossesorsEng(
       r.selection.possesor?.np,
       r.selection.e,
+      r.selection.determiners,
       r.selection.type
     );
   }
   if (r.selection.type === "possesor") {
-    return addPossesorsEng(r.selection.np, undefined, "complement");
+    return addPossesorsEng(r.selection.np, undefined, undefined, "complement");
   }
   if (r.selection.type === "comp. noun") {
     const e = getEnglishWord(r.selection.entry);
@@ -415,6 +428,7 @@ export function getEnglishFromRendered(
       undefined,
       // TODO: better handling of,
       typeof e === "object" ? e.singular || "___" : e,
+      undefined,
       "noun"
     );
   }
@@ -424,6 +438,7 @@ export function getEnglishFromRendered(
       return addPossesorsEng(
         r.selection.selection.possesor?.np,
         addArticlesAndAdjs(r.selection.selection),
+        r.selection.selection.determiners,
         "noun"
       );
     }
@@ -433,6 +448,7 @@ export function getEnglishFromRendered(
     return addPossesorsEng(
       r.selection.possesor?.np,
       addArticlesAndAdjs(r.selection),
+      r.selection.determiners,
       "noun"
     );
   }

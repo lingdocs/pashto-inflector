@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import { assertNever } from "../misc-helpers";
 
 /**
  * Monadic binding for ParseResult[]
@@ -261,63 +262,147 @@ export function startsVerbSection(b: T.ParsedBlock): boolean {
   );
 }
 
-export function canTakeShrunkenPossesor(
-  block: T.NPSelection | T.APSelection
-): boolean {
-  if (block.type === "NP") {
-    return block.selection.type !== "pronoun" && !block.selection.possesor;
-  }
-  if (block.selection.type === "sandwich") {
-    return canTakeShrunkenPossesor(block.selection.inside);
-  }
-  return false;
-}
-
-export function addShrunkenPossesor(
-  b: T.NPSelection,
-  person: T.Person
-): T.NPSelection;
-export function addShrunkenPossesor(
-  b: T.APSelection,
-  person: T.Person
-): T.APSelection;
-export function addShrunkenPossesor(
-  b: T.NPSelection | T.APSelection,
-  person: T.Person
-): T.NPSelection | T.APSelection {
-  if (b.selection.type === "adverb" || b.selection.type === "pronoun") {
-    throw new Error("cannot add shrunken possesor");
-  }
-  if (b.type === "AP") {
+function addShrunkenPossesorNP(person: T.Person) {
+  return (b: T.NPSelection): T.NPSelection => {
+    if (b.selection.type === "pronoun") {
+      throw new Error("Cannot add possessive on pronoun");
+    }
+    if (b.selection.possesor) {
+      throw new Error("Cannot add possessive with existing possesor");
+    }
     return {
       ...b,
       selection: {
         ...b.selection,
-        inside: addShrunkenPossesor(b.selection.inside, person),
-      },
-    };
-  }
-  if (b.selection.possesor) {
-    throw new Error("cannot add another possesor");
-  }
-  return {
-    ...b,
-    selection: {
-      ...b.selection,
-      possesor: {
-        type: "possesor",
-        shrunken: true,
-        np: {
-          type: "NP",
-          selection: {
-            type: "pronoun",
-            distance: "far",
-            person,
+        possesor: {
+          type: "possesor",
+          shrunken: true,
+          np: {
+            type: "NP",
+            selection: {
+              type: "pronoun",
+              distance: "far",
+              person,
+            },
           },
         },
       },
-    },
+    };
   };
+}
+
+export function canTakeShrunkenPossesor(
+  b: T.ParsedBlock | T.NPSelection
+): boolean {
+  if (b.type === "NP") {
+    if (!("selection" in b.selection)) {
+      // base NP case;
+      return b.selection.type !== "pronoun" && !b.selection.possesor;
+    } else {
+      return canTakeShrunkenPossesor(b.selection);
+    }
+  }
+  if (b.type === "complement") {
+    if (!("type" in b.selection)) {
+      // TODO: will need to change this when we add sandwiches to adjectives
+      return false;
+    }
+    if (b.selection.type === "NP") {
+      return canTakeShrunkenPossesor(b.selection);
+    }
+    if (b.selection.type === "loc. adv.") {
+      return false;
+    }
+    if (b.selection.type === "possesor") {
+      return canTakeShrunkenPossesor(b.selection.np);
+    }
+    if (b.selection.type === "sandwich") {
+      return canTakeShrunkenPossesor(b.selection.inside);
+    }
+    assertNever(b.selection, "unknown complement type");
+  }
+  if (b.type === "AP") {
+    if (b.selection.type === "sandwich") {
+      return canTakeShrunkenPossesor(b.selection.inside);
+    }
+    if (b.selection.type === "adverb") {
+      return false;
+    }
+    assertNever(b.selection, "unknown AP type");
+  }
+  return false;
+}
+
+/**
+ * adds a given possesor to a given block
+ * these should be checked beforehand to see if the
+ * the possesor can go there, so it will throw an
+ * error if this is impossible
+ */
+export function addShrunkenPossesor(
+  b: T.ParsedBlock,
+  person: T.Person
+): T.ParsedBlock {
+  const addOnNP = addShrunkenPossesorNP(person);
+  if (b.type === "NP") {
+    return {
+      ...b,
+      selection: addOnNP(b.selection),
+    };
+  }
+  if (b.type === "AP") {
+    if (b.selection.type === "adverb") {
+      throw new Error("can't add possesor on adverb");
+    }
+    if (b.selection.type === "sandwich") {
+      return {
+        ...b,
+        selection: {
+          ...b.selection,
+          inside: addOnNP(b.selection.inside),
+        },
+      };
+    }
+    assertNever(b.selection, "unknown AP type");
+  }
+  if (b.type === "complement") {
+    if (!("type" in b.selection)) {
+      // TODO: update when adjectives can get sandwiches
+      throw new Error("can't add possesor on adjective");
+    }
+    if (b.selection.type === "NP") {
+      return {
+        ...b,
+        selection: addOnNP(b.selection),
+      };
+    }
+    if (b.selection.type === "loc. adv.") {
+      throw new Error("can't add possesor on loc. adv.");
+    }
+    if (b.selection.type === "possesor") {
+      if (b.selection.np.selection.type === "pronoun") {
+        throw new Error("can't add possesor on pronoun");
+      }
+      return {
+        ...b,
+        selection: {
+          ...b.selection,
+          np: addOnNP(b.selection.np),
+        },
+      };
+    }
+    if (b.selection.type === "sandwich") {
+      return {
+        ...b,
+        selection: {
+          ...b.selection,
+          inside: addOnNP(b.selection.inside),
+        },
+      };
+    }
+    assertNever(b.selection, "unknown complement type");
+  }
+  throw new Error(`Can't add possesive to ${b.type} block`);
 }
 
 export function toParseError(message: string): T.ParseError {

@@ -3,6 +3,7 @@ import { parseNP } from "./parse-np";
 import { bindParseResult } from "./utils";
 // TODO: maybe contractions should just be male to cut down on the
 // alternative sentences
+// TODO: be able to parse khpul etc
 const contractions: [string[], T.Person[]][] = [
   [["زما"], [T.Person.FirstSingMale, T.Person.FirstSingFemale]],
   [["ستا"], [T.Person.SecondSingMale, T.Person.SecondSingFemale]],

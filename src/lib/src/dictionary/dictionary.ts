@@ -27,6 +27,7 @@ function queryTs(ts: number): T.DictionaryEntry {
   }
   const res = dictDb.findOneByTs(ts);
   if (!res) {
+    console.log({ err: true, ts });
     throw new Error("complement link broken");
   }
   return res;

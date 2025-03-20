@@ -54,12 +54,11 @@ import { complementTakesKingship } from "../phrase-building/complement-tools";
 
 // TODO: زه د هغې غټې ښځې کور شوم - should work
 
+// TODO: زما غټه ښځه وینې - throws "complement link broken"
 // FOR display - Verb blocks should display VBP - VBE somehow
 
 // زه مې دې په کور کې کړم
 //  should work
-//زه دې په کور کې کړم why is one option   -  She/it (f.) made me (m.) in (a/the) house ???
-// زه دې خفه کړم - why she/it made me sad ??
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI
@@ -793,13 +792,13 @@ function finishTransitiveWOneNP(np: T.ParsedNP) {
           });
         }
         if (!isPast) {
-          if (isFirstOrSecondPersPronoun(np.selection) && !np.inflected) {
+          const shouldInflect = isFirstOrSecondPersPronoun(np.selection);
+          if (shouldInflect && !np.inflected) {
             errors.push({
               message:
                 "first or second pronoun object of non-past transitive verb must be inflected",
             });
-          }
-          if (np.inflected) {
+          } else if (!shouldInflect && np.inflected) {
             errors.push({
               message:
                 "object of non-past transitive verb should not be inflected",
@@ -1513,14 +1512,9 @@ function createPossesivePossibilities(
   }[] {
     const { miniPronoun, adjusted } = pullOutMiniPronoun(body, pos);
     const people = getPeopleFromMiniPronouns([miniPronoun]);
-    // TODO: turn into reduce?
-    // TODO: allow possesives for sandwiches
     return adjusted.blocks
       .flatMap((x, i) => {
-        if (
-          (x.type === "NP" && canTakeShrunkenPossesor(x.selection)) ||
-          (x.type === "AP" && canTakeShrunkenPossesor(x))
-        ) {
+        if (canTakeShrunkenPossesor(x)) {
           return addPossesiveAtIndex(people, adjusted.blocks, i);
         } else {
           return [];
@@ -1536,24 +1530,14 @@ function createPossesivePossibilities(
     blocks: T.ParsedBlock[],
     i: number
   ): T.ParsedBlock[][] {
-    return people.map((person) => {
-      return blocks.map((x, j) => {
+    const v = people.map((person) =>
+      blocks.map((x, j) => {
         if (i !== j) return x;
-        // TODO: this is redundant ?
-        if (x.type === "NP" && canTakeShrunkenPossesor(x.selection)) {
-          return {
-            ...x,
-            selection: addShrunkenPossesor(x.selection, person),
-          };
-        } else if (x.type === "AP" && canTakeShrunkenPossesor(x)) {
-          return addShrunkenPossesor(x, person);
-        } else {
-          throw new Error(
-            "improper index for adding possesor - addPossesiveAtIndex"
-          );
-        }
-      });
-    });
+        const r = addShrunkenPossesor(x, person);
+        return r || x;
+      })
+    );
+    return v;
   }
   return blocks.flatMap((b) => {
     const miniPronouns = getMiniPronouns(b.body.kids);
