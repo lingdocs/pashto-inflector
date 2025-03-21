@@ -1,5 +1,5 @@
 import * as T from "../../../types";
-import { getPeople, returnParseResultS } from "./utils";
+import { getPeople, returnParseResultSingle } from "./utils";
 
 const allThird = getPeople(3, "both");
 const allPeople: T.Person[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -16,7 +16,9 @@ export function parseEquative(
     tenses: T.EquativeTenseWithoutBa[]
   ): T.ParseResult<T.ParsedVBE>[] {
     return tenses.flatMap((tense) =>
-      people.map((person) => returnParseResultS(rest, makeEqVBE(tense, person)))
+      people.map((person) =>
+        returnParseResultSingle(rest, makeEqVBE(tense, person))
+      )
     );
   }
   if (s === "دي") {

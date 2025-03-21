@@ -75,7 +75,7 @@ export function returnParseResults<D>(
   }));
 }
 
-export function returnParseResultS<D>(
+export function returnParseResultSingle<D>(
   tokens: Readonly<T.Token[]>,
   body: D,
   errors?: T.ParseError[]

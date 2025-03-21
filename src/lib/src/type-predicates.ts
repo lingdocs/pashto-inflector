@@ -2,6 +2,7 @@ import * as T from "../../types";
 import { pashtoConsonants } from "./pashto-consonants";
 import { endsInConsonant, endsWith, hasShwaEnding } from "./p-text-helpers";
 import { countSyllables } from "./accent-helpers";
+import { getTransitivity } from "./verb-info";
 
 const verbTenses: T.VerbTense[] = [
   "presentVerb",
@@ -22,6 +23,21 @@ export function isTlulVerb(e: T.VerbEntry | T.VerbDictionaryEntry): boolean {
     entry.p === "درتلل" ||
     entry.p === "ورتلل"
   );
+}
+
+export function isStatCompound(k: "kawul" | "kedul") {
+  return (e: T.VerbEntry) => {
+    // TODO: best way to check this?
+    if (e.entry.c.startsWith("v. stat.")) {
+      const transitivity = getTransitivity(e.entry);
+      return (
+        (k === "kawul" && transitivity === "transitive") ||
+        (k === "kedul" && transitivity === "intransitive")
+      );
+    } else {
+      return false;
+    }
+  };
 }
 
 export function isKawulVerb(e: T.VerbEntry | T.VerbDictionaryEntry): boolean {

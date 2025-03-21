@@ -4,6 +4,22 @@ export function isKedulStatEntry(v: T.VerbDictionaryEntry): boolean {
   return v.p === "کېدل" && v.e.startsWith("to bec");
 }
 
+export function isStatAux(v: T.VerbEntry): "kawul" | "kedul" | false {
+  return isKawulStat(v) ? "kawul" : isKedulStat(v) ? "kedul" : false;
+}
+
+export function isKawulStat(v: T.VerbEntry): boolean {
+  return (
+    v.entry.p === "کول" && !v.complement && v.entry.e.startsWith("to make")
+  );
+}
+
+export function isKedulStat(v: T.VerbEntry): boolean {
+  return (
+    v.entry.p === "کېدل" && !v.complement && v.entry.e.startsWith("to bec")
+  );
+}
+
 export function isKedulDynEntry(v: T.VerbDictionaryEntry): boolean {
   return v.p === "کېدل" && v.e.startsWith("to hap");
 }

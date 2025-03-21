@@ -9,6 +9,7 @@ import {
   isParsedVBE,
   isParsedVBP,
   returnParseResult,
+  returnParseResults,
   startsVerbSection,
 } from "./utils";
 import {
@@ -31,11 +32,10 @@ import {
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { isSecondPerson, personToGenNum } from "../misc-helpers";
 import { equals, zip } from "rambda";
-import { isImperativeTense } from "../type-predicates";
-import { isKedulStatEntry } from "./parse-verb-helpers";
+import { isImperativeTense, isStatCompound } from "../type-predicates";
+import { isKedulStatEntry, isStatAux } from "./parse-verb-helpers";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
 import { personsFromPattern1 } from "./parse-noun-word";
-import { fFlatMapParseResult } from "../fp-ps";
 import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 import { complementTakesKingship } from "../phrase-building/complement-tools";
 // to hide equatives type-doubling issue
@@ -57,6 +57,12 @@ import { complementTakesKingship } from "../phrase-building/complement-tools";
 // TODO: زما غټه ښځه وینې - throws "complement link broken"
 // FOR display - Verb blocks should display VBP - VBE somehow
 // TODO: راشه is broken
+// TODO: past participle for compounds like کړې وه
+// why doesn't ښځه خفه شوه  parse as a compound?
+
+// this doesn't catch an error زه دې ستړی کړلم
+// and also parses as ستړې کړلم
+// same thing doesn't catch ما پیاله مات کړه
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -305,17 +311,19 @@ function finishPossibleVPSs({
           voice: "active",
         };
         if (transitivity === "intransitive") {
-          return finishIntransitive({
-            miniPronouns,
-            npsAndAps,
-            exComplement,
-            tokens,
-            v,
-            person,
-          });
+          return bindParseResult(
+            finishIntransitive({
+              miniPronouns,
+              npsAndAps,
+              exComplement,
+              tokens,
+              v,
+              person,
+            }),
+            checkForCompounds(dictionary)
+          );
         } else if (transitivity === "transitive") {
-          return fFlatMapParseResult(
-            checkForDynamicCompound(dictionary),
+          return bindParseResult(
             finishTransitive({
               miniPronouns,
               npsAndAps,
@@ -324,7 +332,8 @@ function finishPossibleVPSs({
               v,
               person,
               isPast,
-            })
+            }),
+            checkForCompounds(dictionary)
           );
         } else {
           if (exComplement) {
@@ -349,49 +358,100 @@ function finishPossibleVPSs({
  * ماشوم وهل - could mean adopt (?) (dyn compound) or to hit a child
  * (simple verb وهل)
  */
-function checkForDynamicCompound(dictionary: T.DictionaryAPI) {
-  return (vps: T.VPSelectionComplete): T.VPSelectionComplete[] => {
-    if (vps.verb.transitivity !== "transitive") {
-      return [vps];
-    }
-    const object: T.ObjectSelection | undefined = getObjectSelection(
-      vps.blocks
-    );
-    if (
-      !object ||
-      typeof object.selection !== "object" ||
-      object.selection.selection.type !== "noun"
-    ) {
-      return [vps];
-    }
-    const dynAuxVerb = dynamicAuxVerbs.find(
-      (v) => v.entry.p === vps.verb.verb.entry.p
-    ) as T.VerbEntryNoFVars | undefined;
-    if (!dynAuxVerb) {
-      return [vps];
-    }
-    const dynCompoundVerbs = dictionary
-      .verbEntryLookupByL(object.selection.selection.entry.ts)
-      .filter((e) => e.entry.c.includes("dyn."));
-    if (!dynCompoundVerbs.length) {
-      return [vps];
-    }
-    const dynCompoundVerb = dynCompoundVerbs[0];
-    return [
-      {
-        ...vps,
-        // TODO: could be more efficient by getting index first
-        blocks: vps.blocks.map(markObjAsDynamicComplement),
-        verb: {
-          ...vps.verb,
-          verb: dynCompoundVerb,
-          dynAuxVerb,
-          isCompound: "dynamic",
-        },
-      },
-      vps,
-    ];
+function checkForCompounds(dictionary: T.DictionaryAPI) {
+  return (
+    tokens: readonly T.Token[],
+    vps: T.VPSelectionComplete
+  ): T.ParseResult<T.VPSelectionComplete>[] => {
+    const dynResults = checkForDynCompounds(dictionary, tokens, vps);
+    const statResults = checkForStatCompounds(dictionary, tokens, vps);
+    return [...dynResults, ...statResults, ...returnParseResult(tokens, vps)];
   };
+}
+
+function checkForDynCompounds(
+  dictionary: T.DictionaryAPI,
+  tokens: readonly T.Token[],
+  vps: T.VPSelectionComplete
+): T.ParseResult<T.VPSelectionComplete>[] {
+  if (vps.verb.transitivity !== "transitive") {
+    return [];
+  }
+  const object: T.ObjectSelection | undefined = getObjectSelection(vps.blocks);
+  if (
+    !object ||
+    typeof object.selection !== "object" ||
+    object.selection.selection.type !== "noun"
+  ) {
+    return [];
+  }
+  const dynAuxVerb = dynamicAuxVerbs.find(
+    (v) => v.entry.p === vps.verb.verb.entry.p
+  ) as T.VerbEntryNoFVars | undefined;
+  if (!dynAuxVerb) {
+    return [];
+  }
+  const dynCompoundVerbs = dictionary
+    .verbEntryLookupByL(object.selection.selection.entry.ts)
+    .filter((e) => e.entry.c.includes("dyn."));
+  if (!dynCompoundVerbs.length) {
+    return [];
+  }
+  const dynCompoundVerb = dynCompoundVerbs[0];
+  return returnParseResult(tokens, {
+    ...vps,
+    // TODO: could be more efficient by getting index first
+    blocks: vps.blocks.map(markObjAsDynamicComplement),
+    verb: {
+      ...vps.verb,
+      verb: dynCompoundVerb,
+      dynAuxVerb,
+      isCompound: "dynamic",
+    },
+  });
+}
+
+function checkForStatCompounds(
+  dictionary: T.DictionaryAPI,
+  tokens: readonly T.Token[],
+  vps: T.VPSelectionComplete
+): T.ParseResult<T.VPSelectionComplete>[] {
+  if (!vps.externalComplement) {
+    return [];
+  }
+  const aux = isStatAux(vps.verb.verb);
+  if (
+    !aux ||
+    (aux === "kawul" && vps.verb.transitivity !== "transitive") ||
+    (aux === "kedul" && vps.verb.transitivity !== "intransitive")
+  ) {
+    return [];
+  }
+  if (
+    vps.externalComplement.selection.type === "loc. adv." ||
+    vps.externalComplement.selection.type === "adjective" ||
+    vps.externalComplement.selection.type === "comp. noun"
+  ) {
+    // adjectives should already be checked for accuracy by the
+    // parsing of complement. TODO: make sure it's checked to match with
+    // the target, not just the king
+    const l = vps.externalComplement.selection.entry.ts;
+    return returnParseResults(
+      tokens,
+      dictionary
+        .verbEntryLookupByL(l)
+        .filter(isStatCompound(aux))
+        .map<T.VPSelectionComplete>((verb) => ({
+          ...vps,
+          externalComplement: undefined,
+          verb: {
+            ...vps.verb,
+            verb,
+          },
+        }))
+    );
+  }
+  return [];
 }
 
 function markObjAsDynamicComplement(b: T.VPSBlockComplete): T.VPSBlockComplete {
@@ -582,6 +642,7 @@ function finishTransitive({
   if (exCompStatus === "req" && !exComplement) {
     return [];
   }
+  // TODO: check the complement errors with the target, not just with the king!
   const [externalComplement, compErrors] = checkExComp(exComplement, person);
   return (
     nps.length === 2
@@ -1576,6 +1637,7 @@ function isVBP(x: T.ParsedVBE | T.ParsedVBP): x is T.ParsedVBP {
 }
 
 function checkExComp(
+  // TODO: make sure this is matching the target
   comp: T.ParsedComplementSelection | undefined,
   person: T.Person
 ): [T.ComplementSelection | undefined, T.ParseError[]] {

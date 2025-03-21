@@ -469,7 +469,10 @@ function getObjComplementInfo(
 }
 
 export function getTransitivity(
-  entry: T.DictionaryEntryNoFVars
+  entry:
+    | T.DictionaryEntryNoFVars
+    | T.VerbDictionaryEntry
+    | T.VerbDictionaryEntryNoFVars
 ): T.Transitivity {
   if (!entry.c) {
     throw new Error("No part of speech info");

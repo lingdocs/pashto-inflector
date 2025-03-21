@@ -1,6 +1,6 @@
 import * as T from "../../../types";
 import { isAdverbEntry } from "../type-predicates";
-import { returnParseResultS } from "./utils";
+import { returnParseResultSingle } from "./utils";
 
 export function parseAdverb(
   tokens: Readonly<T.Token[]>,
@@ -12,7 +12,7 @@ export function parseAdverb(
   const [first, ...rest] = tokens;
   const adverbs = dictionary.queryP(first.s).filter(isAdverbEntry);
   return adverbs.map((entry) =>
-    returnParseResultS(rest, {
+    returnParseResultSingle(rest, {
       type: "AP",
       selection: {
         type: "adverb",
