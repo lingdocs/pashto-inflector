@@ -5,7 +5,7 @@ import { renderNPSelection } from "./render-np";
 import { getPersonFromVerbForm } from "../misc-helpers";
 import { getVerbBlockPosFromPerson } from "../misc-helpers";
 import { renderAdverbSelection } from "./render-ap";
-import { complementTakesKingship } from "./complement-tools";
+import { complementTakesTarget } from "./complement-tools";
 import { renderSandwich } from "./render-sandwich";
 import {
   EPSBlocksAreComplete,
@@ -38,7 +38,7 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): {
 } {
   const subject = getSubjectSelection(EP.blocks).selection;
   const subjectPerson = getPersonFromNP(subject);
-  const complementKing = complementTakesKingship(subject, EP.predicate);
+  const complementKing = complementTakesTarget(subject, EP.predicate);
   const kingPerson = complementKing
     ? getPersonFromNP(complementKing)
     : subjectPerson;

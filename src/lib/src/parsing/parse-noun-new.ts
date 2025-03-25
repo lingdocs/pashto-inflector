@@ -89,7 +89,7 @@ function checkForDeterminerDuplicates(
   return duplicates.map((x) => `duplicate ${x} determiner`);
 }
 
-function adjDetsMatch(
+export function adjDetsMatch(
   adjectives: T.InflectableBaseParse<
     T.AdjectiveSelection | T.DeterminerSelection
   >[],

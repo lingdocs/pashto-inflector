@@ -20,7 +20,7 @@ import {
 } from "./render-common";
 import { renderComplementSelection } from "./render-complement";
 import { statVerb } from "../new-verb-engine/roots-and-stems";
-import { complementTakesKingship } from "./complement-tools";
+import { complementTakesTarget } from "./complement-tools";
 
 // TODO: Issue with yo me R -- both in rendering (what to do - یوړ مې)
 // and in parsing!
@@ -34,7 +34,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const isTransitive = object !== "none";
   const { king, servant } = getKingAndServant(isPast, isTransitive);
   const kingNP = king === "subject" ? subject : object;
-  const complementKing = complementTakesKingship(kingNP, complement);
+  const complementKing = complementTakesTarget(kingNP, complement);
   const kingPerson = getPersonFromNP(kingNP);
   const complementPerson = getPersonFromNP(object ? object : subject);
   // TODO: more elegant way of handling this type safety
