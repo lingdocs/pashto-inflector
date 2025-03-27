@@ -14,8 +14,6 @@ import { assertNever } from "../misc-helpers";
  * @param previous - the set of results (monad) to start with
  * @param f - a function that takes a remaining list of tokens and one body of the previous result
  * and returns the next set of possible results, optionally with an object containing any errors
- * @param getCritical - if needed, a function that returns with *part* of the result body to compare
- * for identical results while pruning out the unneccesary errors
  * @param ignorePrevious - pass in true if you don't need the previous ParseResult to calculate
  * the next one. This will add effeciancy by only caring about how many tokens are available
  * from the different previous results
@@ -28,6 +26,7 @@ export function bindParseResult<C, D>(
     r: C
   ) =>
     | T.ParseResult<D>[]
+    // TODO: eliminate this weirdness!
     | {
         errors: T.ParseError[];
         next: T.ParseResult<D>[];
@@ -50,17 +49,71 @@ export function bindParseResult<C, D>(
       })()
     : previous;
   const nextPossibilities = prev.flatMap(({ tokens, body, errors }) => {
+    // TODO: do this here ??
+    // if (tokens.length === 0) {
+    //   return [];
+    // }
     const res = f(tokens, body);
     const { errors: errsPassed, next } = Array.isArray(res)
       ? { errors: [], next: res }
       : res;
-    return next.map((x) => ({
-      tokens: x.tokens,
-      body: x.body,
-      errors: [...errsPassed, ...x.errors, ...errors],
-    }));
+    return next.map(addErrors([...errsPassed, ...errors]));
   });
   return cleanOutResults(nextPossibilities);
+}
+
+/**
+ * For when your next step depends on a parse that only relies on
+ * the tokens ahead, the parser can be passed and used only once
+ * for every length of results it gets
+ *
+ * ie if you have an arguments section like زه تا before وینم will give
+ * you 8 possibilities to try with parsing, all with the remaining و ینم tokens
+ *
+ * this way it will only try to parse those remaining tokens once
+ *
+ **/
+export function bindParseResultWParser<C, D, E>(
+  prev: T.ParseResult<C>[],
+  parser: (tokens: Readonly<T.Token[]>) => T.ParseResult<D>[],
+  f: (res: C, parsed: D, tokens: Readonly<T.Token[]>) => T.ParseResult<E>[]
+): T.ParseResult<E>[] {
+  const grouped = groupByTokenLength(prev);
+  return cleanOutResults(
+    grouped.flatMap((group) => {
+      const parsed = cleanOutResults(parser(group[0].tokens));
+      return group.flatMap((prev) => {
+        return parsed.flatMap((parse) =>
+          f(prev.body, parse.body, parse.tokens).map(addErrors(parse.errors))
+        );
+      });
+    })
+  );
+}
+
+function addErrors<C>(errs: T.ParseError[]) {
+  return function (pr: T.ParseResult<C>): T.ParseResult<C> {
+    return {
+      tokens: pr.tokens,
+      body: pr.body,
+      errors: [...pr.errors, ...errs],
+    };
+  };
+}
+
+function groupByTokenLength<D>(
+  results: T.ParseResult<D>[]
+): T.ParseResult<D>[][] {
+  const buckets: Record<number, T.ParseResult<D>[]> = {};
+  results.forEach((pr) => {
+    const l = pr.tokens.length;
+    if (!buckets[l]) {
+      buckets[l] = [pr];
+    } else {
+      buckets[l].push(pr);
+    }
+  });
+  return Object.values(buckets);
 }
 
 export function returnParseResults<D>(

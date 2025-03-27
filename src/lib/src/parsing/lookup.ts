@@ -9,8 +9,14 @@ import {
 import { removeFVarientsFromVerb } from "../accent-and-ps-utils";
 import { splitVarients, undoAaXuPattern } from "../p-text-helpers";
 import { arraysHaveCommon } from "../misc-helpers";
-import { shortVerbEndConsonant } from "./misc";
-import { kawulDyn, kawulStat, kedulDyn, kedulStat, tlul } from "./irreg-verbs";
+import { shortVerbEndConsonant } from "./verb-section/misc";
+import {
+  kawulDyn,
+  kawulStat,
+  kedulDyn,
+  kedulStat,
+  tlul,
+} from "./verb-section/irreg-verbs";
 
 export type LookupFunction = typeof lookup;
 

@@ -1,12 +1,12 @@
-import * as T from "../../../types";
-import { fFlatMapParseResult, fmapParseResult } from "../fp-ps";
-import { isLocativeAdverbEntry } from "../type-predicates";
+import * as T from "../../../../types";
+import { fFlatMapParseResult, fmapParseResult } from "../../fp-ps";
+import { isLocativeAdverbEntry } from "../../type-predicates";
 import { parseAdjective } from "./parse-adjective-new";
 import { parseAdverb } from "./parse-adverb";
 import { parseNP } from "./parse-np";
 import { parsePossesor } from "./parse-possesor";
 import { parseSandwich } from "./parse-sandwich";
-import { bindParseResult } from "./utils";
+import { bindParseResult } from "../utils";
 
 export function parseComplement(
   tokens: Readonly<T.Token[]>,

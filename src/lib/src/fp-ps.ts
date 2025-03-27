@@ -68,6 +68,17 @@ export function fmapParseResult<A extends object, B extends object>(
   }));
 }
 
+export function fmapParseResultSing<A extends object, B extends object>(
+  f: (x: A) => B,
+  x: T.ParseResult<A>
+): T.ParseResult<B> {
+  return {
+    tokens: x.tokens,
+    body: f(x.body),
+    errors: x.errors,
+  };
+}
+
 export function fFlatMapParseResult<A extends object, B extends object>(
   f: (x: A) => B[],
   x: T.ParseResult<A>[]

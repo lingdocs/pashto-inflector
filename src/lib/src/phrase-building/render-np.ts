@@ -11,7 +11,7 @@ import {
   isAnimNounEntry,
   isPattern1Entry,
 } from "../type-predicates";
-import { shortVerbEndConsonant } from "../parsing/misc";
+import { shortVerbEndConsonant } from "../parsing/verb-section/misc";
 import { removeL } from "../new-verb-engine/rs-helpers";
 import { applySingleOrLengthOpts } from "../fp-ps";
 import { accentOnNFromEnd } from "../accent-helpers";

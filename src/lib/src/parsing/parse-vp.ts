@@ -1,20 +1,19 @@
 import * as T from "../../../types";
+import { parseArgumentSection } from "./argument-section/parse-argument-section";
+import {
+  parseVerbSection,
+  VerbSectionBlock,
+} from "./verb-section/parse-verb-section";
 import {
   addShrunkenPossesor,
   bindParseResult,
+  bindParseResultWParser,
   canTakeShrunkenPossesor,
-  isNeg,
-  isNonOoPh,
-  isPH,
-  isParsedVBE,
-  isParsedVBP,
   returnParseResult,
   returnParseResults,
-  startsVerbSection,
 } from "./utils";
 import {
   getObjectSelection,
-  getSubjectSelection,
   makeObjectSelectionComplete,
   makeSubjectSelectionComplete,
 } from "../phrase-building/blocks-utils";
@@ -24,22 +23,21 @@ import {
   isPastTense,
   takesExternalComplement,
 } from "../phrase-building/vp-tools";
-import { parseBlocks } from "./parse-blocks";
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { isFirstPerson, isSecondPerson, personToGenNum } from "../misc-helpers";
-import { equals, zip } from "rambda";
-import { isImperativeTense, isStatCompound } from "../type-predicates";
-import { isKedulStatEntry, isStatAux } from "./parse-verb-helpers";
-import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
-import { personsFromPattern1 } from "./parse-noun-word";
+import { equals } from "rambda";
+import { isImperativeTense } from "../type-predicates";
+import { isKedulStatEntry } from "./verb-section/parse-verb-helpers";
+import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
+import { personsFromPattern1 } from "./argument-section/parse-noun-word";
 import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 import {
   checkComplement,
-  complementTakesTarget,
   parsedCompToCompSelection,
   winnerOfNpAndCompliment,
 } from "../phrase-building/complement-tools";
+
 // to hide equatives type-doubling issue
 
 // TODO: problem with 3rd pers sing verb endings اواز مې دې واورېده
@@ -73,6 +71,8 @@ import {
 // زه ښځه ستړی بولم should error!
 
 // problem with شتړې being an adverb
+// TODO: complements currently only working with NP complements like with زه تا سړی بولم
+// TODO: issue with کوم being کوېږم
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -81,211 +81,134 @@ export function parseVP(
   if (tokens.length === 0) {
     return [];
   }
-  const blocks = parseBlocks(tokens, dictionary, [], []);
-  return bindParseResult(
-    createPossesivePossibilities(blocks),
-    (tokens, { blocks, kids }) => {
-      const ba = kids.some((k) => k === "ba");
-      const miniPronouns = getMiniPronouns(kids);
-      const npsAndAps = blocks.filter(
-        (x): x is T.ParsedNP | T.APSelection =>
-          x.type === "NP" || x.type === "AP"
-      );
-      const exComplement = blocks.find((b) => b.type === "complement");
-      // TODO: would be nice if this could pass error messages about the
-      // negative being out of place etc
-      if (!verbSectionOK(blocks)) {
-        return [];
-      }
-      const tenses = getTenses(blocks, ba);
-      // TODO get errors from the get tenses (perfect verbs not agreeing)
-      return tenses.flatMap(
-        ({ tense, person, transitivities, negative, verb }) => {
-          const isPast = isPastTense(tense);
-          return transitivities
-            .flatMap<T.ParseResult<T.VPSelectionComplete>>(
-              (transitivity): T.ParseResult<T.VPSelectionComplete>[] => {
-                const v: T.VerbSelectionComplete = {
-                  type: "verb",
-                  verb,
-                  transitivity,
-                  canChangeTransitivity: false,
-                  canChangeStatDyn: false,
-                  negative,
-                  tense,
-                  canChangeVoice: transitivity === "transitive",
-                  isCompound: false,
-                  voice: "active",
-                };
-                if (transitivity === "intransitive") {
-                  return bindParseResult(
-                    finishIntransitive({
-                      miniPronouns,
-                      npsAndAps,
-                      exComplement,
-                      tokens,
-                      v,
-                      person,
-                    }),
-                    checkForCompounds(dictionary)
-                  );
-                } else if (transitivity === "transitive") {
-                  return bindParseResult(
-                    finishTransitive({
-                      miniPronouns,
-                      npsAndAps,
-                      exComplement,
-                      tokens,
-                      v,
-                      vbePerson: person,
-                      isPast,
-                    }),
-                    checkForCompounds(dictionary)
-                  );
-                } else {
-                  if (exComplement) {
-                    return [];
-                  }
-                  return finishGrammaticallyTransitive({
-                    miniPronouns,
-                    npsAndAps,
-                    tokens,
-                    v,
-                    person,
-                    isPast,
-                  });
-                }
-              }
-            )
-            .filter(checkImperative2ndPers);
-        }
-      );
+  const argument = parseArgumentSection(tokens, dictionary);
+  return bindParseResultWParser(
+    argument,
+    (tokens) => parseVerbSection(tokens, dictionary),
+    (arg, vs, tkns) => {
+      return combineArgAndVerbSections(tkns, dictionary, arg, vs);
     }
   );
 }
 
-// cleanup and correct this finishIntransitive
-// then make sure it all works with the complements!
-function finishIntransitive({
-  miniPronouns,
-  npsAndAps,
-  exComplement,
-  tokens,
-  v,
-  person,
-}: {
-  miniPronouns: T.ParsedMiniPronoun[];
-  npsAndAps: (T.ParsedNP | T.APSelection)[];
-  exComplement: T.ParsedComplementSelection | undefined;
-  tokens: Readonly<T.Token[]>;
-  v: T.VerbSelectionComplete;
-  person: T.Person;
-}): T.ParseResult<T.VPSelectionComplete>[] {
-  const nps = npsAndAps.filter((x): x is T.ParsedNP => x.type === "NP");
-  const { complement, compPresenceErrors } = checkComplementPresence(
-    v.verb,
-    exComplement
-  );
-  const errors: T.ParseError[] = [
-    ...ensureNoMiniPronouns(miniPronouns),
-    ...(nps.length > 1
-      ? [{ message: "intransitive verb can only take one subject" }]
-      : []),
-    ...compPresenceErrors,
+function combineArgAndVerbSections(
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
+  arg: ReturnType<typeof parseArgumentSection>[number]["body"],
+  vs: ReturnType<typeof parseVerbSection>[number]["body"]
+): T.ParseResult<T.VPSelectionComplete>[] {
+  const [kids, kidsErrors] = consolidateKidsSection(arg, vs.kids);
+  const blocks = [
+    ...arg.npsAndAps,
+    ...(arg.complement ? [arg.complement] : []),
   ];
-  const compErrors = checkComplement(complement, person);
-  if (nps.length === 0) {
-    // TODO: if complement takes over, subject could be anything
-    const subject = makeSubjectSelectionComplete({
-      type: "NP",
-      selection: makePronounSelection(person),
-    });
-    const complementWins = complementTakesTarget(subject.selection, complement);
-    if (
-      complementWins &&
-      person !== getPersonFromNP(complement?.selection as T.NPSelection)
-    ) {
-      errors.push({
-        message: "verb must agree with complement in this case",
-      });
-    }
-    const blocks: T.VPSBlockComplete[] = [
-      ...mapOutnpsAndAps([], npsAndAps),
-      {
-        key: 3456,
-        block: subject,
-      },
-      {
-        key: 2345,
-        block: {
-          type: "objectSelection",
-          selection: "none",
-        },
-      },
-    ];
-    return [
-      {
-        tokens,
-        body: {
-          blocks,
-          verb: v,
-          externalComplement: parsedCompToCompSelection(complement),
-          form: {
-            removeKing: true,
-            shrinkServant: false,
-          },
-        } as T.VPSelectionComplete,
-        errors: [...errors, ...compErrors],
-      },
-    ];
-  }
-  const np = nps[0];
-  const subjectPerson = getPersonFromNP(np.selection);
-  const compWins = complementTakesTarget(np.selection, complement);
-  if (isImperativeTense(v.tense) && !isSecondPerson(subjectPerson)) {
-    return [];
-  }
-  if (np.inflected) {
-    errors.push({
-      message: "subject of intransitive verb must not be inflected",
-    });
-  }
-  if (!compWins && subjectPerson !== person) {
-    errors.push({
-      message: "subject and verb must agree for intransitive verb",
-    });
-  } else if (
-    compWins &&
-    getPersonFromNP(exComplement?.selection as T.NPSelection)
-  ) {
-    errors.push({ message: "verb must agree with complement in this case" });
-  }
-  const blocks: T.VPSBlockComplete[] = [
-    ...mapOutnpsAndAps(["S"], npsAndAps),
-    {
-      key: 2345,
-      block: {
-        type: "objectSelection",
-        selection: "none",
-      },
-    },
-  ];
+  const ba = kids.some((k) => k === "ba");
+  const tenses = getTenses(vs.blocks, ba);
+  // TODO get errors from the get tenses (perfect verbs not agreeing)
+  return createPossesivePossibilities({
+    blocks,
+    kids,
+  }).flatMap(({ kids, blocks }) => {
+    const miniPronouns = getMiniPronouns(kids);
+    const npsAndAps = blocks.filter((x) => x.type === "NP" || x.type === "AP");
+    const exComplement = blocks.find((x) => x.type === "complement");
+    return tenses.flatMap(
+      ({ tense, person, transitivities, negative, verb }) => {
+        const isPast = isPastTense(tense);
+        return transitivities.flatMap<T.ParseResult<T.VPSelectionComplete>>(
+          (transitivity): T.ParseResult<T.VPSelectionComplete>[] => {
+            const v: T.VerbSelectionComplete = {
+              type: "verb",
+              verb,
+              transitivity,
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative,
+              tense,
+              canChangeVoice: transitivity === "transitive",
+              isCompound: false,
+              voice: "active",
+            };
+            if (transitivity === "intransitive") {
+              return bindParseResult(
+                finishIntransitive({
+                  kidsErrors,
+                  miniPronouns,
+                  npsAndAps,
+                  exComplement,
+                  tokens,
+                  v,
+                  vbePerson: person,
+                }),
+                checkForDynCompounds(dictionary)
+              );
+            } else if (transitivity === "transitive") {
+              return bindParseResult(
+                finishTransitive({
+                  kidsErrors,
+                  miniPronouns,
+                  npsAndAps,
+                  exComplement,
+                  tokens,
+                  v,
+                  vbePerson: person,
+                  isPast,
+                }),
+                checkForDynCompounds(dictionary)
+              );
+            } /* grammaticallyTransitive */ else {
+              if (exComplement) {
+                return [];
+              }
+              return finishGrammaticallyTransitive({
+                kidsErrors,
+                miniPronouns,
+                npsAndAps,
+                tokens,
+                v,
+                person,
+                isPast,
+              });
+            }
+          }
+        );
+      }
+    );
+  });
+}
 
-  return [
-    {
-      tokens,
-      body: {
-        blocks,
-        verb: v,
-        externalComplement: parsedCompToCompSelection(complement),
-        form: {
-          removeKing: false,
-          shrinkServant: false,
-        },
-      } as T.VPSelectionComplete,
-      errors: [...errors, ...compErrors],
+function consolidateKidsSection(
+  arg: ReturnType<typeof parseArgumentSection>[number]["body"],
+  vsKids: { position: number; section: T.ParsedKid[] }[]
+): [T.ParsedKid[], T.ParseError[]] {
+  const lastArgPos = arg.npsAndAps.length;
+  const vsKidsAdjusted = vsKids.map((x) => ({
+    ...x,
+    postion: x.position + lastArgPos,
+  }));
+  const kids = [...arg.kids, ...vsKidsAdjusted];
+  return kids.reduce<[T.ParsedKid[], T.ParseError[]]>(
+    ([kds, errs], k) => {
+      if (k.position === 1) {
+        return [[...kds, ...k.section], errs];
+      } else {
+        return [
+          [...kds, ...k.section],
+          [
+            ...errs,
+            {
+              message: `kid${k.section.length > 1 ? "s" : ""} ${k.section.join(
+                ", "
+              )} out of place. Found after block ${
+                k.position
+              }, should be after the first block.`,
+            },
+          ],
+        ];
+      }
     },
-  ];
+    [[], []]
+  );
 }
 
 type TransitivePossibility = {
@@ -304,7 +227,75 @@ type MakeTransPossibilitiesProps = {
   // TODO: may need to add exComplement here as we properly check it
 };
 
+function finishIntransitive({
+  kidsErrors,
+  miniPronouns,
+  npsAndAps,
+  exComplement,
+  tokens,
+  v,
+  vbePerson,
+}: {
+  kidsErrors: T.ParseError[];
+  miniPronouns: T.ParsedMiniPronoun[];
+  npsAndAps: (T.ParsedNP | T.APSelection)[];
+  exComplement: T.ParsedComplementSelection | undefined;
+  tokens: Readonly<T.Token[]>;
+  v: T.VerbSelectionComplete;
+  vbePerson: T.Person;
+}): T.ParseResult<T.VPSelectionComplete>[] {
+  const nps = npsAndAps.filter((x): x is T.ParsedNP => x.type === "NP");
+  const { complement, compPresenceErrors } = checkComplementPresence(
+    v.verb,
+    exComplement
+  );
+  const initialErrors: T.ParseError[] = [
+    ...kidsErrors,
+    ...(nps.length > 1
+      ? [
+          {
+            message: "intransitive verb can only take one NP for subject",
+          },
+        ]
+      : []),
+    ...compPresenceErrors,
+    ...ensureNoMiniPronouns(miniPronouns),
+  ];
+  const np = nps.length ? nps[0] : undefined;
+  const s = np || makeShadowPronoun(false, vbePerson);
+  if (isIllegalImperative(v.tense, s.selection)) {
+    return [];
+  }
+  const form: T.FormVersion = {
+    shrinkServant: false,
+    removeKing: !np,
+  };
+  const structureErrors = checkIntransitiveStructure({
+    s,
+    exComplement: complement,
+    vbePerson,
+  });
+  const o = "none";
+  const blocks = mapOutnpsAndAps(
+    ["S"],
+    limitNPs([...(np ? [] : [s]), o, ...npsAndAps], 1)
+  );
+  return [
+    {
+      tokens,
+      body: {
+        blocks,
+        verb: v,
+        externalComplement: parsedCompToCompSelection(complement),
+        form,
+      },
+      errors: [...initialErrors, ...structureErrors],
+    },
+  ];
+}
+
 function finishTransitive({
+  kidsErrors,
   miniPronouns,
   npsAndAps,
   exComplement,
@@ -313,6 +304,7 @@ function finishTransitive({
   vbePerson,
   isPast,
 }: {
+  kidsErrors: T.ParseError[];
   miniPronouns: T.ParsedMiniPronoun[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   exComplement: T.ParsedComplementSelection | undefined;
@@ -327,6 +319,7 @@ function finishTransitive({
     exComplement
   );
   const initialErrors: T.ParseError[] = [
+    ...kidsErrors,
     ...(nps.length > 2
       ? [
           {
@@ -339,10 +332,10 @@ function finishTransitive({
   ];
   const possibilites = (
     nps.length >= 2
-      ? finishTransitiveWTwoNPs(nps)
+      ? getTransPossibilitiesWTwoNPs(nps)
       : nps.length === 1
-      ? finishTransitiveWOneNP(nps[0])
-      : finishTransitiveWNoNPs
+      ? getTransPossibilitiesWOneNP(nps[0])
+      : getTransPossibilitiesWNoNPs
   )({
     miniPronouns,
     npsAndAps,
@@ -351,6 +344,9 @@ function finishTransitive({
     tokens,
   });
   return bindParseResult(possibilites, (tokens, p) => {
+    if (isIllegalImperative(v.tense, p.s.selection)) {
+      return [];
+    }
     const errors = [
       ...initialErrors,
       ...checkTransitiveStructure({
@@ -376,7 +372,7 @@ function finishTransitive({
   });
 }
 
-function finishTransitiveWNoNPs({
+function getTransPossibilitiesWNoNPs({
   miniPronouns,
   npsAndAps,
   vbePerson,
@@ -417,7 +413,7 @@ function finishTransitiveWNoNPs({
   });
 }
 
-function finishTransitiveWOneNP(np: T.ParsedNP) {
+function getTransPossibilitiesWOneNP(np: T.ParsedNP) {
   return function ({
     miniPronouns,
     npsAndAps,
@@ -478,7 +474,7 @@ function finishTransitiveWOneNP(np: T.ParsedNP) {
   };
 }
 
-function finishTransitiveWTwoNPs(nps: T.ParsedNP[]) {
+function getTransPossibilitiesWTwoNPs(nps: T.ParsedNP[]) {
   return function ({
     miniPronouns,
     npsAndAps,
@@ -495,7 +491,7 @@ function finishTransitiveWTwoNPs(nps: T.ParsedNP[]) {
           o,
           blocks: mapOutnpsAndAps(
             !flip ? ["S", "O"] : ["O", "S"],
-            ensureNoMoreThanTwoNps(npsAndAps)
+            limitNPs(npsAndAps, 2)
           ),
           form: {
             removeKing: false,
@@ -516,6 +512,7 @@ function finishGrammaticallyTransitive({
   person,
   isPast,
 }: {
+  kidsErrors: T.ParseError[];
   miniPronouns: T.ParsedMiniPronoun[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   tokens: Readonly<T.Token[]>;
@@ -540,6 +537,9 @@ function finishGrammaticallyTransitive({
     tokens,
   });
   return bindParseResult(possibilites, (tokens, p) => {
+    if (isIllegalImperative(v.tense, p.s.selection)) {
+      return [];
+    }
     const errors = [
       ...checkTransitiveStructure({
         s: p.s,
@@ -629,7 +629,7 @@ function finishGrammTransWNP(subject: T.ParsedNP) {
 }
 
 function getTenses(
-  blocks: T.ParsedBlock[],
+  blocks: VerbSectionBlock[],
   ba: boolean
 ): {
   tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
@@ -790,105 +790,53 @@ function checkForTlulCombos(
   return verb.info.verb;
 }
 
-/**
- * This returns multiple possibilities because for example
- * ماشوم وهل - could mean adopt (?) (dyn compound) or to hit a child
- * (simple verb وهل)
- */
-function checkForCompounds(dictionary: T.DictionaryAPI) {
-  return (
+function checkForDynCompounds(dictionary: T.DictionaryAPI) {
+  return function (
     tokens: readonly T.Token[],
     vps: T.VPSelectionComplete
-  ): T.ParseResult<T.VPSelectionComplete>[] => {
-    const dynResults = checkForDynCompounds(dictionary, tokens, vps);
-    const statResults = checkForStatCompounds(dictionary, tokens, vps);
-    return [...dynResults, ...statResults, ...returnParseResult(tokens, vps)];
-  };
-}
-
-function checkForDynCompounds(
-  dictionary: T.DictionaryAPI,
-  tokens: readonly T.Token[],
-  vps: T.VPSelectionComplete
-): T.ParseResult<T.VPSelectionComplete>[] {
-  if (vps.verb.transitivity !== "transitive") {
-    return [];
-  }
-  const object: T.ObjectSelection | undefined = getObjectSelection(vps.blocks);
-  if (
-    !object ||
-    typeof object.selection !== "object" ||
-    object.selection.selection.type !== "noun"
-  ) {
-    return [];
-  }
-  const dynAuxVerb = dynamicAuxVerbs.find(
-    (v) => v.entry.p === vps.verb.verb.entry.p
-  ) as T.VerbEntryNoFVars | undefined;
-  if (!dynAuxVerb) {
-    return [];
-  }
-  const dynCompoundVerbs = dictionary
-    .verbEntryLookupByL(object.selection.selection.entry.ts)
-    .filter((e) => e.entry.c.includes("dyn."));
-  if (!dynCompoundVerbs.length) {
-    return [];
-  }
-  const dynCompoundVerb = dynCompoundVerbs[0];
-  return returnParseResult(tokens, {
-    ...vps,
-    // TODO: could be more efficient by getting index first
-    blocks: vps.blocks.map(markObjAsDynamicComplement),
-    verb: {
-      ...vps.verb,
-      verb: dynCompoundVerb,
-      dynAuxVerb,
-      isCompound: "dynamic",
-    },
-  });
-}
-
-function checkForStatCompounds(
-  dictionary: T.DictionaryAPI,
-  tokens: readonly T.Token[],
-  vps: T.VPSelectionComplete
-): T.ParseResult<T.VPSelectionComplete>[] {
-  if (!vps.externalComplement) {
-    return [];
-  }
-  const aux = isStatAux(vps.verb.verb);
-  if (
-    !aux ||
-    (aux === "kawul" && vps.verb.transitivity !== "transitive") ||
-    (aux === "kedul" && vps.verb.transitivity !== "intransitive")
-  ) {
-    return [];
-  }
-  if (
-    vps.externalComplement.selection.type === "loc. adv." ||
-    vps.externalComplement.selection.type === "adjective" ||
-    vps.externalComplement.selection.type === "comp. noun"
-  ) {
-    // adjectives should already be checked for accuracy by the
-    // parsing of complement. TODO: make sure it's checked to match with
-    // the target, not just the king
-    const l = vps.externalComplement.selection.entry.ts;
-    return returnParseResults(
-      tokens,
-      dictionary
-        .verbEntryLookupByL(l)
-        .filter(isStatCompound(aux))
-        .map<T.VPSelectionComplete>((verb) => ({
-          ...vps,
-          externalComplement: undefined,
-          verb: {
-            ...vps.verb,
-            verb,
-          },
-        }))
+  ): T.ParseResult<T.VPSelectionComplete>[] {
+    if (vps.verb.transitivity !== "transitive") {
+      return returnParseResult(tokens, vps);
+    }
+    const object: T.ObjectSelection | undefined = getObjectSelection(
+      vps.blocks
     );
-  }
-  return [];
+    if (
+      !object ||
+      typeof object.selection !== "object" ||
+      object.selection.selection.type !== "noun"
+    ) {
+      return returnParseResult(tokens, vps);
+    }
+    const dynAuxVerb = dynamicAuxVerbs.find(
+      (v) => v.entry.p === vps.verb.verb.entry.p
+    ) as T.VerbEntryNoFVars | undefined;
+    if (!dynAuxVerb) {
+      return returnParseResult(tokens, vps);
+    }
+    const dynCompoundVerbs = dictionary
+      .verbEntryLookupByL(object.selection.selection.entry.ts)
+      .filter((e) => e.entry.c.includes("dyn."));
+    if (!dynCompoundVerbs.length) {
+      return returnParseResult(tokens, vps);
+    }
+    const dynCompoundVerb = dynCompoundVerbs[0];
+    console.log({ vps, dynCompoundVerb });
+    return returnParseResults(tokens, [
+      {
+        ...vps,
+        // TODO: could be more efficient by getting index first
+        blocks: vps.blocks.map(markObjAsDynamicComplement),
+        verb: {
+          ...vps.verb,
+          verb: dynCompoundVerb,
+          dynAuxVerb,
+          isCompound: "dynamic",
+        },
+      },
+      vps,
+    ]);
+  };
 }
 
 function markObjAsDynamicComplement(b: T.VPSBlockComplete): T.VPSBlockComplete {
@@ -915,16 +863,11 @@ function markObjAsDynamicComplement(b: T.VPSBlockComplete): T.VPSBlockComplete {
   return b;
 }
 
-function checkImperative2ndPers({
-  body: vps,
-}: T.ParseResult<T.VPSelectionComplete>): boolean {
-  if (!isImperativeTense(vps.verb.tense)) {
-    return true;
-  }
-  const subjectPerson = getPersonFromNP(
-    getSubjectSelection(vps.blocks).selection
-  );
-  return isSecondPerson(subjectPerson);
+function isIllegalImperative(
+  tense: T.VerbFormName,
+  subject: T.NPSelection
+): boolean {
+  return isImperativeTense(tense) && !isSecondPerson(getPersonFromNP(subject));
 }
 
 function getNPInsertPoint(
@@ -999,6 +942,35 @@ function ensureShrunkenServant(isPast: boolean) {
   };
 }
 
+function checkIntransitiveStructure({
+  s,
+  exComplement,
+  vbePerson,
+}: {
+  s: T.ParsedNP;
+  exComplement: T.ParsedComplementSelection | undefined;
+  vbePerson: T.Person;
+}): T.ParseError[] {
+  const errors: T.ParseError[] = checkComplement(
+    exComplement,
+    getPersonFromNP(s.selection)
+  );
+  const winner = winnerOfNpAndCompliment(s.selection, exComplement);
+  if (winner.person !== vbePerson) {
+    errors.push({
+      message: `intransitive verb must agree with ${
+        winner.source === "np" ? "subject" : "complement NP in this case."
+      }`,
+    });
+  }
+  if (s.inflected) {
+    errors.push({
+      message: "subject of intransitive verb must not be inflected",
+    });
+  }
+  return errors;
+}
+
 function checkTransitiveStructure({
   s,
   o,
@@ -1012,13 +984,13 @@ function checkTransitiveStructure({
   isPast: boolean;
   vbePerson: T.Person;
 }): T.ParseError[] {
-  const errors: T.ParseError[] =
-    typeof o === "object"
-      ? checkComplement(exComplement, getPersonFromNP(o.selection))
-      : [];
+  const grammTrans = typeof o !== "object";
+  const errors: T.ParseError[] = !grammTrans
+    ? checkComplement(exComplement, getPersonFromNP(o.selection))
+    : [];
   // complement must always agree with the object
   if (
-    typeof o === "object" &&
+    !grammTrans &&
     isInvalidSubjObjCombo(
       getPersonFromNP(s.selection),
       getPersonFromNP(o.selection)
@@ -1030,7 +1002,7 @@ function checkTransitiveStructure({
   }
   if (isPast) {
     // in the past the verb will agree with the object, unless the compliment takes over
-    if (typeof o === "object") {
+    if (!grammTrans) {
       const winner = winnerOfNpAndCompliment(o.selection, exComplement);
       if (winner.person !== vbePerson) {
         errors.push({
@@ -1060,7 +1032,7 @@ function checkTransitiveStructure({
       });
     }
   } else {
-    if (typeof o === "object") {
+    if (!grammTrans) {
       if (isFirstOrSecondPersPronoun(o.selection)) {
         if (!o.inflected) {
           errors.push({
@@ -1186,27 +1158,6 @@ function getTenseFromRootsStems(
   return tenseFromAspectBaseBa(aspect, base, hasBa);
 }
 
-function verbSectionOK(blocks: T.ParsedBlock[]): boolean {
-  const possibilites = [
-    [isParsedVBE],
-    [isNeg, isParsedVBE],
-    [isPH, isParsedVBE],
-    [isPH, isNeg, isParsedVBE],
-    [isNeg, isNonOoPh, isParsedVBE],
-    [isParsedVBP, isParsedVBE],
-    [isNeg, isParsedVBE, isParsedVBP],
-    [isParsedVBP, isNeg, isParsedVBE],
-    // could be more clever with optional isPH here
-    [isPH, isParsedVBP, isParsedVBE],
-    [isPH, isNeg, isParsedVBE, isParsedVBP],
-    [isPH, isParsedVBP, isNeg, isParsedVBE],
-  ];
-  const vs = blocks.slice(blocks.findIndex(startsVerbSection));
-  return possibilites.some(
-    (poss) => poss.length === vs.length && zip(poss, vs).every(([p, b]) => p(b))
-  );
-}
-
 function getTransitivities(v: T.VerbEntry): T.Transitivity[] {
   const transitivities: T.Transitivity[] = [];
   const opts = v.entry.c.split("/");
@@ -1257,7 +1208,7 @@ function getEquativeTense(
  */
 function mapOutnpsAndAps(
   npOrder: ("S" | "O")[],
-  blocks: (T.APSelection | T.ParsedNP | T.Person.ThirdPlurMale)[]
+  blocks: (T.APSelection | T.ParsedNP | T.Person.ThirdPlurMale | "none")[]
 ): T.VPSBlockComplete[] {
   const queue = [...npOrder];
   return blocks.map((x, i): T.VPSBlockComplete => {
@@ -1271,6 +1222,15 @@ function mapOutnpsAndAps(
         block: {
           type: "objectSelection",
           selection: x,
+        },
+      };
+    }
+    if (typeof x === "string") {
+      return {
+        key: i,
+        block: {
+          type: "objectSelection",
+          selection: "none",
         },
       };
     }
@@ -1294,18 +1254,26 @@ function mapOutnpsAndAps(
   });
 }
 
-function ensureNoMoreThanTwoNps(
-  blocks: (T.ParsedNP | T.APSelection)[]
-): (T.ParsedNP | T.APSelection)[] {
-  let count = 0;
-  return blocks.filter((x) => {
-    if (x.type === "NP") count++;
-    if (count > 2 && x.type === "NP") {
-      return false;
-    } else {
-      return true;
-    }
-  });
+function limitNPs(
+  blocks: (T.ParsedNP | T.APSelection | "none")[],
+  amount: 1 | 2
+): (T.ParsedNP | T.APSelection | "none")[] {
+  return blocks.reduce<[(T.ParsedNP | T.APSelection | "none")[], number]>(
+    ([bs, count], x) => {
+      if (typeof x === "string") {
+        return [[...bs, x], count];
+      }
+      if (x.type === "NP") {
+        if (count === amount) {
+          return [bs, count];
+        }
+        return [[...bs, x], count + 1];
+      } else {
+        return [[...bs, x], count];
+      }
+    },
+    [[], 0]
+  )[0];
 }
 
 /**
@@ -1328,15 +1296,13 @@ function ensureNoMoreThanTwoNps(
  * @param blocks
  * @returns
  */
-function createPossesivePossibilities(
-  blocks: T.ParseResult<{
-    kids: T.ParsedKid[];
-    blocks: T.ParsedBlock[];
-  }>[]
-): T.ParseResult<{
+function createPossesivePossibilities(b: {
   kids: T.ParsedKid[];
   blocks: T.ParsedBlock[];
-}>[] {
+}): {
+  kids: T.ParsedKid[];
+  blocks: T.ParsedBlock[];
+}[] {
   function pullOutMiniPronoun(
     body: {
       kids: T.ParsedKid[];
@@ -1401,36 +1367,26 @@ function createPossesivePossibilities(
     );
     return v;
   }
-  return blocks.flatMap((b) => {
-    const miniPronouns = getMiniPronouns(b.body.kids);
-    if (miniPronouns.length === 0) {
-      return b;
-    } else if (miniPronouns.length === 1) {
-      const withFirstMiniAsPossesive = spreadOutPoss(b.body, 0);
-      return [b.body, ...withFirstMiniAsPossesive].map((x) => ({
-        tokens: b.tokens,
-        body: x,
-        errors: b.errors,
-      }));
-    } else {
-      const withFirstMiniAsPossesive = spreadOutPoss(b.body, 0);
-      const withSecondMiniAsPossesive = spreadOutPoss(b.body, 1);
-      return [
-        // using none of the mini-pronouns as possesives
-        b.body,
-        // using the first mini-pronoun as a possesive
-        ...withFirstMiniAsPossesive,
-        // using the second mini-pronoun as a prossesive
-        ...withSecondMiniAsPossesive,
-        // using both mini pronouns as possesives
-        ...withFirstMiniAsPossesive.flatMap((x) => spreadOutPoss(x, 0)),
-      ].map((x) => ({
-        tokens: b.tokens,
-        body: x,
-        errors: b.errors,
-      }));
-    }
-  });
+  const miniPronouns = getMiniPronouns(b.kids);
+  if (miniPronouns.length === 0) {
+    return [b];
+  } else if (miniPronouns.length === 1) {
+    const withFirstMiniAsPossesive = spreadOutPoss(b, 0);
+    return [b, ...withFirstMiniAsPossesive];
+  } else {
+    const withFirstMiniAsPossesive = spreadOutPoss(b, 0);
+    const withSecondMiniAsPossesive = spreadOutPoss(b, 1);
+    return [
+      // using none of the mini-pronouns as possesives
+      b,
+      // using the first mini-pronoun as a possesive
+      ...withFirstMiniAsPossesive,
+      // using the second mini-pronoun as a prossesive
+      ...withSecondMiniAsPossesive,
+      // using both mini pronouns as possesives
+      ...withFirstMiniAsPossesive.flatMap((x) => spreadOutPoss(x, 0)),
+    ];
+  }
 }
 
 // TODO: this should be replaced with tagging in objects
