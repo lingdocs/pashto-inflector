@@ -16,13 +16,13 @@ export function makeKid(kid: T.Kid["kid"], key?: number): T.Kid {
   };
 }
 
-export function getComplementSelection(
-  blocks: T.VPSBlockComplete[]
-): T.ComplementSelection | undefined {
-  return blocks.find((b) => b.block.type === "complement")?.block as
-    | T.ComplementSelection
-    | undefined;
-}
+// export function getComplementSelection(
+//   blocks: T.VPSBlockComplete[]
+// ): T.ComplementSelection | undefined {
+//   return blocks.find((b) => b.block.type === "complement")?.block as
+//     | T.ComplementSelection
+//     | undefined;
+// }
 
 export function getSubjectSelection(
   blocks: T.EPSBlockComplete[] | T.VPSBlockComplete[]

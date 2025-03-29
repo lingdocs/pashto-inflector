@@ -27,16 +27,16 @@ import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { isFirstPerson, isSecondPerson, personToGenNum } from "../misc-helpers";
 import { equals } from "rambda";
-import { isImperativeTense } from "../type-predicates";
+import { isImperativeTense, isTlulVerb } from "../type-predicates";
 import { isKedulStatEntry } from "./verb-section/parse-verb-helpers";
-import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
-import { personsFromPattern1 } from "./argument-section/parse-noun-word";
 import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 import {
   checkComplement,
   parsedCompToCompSelection,
   winnerOfNpAndCompliment,
 } from "../phrase-building/complement-tools";
+import { personsFromPattern1 } from "./argument-section/parse-noun-word";
+import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
 
 // to hide equatives type-doubling issue
 
@@ -73,6 +73,7 @@ import {
 // problem with شتړې being an adverb
 // TODO: complements currently only working with NP complements like with زه تا سړی بولم
 // TODO: issue with کوم being کوېږم
+// USE hasMisusedStatKedul at end of verbsection parse
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -104,6 +105,7 @@ function combineArgAndVerbSections(
   ];
   const ba = kids.some((k) => k === "ba");
   const tenses = getTenses(vs.blocks, ba);
+
   // TODO get errors from the get tenses (perfect verbs not agreeing)
   return createPossesivePossibilities({
     blocks,
@@ -647,22 +649,25 @@ function getTenses(
   const vbeIndex = blocks.findIndex((x) => x.type === "VB" && !isVBP(x));
   const vbpIndex = blocks.findIndex((x) => x.type === "VB" && isVBP(x));
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
-  const verb = vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
-  const vbp = vbpIndex !== -1 ? (blocks[vbpIndex] as T.ParsedVBP) : undefined;
-  if (!verb || verb.type !== "VB") {
+  const vbeR = vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
+  const vbpR = vbpIndex !== -1 ? (blocks[vbpIndex] as T.ParsedVBP) : undefined;
+  const { vbe, vbp } = checkForTlulCombos(ph, vbeR, vbpR);
+  if (!vbe || vbe.type !== "VB") {
     return [];
   }
-  if (verb.info.type === "verb") {
-    if (!verb.info.imperative && negative && negative.imperative) {
+  if (vbe.info.type === "verb") {
+    if (!vbe.info.imperative && negative && negative.imperative) {
       // TODO: return errors here
       return [];
     }
-    const abilityTense = getAbilityTense(ba, verb, vbp);
-    if (vbp && !abilityTense) {
+    const abilityTenses = getAbilityTenses(ba, vbe, vbp);
+    if (vbp && !abilityTenses.length) {
       return [];
     }
     const mainV =
-      abilityTense && vbp && vbp.info.type === "ability" ? vbp.info : verb.info;
+      abilityTenses.length && vbp && vbp.info.type === "ability"
+        ? vbp.info
+        : vbe.info;
     const aspect = mainV.aspect;
     if (aspect === "perfective") {
       if (!ph && mainV.type !== "verb" && isKedulStatEntry(mainV.verb.entry))
@@ -670,51 +675,46 @@ function getTenses(
     } else {
       if (ph) return [];
     }
-
-    const tense = abilityTense
-      ? undefined
-      : getTenseFromRootsStems(
+    const tenses = abilityTenses.length
+      ? []
+      : getTensesFromRootsStems(
           ba,
-          verb.info.base,
-          verb.info.aspect,
+          vbe.info.base,
+          vbe.info.aspect,
           !!negative,
-          verb.info.imperative
+          vbe.info.imperative
         );
-    if (!tense && !abilityTense) {
+    if (!tenses.length && !abilityTenses.length) {
       return [];
     }
     const transitivities =
-      abilityTense && vbp
+      abilityTenses.length && vbp
         ? getTransitivities(vbp.info.verb)
-        : getTransitivities(verb.info.verb);
-    const verbEntry = vbp ? vbp.info.verb : checkForTlulCombos(verb, ph);
+        : getTransitivities(vbe.info.verb);
+    const verbEntry = vbp ? vbp.info.verb : vbe.info.verb;
     if (!verbEntry) return [];
-    if (abilityTense) {
+    if (abilityTenses.length) {
       if (!vbp) {
         throw new Error("VBP should exist in ability verb");
       }
-      return [
-        {
-          tense: abilityTense,
-          transitivities,
-          negative: !!negative,
-          person: verb.person,
-          verb: vbp.info.verb,
-        },
-      ];
-    }
-    if (!tense) {
-      return [];
-    }
-    return [
-      {
-        tense,
+      return abilityTenses.map((abilityTense) => ({
+        tense: abilityTense,
         transitivities,
         negative: !!negative,
-        person: verb.person,
-        verb: verbEntry,
-      },
-    ];
+        person: vbe.person,
+        verb: vbp.info.verb,
+      }));
+    }
+    if (!tenses.length) {
+      return [];
+    }
+    return tenses.map((tense) => ({
+      tense,
+      transitivities,
+      negative: !!negative,
+      person: vbe.person,
+      verb: verbEntry,
+    }));
   } else {
     // perfect
     const pPart = blocks.find(
@@ -752,44 +752,6 @@ function getTenses(
   }
 }
 
-function checkForTlulCombos(
-  verb: T.ParsedVBE,
-  ph: T.ParsedPH | undefined
-): T.VerbEntry | undefined {
-  if (verb.info.type === "equative") {
-    throw new Error("should not be equative here");
-  }
-  if (!ph) {
-    return verb.info.verb;
-  }
-  if (["را", "ور", "در"].includes(ph.s) || ph.s.startsWith("لاړ")) {
-    if (
-      !(
-        isKedulStatEntry(verb.info.verb.entry) &&
-        verb.info.aspect === "perfective" &&
-        verb.info.base === "stem"
-      )
-    ) {
-      return undefined;
-    }
-    const personsFromLar = personsFromPattern1("لاړ", ph.s);
-    if (personsFromLar.includes(verb.person)) {
-      return tlul;
-    }
-    if (ph.s === "را") {
-      return raatlul;
-    }
-    if (ph.s === "در") {
-      return dartlul;
-    }
-    if (ph.s === "ور") {
-      return wartlul;
-    }
-    return undefined;
-  }
-  return verb.info.verb;
-}
-
 function checkForDynCompounds(dictionary: T.DictionaryAPI) {
   return function (
     tokens: readonly T.Token[],
@@ -821,7 +783,6 @@ function checkForDynCompounds(dictionary: T.DictionaryAPI) {
       return returnParseResult(tokens, vps);
     }
     const dynCompoundVerb = dynCompoundVerbs[0];
-    console.log({ vps, dynCompoundVerb });
     return returnParseResults(tokens, [
       {
         ...vps,
@@ -1094,23 +1055,27 @@ function getPeopleFromMiniPronouns(kids: T.ParsedKid[]): T.Person[] {
   return p;
 }
 
-function getAbilityTense(
+function getAbilityTenses(
   hasBa: boolean,
   vbe: T.ParsedVBE,
   vbp: T.ParsedVBP | undefined
-): T.AbilityTense | undefined {
+): T.AbilityTense[] {
   if (vbe.info.type === "equative") {
-    return undefined;
+    return [];
   }
   if (!vbp || vbp.info.type !== "ability") {
-    return undefined;
+    return [];
   }
   if (!isKedulStatEntry(vbe.info.verb.entry)) {
-    return undefined;
+    return [];
   }
-  const aspect = vbp.info.aspect;
+  const aspects: T.Aspect[] = isAbilityAspectAmbiguousVBP(vbp)
+    ? ["imperfective", "perfective"]
+    : [vbp.info.aspect];
   const base = vbe.info.base;
-  return `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`;
+  return aspects.map<T.AbilityTense>(
+    (aspect) => `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`
+  );
 }
 
 function tenseFromAspectBaseBa(
@@ -1137,25 +1102,25 @@ function tenseFromAspectBaseBa(
   }
 }
 
-function getTenseFromRootsStems(
+function getTensesFromRootsStems(
   hasBa: boolean,
   base: "root" | "stem",
   aspect: T.Aspect,
   negative: boolean,
   imperative: boolean | undefined
-): T.VerbTense | T.ImperativeTense | undefined {
+): (T.VerbTense | T.ImperativeTense)[] {
   if (imperative) {
     if (base === "root") {
-      return undefined;
+      return [];
     }
     if (hasBa) {
-      return undefined;
+      return [];
     }
     return aspect === "imperfective" || negative
-      ? "imperfectiveImperative"
-      : "perfectiveImperative";
+      ? ["imperfectiveImperative"]
+      : ["perfectiveImperative"];
   }
-  return tenseFromAspectBaseBa(aspect, base, hasBa);
+  return [tenseFromAspectBaseBa(aspect, base, hasBa)];
 }
 
 function getTransitivities(v: T.VerbEntry): T.Transitivity[] {
@@ -1415,4 +1380,80 @@ function checkComplementPresence(
     };
   }
   return { complement: exComplement, compPresenceErrors: [] };
+}
+
+/**
+ * This is just needed to turn the VBEs into proper tlul words,
+ * if we have an ability VBP it will already be correct. This is not
+ * the clearest and cleanest workflow, it probably would be better
+ * to get the proper verb in the VBE in the first place, but this is
+ * what we're working with for now
+ */
+function checkForTlulCombos(
+  ph: T.ParsedPH | undefined,
+  vbe: T.ParsedVBE | undefined,
+  vbp: T.ParsedVBP | undefined
+): { vbp: T.ParsedVBP | undefined; vbe: T.ParsedVBE | undefined } {
+  function replaceEntry(vbe: T.ParsedVBE, verb: T.VerbEntry): T.ParsedVBE {
+    if (vbe.type === "welded") {
+      return vbe;
+    }
+    if (vbe.info.type === "equative") {
+      return vbe;
+    }
+    return {
+      ...vbe,
+      info: {
+        ...vbe.info,
+        verb,
+      },
+    };
+  }
+  if (!vbe) {
+    return { vbp, vbe };
+  }
+  if (vbe.info.type === "equative") {
+    throw new Error("should not be equative here");
+  }
+  if (!ph) {
+    return { vbp, vbe };
+  }
+  if (["را", "ور", "در"].includes(ph.s) || ph.s.startsWith("لاړ")) {
+    if (
+      !(
+        isKedulStatEntry(vbe.info.verb.entry) &&
+        vbe.info.aspect === "perfective" &&
+        vbe.info.base === "stem"
+      )
+    ) {
+      return { vbe, vbp };
+    }
+    const personsFromLar = personsFromPattern1("لاړ", ph.s);
+    // TOOD: could do error handling here
+    if (personsFromLar.includes(vbe.person)) {
+      return { vbe: replaceEntry(vbe, tlul), vbp };
+    }
+    if (ph.s === "را") {
+      return { vbe: replaceEntry(vbe, raatlul), vbp };
+    }
+    if (ph.s === "در") {
+      return { vbe: replaceEntry(vbe, dartlul), vbp };
+    }
+    if (ph.s === "ور") {
+      return { vbe: replaceEntry(vbe, wartlul), vbp };
+    }
+    return { vbe, vbp };
+  }
+  return { vbe, vbp };
+}
+
+// TODO: make sure this is expanded to deal properly with stative compounds
+function isAbilityAspectAmbiguousVBP(vbp: T.ParsedVBP): boolean {
+  if (vbp.type === "welded") {
+    return false;
+  }
+  if (vbp.info.type === "ppart") {
+    return false;
+  }
+  return isTlulVerb(vbp.info.verb);
 }

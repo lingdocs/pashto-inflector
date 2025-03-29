@@ -38,9 +38,9 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): {
 } {
   const subject = getSubjectSelection(EP.blocks).selection;
   const subjectPerson = getPersonFromNP(subject);
-  const complementKing = complementTakesTarget(subject, EP.predicate);
-  const kingPerson = complementKing
-    ? getPersonFromNP(complementKing)
+  const complementWins = complementTakesTarget(subject, EP.predicate);
+  const kingPerson = complementWins
+    ? getPersonFromNP(EP.predicate.selection as T.NPSelection)
     : subjectPerson;
   const equative: T.EquativeBlock = {
     type: "equative",

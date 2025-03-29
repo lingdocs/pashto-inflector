@@ -53,13 +53,11 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
   return function (
     prev: T.ParseResult<VerbSectionData>
   ): T.ParseResult<VerbSectionData>[] {
-    const { ph, hasNeg, hasVBE, vbeIndex, hasVBP } = scanSection(
-      prev.body.blocks
-    );
+    const { ph, hasNeg, VBE, vbeIndex, hasVBP } = scanSection(prev.body.blocks);
     const allResults: T.ParseResult<VerbSectionBlock | T.ParsedKidsSection>[] =
       [
         ...(!ph ? parsePH(prev.tokens) : []),
-        ...(hasVBE
+        ...(VBE
           ? []
           : [
               ...parseVBE(
@@ -77,7 +75,7 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
         ...parseKidsSection(prev.tokens, []),
       ].filter(ensureVBEAuxOk(prev.body.blocks, vbeIndex));
     if (allResults.length === 0) {
-      return verbSectionOK(prev.body.blocks) ? [prev] : [];
+      return finalChecksOnVerbSection(prev);
     }
     return bindParseResult(allResults, (tokens, r) => {
       if (r.type === "kids") {
@@ -116,7 +114,7 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
 function scanSection(blocks: VerbSectionBlock[]): {
   ph: T.ParsedPH | undefined;
   hasNeg: boolean;
-  hasVBE: boolean;
+  VBE: T.ParsedVBE | undefined;
   vbeIndex: number;
   hasVBP: boolean;
 } {
@@ -137,7 +135,7 @@ function scanSection(blocks: VerbSectionBlock[]): {
       if (isParsedVBE(b)) {
         return {
           ...acc,
-          hasVBE: true,
+          VBE: b,
           vbeIndex: i,
         };
       }
@@ -149,8 +147,24 @@ function scanSection(blocks: VerbSectionBlock[]): {
       }
       return acc;
     },
-    { ph: undefined, hasNeg: false, hasVBE: false, vbeIndex: -1, hasVBP: false }
+    {
+      ph: undefined,
+      hasNeg: false,
+      VBE: undefined,
+      vbeIndex: -1,
+      hasVBP: false,
+    }
   );
+}
+
+function finalChecksOnVerbSection(
+  v: T.ParseResult<VerbSectionData>
+): T.ParseResult<VerbSectionData>[] {
+  // && !hasMisusedStatKedul(v.body.blocks);
+  // TODO: add errors here
+  return verbSectionOK(v.body.blocks) && !hasMisusedStatKedul(v.body.blocks)
+    ? [v]
+    : [];
 }
 
 function verbSectionOK(vs: T.ParsedBlock[]): boolean {
@@ -168,25 +182,23 @@ function verbSectionOK(vs: T.ParsedBlock[]): boolean {
     [isPH, isNeg, isParsedVBE, isParsedVBP],
     [isPH, isParsedVBP, isNeg, isParsedVBE],
   ];
-  return (
-    possibilites.some(
-      (poss) =>
-        poss.length === vs.length && zip(poss, vs).every(([p, b]) => p(b))
-    ) && !hasMisusedStatKedul(vs)
-  );
+  return possibilites.some(
+    (poss) => poss.length === vs.length && zip(poss, vs).every(([p, b]) => p(b))
+  ); // && !hasMisusedStatKedul(vs)
 }
 
-/**
- * check to see if we didn't up getting a VBP and we
- * used a VBE kedul stat incorrectly - for example پوښتنه وشوه
- * being interpreted as پوښتنه شوه
- */
+// TODO: this isn't working right now and might not be necessary
+// /**
+//  * check to see if we didn't up getting a VBP and we
+//  * used a VBE kedul stat incorrectly - for example پوښتنه وشوه
+//  * being interpreted as پوښتنه شوه
+//  */
 function hasMisusedStatKedul(blocks: T.ParsedBlock[]): boolean {
-  const ph = blocks.some((b): b is T.ParsedPH => b.type === "PH");
+  const ph = blocks.find((b): b is T.ParsedPH => b.type === "PH");
   const vbp = blocks.some(isParsedVBP);
   const vbe = blocks.find(isParsedVBE);
   return !!(
-    ph &&
+    ph?.s === "و" &&
     !vbp &&
     vbe &&
     vbe.info.type === "verb" &&

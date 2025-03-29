@@ -34,7 +34,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const isTransitive = object !== "none";
   const { king, servant } = getKingAndServant(isPast, isTransitive);
   const kingNP = king === "subject" ? subject : object;
-  const complementKing = complementTakesTarget(kingNP, complement);
+  const complementWins = complementTakesTarget(kingNP, complement);
   const kingPerson = getPersonFromNP(kingNP);
   const complementPerson = getPersonFromNP(object ? object : subject);
   // TODO: more elegant way of handling this type safety
@@ -67,9 +67,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
     tense: VP.verb.tense,
     subject: subjectPerson,
     object: objectPerson,
-    complementKing: complementKing
-      ? getPersonFromNP(complementKing)
-      : undefined,
+    complementKing: complementWins ? complementPerson : undefined,
     voice: VP.verb.voice,
     negative: VP.verb.negative,
   });
@@ -81,7 +79,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   // just enter the negative in the verb blocks
   return {
     type: "VPRendered",
-    king: complementKing ? "complement" : king,
+    king: complementWins ? "complement" : king,
     servant,
     isPast,
     isTransitive,
