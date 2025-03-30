@@ -1,6 +1,6 @@
 import * as T from "../../../../types";
 import { parseNP } from "./parse-np";
-import { bindParseResult } from "../utils";
+import { bindParseResult, returnParseResultSingle } from "../utils";
 // TODO: maybe contractions should just be male to cut down on the
 // alternative sentences
 // TODO: be able to parse khpul etc
@@ -19,19 +19,22 @@ const contractions: [string[], T.Person[]][] = [
 
 export function parsePossesor(
   tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI
+): T.ParseResult<T.PossesorSelection>[] {
+  if (tokens.length === 0) {
+    return [];
+  }
+  return parsePossesorR(tokens, dictionary, undefined);
+}
+
+function parsePossesorR(
+  tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-  prevPossesor: T.PossesorSelection | undefined,
-  errors: T.ParseError[]
+  prevPossesor: T.ParseResult<T.PossesorSelection> | undefined
 ): T.ParseResult<T.PossesorSelection>[] {
   if (tokens.length === 0) {
     if (prevPossesor) {
-      return [
-        {
-          tokens,
-          body: prevPossesor,
-          errors: [],
-        },
-      ];
+      return [prevPossesor];
     }
     return [];
   }
@@ -40,74 +43,35 @@ export function parsePossesor(
   // then later (if possessor || contractions)
   const contractions = parseContractions(first);
   if (contractions.length) {
-    const errorsN = [
-      ...errors,
-      ...(prevPossesor
-        ? [{ message: "a pronoun cannot have a possesor" }]
-        : []),
-    ];
-    return contractions
-      .flatMap((p) => parsePossesor(rest, dictionary, p, errorsN))
-      .map((x) => ({
-        ...x,
-        errors: [...errorsN, ...x.errors],
-      }));
+    if (prevPossesor) {
+      return [];
+    }
+    return contractions.flatMap((p) =>
+      parsePossesorR(rest, dictionary, returnParseResultSingle(rest, p))
+    );
   }
   if (first.s === "د") {
     const np = parseNP(rest, dictionary, undefined);
-    return bindParseResult(np, (tokens, body) => {
-      const possesor: T.PossesorSelection = {
+    return bindParseResult(np, (tkns, body) => {
+      const possesor: T.PossesorSelection = addPoss(prevPossesor?.body, {
         type: "possesor",
         shrunken: false,
         np: body.selection,
-      };
-      const errorsN: T.ParseError[] = [
-        ...errors,
+      });
+      const errors: T.ParseError[] = [
+        ...(prevPossesor ? prevPossesor.errors : []),
         ...(!body.inflected
           ? // TODO: get ps to say which possesor
             // TODO: track the position coming from the parseNP etc for highlighting
             [{ message: `possesor should be inflected` }]
           : []),
       ];
-      return parsePossesor(
-        tokens,
-        dictionary,
-        addPoss(prevPossesor, possesor),
-        errorsN
-      );
-      // TODO: add and check error - can't add possesor to pronoun
+      const p = returnParseResultSingle(tkns, possesor, errors);
+      const ahead = parsePossesorR(tkns, dictionary, p);
+      return ahead.length ? ahead : [];
     });
   }
-  if (first.s === "زما") {
-    return [
-      {
-        tokens: rest,
-        body: {
-          type: "possesor",
-          shrunken: false,
-          np: {
-            type: "NP",
-            selection: {
-              type: "pronoun",
-              distance: "far",
-              person: T.Person.FirstSingMale,
-            },
-          },
-        },
-        errors,
-      },
-    ];
-  }
-  if (prevPossesor) {
-    return [
-      {
-        tokens,
-        body: prevPossesor,
-        errors,
-      },
-    ];
-  }
-  return [];
+  return prevPossesor ? [prevPossesor] : [];
 }
 
 function addPoss(

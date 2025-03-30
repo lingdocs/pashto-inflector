@@ -180,6 +180,7 @@ function combineArgAndVerbSections(
   });
 }
 
+// TODO: could also check for order errors in the consolidated kid's section ?
 function consolidateKidsSection(
   arg: ReturnType<typeof parseArgumentSection>[number]["body"],
   vsKids: { position: number; section: T.ParsedKid[] }[]

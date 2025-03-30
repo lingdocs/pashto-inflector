@@ -10,7 +10,7 @@ import { isCompleteResult } from "../utils";
 import { testDictionary as dictionary } from "../mini-test-dictionary";
 
 const sturey = dictionary.adjLookup("ستړی")[0];
-const sarey = dictionary.nounLookup("سړی")[0];
+const saray = dictionary.nounLookup("سړی")[0];
 const maashoom = dictionary.nounLookup("ماشوم")[0];
 const malguray = dictionary.nounLookup("ملګری")[0];
 const plaar = dictionary.nounLookup("پلار")[0];
@@ -21,7 +21,7 @@ const tests: {
 }[] = [
   {
     input: "د سړي",
-    output: [makeNounSelection(sarey, undefined)],
+    output: [makeNounSelection(saray, undefined)],
   },
   {
     input: "د ماشومې",
@@ -103,19 +103,19 @@ const tests: {
   },
   {
     input: "د پلار ستا",
-    output: "error",
+    output: [],
   },
 ];
 
 test("parse possesor", () => {
   tests.forEach(({ input, output }) => {
     const tokens = tokenizer(input);
-    const parsed = parsePossesor(tokens, dictionary, undefined, []);
+    const parsed = parsePossesor(tokens, dictionary);
     if (output === "error") {
       expect(parsed.some((x) => x.errors.length)).toBe(true);
     } else {
       expect(
-        parsePossesor(tokens, dictionary, undefined, [])
+        parsePossesor(tokens, dictionary)
           .filter(isCompleteResult)
           .map((x) => x.body.np.selection)
       ).toEqual(output);

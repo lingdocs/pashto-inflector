@@ -19,7 +19,7 @@ export function parseComplement(
       // TODO: curry these things and use parserCombOr
       ...parseAdjective(tokens, dictionary),
       ...parseSandwich(tokens, dictionary, undefined),
-      ...parsePossesor(tokens, dictionary, undefined, []),
+      ...parsePossesor(tokens, dictionary),
       ...fFlatMapParseResult(
         (p): T.ParsedComplementSelection["selection"][] => {
           if (p.selection.type === "sandwich") {
@@ -41,7 +41,7 @@ function parseNPWPoss(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI
 ): T.ParseResult<T.NPSelection>[] {
-  const possesor = parsePossesor(tokens, dictionary, undefined, []);
+  const possesor = parsePossesor(tokens, dictionary);
   const np = !possesor.length
     ? parseNP(tokens, dictionary, undefined)
     : bindParseResult<T.PossesorSelection, T.ParsedNP>(possesor, (tokens, p) =>
