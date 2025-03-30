@@ -1,5 +1,3 @@
-/* eslint-disable jest/no-conditional-expect */
-/* eslint-disable jest/valid-title */
 import * as T from "../../../types";
 import { parseKidsSection } from "./parse-kids-section";
 import { tokenizer } from "./tokenizer";
@@ -66,7 +64,7 @@ tests.forEach(({ label, cases }) => {
   test(label, () => {
     cases.forEach(({ input, output, error }) => {
       const tokens = tokenizer(input);
-      const parsed = parseKidsSection(tokens, []);
+      const parsed = parseKidsSection(tokens, [], []);
       if (output.length) {
         expect(parsed.length).toBe(1);
         expect(parsed.map((x) => x.body.kids)).toEqual(

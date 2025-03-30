@@ -110,12 +110,12 @@ const tests: {
 test("parse possesor", () => {
   tests.forEach(({ input, output }) => {
     const tokens = tokenizer(input);
-    const parsed = parsePossesor(tokens, dictionary, undefined);
+    const parsed = parsePossesor(tokens, dictionary, undefined, []);
     if (output === "error") {
       expect(parsed.some((x) => x.errors.length)).toBe(true);
     } else {
       expect(
-        parsePossesor(tokens, dictionary, undefined)
+        parsePossesor(tokens, dictionary, undefined, [])
           .filter(isCompleteResult)
           .map((x) => x.body.np.selection)
       ).toEqual(output);

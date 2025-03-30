@@ -39,24 +39,13 @@ import { personsFromPattern1 } from "./argument-section/parse-noun-word";
 import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
 
 // to hide equatives type-doubling issue
+// shouldn't be opt parsing with demonstratives
 
 // TODO: problem with 3rd pers sing verb endings اواز مې دې واورېده
 
-// TODO: test all types with pronouns
-// TODO: way to get an error message for past participle and equative
-// not matching up
-
-// TODO: kenaastulay shum should be imperfective AND perfective
-// TODO: why are some ability verbs coming out double??
-// TOOD: how to handle the roots and stems lookup for ability - with things like بوتلل
-
-// TODO: This parses extra options with demonstratives کور ته دې بوتلی شم
-
 // TODO: زه د هغې غټې ښځې کور شوم - should work
 
-// TODO: زما غټه ښځه وینې - throws "complement link broken"
 // FOR display - Verb blocks should display VBP - VBE somehow
-// TODO: راشه is broken
 // TODO: past participle for compounds like کړې وه
 // why doesn't ښځه خفه شوه  parse as a compound?
 
@@ -64,17 +53,23 @@ import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
 // and also parses as ستړې کړلم
 // same thing doesn't catch ما پیاله مات کړه
 
-// ماشومانو وهلم complement link broken!
-// ودې وینم complement link broken!
 // دا خبره مې سپکاوی بللی دی ERRORS
 
-// زه ښځه ستړی بولم should error!
-
-// problem with شتړې being an adverb
-// TODO: complements currently only working with NP complements like with زه تا سړی بولم
 // TODO: issue with کوم being کوېږم
-// USE hasMisusedStatKedul at end of verbsection parse
 
+// FOR block display show adj head
+// TODO: problem with adjective parsing errors not coming through!
+// also زه ستړی شوم should not work for feminine
+// زه ښځه ستړی بولم should error!
+// دا خبره مې سپکاوی بللی دی should error but it doesn't
+// ما کتاب ستونزه بللې ده
+// زه دې ستړی کړم
+// should only be one gender
+// proper errors around سړي ښځه لیدلې ده
+
+//  issue with ستړې being an adverb
+// BIG RENDERING ISSUE - سړی shouldn't inflect to سړیانو
+//  change the dictionary back to n. m. anim ?
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI
@@ -99,6 +94,12 @@ function combineArgAndVerbSections(
   vs: ReturnType<typeof parseVerbSection>[number]["body"]
 ): T.ParseResult<T.VPSelectionComplete>[] {
   const [kids, kidsErrors] = consolidateKidsSection(arg, vs.kids);
+  // if (
+  //   kidsErrors.length // &&
+  //   // kidsErrors.some((x) => x.message.includes("position"))
+  // ) {
+  //   console.log({ kids, kidsErrors, arg, vs });
+  // }
   const blocks = [
     ...arg.npsAndAps,
     ...(arg.complement ? [arg.complement] : []),
@@ -186,7 +187,7 @@ function consolidateKidsSection(
   const lastArgPos = arg.npsAndAps.length;
   const vsKidsAdjusted = vsKids.map((x) => ({
     ...x,
-    postion: x.position + lastArgPos,
+    position: x.position + lastArgPos,
   }));
   const kids = [...arg.kids, ...vsKidsAdjusted];
   return kids.reduce<[T.ParsedKid[], T.ParseError[]]>(
@@ -199,9 +200,9 @@ function consolidateKidsSection(
           [
             ...errs,
             {
-              message: `kid${k.section.length > 1 ? "s" : ""} ${k.section.join(
-                ", "
-              )} out of place. Found after block ${
+              message: `kid${k.section.length > 1 ? "s" : ""} ${k.section
+                .map((x) => `'${x}'`)
+                .join(", ")} out of place. Found after block ${
                 k.position
               }, should be after the first block.`,
             },
@@ -1413,7 +1414,7 @@ function checkForTlulCombos(
     return { vbp, vbe };
   }
   if (vbe.info.type === "equative") {
-    throw new Error("should not be equative here");
+    return { vbp, vbe };
   }
   if (!ph) {
     return { vbp, vbe };
@@ -1454,6 +1455,9 @@ function isAbilityAspectAmbiguousVBP(vbp: T.ParsedVBP): boolean {
   }
   if (vbp.info.type === "ppart") {
     return false;
+  }
+  if (vbp.info.verb.entry.separationAtP) {
+    return true;
   }
   return isTlulVerb(vbp.info.verb);
 }

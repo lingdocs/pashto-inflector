@@ -78,14 +78,30 @@ function finishVerbEntryLookup(entry: T.DictionaryEntry): T.VerbEntry[] {
   if (!tp.isVerbDictionaryEntry(entry)) {
     return [];
   }
-  return entry.l
-    ? [
-        {
-          entry,
-          complement: memoizedQueryTs(entry.l),
-        },
-      ]
-    : [{ entry }];
+  // TODO: this is weird and convoluted, but for some reason
+  // I needed this to catch errors that were going uncaught
+  // when I wasn't able to find the complement? But then as soon
+  // as I started catching and observing the errors, they ceased
+  // to exist. Changing the behavior once observed like some kind
+  // of insane quantum mechanics experiment
+  if (entry.l) {
+    const { l, err } = (() => {
+      try {
+        return { l: memoizedQueryTs(entry.l), err: undefined };
+      } catch (e) {
+        console.error(e);
+        return {
+          l: undefined,
+          err: `error looking for complement for ${JSON.stringify(entry)}`,
+        };
+      }
+    })();
+    if (err) {
+      return [{ entry }];
+    }
+    return [{ entry, complement: l }];
+  }
+  return [{ entry }];
 }
 
 function verbEntryLookupByLFunction(ts: number): T.VerbEntry[] {

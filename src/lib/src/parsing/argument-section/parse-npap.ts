@@ -11,7 +11,7 @@ export function parseNPAP(
   if (s.length === 0) {
     return [];
   }
-  const possesor = parsePossesor(s, dictionary, undefined);
+  const possesor = parsePossesor(s, dictionary, undefined, []);
   if (!possesor.length) {
     return [
       ...parseNP(s, dictionary, undefined),

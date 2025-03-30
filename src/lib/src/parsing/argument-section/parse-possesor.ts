@@ -20,7 +20,8 @@ const contractions: [string[], T.Person[]][] = [
 export function parsePossesor(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-  prevPossesor: T.PossesorSelection | undefined
+  prevPossesor: T.PossesorSelection | undefined,
+  errors: T.ParseError[]
 ): T.ParseResult<T.PossesorSelection>[] {
   if (tokens.length === 0) {
     if (prevPossesor) {
@@ -39,14 +40,17 @@ export function parsePossesor(
   // then later (if possessor || contractions)
   const contractions = parseContractions(first);
   if (contractions.length) {
-    const errors = prevPossesor
-      ? [{ message: "a pronoun cannot have a possesor" }]
-      : [];
+    const errorsN = [
+      ...errors,
+      ...(prevPossesor
+        ? [{ message: "a pronoun cannot have a possesor" }]
+        : []),
+    ];
     return contractions
-      .flatMap((p) => parsePossesor(rest, dictionary, p))
+      .flatMap((p) => parsePossesor(rest, dictionary, p, errorsN))
       .map((x) => ({
         ...x,
-        errors: [...errors, ...x.errors],
+        errors: [...errorsN, ...x.errors],
       }));
   }
   if (first.s === "د") {
@@ -57,19 +61,21 @@ export function parsePossesor(
         shrunken: false,
         np: body.selection,
       };
-      return {
-        errors: !body.inflected
+      const errorsN: T.ParseError[] = [
+        ...errors,
+        ...(!body.inflected
           ? // TODO: get ps to say which possesor
             // TODO: track the position coming from the parseNP etc for highlighting
             [{ message: `possesor should be inflected` }]
-          : [],
-        // add and check error - can't add possesor to pronoun
-        next: parsePossesor(
-          tokens,
-          dictionary,
-          addPoss(prevPossesor, possesor)
-        ),
-      };
+          : []),
+      ];
+      return parsePossesor(
+        tokens,
+        dictionary,
+        addPoss(prevPossesor, possesor),
+        errorsN
+      );
+      // TODO: add and check error - can't add possesor to pronoun
     });
   }
   if (first.s === "زما") {
@@ -88,7 +94,7 @@ export function parsePossesor(
             },
           },
         },
-        errors: [],
+        errors,
       },
     ];
   }
@@ -97,7 +103,7 @@ export function parsePossesor(
       {
         tokens,
         body: prevPossesor,
-        errors: [],
+        errors,
       },
     ];
   }

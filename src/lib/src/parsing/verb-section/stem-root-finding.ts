@@ -73,8 +73,8 @@ export function withAlephAdded(s: string): string[] {
   return [s, ...(startsWithAleph(s) ? [] : ["ا" + s, "آ" + s])];
 }
 
-function regStemSearch(s: string, dicitonary: T.DictionaryAPI): T.VerbEntry[] {
-  const regTrans = dicitonary
+function regStemSearch(s: string, dictionary: T.DictionaryAPI): T.VerbEntry[] {
+  const regTrans = dictionary
     .verbEntryLookup(s + "ل")
     .filter(
       (e) =>
@@ -83,7 +83,7 @@ function regStemSearch(s: string, dicitonary: T.DictionaryAPI): T.VerbEntry[] {
         !e.entry.psp &&
         !e.entry.c.includes("intrans")
     );
-  const regIntrans = dicitonary
+  const regIntrans = dictionary
     .verbEntryLookup((s.endsWith("ېږ") ? s.slice(0, -2) : s) + "ېدل")
     .filter(
       (e) =>

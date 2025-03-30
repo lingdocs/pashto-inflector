@@ -11,55 +11,27 @@ import { assertNever } from "../misc-helpers";
  * all the results are flatMapped into a new ParseResult[] monad
  * and the errors are passed on and pruned
  *
- * @param previous - the set of results (monad) to start with
- * @param f - a function that takes a remaining list of tokens and one body of the previous result
- * and returns the next set of possible results, optionally with an object containing any errors
- * @param ignorePrevious - pass in true if you don't need the previous ParseResult to calculate
- * the next one. This will add effeciancy by only caring about how many tokens are available
- * from the different previous results
  * @returns
  */
 export function bindParseResult<C, D>(
-  previous: T.ParseResult<C>[],
-  f: (
-    tokens: Readonly<T.Token[]>,
-    r: C
-  ) =>
-    | T.ParseResult<D>[]
-    // TODO: eliminate this weirdness!
-    | {
-        errors: T.ParseError[];
-        next: T.ParseResult<D>[];
-      },
-  ignorePrevious?: boolean
+  prev: T.ParseResult<C>[],
+  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[]
 ): T.ParseResult<D>[] {
-  const prev = ignorePrevious
-    ? (() => {
-        const resArr: T.ParseResult<C>[] = [];
-        previous.filter((item) => {
-          const i = resArr.findIndex(
-            (x) => x.tokens.length === item.tokens.length
-          );
-          if (i <= -1) {
-            resArr.push(item);
-          }
-          return null;
-        });
-        return resArr;
-      })()
-    : previous;
-  const nextPossibilities = prev.flatMap(({ tokens, body, errors }) => {
-    // TODO: do this here ??
-    // if (tokens.length === 0) {
-    //   return [];
-    // }
-    const res = f(tokens, body);
-    const { errors: errsPassed, next } = Array.isArray(res)
-      ? { errors: [], next: res }
-      : res;
-    return next.map(addErrors([...errsPassed, ...errors]));
-  });
-  return cleanOutResults(nextPossibilities);
+  // PERFECTION 🧪
+  return cleanOutResults(
+    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors)))
+  );
+}
+
+export function bindParseWithAllErrors<C, D>(
+  prev: T.ParseResult<C>[],
+  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[]
+): T.ParseResult<D>[] {
+  // PERFECTION 🧪
+  // TODO: Do we really need to remove duplicates ?? I don't think so
+  return removeDuplicates(
+    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors)))
+  );
 }
 
 /**
@@ -84,7 +56,9 @@ export function bindParseResultWParser<C, D, E>(
       const parsed = cleanOutResults(parser(group[0].tokens));
       return group.flatMap((prev) => {
         return parsed.flatMap((parse) =>
-          f(prev.body, parse.body, parse.tokens).map(addErrors(parse.errors))
+          f(prev.body, parse.body, parse.tokens).map(
+            addErrors([...parse.errors, ...prev.errors])
+          )
         );
       });
     })
@@ -158,9 +132,7 @@ export function returnParseResult<D>(
  * finds the most successful path(s) and culls out any other more erroneous
  * or redundant paths
  */
-export function cleanOutResults<C>(
-  results: T.ParseResult<C>[]
-): T.ParseResult<C>[] {
+function cleanOutResults<C>(results: T.ParseResult<C>[]): T.ParseResult<C>[] {
   if (results.length === 0) {
     return results;
   }
@@ -171,8 +143,15 @@ export function cleanOutResults<C>(
     }
   }
   const errorsCulled = results.filter((x) => x.errors.length === min);
+  return removeDuplicates(errorsCulled);
+}
+
+function removeDuplicates<C>(results: T.ParseResult<C>[]): T.ParseResult<C>[] {
+  if (results.length === 0) {
+    return results;
+  }
   // @ts-expect-error - bc
-  return Array.from(new Set(errorsCulled.map(JSON.stringify))).map(JSON.parse);
+  return Array.from(new Set(results.map(JSON.stringify))).map(JSON.parse);
 }
 
 export type Parser<R> = (

@@ -31,6 +31,11 @@ type VerbSectionData = {
   }[];
 };
 
+const empty: VerbSectionData = {
+  blocks: [],
+  kids: [],
+};
+
 export function parseVerbSection(
   tokens: readonly T.Token[],
   dictionary: T.DictionaryAPI
@@ -40,10 +45,7 @@ export function parseVerbSection(
   }
   return parseVerbSectR(dictionary)({
     tokens,
-    body: {
-      blocks: [],
-      kids: [],
-    },
+    body: empty,
     errors: [],
   });
 }
@@ -72,7 +74,7 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
             ]),
         ...(!hasVBP ? parseVBP(prev.tokens, dictionary, ph) : []),
         ...(!hasNeg ? parseNeg(prev.tokens) : []),
-        ...parseKidsSection(prev.tokens, []),
+        ...parseKidsSection(prev.tokens, [], []),
       ].filter(ensureVBEAuxOk(prev.body.blocks, vbeIndex));
     if (allResults.length === 0) {
       return finalChecksOnVerbSection(prev);

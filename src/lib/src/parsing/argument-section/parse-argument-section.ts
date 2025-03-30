@@ -1,7 +1,11 @@
 import * as T from "../../../../types";
 import { parseKidsSection } from "./../parse-kids-section";
 import { parseNPAP } from "./parse-npap";
-import { bindParseResult, returnParseResultSingle } from "./../utils";
+import {
+  bindParseWithAllErrors,
+  returnParseResult,
+  returnParseResultSingle,
+} from "./../utils";
 import { parseComplement } from "./parse-complement";
 import { assertNever } from "../../misc-helpers";
 
@@ -11,6 +15,16 @@ type ArgSectionData = {
   complement: T.ParsedComplementSelection | undefined;
 };
 
+// could define this as a monoid if I wanted to 🤓
+const empty: ArgSectionData = {
+  kids: [],
+  npsAndAps: [],
+  complement: undefined,
+};
+
+// TODO !! somehow when we're binding the argument parsing calls
+// we are losing the errors from the NPs
+
 export function parseArgumentSection(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI
@@ -18,50 +32,49 @@ export function parseArgumentSection(
   if (tokens.length === 0) {
     return [];
   }
-  // at each stage - we need to also return an option to stop
-  return parseArgSectR(dictionary)({
-    tokens,
-    body: {
-      kids: [],
-      npsAndAps: [],
-      complement: undefined,
-    },
-    errors: [],
-  });
+  return [
+    // also give an option to keep parsing without an argument section
+    returnParseResultSingle(tokens, empty),
+    ...parseArgSectR(dictionary)({
+      tokens,
+      body: empty,
+      errors: [],
+    }),
+  ];
 }
 
 function parseArgSectR(dictionary: T.DictionaryAPI) {
   return function (
     prev: T.ParseResult<ArgSectionData>
   ): T.ParseResult<ArgSectionData>[] {
-    const baseResults = [
-      ...parseNPAP(prev.tokens, dictionary),
-      ...parseKidsSection(prev.tokens, []),
-    ];
-    const withComp: T.ParseResult<
-      | T.APSelection
+    function keepGoing(res: T.ParseResult<ArgSectionData>) {
+      return [res, ...parseArgSectR(dictionary)(res)];
+    }
+    const results: T.ParseResult<
       | T.ParsedNP
+      | T.APSelection
       | T.ParsedKidsSection
       | T.ParsedComplementSelection
     >[] = [
-      ...baseResults,
-      ...(baseResults.length ? parseComplement(prev.tokens, dictionary) : []),
+      ...parseNPAP(prev.tokens, dictionary),
+      ...parseKidsSection(prev.tokens, [], []),
+      ...(!prev.body.complement
+        ? parseComplement(prev.tokens, dictionary)
+        : []),
     ];
-    if (withComp.length === 0) {
+    if (results.length === 0) {
       return [prev];
     }
-    function returnAndKeepGoing(res: T.ParseResult<ArgSectionData>) {
-      return [res, ...parseArgSectR(dictionary)(res)];
-    }
-    // TODO: is it safer or more confusing to use the shadow var name tokens here?
-    return bindParseResult(withComp, (tkns, r) => {
+    // we have errors in `results` up to this point, then they get lost
+    // in the binding somehow
+    return bindParseWithAllErrors(results, (tkns, r) => {
       if (r.type === "AP" || r.type === "NP") {
         const d: ArgSectionData = {
           kids: prev.body.kids,
           npsAndAps: [...prev.body.npsAndAps, r],
           complement: prev.body.complement,
         };
-        return returnAndKeepGoing(returnParseResultSingle(tkns, d));
+        return keepGoing(returnParseResultSingle(tkns, d));
       }
       if (r.type === "kids") {
         const position = prev.body.npsAndAps.length;
@@ -78,7 +91,7 @@ function parseArgSectR(dictionary: T.DictionaryAPI) {
           npsAndAps: prev.body.npsAndAps,
           complement: prev.body.complement,
         };
-        return returnAndKeepGoing(returnParseResultSingle(tkns, d, errors));
+        return keepGoing(returnParseResultSingle(tkns, d, errors));
       }
       if (r.type === "complement") {
         const d: ArgSectionData = {
@@ -89,7 +102,9 @@ function parseArgSectR(dictionary: T.DictionaryAPI) {
         const errors: T.ParseError[] = prev.body.complement
           ? [{ message: "second complement not allowed" }]
           : [];
-        return returnAndKeepGoing(returnParseResultSingle(tkns, d, errors));
+        // complement is necessarily the end of the argument section
+        // don't keep going
+        return returnParseResult(tkns, d, errors);
       }
       assertNever(r, "unknown parse result");
     });

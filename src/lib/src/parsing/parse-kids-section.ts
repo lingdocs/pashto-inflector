@@ -4,30 +4,32 @@ import { bindParseResult, returnParseResult } from "./utils";
 
 export function parseKidsSection(
   tokens: Readonly<T.Token[]>,
-  prevKids: T.ParsedKid[]
+  prevKids: T.ParsedKid[],
+  errors: T.ParseError[]
 ): T.ParseResult<T.ParsedKidsSection>[] {
   if (tokens.length === 0) {
     return prevKids.length
-      ? returnParseResult(tokens, { type: "kids", kids: prevKids })
+      ? returnParseResult(tokens, { type: "kids", kids: prevKids }, errors)
       : [];
   }
   const parsedKid = parseKid(tokens);
   // TODO: is this even necessary ??
   if (!parsedKid.length) {
     return prevKids.length
-      ? returnParseResult(tokens, { type: "kids", kids: prevKids })
+      ? returnParseResult(tokens, { type: "kids", kids: prevKids }, errors)
       : [];
   }
   return bindParseResult(parsedKid, (tokens, r) => {
     // return parseKidsSection(tokens, [...prevKids, r]);
-    return {
-      errors: kidDoubled(r, prevKids)
+    const errorsN = [
+      ...errors,
+      ...(kidDoubled(r, prevKids)
         ? [{ message: `double '${r}' in kids section` }]
         : !kidComesBehind(r, prevKids.at(-1))
         ? [{ message: "kids section out of order" }]
-        : [],
-      next: parseKidsSection(tokens, [...prevKids, r]),
-    };
+        : []),
+    ];
+    return parseKidsSection(tokens, [...prevKids, r], errorsN);
   });
 }
 

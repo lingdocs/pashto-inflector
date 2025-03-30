@@ -95,6 +95,8 @@ export class DictionaryDb {
           unique: ["ts"],
         }
       );
+      // because during dev it tries to initialize twice
+      this.collection.clear();
       this.collection.insert(dictionary.entries);
       this.lokidb.saveDatabase((err) => {
         /* istanbul ignore next */
@@ -204,10 +206,8 @@ export class DictionaryDb {
       notifyUpdateComing();
       this.ready = false;
       localStorage.removeItem(this.dictionaryInfoLocalStorageKey);
-      if (this.collection) {
-        this.collection.clear();
-        this.lokidb.removeCollection(this.dictionaryCollectionName);
-      }
+      this.collection?.clear();
+      this.lokidb.removeCollection(this.dictionaryCollectionName);
       await (async () => {
         return new Promise((resolve: (value: "done") => void) => {
           this.lokidb.saveDatabase(() => {
