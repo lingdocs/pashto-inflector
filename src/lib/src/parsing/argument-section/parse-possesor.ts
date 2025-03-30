@@ -1,6 +1,7 @@
 import * as T from "../../../../types";
 import { parseNP } from "./parse-np";
 import { bindParseResult, returnParseResultSingle } from "../utils";
+
 // TODO: maybe contractions should just be male to cut down on the
 // alternative sentences
 // TODO: be able to parse khpul etc
@@ -24,42 +25,53 @@ export function parsePossesor(
   if (tokens.length === 0) {
     return [];
   }
-  return parsePossesorR(tokens, dictionary, undefined);
+  return parsePossesorR(dictionary, {
+    tokens,
+    body: undefined,
+    errors: [],
+  });
 }
 
 function parsePossesorR(
-  tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-  prevPossesor: T.ParseResult<T.PossesorSelection> | undefined
+  prev: T.ParseResult<T.PossesorSelection | undefined>
 ): T.ParseResult<T.PossesorSelection>[] {
-  if (tokens.length === 0) {
-    if (prevPossesor) {
-      return [prevPossesor];
+  if (prev.tokens.length === 0) {
+    if (prev.body) {
+      // need to do this for ts inference
+      return [
+        {
+          tokens: prev.tokens,
+          body: prev.body,
+          errors: prev.errors,
+        },
+      ];
     }
     return [];
   }
-  const [first, ...rest] = tokens;
-  // parse contraction
-  // then later (if possessor || contractions)
-  const contractions = parseContractions(first);
+  const contractions = parseContractions(prev.tokens);
   if (contractions.length) {
-    if (prevPossesor) {
+    if (prev.body) {
       return [];
     }
-    return contractions.flatMap((p) =>
-      parsePossesorR(rest, dictionary, returnParseResultSingle(rest, p))
+    return bindParseResult(contractions, (tkns, p) =>
+      parsePossesorR(dictionary, returnParseResultSingle(tkns, p))
     );
   }
+  const [first, ...rest] = prev.tokens;
+  // parse contraction
+  // then later (if possessor || contractions)
+
   if (first.s === "د") {
     const np = parseNP(rest, dictionary, undefined);
     return bindParseResult(np, (tkns, body) => {
-      const possesor: T.PossesorSelection = addPoss(prevPossesor?.body, {
+      const possesor: T.PossesorSelection = addPoss(prev.body, {
         type: "possesor",
         shrunken: false,
         np: body.selection,
       });
       const errors: T.ParseError[] = [
-        ...(prevPossesor ? prevPossesor.errors : []),
+        ...prev.errors,
         ...(!body.inflected
           ? // TODO: get ps to say which possesor
             // TODO: track the position coming from the parseNP etc for highlighting
@@ -67,11 +79,20 @@ function parsePossesorR(
           : []),
       ];
       const p = returnParseResultSingle(tkns, possesor, errors);
-      const ahead = parsePossesorR(tkns, dictionary, p);
+      const ahead = parsePossesorR(dictionary, p);
       return ahead.length ? ahead : [];
     });
   }
-  return prevPossesor ? [prevPossesor] : [];
+  return prev.body
+    ? [
+        // need to do this for ts inference
+        {
+          tokens: prev.tokens,
+          body: prev.body,
+          errors: prev.errors,
+        },
+      ]
+    : [];
 }
 
 function addPoss(
@@ -94,21 +115,26 @@ function addPoss(
   };
 }
 
-function parseContractions({ s }: T.Token): T.PossesorSelection[] {
-  const c = contractions.find(([ps]) => ps.includes(s));
+function parseContractions(
+  tokens: Readonly<T.Token[]>
+): T.ParseResult<T.PossesorSelection>[] {
+  const [first, ...rest] = tokens;
+  const c = contractions.find(([ps]) => ps.includes(first.s));
   if (!c) {
     return [];
   }
-  return c[1].map((person) => ({
-    type: "possesor",
-    shrunken: false,
-    np: {
-      type: "NP",
-      selection: {
-        type: "pronoun",
-        distance: "far",
-        person,
+  return c[1].map((person) =>
+    returnParseResultSingle(rest, {
+      type: "possesor",
+      shrunken: false,
+      np: {
+        type: "NP",
+        selection: {
+          type: "pronoun",
+          distance: "far",
+          person,
+        },
       },
-    },
-  }));
+    })
+  );
 }
