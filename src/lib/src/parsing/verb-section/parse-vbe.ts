@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
 import { getVerbEnding } from "./parse-verb-helpers";
-import { returnParseResults } from "./../utils";
+import { returnParseResults } from "../utils";
 import * as tp from "../../type-predicates";
 import { pashtoConsonants } from "../../pashto-consonants";
 import { getImperativeVerbEnding } from "./misc";

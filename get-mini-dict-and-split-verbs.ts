@@ -9,10 +9,6 @@ const res = await fetch(
 );
 const dictionary = (await res.json()) as T.Dictionary;
 
-const entries: T.DictionaryEntry[] = dictionary.entries.filter((x) =>
-  collection.includes(x.ts)
-);
-
 const splitEntries: T.VerbDictionaryEntry[] =
   dictionary.entries.filter<T.VerbDictionaryEntry>(
     (x): x is T.VerbDictionaryEntry =>
@@ -20,6 +16,10 @@ const splitEntries: T.VerbDictionaryEntry[] =
       !!x.separationAtP &&
       !["کول", "کېدل"].includes(x.p)
   );
+
+const entries: T.DictionaryEntry[] = dictionary.entries.filter(
+  (x) => collection.includes(x.ts) || splitEntries.some((e) => e.ts === x.ts)
+);
 
 const miniDictContents = `import { DictionaryEntry } from "../src/types";
 // DO NOT MODIFY - GENERATED FROM mini-dict-tss.ts

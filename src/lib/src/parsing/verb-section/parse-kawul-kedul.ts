@@ -6,6 +6,7 @@ import { getImperativeVerbEnding } from "./misc";
 
 // TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat
 
+// TODO: this might be a lot of unnecessary currying
 const getForm =
   (hasOo: boolean) =>
   (kawulKedul: "kawul" | "kedul") =>
@@ -20,9 +21,9 @@ const getForm =
           base,
           type: "verb",
           verb,
-        },
+        } as const,
         person,
-      };
+      } as const;
     });
   };
 
@@ -138,7 +139,7 @@ export function parseKawulKedul(
     ];
   }
   if (start === "شول" && ending !== "ل") {
-    return oneBase("kedul")("root")("imperfective")(people.root);
+    return oneBase("kedul")("root")("perfective")(people.root);
   }
   if (start === "شو") {
     // TODO: check to make sure we're removing enough people here??

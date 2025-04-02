@@ -1,5 +1,5 @@
 import * as T from "../../../../types";
-import { entries as splitVerbEntries } from "./split-verbs";
+import { entries as splitVerbEntries } from "./../split-verbs";
 import * as tp from "../../type-predicates";
 import memoize from "micro-memoize";
 
@@ -29,14 +29,14 @@ export function findRoot(ph: T.ParsedPH | undefined) {
 
 export function findImperfectiveRoot(
   s: string,
-  dicitonary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI
 ): RootInfo[] {
   if (["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
     return [];
   }
   const reg = [s, s + "ل"]
-    .flatMap(dicitonary.verbEntryLookup)
-    .filter((e) => !e.entry.c.includes("comp"));
+    .flatMap(dictionary.verbEntryLookup)
+    .filter((e) => !e.entry.c.includes("comp."));
   return reg.map((verb) => ({
     type: "verb",
     aspect: "imperfective",

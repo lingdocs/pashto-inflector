@@ -5,6 +5,8 @@ const dontUseFaultyIndexedDB = (): boolean =>
   /^Apple/.test(navigator.vendor) &&
   /AppleWebKit[/]60.*Version[/][89][.]/.test(navigator.appVersion);
 
+// TODO: !! Why does findOneByTs require us to convert the ts to a string ?!
+
 export class DictionaryDb {
   // config variables
   private dictionaryInfoLocalStorageKey: string;
@@ -228,12 +230,11 @@ export class DictionaryDb {
   /**
    * Returns a single word from it's timestamp (ts)
    */
-  // TODO: not working in app usage now now with new 'this' issues
   public findOneByTs(ts: number): T.DictionaryEntry | undefined {
     if (!this.ready || !this.collection) {
       return undefined;
     }
-    const res = this.collection.by("ts", ts);
+    const res = this.collection.by("ts", ts.toString());
     if (!res) {
       return undefined;
     }

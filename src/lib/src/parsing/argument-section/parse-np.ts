@@ -1,6 +1,6 @@
 import * as T from "../../../../types";
 import { parsePronoun } from "./parse-pronoun";
-import { parseNoun } from "./parse-noun-new";
+import { parseNoun } from "./parse-noun";
 import { fmapParseResult } from "../../fp-ps";
 import { parseParticiple } from "./parse-participle";
 

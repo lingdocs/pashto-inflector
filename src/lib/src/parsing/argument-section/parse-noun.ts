@@ -1,14 +1,9 @@
 import * as T from "../../../../types";
 import { makeNounSelection } from "../../phrase-building/make-selections";
 import { parseAdjective } from "./parse-adjective-new";
-import { parseDeterminer } from "./../argument-section/parse-determiner";
+import { parseDeterminer } from "./parse-determiner";
 import { parseNounWord } from "./parse-noun-word";
-import {
-  bindParseResult,
-  parserCombMany,
-  parserCombSucc3,
-  toParseError,
-} from "./../utils";
+import { bindParseResult, parserCombMany, parserCombSucc3 } from "../utils";
 
 type NounResult = { inflected: boolean; selection: T.NounSelection };
 
@@ -27,19 +22,15 @@ export function parseNoun(
     parseNounWord,
   ])(tokens, dictionary);
   return bindParseResult(res, (tkns, [determiners, adjectives, nounWord]) => {
-    const { error: adjErrors } = adjDetsMatch(
-      adjectives,
-      nounWord.gender,
-      nounWord.inflected ? 1 : 0,
-      nounWord.plural
-    );
-    const { error: detErrors } = adjDetsMatch(
-      determiners,
-      nounWord.gender,
-      nounWord.inflected ? 1 : 0,
-      nounWord.plural
-    );
-    const dupErrors = checkForDeterminerDuplicates(determiners);
+    const errors: T.ParseError[] = [
+      ...adjDetsMatch(
+        [...adjectives, ...determiners],
+        nounWord.gender,
+        nounWord.inflected,
+        nounWord.plural
+      ),
+      ...checkForDeterminerDuplicates(determiners),
+    ];
     const s = makeNounSelection(nounWord.entry, undefined);
     const body: NounResult = {
       inflected: nounWord.inflected,
@@ -62,11 +53,7 @@ export function parseNoun(
       {
         body,
         tokens: tkns,
-        errors: [
-          ...detErrors.map(toParseError),
-          ...dupErrors.map(toParseError),
-          ...adjErrors.map(toParseError),
-        ],
+        errors,
       },
     ];
   });
@@ -74,7 +61,7 @@ export function parseNoun(
 
 function checkForDeterminerDuplicates(
   determiners: T.InflectableBaseParse<T.DeterminerSelection>[]
-): string[] {
+): T.ParseError[] {
   // from https://flexiple.com/javascript/find-duplicates-javascript-array
   const array = determiners.map((d) => d.selection.determiner.p);
   const duplicates: string[] = [];
@@ -87,46 +74,34 @@ function checkForDeterminerDuplicates(
       }
     }
   }
-  return duplicates.map((x) => `duplicate ${x} determiner`);
+  return duplicates.map((x) => ({ message: `duplicate determiner ${x}` }));
 }
 
 export function adjDetsMatch(
-  adjectives: T.InflectableBaseParse<
-    T.AdjectiveSelection | T.DeterminerSelection
-  >[],
+  ads: T.InflectableBaseParse<T.AdjectiveSelection | T.DeterminerSelection>[],
   gender: T.Gender,
-  inf: 0 | 1 | 2,
-  plural: boolean | undefined
-): { ok: boolean; error: string[] } {
-  const inflection = (plural && inf < 2 ? inf + 1 : inf) as 0 | 1 | 2;
-  const unmatching = adjectives.filter(
-    (adj) =>
-      !adj.gender.includes(gender) ||
-      !adj.inflection.some((i) => i === inflection)
-  );
-  if (unmatching.length) {
-    return {
-      ok: false,
-      error: unmatching.map((x) => {
-        const p =
-          x.selection.type === "adjective"
-            ? x.selection.entry.p
-            : x.selection.determiner.p;
-        const adjText = x.given === p ? x.given : `${x.given} (${p})`;
-        const inflectionIssue = !x.inflection.some((x) => x === inflection)
-          ? ` should be ${showInflection(inflection)}`
-          : ``;
-        return `${
-          x.selection.type === "adjective" ? "Adjective" : "Determiner"
-        } agreement error: ${adjText} should be ${inflectionIssue} ${gender}.`;
-      }),
-    };
-  } else {
-    return {
-      ok: true,
-      error: [],
-    };
-  }
+  inflected: boolean,
+  plural: boolean
+): T.ParseError[] {
+  // TODO: will need to do special cases for په  کې etc
+  return ads.flatMap<T.ParseError>((x) => {
+    const genderErr: T.ParseError[] = !x.gender.includes(gender)
+      ? [{ message: `${x.given} should be ${gender}.` }]
+      : [];
+    const isDemons =
+      x.selection.type === "determiner" &&
+      isDemonstrative(x.selection.determiner);
+    const inflectionNum =
+      isDemons && !inflected ? 0 : ((+inflected + +plural) as 0 | 1 | 2);
+    const infErr: T.ParseError[] = !x.inflection.includes(inflectionNum)
+      ? [
+          {
+            message: `${x.given} should be ${showInflection(inflectionNum)}`,
+          },
+        ]
+      : [];
+    return [...genderErr, ...infErr];
+  });
 }
 
 function showInflection(inf: 0 | 1 | 2): string {
@@ -135,4 +110,8 @@ function showInflection(inf: 0 | 1 | 2): string {
     : inf === 1
     ? "first inflection"
     : "second inflection";
+}
+
+function isDemonstrative(x: T.Determiner): boolean {
+  return "demonstrative" in x && x.demonstrative;
 }

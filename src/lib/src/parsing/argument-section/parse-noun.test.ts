@@ -1,19 +1,16 @@
 import {
+  makeAdjectiveSelection,
   // makeAdjectiveSelection,
   makeNounSelection,
 } from "../../phrase-building/make-selections";
 import * as T from "../../../../types";
 // import { lookup } from "./lookup";
-import { parseNoun } from "./parse-noun-new";
-import { tokenizer } from "./../tokenizer";
+import { parseNoun } from "./parse-noun";
+import { tokenizer } from "../tokenizer";
 // import { isCompleteResult } from "./utils";
-import { testDictionary } from "./../mini-test-dictionary";
+import { testDictionary } from "../mini-test-dictionary";
 
-// const sor = testDictionary.adjLookup("سوړ")[0];
-// const zor = testDictionary.adjLookup("زوړ")[0];
-// const sturey = testDictionary.adjLookup("ستړی")[0];
-// const ghut = testDictionary.adjLookup("غټ")[0];
-const sarey = testDictionary.nounLookup("سړی")[0];
+const saray = testDictionary.nounLookup("سړی")[0];
 const dostee = testDictionary.nounLookup("دوستي")[0];
 const wreejze = testDictionary.nounLookup("وریژې")[0];
 const xudza = testDictionary.nounLookup("ښځه")[0];
@@ -47,6 +44,11 @@ const lafz = testDictionary.nounLookup("لفظ")[0];
 const fatha = testDictionary.nounLookup("فتح")[0];
 const nafa = testDictionary.nounLookup("نفع")[0];
 const tajraba = testDictionary.nounLookup("تجربه")[0];
+
+const zor = testDictionary.adjLookup("زوړ")[0];
+const ghut = testDictionary.adjLookup("غټ")[0];
+const sturay = testDictionary.adjLookup("ستړی")[0];
+const sor = testDictionary.adjLookup("سوړ")[0];
 
 // TODO: test for adjective errors etc
 // bundled plural
@@ -572,7 +574,7 @@ const tests: {
         output: [
           {
             inflected: false,
-            selection: makeNounSelection(sarey, undefined),
+            selection: makeNounSelection(saray, undefined),
           },
         ],
       },
@@ -581,12 +583,12 @@ const tests: {
         output: [
           {
             inflected: true,
-            selection: makeNounSelection(sarey, undefined),
+            selection: makeNounSelection(saray, undefined),
           },
           {
             inflected: false,
             selection: {
-              ...makeNounSelection(sarey, undefined),
+              ...makeNounSelection(saray, undefined),
               number: "plural",
             },
           },
@@ -598,7 +600,7 @@ const tests: {
           {
             inflected: true,
             selection: {
-              ...makeNounSelection(sarey, undefined),
+              ...makeNounSelection(saray, undefined),
               number: "plural",
             },
           },
@@ -610,7 +612,7 @@ const tests: {
           {
             inflected: true,
             selection: {
-              ...makeNounSelection(sarey, undefined),
+              ...makeNounSelection(saray, undefined),
               number: "plural",
             },
           },
@@ -1746,135 +1748,490 @@ describe("parsing nouns", () => {
   });
 });
 
-// const adjsTests: {
-//   category: string;
-//   cases: {
-//     input: string;
-//     output: { inflected: boolean; selection: T.NounSelection }[];
-//   }[];
-// }[] = [
-//   {
-//     category: "agreement with regular nouns",
-//     cases: [
-//       {
-//         input: "زاړه سړي",
-//         output: [
-//           {
-//             inflected: true,
-//             selection: {
-//               ...makeNounSelection(sarey, undefined),
-//               adjectives: [makeAdjectiveSelection(zor)],
-//             },
-//           },
-//           {
-//             inflected: false,
-//             selection: {
-//               ...makeNounSelection(sarey, undefined),
-//               adjectives: [makeAdjectiveSelection(zor)],
-//               number: "plural",
-//             },
-//           },
-//         ],
-//       },
-//       {
-//         input: "غټو ستړو ښځو",
-//         output: [
-//           {
-//             inflected: true,
-//             selection: {
-//               ...makeNounSelection(xudza, undefined),
-//               adjectives: [
-//                 makeAdjectiveSelection(ghut),
-//                 makeAdjectiveSelection(sturey),
-//               ],
-//               number: "plural",
-//             },
-//           },
-//         ],
-//       },
-//       {
-//         input: "غټو ستړې ښځو",
-//         output: [],
-//       },
-//     ],
-//   },
-//   {
-//     category: "agreement with plural nouns",
-//     cases: [
-//       {
-//         input: "سړې اوبه",
-//         output: [
-//           {
-//             inflected: false,
-//             selection: {
-//               ...makeNounSelection(oobu, undefined),
-//               gender: "fem",
-//               number: "plural",
-//               adjectives: [makeAdjectiveSelection(sor)],
-//             },
-//           },
-//         ],
-//       },
-//       {
-//         input: "زاړه غنم",
-//         output: [
-//           {
-//             inflected: false,
-//             selection: {
-//               ...makeNounSelection(ghanum, undefined),
-//               number: "plural",
-//               adjectives: [makeAdjectiveSelection(zor)],
-//             },
-//           },
-//         ],
-//       },
-//       {
-//         input: "زوړ غنم",
-//         output: [],
-//       },
-//       {
-//         input: "زاړه کورونه",
-//         output: [
-//           {
-//             inflected: false,
-//             selection: {
-//               ...makeNounSelection(kor, undefined),
-//               number: "plural",
-//               adjectives: [makeAdjectiveSelection(zor)],
-//             },
-//           },
-//         ],
-//       },
-//       {
-//         input: "غټو زړو کورونو",
-//         output: [
-//           {
-//             inflected: true,
-//             selection: {
-//               ...makeNounSelection(kor, undefined),
-//               number: "plural",
-//               adjectives: [
-//                 makeAdjectiveSelection(ghut),
-//                 makeAdjectiveSelection(zor),
-//               ],
-//             },
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
+const adjsTests: {
+  category: string;
+  cases: {
+    input: string;
+    output: { inflected: boolean; selection: T.NounSelection }[];
+    error?: boolean;
+  }[];
+}[] = [
+  {
+    category: "agreement with regular nouns",
+    cases: [
+      {
+        input: "زاړه سړي",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(saray, undefined),
+              adjectives: [makeAdjectiveSelection(zor)],
+            },
+          },
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(saray, undefined),
+              adjectives: [makeAdjectiveSelection(zor)],
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "ستړې ښځه",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(xudza, undefined),
+              adjectives: [makeAdjectiveSelection(sturay)],
+            },
+          },
+        ],
+      },
+      {
+        input: "غټو ستړو ښځو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(xudza, undefined),
+              adjectives: [
+                makeAdjectiveSelection(ghut),
+                makeAdjectiveSelection(sturay),
+              ],
+              number: "plural",
+            },
+          },
+        ],
+      },
+      {
+        input: "غټو ستړې ښځو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(xudza, undefined),
+              adjectives: [
+                makeAdjectiveSelection(ghut),
+                makeAdjectiveSelection(sturay),
+              ],
+              number: "plural",
+            },
+          },
+        ],
+        error: true,
+      },
+    ],
+  },
+  {
+    category: "agreement with plural nouns",
+    cases: [
+      {
+        input: "سړې اوبه",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(oobu, undefined),
+              gender: "fem",
+              number: "plural",
+              adjectives: [makeAdjectiveSelection(sor)],
+            },
+          },
+        ],
+      },
+      {
+        input: "زاړه غنم",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(ghanum, undefined),
+              number: "plural",
+              adjectives: [makeAdjectiveSelection(zor)],
+            },
+          },
+        ],
+      },
+      {
+        input: "زوړ غنم",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(ghanum, undefined),
+              number: "plural",
+              adjectives: [makeAdjectiveSelection(zor)],
+            },
+          },
+        ],
+        error: true,
+      },
+      {
+        input: "زاړه کورونه",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(kor, undefined),
+              number: "plural",
+              adjectives: [makeAdjectiveSelection(zor)],
+            },
+          },
+        ],
+      },
+      {
+        input: "غټو زړو کورونو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(kor, undefined),
+              number: "plural",
+              adjectives: [
+                makeAdjectiveSelection(ghut),
+                makeAdjectiveSelection(zor),
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    category: "with determiners as well",
+    cases: [
+      {
+        input: "کومه غټه ښځه",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(xudza, undefined),
+              determiners: {
+                type: "determiners",
+                withNoun: true,
+                determiners: [
+                  {
+                    type: "determiner",
+                    determiner: { p: "کوم", f: "koom", type: "det" },
+                  },
+                ],
+              },
+              adjectives: [makeAdjectiveSelection(ghut)],
+            },
+          },
+        ],
+      },
+      {
+        input: "کومه غټ ښځه",
+        output: [
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(xudza, undefined),
+              determiners: {
+                type: "determiners",
+                withNoun: true,
+                determiners: [
+                  {
+                    type: "determiner",
+                    determiner: { p: "کوم", f: "koom", type: "det" },
+                  },
+                ],
+              },
+              adjectives: [makeAdjectiveSelection(ghut)],
+            },
+          },
+        ],
+        error: true,
+      },
+      {
+        input: "کومې غټې ښځې",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(xudza, undefined),
+              determiners: {
+                type: "determiners",
+                withNoun: true,
+                determiners: [
+                  {
+                    type: "determiner",
+                    determiner: { p: "کوم", f: "koom", type: "det" },
+                  },
+                ],
+              },
+              adjectives: [makeAdjectiveSelection(ghut)],
+            },
+          },
+          {
+            inflected: false,
+            selection: {
+              ...makeNounSelection(xudza, undefined),
+              determiners: {
+                type: "determiners",
+                withNoun: true,
+                determiners: [
+                  {
+                    type: "determiner",
+                    determiner: { p: "کوم", f: "koom", type: "det" },
+                  },
+                ],
+              },
+              number: "plural",
+              adjectives: [makeAdjectiveSelection(ghut)],
+            },
+          },
+        ],
+      },
+      {
+        input: "کومو غټو سړیو",
+        output: [
+          {
+            inflected: true,
+            selection: {
+              ...makeNounSelection(saray, undefined),
+              determiners: {
+                type: "determiners",
+                withNoun: true,
+                determiners: [
+                  {
+                    type: "determiner",
+                    determiner: { p: "کوم", f: "koom", type: "det" },
+                  },
+                ],
+              },
+              number: "plural",
+              adjectives: [makeAdjectiveSelection(ghut)],
+            },
+          },
+        ],
+      },
+    ],
+  },
+];
 
-// describe("parsing nouns with adjectives", () => {
-//   adjsTests.forEach(({ category, cases }) => {
-//     test(category, () => {
-//       cases.forEach(({ input, output }) => {
-//         const tokens = tokenizer(input);
-//         const res = parseNoun(tokens, lookup, undefined, [])
-//           .filter(isCompleteResult)
-//           .map(({ body }) => body);
-//         expect(res).toEqual(output);
-//       });
-//     });
-//   });
-// });
+const daa: T.Determiner = {
+  p: "دا",
+  f: "daa",
+  demonstrative: true,
+  type: "det",
+};
+const hagha: T.Determiner = {
+  p: "هغه",
+  f: "hágha",
+  demonstrative: true,
+  type: "det",
+};
+const dagha: T.Determiner = {
+  p: "دغه",
+  f: "dágha",
+  demonstrative: true,
+  type: "det",
+};
+
+const determinerTests: {
+  input: string;
+  result: {
+    plural: boolean;
+    inflected: boolean;
+    noun: T.NounEntry;
+    determiner: T.Determiner;
+    error?: true;
+  }[];
+}[] = [
+  {
+    input: "دا ښځه",
+    result: [{ plural: false, inflected: false, noun: xudza, determiner: daa }],
+  },
+  {
+    input: "دې ښځه",
+    result: [
+      {
+        plural: false,
+        inflected: false,
+        noun: xudza,
+        determiner: daa,
+        error: true,
+      },
+    ],
+  },
+  {
+    input: "دا ښځې",
+    result: [{ plural: true, inflected: false, noun: xudza, determiner: daa }],
+  },
+  {
+    input: "دې ښځې",
+    result: [{ plural: false, inflected: true, noun: xudza, determiner: daa }],
+  },
+  {
+    input: "دې ښځو",
+    result: [{ plural: true, inflected: true, noun: xudza, determiner: daa }],
+  },
+  {
+    input: "دا ښځو",
+    result: [
+      {
+        plural: true,
+        inflected: true,
+        noun: xudza,
+        determiner: daa,
+        error: true,
+      },
+    ],
+  },
+  {
+    input: "دا سړی",
+    result: [{ plural: false, inflected: false, noun: saray, determiner: daa }],
+  },
+  {
+    input: "دې سړی",
+    result: [
+      {
+        plural: false,
+        inflected: false,
+        noun: saray,
+        determiner: daa,
+        error: true,
+      },
+    ],
+  },
+  {
+    input: "دا سړي",
+    result: [{ plural: true, inflected: false, noun: saray, determiner: daa }],
+  },
+  {
+    input: "دې سړي",
+    result: [{ plural: false, inflected: true, noun: saray, determiner: daa }],
+  },
+  {
+    input: "دې سړیو",
+    result: [{ plural: true, inflected: true, noun: saray, determiner: daa }],
+  },
+  {
+    input: "دا سړیو",
+    result: [
+      {
+        plural: true,
+        inflected: true,
+        noun: saray,
+        determiner: daa,
+        error: true,
+      },
+    ],
+  },
+  ...[
+    { s: "د", determiner: dagha },
+    { s: "ه", determiner: hagha },
+  ].flatMap(({ s, determiner }) => [
+    {
+      input: `${s}غه ښځه`,
+      result: [{ plural: false, inflected: false, noun: xudza, determiner }],
+    },
+    {
+      input: `${s}غه ښځې`,
+      result: [{ plural: true, inflected: false, noun: xudza, determiner }],
+    },
+    {
+      input: `${s}غې ښځې`,
+      result: [{ plural: false, inflected: true, noun: xudza, determiner }],
+    },
+    {
+      input: `${s}غو ښځې`,
+      result: [
+        {
+          plural: false,
+          inflected: true,
+          noun: xudza,
+          determiner,
+          error: true,
+        },
+        {
+          plural: true,
+          inflected: false,
+          noun: xudza,
+          determiner,
+          error: true,
+        },
+      ],
+    },
+    {
+      input: `${s}غو ښځو`,
+      result: [
+        {
+          plural: true,
+          inflected: true,
+          noun: xudza,
+          determiner,
+        },
+      ],
+    },
+    {
+      input: `${s}غو ښځه`,
+      result: [
+        {
+          plural: false,
+          inflected: false,
+          noun: xudza,
+          determiner,
+          error: true,
+        },
+      ],
+    },
+  ]),
+];
+
+describe("parsing determiners with nouns", () => {
+  determinerTests.forEach(({ input, result }) => {
+    test("", () => {
+      const tokens = tokenizer(input);
+      const res = parseNoun(tokens, testDictionary, undefined);
+      const expected = result.map<{
+        inflected: boolean;
+        selection: T.NounSelection;
+      }>((x) => ({
+        inflected: x.inflected,
+        selection: {
+          ...makeNounSelection(x.noun, undefined),
+          determiners: {
+            type: "determiners",
+            withNoun: true,
+            determiners: [
+              {
+                type: "determiner",
+                determiner: x.determiner,
+              },
+            ],
+          },
+          number: x.plural ? "plural" : "singular",
+          adjectives: [],
+        },
+      }));
+      expect(
+        !!res.length &&
+          res.every((x, i) => !!x.errors.length === !!result[i].error)
+      ).toBe(true);
+      expect(res.map((x) => x.body)).toEqual(expected);
+    });
+  });
+});
+
+describe("parsing nouns with adjectives and determiners", () => {
+  adjsTests.forEach(({ category, cases }) => {
+    test(category, () => {
+      cases.forEach(({ input, output, error }) => {
+        const tokens = tokenizer(input);
+        const res = parseNoun(tokens, testDictionary, undefined);
+        expect(
+          !!res.length && res.every((x) => !!x.errors.length === !!error)
+        ).toBe(true);
+        expect(res.map((x) => x.body)).toEqual(output);
+      });
+    });
+  });
+});

@@ -32,7 +32,8 @@ function parseAbility(
     ? s.slice(0, -1)
     : "";
   if (!start) return [];
-  return findRoot(ph)(start, dicitonary)
+
+  const res = findRoot(ph)(start, dicitonary)
     .map<T.ParsedVBP>((root) => ({
       type: "VB",
       info: {
@@ -42,6 +43,7 @@ function parseAbility(
       },
     }))
     .flatMap((m) => returnParseResult(rest, m));
+  return res;
 }
 
 function parsePastPart(
@@ -53,10 +55,18 @@ function parsePastPart(
   if (!ending || !["ی", "ي", "ې"].includes(ending)) {
     return [];
   }
+
   // TODO: ALSO HANDLE SHORT FORMS
   const wOutEnd = s.slice(0, -1);
   // TODO: irreg part or just leave that to shúway ?
-  const matches = dictionary.verbEntryLookup(wOutEnd);
+  const matches = [
+    ...dictionary.verbEntryLookup(wOutEnd),
+    ...(canBePastPartWOutL(wOutEnd + "ل")
+      ? dictionary
+          .verbEntryLookup(wOutEnd + "ل")
+          .filter((x) => x.entry.p !== "talúl")
+      : []),
+  ];
   const genNums = endingGenNum(ending);
   return matches
     .flatMap<T.ParsedVBP>((verb) =>
@@ -70,6 +80,28 @@ function parsePastPart(
       }))
     )
     .flatMap((m) => returnParseResult(rest, m));
+}
+
+// should be in line with possiblePPartLengths
+function canBePastPartWOutL(s: string): boolean {
+  const shortenableEndings = ["ښتل", "ستل", "وتل"];
+  const wrul = ["وړل", "راوړل", "وروړل", "دروړل"];
+  if (s === "تلل") {
+    return true;
+  }
+  if (
+    !s.endsWith("استل") &&
+    shortenableEndings.some((e) => s.endsWith(e) && s.length > e.length)
+  ) {
+    return true;
+  }
+  if (wrul.includes(s)) {
+    return true;
+  }
+  if (s.endsWith("ښودل") && s.length > 4 && s !== "کېښودل" && s !== "کښېښودل") {
+    return true;
+  }
+  return false;
 }
 
 function endingGenNum(s: "ی" | "ې" | "ي"): T.GenderNumber[] {

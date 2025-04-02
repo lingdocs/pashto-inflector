@@ -12,7 +12,7 @@ import {
 } from "../utils";
 import { parseNeg } from "./parse-negative";
 import { parsePH } from "./parse-ph";
-import { parseVBE } from "./parse-vbe-new";
+import { parseVBE } from "./parse-vbe";
 import { parseVBP } from "./parse-vbp";
 import { isKedulDynEntry, isKedulStatEntry } from "./parse-verb-helpers";
 import { parseEquative } from "./parse-equative";
@@ -23,7 +23,7 @@ export type VerbSectionBlock =
   | T.ParsedVBP
   | T.NegativeBlock;
 
-type VerbSectionData = {
+export type VerbSectionData = {
   blocks: VerbSectionBlock[];
   kids: {
     position: number;
@@ -164,12 +164,12 @@ function finalChecksOnVerbSection(
 ): T.ParseResult<VerbSectionData>[] {
   // && !hasMisusedStatKedul(v.body.blocks);
   // TODO: add errors here
-  return verbSectionOK(v.body.blocks) && !hasMisusedStatKedul(v.body.blocks)
+  return verbSectionOK(v.body.blocks) && variousBlockChecks(v.body.blocks)
     ? [v]
     : [];
 }
 
-function verbSectionOK(vs: T.ParsedBlock[]): boolean {
+function verbSectionOK(vs: VerbSectionBlock[]): boolean {
   const possibilites = [
     [isParsedVBE],
     [isNeg, isParsedVBE],
@@ -189,23 +189,38 @@ function verbSectionOK(vs: T.ParsedBlock[]): boolean {
   ); // && !hasMisusedStatKedul(vs)
 }
 
-// TODO: this isn't working right now and might not be necessary
-// /**
-//  * check to see if we didn't up getting a VBP and we
-//  * used a VBE kedul stat incorrectly - for example پوښتنه وشوه
-//  * being interpreted as پوښتنه شوه
-//  */
-function hasMisusedStatKedul(blocks: T.ParsedBlock[]): boolean {
+function variousBlockChecks(blocks: VerbSectionBlock[]): boolean {
   const ph = blocks.find((b): b is T.ParsedPH => b.type === "PH");
-  const vbp = blocks.some(isParsedVBP);
+  const vbp = blocks.find(isParsedVBP);
   const vbe = blocks.find(isParsedVBE);
-  return !!(
+  const hasMisusedStatKedul = !!(
     ph?.s === "و" &&
     !vbp &&
     vbe &&
     vbe.info.type === "verb" &&
     isKedulStatEntry(vbe.info.verb.entry)
   );
+  if (hasMisusedStatKedul) {
+    return false;
+  }
+  const ppart = blocks.some((x) => x.type === "VB" && x.info.type === "ppart");
+  const unfittingPPart = ppart && vbe && vbe.info.type !== "equative";
+
+  if (unfittingPPart) {
+    return false;
+  }
+  const ability = blocks.some(
+    (x) => x.type === "VB" && x.info.type === "ability"
+  );
+  const badAbility =
+    (ability && !vbe) ||
+    (ability &&
+      (vbe?.info.type !== "verb" ||
+        (vbe.info.type === "verb" && vbe.info.imperative)));
+  if (badAbility) {
+    return false;
+  }
+  return true;
 }
 
 /**
