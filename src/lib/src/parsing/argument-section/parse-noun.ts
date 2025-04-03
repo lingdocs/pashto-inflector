@@ -3,7 +3,17 @@ import { makeNounSelection } from "../../phrase-building/make-selections";
 import { parseAdjective } from "./parse-adjective-new";
 import { parseDeterminer } from "./parse-determiner";
 import { parseNounWord } from "./parse-noun-word";
-import { bindParseResult, parserCombMany, parserCombSucc3 } from "../utils";
+import {
+  bindParseWithAllErrors,
+  parserCombMany,
+  parserCombSucc2,
+  returnParseResults,
+} from "../utils";
+import { fmapParseResult } from "../../fp-ps";
+import { testDictionary } from "../mini-test-dictionary";
+
+const saray = testDictionary.nounLookup("سړی")[0];
+const xudza = testDictionary.nounLookup("ښځه")[0];
 
 type NounResult = { inflected: boolean; selection: T.NounSelection };
 
@@ -15,48 +25,182 @@ export function parseNoun(
   if (tokens.length === 0) {
     return [];
   }
-  // TODO: the succ could be optimized using the bindParseResultWParser trick
-  const res = parserCombSucc3([
-    parserCombMany(parseDeterminer),
-    parserCombMany(parseAdjective),
-    parseNounWord,
-  ])(tokens, dictionary);
-  return bindParseResult(res, (tkns, [determiners, adjectives, nounWord]) => {
-    const errors: T.ParseError[] = [
-      ...adjDetsMatch(
-        [...adjectives, ...determiners],
-        nounWord.gender,
-        nounWord.inflected,
-        nounWord.plural
-      ),
-      ...checkForDeterminerDuplicates(determiners),
-    ];
-    const s = makeNounSelection(nounWord.entry, undefined);
-    const body: NounResult = {
-      inflected: nounWord.inflected,
-      selection: {
-        ...s,
-        gender: nounWord.gender,
-        number: nounWord.plural ? "plural" : "singular",
-        adjectives: adjectives.map((a) => a.selection),
-        determiners: determiners.length
-          ? {
-              type: "determiners",
-              withNoun: true,
-              determiners: determiners.map((d) => d.selection),
-            }
-          : undefined,
-        possesor,
-      },
-    };
-    return [
-      {
-        body,
-        tokens: tkns,
-        errors,
-      },
-    ];
+  const determiners = parserCombMany(parseDeterminer)(tokens, dictionary);
+  const res = bindParseWithAllErrors(determiners, (tkns, dts) => {
+    const singleDet = getLoneDeterminer(dts);
+    const demWOutNoun =
+      // TODO: should make test to make sure that you can't do a standalone
+      // demonstrative w a possesor
+      singleDet && !possesor ? makeDemWOutNoun(tkns, singleDet) : [];
+    const wNoun = fmapParseResult<
+      [
+        T.InflectableBaseParse<T.AdjectiveSelection>[],
+        T.ParsedNounWord<T.NounEntry>
+      ],
+      [
+        {
+          withNoun: boolean;
+          determiners: T.InflectableBaseParse<T.DeterminerSelection>[];
+        },
+        T.InflectableBaseParse<T.AdjectiveSelection>[],
+        T.ParsedNounWord<T.NounEntry>
+      ]
+    >(
+      ([adj, noun]) =>
+        [{ withNoun: true, determiners: dts }, adj, noun] as const,
+      parserCombSucc2([parserCombMany(parseAdjective), parseNounWord])(
+        tkns,
+        dictionary
+      )
+    );
+    return [...wNoun, ...demWOutNoun];
   });
+  // TODO: the succ could be optimized using the bindParseResultWParser trick
+
+  return bindParseWithAllErrors(
+    res,
+    (tkns, [determiners, adjectives, nounWord]) => {
+      const errors: T.ParseError[] = [
+        ...adjDetsMatch(
+          [...adjectives, ...determiners.determiners],
+          nounWord.gender,
+          nounWord.inflected,
+          nounWord.plural
+        ),
+        ...checkForDeterminerDuplicates(determiners.determiners),
+      ];
+      const s = makeNounSelection(nounWord.entry, undefined);
+      const body: NounResult = {
+        inflected: nounWord.inflected,
+        selection: {
+          ...s,
+          gender: nounWord.gender,
+          number: nounWord.plural ? "plural" : "singular",
+          adjectives: adjectives.map((a) => a.selection),
+          determiners: determiners.determiners.length
+            ? {
+                type: "determiners",
+                withNoun: determiners.withNoun,
+                determiners: determiners.determiners.map((d) => d.selection),
+              }
+            : undefined,
+          possesor,
+        },
+      };
+      return [
+        {
+          body,
+          tokens: tkns,
+          errors,
+        },
+      ];
+    }
+  );
+}
+
+function getLoneDeterminer(
+  dts: T.InflectableBaseParse<T.DeterminerSelection>[]
+): T.InflectableBaseParse<T.DeterminerSelection> | undefined {
+  if (dts.length !== 1) {
+    return undefined;
+  }
+  const d = dts[0];
+  if (
+    "demonstrative" in d.selection.determiner &&
+    d.selection.determiner.demonstrative
+  ) {
+    return d;
+  } else {
+    return undefined;
+  }
+}
+
+function makeDemWOutNoun(
+  tokens: Readonly<T.Token[]>,
+  d: T.InflectableBaseParse<T.DeterminerSelection>
+): T.ParseResult<
+  Readonly<
+    [
+      {
+        withNoun: boolean;
+        determiners: T.InflectableBaseParse<T.DeterminerSelection>[];
+      },
+      T.InflectableBaseParse<T.AdjectiveSelection>[],
+      T.ParsedNounWord<T.NounEntry>
+    ]
+  >
+>[] {
+  const ents = {
+    masc: saray,
+    fem: xudza,
+  };
+  const possibilities = getPossibleNounsFromDet(d);
+  const options = possibilities.map<T.ParsedNounWord<T.NounEntry>>((p) => ({
+    inflected: p.inflected,
+    plural: p.plural,
+    gender: p.gender,
+    given: "",
+    entry: ents[p.gender],
+  }));
+  return returnParseResults(
+    tokens,
+    options.map((n) => [{ withNoun: false, determiners: [d] }, [], n] as const)
+  );
+}
+
+function getPossibleNounsFromDet(
+  d: T.InflectableBaseParse<T.DeterminerSelection>
+) {
+  // cases
+  // TODO: this could be done by inferring from the inflection info
+  // in purely from the demonstrative itself, to make the logic in one source of
+  // truth, but that is a bit more obtuse and difficult to implement
+  // so doing this for now
+  // TODO: Test this!
+  // daa
+  //  - masc/fem sing plain
+  //  - masc/fem plural plain
+  // de
+  //  - masc/fem sing inflected
+  //  - masc/fem plural inflected
+  // hagha
+  //  - masc/fem sing plain
+  //  - masc sing inflected
+  // haghe
+  //  - fem sing inflected
+  // hagho
+  //  - masc/fem plural inflected
+  const bothNumbers = [false, true];
+  const possibilites: {
+    gender: T.Gender;
+    plural: boolean;
+    inflected: boolean;
+  }[] =
+    d.selection.determiner.p === "دا"
+      ? d.gender.flatMap((gender) =>
+          bothNumbers.map((plural) => ({
+            gender,
+            plural,
+            inflected: d.inflection.includes(1),
+          }))
+        )
+      : d.inflection.includes(2)
+      ? [
+          { gender: "masc", plural: true, inflected: true },
+          { gender: "fem", plural: true, inflected: true },
+        ]
+      : d.gender.flatMap<{
+          gender: T.Gender;
+          plural: boolean;
+          inflected: boolean;
+        }>((gender) => [
+          { gender, plural: false, inflected: false },
+          { gender, plural: true, inflected: false },
+          ...(d.inflection.includes(1)
+            ? [{ gender, plural: false, inflected: true }]
+            : []),
+        ]);
+  return possibilites;
 }
 
 function checkForDeterminerDuplicates(

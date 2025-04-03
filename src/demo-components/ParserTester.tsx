@@ -17,7 +17,7 @@ function ParserTester({ dictionary }: { dictionary: T.DictionaryAPI }) {
       return;
     }
     const tokens = tokenizer(value);
-    const res = parseVerbSection(tokens, testDictionary);
+    const res = parseNoun(tokens, testDictionary, undefined);
     setText(value);
     setResult(res);
   }

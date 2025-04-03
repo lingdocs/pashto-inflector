@@ -9,6 +9,7 @@ import { parseNoun } from "./parse-noun";
 import { tokenizer } from "../tokenizer";
 // import { isCompleteResult } from "./utils";
 import { testDictionary } from "../mini-test-dictionary";
+import { cleanOutResults } from "../utils";
 
 const saray = testDictionary.nounLookup("سړی")[0];
 const dostee = testDictionary.nounLookup("دوستي")[0];
@@ -49,6 +50,10 @@ const zor = testDictionary.adjLookup("زوړ")[0];
 const ghut = testDictionary.adjLookup("غټ")[0];
 const sturay = testDictionary.adjLookup("ستړی")[0];
 const sor = testDictionary.adjLookup("سوړ")[0];
+
+function fillerNouns(gender: T.Gender): T.NounEntry[] {
+  return gender === "masc" ? [saray] : [xudza];
+}
 
 // TODO: test for adjective errors etc
 // bundled plural
@@ -2035,7 +2040,7 @@ const dagha: T.Determiner = {
   type: "det",
 };
 
-const determinerTests: {
+type DeterminerTest = {
   input: string;
   result: {
     plural: boolean;
@@ -2043,8 +2048,11 @@ const determinerTests: {
     noun: T.NounEntry;
     determiner: T.Determiner;
     error?: true;
+    hideNoun?: true;
   }[];
-}[] = [
+};
+
+const determinerTests: DeterminerTest[] = [
   {
     input: "دا ښځه",
     result: [{ plural: false, inflected: false, noun: xudza, determiner: daa }],
@@ -2128,7 +2136,7 @@ const determinerTests: {
   ...[
     { s: "د", determiner: dagha },
     { s: "ه", determiner: hagha },
-  ].flatMap(({ s, determiner }) => [
+  ].flatMap<DeterminerTest>(({ s, determiner }) => [
     {
       input: `${s}غه ښځه`,
       result: [{ plural: false, inflected: false, noun: xudza, determiner }],
@@ -2184,13 +2192,108 @@ const determinerTests: {
       ],
     },
   ]),
+  // determiners without nouns mentioned
+  {
+    input: "دا",
+    result: T.genders.flatMap((gender) =>
+      [false, true].flatMap((plural) =>
+        fillerNouns(gender).map((noun) => ({
+          plural,
+          inflected: false,
+          noun,
+          determiner: daa,
+          hideNoun: true,
+        }))
+      )
+    ),
+  },
+  {
+    input: "دې",
+    result: T.genders.flatMap((gender) =>
+      [false, true].flatMap((plural) =>
+        fillerNouns(gender).map((noun) => ({
+          plural,
+          inflected: true,
+          noun,
+          determiner: daa,
+          hideNoun: true,
+        }))
+      )
+    ),
+  },
+  ...[
+    { s: "ه", determiner: hagha },
+    { s: "د", determiner: dagha },
+  ].flatMap<DeterminerTest>(({ s, determiner }) => [
+    {
+      input: `${s}غه`,
+      result: T.genders.flatMap<DeterminerTest["result"][number]>((gender) =>
+        fillerNouns(gender).flatMap<DeterminerTest["result"][number]>(
+          (noun) => [
+            {
+              plural: false,
+              inflected: false,
+              noun,
+              determiner,
+              hideNoun: true,
+            },
+            {
+              plural: true,
+              inflected: false,
+              noun,
+              determiner,
+              hideNoun: true,
+            },
+            ...(gender === "masc"
+              ? [
+                  {
+                    plural: false,
+                    inflected: true,
+                    noun,
+                    determiner,
+                    hideNoun: true as const,
+                  },
+                ]
+              : []),
+          ]
+        )
+      ),
+    },
+    {
+      input: `${s}غې`,
+      result: fillerNouns("fem").map((noun) => ({
+        plural: false,
+        inflected: true,
+        noun,
+        determiner,
+        hideNoun: true,
+      })),
+    },
+    {
+      input: `${s}غو`,
+      result: T.genders.flatMap((gender) =>
+        fillerNouns(gender).map((noun) => ({
+          plural: true,
+          inflected: true,
+          noun,
+          determiner,
+          hideNoun: true,
+        }))
+      ),
+    },
+  ]),
 ];
 
 describe("parsing determiners with nouns", () => {
   determinerTests.forEach(({ input, result }) => {
     test("", () => {
       const tokens = tokenizer(input);
-      const res = parseNoun(tokens, testDictionary, undefined);
+      const res = cleanOutResults(
+        parseNoun(tokens, testDictionary, undefined).filter(
+          (x) => !x.tokens.length
+        )
+      );
+
       const expected = result.map<{
         inflected: boolean;
         selection: T.NounSelection;
@@ -2200,7 +2303,7 @@ describe("parsing determiners with nouns", () => {
           ...makeNounSelection(x.noun, undefined),
           determiners: {
             type: "determiners",
-            withNoun: true,
+            withNoun: !x.hideNoun,
             determiners: [
               {
                 type: "determiner",
@@ -2216,7 +2319,7 @@ describe("parsing determiners with nouns", () => {
         !!res.length &&
           res.every((x, i) => !!x.errors.length === !!result[i].error)
       ).toBe(true);
-      expect(res.map((x) => x.body)).toEqual(expected);
+      expect(res.map((x) => x.body)).toIncludeSameMembers(expected);
     });
   });
 });
@@ -2226,11 +2329,15 @@ describe("parsing nouns with adjectives and determiners", () => {
     test(category, () => {
       cases.forEach(({ input, output, error }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, testDictionary, undefined);
+        const res = cleanOutResults(
+          parseNoun(tokens, testDictionary, undefined).filter(
+            (x) => !x.tokens.length
+          )
+        );
         expect(
           !!res.length && res.every((x) => !!x.errors.length === !!error)
         ).toBe(true);
-        expect(res.map((x) => x.body)).toEqual(output);
+        expect(res.map((x) => x.body)).toIncludeSameMembers(output);
       });
     });
   });

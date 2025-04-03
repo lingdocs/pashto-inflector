@@ -4,6 +4,8 @@ import { parseNoun } from "./parse-noun";
 import { fmapParseResult } from "../../fp-ps";
 import { parseParticiple } from "./parse-participle";
 
+// TODO: THIS gets called four times off the bat so it could get
+// memoized
 export function parseNP(
   tokens: Readonly<T.Token[]>,
   dicitonary: T.DictionaryAPI,

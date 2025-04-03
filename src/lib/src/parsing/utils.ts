@@ -132,7 +132,9 @@ export function returnParseResult<D>(
  * finds the most successful path(s) and culls out any other more erroneous
  * or redundant paths
  */
-function cleanOutResults<C>(results: T.ParseResult<C>[]): T.ParseResult<C>[] {
+export function cleanOutResults<C>(
+  results: T.ParseResult<C>[]
+): T.ParseResult<C>[] {
   if (results.length === 0) {
     return results;
   }

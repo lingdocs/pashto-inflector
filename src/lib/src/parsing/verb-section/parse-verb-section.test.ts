@@ -10,7 +10,7 @@ const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
 const kenaastul = testDictionary.verbEntryLookup("کېناستل")[0];
 const wahul = testDictionary.verbEntryLookup("وهل")[0];
 const awuxtul = testDictionary.verbEntryLookup("اوښتل")[0];
-const raawrul = testDictionary.verbEntryLookup("راوړل")[0];
+// const raawrul = testDictionary.verbEntryLookup("راوړل")[0];
 const botlul = testDictionary.verbEntryLookup("بوتلل")[0];
 const rasedul = testDictionary.verbEntryLookup("رسېدل")[0];
 const tlul = testDictionary
@@ -333,6 +333,7 @@ const sections = [simpleOpts, ability];
 
 // TODO imperative and negatives
 // Perfect forms!
+// better guard for verb section compatability
 
 sections.forEach((section) => {
   describe(section.title, () => {
@@ -342,8 +343,7 @@ sections.forEach((section) => {
         const res = parseVerbSection(tokens, testDictionary).map(
           ({ body }) => body
         );
-        expect(res).toStrictEqual(expect.arrayContaining(output));
-        expect(res.length).toEqual(output.length);
+        expect(res).toIncludeSameMembers(output);
       });
     });
   });
