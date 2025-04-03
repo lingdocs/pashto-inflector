@@ -14,7 +14,11 @@ import { parseNeg } from "./parse-negative";
 import { parsePH } from "./parse-ph";
 import { parseVBE } from "./parse-vbe";
 import { parseVBP } from "./parse-vbp";
-import { isKedulDynEntry, isKedulStatEntry } from "./parse-verb-helpers";
+import {
+  isKedulDynEntry,
+  isKedulStat,
+  isKedulStatEntry,
+} from "./parse-verb-helpers";
 import { parseEquative } from "./parse-equative";
 
 export type VerbSectionBlock =
@@ -164,12 +168,13 @@ function finalChecksOnVerbSection(
 ): T.ParseResult<VerbSectionData>[] {
   // && !hasMisusedStatKedul(v.body.blocks);
   // TODO: add errors here
-  return verbSectionOK(v.body.blocks) && variousBlockChecks(v.body.blocks)
+  return verbSectionOrderOK(v.body.blocks) &&
+    verbSectionBlocksCompatible(v.body.blocks)
     ? [v]
     : [];
 }
 
-function verbSectionOK(vs: VerbSectionBlock[]): boolean {
+function verbSectionOrderOK(vs: VerbSectionBlock[]): boolean {
   const possibilites = [
     [isParsedVBE],
     [isNeg, isParsedVBE],
@@ -189,7 +194,7 @@ function verbSectionOK(vs: VerbSectionBlock[]): boolean {
   ); // && !hasMisusedStatKedul(vs)
 }
 
-function variousBlockChecks(blocks: VerbSectionBlock[]): boolean {
+function verbSectionBlocksCompatible(blocks: VerbSectionBlock[]): boolean {
   const ph = blocks.find((b): b is T.ParsedPH => b.type === "PH");
   const vbp = blocks.find(isParsedVBP);
   const vbe = blocks.find(isParsedVBE);
@@ -203,24 +208,37 @@ function variousBlockChecks(blocks: VerbSectionBlock[]): boolean {
   if (hasMisusedStatKedul) {
     return false;
   }
-  const ppart = blocks.some((x) => x.type === "VB" && x.info.type === "ppart");
-  const unfittingPPart = ppart && vbe && vbe.info.type !== "equative";
+  return vbp
+    ? // if there is a VBP present, it needs to be either an ability or perfect form
+      validAbility(vbp, vbe) || validPerfect(vbp, vbe)
+    : // otherwise, there should be just be a VBE present
+      !!vbe;
+}
 
-  if (unfittingPPart) {
+function validAbility(vbp: T.ParsedVBP, vbe: T.ParsedVBE | undefined): boolean {
+  if (!vbe) {
     return false;
   }
-  const ability = blocks.some(
-    (x) => x.type === "VB" && x.info.type === "ability"
+  if (vbe.type !== "VB") {
+    return false;
+  }
+  if (vbp.info.type !== "ability") {
+    return false;
+  }
+  return (
+    vbe.info.type === "verb" &&
+    isKedulStat(vbe.info.verb) &&
+    vbe.info.aspect === "perfective" &&
+    !vbe.info.imperative
   );
-  const badAbility =
-    (ability && !vbe) ||
-    (ability &&
-      (vbe?.info.type !== "verb" ||
-        (vbe.info.type === "verb" && vbe.info.imperative)));
-  if (badAbility) {
+}
+
+function validPerfect(vbp: T.ParsedVBP, vbe: T.ParsedVBE | undefined): boolean {
+  // TODO: allow perfects without the equative
+  if (!vbe) {
     return false;
   }
-  return true;
+  return vbp.info.type === "ppart" && vbe.info.type === "equative";
 }
 
 /**
