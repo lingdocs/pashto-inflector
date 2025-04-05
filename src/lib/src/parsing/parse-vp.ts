@@ -5,6 +5,7 @@ import {
   VerbSectionBlock,
 } from "./verb-section/parse-verb-section";
 import {
+  addErrors,
   addShrunkenPossesor,
   bindParseResult,
   bindParseResultWParser,
@@ -59,8 +60,6 @@ import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
 
 // FOR block display show adj head
 // TODO: problem with adjective parsing errors not coming through!
-// also زه ستړی شوم should not work for feminine
-// زه ښځه ستړی بولم should error!
 // دا خبره مې سپکاوی بللی دی should error but it doesn't
 // ما کتاب ستونزه بللې ده
 // زه دې ستړی کړم
@@ -116,7 +115,7 @@ function combineArgAndVerbSections(
     const npsAndAps = blocks.filter((x) => x.type === "NP" || x.type === "AP");
     const exComplement = blocks.find((x) => x.type === "complement");
     return tenses.flatMap(
-      ({ tense, person, transitivities, negative, verb }) => {
+      ({ tense, person, transitivities, negative, verb, errors }) => {
         const isPast = isPastTense(tense);
         return transitivities.flatMap<T.ParseResult<T.VPSelectionComplete>>(
           (transitivity): T.ParseResult<T.VPSelectionComplete>[] => {
@@ -142,7 +141,7 @@ function combineArgAndVerbSections(
                   tokens,
                   v,
                   vbePerson: person,
-                }),
+                }).map(addErrors(errors)),
                 checkForDynCompounds(dictionary)
               );
             } else if (transitivity === "transitive") {
@@ -156,7 +155,7 @@ function combineArgAndVerbSections(
                   v,
                   vbePerson: person,
                   isPast,
-                }),
+                }).map(addErrors(errors)),
                 checkForDynCompounds(dictionary)
               );
             } /* grammaticallyTransitive */ else {
@@ -171,7 +170,7 @@ function combineArgAndVerbSections(
                 v,
                 person,
                 isPast,
-              });
+              }).map(addErrors(errors));
             }
           }
         );
@@ -641,6 +640,7 @@ function getTenses(
   transitivities: T.Transitivity[];
   negative: boolean;
   verb: T.VerbEntry;
+  errors: T.ParseError[];
 }[] {
   const negIndex = blocks.findIndex((x) => x.type === "negative");
   const negative: T.NegativeBlock | undefined = blocks[negIndex] as
@@ -705,6 +705,7 @@ function getTenses(
         negative: !!negative,
         person: vbe.person,
         verb: vbp.info.verb,
+        errors: [],
       }));
     }
     if (!tenses.length) {
@@ -716,15 +717,19 @@ function getTenses(
       negative: !!negative,
       person: vbe.person,
       verb: verbEntry,
+      errors: [],
     }));
   } else {
     // perfect
+    const errors: T.ParseError[] = [];
     const pPart = blocks.find(
       (x) => x.type === "VB" && x.info.type === "ppart"
     ) as T.ParsedVBP | undefined;
     const equative = blocks.find(
       (x) => x.type === "VB" && x.info.type === "equative"
     ) as T.ParsedVBE | undefined;
+    // TODO: Maybe remove (and type) this check because we already prevented
+    // these kinds of errors in the parseVerbSection
     if (
       !pPart ||
       pPart.info.type === "ability" ||
@@ -735,20 +740,25 @@ function getTenses(
     }
     const equativeGenNum = personToGenNum(equative.person);
     if (!equals(equativeGenNum, pPart.info.genNum)) {
-      return [];
+      errors.push({
+        message: `equative (${equativeGenNum.gender}. ${equativeGenNum.number}) and past participle (${pPart.info.genNum.gender}. ${pPart.info.genNum.number}) do not agree`,
+      });
     }
     const transitivities = getTransitivities(pPart.info.verb);
     const tense = getPerfectTense(ba, equative.info.tense);
     if (!tense) {
-      return [];
+      errors.push({
+        message: `invalid perfect tense form`,
+      });
     }
     return [
       {
-        tense,
+        tense: tense || `${equative.info.tense}Perfect`,
         transitivities,
         negative: !!negative,
         person: equative.person,
         verb: pPart.info.verb,
+        errors,
       },
     ];
   }

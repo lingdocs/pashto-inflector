@@ -65,7 +65,7 @@ export function bindParseResultWParser<C, D, E>(
   );
 }
 
-function addErrors<C>(errs: T.ParseError[]) {
+export function addErrors<C>(errs: T.ParseError[]) {
   return function (pr: T.ParseResult<C>): T.ParseResult<C> {
     return {
       tokens: pr.tokens,
