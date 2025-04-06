@@ -14,6 +14,7 @@ import {
   getSubjectSelection,
   VPSBlocksAreComplete,
 } from "./blocks-utils";
+// TOOD: could use a bunch of optics in here too
 
 export function isInvalidSubjObjCombo(subj: T.Person, obj: T.Person): boolean {
   const firstPeople = [
@@ -247,7 +248,7 @@ export function switchSubjObj<
     return {
       ...vps,
       blocks: adjustObjectSelection(
-        adjustSubjectSelection(vps.blocks, object),
+        adjustSubjectSelection(object)(vps.blocks),
         subject
       ),
     };
@@ -258,7 +259,7 @@ export function switchSubjObj<
   return {
     ...vps,
     blocks: adjustObjectSelection(
-      adjustSubjectSelection(vps.blocks, object),
+      adjustSubjectSelection(object)(vps.blocks),
       subject
     ),
   };
@@ -374,13 +375,13 @@ export function ensure2ndPersSubjPronounAndNoConflict(
     if (typeof object !== "object" || object.selection.type !== "pronoun") {
       return {
         ...vps,
-        blocks: adjustSubjectSelection(vps.blocks, default2ndPersSubject),
+        blocks: adjustSubjectSelection(default2ndPersSubject)(vps.blocks),
       };
     }
     return {
       ...vps,
       blocks: adjustObjectSelection(
-        adjustSubjectSelection(vps.blocks, default2ndPersSubject),
+        adjustSubjectSelection(default2ndPersSubject)(vps.blocks),
         {
           type: "NP",
           selection: {
@@ -394,7 +395,7 @@ export function ensure2ndPersSubjPronounAndNoConflict(
   if (!subjIs2ndPerson && !objIs2ndPerson) {
     return {
       ...vps,
-      blocks: adjustSubjectSelection(vps.blocks, default2ndPersSubject),
+      blocks: adjustSubjectSelection(default2ndPersSubject)(vps.blocks),
     };
   }
   throw new Error("error ensuring compatible VPSelection for imperative verb");

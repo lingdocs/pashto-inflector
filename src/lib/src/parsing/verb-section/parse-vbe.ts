@@ -8,7 +8,6 @@ import { getImperativeVerbEnding } from "./misc";
 import {
   findRoot,
   findStem,
-  startsWithAleph,
   withAlephAdded,
   RootInfo,
 } from "./stem-root-finding";
@@ -141,7 +140,7 @@ function specialThirdPersMascSingForm(
     (ending === "ت" &&
       ["س", "ښ"].some((x) => base.endsWith(x)) &&
       base.length > 1)
-      ? findRoot(ph)(base, dicitonary).map<T.ParsedVBE>((info) => ({
+      ? findRoot(ph)(base + ending, dicitonary).map<T.ParsedVBE>((info) => ({
           type: "VB",
           person: T.Person.ThirdSingMale,
           info,
@@ -159,24 +158,16 @@ function specialThirdPersMascSingForm(
       (e): e is T.VerbDictionaryEntry =>
         tp.isVerbDictionaryEntry(e) && !e.l && !!e.tppp
     )
-    .flatMap((entry) =>
-      // NOT IF STARTS WITH ALEPH!
-      (entry.separationAtP
-        ? (["imperfective"] as const)
-        : startsWithAleph(entry.p) && !startsWithAleph(base)
-        ? (["perfective"] as const)
-        : (["imperfective", "perfective"] as const)
-      ).map<T.ParsedVBE>((aspect) => ({
-        type: "VB" as const,
-        person: T.Person.ThirdSingMale,
-        info: {
-          type: "verb",
-          aspect,
-          base: "root",
-          verb: { entry },
-        } as const,
-      }))
-    );
+    .map((entry) => ({
+      type: "VB" as const,
+      person: T.Person.ThirdSingMale,
+      info: {
+        type: "verb",
+        aspect: ph ? "perfective" : "imperfective",
+        base: "root",
+        verb: { entry },
+      } as const,
+    }));
 
   return [...regular, ...hardEnding];
 

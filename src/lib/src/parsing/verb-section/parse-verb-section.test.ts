@@ -19,18 +19,18 @@ const tlul = testDictionary
   .filter((x) => x.entry.e.includes("to go"))[0];
 const manul = testDictionary.verbEntryLookup("منل")[0];
 // const gaalul = testDictionary.verbEntryLookup("ګالل")[0];
-// const khorul = testDictionary.verbEntryLookup("خوړل")[0];
+const khorul = testDictionary.verbEntryLookup("خوړل")[0];
 // const kxenaastul = testDictionary.verbEntryLookup("کښېناستل")[0];
-// const prexodul = testDictionary.verbEntryLookup("پرېښودل")[0];
-// const prexowul = testDictionary.verbEntryLookup("پرېښوول")[0];
-// const prexawul = testDictionary.verbEntryLookup("پرېښول")[0];
+const prexodul = testDictionary.verbEntryLookup("پرېښودل")[0];
+const prexowul = testDictionary.verbEntryLookup("پرېښوول")[0];
+const prexawul = testDictionary.verbEntryLookup("پرېښول")[0];
 // const xodul = testDictionary.verbEntryLookup("ښودل")[0];
 // const kexodul = testDictionary.verbEntryLookup("کېښودل")[0];
 // const kxexodul = testDictionary.verbEntryLookup("کښېښودل")[0];
 // const katul = testDictionary.verbEntryLookup("کتل")[0];
 // const watul = testDictionary.verbEntryLookup("وتل")[0];
 // const wurul = testDictionary.verbEntryLookup("وړل")[0];
-// const alwatul = testDictionary.verbEntryLookup("الوتل")[0];
+const alwatul = testDictionary.verbEntryLookup("الوتل")[0];
 
 // TODO: could to more thorough testing of short past participle forms
 
@@ -276,6 +276,381 @@ const simpleIntrans: Section = {
         persons: getPeople(3, "both"),
         verb: rasedul,
       }),
+    },
+  ],
+};
+
+const simpleIrregStems: Section = {
+  title: "simple irregular stems",
+  tests: [
+    {
+      input: "وینم",
+      output: testVBEOutuput({
+        bases: ["stem"],
+        aspects: ["imperfective"],
+        persons: getPeople(1, "sing"),
+        verb: leedul,
+      }),
+    },
+    {
+      input: "ووینم",
+      output: testVBEOutuput({
+        ph: "و",
+        bases: ["stem"],
+        aspects: ["perfective"],
+        persons: getPeople(1, "sing"),
+        verb: leedul,
+      }),
+    },
+    {
+      input: "لیده",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["imperfective"],
+        persons: getPeople(3, "sing"),
+        verb: leedul,
+      }),
+    },
+    {
+      input: "ولیده",
+      output: testVBEOutuput({
+        ph: "و",
+        bases: ["root"],
+        aspects: ["perfective"],
+        persons: getPeople(3, "sing"),
+        verb: leedul,
+      }),
+    },
+    {
+      input: "خورې",
+      output: testVBEOutuput({
+        bases: ["stem"],
+        aspects: ["imperfective"],
+        persons: getPeople(2, "sing"),
+        verb: khorul,
+      }),
+    },
+    {
+      input: "خوړي",
+      output: [],
+    },
+    {
+      input: "وخورې",
+      output: testVBEOutuput({
+        ph: "و",
+        bases: ["stem"],
+        aspects: ["perfective"],
+        persons: getPeople(2, "sing"),
+        verb: khorul,
+      }),
+    },
+    {
+      input: "اخلم",
+      output: testVBEOutuput({
+        bases: ["stem"],
+        aspects: ["imperfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }),
+    },
+    {
+      input: "واخلم",
+      output: testVBEOutuput({
+        ph: "وا",
+        bases: ["stem"],
+        aspects: ["perfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }),
+    },
+    {
+      input: "اخیستم",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["imperfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }),
+    },
+    {
+      input: "واخیستلم",
+      output: testVBEOutuput({
+        ph: "وا",
+        bases: ["root"],
+        aspects: ["perfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }),
+    },
+    {
+      input: "الوځي",
+      output: testVBEOutuput({
+        bases: ["stem"],
+        aspects: ["imperfective"],
+        persons: getPeople(3, "both"),
+        verb: alwatul,
+      }),
+    },
+    {
+      input: "وانه لوځي",
+      output: getPeople(3, "both").map<VerbSectionData>((person) => ({
+        blocks: [
+          { type: "PH", s: "وا" },
+          { type: "negative", imperative: false },
+          makeParsedVBE({
+            person,
+            aspect: "perfective",
+            base: "stem",
+            verb: alwatul,
+          }),
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "وابه نه لوځې",
+      output: getPeople(2, "sing").map<VerbSectionData>((person) => ({
+        blocks: [
+          { type: "PH", s: "وا" },
+          { type: "negative", imperative: false },
+          makeParsedVBE({
+            person,
+            aspect: "perfective",
+            base: "stem",
+            verb: alwatul,
+          }),
+        ],
+        kids: [
+          {
+            position: 1,
+            section: ["ba"],
+          },
+        ],
+      })),
+    },
+    {
+      input: "وابه نه لوتل",
+      output: [
+        {
+          blocks: [
+            { type: "PH", s: "وا" },
+            { type: "negative", imperative: false },
+            makeParsedVBE({
+              person: T.Person.ThirdPlurMale,
+              aspect: "perfective",
+              base: "root",
+              verb: alwatul,
+            }),
+          ],
+          kids: [
+            {
+              position: 1,
+              section: ["ba"],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      input: "نه الوتئ",
+      output: getPeople(2, "pl").map((person) => ({
+        blocks: [
+          { type: "negative", imperative: false },
+          makeParsedVBE({
+            person,
+            aspect: "imperfective",
+            base: "root",
+            verb: alwatul,
+          }),
+        ],
+        kids: [],
+      })),
+    },
+  ],
+};
+
+const seperatingHead: Section = {
+  title: "verbs with seperating head",
+  tests: [
+    {
+      input: "کېني",
+      output: [
+        ...testVBEOutuput({
+          persons: getPeople(3, "both"),
+          verb: kenaastul,
+          aspects: ["imperfective"],
+          bases: ["stem"],
+        }),
+        ...testVBEOutuput({
+          ph: "کې",
+          persons: getPeople(3, "both"),
+          verb: kenaastul,
+          aspects: ["perfective"],
+          bases: ["stem"],
+        }),
+      ],
+    },
+    {
+      input: "کېنم",
+      output: [
+        ...testVBEOutuput({
+          persons: getPeople(1, "sing"),
+          verb: kenaastul,
+          aspects: ["imperfective"],
+          bases: ["stem"],
+        }),
+        ...testVBEOutuput({
+          ph: "کې",
+          persons: getPeople(1, "sing"),
+          verb: kenaastul,
+          aspects: ["perfective"],
+          bases: ["stem"],
+        }),
+      ],
+    },
+    {
+      input: "کې نه ني",
+      output: getPeople(3, "both").map<VerbSectionData>((person) => ({
+        blocks: [
+          { type: "PH", s: "کې" },
+          { type: "negative", imperative: false },
+          makeParsedVBE({
+            person,
+            aspect: "perfective",
+            base: "stem",
+            verb: kenaastul,
+          }),
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "کېناست",
+      output: [
+        ...testVBEOutuput({
+          persons: [T.Person.ThirdSingMale],
+          verb: kenaastul,
+          aspects: ["imperfective"],
+          bases: ["root"],
+        }),
+        ...testVBEOutuput({
+          ph: "کې",
+          persons: [T.Person.ThirdSingMale],
+          verb: kenaastul,
+          aspects: ["perfective"],
+          bases: ["root"],
+        }),
+      ],
+    },
+    {
+      input: "کې به نه ناست",
+      output: [
+        {
+          blocks: [
+            { type: "PH", s: "کې" },
+            { type: "negative", imperative: false },
+            makeParsedVBE({
+              person: T.Person.ThirdSingMale,
+              aspect: "perfective",
+              base: "root",
+              verb: kenaastul,
+            }),
+          ],
+          kids: [
+            {
+              position: 1,
+              section: ["ba"],
+            },
+          ],
+        },
+      ],
+    },
+    ...["کې به نه ناستلم", "کې به نه ناستم"].map<Section["tests"][number]>(
+      (input) => ({
+        input,
+        output: getPeople(1, "sing").map((person) => ({
+          blocks: [
+            { type: "PH", s: "کې" },
+            { type: "negative", imperative: false },
+            makeParsedVBE({
+              person,
+              aspect: "perfective",
+              base: "root",
+              verb: kenaastul,
+            }),
+          ],
+          kids: [
+            {
+              position: 1,
+              section: ["ba"],
+            },
+          ],
+        })),
+      })
+    ),
+    {
+      input: "پرېږده",
+      output: [prexawul, prexodul, prexowul].flatMap((verb) => [
+        ...testVBEOutuput({
+          persons: getPeople(2, "sing"),
+          verb,
+          aspects: ["imperfective"],
+          bases: ["stem"],
+          imperative: true,
+        }),
+        ...testVBEOutuput({
+          ph: "پرې",
+          persons: getPeople(2, "sing"),
+          verb,
+          aspects: ["perfective"],
+          bases: ["stem"],
+          imperative: true,
+        }),
+      ]),
+    },
+    {
+      input: "مه یې پرېږده",
+      output: [prexawul, prexodul, prexowul].flatMap<VerbSectionData>((verb) =>
+        getPeople(2, "sing").flatMap<VerbSectionData>((person) => [
+          {
+            blocks: [
+              { type: "negative", imperative: true },
+              makeParsedVBE({
+                person,
+                aspect: "imperfective",
+                base: "stem",
+                imperative: true,
+                verb,
+              }),
+            ],
+            kids: [
+              {
+                position: 1,
+                section: ["ye"],
+              },
+            ],
+          },
+          {
+            blocks: [
+              { type: "negative", imperative: true },
+              { type: "PH", s: "پرې" },
+              makeParsedVBE({
+                person,
+                aspect: "perfective",
+                base: "stem",
+                imperative: true,
+                verb,
+              }),
+            ],
+            kids: [
+              {
+                position: 1,
+                section: ["ye"],
+              },
+            ],
+          },
+        ])
+      ),
     },
   ],
 };
@@ -577,7 +952,14 @@ const perfect: Section = {
   ],
 };
 
-const sections = [simpleOpts, simpleIntrans, ability, perfect];
+const sections = [
+  simpleOpts,
+  simpleIntrans,
+  simpleIrregStems,
+  seperatingHead,
+  ability,
+  perfect,
+];
 
 // TODO imperative and negatives
 // Perfect forms!

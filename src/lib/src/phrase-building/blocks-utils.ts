@@ -235,28 +235,23 @@ export function VPSBlocksAreComplete(
   return true;
 }
 
-export function adjustSubjectSelection(
-  blocks: T.EPSBlock[],
+export function adjustSubjectSelection<B extends T.VPSBlock | T.EPSBlock>(
   subject: T.SubjectSelection | T.NPSelection | undefined
-): T.EPSBlock[];
-export function adjustSubjectSelection(
-  blocks: T.VPSBlock[],
-  subject: T.SubjectSelection | T.NPSelection | undefined
-): T.VPSBlock[];
-export function adjustSubjectSelection(
-  blocks: T.VPSBlock[] | T.EPSBlock[],
-  subject: T.SubjectSelection | T.NPSelection | undefined
-): T.VPSBlock[] | T.EPSBlock[] {
-  const nb = [...blocks];
-  const i = nb.findIndex((b) => b.block && b.block.type === "subjectSelection");
-  if (i === -1) {
-    throw new Error("couldn't find subjectSelection to modify");
-  }
-  nb[i].block =
-    subject?.type === "subjectSelection"
-      ? subject
-      : makeSubjectSelection(subject);
-  return nb;
+) {
+  return function (blocks: B[]): B[] {
+    const nb = [...blocks];
+    const i = nb.findIndex(
+      (b) => b.block && b.block.type === "subjectSelection"
+    );
+    if (i === -1) {
+      throw new Error("couldn't find subjectSelection to modify");
+    }
+    nb[i].block =
+      subject?.type === "subjectSelection"
+        ? subject
+        : makeSubjectSelection(subject);
+    return nb;
+  };
 }
 
 export function adjustObjectSelection(
@@ -313,16 +308,17 @@ export function moveObjectToEnd(
 }
 
 export function shiftBlock<B extends T.VPSBlock[] | T.EPSBlock[]>(
-  blocks: B,
   index: number,
   direction: "back" | "forward"
-): B {
-  const newIndex =
-    index +
-    (direction === "forward"
-      ? 1 // (isNoObject(blocks[index + 1].block) ? 2 : 1)
-      : -1); // (isNoObject(blocks[index - 1].block) ? -2 : -2)
-  return arrayMove(blocks, index, newIndex) as B;
+) {
+  return function (blocks: B): B {
+    const newIndex =
+      index +
+      (direction === "forward"
+        ? 1 // (isNoObject(blocks[index + 1].block) ? 2 : 1)
+        : -1); // (isNoObject(blocks[index - 1].block) ? -2 : -2)
+    return arrayMove(blocks, index, newIndex) as B;
+  };
 }
 
 export function insertNewAP<B extends T.VPSBlock[] | T.EPSBlock[]>(
@@ -332,22 +328,22 @@ export function insertNewAP<B extends T.VPSBlock[] | T.EPSBlock[]>(
 }
 
 export function setAP<B extends T.VPSBlock[] | T.EPSBlock[]>(
-  blocks: B,
   index: number,
   AP: T.APSelection | undefined
-): B {
-  const nBlocks = [...blocks] as B;
-  nBlocks[index].block = AP;
-  return nBlocks;
+): (b: B) => B {
+  return function (blocks: B): B {
+    const nBlocks = [...blocks] as B;
+    nBlocks[index].block = AP;
+    return nBlocks;
+  };
 }
 
-export function removeAP<B extends T.VPSBlock[] | T.EPSBlock[]>(
-  blocks: B,
-  index: number
-): B {
-  const nBlocks = [...blocks] as B;
-  nBlocks.splice(index, 1);
-  return nBlocks;
+export function removeAP<B extends T.VPSBlock[] | T.EPSBlock[]>(index: number) {
+  return function (blocks: B): B {
+    const nBlocks = [...blocks] as B;
+    nBlocks.splice(index, 1);
+    return nBlocks;
+  };
 }
 
 export function isNoObject(

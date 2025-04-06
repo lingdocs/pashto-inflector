@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import * as O from "optics-ts";
 import { isInvalidSubjObjCombo } from "./vp-tools";
 import { switchSubjObj } from "./vp-tools";
 import { ensure2ndPersSubjPronounAndNoConflict } from "./vp-tools";
@@ -107,6 +108,11 @@ export type VpsReducerAction =
         | undefined;
     };
 
+const blocks = O.optic_<T.VPSelectionState>().prop("blocks");
+const form = O.optic_<T.VPSelectionState>().prop("form");
+const verbVoice = O.optic<T.VPSelectionState>().prop("verb").prop("voice");
+const verbSelection = O.optic<T.VPSelectionState>().prop("verb");
+
 export function vpsReducer(
   vps: T.VPSelectionState,
   action: VpsReducerAction,
@@ -123,10 +129,9 @@ export function vpsReducer(
         if (sendAlert) sendAlert("That combination of pronouns is not allowed");
         return vps;
       }
-      return {
-        ...vps,
-        blocks: adjustSubjectSelection(vps.blocks, action.payload.subject),
-      };
+      return O.modify(blocks)(adjustSubjectSelection(action.payload.subject))(
+        vps
+      );
     }
     if (action.type === "set object") {
       if (!vps.verb) return vps;
@@ -141,20 +146,14 @@ export function vpsReducer(
         if (sendAlert) sendAlert("That combination of pronouns is not allowed");
         return vps;
       }
-      return {
-        ...vps,
-        blocks: adjustObjectSelection(vps.blocks, object),
-      };
+      return O.set(blocks)(adjustObjectSelection(vps.blocks, object))(vps);
     }
     if (action.type === "swap subj/obj") {
       if (vps.verb?.isCompound === "dynamic") return vps;
       return switchSubjObj(vps);
     }
     if (action.type === "set form") {
-      return {
-        ...vps,
-        form: action.payload,
-      };
+      return O.set(form)(action.payload)(vps);
     }
     if (action.type === "set voice") {
       if (vps.verb && vps.verb.canChangeVoice) {
@@ -165,33 +164,25 @@ export function vpsReducer(
           return vps;
         }
         if (voice === "passive") {
-          return {
-            ...vps,
-            blocks: adjustObjectSelection(
-              adjustSubjectSelection(
-                vps.blocks,
-                typeof object === "object" ? object : undefined
-              ),
-              "none"
-            ),
-            verb: {
-              ...vps.verb,
-              voice,
-              // tenseCategory: vps.verb.tenseCategory === "modal" ? "basic" : vps.verb.tenseCategory,
-            },
-          };
+          return O.set(verbVoice)(voice)(
+            O.set(blocks)(
+              adjustObjectSelection(
+                adjustSubjectSelection(
+                  typeof object === "object" ? object : undefined
+                )(vps.blocks),
+                "none"
+              )
+            )(vps)
+          );
         } else {
-          return {
-            ...vps,
-            blocks: adjustObjectSelection(
-              adjustSubjectSelection(vps.blocks, undefined),
-              typeof subject === "object" ? subject : undefined
-            ),
-            verb: {
-              ...vps.verb,
-              voice,
-            },
-          };
+          return O.set(verbVoice)(voice)(
+            O.set(blocks)(
+              adjustObjectSelection(
+                adjustSubjectSelection(undefined)(vps.blocks),
+                typeof subject === "object" ? subject : undefined
+              )
+            )(vps)
+          );
         }
       } else {
         return vps;
@@ -221,49 +212,39 @@ export function vpsReducer(
       const tense = action.payload;
       if (!(vps.verb && tense)) return vps;
       if (isPerfectTense(tense)) {
-        return {
-          ...vps,
-          verb: {
-            ...vps.verb,
-            perfectTense: tense,
-            tenseCategory: "perfect",
-          },
-        };
+        return O.set(verbSelection)({
+          ...vps.verb,
+          perfectTense: tense,
+          tenseCategory: "perfect",
+        } satisfies T.VerbSelection)(vps);
       } else if (isImperativeTense(tense)) {
-        return {
-          ...vps,
-          verb: {
-            ...vps.verb,
-            imperativeTense: tense,
-            tenseCategory: "imperative",
-          },
-        };
+        return O.set(verbSelection)({
+          ...vps.verb,
+          imperativeTense: tense,
+          tenseCategory: "imperative",
+        } satisfies T.VerbSelection)(vps);
       } else {
-        return {
-          ...vps,
-          verb: {
-            ...vps.verb,
-            verbTense: tense,
-            tenseCategory:
-              vps.verb.tenseCategory === "perfect"
-                ? "basic"
-                : vps.verb.tenseCategory,
-          },
-        };
+        return O.set(verbSelection)({
+          ...vps.verb,
+          verbTense: tense,
+          tenseCategory:
+            vps.verb.tenseCategory === "perfect"
+              ? "basic"
+              : vps.verb.tenseCategory,
+        } satisfies T.VerbSelection)(vps);
       }
     }
     if (action.type === "set tense category") {
       if (!vps.verb) return vps;
       const category = action.payload;
       if (category === "imperative") {
-        return ensure2ndPersSubjPronounAndNoConflict({
-          ...vps,
-          verb: {
+        return ensure2ndPersSubjPronounAndNoConflict(
+          O.set(verbSelection)({
             ...vps.verb,
             voice: "active",
             tenseCategory: category,
-          },
-        });
+          } satisfies T.VerbSelection)(vps)
+        );
       }
       if (category === "modal") {
         return {
@@ -304,30 +285,18 @@ export function vpsReducer(
       return makeVPSelectionState(action.payload, vps);
     }
     if (action.type === "insert new AP") {
-      return {
-        ...vps,
-        blocks: insertNewAP(vps.blocks),
-      };
+      return O.modify(blocks)(insertNewAP)(vps);
     }
     if (action.type === "set AP") {
       const { index, AP } = action.payload;
-      return {
-        ...vps,
-        blocks: setAP(vps.blocks, index, AP),
-      };
+      return O.modify(blocks)(setAP(index, AP))(vps);
     }
     if (action.type === "remove AP") {
-      return {
-        ...vps,
-        blocks: removeAP(vps.blocks, action.payload),
-      };
+      return O.modify(blocks)(removeAP(action.payload))(vps);
     }
     if (action.type === "shift block") {
       const { index, direction } = action.payload;
-      return {
-        ...vps,
-        blocks: shiftBlock(vps.blocks, index, direction),
-      };
+      return O.modify(blocks)(shiftBlock(index, direction))(vps);
     }
     if (action.type === "set externalComplement") {
       const selection = action.payload;
