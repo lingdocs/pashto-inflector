@@ -3,7 +3,7 @@ import { testDictionary } from "../mini-test-dictionary";
 import { tokenizer } from "./../tokenizer";
 import { getPeople } from "../utils";
 import { parseVerbSection, VerbSectionData } from "./parse-verb-section";
-import { kedulStat } from "./irreg-verbs";
+import { kedulDyn, kedulStat, raatlul, wartlul } from "./irreg-verbs";
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
@@ -27,8 +27,8 @@ const prexawul = testDictionary.verbEntryLookup("پرېښول")[0];
 // const xodul = testDictionary.verbEntryLookup("ښودل")[0];
 // const kexodul = testDictionary.verbEntryLookup("کېښودل")[0];
 // const kxexodul = testDictionary.verbEntryLookup("کښېښودل")[0];
-// const katul = testDictionary.verbEntryLookup("کتل")[0];
-// const watul = testDictionary.verbEntryLookup("وتل")[0];
+const katul = testDictionary.verbEntryLookup("کتل")[0];
+const watul = testDictionary.verbEntryLookup("وتل")[0];
 // const wurul = testDictionary.verbEntryLookup("وړل")[0];
 const alwatul = testDictionary.verbEntryLookup("الوتل")[0];
 
@@ -469,6 +469,125 @@ const simpleIrregStems: Section = {
   ],
 };
 
+const irreg3rdMascSing: Section = {
+  title: "Irregular third masc sing.",
+  tests: [
+    {
+      input: "خوړ",
+      output: testVBEOutuput({
+        aspects: ["imperfective"],
+        bases: ["root"],
+        verb: khorul,
+        persons: [T.Person.ThirdSingMale],
+      }),
+    },
+    {
+      input: "ویې خوړ",
+      output: [
+        {
+          blocks: [
+            { type: "PH", s: "و" },
+            makeParsedVBE({
+              person: T.Person.ThirdSingMale,
+              aspect: "perfective",
+              base: "root",
+              verb: khorul,
+            }),
+          ],
+          kids: [
+            {
+              position: 1,
+              section: ["ye"],
+            },
+          ],
+        },
+      ],
+    },
+    ...["کوت", "کاته"].map((input) => ({
+      input,
+      output: testVBEOutuput({
+        persons: [T.Person.ThirdSingMale],
+        bases: ["root"],
+        aspects: ["imperfective"],
+        verb: katul,
+      }),
+    })),
+    ...["ووت", "واته"].map((input) => ({
+      input,
+      output: testVBEOutuput({
+        persons: [T.Person.ThirdSingMale],
+        bases: ["root"],
+        aspects: ["imperfective"],
+        verb: watul,
+      }),
+    })),
+    ...["وووت", "وواته"].map((input) => ({
+      input,
+      output: testVBEOutuput({
+        ph: "و",
+        persons: [T.Person.ThirdSingMale],
+        bases: ["root"],
+        aspects: ["perfective"],
+        verb: watul,
+      }),
+    })),
+    {
+      input: "رسېد",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["imperfective"],
+        verb: rasedul,
+        persons: [T.Person.ThirdSingMale],
+      }),
+    },
+    {
+      input: "رسېده",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["imperfective"],
+        verb: rasedul,
+        persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+      }),
+    },
+    {
+      input: "کېناسته",
+      output: [
+        ...testVBEOutuput({
+          bases: ["root"],
+          aspects: ["imperfective"],
+          verb: kenaastul,
+          persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+        }),
+        ...testVBEOutuput({
+          ph: "کې",
+          bases: ["root"],
+          aspects: ["perfective"],
+          verb: kenaastul,
+          persons: [T.Person.ThirdSingMale, T.Person.ThirdSingFemale],
+        }),
+      ],
+    },
+    {
+      input: "کېناست",
+      output: [
+        ...testVBEOutuput({
+          bases: ["root"],
+          aspects: ["imperfective"],
+          verb: kenaastul,
+          persons: [T.Person.ThirdSingMale],
+        }),
+        ...testVBEOutuput({
+          ph: "کې",
+          bases: ["root"],
+          aspects: ["perfective"],
+          verb: kenaastul,
+          persons: [T.Person.ThirdSingMale],
+        }),
+      ],
+    },
+  ],
+};
+
 const seperatingHead: Section = {
   title: "verbs with seperating head",
   tests: [
@@ -509,7 +628,7 @@ const seperatingHead: Section = {
       ],
     },
     {
-      input: "کې نه ني",
+      input: "کې به نه ني",
       output: getPeople(3, "both").map<VerbSectionData>((person) => ({
         blocks: [
           { type: "PH", s: "کې" },
@@ -521,7 +640,12 @@ const seperatingHead: Section = {
             verb: kenaastul,
           }),
         ],
-        kids: [],
+        kids: [
+          {
+            position: 1,
+            section: ["ba"],
+          },
+        ],
       })),
     },
     {
@@ -652,39 +776,132 @@ const seperatingHead: Section = {
         ])
       ),
     },
+    {
+      input: "پرېښود",
+      output: [
+        ...testVBEOutuput({
+          persons: [T.Person.ThirdSingMale],
+          verb: prexodul,
+          bases: ["root"],
+          aspects: ["imperfective"],
+        }),
+        ...testVBEOutuput({
+          ph: "پرې",
+          persons: [T.Person.ThirdSingMale],
+          verb: prexodul,
+          bases: ["root"],
+          aspects: ["perfective"],
+        }),
+      ],
+    },
   ],
 };
 
-function testVBEOutuput(props: {
-  ph?: string;
-  bases: ("root" | "stem")[];
-  aspects: T.Aspect[];
-  persons: T.Person[];
-  verb: T.VerbEntry;
-  imperative?: boolean;
-}): Section["tests"][number]["output"] {
-  return props.persons.flatMap((person) =>
-    props.bases.flatMap((base) =>
-      props.aspects.map((aspect) => ({
-        blocks: [
-          ...(props.ph ? [{ type: "PH", s: props.ph } as const] : []),
-          makeParsedVBE({
-            aspect,
-            base,
-            verb: props.verb,
-            person,
-            ...(props.imperative
-              ? {
-                  imperative: props.imperative,
-                }
-              : {}),
-          }),
-        ],
-        kids: [],
-      }))
-    )
-  );
-}
+const irregularVerbs: Section = {
+  title: "irregular verbs",
+  tests: [
+    {
+      input: "ته",
+      output: testVBEOutuput({
+        persons: [T.Person.ThirdSingMale],
+        aspects: ["imperfective"],
+        bases: ["root"],
+        verb: tlul,
+      }),
+    },
+    {
+      input: "راته",
+      output: testVBEOutuput({
+        persons: [T.Person.ThirdSingMale],
+        aspects: ["imperfective"],
+        bases: ["root"],
+        verb: raatlul,
+      }),
+    },
+    {
+      input: "ورته",
+      output: testVBEOutuput({
+        persons: [T.Person.ThirdSingMale],
+        aspects: ["imperfective"],
+        bases: ["root"],
+        verb: wartlul,
+      }),
+    },
+    {
+      input: "شو",
+      output: [
+        ...testVBEOutuput({
+          persons: [
+            ...getPeople(1, "pl"),
+            T.Person.ThirdSingMale,
+            T.Person.ThirdPlurMale,
+          ],
+          aspects: ["perfective"],
+          bases: ["root"],
+          verb: kedulStat,
+        }),
+        ...testVBEOutuput({
+          persons: getPeople(1, "pl"),
+          aspects: ["perfective"],
+          bases: ["stem"],
+          verb: kedulStat,
+        }),
+      ],
+    },
+    {
+      input: "وبه شو",
+      output: [
+        ...testVBEOutuput({
+          ph: "و",
+          kids: [{ position: 1, section: ["ba"] }],
+          persons: [
+            ...getPeople(1, "pl"),
+            T.Person.ThirdSingMale,
+            T.Person.ThirdPlurMale,
+          ],
+          aspects: ["perfective"],
+          bases: ["root"],
+          verb: kedulDyn,
+        }),
+        ...testVBEOutuput({
+          ph: "و",
+          kids: [{ position: 1, section: ["ba"] }],
+          persons: getPeople(1, "pl"),
+          aspects: ["perfective"],
+          bases: ["stem"],
+          verb: kedulDyn,
+        }),
+      ],
+    },
+    ...["شوله", "شوه"].map((input) => ({
+      input,
+      output: testVBEOutuput({
+        persons: [T.Person.ThirdSingFemale],
+        aspects: ["perfective"],
+        bases: ["root"],
+        verb: kedulStat,
+      }),
+    })),
+    {
+      input: "شئ",
+      output: [
+        ...testVBEOutuput({
+          persons: getPeople(2, "pl"),
+          aspects: ["perfective"],
+          bases: ["stem"],
+          verb: kedulStat,
+          imperative: true,
+        }),
+        ...testVBEOutuput({
+          persons: getPeople(2, "pl"),
+          aspects: ["perfective"],
+          bases: ["stem"],
+          verb: kedulStat,
+        }),
+      ],
+    },
+  ],
+};
 
 const ability: Section = {
   title: "with ability VBPs",
@@ -957,6 +1174,8 @@ const sections = [
   simpleIntrans,
   simpleIrregStems,
   seperatingHead,
+  irreg3rdMascSing,
+  irregularVerbs,
   ability,
   perfect,
 ];
@@ -978,6 +1197,38 @@ sections.forEach((section) => {
     });
   });
 });
+
+function testVBEOutuput(props: {
+  ph?: string;
+  kids?: Section["tests"][number]["output"][number]["kids"];
+  bases: ("root" | "stem")[];
+  aspects: T.Aspect[];
+  persons: T.Person[];
+  verb: T.VerbEntry;
+  imperative?: boolean;
+}): Section["tests"][number]["output"] {
+  return props.persons.flatMap((person) =>
+    props.bases.flatMap((base) =>
+      props.aspects.map((aspect) => ({
+        blocks: [
+          ...(props.ph ? [{ type: "PH", s: props.ph } as const] : []),
+          makeParsedVBE({
+            aspect,
+            base,
+            verb: props.verb,
+            person,
+            ...(props.imperative
+              ? {
+                  imperative: props.imperative,
+                }
+              : {}),
+          }),
+        ],
+        kids: props.kids ? props.kids : [],
+      }))
+    )
+  );
+}
 
 function makeEqVBE(
   person: T.Person,

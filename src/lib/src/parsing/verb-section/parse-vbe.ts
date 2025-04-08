@@ -37,7 +37,7 @@ export function parseVBE(
     return [];
   }
   const [first, ...rest] = tokens;
-  const irregResults = parseIrregularVerb(first.s);
+  const irregResults = parseIrregularVerb(first.s, ph);
   if (irregResults.length) {
     return returnParseResults(rest, irregResults);
   }
@@ -194,7 +194,13 @@ function thirdPersSingMascShortFromRoot(
   return [];
 }
 
-function parseIrregularVerb(s: string): T.ParsedVBE[] {
+function parseIrregularVerb(
+  s: string,
+  ph: T.ParsedPH | undefined
+): T.ParsedVBE[] {
+  if (ph) {
+    return [];
+  }
   if (["ته", "راته", "ورته", "درته"].includes(s)) {
     return [
       {

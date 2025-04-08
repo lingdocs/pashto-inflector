@@ -108,8 +108,8 @@ export type VpsReducerAction =
         | undefined;
     };
 
-const blocks = O.optic_<T.VPSelectionState>().prop("blocks");
-const form = O.optic_<T.VPSelectionState>().prop("form");
+const blocks = O.optic<T.VPSelectionState>().prop("blocks");
+const form = O.optic<T.VPSelectionState>().prop("form");
 const verbVoice = O.optic<T.VPSelectionState>().prop("verb").prop("voice");
 const verbSelection = O.optic<T.VPSelectionState>().prop("verb");
 
