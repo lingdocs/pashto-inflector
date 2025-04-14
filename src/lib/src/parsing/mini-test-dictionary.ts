@@ -52,6 +52,20 @@ function verbEntryLookup(p: string): T.VerbEntry[] {
     );
 }
 
+function verbEntryLookupByL(l: number): T.VerbEntry[] {
+  return entries
+    .filter((e) => e.l === l)
+    .filter(isVerbDictionaryEntry)
+    .map<T.VerbEntry>((entry) =>
+      entry.l
+        ? {
+            entry,
+            complement: entries.find((e) => e.ts === entry.l),
+          }
+        : { entry }
+    );
+}
+
 export const testDictionary: T.DictionaryAPI = {
   // @ts-expect-error we won't mock the initialization
   initialize: async () => 0,
@@ -63,4 +77,5 @@ export const testDictionary: T.DictionaryAPI = {
   otherLookup,
   specialPluralLookup,
   verbEntryLookup,
+  verbEntryLookupByL,
 };

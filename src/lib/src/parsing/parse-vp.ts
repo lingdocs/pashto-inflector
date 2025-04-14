@@ -27,7 +27,7 @@ import {
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import { isFirstPerson, isSecondPerson, personToGenNum } from "../misc-helpers";
-import { equals } from "rambda";
+import { ArgumentTypes, equals } from "rambda";
 import { isImperativeTense, isTlulVerb } from "../type-predicates";
 import { isKedulStatEntry } from "./verb-section/parse-verb-helpers";
 import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
@@ -278,11 +278,17 @@ function finishIntransitive({
     exComplement: complement,
     vbePerson,
   });
-  const o = "none";
-  const blocks = mapOutnpsAndAps(
-    ["S"],
-    limitNPs([...(np ? [] : [s]), o, ...npsAndAps], 1)
+  const o: "none" = "none" as const;
+  const allBlocks: ArgumentTypes<typeof limitNPs>[0] = [
+    ...(np ? [] : [s]),
+    ...npsAndAps,
+  ].toSpliced(
+    1,
+    0,
+    // @ts-expect-error - ts being weird here
+    o
   );
+  const blocks = mapOutnpsAndAps(["S"], limitNPs(allBlocks, 1));
   return [
     {
       tokens,

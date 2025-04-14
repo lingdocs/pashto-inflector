@@ -3,6 +3,7 @@ import * as T from "../types";
 import { tokenizer } from "../lib/src/parsing/tokenizer";
 import { parseNoun } from "../lib/src/parsing/argument-section/parse-noun";
 import { parseDeterminer } from "../lib/src/parsing/argument-section/parse-determiner";
+import { parseVP } from "../lib/src/parsing/parse-vp";
 import { JsonEditor } from "json-edit-react";
 import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
@@ -17,9 +18,7 @@ function ParserTester({ dictionary }: { dictionary: T.DictionaryAPI }) {
       return;
     }
     const tokens = tokenizer(value);
-    const res = parseVerbSection(tokens, testDictionary).filter(
-      (x) => !x.tokens.length
-    );
+    const res = parseVP(tokens, testDictionary).filter((x) => !x.tokens.length);
     setText(value);
     setResult(res);
   }

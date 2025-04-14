@@ -1232,6 +1232,7 @@ export type EntryFeederSingleType<X extends VerbEntry | DictionaryEntry> =
 export type EntryLookupPortal<X extends VerbEntry | DictionaryEntry> = {
   search: (s: string) => X[];
   getByTs: (ts: number) => X | undefined;
+  getByL: (l: number) => X[];
 };
 
 export type EquativeBlock = { type: "equative"; equative: EquativeRendered };

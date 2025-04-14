@@ -568,14 +568,14 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
   return {
     ...vps,
     blocks: adjustObjectSelection(
-      adjustSubjectSelection(vps.blocks, {
+      adjustSubjectSelection({
         type: "NP",
         selection: {
           type: "pronoun",
           distance: "far",
           person: subj,
         },
-      }),
+      })(vps.blocks),
       (typeof vpsObj === "object" &&
         !(
           vpsObj.selection.type === "noun" &&
@@ -647,9 +647,8 @@ function getRandomVPSelection(mix: MixType = "both") {
       return {
         blocks: possibleShuffleArray(
           adjustObjectSelection(
-            adjustSubjectSelection(
-              VPS.blocks,
-              subject !== undefined ? subject : randSubj
+            adjustSubjectSelection(subject !== undefined ? subject : randSubj)(
+              VPS.blocks
             ),
             object !== undefined ? object : randObj
           )
@@ -662,7 +661,7 @@ function getRandomVPSelection(mix: MixType = "both") {
     return {
       blocks: possibleShuffleArray(
         adjustObjectSelection(
-          adjustSubjectSelection(VPS.blocks, randSubj),
+          adjustSubjectSelection(randSubj)(VPS.blocks),
           (typeof object === "object" &&
             !(
               object.selection.type === "noun" &&

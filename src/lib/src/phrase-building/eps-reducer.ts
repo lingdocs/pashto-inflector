@@ -68,7 +68,10 @@ export default function epsReducer(
   if (action.type === "set subject") {
     const subject = action.payload;
     if (!subject) {
-      return O.set(blocks)(adjustSubjectSelection(eps.blocks, subject))(eps);
+      return {
+        ...eps,
+        blocks: adjustSubjectSelection(subject)(eps.blocks) as T.EPSBlock[],
+      };
     }
     if (
       subject.selection.type === "pronoun" &&
@@ -94,14 +97,19 @@ export default function epsReducer(
             : {}),
         },
       };
-      return O.set(predicate)({
-        ...eps.predicate,
-        selection: adjusted,
-      })(O.set(blocks)(adjustSubjectSelection(eps.blocks, subject))(eps));
+      return {
+        ...eps,
+        predicate: {
+          ...eps.predicate,
+          selection: adjusted,
+        },
+        blocks: adjustSubjectSelection(subject)(eps.blocks) as T.EPSBlock[],
+      };
     }
-    const n: T.EPSelectionState = O.set(blocks)(
-      adjustSubjectSelection(eps.blocks, subject)
-    )(eps);
+    const n: T.EPSelectionState = {
+      ...eps,
+      blocks: adjustSubjectSelection(subject)(eps.blocks) as T.EPSBlock[],
+    };
     return subject ? ensureMiniPronounsOk(eps, n, sendAlert) : n;
   }
   if (action.type === "set predicate") {
@@ -121,17 +129,16 @@ export default function epsReducer(
         movePersonGender(pronoun, gender),
         number
       );
-      return O.set(predicate)(action.payload)(
-        O.set(blocks)(
-          adjustSubjectSelection(eps.blocks, {
-            type: "NP",
-            selection: {
-              ...subject.selection,
-              person: newPronoun,
-            },
-          })
-        )(eps)
-      );
+      return {
+        ...eps,
+        blocks: adjustSubjectSelection({
+          type: "NP",
+          selection: {
+            ...subject.selection,
+            person: newPronoun,
+          },
+        })(eps.blocks) as T.EPSBlock[],
+      };
     }
     const n: T.EPSelectionState = O.set(predicate)(action.payload)(eps);
     return predicate ? ensureMiniPronounsOk(eps, n, sendAlert) : n;

@@ -50,7 +50,7 @@ function VPPicker({
     { role: "servant" | "king"; item: "subject" | "object" } | false
   >(false);
   function adjustVps(action: VpsReducerAction) {
-    onChange(vpsReducer(vps, action));
+    onChange(vpsReducer(entryFeeder)(vps, action));
   }
   function handleSubjectChange(
     subject: T.NPSelection | undefined,

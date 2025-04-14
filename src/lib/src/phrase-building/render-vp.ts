@@ -36,7 +36,9 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const kingNP = king === "subject" ? subject : object;
   const complementWins = complementTakesTarget(kingNP, complement);
   const kingPerson = getPersonFromNP(kingNP);
-  const complementPerson = getPersonFromNP(object ? object : subject);
+  const complementPerson = getPersonFromNP(
+    typeof object === "object" ? object : subject
+  );
   // TODO: more elegant way of handling this type safety
   if (kingPerson === undefined) {
     throw new Error("king of sentance does not exist");
@@ -298,7 +300,7 @@ function renderVPBlocks(
         renderComplementSelection(
           block,
           // just for typesafety // TODO: only include the person if we're doing an adjective
-          config.complementPerson || T.Person.FirstSingMale
+          config.complementPerson ?? T.Person.FirstSingMale
         )
       ),
     ];

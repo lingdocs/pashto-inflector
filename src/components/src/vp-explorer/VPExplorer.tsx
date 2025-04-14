@@ -39,7 +39,7 @@ function VPExplorer(props: {
   eventEmitter?: (e: string) => void;
 }) {
   const [vps, adjustVps] = useStickyReducer(
-    vpsReducer,
+    vpsReducer(props.entryFeeder),
     props.loaded
       ? props.loaded
       : (savedVps) => makeVPSelectionState(props.verb, savedVps),
