@@ -6,6 +6,7 @@ import { parseDeterminer } from "../lib/src/parsing/argument-section/parse-deter
 import { parseVP } from "../lib/src/parsing/parse-vp";
 import { JsonEditor } from "json-edit-react";
 import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
+import { parseEquative } from "../lib/src/parsing/verb-section/parse-equative";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
 
 function ParserTester({ dictionary }: { dictionary: T.DictionaryAPI }) {

@@ -1,8 +1,12 @@
 import * as T from "../../../../types";
 import { getPeople, returnParseResultSingle } from "./../utils";
 
-const allThird = getPeople(3, "both");
-const allPeople: T.Person[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+export type EqInfo = {
+  persons: T.Person[];
+  tenses: T.EquativeTenseWithoutBa[];
+};
+
+const allPersons: T.Person[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export function parseEquative(
   tokens: Readonly<T.Token[]>
@@ -11,54 +15,133 @@ export function parseEquative(
     return [];
   }
   const [{ s }, ...rest] = tokens;
-  function eqMaker(
-    people: T.Person[],
-    tenses: T.EquativeTenseWithoutBa[]
-  ): T.ParseResult<T.ParsedVBE>[] {
+  function eqMaker({ tenses, persons }: EqInfo): T.ParseResult<T.ParsedVBE>[] {
     return tenses.flatMap((tense) =>
-      people.map((person) =>
+      persons.map((person) =>
         returnParseResultSingle(rest, makeEqVBE(tense, person))
       )
     );
   }
-  if (s === "دي") {
-    return eqMaker(
-      [T.Person.ThirdPlurMale, T.Person.ThirdPlurFemale],
-      ["present"]
-    );
+  if (s === "وای" || s === "وی") {
+    return eqMaker({ tenses: ["pastSubjunctive"], persons: allPersons });
   }
-  if (s === "وي") {
-    return eqMaker(allThird, ["habitual", "subjunctive"]);
+  return [...getThirdPersEqs(s), ...getFstSndPersEqs(s)].flatMap(eqMaker);
+}
+
+function getFstSndPersEqs(s: string): EqInfo[] {
+  const tenses: T.EquativeTenseWithoutBa[] =
+    s.length === 3 && s.startsWith("ول")
+      ? ["past"]
+      : s.length === 2
+      ? s.startsWith("و")
+        ? ["subjunctive", "past"]
+        : s.startsWith("ی")
+        ? ["present", "habitual"]
+        : []
+      : [];
+  if (!tenses.length) {
+    return [];
   }
-  if (s === "دی") {
-    return eqMaker([T.Person.ThirdSingMale], ["present"]);
-  }
-  if (s === "ده") {
-    return eqMaker([T.Person.ThirdSingFemale], ["present"]);
-  }
-  if (["وای", "وی"].includes(s)) {
-    return eqMaker(allPeople, ["pastSubjunctive"]);
-  }
-  if (s === "ول") {
-    return eqMaker([T.Person.ThirdPlurMale], ["past"]);
-  }
-  const persons = getEqEndingPersons(s[s.length - 1]);
+  const persons = getFirstSecPersonsEndings(s.at(-1) || "");
   if (!persons.length) {
     return [];
   }
-  if (s.length === 2 && s.startsWith("ی")) {
-    return eqMaker(persons, ["present", "habitual"]);
+  return [
+    {
+      tenses,
+      persons,
+    },
+  ];
+}
+
+function getThirdPersEqs(s: string): EqInfo[] {
+  if (s === "دي") {
+    return [
+      {
+        persons: [T.Person.ThirdPlurMale, T.Person.ThirdPlurFemale],
+        tenses: ["present"],
+      },
+    ];
   }
-  if (s.length === 3 && s.startsWith("ول")) {
-    return eqMaker(persons, ["past"]);
+  if (s === "وي") {
+    return [
+      {
+        persons: getPeople(3, "both"),
+        tenses: ["habitual", "subjunctive"],
+      },
+    ];
   }
-  if (s.length === 2 && s.startsWith("و")) {
-    return eqMaker(persons, ["past", "subjunctive"]);
+  if (s === "دی") {
+    return [
+      {
+        persons: [T.Person.ThirdSingMale],
+        tenses: ["present"],
+      },
+    ];
+  }
+  if (s === "ده") {
+    return [
+      {
+        persons: [T.Person.ThirdSingFemale],
+        tenses: ["present"],
+      },
+    ];
+  }
+  if (s === "ول") {
+    return [
+      {
+        persons: [T.Person.ThirdPlurMale],
+        tenses: ["past"],
+      },
+    ];
+  }
+  if (s === "و") {
+    return [
+      {
+        persons: [T.Person.ThirdSingMale],
+        tenses: ["past"],
+      },
+    ];
+  }
+  if (s === "وو") {
+    return [{ persons: [T.Person.ThirdPlurMale], tenses: ["past"] }];
+  }
+  if (s === "ولو") {
+    return [
+      {
+        persons: [T.Person.ThirdSingMale],
+        tenses: ["past"],
+      },
+    ];
+  }
+  if (
+    (s.length === 3 && s.startsWith("ول")) ||
+    (s.length === 2 && s.startsWith("و"))
+  ) {
+    const persons = getThirdPastEndings(s.at(-1) || "");
+    return persons.length
+      ? [
+          {
+            persons,
+            tenses: ["past"],
+          },
+        ]
+      : [];
   }
   return [];
 }
 
-function getEqEndingPersons(s: string): T.Person[] {
+function getThirdPastEndings(s: string): T.Person[] {
+  if (s === "ه") {
+    return [T.Person.ThirdSingFemale];
+  }
+  if (s === "ې") {
+    return [T.Person.ThirdPlurFemale];
+  }
+  return [];
+}
+
+function getFirstSecPersonsEndings(s: string): T.Person[] {
   if (s === "م") {
     return getPeople(1, "sing");
   }

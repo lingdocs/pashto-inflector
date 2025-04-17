@@ -123,7 +123,9 @@ function combineArgAndVerbSections(
               type: "verb",
               verb,
               transitivity,
-              canChangeTransitivity: false,
+              canChangeTransitivity: verb.entry.c.includes(
+                "v. trans./gramm. trans."
+              ),
               canChangeStatDyn: false,
               negative,
               tense,
@@ -279,15 +281,14 @@ function finishIntransitive({
     vbePerson,
   });
   const o: "none" = "none" as const;
-  const allBlocks: ArgumentTypes<typeof limitNPs>[0] = [
+  const allBlocksTemp: ArgumentTypes<typeof limitNPs>[0] = [
     ...(np ? [] : [s]),
     ...npsAndAps,
-  ].toSpliced(
-    1,
-    0,
-    // @ts-expect-error - ts being weird here
-    o
+  ];
+  const subjPosition = allBlocksTemp.findIndex(
+    (x) => typeof x === "object" && x.type === "NP"
   );
+  const allBlocks = allBlocksTemp.toSpliced(subjPosition + 1, 0, o);
   const blocks = mapOutnpsAndAps(["S"], limitNPs(allBlocks, 1));
   return [
     {

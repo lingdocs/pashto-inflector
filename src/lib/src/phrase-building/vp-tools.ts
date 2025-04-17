@@ -271,14 +271,12 @@ export function completeVPSelection(
   if (!VPSBlocksAreComplete(vps.blocks)) {
     return undefined;
   }
-  // necessary for this version on typscript ...
-  const verb: T.VerbSelectionComplete = {
-    ...vps.verb,
-    tense: getTenseFromVerbSelection(vps.verb),
-  };
   return {
     ...vps,
-    verb,
+    verb: {
+      ...vps.verb,
+      tense: getTenseFromVerbSelection(vps.verb),
+    },
     blocks: vps.blocks,
   };
 }
