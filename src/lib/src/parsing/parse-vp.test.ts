@@ -52,6 +52,7 @@ const xudza = testDictionary.nounLookup("ښځه")[0];
 const kor = testDictionary.nounLookup("کور")[0];
 const paroon = testDictionary.otherLookup("p", "پرون")[0] as T.AdverbEntry;
 const dalta = testDictionary.otherLookup("p", "دلته")[0] as T.AdverbEntry;
+const jzarul = testDictionary.verbEntryLookup("ژړل")[0] as T.VerbEntry;
 
 // TODO: could to more thorough testing of short past participle forms
 
@@ -926,6 +927,189 @@ const transBoth: Section = {
   ],
 };
 
+const grammTransFull: Section = {
+  title: "gramm. trans. full",
+  tests: [
+    // basic
+    {
+      input: "سړی ژاړي",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(saray, undefined),
+            }),
+            makeObjBlock("grammTranThird"),
+          ],
+          verb: makeVS(jzarul, "presentVerb"),
+          form: full,
+          externalComplement: undefined,
+        },
+      ],
+    },
+    {
+      input: "سړي ژړل",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(saray, undefined),
+            }),
+            makeObjBlock("grammTranThird"),
+          ],
+          verb: makeVS(jzarul, "imperfectivePast"),
+          form: full,
+          externalComplement: undefined,
+        },
+      ],
+    },
+    // perfect
+    {
+      input: "ښځو ژړلي دي",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: {
+                ...makeNounSelection(xudza, undefined),
+                number: "plural",
+              },
+            }),
+            makeObjBlock("grammTranThird"),
+          ],
+          verb: makeVS(jzarul, "presentPerfect"),
+          form: full,
+          externalComplement: undefined,
+        },
+      ],
+    },
+    // ability
+    {
+      input: "سړی ژړلی شي",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(saray, undefined),
+            }),
+            makeObjBlock("grammTranThird"),
+          ],
+          verb: makeVS(jzarul, "presentVerbModal"),
+          form: full,
+          externalComplement: undefined,
+        },
+      ],
+    },
+    {
+      input: "سړي وژړلی شول",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(saray, undefined),
+            }),
+            makeObjBlock("grammTranThird"),
+          ],
+          verb: makeVS(jzarul, "perfectivePastModal"),
+          form: full,
+          externalComplement: undefined,
+        },
+      ],
+    },
+    // imperative
+    {
+      input: "ته وینه",
+      output: getPeople(2, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("grammTranThird")],
+        verb: {
+          ...makeVS(leedul, "imperfectiveImperative"),
+          transitivity: "grammatically transitive",
+          canChangeVoice: false,
+        },
+        form: full,
+        externalComplement: undefined,
+      })),
+    },
+  ],
+};
+
+const grammTransShort: Section = {
+  title: "gramm. trans. shortened",
+  tests: [
+    {
+      input: "ژاړم",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("grammTranThird")],
+        verb: makeVS(jzarul, "presentVerb"),
+        form: dropKing,
+        externalComplement: undefined,
+      })),
+    },
+    {
+      input: "ژړل مې",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("grammTranThird")],
+        verb: makeVS(jzarul, "imperfectivePast"),
+        form: shrinkServant,
+        externalComplement: undefined,
+      })),
+    },
+    {
+      input: "ژړلي مې دي",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("grammTranThird")],
+        verb: makeVS(jzarul, "presentPerfect"),
+        form: shrinkServant,
+        externalComplement: undefined,
+      })),
+    },
+    // ability
+    {
+      input: "نه شم ژړلی",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("grammTranThird")],
+        verb: {
+          ...makeVS(jzarul, "presentVerbModal"),
+          negative: true,
+        },
+        form: dropKing,
+        externalComplement: undefined,
+      })),
+    },
+    {
+      input: "ونه مې شول ژړلی",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("grammTranThird")],
+        verb: {
+          ...makeVS(jzarul, "perfectivePastModal"),
+          negative: true,
+        },
+        form: shrinkServant,
+        externalComplement: undefined,
+      })),
+    },
+    // imperative
+    {
+      input: "وینه",
+      output: getPeople(2, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("grammTranThird")],
+        verb: {
+          ...makeVS(leedul, "imperfectiveImperative"),
+          transitivity: "grammatically transitive",
+          canChangeVoice: false,
+        },
+        form: dropKing,
+        externalComplement: undefined,
+      })),
+    },
+  ],
+};
+
 const sections = [
   intransFullForm,
   transFullForm,
@@ -933,7 +1117,8 @@ const sections = [
   transDropKing,
   transShrinkServant,
   transBoth,
-  // TODO: gramm trans full / drop king
+  grammTransFull,
+  grammTransShort,
 ];
 
 sections.forEach((section) => {
@@ -967,7 +1152,7 @@ function makeSubjBlock(content: T.Person | T.NPSelection): T.VPSBlockComplete {
 }
 
 function makeObjBlock(
-  content: "none" | T.Person | T.NPSelection
+  content: "none" | "grammTranThird" | T.Person | T.NPSelection
 ): T.VPSBlockComplete {
   return {
     key: 24,
@@ -975,7 +1160,9 @@ function makeObjBlock(
       type: "objectSelection",
       selection:
         typeof content === "string"
-          ? content
+          ? content === "none"
+            ? content
+            : T.Person.ThirdPlurMale
           : typeof content === "number"
           ? {
               type: "NP",
