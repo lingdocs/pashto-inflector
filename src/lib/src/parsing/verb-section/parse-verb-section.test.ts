@@ -1,6 +1,6 @@
 import * as T from "../../../../types";
 import { testDictionary } from "../mini-test-dictionary";
-import { tokenizer } from "./../tokenizer";
+import { tokenizer } from "../tokenizer";
 import { getPeople } from "../utils";
 import { parseVerbSection, VerbSectionData } from "./parse-verb-section";
 import { kedulDyn, kedulStat, raatlul, wartlul } from "./irreg-verbs";
@@ -31,6 +31,7 @@ const katul = testDictionary.verbEntryLookup("کتل")[0];
 const watul = testDictionary.verbEntryLookup("وتل")[0];
 // const wurul = testDictionary.verbEntryLookup("وړل")[0];
 const alwatul = testDictionary.verbEntryLookup("الوتل")[0];
+const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0];
 
 // TODO: could to more thorough testing of short past participle forms
 
@@ -38,6 +39,7 @@ type Section = {
   title: string;
   tests: { input: string; output: VerbSectionData[]; error?: boolean }[];
 };
+// TODO: get وګرځېدلم working
 
 const simpleOpts: Section = {
   title: "bare bones VBE forms",
@@ -250,6 +252,16 @@ const simpleIntrans: Section = {
       }),
     },
     {
+      input: "ورسېدم",
+      output: testVBEOutuput({
+        bases: ["root"],
+        ph: "و",
+        aspects: ["perfective"],
+        persons: getPeople(1, "sing"),
+        verb: rasedul,
+      }),
+    },
+    {
       input: "رسېږي",
       output: testVBEOutuput({
         bases: ["stem"],
@@ -275,6 +287,25 @@ const simpleIntrans: Section = {
         aspects: ["imperfective"],
         persons: getPeople(3, "both"),
         verb: rasedul,
+      }),
+    },
+    {
+      input: "ګرځې",
+      output: testVBEOutuput({
+        bases: ["stem"],
+        aspects: ["imperfective"],
+        persons: getPeople(2, "sing"),
+        verb: gardzedul,
+      }),
+    },
+    {
+      input: "وګرځېدم",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["perfective"],
+        ph: "و",
+        persons: getPeople(1, "sing"),
+        verb: gardzedul,
       }),
     },
   ],
@@ -1179,10 +1210,6 @@ const sections = [
   ability,
   perfect,
 ];
-
-// TODO imperative and negatives
-// Perfect forms!
-// better guard for verb section compatability
 
 sections.forEach((section) => {
   describe(section.title, () => {

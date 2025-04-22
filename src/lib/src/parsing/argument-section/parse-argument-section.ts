@@ -1,11 +1,7 @@
 import * as T from "../../../../types";
 import { parseKidsSection } from "./../parse-kids-section";
 import { parseNPAP } from "./parse-npap";
-import {
-  bindParseWithAllErrors,
-  returnParseResult,
-  returnParseResultSingle,
-} from "./../utils";
+import { bindParseWithAllErrors, returnParseResultSingle } from "./../utils";
 import { parseComplement } from "./parse-complement";
 import { assertNever } from "../../misc-helpers";
 
@@ -55,13 +51,13 @@ function parseArgSectR(dictionary: T.DictionaryAPI) {
       | T.APSelection
       | T.ParsedKidsSection
       | T.ParsedComplementSelection
-    >[] = [
-      ...parseNPAP(prev.tokens, dictionary),
-      ...parseKidsSection(prev.tokens, [], []),
-      ...(!prev.body.complement
-        ? parseComplement(prev.tokens, dictionary)
-        : []),
-    ];
+    >[] = !prev.body.complement
+      ? [
+          ...parseNPAP(prev.tokens, dictionary),
+          ...parseKidsSection(prev.tokens, [], []),
+          ...parseComplement(prev.tokens, dictionary),
+        ]
+      : parseKidsSection(prev.tokens, [], []);
     if (results.length === 0) {
       return [prev];
     }
@@ -77,7 +73,7 @@ function parseArgSectR(dictionary: T.DictionaryAPI) {
         return keepGoing(returnParseResultSingle(tkns, d));
       }
       if (r.type === "kids") {
-        const position = prev.body.npsAndAps.length;
+        const position = prev.body.npsAndAps.length + +!!prev.body.complement;
         const errors =
           position === 1 ? [] : [{ message: "kid's section out of place" }];
         const d: ArgSectionData = {
@@ -102,9 +98,7 @@ function parseArgSectR(dictionary: T.DictionaryAPI) {
         const errors: T.ParseError[] = prev.body.complement
           ? [{ message: "second complement not allowed" }]
           : [];
-        // complement is necessarily the end of the argument section
-        // don't keep going
-        return returnParseResult(tkns, d, errors);
+        return keepGoing(returnParseResultSingle(tkns, d, errors));
       }
       assertNever(r, "unknown parse result");
     });

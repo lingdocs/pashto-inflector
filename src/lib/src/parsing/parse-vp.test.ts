@@ -17,6 +17,7 @@ import { parseVP } from "./parse-vp";
 import {
   makeAdverbSelection,
   makeNounSelection,
+  makePossesorSelection,
   makePronounSelection,
 } from "../phrase-building/make-selections";
 import { makeVPSelectionState } from "../phrase-building/verb-selection";
@@ -50,9 +51,13 @@ const tlul = testDictionary
 const saray = testDictionary.nounLookup("سړی")[0];
 const xudza = testDictionary.nounLookup("ښځه")[0];
 const kor = testDictionary.nounLookup("کور")[0];
+const kitaab = testDictionary.nounLookup("کتاب")[0];
+const stoonza = testDictionary.nounLookup("ستونزه")[0];
 const paroon = testDictionary.otherLookup("p", "پرون")[0] as T.AdverbEntry;
 const dalta = testDictionary.otherLookup("p", "دلته")[0] as T.AdverbEntry;
 const jzarul = testDictionary.verbEntryLookup("ژړل")[0] as T.VerbEntry;
+const balul = testDictionary.verbEntryLookup("بلل")[0] as T.VerbEntry;
+const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0] as T.VerbEntry;
 
 // TODO: could to more thorough testing of short past participle forms
 
@@ -370,6 +375,18 @@ const transFullForm: Section = {
         },
       ],
     },
+    {
+      input: "ما تاسو لیدلې ولئ",
+      output: getPeople(1, "sing").map<T.VPSelectionComplete>((person) => ({
+        blocks: [
+          makeSubjBlock(person),
+          makeObjBlock(T.Person.SecondPlurFemale),
+        ],
+        verb: makeVS(leedul, "pastPerfect"),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
     // imperative
     {
       input: "ته سړی ووهه",
@@ -600,7 +617,7 @@ const transDropKing: Section = {
         },
       ],
     },
-    // // imperative
+    // imperative
     {
       input: "سړی ووهه",
       output: getPeople(2, "sing").map<T.VPSelectionComplete>((person) => ({
@@ -1110,6 +1127,636 @@ const grammTransShort: Section = {
   ],
 };
 
+const complIntransFull: Section = {
+  title: "complement w intrans. full",
+  tests: [
+    {
+      input: "کتاب ستونزه وګرځېږي",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(kitaab, undefined),
+            }),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(gardzedul, "subjunctiveVerb"),
+          form: full,
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+        },
+      ],
+    },
+    {
+      input: "کتاب ستونزه وګرځېدله",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(kitaab, undefined),
+            }),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(gardzedul, "perfectivePast"),
+          form: full,
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+        },
+      ],
+    },
+    {
+      input: "ستونزه کتابونه وګرځېدل",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            }),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(gardzedul, "perfectivePast"),
+          form: full,
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: {
+                ...makeNounSelection(kitaab, undefined),
+                number: "plural",
+              },
+            },
+          },
+        },
+      ],
+    },
+    {
+      input: "ته به ستونزه ګرځېدلی یې",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock(T.Person.SecondSingMale),
+            makeObjBlock("none"),
+          ],
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+          verb: makeVS(gardzedul, "futurePerfect"),
+          form: full,
+        },
+      ],
+    },
+  ],
+};
+
+const complTransFull: Section = {
+  title: "complement w trans. full",
+  tests: [
+    {
+      input: "زه کتاب ستونزه بولم",
+      output: getPeople(1, "sing").map((person) => ({
+        blocks: [
+          makeSubjBlock(person),
+          makeObjBlock({
+            type: "NP",
+            selection: makeNounSelection(kitaab, undefined),
+          }),
+        ],
+        verb: makeVS(balul, "presentVerb"),
+        externalComplement: {
+          type: "complement",
+          selection: {
+            type: "NP",
+            selection: makeNounSelection(stoonza, undefined),
+          },
+        },
+        form: full,
+      })),
+    },
+    {
+      input: "ما کتاب ستونزه بللې ده",
+      output: getPeople(1, "sing").map((person) => ({
+        blocks: [
+          makeSubjBlock(person),
+          makeObjBlock({
+            type: "NP",
+            selection: makeNounSelection(kitaab, undefined),
+          }),
+        ],
+        verb: makeVS(balul, "presentPerfect"),
+        externalComplement: {
+          type: "complement",
+          selection: {
+            type: "NP",
+            selection: makeNounSelection(stoonza, undefined),
+          },
+        },
+        form: full,
+      })),
+    },
+    {
+      input: "ما ته ستونزه بللې یې",
+      output: (["presentPerfect", "habitualPerfect"] as const).flatMap(
+        (tense) =>
+          getPeople(1, "sing").map((person) => ({
+            blocks: [
+              makeSubjBlock(person),
+              makeObjBlock(T.Person.SecondSingFemale),
+            ],
+            verb: makeVS(balul, tense),
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: makeNounSelection(stoonza, undefined),
+              },
+            },
+            form: full,
+          }))
+      ),
+    },
+    {
+      input: "ما تاسو ستونزه بللې یئ",
+      output: (["presentPerfect", "habitualPerfect"] as const).flatMap(
+        (tense) =>
+          getPeople(1, "sing").map((person) => ({
+            blocks: [
+              makeSubjBlock(person),
+              makeObjBlock(T.Person.SecondPlurFemale),
+            ],
+            verb: makeVS(balul, tense),
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: makeNounSelection(stoonza, undefined),
+              },
+            },
+            form: full,
+          }))
+      ),
+    },
+  ],
+};
+
+const complIntransDropKing: Section = {
+  title: "complement w/ intrans. drop king",
+  tests: [
+    {
+      input: "ستونزه وګرځېږې",
+      output: getPeople(2, "sing").map<T.VPSelectionComplete>((person) => ({
+        blocks: [makeSubjBlock(person), makeObjBlock("none")],
+        verb: makeVS(gardzedul, "subjunctiveVerb"),
+        form: dropKing,
+        externalComplement: {
+          type: "complement",
+          selection: {
+            type: "NP",
+            selection: makeNounSelection(stoonza, undefined),
+          },
+        },
+      })),
+    },
+    {
+      input: "ستونزه وګرځېږي",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            }),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(gardzedul, "subjunctiveVerb"),
+          form: full,
+          externalComplement: undefined,
+        },
+        ...getPeople(3, "both").map<T.VPSelectionComplete>((person) => ({
+          blocks: [makeSubjBlock(person), makeObjBlock("none")],
+          verb: makeVS(gardzedul, "subjunctiveVerb"),
+          form: dropKing,
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+        })),
+      ],
+    },
+    {
+      input: "ستونزه وګرځېدې",
+      output: getPeople(2, "sing").map<T.VPSelectionComplete>((person) => ({
+        blocks: [makeSubjBlock(person), makeObjBlock("none")],
+        verb: makeVS(gardzedul, "perfectivePast"),
+        form: dropKing,
+        externalComplement: {
+          type: "complement",
+          selection: {
+            type: "NP",
+            selection: makeNounSelection(stoonza, undefined),
+          },
+        },
+      })),
+    },
+    {
+      input: "ستونزه وګرځېدله",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            }),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(gardzedul, "perfectivePast"),
+          form: full,
+          externalComplement: undefined,
+        },
+        ...getPeople(3, "both").map<T.VPSelectionComplete>((person) => ({
+          blocks: [makeSubjBlock(person), makeObjBlock("none")],
+          verb: makeVS(gardzedul, "perfectivePast"),
+          form: dropKing,
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+        })),
+      ],
+    },
+  ],
+};
+
+const complTransDropKing: Section = {
+  title: "complement w/ trans. drop king",
+  tests: [
+    {
+      input: "کتاب ستونزه بولم",
+      output: getPeople(1, "sing").map((person) => ({
+        blocks: [
+          makeSubjBlock(person),
+          makeObjBlock({
+            type: "NP",
+            selection: makeNounSelection(kitaab, undefined),
+          }),
+        ],
+        verb: makeVS(balul, "presentVerb"),
+        externalComplement: {
+          type: "complement",
+          selection: {
+            type: "NP",
+            selection: makeNounSelection(stoonza, undefined),
+          },
+        },
+        form: dropKing,
+      })),
+    },
+    {
+      input: "ما ستونزه بللې ده",
+      output: getPeople(1, "sing").flatMap((subj) => [
+        {
+          blocks: [
+            makeSubjBlock(subj),
+            makeObjBlock({
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            }),
+          ],
+          verb: makeVS(balul, "presentPerfect"),
+          externalComplement: undefined,
+          form: full,
+        },
+        ...getPeople(3, "both").map<T.VPSelectionComplete>((obj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock(obj)],
+          verb: makeVS(balul, "presentPerfect"),
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+          form: dropKing,
+        })),
+      ]),
+    },
+    {
+      input: "ما ستونزه بللې یې",
+      output: (["presentPerfect", "habitualPerfect"] as const).flatMap(
+        (tense) =>
+          getPeople(1, "sing").map((person) => ({
+            blocks: [
+              makeSubjBlock(person),
+              makeObjBlock(T.Person.SecondSingFemale),
+            ],
+            verb: makeVS(balul, tense),
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: makeNounSelection(stoonza, undefined),
+              },
+            },
+            form: dropKing,
+          }))
+      ),
+    },
+    {
+      input: "ما ستونزه بللي یئ",
+      output: (["presentPerfect", "habitualPerfect"] as const).flatMap(
+        (tense) =>
+          getPeople(1, "sing").map((person) => ({
+            blocks: [
+              makeSubjBlock(person),
+              makeObjBlock(T.Person.SecondPlurMale),
+            ],
+            verb: makeVS(balul, tense),
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: makeNounSelection(stoonza, undefined),
+              },
+            },
+            form: dropKing,
+          }))
+      ),
+    },
+  ],
+};
+
+const complTransShrinkServant: Section = {
+  title: "complement w/ trans. shrink servant",
+  tests: [
+    {
+      input: "زه یې ستونزه بولم",
+      output: getPeople(1, "sing").flatMap((subj) =>
+        getPeople(3, "both").flatMap((obj) => [
+          {
+            blocks: [
+              makeSubjBlock(subj),
+              makeObjBlock({
+                type: "NP",
+                selection: {
+                  ...makeNounSelection(stoonza, undefined),
+                  possesor: {
+                    type: "possesor",
+                    shrunken: true,
+                    np: {
+                      type: "NP",
+                      selection: makePronounSelection(obj),
+                    },
+                  },
+                },
+              }),
+            ],
+            verb: makeVS(balul, "presentVerb"),
+            externalComplement: undefined,
+            form: full,
+          },
+          {
+            blocks: [makeSubjBlock(subj), makeObjBlock(obj)],
+            verb: makeVS(balul, "presentVerb"),
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: makeNounSelection(stoonza, undefined),
+              },
+            },
+            form: shrinkServant,
+          },
+        ])
+      ),
+    },
+    {
+      input: "کتاب مې ستونزه بللې ده",
+      output: getPeople(1, "sing").flatMap((mpp) => [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: {
+                ...makeNounSelection(kitaab, undefined),
+                possesor: {
+                  ...makePossesorSelection(makePronounSelection(mpp)),
+                  shrunken: true,
+                },
+              },
+            }),
+            makeObjBlock({
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            }),
+          ],
+          verb: makeVS(balul, "presentPerfect"),
+          externalComplement: undefined,
+          form: full,
+        },
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(kitaab, undefined),
+            }),
+            makeObjBlock({
+              type: "NP",
+              selection: {
+                ...makeNounSelection(stoonza, undefined),
+                possesor: {
+                  ...makePossesorSelection(makePronounSelection(mpp)),
+                  shrunken: true,
+                },
+              },
+            }),
+          ],
+          verb: makeVS(balul, "presentPerfect"),
+          externalComplement: undefined,
+          form: full,
+        },
+        ...getPeople(3, "both").flatMap<T.VPSelectionComplete>((fp) => [
+          {
+            blocks: [
+              makeSubjBlock({
+                type: "NP",
+                selection: {
+                  ...makeNounSelection(kitaab, undefined),
+                  possesor: {
+                    ...makePossesorSelection(makePronounSelection(mpp)),
+                    shrunken: true,
+                  },
+                },
+              }),
+              makeObjBlock(fp),
+            ],
+            verb: makeVS(balul, "presentPerfect"),
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: makeNounSelection(stoonza, undefined),
+              },
+            },
+            form: dropKing,
+          },
+          {
+            blocks: [
+              makeSubjBlock({
+                type: "NP",
+                selection: makeNounSelection(kitaab, undefined),
+              }),
+              makeObjBlock(fp),
+            ],
+            verb: makeVS(balul, "presentPerfect"),
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: {
+                  ...makeNounSelection(stoonza, undefined),
+                  possesor: {
+                    ...makePossesorSelection(makePronounSelection(mpp)),
+                    shrunken: true,
+                  },
+                },
+              },
+            },
+            form: dropKing,
+          },
+        ]),
+        {
+          blocks: [
+            makeSubjBlock(mpp),
+            makeObjBlock({
+              type: "NP",
+              selection: makeNounSelection(kitaab, undefined),
+            }),
+          ],
+          verb: makeVS(balul, "presentPerfect"),
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+          form: shrinkServant,
+        },
+      ]),
+    },
+    {
+      input: "ته مې ستونزه بللې یې",
+      output: (
+        ["presentPerfect", "habitualPerfect"] as const
+      ).flatMap<T.VPSelectionComplete>((tense) =>
+        getPeople(1, "sing").map<T.VPSelectionComplete>((subj) => ({
+          blocks: [
+            makeSubjBlock(subj),
+            makeObjBlock(T.Person.SecondSingFemale),
+          ],
+          verb: makeVS(balul, tense),
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+          form: shrinkServant,
+        }))
+      ),
+    },
+  ],
+};
+
+const complTransBoth: Section = {
+  title: "complement with trans. shrink both",
+  tests: [
+    {
+      input: "ستونزه یې بولم",
+      output: getPeople(1, "sing").flatMap<T.VPSelectionComplete>((subj) =>
+        getPeople(3, "both").flatMap<T.VPSelectionComplete>((mpp) => [
+          {
+            blocks: [makeSubjBlock(subj), makeObjBlock(mpp)],
+            verb: makeVS(balul, "presentVerb"),
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: makeNounSelection(stoonza, undefined),
+              },
+            },
+            form: both,
+          },
+          {
+            blocks: [
+              makeSubjBlock(subj),
+              makeObjBlock({
+                type: "NP",
+                selection: {
+                  ...makeNounSelection(stoonza, undefined),
+                  possesor: {
+                    type: "possesor",
+                    shrunken: true,
+                    np: {
+                      type: "NP",
+                      selection: makePronounSelection(mpp),
+                    },
+                  },
+                },
+              }),
+            ],
+            verb: makeVS(balul, "presentVerb"),
+            externalComplement: undefined,
+            form: dropKing,
+          },
+        ])
+      ),
+    },
+    {
+      input: "ستونزه مې بللی یې",
+      output: (
+        ["presentPerfect", "habitualPerfect"] as const
+      ).flatMap<T.VPSelectionComplete>((tense) =>
+        getPeople(1, "sing").map<T.VPSelectionComplete>((subj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock(T.Person.SecondSingMale)],
+          verb: makeVS(balul, tense),
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: makeNounSelection(stoonza, undefined),
+            },
+          },
+          form: both,
+        }))
+      ),
+    },
+  ],
+};
+
 const sections = [
   intransFullForm,
   transFullForm,
@@ -1119,6 +1766,13 @@ const sections = [
   transBoth,
   grammTransFull,
   grammTransShort,
+  // with complements
+  complIntransFull,
+  complTransFull,
+  complIntransDropKing,
+  complTransDropKing,
+  complTransShrinkServant,
+  complTransBoth,
 ];
 
 sections.forEach((section) => {

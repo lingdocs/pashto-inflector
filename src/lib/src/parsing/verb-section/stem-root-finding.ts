@@ -149,7 +149,7 @@ export function findPerfectiveRoot(ph: T.ParsedPH) {
       .filter(
         (e) =>
           // TODO: ALLOW FOR PRP LOOKUP!
-          !e.entry.c.includes("comp") && !e.entry.prp && !e.entry.separationAtP
+          !e.entry.c.includes("comp.") && !e.entry.prp && !e.entry.separationAtP
       );
     // TODO: check that it matches the perfective head and filter or give error messages here
     return [...reg, ...rootSplitLookup(s)]

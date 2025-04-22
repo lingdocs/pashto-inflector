@@ -10,6 +10,7 @@ import {
   bindParseResult,
   bindParseResultWParser,
   canTakeShrunkenPossesor,
+  getPeople,
   returnParseResult,
   returnParseResults,
 } from "./utils";
@@ -22,6 +23,7 @@ import {
   getPersonFromNP,
   isInvalidSubjObjCombo,
   isPastTense,
+  isThirdPerson,
   takesExternalComplement,
 } from "../phrase-building/vp-tools";
 import { makePronounSelection } from "../phrase-building/make-selections";
@@ -93,12 +95,6 @@ function combineArgAndVerbSections(
   vs: ReturnType<typeof parseVerbSection>[number]["body"]
 ): T.ParseResult<T.VPSelectionComplete>[] {
   const [kids, kidsErrors] = consolidateKidsSection(arg, vs.kids);
-  // if (
-  //   kidsErrors.length // &&
-  //   // kidsErrors.some((x) => x.message.includes("position"))
-  // ) {
-  //   console.log({ kids, kidsErrors, arg, vs });
-  // }
   const blocks = [
     ...arg.npsAndAps,
     ...(arg.complement ? [arg.complement] : []),
@@ -229,6 +225,7 @@ type MakeTransPossibilitiesProps = {
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   vbePerson: T.Person;
   isPast: boolean;
+  // exComplement: T.ParsedComplementSelection | undefined,
   // TODO: may need to add exComplement here as we properly check it
 };
 
@@ -267,31 +264,30 @@ function finishIntransitive({
     ...ensureNoMiniPronouns(miniPronouns),
   ];
   const np = nps.length ? nps[0] : undefined;
-  const s = np || makeShadowPronoun(false, vbePerson);
-  if (isIllegalImperative(v.tense, s.selection)) {
-    return [];
-  }
+  const ss: T.ParsedNP[] = (
+    np ? [np] : makeShadowPronouns(false, vbePerson, exComplement)
+  ).filter((s) => !isIllegalImperative(v.tense, s.selection));
   const form: T.FormVersion = {
     shrinkServant: false,
     removeKing: !np,
   };
-  const structureErrors = checkIntransitiveStructure({
-    s,
-    exComplement: complement,
-    vbePerson,
-  });
-  const o: "none" = "none" as const;
-  const allBlocksTemp: ArgumentTypes<typeof limitNPs>[0] = [
-    ...(np ? [] : [s]),
-    ...npsAndAps,
-  ];
-  const subjPosition = allBlocksTemp.findIndex(
-    (x) => typeof x === "object" && x.type === "NP"
-  );
-  const allBlocks = allBlocksTemp.toSpliced(subjPosition + 1, 0, o);
-  const blocks = mapOutnpsAndAps(["S"], limitNPs(allBlocks, 1));
-  return [
-    {
+  return ss.map((s) => {
+    const structureErrors = checkIntransitiveStructure({
+      s,
+      exComplement: complement,
+      vbePerson,
+    });
+    const o: "none" = "none" as const;
+    const allBlocksTemp: ArgumentTypes<typeof limitNPs>[0] = [
+      ...(np ? [] : [s]),
+      ...npsAndAps,
+    ];
+    const subjPosition = allBlocksTemp.findIndex(
+      (x) => typeof x === "object" && x.type === "NP"
+    );
+    const allBlocks = allBlocksTemp.toSpliced(subjPosition + 1, 0, o);
+    const blocks = mapOutnpsAndAps(["S"], limitNPs(allBlocks, 1));
+    return {
       tokens,
       body: {
         blocks,
@@ -300,8 +296,8 @@ function finishIntransitive({
         form,
       },
       errors: [...initialErrors, ...structureErrors],
-    },
-  ];
+    };
+  });
 }
 
 function finishTransitive({
@@ -344,7 +340,7 @@ function finishTransitive({
     nps.length >= 2
       ? getTransPossibilitiesWTwoNPs(nps)
       : nps.length === 1
-      ? getTransPossibilitiesWOneNP(nps[0])
+      ? getTransPossibilitiesWOneNP(nps[0], exComplement)
       : getTransPossibilitiesWNoNPs
   )({
     miniPronouns,
@@ -423,7 +419,10 @@ function getTransPossibilitiesWNoNPs({
   });
 }
 
-function getTransPossibilitiesWOneNP(np: T.ParsedNP) {
+function getTransPossibilitiesWOneNP(
+  np: T.ParsedNP,
+  exComplement: T.ParsedComplementSelection | undefined
+) {
   return function ({
     miniPronouns,
     npsAndAps,
@@ -451,7 +450,7 @@ function getTransPossibilitiesWOneNP(np: T.ParsedNP) {
       )(miniPronouns);
       const filledIn: T.ParsedNP[] = form.removeKing
         ? // make a pronoun filler for the removed knig
-          [makeShadowPronoun(false, vbePerson)]
+          makeShadowPronouns(false, vbePerson, exComplement)
         : // make a pronoun filler possibilities for the shrunken servant
           expandShrunkenServant(
             miniPronouns,
@@ -867,6 +866,24 @@ function makeShadowPronoun(inflected: boolean, person: T.Person): T.ParsedNP {
       selection: makePronounSelection(person),
     },
   };
+}
+
+function makeShadowPronouns(
+  inflected: boolean,
+  vbePerson: T.Person,
+  exComp: T.ParsedComplementSelection | undefined
+): T.ParsedNP[] {
+  if (
+    exComp &&
+    "type" in exComp.selection &&
+    exComp.selection.type === "NP" &&
+    isThirdPerson(vbePerson)
+  ) {
+    return getPeople(3, "both").map((person) =>
+      makeShadowPronoun(inflected, person)
+    );
+  }
+  return [makeShadowPronoun(inflected, vbePerson)];
 }
 
 function expandShrunkenServant(
