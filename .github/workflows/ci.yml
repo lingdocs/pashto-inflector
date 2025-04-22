@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "yarn"
       - name: Install, build, test
         run: |
@@ -27,5 +27,5 @@ jobs:
           yarn build-lib
           yarn build-components
           yarn build-website
-          yarn test --silent
+          yarn test
           yarn check-all-inflections
