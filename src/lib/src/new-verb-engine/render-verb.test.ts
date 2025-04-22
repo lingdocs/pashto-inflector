@@ -118,6 +118,7 @@ const tests: {
           object: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -147,6 +148,7 @@ const tests: {
           object: T.Person.ThirdPlurMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -175,6 +177,7 @@ const tests: {
           subject: T.Person.ThirdSingMale,
           object: T.Person.ThirdSingFemale,
           voice: "active",
+          complementKing: undefined,
           negative: false,
         },
         output: {
@@ -207,6 +210,7 @@ const tests: {
           subject: T.Person.FirstSingMale,
           object: T.Person.ThirdSingMale,
           voice: "active",
+          complementKing: undefined,
           negative: false,
         },
         output: {
@@ -237,6 +241,7 @@ const tests: {
           object: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -266,6 +271,7 @@ const tests: {
           object: T.Person.ThirdSingFemale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: true,
@@ -298,6 +304,7 @@ const tests: {
           object: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -341,6 +348,7 @@ const tests: {
           object: T.Person.ThirdSingFemale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -389,6 +397,7 @@ const tests: {
           object: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -418,6 +427,7 @@ const tests: {
           object: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -447,6 +457,7 @@ const tests: {
           object: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -476,6 +487,7 @@ const tests: {
           object: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -510,6 +522,7 @@ const tests: {
           object: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -563,6 +576,7 @@ const tests: {
           object: T.Person.FirstSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -602,6 +616,7 @@ const tests: {
           object: T.Person.FirstSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -641,6 +656,7 @@ const tests: {
           subject: T.Person.ThirdSingMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -685,6 +701,7 @@ const tests: {
           object: T.Person.ThirdPlurMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -724,6 +741,7 @@ const tests: {
           subject: T.Person.ThirdPlurMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: true,
@@ -763,6 +781,7 @@ const tests: {
           object: T.Person.SecondSingFemale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -805,6 +824,7 @@ const tests: {
           object: T.Person.SecondSingFemale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: true,
@@ -847,6 +867,7 @@ const tests: {
           subject: T.Person.FirstPlurMale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -889,6 +910,7 @@ const tests: {
           object: T.Person.SecondSingFemale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: true,
@@ -936,6 +958,7 @@ const tests: {
           voice: "active",
           object: T.Person.ThirdSingFemale,
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -977,6 +1000,7 @@ const tests: {
           object: T.Person.ThirdSingFemale,
           voice: "active",
           negative: false,
+          complementKing: undefined,
         },
         output: {
           hasBa: false,
@@ -1570,6 +1594,7 @@ test("special endings", () => {
           : T.Person.ThirdSingMale,
         voice: "active",
         negative: false,
+        complementKing: undefined,
       })
     ).toEqual({ hasBa: false, vbs: x.result });
   });
@@ -1582,6 +1607,7 @@ test("special endings", () => {
       object: undefined,
       voice: "active",
       negative: false,
+      complementKing: undefined,
     })
   ).toEqual({
     hasBa: false,
@@ -1613,6 +1639,7 @@ test("special endings", () => {
       object: undefined,
       voice: "active",
       negative: false,
+      complementKing: undefined,
     })
   ).toEqual({
     hasBa: false,
@@ -1645,6 +1672,7 @@ test("special endings", () => {
       object: undefined,
       voice: "active",
       negative: false,
+      complementKing: undefined,
     })
   ).toEqual({
     hasBa: false,
@@ -1678,6 +1706,7 @@ test("special endings", () => {
       object: T.Person.ThirdPlurMale,
       voice: "active",
       negative: false,
+      complementKing: undefined,
     })
   ).toEqual({
     hasBa: false,
@@ -1709,6 +1738,7 @@ test("special endings", () => {
       object: T.Person.ThirdPlurMale,
       voice: "active",
       negative: false,
+      complementKing: undefined,
     })
   ).toEqual({
     hasBa: false,

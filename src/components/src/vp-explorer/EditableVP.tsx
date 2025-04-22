@@ -45,7 +45,7 @@ function EditableVP({
     setEditing(false);
   }
   function handleSetForm(form: T.FormVersion) {
-    setVps(vpsReducer(vps, { type: "set form", payload: form }));
+    setVps(vpsReducer(entryFeeder)(vps, { type: "set form", payload: form }));
   }
   return (
     <div className="mt-2 mb-4">

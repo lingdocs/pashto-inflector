@@ -21,7 +21,7 @@ import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
 import ParserDemo from "./demo-components/ParserDemo";
 import TextDisplayDemo from "./demo-components/TextDisplayDemo";
-import ParserTester from "./demo-components/ParserTester";
+// import ParserTester from "./demo-components/ParserTester";
 // import InflectionTable from "./components/src/InflectionsTable";
 
 function App() {
@@ -177,14 +177,14 @@ function App() {
               dictionary={dictionary}
             />
           </Hider>
-          <Hider
+          {/* <Hider
             label="Parser Tester"
             hLevel={3}
             showing={showing === "parser-tester"}
             handleChange={() => handleHiderClick("parser-tester")}
           >
             <ParserTester dictionary={dictionary} />
-          </Hider>
+          </Hider> */}
           <Hider
             label="Pashto Text Display"
             hLevel={3}
@@ -195,6 +195,7 @@ function App() {
           </Hider>
         </div>
       </main>
+      {/* @ts-expect-error modal error */}
       <Modal
         show={showingTextOptions}
         onHide={() => setShowingTextOptions(false)}
@@ -204,6 +205,7 @@ function App() {
           {/* @ts-expect-error strange react-bootstrap issue */}
           <Modal.Title>Settings</Modal.Title>
         </Modal.Header>
+        {/* @ts-expect-error modal error */}
         <Modal.Body>
           <h6>Pashto Spelling</h6>
           <ButtonSelect
@@ -257,6 +259,7 @@ function App() {
             }
           />
         </Modal.Body>
+        {/* @ts-expect-error modal error */}
         <Modal.Footer>
           <button
             type="button"
