@@ -22,7 +22,7 @@ jobs:
       - name: Install, build, test
         run: |
           yarn --version
-          yarn set version stable
           yarn install-all
+          yarn set version stable
           yarn get-words
           yarn test
