@@ -22,10 +22,9 @@ jobs:
           cache: "yarn"
       - name: Install, build, test
         run: |
-          yarn install-all
-          yarn get-words
-          yarn build-lib
-          yarn build-components
-          yarn build-website
-          yarn test
-          yarn check-all-inflections
+          npm run install-all
+          npm run build-lib
+          npm run build-components
+          npm run build-website
+          npm run test
+          npm run check-all-inflections

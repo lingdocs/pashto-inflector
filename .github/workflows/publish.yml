@@ -27,11 +27,10 @@ jobs:
       - name: Publish when version changed
         if: steps.check.outputs.changed == 'true'
         run: |
-          yarn install-all
-          yarn get-words
-          yarn build-lib
-          yarn build-components
-          yarn test --silent
+          npm run install-all
+          npm run build-lib
+          npm run build-components
+          npm urn test --silent
           cp .npmrc src/lib
           cp .npmrc src/components
           cd src/lib

@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "test": "jest",
     "preview": "vite preview",
-    "install-all": "npm install --legacy-peer-deps && node get-words.cjs && cd src/lib && npm install && cd ../components && npm install --legacy-peer-deps",
+    "install-all": "npm install --legacy-peer-deps && node get-words.cjs && tsx get-mini-dict-and-split-verbs.ts && cd src/lib && npm install && cd ../components && npm install --legacy-peer-deps",
     "build-website": "tsc -b && vite build",
     "build-components": "rm -rf src/components/dist && tsc --project src/components/tsconfig.json && cd src/components && node post-build.cjs && cd ../.. && rollup -c",
     "build-lib": "rm -rf src/lib/dist && tsc --project src/lib/tsconfig.json && tsup src/lib/library.ts --format cjs && mv dist/library.cjs src/lib/dist/lib",

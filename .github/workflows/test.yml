@@ -21,8 +21,6 @@ jobs:
           node-version: 20
       - name: Install, build, test
         run: |
-          yarn --version
-          yarn install-all
-          yarn set version stable
-          yarn get-words
-          yarn test
+          npm run install-all
+          npm run get-words
+          npm run test
