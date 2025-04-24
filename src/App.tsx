@@ -195,7 +195,6 @@ function App() {
           </Hider>
         </div>
       </main>
-      {/* @ts-expect-error modal error */}
       <Modal
         show={showingTextOptions}
         onHide={() => setShowingTextOptions(false)}
@@ -205,7 +204,6 @@ function App() {
           {/* @ts-expect-error strange react-bootstrap issue */}
           <Modal.Title>Settings</Modal.Title>
         </Modal.Header>
-        {/* @ts-expect-error modal error */}
         <Modal.Body>
           <h6>Pashto Spelling</h6>
           <ButtonSelect
@@ -259,7 +257,6 @@ function App() {
             }
           />
         </Modal.Body>
-        {/* @ts-expect-error modal error */}
         <Modal.Footer>
           <button
             type="button"

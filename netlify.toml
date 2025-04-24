@@ -1,3 +1,3 @@
 [build]
-  command = "yarn install-all && yarn get-words && yarn build-website"
+  command = "npm install-all && npm build-website"
   publish = "dist/"
