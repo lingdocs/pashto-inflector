@@ -6,16 +6,13 @@
  *
  */
 
-// type prettify<t> = {
-//     [k in keyof t]: t[k];
-// } & {};
-
 export type PsStringField = "p" | "f";
 export type PsString = {
   [k in PsStringField]: string;
 } & {
   e?: string;
 };
+
 export type PsJSX = {
   p: JSX.Element;
   f: JSX.Element;
@@ -1336,7 +1333,6 @@ export type Kid = {
 };
 
 export type ParsedMiniPronoun = "me" | "de" | "ye" | "mU";
-
 export type ParsedKid = "ba" | ParsedMiniPronoun;
 
 export type MiniPronoun = {

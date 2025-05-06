@@ -54,17 +54,6 @@ function App() {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // const infout = inflectWord({
-  //   ts: 1527814202,
-  //   i: 12761,
-  //   p: "کرسي",
-  //   f: "kUrsee",
-  //   g: "kUrsee",
-  //   e: "chair, seat, stool",
-  //   r: 3,
-  //   c: "n. f.",
-  // });
-
   return (
     <>
       <main className="flex-shrink-0 mb-4">

@@ -75,6 +75,10 @@ export function addErrors<C>(errs: T.ParseError[]) {
   };
 }
 
+export function toParseError(message: string): T.ParseError {
+  return { message };
+}
+
 function groupByTokenLength<D>(
   results: T.ParseResult<D>[]
 ): T.ParseResult<D>[][] {
@@ -437,8 +441,4 @@ export function addShrunkenPossesor(
     assertNever(b.selection, "unknown complement type");
   }
   throw new Error(`Can't add possesive to ${b.type} block`);
-}
-
-export function toParseError(message: string): T.ParseError {
-  return { message };
 }

@@ -22,6 +22,12 @@ import {
 } from "../phrase-building/make-selections";
 import { makeVPSelectionState } from "../phrase-building/verb-selection";
 
+//                        _
+// __      _____  _ __ __| |___
+// \ \ /\ / / _ \| '__/ _` / __|
+//  \ V  V / (_) | | | (_| \__ \
+//   \_/\_/ \___/|_|  \__,_|___/
+
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
 // const kenaastul = testDictionary.verbEntryLookup("کېناستل")[0];
@@ -59,7 +65,11 @@ const jzarul = testDictionary.verbEntryLookup("ژړل")[0] as T.VerbEntry;
 const balul = testDictionary.verbEntryLookup("بلل")[0] as T.VerbEntry;
 const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0] as T.VerbEntry;
 
-// TODO: could to more thorough testing of short past participle forms
+//  _            _
+// | |_ ___  ___| |_ ___
+// | __/ _ \/ __| __/ __|
+// | ||  __/\__ \ |_\__ \
+//  \__\___||___/\__|___/
 
 const [full, shrinkServant, dropKing, both]: T.FormVersion[] = [
   { shrinkServant: false, removeKing: false },
@@ -250,7 +260,7 @@ const intransFullForm: Section = {
 };
 
 const transFullForm: Section = {
-  title: "Transitive Full Form",
+  title: "Transitive Full Form ",
   tests: [
     // basic
     {
