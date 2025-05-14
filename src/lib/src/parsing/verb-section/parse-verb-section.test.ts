@@ -19,6 +19,7 @@ const tlul = testDictionary
   .filter((x) => x.entry.e.includes("to go"))[0];
 const manul = testDictionary.verbEntryLookup("منل")[0];
 const pakhawul = testDictionary.verbEntryLookup("پخول")[0];
+const pakhedul = testDictionary.verbEntryLookup("پخېدل")[0];
 // const gaalul = testDictionary.verbEntryLookup("ګالل")[0];
 const khorul = testDictionary.verbEntryLookup("خوړل")[0];
 // const kxenaastul = testDictionary.verbEntryLookup("کښېناستل")[0];
@@ -1247,7 +1248,7 @@ const perfect: Section = {
 const statComp: Section = {
   title: "stative compounds",
   tests: [
-    // imperfective
+    // imperfective - joined
     {
       input: "پخوي",
       output: getPeople(3, "both").map((person) => ({
@@ -1304,6 +1305,23 @@ const statComp: Section = {
         kids: [],
       }))
     },
+    {
+      input: "پخېدم",
+      output: getPeople(1, "sing").map(person => ({
+        blocks: [
+          makeParsedVBE({
+            aspect: "imperfective",
+            base: "root",
+            verb: pakhedul,
+            person,
+          }),
+        ],
+        kids: [],
+      }))
+    },
+    // imperfective - welded
+    // perfective - adj agreement
+    // perfective - others
   ],
 }
 
@@ -1328,6 +1346,7 @@ sections.forEach((section) => {
         const res = parseVerbSection(tokens, testDictionary)
           .filter((x) => !x.tokens.length)
           .map(({ body }) => body);
+        // @ts-ignore - issue with linting
         expect(res).toIncludeSameMembers(output);
       });
     });
@@ -1377,6 +1396,7 @@ function makeEqVBE(
       tense: tense,
     },
     person: person,
+    target: [person],
   };
 }
 
@@ -1416,6 +1436,7 @@ function makeParsedVBE(props: {
   return {
     type: "VB",
     person: props.person,
+    target: [props.person],
     info: {
       type: "verb",
       aspect: props.aspect,

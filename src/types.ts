@@ -26,12 +26,12 @@ export type PsWord = PsString & {
 
 export type HyphenPsContent =
   | ({
-      type: "unwritten";
-      f: string;
-    } & Omit<PsString, "p">)
+    type: "unwritten";
+    f: string;
+  } & Omit<PsString, "p">)
   | ({
-      type: "written";
-    } & PsString);
+    type: "written";
+  } & PsString);
 
 export type DictionaryInfo = {
   title: string;
@@ -322,22 +322,22 @@ export type NonComboVerbInfo =
 export type VerbInfo =
   | NonComboVerbInfo
   | {
-      type: "transitive or grammatically transitive simple";
-      transitive: SimpleVerbInfo;
-      grammaticallyTransitive: SimpleVerbInfo;
-    }
+    type: "transitive or grammatically transitive simple";
+    transitive: SimpleVerbInfo;
+    grammaticallyTransitive: SimpleVerbInfo;
+  }
   | {
-      type: "dynamic or stative compound";
-      transitivity: Transitivity;
-      stative: StativeCompoundVerbInfo;
-      dynamic: DynamicCompoundVerbInfo;
-    }
+    type: "dynamic or stative compound";
+    transitivity: Transitivity;
+    stative: StativeCompoundVerbInfo;
+    dynamic: DynamicCompoundVerbInfo;
+  }
   | {
-      type: "dynamic or generative stative compound";
-      transitivity: Transitivity;
-      stative: GenerativeStativeCompoundVerbInfo;
-      dynamic: DynamicCompoundVerbInfo;
-    };
+    type: "dynamic or generative stative compound";
+    transitivity: Transitivity;
+    stative: GenerativeStativeCompoundVerbInfo;
+    dynamic: DynamicCompoundVerbInfo;
+  };
 
 export type Transitivity =
   | "transitive"
@@ -404,15 +404,15 @@ export type VerbConjugation = {
 export type VerbOutput =
   | VerbConjugation
   | {
-      info: VerbInfo;
-      stative: VerbConjugation;
-      dynamic: VerbConjugation;
-    }
+    info: VerbInfo;
+    stative: VerbConjugation;
+    dynamic: VerbConjugation;
+  }
   | {
-      info: VerbInfo;
-      transitive: VerbConjugation;
-      grammaticallyTransitive: VerbConjugation;
-    };
+    info: VerbInfo;
+    transitive: VerbConjugation;
+    grammaticallyTransitive: VerbConjugation;
+  };
 
 export type PassiveContent = {
   imperfective: AspectContentPassive; // --╖  ASPECT = "imperfective"
@@ -491,23 +491,23 @@ export type PluralInflections = GenderedSet<PluralInflectionSet>;
 
 export type InflectorOutput =
   | {
-      arabicPlural: PluralInflections;
-      plural?: PluralInflections;
-      bundledPlural?: PluralInflections;
-      inflections?: Inflections;
-      vocative?: PluralInflections;
-    }
+    arabicPlural: PluralInflections;
+    plural?: PluralInflections;
+    bundledPlural?: PluralInflections;
+    inflections?: Inflections;
+    vocative?: PluralInflections;
+  }
   | {
-      plural: PluralInflections;
-      arabicPlural?: PluralInflections;
-      bundledPlural?: PluralInflections;
-      inflections?: Inflections;
-      vocative?: PluralInflections;
-    }
+    plural: PluralInflections;
+    arabicPlural?: PluralInflections;
+    bundledPlural?: PluralInflections;
+    inflections?: Inflections;
+    vocative?: PluralInflections;
+  }
   | {
-      inflections?: Inflections;
-      vocative?: PluralInflections;
-    }
+    inflections?: Inflections;
+    vocative?: PluralInflections;
+  }
   | false;
 
 export type PersonLine = [
@@ -779,9 +779,9 @@ export type VPSelectionState = {
   blocks: VPSBlock[];
   verb: VerbSelection;
   externalComplement:
-    | undefined
-    | UnselectedComplementSelection
-    | ComplementSelection;
+  | undefined
+  | UnselectedComplementSelection
+  | ComplementSelection;
   form: FormVersion;
 };
 
@@ -982,129 +982,129 @@ export type UnselectedComplementSelection = {
 
 export type Rendered<
   T extends
-    | NPSelection
-    | NPSelection["selection"]
-    | APSelection
-    | APSelection["selection"]
-    | SubjectSelectionComplete
-    | ObjectSelectionComplete
-    | AdjectiveSelection
-    | SandwichSelection<Sandwich>
-    | ComplementSelection
-    | CompNounSelection
-    | DeterminersSelection
-    | DeterminerSelection
-    | ComplementSelection["selection"]
-    | UnselectedComplementSelection
-    | undefined
+  | NPSelection
+  | NPSelection["selection"]
+  | APSelection
+  | APSelection["selection"]
+  | SubjectSelectionComplete
+  | ObjectSelectionComplete
+  | AdjectiveSelection
+  | SandwichSelection<Sandwich>
+  | ComplementSelection
+  | CompNounSelection
+  | DeterminersSelection
+  | DeterminerSelection
+  | ComplementSelection["selection"]
+  | UnselectedComplementSelection
+  | undefined
 > = T extends NPSelection
   ? {
-      type: "NP";
-      selection: Rendered<NPSelection["selection"]>;
-    }
+    type: "NP";
+    selection: Rendered<NPSelection["selection"]>;
+  }
   : T extends APSelection
   ? {
-      type: "AP";
-      selection: Rendered<APSelection["selection"]>;
-    }
+    type: "AP";
+    selection: Rendered<APSelection["selection"]>;
+  }
   : T extends ComplementSelection
   ? {
-      type: "complement";
-      selection: Rendered<ComplementSelection["selection"]>;
-    }
+    type: "complement";
+    selection: Rendered<ComplementSelection["selection"]>;
+  }
   : T extends PossesorSelection
   ? RenderedPossesorSelection
   : T extends UnselectedComplementSelection
   ? {
-      type: "complement";
-      selection: {
-        type: "unselected";
-        ps: PsString[];
-        e: string;
-      };
-    }
+    type: "complement";
+    selection: {
+      type: "unselected";
+      ps: PsString[];
+      e: string;
+    };
+  }
   : T extends SandwichSelection<Sandwich>
   ? Omit<SandwichSelection<Sandwich>, "inside"> & {
-      inside: Rendered<NPSelection>;
-    }
+    inside: Rendered<NPSelection>;
+  }
   : T extends AdverbSelection
   ? {
-      type: "adverb";
-      entry: AdverbEntry;
-      person: Person;
-      ps: PsString[];
-      e?: string;
-    }
+    type: "adverb";
+    entry: AdverbEntry;
+    person: Person;
+    ps: PsString[];
+    e?: string;
+  }
   : T extends CompNounSelection
   ? { type: "comp. noun"; entry: NounEntry; ps: PsString[] }
   : T extends AdjectiveSelection
   ? {
-      type: "adjective";
-      entry: AdjectiveEntry;
-      ps: PsString[];
-      e?: string;
-      sandwich: Rendered<SandwichSelection<Sandwich>> | undefined;
-      inflected: boolean;
-      person: Person;
-    }
+    type: "adjective";
+    entry: AdjectiveEntry;
+    ps: PsString[];
+    e?: string;
+    sandwich: Rendered<SandwichSelection<Sandwich>> | undefined;
+    inflected: boolean;
+    person: Person;
+  }
   : T extends DeterminersSelection
   ? {
-      type: "determiners";
-      withNoun: boolean;
-      determiners: Rendered<DeterminerSelection>[];
-    }
+    type: "determiners";
+    withNoun: boolean;
+    determiners: Rendered<DeterminerSelection>[];
+  }
   : T extends DeterminerSelection
   ? {
-      type: "determiner";
-      determiner: DeterminerSelection["determiner"];
-      ps: PsString[];
-      e: string;
-      inflected: boolean;
-      number: NounNumber;
-      gender: Gender;
-    }
+    type: "determiner";
+    determiner: DeterminerSelection["determiner"];
+    ps: PsString[];
+    e: string;
+    inflected: boolean;
+    number: NounNumber;
+    gender: Gender;
+  }
   : T extends SubjectSelectionComplete
   ? {
-      type: "subjectSelection";
-      selection: Rendered<NPSelection>;
-    }
+    type: "subjectSelection";
+    selection: Rendered<NPSelection>;
+  }
   : T extends ObjectSelectionComplete
   ? {
-      type: "objectSelection";
-      selection: Rendered<NPSelection> | Person.ThirdPlurMale | "none";
-    }
+    type: "objectSelection";
+    selection: Rendered<NPSelection> | Person.ThirdPlurMale | "none";
+  }
   : T extends undefined
   ? {
-      type: "undefined";
-      ps: PsString;
-    }
+    type: "undefined";
+    ps: PsString;
+  }
   : // TODO: this will be a problem (removing the change gender etc)
-    // if we want to make the sentence diagram interactive
-    ReplaceKey<
-      Omit<
-        T,
-        | "changeGender"
-        | "changeNumber"
-        | "changeDistance"
-        | "adjectives"
-        | "possesor"
-      >,
-      "e",
-      string
-    > & {
-      ps: SingleOrLengthOpts<PsString[]>;
-      e?: string;
-      inflected: boolean;
-      person: Person;
-      role: "king" | "servant" | "none";
-      // TODO: better recursive thing
-      adjectives?: Rendered<AdjectiveSelection>[];
-      possesor?: {
-        shrunken: boolean;
-        np: Rendered<NPSelection>;
-      };
-      determiners?: Rendered<DeterminersSelection>;
+  // if we want to make the sentence diagram interactive
+  ReplaceKey<
+    Omit<
+      T,
+      | "changeGender"
+      | "changeNumber"
+      | "changeDistance"
+      | "adjectives"
+      | "possesor"
+    >,
+    "e",
+    string
+  > & {
+    ps: SingleOrLengthOpts<PsString[]>;
+    e?: string;
+    inflected: boolean;
+    person: Person;
+    role: "king" | "servant" | "none";
+    // TODO: better recursive thing
+    adjectives?: Rendered<AdjectiveSelection>[];
+    possesor?: {
+      shrunken: boolean;
+      np: Rendered<NPSelection>;
     };
+    determiners?: Rendered<DeterminersSelection>;
+  };
 
 export type EPSelectionState = {
   blocks: EPSBlock[];
@@ -1126,10 +1126,10 @@ export type VPSBlock = {
   key: number;
   // TODO: confusing use of APSelection / should be like APSelection s APSelection complete like the others
   block:
-    | SubjectSelection
-    | ObjectSelection
-    | (APSelection | undefined)
-    | ComplementSelection;
+  | SubjectSelection
+  | ObjectSelection
+  | (APSelection | undefined)
+  | ComplementSelection;
 };
 export type VPSBlockComplete = {
   key: number;
@@ -1154,12 +1154,12 @@ export type SandwichSelection<S extends Sandwich> = S & {
 export type ComplementSelection = {
   type: "complement";
   selection:
-    | AdjectiveSelection
-    | LocativeAdverbSelection
-    | SandwichSelection<Sandwich>
-    | CompNounSelection
-    | PossesorSelection
-    | NPSelection;
+  | AdjectiveSelection
+  | LocativeAdverbSelection
+  | SandwichSelection<Sandwich>
+  | CompNounSelection
+  | PossesorSelection
+  | NPSelection;
 };
 
 export type CompNounSelection = {
@@ -1170,13 +1170,13 @@ export type CompNounSelection = {
 export type ParsedComplementSelection = {
   type: "complement";
   selection:
-    | InflectableBaseParse<AdjectiveSelection>
-    | LocativeAdverbSelection
-    | SandwichSelection<Sandwich>
-    // TODO: better noun chunk selection
-    // | NounSelection
-    | NPSelection
-    | PossesorSelection;
+  | InflectableBaseParse<AdjectiveSelection>
+  | LocativeAdverbSelection
+  | SandwichSelection<Sandwich>
+  // TODO: better noun chunk selection
+  // | NounSelection
+  | NPSelection
+  | PossesorSelection;
 };
 
 export type Sandwich = {
@@ -1208,19 +1208,19 @@ export type EPRendered = {
 
 export type EntryFeeder =
   | {
-      nouns: EntryLookupPortal<NounEntry>;
-      verbs: EntryLookupPortal<VerbEntry>;
-      adjectives: EntryLookupPortal<AdjectiveEntry>;
-      locativeAdverbs: EntryLookupPortal<LocativeAdverbEntry>;
-      adverbs: EntryLookupPortal<AdverbEntry>;
-    }
+    nouns: EntryLookupPortal<NounEntry>;
+    verbs: EntryLookupPortal<VerbEntry>;
+    adjectives: EntryLookupPortal<AdjectiveEntry>;
+    locativeAdverbs: EntryLookupPortal<LocativeAdverbEntry>;
+    adverbs: EntryLookupPortal<AdverbEntry>;
+  }
   | {
-      nouns: NounEntry[];
-      verbs: VerbEntry[];
-      adjectives: AdjectiveEntry[];
-      locativeAdverbs: LocativeAdverbEntry[];
-      adverbs: AdverbEntry[];
-    };
+    nouns: NounEntry[];
+    verbs: VerbEntry[];
+    adjectives: AdjectiveEntry[];
+    locativeAdverbs: LocativeAdverbEntry[];
+    adverbs: AdverbEntry[];
+  };
 
 export type EntryFeederSingleType<X extends VerbEntry | DictionaryEntry> =
   | X[]
@@ -1288,17 +1288,17 @@ export type PredicateBlock = {
 export type Block = {
   key: number;
   block:
-    | Rendered<SubjectSelectionComplete>
-    | Rendered<ObjectSelectionComplete>
-    | Rendered<APSelection>
-    | Rendered<ComplementSelection | UnselectedComplementSelection>
-    | Rendered<UnselectedComplementSelection>
-    | PredicateBlock
-    | NegativeBlock
-    | EquativeBlock
-    | VB
-    | VBE
-    | VHead;
+  | Rendered<SubjectSelectionComplete>
+  | Rendered<ObjectSelectionComplete>
+  | Rendered<APSelection>
+  | Rendered<ComplementSelection | UnselectedComplementSelection>
+  | Rendered<UnselectedComplementSelection>
+  | PredicateBlock
+  | NegativeBlock
+  | EquativeBlock
+  | VB
+  | VBE
+  | VHead;
 };
 
 export type ParsedBlock =
@@ -1324,7 +1324,10 @@ export type ParsedPH = {
   type: "PH";
   s: string;
 };
-export type ParsedVBE = Omit<VBE, "ps">;
+export type ParsedVBE = Omit<VBE, "ps"> & {
+  /** the target is the possible person(s) of the object or the subject (for intransitives) - based on the complement*/
+  target: Person[]
+};
 export type ParsedVBP = Omit<VBP, "ps">;
 
 export type Kid = {
@@ -1355,18 +1358,18 @@ export type VB = VBBasic | Welded;
 export type VBE = VB & {
   person: Person;
   info:
-    | {
-        type: "equative";
-        tense: EquativeTenseWithoutBa;
-      }
-    | {
-        type: "verb";
-        aspect: Aspect;
-        base: "stem" | "root";
-        verb: VerbEntry;
-        imperative?: true;
-        abilityAux?: boolean;
-      };
+  | {
+    type: "equative";
+    tense: EquativeTenseWithoutBa;
+  }
+  | {
+    type: "verb";
+    aspect: Aspect;
+    base: "stem" | "root";
+    verb: VerbEntry;
+    imperative?: true;
+    abilityAux?: boolean;
+  };
 };
 
 /** A VB block used for ability verbs or perfect (past participle)

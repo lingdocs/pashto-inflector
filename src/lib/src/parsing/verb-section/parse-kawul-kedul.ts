@@ -9,23 +9,24 @@ import { getImperativeVerbEnding } from "./misc";
 // TODO: this might be a lot of unnecessary currying
 const getForm =
   (hasOo: boolean) =>
-  (kawulKedul: "kawul" | "kedul") =>
-  (aspect: T.Aspect) =>
-  (base: "stem" | "root") =>
-  (person: T.Person): T.ParsedVBE[] => {
-    return validVerbs(hasOo, kawulKedul, aspect).map((verb) => {
-      return {
-        type: "VB",
-        info: {
-          aspect,
-          base,
-          type: "verb",
-          verb,
-        } as const,
-        person,
-      } as const;
-    });
-  };
+    (kawulKedul: "kawul" | "kedul") =>
+      (aspect: T.Aspect) =>
+        (base: "stem" | "root") =>
+          (person: T.Person): T.ParsedVBE[] => {
+            return validVerbs(hasOo, kawulKedul, aspect).map((verb) => {
+              return {
+                type: "VB",
+                info: {
+                  aspect,
+                  base,
+                  type: "verb",
+                  verb,
+                } as const,
+                person,
+                target: [person],
+              } as const;
+            });
+          };
 
 // TODO: what about وکولم etc
 
@@ -42,29 +43,29 @@ export function parseKawulKedul(
   const getF = getForm(hasOo);
   const oneBase =
     (kawulKedul: "kawul" | "kedul") =>
-    (base: "root" | "stem") =>
-    (aspect: T.Aspect) =>
-    (people: T.Person[]) => {
-      return returnParseResults<T.ParsedVBE>(
-        rest,
-        people.flatMap(getF(kawulKedul)(aspect)(base))
-      );
-    };
+      (base: "root" | "stem") =>
+        (aspect: T.Aspect) =>
+          (people: T.Person[]) => {
+            return returnParseResults<T.ParsedVBE>(
+              rest,
+              people.flatMap(getF(kawulKedul)(aspect)(base))
+            );
+          };
   const rootAndStem =
     (kawulKedul: "kawul" | "kedul") =>
-    (aspect: T.Aspect) =>
-    (people: {
-      people: ReturnType<typeof getVerbEnding>;
-      imperativePeople: ReturnType<typeof getImperativeVerbEnding>;
-    }) => {
-      return returnParseResults<T.ParsedVBE>(rest, [
-        ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
-        ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
-        ...people.imperativePeople.flatMap<T.ParsedVBE>((person) =>
-          getF(kawulKedul)(aspect)("stem")(person).map(addImperative)
-        ),
-      ]);
-    };
+      (aspect: T.Aspect) =>
+        (people: {
+          people: ReturnType<typeof getVerbEnding>;
+          imperativePeople: ReturnType<typeof getImperativeVerbEnding>;
+        }) => {
+          return returnParseResults<T.ParsedVBE>(rest, [
+            ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
+            ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
+            ...people.imperativePeople.flatMap<T.ParsedVBE>((person) =>
+              getF(kawulKedul)(aspect)("stem")(person).map(addImperative)
+            ),
+          ]);
+        };
   if (first.s === "کړ") {
     return oneBase("kawul")("root")("perfective")([T.Person.ThirdSingMale]);
   }
@@ -187,12 +188,12 @@ function validVerbs(
     return kawulKedul === "kawul"
       ? [kawulDyn]
       : [
-          kedulDyn,
-          // because the oo could also be for an ability VBP to come after
-          // in which case the kedulDyn will be eliminated by ensureVBEAuxOk
-          // in parse-blocks
-          kedulStat,
-        ];
+        kedulDyn,
+        // because the oo could also be for an ability VBP to come after
+        // in which case the kedulDyn will be eliminated by ensureVBEAuxOk
+        // in parse-blocks
+        kedulStat,
+      ];
   }
   if (aspect === "imperfective" && !hasOo) {
     return [];

@@ -30,7 +30,17 @@ import { parseKawulKedul } from "./parse-kawul-kedul";
 export function parseVBE(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-  // defined as undefined if there a VBP because the VBP will use the ph
+  ph: T.ParsedPH | undefined,
+): T.ParseResult<T.ParsedVBE>[] {
+  return [
+    ...parseVBEBasic(tokens, dictionary, ph),
+    ...parseWelded(),//tokens, dictionary, ph),
+  ];
+}
+
+function parseVBEBasic(
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined
 ): T.ParseResult<T.ParsedVBE>[] {
   if (tokens.length === 0) {
@@ -58,11 +68,13 @@ export function parseVBE(
       ...stem.map<T.ParsedVBE>((person) => ({
         type: "VB",
         person,
+        target: [person],
         info,
       })),
       ...imperative.map<T.ParsedVBE>((person) => ({
         type: "VB",
         person,
+        target: [person],
         info: {
           ...info,
           imperative: true,
@@ -78,6 +90,7 @@ export function parseVBE(
         ...root.map<T.ParsedVBE>((person) => ({
           type: "VB",
           person,
+          target: [person],
           info,
         })),
       ];
@@ -85,6 +98,15 @@ export function parseVBE(
     ...specialThirdPersMascSingForm(base, ending, dictionary, ph),
   ]);
   return [...stemRes, ...rootRes];
+}
+
+function parseWelded(
+  // tokens: Readonly<T.Token[]>,
+  // dictionary: T.DictionaryAPI,
+  // ph: T.ParsedPH | undefined
+): T.ParseResult<T.ParsedVBE>[] {
+  // const comp = parseComplement  
+  return [];
 }
 
 function specialThirdPersMascSingForm(
@@ -143,6 +165,7 @@ function specialThirdPersMascSingForm(
       ? findRoot(ph)(base + ending, dicitonary).map<T.ParsedVBE>((info) => ({
         type: "VB",
         person: T.Person.ThirdSingMale,
+        target: [T.Person.ThirdSingMale],
         info,
       }))
       : [];
@@ -161,6 +184,7 @@ function specialThirdPersMascSingForm(
     .map((entry) => ({
       type: "VB" as const,
       person: T.Person.ThirdSingMale,
+      target: [T.Person.ThirdSingMale],
       info: {
         type: "verb",
         aspect: ph ? "perfective" : "imperfective",
@@ -173,6 +197,7 @@ function specialThirdPersMascSingForm(
     findRoot(ph)(base.slice(0, -2) + "و", dicitonary).map<T.ParsedVBE>(info => ({
       type: "VB",
       person: T.Person.ThirdSingMale,
+      target: [T.Person.ThirdSingMale],
       info,
     })) : [];
 
@@ -194,6 +219,7 @@ function thirdPersSingMascShortFromRoot(
       {
         type: "VB",
         person: T.Person.ThirdSingMale,
+        target: [T.Person.ThirdSingMale],
         info,
       },
     ];
@@ -225,6 +251,7 @@ function parseIrregularVerb(
                 : tlul,
         },
         person: T.Person.ThirdSingMale,
+        target: [T.Person.ThirdSingMale],
       },
     ];
   }

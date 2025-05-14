@@ -33,12 +33,12 @@ function getFstSndPersEqs(s: string): EqInfo[] {
     s.length === 3 && s.startsWith("ول")
       ? ["past"]
       : s.length === 2
-      ? s.startsWith("و")
-        ? ["subjunctive", "past"]
-        : s.startsWith("ی")
-        ? ["present", "habitual"]
-        : []
-      : [];
+        ? s.startsWith("و")
+          ? ["subjunctive", "past"]
+          : s.startsWith("ی")
+            ? ["present", "habitual"]
+            : []
+        : [];
   if (!tenses.length) {
     return [];
   }
@@ -121,11 +121,11 @@ function getThirdPersEqs(s: string): EqInfo[] {
     const persons = getThirdPastEndings(s.at(-1) || "");
     return persons.length
       ? [
-          {
-            persons,
-            tenses: ["past"],
-          },
-        ]
+        {
+          persons,
+          tenses: ["past"],
+        },
+      ]
       : [];
   }
   return [];
@@ -168,5 +168,6 @@ function makeEqVBE(
       tense,
     },
     person,
+    target: [person],
   };
 }
