@@ -45,9 +45,9 @@ function verbEntryLookup(p: string): T.VerbEntry[] {
     .map<T.VerbEntry>((entry) =>
       entry.l
         ? {
-            entry,
-            complement: entries.find((e) => e.ts === entry.l),
-          }
+          entry,
+          complement: entries.find((e) => e.ts === entry.l),
+        }
         : { entry }
     );
 }
@@ -59,9 +59,9 @@ function verbEntryLookupByL(l: number): T.VerbEntry[] {
     .map<T.VerbEntry>((entry) =>
       entry.l
         ? {
-            entry,
-            complement: entries.find((e) => e.ts === entry.l),
-          }
+          entry,
+          complement: entries.find((e) => e.ts === entry.l),
+        }
         : { entry }
     );
 }

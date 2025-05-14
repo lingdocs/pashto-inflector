@@ -36,7 +36,7 @@ export function findImperfectiveRoot(
   }
   const reg = [s, s + "ل"]
     .flatMap(dictionary.verbEntryLookup)
-    .filter((e) => !e.entry.c.includes("comp."));
+    .filter(e => isMergedCompOrSimple(e.entry));
   return reg.map((verb) => ({
     type: "verb",
     aspect: "imperfective",
@@ -56,7 +56,7 @@ function findImperfectiveStem(
   const irregulars = dicitonary
     .otherLookup("psp", s)
     .filter(
-      (e): e is T.VerbDictionaryEntry => tp.isVerbDictionaryEntry(e) && !e.l
+      (e): e is T.VerbDictionaryEntry => tp.isVerbDictionaryEntry(e) && isMergedCompOrSimple(e)
     )
     .map<T.VerbEntry>((entry) => ({
       entry,
@@ -72,22 +72,21 @@ function findImperfectiveStem(
 export function withAlephAdded(s: string): string[] {
   return [s, ...(startsWithAleph(s) ? [] : ["ا" + s, "آ" + s])];
 }
-
 function regStemSearch(s: string, dictionary: T.DictionaryAPI): T.VerbEntry[] {
-  const regTrans = dictionary
+  const regTransA = dictionary
     .verbEntryLookup(s + "ل")
-    .filter(
-      (e) =>
-        !e.entry.c.includes("comp.") &&
-        !e.entry.ssp &&
-        !e.entry.psp &&
-        !e.entry.c.includes("intrans")
-    );
+  const regTrans = regTransA.filter(
+    (e) =>
+      isMergedCompOrSimple(e.entry) &&
+      !e.entry.ssp &&
+      !e.entry.psp &&
+      !e.entry.c.includes("intrans")
+  );
   const regIntrans = dictionary
     .verbEntryLookup((s.endsWith("ېږ") ? s.slice(0, -2) : s) + "ېدل")
     .filter(
       (e) =>
-        !e.entry.c.includes("comp.") &&
+        isMergedCompOrSimple(e.entry) &&
         !e.entry.ssp &&
         !e.entry.psp &&
         e.entry.c.includes("intrans")
@@ -97,7 +96,7 @@ function regStemSearch(s: string, dictionary: T.DictionaryAPI): T.VerbEntry[] {
 
 function findPerfectiveStem(ph: T.ParsedPH) {
   // TODO: use ph to check if they are compatible HERE
-  return function (s: string, dicitonary: T.DictionaryAPI): StemInfo[] {
+  return function(s: string, dicitonary: T.DictionaryAPI): StemInfo[] {
     if (["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
       return [];
     }
@@ -139,7 +138,7 @@ const stemSplitLookup = memoize((s: string) =>
 );
 
 export function findPerfectiveRoot(ph: T.ParsedPH) {
-  return function (s: string, dicitonary: T.DictionaryAPI): RootInfo[] {
+  return function(s: string, dicitonary: T.DictionaryAPI): RootInfo[] {
     if (startsWithAleph(s) || ["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
       return [];
     }
@@ -164,8 +163,8 @@ export function findPerfectiveRoot(ph: T.ParsedPH) {
 }
 
 function phMatches(base: "root" | "stem") {
-  return function (ph: T.ParsedPH) {
-    return function (verb: T.VerbEntry) {
+  return function(ph: T.ParsedPH) {
+    return function(verb: T.VerbEntry) {
       // TODO: handle را غل etc! ? or is
       const verbPh = getPhFromVerb(verb, base);
       return verbPh === ph.s;
@@ -185,6 +184,13 @@ function getPhFromVerb(v: T.VerbEntry, base: "root" | "stem"): string {
     return "وا";
   }
   return "و";
+}
+
+function isMergedCompOrSimple(v: T.VerbDictionaryEntry): boolean {
+  if (!v.c.includes("comp.")) {
+    return true;
+  }
+  return (v.c.startsWith("v. stat.") && !v.p.includes(" "));
 }
 
 export function startsWithAleph(base: string): boolean {

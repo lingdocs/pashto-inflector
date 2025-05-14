@@ -5,7 +5,6 @@ import { tokenizer } from "../lib/src/parsing/tokenizer";
 // import { NPDisplay } from "../components/library";
 import EditableVP from "../components/src/vp-explorer/EditableVP";
 import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
-// import { parseNoun } from "../lib/src/parsing/parse-noun-new";
 import { JsonEditor } from "json-edit-react";
 // import { renderNounSelection } from "../lib/src/phrase-building/render-np";
 // import { NPBlock } from "../components/src/blocks/Block";
@@ -138,15 +137,14 @@ function ParserDemo({
       <div className="form-group mb-2">
         <input
           dir="rtl"
-          className={`form-control ${
-            !text
-              ? ""
-              : text && (errors.length || noneFound)
+          className={`form-control ${!text
+            ? ""
+            : text && (errors.length || noneFound)
               ? "is-invalid"
               : result.length
-              ? "is-valid"
-              : "is-waiting"
-          }`}
+                ? "is-valid"
+                : "is-waiting"
+            }`}
           type="text"
           value={text}
           onChange={(e) => handleInput(e.target.value)}

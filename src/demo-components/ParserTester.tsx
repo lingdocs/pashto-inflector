@@ -19,7 +19,7 @@ function ParserTester({ dictionary }: { dictionary: T.DictionaryAPI }) {
       return;
     }
     const tokens = tokenizer(value);
-    const res = parseVP(tokens, testDictionary).filter((x) => !x.tokens.length);
+    const res = parseVerbSection(tokens, testDictionary).filter((x) => !x.tokens.length);
     setText(value);
     setResult(res);
   }
@@ -28,15 +28,14 @@ function ParserTester({ dictionary }: { dictionary: T.DictionaryAPI }) {
       <div className="form-group mb-2">
         <input
           dir="rtl"
-          className={`form-control ${
-            !text
+          className={`form-control ${!text
               ? ""
               : text && result.some((x) => x.errors.length)
-              ? "is-invalid"
-              : result.length
-              ? "is-valid"
-              : "is-waiting"
-          }`}
+                ? "is-invalid"
+                : result.length
+                  ? "is-valid"
+                  : "is-waiting"
+            }`}
           type="text"
           value={text}
           onChange={(e) => handleInput(e.target.value)}

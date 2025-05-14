@@ -137,21 +137,21 @@ function specialThirdPersMascSingForm(
 
   const hardEnding: T.ParsedVBE[] =
     (ending === "د" && ["ې", "و"].some((x) => base.endsWith(x))) ||
-    (ending === "ت" &&
-      ["س", "ښ"].some((x) => base.endsWith(x)) &&
-      base.length > 1)
+      (ending === "ت" &&
+        ["س", "ښ"].some((x) => base.endsWith(x)) &&
+        base.length > 1)
       ? findRoot(ph)(base + ending, dicitonary).map<T.ParsedVBE>((info) => ({
-          type: "VB",
-          person: T.Person.ThirdSingMale,
-          info,
-        }))
+        type: "VB",
+        person: T.Person.ThirdSingMale,
+        info,
+      }))
       : [];
 
   const regular: T.ParsedVBE[] = [
     base + ending,
     ...(ending === "ه" ? [base] : []),
   ]
-    // now we can do way better that we know what the ph is
+    // TODO: now we can do way better that we know what the ph is
     .flatMap(withAlephAdded)
     .flatMap((v) => dicitonary.otherLookup("tppp", v, true))
     .filter(
@@ -169,7 +169,14 @@ function specialThirdPersMascSingForm(
       } as const,
     }));
 
-  return [...regular, ...hardEnding];
+  const aawu: T.ParsedVBE[] = (base + ending).endsWith("اوه") && base.length > 2 ?
+    findRoot(ph)(base.slice(0, -2) + "و", dicitonary).map<T.ParsedVBE>(info => ({
+      type: "VB",
+      person: T.Person.ThirdSingMale,
+      info,
+    })) : [];
+
+  return [...regular, ...hardEnding, ...aawu];
 
   //   ...imperfectiveWSep, ...perfectiveWSep];
 }
@@ -182,7 +189,7 @@ function thirdPersSingMascShortFromRoot(
   if (info.verb.entry.tppp) {
     return [];
   }
-  if (ending === "ه" && !base.endsWith("ل")) {
+  if (ending === "ه" && !["ل", "و"].some(char => base.endsWith(char))) {
     return [
       {
         type: "VB",
@@ -212,10 +219,10 @@ function parseIrregularVerb(
           verb: s.startsWith("را")
             ? raatlul
             : s.startsWith("ور")
-            ? wartlul
-            : s.startsWith("در")
-            ? dartlul
-            : tlul,
+              ? wartlul
+              : s.startsWith("در")
+                ? dartlul
+                : tlul,
         },
         person: T.Person.ThirdSingMale,
       },

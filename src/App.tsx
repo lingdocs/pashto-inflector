@@ -21,7 +21,7 @@ import InflectionDemo from "./demo-components/InflectionDemo";
 import SpellingDemo from "./demo-components/SpellingDemo";
 import ParserDemo from "./demo-components/ParserDemo";
 import TextDisplayDemo from "./demo-components/TextDisplayDemo";
-// import ParserTester from "./demo-components/ParserTester";
+import ParserTester from "./demo-components/ParserTester";
 // import InflectionTable from "./components/src/InflectionsTable";
 
 function App() {
@@ -53,7 +53,6 @@ function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
-
   return (
     <>
       <main className="flex-shrink-0 mb-4">
@@ -166,14 +165,14 @@ function App() {
               dictionary={dictionary}
             />
           </Hider>
-          {/* <Hider
+          <Hider
             label="Parser Tester"
             hLevel={3}
             showing={showing === "parser-tester"}
             handleChange={() => handleHiderClick("parser-tester")}
           >
             <ParserTester dictionary={dictionary} />
-          </Hider> */}
+          </Hider>
           <Hider
             label="Pashto Text Display"
             hLevel={3}

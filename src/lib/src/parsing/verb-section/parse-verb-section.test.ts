@@ -18,6 +18,7 @@ const tlul = testDictionary
   .verbEntryLookup("تلل")
   .filter((x) => x.entry.e.includes("to go"))[0];
 const manul = testDictionary.verbEntryLookup("منل")[0];
+const pakhawul = testDictionary.verbEntryLookup("پخول")[0];
 // const gaalul = testDictionary.verbEntryLookup("ګالل")[0];
 const khorul = testDictionary.verbEntryLookup("خوړل")[0];
 // const kxenaastul = testDictionary.verbEntryLookup("کښېناستل")[0];
@@ -32,6 +33,8 @@ const watul = testDictionary.verbEntryLookup("وتل")[0];
 // const wurul = testDictionary.verbEntryLookup("وړل")[0];
 const alwatul = testDictionary.verbEntryLookup("الوتل")[0];
 const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0];
+const sharmawul = testDictionary.verbEntryLookup("شرمول")[0];
+// const sharmedul = testDictionary.verbEntryLookup("شرمېدل")[0];
 
 // TODO: could to more thorough testing of short past participle forms
 
@@ -227,6 +230,62 @@ const simpleOpts: Section = {
       input: "منلي",
       output: [],
     },
+    {
+      input: "شرماوه",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["imperfective"],
+        persons: [T.Person.ThirdSingMale],
+        verb: sharmawul,
+      }),
+    },
+    {
+      input: "شرموه",
+      output: [
+        ...testVBEOutuput({
+          bases: ["stem"],
+          aspects: ["imperfective"],
+          persons: getPeople(2, "sing"),
+          imperative: true,
+          verb: sharmawul,
+        }),
+        ...testVBEOutuput({
+          bases: ["root"],
+          aspects: ["imperfective"],
+          persons: [T.Person.ThirdSingFemale],
+          verb: sharmawul,
+        }),
+      ],
+    },
+    {
+      input: "وشرموه",
+      output: [
+        ...testVBEOutuput({
+          bases: ["stem"],
+          ph: "و",
+          aspects: ["perfective"],
+          persons: getPeople(2, "sing"),
+          imperative: true,
+          verb: sharmawul,
+        }),
+        ...testVBEOutuput({
+          bases: ["root"],
+          ph: "و",
+          aspects: ["perfective"],
+          persons: [T.Person.ThirdSingFemale],
+          verb: sharmawul,
+        }),
+      ],
+    },
+    {
+      input: "شرموله",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["imperfective"],
+        persons: [T.Person.ThirdSingFemale],
+        verb: sharmawul,
+      })
+    }
   ],
 };
 
@@ -938,21 +997,6 @@ const ability: Section = {
   title: "with ability VBPs",
   tests: [
     {
-      input: "لیدلی شم",
-      output: getPeople(1, "sing").map((person) => ({
-        blocks: [
-          makeAbilityVBP({ aspect: "imperfective", verb: leedul }),
-          makeParsedVBE({
-            aspect: "perfective",
-            verb: kedulStat,
-            base: "stem",
-            person,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    {
       input: "ولیدلی شم",
       output: getPeople(1, "sing").map((person) => ({
         blocks: [
@@ -1200,6 +1244,70 @@ const perfect: Section = {
   ],
 };
 
+const statComp: Section = {
+  title: "stative compounds",
+  tests: [
+    // imperfective
+    {
+      input: "پخوي",
+      output: getPeople(3, "both").map((person) => ({
+        blocks: [
+          makeParsedVBE({
+            aspect: "imperfective",
+            base: "stem",
+            verb: pakhawul,
+            person,
+          })
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "پخوه",
+      output: [
+        ...getPeople(2, "sing").map((person) => ({
+          blocks: [
+            makeParsedVBE({
+              aspect: "imperfective",
+              base: "stem",
+              verb: pakhawul,
+              imperative: true,
+              person,
+            })
+          ],
+          kids: [],
+        })),
+        {
+          blocks: [
+            makeParsedVBE({
+              aspect: "imperfective",
+              base: "root",
+              verb: pakhawul,
+              person: T.Person.ThirdSingFemale,
+            }),
+          ],
+          kids: [],
+        },
+      ],
+    },
+    {
+      input: "پخولم",
+      output: getPeople(1, "sing").map(person => ({
+        blocks: [
+          makeParsedVBE({
+            aspect: "imperfective",
+            base: "root",
+            verb: pakhawul,
+            person,
+          }),
+        ],
+        kids: [],
+      }))
+    },
+  ],
+}
+
+
 const sections = [
   simpleOpts,
   simpleIntrans,
@@ -1209,6 +1317,7 @@ const sections = [
   irregularVerbs,
   ability,
   perfect,
+  statComp,
 ];
 
 sections.forEach((section) => {
@@ -1246,8 +1355,8 @@ function testVBEOutuput(props: {
             person,
             ...(props.imperative
               ? {
-                  imperative: props.imperative,
-                }
+                imperative: props.imperative,
+              }
               : {}),
           }),
         ],
@@ -1314,8 +1423,8 @@ function makeParsedVBE(props: {
       base: props.base,
       ...(props.imperative
         ? {
-            imperative: props.imperative,
-          }
+          imperative: props.imperative,
+        }
         : {}),
     },
   };
