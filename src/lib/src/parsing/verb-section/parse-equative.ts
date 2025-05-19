@@ -168,6 +168,5 @@ function makeEqVBE(
       tense,
     },
     person,
-    target: [person],
   };
 }

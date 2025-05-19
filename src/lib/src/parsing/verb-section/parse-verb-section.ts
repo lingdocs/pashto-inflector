@@ -56,7 +56,7 @@ export function parseVerbSection(
 
 // issue - verbs like wahul don't get parsed because the و needs to be optional!
 function parseVerbSectR(dictionary: T.DictionaryAPI) {
-  return function (
+  return function(
     prev: T.ParseResult<VerbSectionData>
   ): T.ParseResult<VerbSectionData>[] {
     const { ph, hasNeg, VBE, vbeIndex, hasVBP } = scanSection(prev.body.blocks);
@@ -66,16 +66,16 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
         ...(VBE
           ? []
           : [
-              ...parseVBE(
-                prev.tokens,
-                dictionary,
-                hasVBP
-                  ? // incase of [PH] + [VBP] before, PH was used up by [VBP]
-                    undefined
-                  : ph
-              ),
-              ...(ph ? [] : parseEquative(prev.tokens)),
-            ]),
+            ...parseVBE(
+              prev.tokens,
+              dictionary,
+              hasVBP
+                ? // incase of [PH] + [VBP] before, PH was used up by [VBP]
+                undefined
+                : ph
+            ),
+            ...(ph ? [] : parseEquative(prev.tokens)),
+          ]),
         ...(!hasVBP ? parseVBP(prev.tokens, dictionary, ph) : []),
         ...(!hasNeg ? parseNeg(prev.tokens) : []),
         ...parseKidsSection(prev.tokens, [], []),
@@ -135,7 +135,7 @@ function scanSection(blocks: VerbSectionBlock[]): {
       if (b.type === "negative") {
         return {
           ...acc,
-          hasNeg: true,
+          hasNeg: true
         };
       }
       if (isParsedVBE(b)) {
@@ -210,9 +210,9 @@ function verbSectionBlocksCompatible(blocks: VerbSectionBlock[]): boolean {
   }
   return vbp
     ? // if there is a VBP present, it needs to be either an ability or perfect form
-      validAbility(vbp, vbe) || validPerfect(vbp, vbe)
+    validAbility(vbp, vbe) || validPerfect(vbp, vbe)
     : // otherwise, there should be just be a VBE present
-      !!vbe;
+    !!vbe;
 }
 
 function validAbility(vbp: T.ParsedVBP, vbe: T.ParsedVBE | undefined): boolean {
@@ -254,7 +254,7 @@ function ensureVBEAuxOk(
   blocks: (VerbSectionBlock | T.ParsedKidsSection)[],
   vbeIndex: number
 ) {
-  return function (
+  return function(
     last: T.ParseResult<VerbSectionBlock | T.ParsedKidsSection>
   ): boolean {
     if (
@@ -264,6 +264,7 @@ function ensureVBEAuxOk(
       vbeIndex !== -1
     ) {
       const vbe = blocks[vbeIndex] as T.VBE;
+      // @ts-ignore - TODO: WHY??
       if (!isParsedVBE(vbe)) {
         throw new Error("misuse of index to get vbe");
       }

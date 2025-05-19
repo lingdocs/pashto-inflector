@@ -3,7 +3,8 @@ import { testDictionary } from "../mini-test-dictionary";
 import { tokenizer } from "../tokenizer";
 import { getPeople } from "../utils";
 import { parseVerbSection, VerbSectionData } from "./parse-verb-section";
-import { kedulDyn, kedulStat, raatlul, wartlul } from "./irreg-verbs";
+import { kawulDyn, kawulStat, kedulDyn, kedulStat, raatlul, wartlul } from "./irreg-verbs";
+import { makeAdjectiveSelection, makeAdverbSelection } from "../../phrase-building/make-selections";
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
@@ -35,6 +36,10 @@ const watul = testDictionary.verbEntryLookup("وتل")[0];
 const alwatul = testDictionary.verbEntryLookup("الوتل")[0];
 const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0];
 const sharmawul = testDictionary.verbEntryLookup("شرمول")[0];
+const mur = testDictionary.adjLookup("مړ")[0];
+const murKawul = testDictionary.verbEntryLookup("مړ کول")[0];
+const wraande = testDictionary.queryP("وړاندې")[0] as T.LocativeAdverbEntry;
+const wraandeKawul = testDictionary.verbEntryLookup("وړاندې کول")[0];
 // const sharmedul = testDictionary.verbEntryLookup("شرمېدل")[0];
 
 // TODO: could to more thorough testing of short past participle forms
@@ -1292,20 +1297,6 @@ const statComp: Section = {
       ],
     },
     {
-      input: "پخولم",
-      output: getPeople(1, "sing").map(person => ({
-        blocks: [
-          makeParsedVBE({
-            aspect: "imperfective",
-            base: "root",
-            verb: pakhawul,
-            person,
-          }),
-        ],
-        kids: [],
-      }))
-    },
-    {
       input: "پخېدم",
       output: getPeople(1, "sing").map(person => ({
         blocks: [
@@ -1319,12 +1310,111 @@ const statComp: Section = {
         kids: [],
       }))
     },
+    {
+      input: "پخولم",
+      output: getPeople(1, "sing").map(person => ({
+        blocks: [
+          makeParsedVBE({
+            aspect: "imperfective",
+            base: "root",
+            verb: pakhawul,
+            person,
+          }),
+        ],
+        kids: [],
+      }))
+    },
     // imperfective - welded
+    {
+      input: "مړې کوي",
+      output: getPeople(3, "both").map(person => ({
+        blocks: [
+          makeWeldedStatComb(person, {
+            type: "verb",
+            aspect: "imperfective",
+            verb: murKawul,
+            base: "stem",
+          },
+            {
+              type: "complement",
+              selection: {
+                inflection: [1],
+                gender: ["fem"],
+                given: "مړې",
+                selection: makeAdjectiveSelection(mur),
+              },
+            },
+            "transitive",
+          )
+        ],
+        kids: [],
+      }))
+    },
+    {
+      input: "مړ کولم",
+      output: getPeople(1, "sing").map(person => ({
+        blocks: [
+          makeWeldedStatComb(person, {
+            type: "verb",
+            aspect: "imperfective",
+            verb: murKawul,
+            base: "root",
+          },
+            {
+              type: "complement",
+              selection: {
+                inflection: [0],
+                gender: ["masc"],
+                given: "مړ",
+                selection: makeAdjectiveSelection(mur),
+              },
+            },
+            "transitive",
+          ),
+        ],
+        kids: [],
+      }))
+    },
+    {
+      input: "وړاندې کوي",
+      output: getPeople(3, "both").map(person => ({
+        blocks: [
+          makeWeldedStatComb(
+            person,
+            { type: "verb", aspect: "imperfective", verb: wraandeKawul, base: "stem" },
+            {
+              type: "complement",
+              selection: {
+                type: "loc. adv.",
+                entry: wraande,
+              },
+            },
+            "transitive",
+          )
+        ],
+        kids: [],
+      }))
+    }
     // perfective - adj agreement
     // perfective - others
   ],
 }
 
+function makeWeldedStatComb(person: T.Person, info: T.VbInfo, left: T.ParsedWelded["left"], transitivity: T.Transitivity): T.ParsedVBE {
+  return {
+    type: "welded",
+    person,
+    info,
+    left,
+    right: {
+      type: "parsedRight",
+      info: {
+        ...info,
+        verb: transitivity === "transitive" ? kawulStat : kawulDyn,
+      },
+    },
+  };
+}
 
 const sections = [
   simpleOpts,
@@ -1396,7 +1486,6 @@ function makeEqVBE(
       tense: tense,
     },
     person: person,
-    target: [person],
   };
 }
 
@@ -1436,7 +1525,6 @@ function makeParsedVBE(props: {
   return {
     type: "VB",
     person: props.person,
-    target: [props.person],
     info: {
       type: "verb",
       aspect: props.aspect,

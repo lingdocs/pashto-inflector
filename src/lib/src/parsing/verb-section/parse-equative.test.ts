@@ -95,7 +95,6 @@ function makeEqs({ persons, tenses }: EqInfo): T.ParsedVBE[] {
         tense,
       },
       person,
-      target: [person],
     }))
   );
 }

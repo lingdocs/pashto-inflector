@@ -171,7 +171,7 @@ function App() {
             showing={showing === "parser-tester"}
             handleChange={() => handleHiderClick("parser-tester")}
           >
-            <ParserTester dictionary={dictionary} />
+            <ParserTester /* dictionary={dictionary} */ />
           </Hider>
           <Hider
             label="Pashto Text Display"

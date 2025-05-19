@@ -1324,10 +1324,7 @@ export type ParsedPH = {
   type: "PH";
   s: string;
 };
-export type ParsedVBE = Omit<VBE, "ps"> & {
-  /** the target is the possible person(s) of the object or the subject (for intransitives) - based on the complement*/
-  target: Person[]
-};
+
 export type ParsedVBP = Omit<VBP, "ps">;
 
 export type Kid = {
@@ -1357,20 +1354,31 @@ export type VB = VBBasic | Welded;
 /** A VB block that has had a person verb ending attached */
 export type VBE = VB & {
   person: Person;
-  info:
-  | {
-    type: "equative";
-    tense: EquativeTenseWithoutBa;
-  }
-  | {
-    type: "verb";
-    aspect: Aspect;
-    base: "stem" | "root";
-    verb: VerbEntry;
-    imperative?: true;
-    abilityAux?: boolean;
-  };
+  info: EqInfo | VbInfo;
 };
+
+export type EqInfo = {
+  type: "equative";
+  tense: EquativeTenseWithoutBa;
+};
+
+export type VbInfo = {
+  type: "verb";
+  aspect: Aspect;
+  base: "stem" | "root";
+  verb: VerbEntry;
+  imperative?: true;
+  abilityAux?: boolean;
+};
+
+export type ParsedVBE = ParsedVB & {
+  person: Person,
+  info: EqInfo | VbInfo;
+}
+
+export type ParsedVB = ParsedVBBasic | ParsedWelded;
+
+export type ParsedVBBasic = Omit<VBBasic, "ps">;
 
 /** A VB block used for ability verbs or perfect (past participle)
  * get optionally swapped in order with the VBE when used with negative
@@ -1412,9 +1420,21 @@ export type GenderNumber = {
 
 export type Welded = {
   type: "welded";
+  // TODO: is this recursive Welded right there, or does it belong
+  // on the right if anywhere?
   left: NComp | VBBasic | Welded;
   right: VBBasic | (VBBasic & (VBPartInfo | VBAbilityInfo));
 };
+export type ParsedWelded = {
+  type: "welded",
+  // TODO: is this recursive Welded right there, or does it belong
+  // on the right if anywhere?
+  left: ParsedComplementSelection | ParsedVBBasic | ParsedWelded;
+  right: {
+    type: "parsedRight",
+    info: VbInfo | VBPartInfo | VBAbilityInfo;
+  }
+}
 
 export type VHead = PH | NComp;
 

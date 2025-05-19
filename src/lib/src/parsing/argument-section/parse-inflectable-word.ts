@@ -69,42 +69,42 @@ function parsePattern1<W extends T.InflectableEntry>(
   }));
   const femPlain = first.s.endsWith("ه")
     ? p1Lookup(first.s.slice(0, -1)).map((selection) => ({
-        tokens: rest,
-        body: {
-          inflection: [0],
-          gender: ["fem"],
-          selection,
-          given: first.s,
-        } satisfies T.InflectableBaseParse<W>,
-        errors: [],
-      }))
+      tokens: rest,
+      body: {
+        inflection: [0],
+        gender: ["fem"],
+        selection,
+        given: first.s,
+      } satisfies T.InflectableBaseParse<W>,
+      errors: [],
+    }))
     : [];
   const femInflected = first.s.endsWith("ې")
     ? p1Lookup(first.s.slice(0, -1)).map((selection) => ({
-        tokens: rest,
-        body: {
-          inflection: [1],
-          gender: ["fem"],
-          selection,
-          given: first.s,
-        } satisfies T.InflectableBaseParse<W>,
-        errors: [],
-      }))
+      tokens: rest,
+      body: {
+        inflection: [1],
+        gender: ["fem"],
+        selection,
+        given: first.s,
+      } satisfies T.InflectableBaseParse<W>,
+      errors: [],
+    }))
     : [];
   const doubleInflected = first.s.endsWith("و")
     ? [
-        ...p1Lookup(first.s.slice(0, -1)),
-        ...p1Lookup(first.s.slice(0, -1) + "ه"),
-      ].map((selection) => ({
-        tokens: rest,
-        body: {
-          inflection: [2],
-          gender: ["masc", "fem"],
-          selection,
-          given: first.s,
-        } satisfies T.InflectableBaseParse<W>,
-        errors: [],
-      }))
+      ...p1Lookup(first.s.slice(0, -1)),
+      ...p1Lookup(first.s.slice(0, -1) + "ه"),
+    ].map((selection) => ({
+      tokens: rest,
+      body: {
+        inflection: [2],
+        gender: ["masc", "fem"],
+        selection,
+        given: first.s,
+      } satisfies T.InflectableBaseParse<W>,
+      errors: [],
+    }))
     : [];
   return [
     ...mascPlainOrInflected,
@@ -225,63 +225,63 @@ function parsePattern4or5<W extends T.InflectableEntry>(
     }));
   const firstMasc = first.s.endsWith("ه")
     ? dictionary
-        .otherLookup("infap", first.s)
-        .filter(f)
-        .map((selection) => ({
-          tokens: rest,
-          body: {
-            inflection: [1],
-            gender: ["masc"],
-            selection,
-            given: first.s,
-          } satisfies T.InflectableBaseParse<W>,
-          errors: [],
-        }))
+      .otherLookup("infap", first.s)
+      .filter(f)
+      .map((selection) => ({
+        tokens: rest,
+        body: {
+          inflection: [1],
+          gender: ["masc"],
+          selection,
+          given: first.s,
+        } satisfies T.InflectableBaseParse<W>,
+        errors: [],
+      }))
     : [];
   const femPlain = first.s.endsWith("ه")
     ? dictionary
-        .otherLookup("infbp", first.s.slice(0, -1))
-        .filter(f)
-        .map((selection) => ({
-          tokens: rest,
-          body: {
-            inflection: [0],
-            gender: ["fem"],
-            selection,
-            given: first.s,
-          } satisfies T.InflectableBaseParse<W>,
-          errors: [],
-        }))
+      .otherLookup("infbp", first.s.slice(0, -1))
+      .filter(f)
+      .map((selection) => ({
+        tokens: rest,
+        body: {
+          inflection: [0],
+          gender: ["fem"],
+          selection,
+          given: first.s,
+        } satisfies T.InflectableBaseParse<W>,
+        errors: [],
+      }))
     : [];
   const femFirst = first.s.endsWith("ې")
     ? dictionary
-        .otherLookup("infbp", first.s.slice(0, -1))
-        .filter(f)
-        .map((selection) => ({
-          tokens: rest,
-          body: {
-            inflection: [1],
-            gender: ["fem"],
-            selection,
-            given: first.s,
-          } satisfies T.InflectableBaseParse<W>,
-          errors: [],
-        }))
+      .otherLookup("infbp", first.s.slice(0, -1))
+      .filter(f)
+      .map((selection) => ({
+        tokens: rest,
+        body: {
+          inflection: [1],
+          gender: ["fem"],
+          selection,
+          given: first.s,
+        } satisfies T.InflectableBaseParse<W>,
+        errors: [],
+      }))
     : [];
   const second = first.s.endsWith("و")
     ? dictionary
-        .otherLookup("infbp", first.s.slice(0, -1))
-        .filter(f)
-        .map((selection) => ({
-          tokens: rest,
-          body: {
-            inflection: [2],
-            gender: ["masc", "fem"],
-            selection,
-            given: first.s,
-          } satisfies T.InflectableBaseParse<W>,
-          errors: [],
-        }))
+      .otherLookup("infbp", first.s.slice(0, -1))
+      .filter(f)
+      .map((selection) => ({
+        tokens: rest,
+        body: {
+          inflection: [2],
+          gender: ["masc", "fem"],
+          selection,
+          given: first.s,
+        } satisfies T.InflectableBaseParse<W>,
+        errors: [],
+      }))
     : [];
 
   return [...plainMasc, ...firstMasc, ...femPlain, ...femFirst, ...second];

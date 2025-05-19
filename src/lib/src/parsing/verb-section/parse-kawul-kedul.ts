@@ -23,7 +23,6 @@ const getForm =
                   verb,
                 } as const,
                 person,
-                target: [person],
               } as const;
             });
           };
@@ -34,6 +33,9 @@ export function parseKawulKedul(
   tokens: Readonly<T.Token[]>,
   hasOo: boolean
 ): T.ParseResult<T.ParsedVBE>[] {
+  if (!tokens.length) {
+    return [];
+  }
   const [first, ...rest] = tokens;
   if (first.s[0] !== "ک" && first.s[0] !== "ش") {
     return [];
@@ -98,13 +100,14 @@ export function parseKawulKedul(
     return oneBase("kawul")("root")("perfective")(people.root);
   }
   if (start === "کو") {
-    return rootAndStem("kawul")("imperfective")({
+    const res = rootAndStem("kawul")("imperfective")({
       people: removePeople(people, {
         stem: [],
         root: [T.Person.ThirdSingMale],
       }),
       imperativePeople,
     });
+    return res;
   }
   if (start === "کول" && ending !== "ل") {
     return [
@@ -196,7 +199,7 @@ function validVerbs(
       ];
   }
   if (aspect === "imperfective" && !hasOo) {
-    return [];
+    return kawulKedul === "kawul" ? [kawulStat, kawulDyn] : [kedulStat, kedulDyn];
   }
   if (aspect === "perfective" && !hasOo) {
     return kawulKedul === "kawul" ? [kawulStat] : [kedulStat];

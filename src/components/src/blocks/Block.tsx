@@ -120,9 +120,8 @@ function Border({
 }) {
   return (
     <div
-      className={`block-border d-flex flex-row justify-content-center align-items-center ${
-        extraClassName ? extraClassName : ""
-      }`}
+      className={`block-border d-flex flex-row justify-content-center align-items-center ${extraClassName ? extraClassName : ""
+        }`}
       style={{
         padding: padding ? padding : "1rem",
         textAlign: "center",
@@ -142,11 +141,11 @@ function VBBlock({
   opts: T.TextOptions;
   script: "p" | "f";
   block:
-    | T.VBBasic
-    | (T.VBBasic & (T.VBPartInfo | T.VBAbilityInfo))
-    | (T.VBBasic & {
-        person: T.Person;
-      });
+  | T.VBBasic
+  | (T.VBBasic & (T.VBPartInfo | T.VBAbilityInfo))
+  | (T.VBBasic & {
+    person: T.Person;
+  });
 }) {
   const [length, setLength] = useState<T.Length>("long");
   const [version, setVersion] = useState<number>(0);
@@ -159,16 +158,16 @@ function VBBlock({
       o === "long"
         ? "short"
         : o === "short" && "mini" in block.ps
-        ? "mini"
-        : "long"
+          ? "mini"
+          : "long"
     );
   }
   const infInfo =
     "info" in block && block.info.type === "ppart"
       ? getEnglishGenNumInfo(block.info.genNum.gender, block.info.genNum.number)
       : "person" in block
-      ? getEnglishPersonInfo(block.person, "short")
-      : "";
+        ? getEnglishPersonInfo(block.person, "short")
+        : "";
   return (
     <div className="text-center">
       <div className="d-flex flex-row justify-content-around">
@@ -349,8 +348,8 @@ function EquativeBlock({
       o === "long"
         ? "short"
         : o === "short" && "mini" in eq.ps
-        ? "mini"
-        : "long"
+          ? "mini"
+          : "long"
     );
   }
   return (
@@ -457,8 +456,8 @@ function ComplementBlock({
   script: "p" | "f";
   opts: T.TextOptions;
   comp:
-    | T.Rendered<T.ComplementSelection["selection"]>
-    | T.Rendered<T.UnselectedComplementSelection>["selection"];
+  | T.Rendered<T.ComplementSelection["selection"]>
+  | T.Rendered<T.UnselectedComplementSelection>["selection"];
   inside?: boolean;
   isKing: boolean;
 }) {
@@ -588,9 +587,8 @@ function Sandwich({
       <div className="text-center">Sandwich 🥪</div>
       <Border padding="0.75rem 0.5rem 0.25rem 0.5rem">
         <div
-          className={`d-flex flex-row${
-            script === "p" ? "-reverse" : ""
-          } justify-content-between align-items-end`}
+          className={`d-flex flex-row${script === "p" ? "-reverse" : ""
+            } justify-content-between align-items-end`}
         >
           <Possesors opts={opts} script={script}>
             {sandwich.inside.selection.type !== "pronoun"
@@ -689,12 +687,12 @@ export function NPBlock({
   const elements = [
     ...(!inside
       ? [
-          <Possesors opts={opts} script={script}>
-            {np.selection.type !== "pronoun"
-              ? np.selection.possesor
-              : undefined}
-          </Possesors>,
-        ]
+        <Possesors opts={opts} script={script}>
+          {np.selection.type !== "pronoun"
+            ? np.selection.possesor
+            : undefined}
+        </Possesors>,
+      ]
       : []),
     <Determiners opts={opts} script={script}>
       {np.selection.determiners}
@@ -730,8 +728,8 @@ export function NPBlock({
           inside
             ? "0.3rem"
             : hasPossesor
-            ? "0.5rem 0.8rem 0.25rem 0.8rem"
-            : "1rem"
+              ? "0.5rem 0.8rem 0.25rem 0.8rem"
+              : "1rem"
         }
       >
         {el}
@@ -774,16 +772,15 @@ function Possesors({
   const contraction = checkForContraction(children.np, script);
   return (
     <div
-      className={`d-flex flex-row${
-        script === "p" ? "-reverse" : ""
-      } mr-1 align-items-end`}
+      className={`d-flex flex-row${script === "p" ? "-reverse" : ""
+        } mr-1 align-items-end`}
       style={
         complement
           ? {}
           : {
-              marginBottom: "0.5rem",
-              borderBottom: "1px solid grey",
-            }
+            marginBottom: "0.5rem",
+            borderBottom: "1px solid grey",
+          }
       }
     >
       {children.np.selection.type !== "pronoun" && (

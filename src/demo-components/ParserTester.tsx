@@ -1,15 +1,11 @@
 import { useState } from "react";
 import * as T from "../types";
 import { tokenizer } from "../lib/src/parsing/tokenizer";
-import { parseNoun } from "../lib/src/parsing/argument-section/parse-noun";
-import { parseDeterminer } from "../lib/src/parsing/argument-section/parse-determiner";
-import { parseVP } from "../lib/src/parsing/parse-vp";
 import { JsonEditor } from "json-edit-react";
 import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
-import { parseEquative } from "../lib/src/parsing/verb-section/parse-equative";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
 
-function ParserTester({ dictionary }: { dictionary: T.DictionaryAPI }) {
+function ParserTester(/* { dictionary }: { dictionary: T.DictionaryAPI } */) {
   const [text, setText] = useState<string>("");
   const [result, setResult] = useState<T.ParseResult<any>[]>([]);
   function handleInput(value: string) {
@@ -29,12 +25,12 @@ function ParserTester({ dictionary }: { dictionary: T.DictionaryAPI }) {
         <input
           dir="rtl"
           className={`form-control ${!text
-              ? ""
-              : text && result.some((x) => x.errors.length)
-                ? "is-invalid"
-                : result.length
-                  ? "is-valid"
-                  : "is-waiting"
+            ? ""
+            : text && result.some((x) => x.errors.length)
+              ? "is-invalid"
+              : result.length
+                ? "is-valid"
+                : "is-waiting"
             }`}
           type="text"
           value={text}

@@ -200,9 +200,8 @@ function consolidateKidsSection(
             {
               message: `kid${k.section.length > 1 ? "s" : ""} ${k.section
                 .map((x) => `'${x}'`)
-                .join(", ")} out of place. Found after block ${
-                k.position
-              }, should be after the first block.`,
+                .join(", ")} out of place. Found after block ${k.position
+                }, should be after the first block.`,
             },
           ],
         ];
@@ -255,10 +254,10 @@ function finishIntransitive({
     ...kidsErrors,
     ...(nps.length > 1
       ? [
-          {
-            message: "intransitive verb can only take one NP for subject",
-          },
-        ]
+        {
+          message: "intransitive verb can only take one NP for subject",
+        },
+      ]
       : []),
     ...compPresenceErrors,
     ...ensureNoMiniPronouns(miniPronouns),
@@ -328,11 +327,11 @@ function finishTransitive({
     ...kidsErrors,
     ...(nps.length > 2
       ? [
-          {
-            message:
-              "transitive verb can only take two NPs: subject and object",
-          },
-        ]
+        {
+          message:
+            "transitive verb can only take two NPs: subject and object",
+        },
+      ]
       : []),
     ...compPresenceErrors,
   ];
@@ -340,8 +339,8 @@ function finishTransitive({
     nps.length >= 2
       ? getTransPossibilitiesWTwoNPs(nps)
       : nps.length === 1
-      ? getTransPossibilitiesWOneNP(nps[0], exComplement)
-      : getTransPossibilitiesWNoNPs
+        ? getTransPossibilitiesWOneNP(nps[0], exComplement)
+        : getTransPossibilitiesWNoNPs
   )({
     miniPronouns,
     npsAndAps,
@@ -423,7 +422,7 @@ function getTransPossibilitiesWOneNP(
   np: T.ParsedNP,
   exComplement: T.ParsedComplementSelection | undefined
 ) {
-  return function ({
+  return function({
     miniPronouns,
     npsAndAps,
     vbePerson,
@@ -450,13 +449,13 @@ function getTransPossibilitiesWOneNP(
       )(miniPronouns);
       const filledIn: T.ParsedNP[] = form.removeKing
         ? // make a pronoun filler for the removed knig
-          makeShadowPronouns(false, vbePerson, exComplement)
+        makeShadowPronouns(false, vbePerson, exComplement)
         : // make a pronoun filler possibilities for the shrunken servant
-          expandShrunkenServant(
-            miniPronouns,
-            isPast,
-            getPersonFromNP(np.selection)
-          );
+        expandShrunkenServant(
+          miniPronouns,
+          isPast,
+          getPersonFromNP(np.selection)
+        );
       const filledInObj = form.removeKing === isPast;
       // instead of having to write
       //  x = form.removeKing ? (isPast ? "foo" : "bar") : (isPast ? "bar" : "foo")
@@ -484,7 +483,7 @@ function getTransPossibilitiesWOneNP(
 }
 
 function getTransPossibilitiesWTwoNPs(nps: T.ParsedNP[]) {
-  return function ({
+  return function({
     miniPronouns,
     npsAndAps,
     tokens,
@@ -610,7 +609,7 @@ function finishGrammTransWNoNPs({
 }
 
 function finishGrammTransWNP(subject: T.ParsedNP) {
-  return function ({
+  return function({
     npsAndAps,
     miniPronouns,
     tokens,
@@ -686,12 +685,12 @@ function getTenses(
     const tenses = abilityTenses.length
       ? []
       : getTensesFromRootsStems(
-          ba,
-          vbe.info.base,
-          vbe.info.aspect,
-          !!negative,
-          vbe.info.imperative
-        );
+        ba,
+        vbe.info.base,
+        vbe.info.aspect,
+        !!negative,
+        vbe.info.imperative
+      );
     if (!tenses.length && !abilityTenses.length) {
       return [];
     }
@@ -771,7 +770,7 @@ function getTenses(
 }
 
 function checkForDynCompounds(dictionary: T.DictionaryAPI) {
-  return function (
+  return function(
     tokens: readonly T.Token[],
     vps: T.VPSelectionComplete
   ): T.ParseResult<T.VPSelectionComplete>[] {
@@ -894,18 +893,18 @@ function expandShrunkenServant(
   return (
     miniPronouns.length === 0
       ? // for the error "did you mean" when they leave out the pronoun
-        [T.Person.ThirdSingMale]
+      [T.Person.ThirdSingMale]
       : getPeopleFromMiniPronouns([miniPronouns[0]])
   ).flatMap((person) =>
     // TODO: maybe move this filtering out of function
     isInvalidSubjObjCombo(kingPerson, person)
       ? []
       : [
-          makeShadowPronoun(
-            isPast || isFirstPerson(person) || isSecondPerson(person),
-            person
-          ),
-        ]
+        makeShadowPronoun(
+          isPast || isFirstPerson(person) || isSecondPerson(person),
+          person
+        ),
+      ]
   );
 }
 
@@ -924,18 +923,17 @@ function ensureNoMiniPronouns(
 }
 
 function ensureShrunkenServant(isPast: boolean) {
-  return function (miniPronouns: T.ParsedMiniPronoun[]): T.ParseError[] {
+  return function(miniPronouns: T.ParsedMiniPronoun[]): T.ParseError[] {
     return miniPronouns.length > 1
       ? [{ message: "unknow extra mini-pronoun" }]
       : miniPronouns.length === 0
-      ? [
+        ? [
           {
-            message: `missing mini-pronoun for shrunken servant ${
-              isPast ? "subject" : "object"
-            }`,
+            message: `missing mini-pronoun for shrunken servant ${isPast ? "subject" : "object"
+              }`,
           },
         ]
-      : [];
+        : [];
   };
 }
 
@@ -955,9 +953,8 @@ function checkIntransitiveStructure({
   const winner = winnerOfNpAndCompliment(s.selection, exComplement);
   if (winner.person !== vbePerson) {
     errors.push({
-      message: `intransitive verb must agree with ${
-        winner.source === "np" ? "subject" : "complement NP in this case."
-      }`,
+      message: `intransitive verb must agree with ${winner.source === "np" ? "subject" : "complement NP in this case."
+        }`,
     });
   }
   if (s.inflected) {
@@ -1003,9 +1000,8 @@ function checkTransitiveStructure({
       const winner = winnerOfNpAndCompliment(o.selection, exComplement);
       if (winner.person !== vbePerson) {
         errors.push({
-          message: `past tense transitive verb must agree with ${
-            winner.source === "np" ? "object" : "complement NP in this case."
-          }`,
+          message: `past tense transitive verb must agree with ${winner.source === "np" ? "object" : "complement NP in this case."
+            }`,
         });
       }
       if (o.inflected) {
@@ -1023,9 +1019,8 @@ function checkTransitiveStructure({
     }
     if (!s.inflected) {
       errors.push({
-        message: `subject of ${
-          typeof o === "number" ? "gramatically " : ""
-        }transitive past tense verb must be inflected`,
+        message: `subject of ${typeof o === "number" ? "gramatically " : ""
+          }transitive past tense verb must be inflected`,
       });
     }
   } else {

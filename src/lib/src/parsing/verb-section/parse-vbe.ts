@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
-import { getVerbEnding } from "./parse-verb-helpers";
-import { returnParseResults } from "../utils";
+import { getVerbEnding, isStatAux } from "./parse-verb-helpers";
+import { bindParseResult, returnParseResults } from "../utils";
 import * as tp from "../../type-predicates";
 import { pashtoConsonants } from "../../pashto-consonants";
 import { getImperativeVerbEnding } from "./misc";
@@ -12,6 +12,8 @@ import {
   RootInfo,
 } from "./stem-root-finding";
 import { parseKawulKedul } from "./parse-kawul-kedul";
+import { parseComplement } from "../argument-section/parse-complement";
+import { getTransitivity } from "../../verb-info";
 
 // TODO: و ارزول
 
@@ -34,7 +36,7 @@ export function parseVBE(
 ): T.ParseResult<T.ParsedVBE>[] {
   return [
     ...parseVBEBasic(tokens, dictionary, ph),
-    ...parseWelded(),//tokens, dictionary, ph),
+    ...parseWelded(tokens, dictionary, ph),//tokens, dictionary, ph),
   ];
 }
 
@@ -68,13 +70,11 @@ function parseVBEBasic(
       ...stem.map<T.ParsedVBE>((person) => ({
         type: "VB",
         person,
-        target: [person],
         info,
       })),
       ...imperative.map<T.ParsedVBE>((person) => ({
         type: "VB",
         person,
-        target: [person],
         info: {
           ...info,
           imperative: true,
@@ -90,7 +90,6 @@ function parseVBEBasic(
         ...root.map<T.ParsedVBE>((person) => ({
           type: "VB",
           person,
-          target: [person],
           info,
         })),
       ];
@@ -101,12 +100,67 @@ function parseVBEBasic(
 }
 
 function parseWelded(
-  // tokens: Readonly<T.Token[]>,
-  // dictionary: T.DictionaryAPI,
-  // ph: T.ParsedPH | undefined
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
+  ph: T.ParsedPH | undefined
 ): T.ParseResult<T.ParsedVBE>[] {
-  // const comp = parseComplement  
-  return [];
+  const complement = parseComplement(tokens, dictionary);
+  if (!complement.length) {
+    return [];
+  }
+  return bindParseResult(complement, (tkns, comp) => {
+    if (typeof comp.selection === "object" && "type" in comp.selection && (comp.selection.type === "sandwich" || comp.selection.type === "possesor")) {
+      return [];
+    }
+    const k = parseKawulKedul(tkns, !!ph && ph.s === "و");
+    return bindParseResult(k, (tk, aux) => {
+      if (!("aspect" in aux.info)) {
+        // purely for type safety because of the badly designed types
+        return [];
+      }
+      if (aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) {
+        const compTs = getLFromComplement(comp);
+        if (compTs === undefined) {
+          return [];
+        }
+        const res = dictionary.verbEntryLookupByL(compTs);
+        const vbe = res.filter(statCompMatchesAux(aux)).map<T.ParsedVBE>((verb) => ({
+          type: "welded",
+          left: comp,
+          right: {
+            type: "parsedRight",
+            info: aux.info as T.VbInfo,
+          },
+          person: aux.person,
+          info: {
+            ...aux.info,
+            verb,
+          }
+        }));
+        return returnParseResults(tk, vbe);
+      } else {
+        return [];
+      }
+    });
+  });
+}
+
+function statCompMatchesAux(aux: T.ParsedVBE) {
+  // TODO: would be nice to have a parsed Aux type      
+  return (e: T.VerbEntry): boolean => {
+    return ("aspect" in aux.info && aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) &&
+      getTransitivity(aux.info.verb.entry) === getTransitivity(e.entry);
+  }
+}
+
+function getLFromComplement(comp: T.ParsedComplementSelection): number | undefined {
+  if ("inflection" in comp.selection) {
+    return comp.selection.selection.entry.ts;
+  }
+  if (comp.selection.type === "loc. adv.") {
+    return comp.selection.entry.ts;
+  }
+  return undefined;
 }
 
 function specialThirdPersMascSingForm(
@@ -165,7 +219,6 @@ function specialThirdPersMascSingForm(
       ? findRoot(ph)(base + ending, dicitonary).map<T.ParsedVBE>((info) => ({
         type: "VB",
         person: T.Person.ThirdSingMale,
-        target: [T.Person.ThirdSingMale],
         info,
       }))
       : [];
@@ -184,7 +237,6 @@ function specialThirdPersMascSingForm(
     .map((entry) => ({
       type: "VB" as const,
       person: T.Person.ThirdSingMale,
-      target: [T.Person.ThirdSingMale],
       info: {
         type: "verb",
         aspect: ph ? "perfective" : "imperfective",
@@ -197,7 +249,6 @@ function specialThirdPersMascSingForm(
     findRoot(ph)(base.slice(0, -2) + "و", dicitonary).map<T.ParsedVBE>(info => ({
       type: "VB",
       person: T.Person.ThirdSingMale,
-      target: [T.Person.ThirdSingMale],
       info,
     })) : [];
 
@@ -219,7 +270,6 @@ function thirdPersSingMascShortFromRoot(
       {
         type: "VB",
         person: T.Person.ThirdSingMale,
-        target: [T.Person.ThirdSingMale],
         info,
       },
     ];
@@ -251,7 +301,6 @@ function parseIrregularVerb(
                 : tlul,
         },
         person: T.Person.ThirdSingMale,
-        target: [T.Person.ThirdSingMale],
       },
     ];
   }
