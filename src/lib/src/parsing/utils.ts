@@ -66,7 +66,7 @@ export function bindParseResultWParser<C, D, E>(
 }
 
 export function addErrors<C>(errs: T.ParseError[]) {
-  return function (pr: T.ParseResult<C>): T.ParseResult<C> {
+  return function(pr: T.ParseResult<C>): T.ParseResult<C> {
     return {
       tokens: pr.tokens,
       body: pr.body,
@@ -205,7 +205,7 @@ export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
 export function parserCombSucc2<A, B>(
   parsers: [Parser<A>, Parser<B>]
 ): Parser<[A, B]> {
-  return function (
+  return function(
     tokens: Readonly<T.Token[]>,
     dictionary: T.DictionaryAPI
   ): T.ParseResult<[A, B]>[] {
@@ -220,7 +220,7 @@ export function parserCombSucc2<A, B>(
 export function parserCombSucc3<A, B, C>(
   parsers: [Parser<A>, Parser<B>, Parser<C>]
 ): Parser<[A, B, C]> {
-  return function (
+  return function(
     tokens: Readonly<T.Token[]>,
     dictionary: T.DictionaryAPI
   ): T.ParseResult<[A, B, C]>[] {
@@ -257,23 +257,27 @@ export function getPeople(
   return number === "sing"
     ? people.filter((p) => p < 6)
     : number === "pl"
-    ? people.filter((p) => p > 5)
-    : people;
+      ? people.filter((p) => p > 5)
+      : people;
 }
 
 export function isPH(b: T.ParsedBlock): b is T.ParsedPH {
-  return b.type === "PH";
+  return b.type === "PH" || b.type === "CompPH";
+}
+
+export function isCompPH(b: T.ParsedBlock): b is T.ParsedCompPH {
+  return b.type === "CompPH";
 }
 
 export function isNeg(b: T.ParsedBlock): b is T.NegativeBlock {
   return b.type === "negative";
 }
 
-export function isOoPh(b: T.ParsedBlock): b is T.ParsedPH {
+export function isOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
   return b.type === "PH" && ["و", "وا"].includes(b.s);
 }
 
-export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedPH {
+export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
   return b.type === "PH" && !["و", "وا"].includes(b.s);
 }
 

@@ -1320,10 +1320,20 @@ export type ParsedNP = {
   inflected: boolean;
   selection: NPSelection;
 };
-export type ParsedPH = {
+export type ParsedPH = ParsedVerbPH | ParsedCompPH;
+
+export type ParsedVerbPH = {
   type: "PH";
   s: string;
 };
+
+export type ParsedCompPH = {
+  type: "CompPH",
+  selection: InflectableBaseParse<AdjectiveSelection> | LocativeAdverbSelection,
+}
+
+// TODO: Make a type that can be used as the welded or PH part of compound verb
+// ie  adj / adv / noun 
 
 export type ParsedVBP = Omit<VBP, "ps">;
 

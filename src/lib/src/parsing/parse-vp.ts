@@ -11,6 +11,7 @@ import {
   bindParseResultWParser,
   canTakeShrunkenPossesor,
   getPeople,
+  isPH,
   returnParseResult,
   returnParseResults,
 } from "./utils";
@@ -651,7 +652,7 @@ function getTenses(
   const negative: T.NegativeBlock | undefined = blocks[negIndex] as
     | T.NegativeBlock
     | undefined;
-  const phIndex = blocks.findIndex((x) => x.type === "PH");
+  const phIndex = blocks.findIndex(isPH);
   // TODO: would be nicer if there were clear taggin gfor "VBP" vs "VBE" !!
   const vbeIndex = blocks.findIndex((x) => x.type === "VB" && !isVBP(x));
   const vbpIndex = blocks.findIndex((x) => x.type === "VB" && isVBP(x));
@@ -1446,7 +1447,7 @@ function checkForTlulCombos(
   if (vbe.info.type === "equative") {
     return { vbp, vbe };
   }
-  if (!ph) {
+  if (!ph || ph.type === "CompPH") {
     return { vbp, vbe };
   }
   if (["را", "ور", "در"].includes(ph.s) || ph.s.startsWith("لاړ")) {

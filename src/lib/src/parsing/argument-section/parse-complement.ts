@@ -21,12 +21,9 @@ export function parseComplement(
       ...parseSandwich(tokens, dictionary, undefined),
       ...parsePossesor(tokens, dictionary),
       ...fFlatMapParseResult(
-        (p): T.ParsedComplementSelection["selection"][] => {
-          if (p.selection.type === "sandwich") {
-            return [p.selection];
-          }
-          return isLocativeAdverbEntry(p.selection.entry)
-            ? [{ type: "loc. adv.", entry: p.selection.entry }]
+        (a): T.ParsedComplementSelection["selection"][] => {
+          return isLocativeAdverbEntry(a.entry)
+            ? [{ type: "loc. adv.", entry: a.entry }]
             : [];
         },
         parseAdverb(tokens, dictionary)
@@ -45,7 +42,7 @@ function parseNPWPoss(
   const np = !possesor.length
     ? parseNP(tokens, dictionary, undefined)
     : bindParseResult<T.PossesorSelection, T.ParsedNP>(possesor, (tokens, p) =>
-        parseNP(tokens, dictionary, p)
-      );
+      parseNP(tokens, dictionary, p)
+    );
   return fFlatMapParseResult((x) => (x.inflected ? [] : [x.selection]), np);
 }

@@ -1,4 +1,7 @@
 import * as T from "../../../../types";
+import { fmapParseResult } from "../../fp-ps";
+import { parseAdjective } from "../argument-section/parse-adjective-new";
+import { parseLocAdverb } from "../argument-section/parse-adverb";
 import { returnParseResult } from "../utils";
 
 const phs = [
@@ -21,8 +24,36 @@ const phs = [
 ];
 
 export function parsePH(
-  tokens: Readonly<T.Token[]>
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedPH>[] {
+  return [
+    ...parseVerbPH(tokens),
+    ...parseCompPH(tokens, dictionary)
+  ];
+}
+
+function parseCompPH(
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
+): T.ParseResult<T.ParsedCompPH>[] {
+  const res: T.ParseResult<T.ParsedCompPH["selection"]>[] =
+    [
+      ...parseAdjective(tokens, dictionary),
+      ...parseLocAdverb(tokens, dictionary),
+    ];
+  return fmapParseResult(
+    selection => ({
+      type: "CompPH",
+      selection,
+    }),
+    res
+  )
+}
+
+function parseVerbPH(
+  tokens: Readonly<T.Token[]>
+): T.ParseResult<T.ParsedVerbPH>[] {
   if (tokens.length === 0) {
     return [];
   }

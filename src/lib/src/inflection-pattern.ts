@@ -17,14 +17,14 @@ export function getInflectionPattern(
   return isPattern1Entry(e)
     ? T.InflectionPattern.Basic
     : isPattern2Entry(e)
-    ? T.InflectionPattern.UnstressedAy
-    : isPattern3Entry(e)
-    ? T.InflectionPattern.StressedAy
-    : isPattern4Entry(e)
-    ? T.InflectionPattern.Pashtun
-    : isPattern5Entry(e)
-    ? T.InflectionPattern.Squish
-    : isNounEntry(e) && isFemNounEntry(e) && isPattern6FemEntry(e)
-    ? T.InflectionPattern.FemInanEe
-    : T.InflectionPattern.None;
+      ? T.InflectionPattern.UnstressedAy
+      : isPattern3Entry(e)
+        ? T.InflectionPattern.StressedAy
+        : isPattern4Entry(e)
+          ? T.InflectionPattern.Pashtun
+          : isPattern5Entry(e)
+            ? T.InflectionPattern.Squish
+            : isNounEntry(e) && isFemNounEntry(e) && isPattern6FemEntry(e)
+              ? T.InflectionPattern.FemInanEe
+              : T.InflectionPattern.None;
 }

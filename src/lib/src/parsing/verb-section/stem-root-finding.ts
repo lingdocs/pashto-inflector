@@ -97,6 +97,9 @@ function regStemSearch(s: string, dictionary: T.DictionaryAPI): T.VerbEntry[] {
 function findPerfectiveStem(ph: T.ParsedPH) {
   // TODO: use ph to check if they are compatible HERE
   return function(s: string, dicitonary: T.DictionaryAPI): StemInfo[] {
+    if (ph && ph.type === "CompPH") {
+      return [];
+    }
     if (["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
       return [];
     }
@@ -139,6 +142,9 @@ const stemSplitLookup = memoize((s: string) =>
 
 export function findPerfectiveRoot(ph: T.ParsedPH) {
   return function(s: string, dicitonary: T.DictionaryAPI): RootInfo[] {
+    if (ph && ph.type === "CompPH") {
+      return [];
+    }
     if (startsWithAleph(s) || ["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
       return [];
     }
@@ -166,6 +172,9 @@ function phMatches(base: "root" | "stem") {
   return function(ph: T.ParsedPH) {
     return function(verb: T.VerbEntry) {
       // TODO: handle را غل etc! ? or is
+      if (ph.type !== "PH") {
+        return false;
+      }
       const verbPh = getPhFromVerb(verb, base);
       return verbPh === ph.s;
     };

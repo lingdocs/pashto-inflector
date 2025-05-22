@@ -62,14 +62,14 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
     const { ph, hasNeg, VBE, vbeIndex, hasVBP } = scanSection(prev.body.blocks);
     const allResults: T.ParseResult<VerbSectionBlock | T.ParsedKidsSection>[] =
       [
-        ...(!ph ? parsePH(prev.tokens) : []),
+        ...(!ph ? parsePH(prev.tokens, dictionary) : []),
         ...(VBE
           ? []
           : [
             ...parseVBE(
               prev.tokens,
               dictionary,
-              hasVBP
+              hasVBP && ph?.type === "PH"
                 ? // incase of [PH] + [VBP] before, PH was used up by [VBP]
                 undefined
                 : ph
@@ -126,7 +126,7 @@ function scanSection(blocks: VerbSectionBlock[]): {
 } {
   return blocks.reduce<ReturnType<typeof scanSection>>(
     (acc, b, i) => {
-      if (b.type === "PH") {
+      if (isPH(b)) {
         return {
           ...acc,
           ph: b,
@@ -199,7 +199,8 @@ function verbSectionBlocksCompatible(blocks: VerbSectionBlock[]): boolean {
   const vbp = blocks.find(isParsedVBP);
   const vbe = blocks.find(isParsedVBE);
   const hasMisusedStatKedul = !!(
-    ph?.s === "و" &&
+    ph?.type === "PH" &&
+    ph.s === "و" &&
     !vbp &&
     vbe &&
     vbe.info.type === "verb" &&

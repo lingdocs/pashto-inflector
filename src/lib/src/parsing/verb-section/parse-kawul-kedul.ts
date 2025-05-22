@@ -5,15 +5,16 @@ import { returnParseResults } from "../utils";
 import { getImperativeVerbEnding } from "./misc";
 
 // TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat
+type Head = "oo" | "compPH" | "none";
 
 // TODO: this might be a lot of unnecessary currying
 const getForm =
-  (hasOo: boolean) =>
+  (head: Head) =>
     (kawulKedul: "kawul" | "kedul") =>
       (aspect: T.Aspect) =>
         (base: "stem" | "root") =>
           (person: T.Person): T.ParsedVBE[] => {
-            return validVerbs(hasOo, kawulKedul, aspect).map((verb) => {
+            return validVerbs(head, kawulKedul, aspect).map((verb) => {
               return {
                 type: "VB",
                 info: {
@@ -24,14 +25,14 @@ const getForm =
                 } as const,
                 person,
               } as const;
-            });
+            })
           };
 
 // TODO: what about وکولم etc
 
 export function parseKawulKedul(
   tokens: Readonly<T.Token[]>,
-  hasOo: boolean
+  ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBE>[] {
   if (!tokens.length) {
     return [];
@@ -40,9 +41,13 @@ export function parseKawulKedul(
   if (first.s[0] !== "ک" && first.s[0] !== "ش") {
     return [];
   }
+  if (ph && ph.type === "PH" && ph.s !== "و") {
+    return [];
+  }
   const start = first.s.slice(0, -1);
   const ending = first.s.at(-1) || "";
-  const getF = getForm(hasOo);
+  const head: Head = !ph ? "none" : ph.type === "CompPH" ? "compPH" : "oo";
+  const getF = getForm(head);
   const oneBase =
     (kawulKedul: "kawul" | "kedul") =>
       (base: "root" | "stem") =>
@@ -112,7 +117,7 @@ export function parseKawulKedul(
   if (start === "کول" && ending !== "ل") {
     return [
       ...oneBase("kawul")("root")("imperfective")(people.root),
-      ...(hasOo ? oneBase("kawul")("root")("perfective")(people.root) : []),
+      ...(head === "oo" ? oneBase("kawul")("root")("perfective")(people.root) : []),
     ];
   }
   if (start === "کېږ") {
@@ -180,29 +185,23 @@ function addImperative(v: T.ParsedVBE): T.ParsedVBE {
 }
 
 function validVerbs(
-  hasOo: boolean,
+  head: Head,
   kawulKedul: "kawul" | "kedul",
   aspect: T.Aspect
 ): T.VerbEntry[] {
-  if (aspect === "imperfective" && hasOo) {
-    return [];
+  if (aspect === "imperfective") {
+    return head === "none" ?
+      kawulKedul === "kawul" ? [kawulStat, kawulDyn] : [kedulStat, kedulDyn]
+      : [];
   }
-  if (aspect === "perfective" && hasOo) {
-    return kawulKedul === "kawul"
-      ? [kawulDyn]
-      : [
-        kedulDyn,
-        // because the oo could also be for an ability VBP to come after
-        // in which case the kedulDyn will be eliminated by ensureVBEAuxOk
-        // in parse-blocks
-        kedulStat,
-      ];
+  if (head === "oo") {
+    return kawulKedul === "kawul" ? [kawulDyn] : [
+      kedulDyn,
+      // because the oo could also be for an ability VBP to come after
+      // in which case the kedulDyn will be eliminated by ensureVBEAuxOk
+      // in parse-blocks
+      kedulStat,
+    ];
   }
-  if (aspect === "imperfective" && !hasOo) {
-    return kawulKedul === "kawul" ? [kawulStat, kawulDyn] : [kedulStat, kedulDyn];
-  }
-  if (aspect === "perfective" && !hasOo) {
-    return kawulKedul === "kawul" ? [kawulStat] : [kedulStat];
-  }
-  throw new Error("should be unreachable");
+  return kawulKedul === "kawul" ? [kawulStat] : [kedulStat];
 }

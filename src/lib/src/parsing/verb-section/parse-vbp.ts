@@ -29,11 +29,10 @@ function parseAbility(
   const start = s.endsWith("ای")
     ? s.slice(0, -2)
     : s.endsWith("ی")
-    ? s.slice(0, -1)
-    : "";
+      ? s.slice(0, -1)
+      : "";
   if (!start) return [];
-
-  const res = findRoot(ph)(start, dicitonary)
+  return findRoot(ph)(start, dicitonary)
     .map<T.ParsedVBP>((root) => ({
       type: "VB",
       info: {
@@ -43,7 +42,6 @@ function parseAbility(
       },
     }))
     .flatMap((m) => returnParseResult(rest, m));
-  return res;
 }
 
 function parsePastPart(
@@ -63,8 +61,8 @@ function parsePastPart(
     ...dictionary.verbEntryLookup(wOutEnd),
     ...(canBePastPartWOutL(wOutEnd + "ل")
       ? dictionary
-          .verbEntryLookup(wOutEnd + "ل")
-          .filter((x) => x.entry.p !== "talúl")
+        .verbEntryLookup(wOutEnd + "ل")
+        .filter((x) => x.entry.p !== "talúl")
       : []),
   ];
   const genNums = endingGenNum(ending);

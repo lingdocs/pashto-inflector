@@ -4,7 +4,7 @@ import { tokenizer } from "../tokenizer";
 import { getPeople } from "../utils";
 import { parseVerbSection, VerbSectionData } from "./parse-verb-section";
 import { kawulDyn, kawulStat, kedulDyn, kedulStat, raatlul, wartlul } from "./irreg-verbs";
-import { makeAdjectiveSelection, makeAdverbSelection } from "../../phrase-building/make-selections";
+import { makeAdjectiveSelection } from "../../phrase-building/make-selections";
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
@@ -20,6 +20,7 @@ const tlul = testDictionary
   .filter((x) => x.entry.e.includes("to go"))[0];
 const manul = testDictionary.verbEntryLookup("منل")[0];
 const pakhawul = testDictionary.verbEntryLookup("پخول")[0];
+const pokh = testDictionary.adjLookup("پوخ")[0];
 const pakhedul = testDictionary.verbEntryLookup("پخېدل")[0];
 // const gaalul = testDictionary.verbEntryLookup("ګالل")[0];
 const khorul = testDictionary.verbEntryLookup("خوړل")[0];
@@ -1396,6 +1397,30 @@ const statComp: Section = {
       }))
     }
     // perfective - adj agreement
+    // {
+    //   input: "پوخ کړي",
+    //   output: getPeople(3, "both").map(person => ({
+    //     blocks: [
+    //       {
+    //         type: "CompPH",
+    //         selection: {
+    //           inflection: ["1"],
+    //           gender: ["fem"],
+    //           selection: {
+    //             type: "adjective",
+    //             entry: pokh,
+    //           }
+    //         }
+    //       },
+    //       {
+    //         type: "VB",
+    //         info: {
+
+    //         }
+    //       }
+    //     ]
+    //   }),
+    // },
     // perfective - others
   ],
 }

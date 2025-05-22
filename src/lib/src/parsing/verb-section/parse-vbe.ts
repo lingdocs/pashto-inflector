@@ -53,7 +53,7 @@ function parseVBEBasic(
   if (irregResults.length) {
     return returnParseResults(rest, irregResults);
   }
-  const kawulKedul = parseKawulKedul(tokens, !!(ph && ph.s === "و"));
+  const kawulKedul = parseKawulKedul(tokens, ph, false);
   if (kawulKedul.length) {
     return kawulKedul;
   }
@@ -104,15 +104,19 @@ function parseWelded(
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined
 ): T.ParseResult<T.ParsedVBE>[] {
+  if (ph) {
+    return [];
+  }
   const complement = parseComplement(tokens, dictionary);
   if (!complement.length) {
     return [];
   }
   return bindParseResult(complement, (tkns, comp) => {
-    if (typeof comp.selection === "object" && "type" in comp.selection && (comp.selection.type === "sandwich" || comp.selection.type === "possesor")) {
+    // TODO: remove the last check allow for CompNP once implemented 
+    if (typeof comp.selection === "object" && "type" in comp.selection && (comp.selection.type === "sandwich" || comp.selection.type === "possesor" || comp.selection.type === "NP")) {
       return [];
     }
-    const k = parseKawulKedul(tkns, !!ph && ph.s === "و");
+    const k = parseKawulKedul(tkns, { type: "CompPH", selection: comp.selection }, true);
     return bindParseResult(k, (tk, aux) => {
       if (!("aspect" in aux.info)) {
         // purely for type safety because of the badly designed types

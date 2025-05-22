@@ -11,15 +11,18 @@ export function parseAP(
   if (s.length === 0) {
     return [];
   }
-  return [
+  const res: T.ParseResult<T.APSelection["selection"]>[] = [
     ...(!possesor ? parseAdverb(s, dicitonary) : []),
-    ...fmapParseResult(
-      (selection) =>
-        ({
-          type: "AP",
-          selection,
-        } as const),
-      parseSandwich(s, dicitonary, possesor)
-    ),
-  ];
+    ...parseSandwich(s, dicitonary, possesor),
+  ]
+  return fmapParseResult(
+    (selection) =>
+    ({
+      type: "AP",
+      selection,
+    } as const),
+    res,
+  );
 }
+
+
