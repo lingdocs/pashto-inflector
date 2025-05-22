@@ -31,16 +31,17 @@ const vBank: Record<"transitive" | "intransitive", Record<("stat" | "dyn"), T.Ve
   },
 }
 
+const makeAuxKawul = makeAux("transitive");
+
 const kawulImperfective: Section = [
   {
     ph: undefined,
     input: "کوم",
-    output: makeAux(
+    output: makeAuxKawul(
       getPeople(1, "sing"),
       "both",
       ["imperfective"],
       ["root", "stem"],
-      "transitive",
     ),
   },
   {
@@ -51,31 +52,28 @@ const kawulImperfective: Section = [
   {
     ph: undefined,
     input: "کولم",
-    output: makeAux(
+    output: makeAuxKawul(
       getPeople(1, "sing"),
       "both",
       ["imperfective"],
       ["root"],
-      "transitive",
     )
   },
   {
     ph: undefined,
     input: "کوې",
     output: [
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(2, "sing"),
         "both",
         ["imperfective"],
         ["root", "stem"],
-        "transitive",
       ),
-      ...makeAux(
+      ...makeAuxKawul(
         [T.Person.ThirdPlurFemale],
         "both",
         ["imperfective"],
         ["root"],
-        "transitive",
       ),
     ],
   },
@@ -83,31 +81,28 @@ const kawulImperfective: Section = [
     ph: undefined,
     input: "کولې",
     output: [
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(2, "sing"),
         "both",
         ["imperfective"],
         ["root"],
-        "transitive",
       ),
-      ...makeAux(
+      ...makeAuxKawul(
         [T.Person.ThirdPlurFemale],
         "both",
         ["imperfective"],
         ["root"],
-        "transitive",
       ),
     ],
   },
   {
     ph: undefined,
     input: "کوي",
-    output: makeAux(
+    output: makeAuxKawul(
       getPeople(3, "both"),
       "both",
       ["imperfective"],
       ["stem"],
-      "transitive",
     ),
   },
   {
@@ -118,31 +113,28 @@ const kawulImperfective: Section = [
   {
     ph: undefined,
     input: "کوو",
-    output: makeAux(
+    output: makeAuxKawul(
       getPeople(1, "pl"),
       "both",
       ["imperfective"],
       ["stem", "root"],
-      "transitive",
     )
   },
   {
     ph: undefined,
     input: "کولو",
     output: [
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(1, "pl"),
         "both",
         ["imperfective"],
         ["root"],
-        "transitive",
       ),
-      ...makeAux(
+      ...makeAuxKawul(
         [T.Person.ThirdSingMale],
         "both",
         ["imperfective"],
         ["root"],
-        "transitive",
       )
     ],
   },
@@ -150,19 +142,17 @@ const kawulImperfective: Section = [
     ph: undefined,
     input: "کوئ",
     output: [
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(2, "pl"),
         "both",
         ["imperfective"],
         ["stem", "root"],
-        "transitive",
       ),
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(2, "pl"),
         "both",
         ["imperfective"],
         ["stem"],
-        "transitive",
         true,
       )
     ],
@@ -170,23 +160,21 @@ const kawulImperfective: Section = [
   {
     ph: undefined,
     input: "کولئ",
-    output: makeAux(
+    output: makeAuxKawul(
       getPeople(2, "pl"),
       "both",
       ["imperfective"],
       ["root"],
-      "transitive",
     ),
   },
   {
     ph: undefined,
     input: "کول",
-    output: makeAux(
+    output: makeAuxKawul(
       [T.Person.ThirdPlurMale],
       "both",
       ["imperfective"],
       ["root"],
-      "transitive"
     )
   },
   {
@@ -198,42 +186,38 @@ const kawulImperfective: Section = [
     ph: undefined,
     input: "کوه",
     output: [
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(2, "sing"),
         "both",
         ["imperfective"],
         ["stem"],
-        "transitive",
         true,
       ),
-      ...makeAux(
+      ...makeAuxKawul(
         [T.Person.ThirdSingFemale],
         "both",
         ["imperfective"],
         ["root"],
-        "transitive",
       )],
   },
   {
     ph: undefined,
     input: "کوله",
-    output: makeAux(
+    output: makeAuxKawul(
       [T.Person.ThirdSingFemale],
       "both",
       ["imperfective"],
       ["root"],
-      "transitive",
     ),
   },
   {
     ph: undefined,
     input: "کاوه",
-    output: makeAux(
+    output: makeAuxKawul(
       [T.Person.ThirdSingMale],
       "both",
       ["imperfective"],
       ["root"],
-      "transitive",
     ),
   }
 ];
@@ -261,19 +245,17 @@ const kawulPerfective: Section = [
     input: "کړې",
     ph: undefined,
     output: [
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(2, "sing"),
         "stat",
         ["perfective"],
         ["stem", "root"],
-        "transitive",
       ),
-      ...makeAux(
+      ...makeAuxKawul(
         [T.Person.ThirdPlurFemale],
         "stat",
         ["perfective"],
         ["root"],
-        "transitive",
       ),
     ]
   },
@@ -281,19 +263,17 @@ const kawulPerfective: Section = [
     input: "کړلې",
     ph: undefined,
     output: [
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(2, "sing"),
         "stat",
         ["perfective"],
         ["root"],
-        "intransitive",
       ),
-      ...makeAux(
+      ...makeAuxKawul(
         [T.Person.ThirdPlurFemale],
         "stat",
         ["perfective"],
         ["root"],
-        "transitive",
       ),
     ]
   },
@@ -301,22 +281,143 @@ const kawulPerfective: Section = [
     input: "کې",
     ph: undefined,
     output: [
-      ...makeAux(
+      ...makeAuxKawul(
         getPeople(2, "sing"),
         "stat",
         ["perfective"],
         ["stem", "root"],
-        "transitive",
       ),
-      ...makeAux(
+      ...makeAuxKawul(
         [T.Person.ThirdPlurFemale],
         "stat",
         ["perfective"],
         ["root"],
-        "transitive",
       ),
     ]
   },
+  ...["کړي", "کي"].flatMap(ps => phVars(
+    ps,
+    getPeople(3, "both"),
+    ["stem"],
+    "transitive",
+  )),
+  {
+    input: "کړلي",
+    ph: undefined,
+    output: [],
+  },
+  ...["کړه", "که"].map(ps => ({
+    input: ps,
+    ph: undefined,
+    output: [
+      ...makeAuxKawul(
+        [T.Person.ThirdSingFemale],
+        "stat",
+        ["perfective"],
+        ["root"],
+      ),
+      ...makeAuxKawul(
+        getPeople(2, "sing"),
+        "stat",
+        ["perfective"],
+        ["stem"],
+        true,
+      )
+    ],
+  })),
+  ...phVars(
+    "کړله",
+    [T.Person.ThirdSingFemale],
+    ["root"],
+    "transitive",
+  ),
+  ...phVars(
+    "کړل",
+    [T.Person.ThirdPlurMale],
+    ["root"],
+    "transitive"
+  ),
+  ...["کړو", "کو", "کړلو"].map(input => ({
+    input,
+    ph: undefined,
+    output: [
+      ...makeAuxKawul(
+        getPeople(1, "pl"),
+        "stat",
+        ["perfective"],
+        [...!input.includes("ل") ? (["stem"] as const) : [], "root"],
+      ),
+      ...makeAuxKawul(
+        [T.Person.ThirdSingMale],
+        "stat",
+        ["perfective"],
+        ["root"],
+      )
+    ],
+  })),
+  ...["کړئ", "کئ"].map(ps => ({
+    input: ps,
+    ph: undefined,
+    output: [
+      ...makeAuxKawul(
+        getPeople(2, "pl"),
+        "stat",
+        ["perfective"],
+        ["root", "stem"],
+      ),
+      ...makeAuxKawul(
+        getPeople(2, "pl"),
+        "stat",
+        ["perfective"],
+        ["stem"],
+        true,
+      )
+    ],
+  })),
+  ...["کړئ", "کئ"].map(ps => ({
+    input: ps,
+    ph: compPH,
+    output: [
+      ...makeAuxKawul(
+        getPeople(2, "pl"),
+        "stat",
+        ["perfective"],
+        ["root", "stem"],
+      ),
+      ...makeAuxKawul(
+        getPeople(2, "pl"),
+        "stat",
+        ["perfective"],
+        ["stem"],
+        true,
+      )
+    ],
+  })),
+  ...["کړئ", "کئ"].map(ps => ({
+    input: ps,
+    ph: oo,
+    output: [
+      ...makeAuxKawul(
+        getPeople(2, "pl"),
+        "dyn",
+        ["perfective"],
+        ["root", "stem"],
+      ),
+      ...makeAuxKawul(
+        getPeople(2, "pl"),
+        "dyn",
+        ["perfective"],
+        ["stem"],
+        true,
+      )
+    ],
+  })),
+  ...phVars(
+    "کړلئ",
+    getPeople(2, "pl"),
+    ["root"],
+    "transitive",
+  )
 ];
 
 const sections = {
@@ -353,34 +454,31 @@ function phVars(input: string, people: T.Person[], base: ("stem" | "root")[], tr
     {
       ph: undefined,
       input,
-      output: makeAux(
+      output: makeAux(transitivity)(
         people,
         "stat",
         ["perfective"],
         base,
-        transitivity,
       )
     },
     {
       ph: oo,
       input,
-      output: makeAux(
+      output: makeAux(transitivity)(
         people,
         "dyn",
         ["perfective"],
         base,
-        transitivity,
       )
     },
     {
       ph: compPH,
       input,
-      output: makeAux(
+      output: makeAux(transitivity)(
         people,
         "stat",
         ["perfective"],
         base,
-        transitivity,
       )
     }
   ]
@@ -391,26 +489,30 @@ function toKeys(v: "stat" | "dyn" | "both"): ("stat" | "dyn")[] {
 }
 
 function makeAux(
-  people: T.Person[],
-  statDyn: "stat" | "dyn" | "both",
-  aspects: T.Aspect[],
-  bases: ("root" | "stem")[],
   trans: "transitive" | "intransitive",
-  imperative?: boolean,
-): T.ParsedVBE[] {
-  const verbs = toKeys(statDyn).map(sd => vBank[trans][sd]);
-  return people.flatMap(person =>
-    bases.flatMap(base =>
-      aspects.flatMap(aspect =>
-        verbs.map(verb => makeParsedVBE({
-          person,
-          aspect,
-          base,
-          verb,
-          imperative,
-        }))))
-  )
+) {
+  return function(
+    people: T.Person[],
+    statDyn: "stat" | "dyn" | "both",
+    aspects: T.Aspect[],
+    bases: ("root" | "stem")[],
+    imperative?: boolean,
+  ): T.ParsedVBE[] {
+    const verbs = toKeys(statDyn).map(sd => vBank[trans][sd]);
+    return people.flatMap(person =>
+      bases.flatMap(base =>
+        aspects.flatMap(aspect =>
+          verbs.map(verb => makeParsedVBE({
+            person,
+            aspect,
+            base,
+            verb,
+            imperative,
+          }))))
+    )
+  }
 }
+
 
 function makeParsedVBE(props: {
   person: T.Person;
