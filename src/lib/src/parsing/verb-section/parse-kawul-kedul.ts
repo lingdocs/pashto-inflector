@@ -5,7 +5,10 @@ import { returnParseResults } from "../utils";
 import { getImperativeVerbEnding } from "./misc";
 
 // TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat
-type Head = "oo" | "compPH" | "none";
+type Head = "oo" | "none" | "other";
+function getHead(ph: T.ParsedPH | undefined): Head {
+  return !ph ? "none" : ph.type === "PH" && ph.s === "و" ? "oo" : "other"
+}
 
 // TODO: this might be a lot of unnecessary currying
 const getForm =
@@ -30,6 +33,8 @@ const getForm =
 
 // TODO: what about وکولم etc
 
+// TODO: handle cases for وانه شم اخیستی! 
+
 export function parseKawulKedul(
   tokens: Readonly<T.Token[]>,
   ph: T.ParsedPH | undefined,
@@ -41,12 +46,9 @@ export function parseKawulKedul(
   if (first.s[0] !== "ک" && first.s[0] !== "ش") {
     return [];
   }
-  if (ph && ph.type === "PH" && ph.s !== "و") {
-    return [];
-  }
   const start = first.s.slice(0, -1);
   const ending = first.s.at(-1) || "";
-  const head: Head = !ph ? "none" : ph.type === "CompPH" ? "compPH" : "oo";
+  const head = getHead(ph)
   const getF = getForm(head);
   const oneBase =
     (kawulKedul: "kawul" | "kedul") =>
@@ -189,19 +191,19 @@ function validVerbs(
   kawulKedul: "kawul" | "kedul",
   aspect: T.Aspect
 ): T.VerbEntry[] {
+  // imperfective
   if (aspect === "imperfective") {
     return head === "none" ?
       kawulKedul === "kawul" ? [kawulStat, kawulDyn] : [kedulStat, kedulDyn]
       : [];
   }
+  // perfective
   if (head === "oo") {
-    return kawulKedul === "kawul" ? [kawulDyn] : [
-      kedulDyn,
-      // because the oo could also be for an ability VBP to come after
-      // in which case the kedulDyn will be eliminated by ensureVBEAuxOk
-      // in parse-blocks
-      kedulStat,
-    ];
+    return kawulKedul === "kawul" ? [kawulDyn] : [kedulDyn];
   }
-  return kawulKedul === "kawul" ? [kawulStat] : [kedulStat];
+  if (head === "none") {
+    return kawulKedul === "kawul" ? [kawulStat] : [kedulStat];
+  }
+  return [];
 }
+
