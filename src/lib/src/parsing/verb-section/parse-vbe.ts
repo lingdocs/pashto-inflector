@@ -11,7 +11,7 @@ import {
   withAlephAdded,
   RootInfo,
 } from "./stem-root-finding";
-import { parseKawulKedul } from "./parse-kawul-kedul";
+import { parseKawulKedulVBE } from "./parse-kawul-kedul";
 import { parseComplement } from "../argument-section/parse-complement";
 import { getTransitivity } from "../../verb-info";
 
@@ -53,7 +53,7 @@ function parseVBEBasic(
   if (irregResults.length) {
     return returnParseResults(rest, irregResults);
   }
-  const kawulKedul = parseKawulKedul(tokens, ph, false);
+  const kawulKedul = parseKawulKedulVBE(tokens, ph, false);
   if (kawulKedul.length) {
     return kawulKedul;
   }
@@ -116,7 +116,7 @@ function parseWelded(
     if (typeof comp.selection === "object" && "type" in comp.selection && (comp.selection.type === "sandwich" || comp.selection.type === "possesor" || comp.selection.type === "NP")) {
       return [];
     }
-    const k = parseKawulKedul(tkns, { type: "CompPH", selection: comp.selection }, true);
+    const k = parseKawulKedulVBE(tkns, { type: "CompPH", selection: comp.selection }, true);
     return bindParseResult(k, (tk, aux) => {
       if (!("aspect" in aux.info)) {
         // purely for type safety because of the badly designed types

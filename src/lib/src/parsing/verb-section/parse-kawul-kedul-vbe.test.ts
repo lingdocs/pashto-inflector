@@ -3,7 +3,7 @@ import { testDictionary } from "../mini-test-dictionary";
 import { tokenizer } from "../tokenizer";
 import { getPeople } from "../utils";
 import { kawulDyn, kawulStat, kedulStat, kedulDyn } from "./irreg-verbs";
-import { parseKawulKedul } from "./parse-kawul-kedul";
+import { parseKawulKedulVBE } from "./parse-kawul-kedul";
 
 type Section = { ph: T.ParsedPH | undefined, input: string, output: T.ParsedVBE[] }[];
 
@@ -714,7 +714,7 @@ for (const [sectionName, section] of Object.entries(sections)) {
     section.forEach(({ input, ph, output }) => {
       test(`${input} ${showPh(ph)}`, () => {
         const tokens = tokenizer(input);
-        const result = parseKawulKedul(tokens, ph);
+        const result = parseKawulKedulVBE(tokens, ph);
         expect(result.every(x => !x.errors.length && !x.tokens.length))
         expect(result.map(x => x.body)).toIncludeSameMembers(output);
       });

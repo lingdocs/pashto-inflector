@@ -33,12 +33,9 @@ export type VerbSectionData = {
     position: number;
     section: T.ParsedKid[];
   }[];
+  ph: undefined | T.ParsedPH,
 };
 
-const empty: VerbSectionData = {
-  blocks: [],
-  kids: [],
-};
 
 export function parseVerbSection(
   tokens: readonly T.Token[],
@@ -47,36 +44,45 @@ export function parseVerbSection(
   if (tokens.length === 0) {
     return [];
   }
-  return parseVerbSectR(dictionary)({
-    tokens,
-    body: empty,
-    errors: [],
-  });
+  const phs = parsePH(tokens, dictionary);
+  return bindParseResult(phs, (tkns, ph) => parseVerbSectionRear(ph)(tkns, dictionary));
+}
+
+function parseVerbSectionRear(ph: T.ParsedPH) {
+  return function(tokens: readonly T.Token[], dictionary: T.DictionaryAPI): T.ParseResult<VerbSectionData>[] {
+    if (tokens.length === 0) {
+      return [];
+    }
+    return parseVerbSectRearR(dictionary)(returnParseResultSingle(tokens, {
+      blocks: [],
+      kids: [],
+      ph,
+    }))
+  }
 }
 
 // issue - verbs like wahul don't get parsed because the و needs to be optional!
-function parseVerbSectR(dictionary: T.DictionaryAPI) {
+function parseVerbSectRearR(dictionary: T.DictionaryAPI) {
   return function(
     prev: T.ParseResult<VerbSectionData>
   ): T.ParseResult<VerbSectionData>[] {
-    const { ph, hasNeg, VBE, vbeIndex, hasVBP } = scanSection(prev.body.blocks);
+    const { hasNeg, VBE, vbeIndex, hasVBP } = scanSection(prev.body.blocks);
     const allResults: T.ParseResult<VerbSectionBlock | T.ParsedKidsSection>[] =
       [
-        ...(!ph ? parsePH(prev.tokens, dictionary) : []),
         ...(VBE
           ? []
           : [
             ...parseVBE(
               prev.tokens,
               dictionary,
-              hasVBP && ph?.type === "PH"
+              hasVBP && prev.body.ph?.type === "PH"
                 ? // incase of [PH] + [VBP] before, PH was used up by [VBP]
                 undefined
-                : ph
+                : prev.body.ph
             ),
-            ...(ph ? [] : parseEquative(prev.tokens)),
+            ...(prev.body.ph ? [] : parseEquative(prev.tokens)),
           ]),
-        ...(!hasVBP ? parseVBP(prev.tokens, dictionary, ph) : []),
+        ...(!hasVBP ? parseVBP(prev.tokens, dictionary, prev.body.ph) : []),
         ...(!hasNeg ? parseNeg(prev.tokens) : []),
         ...parseKidsSection(prev.tokens, [], []),
       ].filter(ensureVBEAuxOk(prev.body.blocks, vbeIndex));
@@ -86,7 +92,7 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
     return bindParseResult(allResults, (tokens, r) => {
       if (r.type === "kids") {
         const position = prev.body.blocks.length;
-        return parseVerbSectR(dictionary)(
+        return parseVerbSectRearR(dictionary)(
           returnParseResultSingle(
             tokens,
             {
@@ -103,7 +109,7 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
           )
         );
       }
-      return parseVerbSectR(dictionary)(
+      return parseVerbSectRearR(dictionary)(
         returnParseResultSingle<VerbSectionData>(
           tokens,
           {
@@ -118,7 +124,6 @@ function parseVerbSectR(dictionary: T.DictionaryAPI) {
 }
 
 function scanSection(blocks: VerbSectionBlock[]): {
-  ph: T.ParsedPH | undefined;
   hasNeg: boolean;
   VBE: T.ParsedVBE | undefined;
   vbeIndex: number;
@@ -126,12 +131,6 @@ function scanSection(blocks: VerbSectionBlock[]): {
 } {
   return blocks.reduce<ReturnType<typeof scanSection>>(
     (acc, b, i) => {
-      if (isPH(b)) {
-        return {
-          ...acc,
-          ph: b,
-        };
-      }
       if (b.type === "negative") {
         return {
           ...acc,
@@ -154,7 +153,6 @@ function scanSection(blocks: VerbSectionBlock[]): {
       return acc;
     },
     {
-      ph: undefined,
       hasNeg: false,
       VBE: undefined,
       vbeIndex: -1,

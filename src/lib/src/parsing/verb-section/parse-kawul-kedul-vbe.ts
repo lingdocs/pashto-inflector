@@ -35,7 +35,7 @@ const getForm =
 
 // TODO: handle cases for وانه شم اخیستی! 
 
-export function parseKawulKedul(
+export function parseKawulKedulVBE(
   tokens: Readonly<T.Token[]>,
   ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBE>[] {
