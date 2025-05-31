@@ -11,6 +11,8 @@ const dictionary = (await res.json()) as T.Dictionary;
 
 const splitEntries: T.VerbDictionaryEntry[] =
   dictionary.entries.filter<T.VerbDictionaryEntry>(
+    // TODO: for some crazy reason this has to be run with Node 20, not 22, otherwise
+    // it wiss lay that tp.isVerbDictionaryEntry() is not a function
     (x): x is T.VerbDictionaryEntry =>
       tp.isVerbDictionaryEntry(x) &&
       !!x.separationAtP &&
@@ -32,8 +34,8 @@ const splitVerbContents = `import { VerbEntry, VerbDictionaryEntry } from "../..
 // DO NOT MODIFY - GENERATED
 export const entries: VerbEntry[] = [
 ${splitEntries
-  .map((e) => `\t{ entry: ${JSON.stringify(e)} as VerbDictionaryEntry },`)
-  .join("\n")}
+    .map((e) => `\t{ entry: ${JSON.stringify(e)} as VerbDictionaryEntry },`)
+    .join("\n")}
 ];
 `;
 

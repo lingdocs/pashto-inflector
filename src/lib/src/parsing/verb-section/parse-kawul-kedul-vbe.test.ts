@@ -3,7 +3,7 @@ import { testDictionary } from "../mini-test-dictionary";
 import { tokenizer } from "../tokenizer";
 import { getPeople } from "../utils";
 import { kawulDyn, kawulStat, kedulStat, kedulDyn } from "./irreg-verbs";
-import { parseKawulKedulVBE } from "./parse-kawul-kedul";
+import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 
 type Section = { ph: T.ParsedPH | undefined, input: string, output: T.ParsedVBE[] }[];
 

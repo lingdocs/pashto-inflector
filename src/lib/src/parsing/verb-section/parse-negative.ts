@@ -22,3 +22,15 @@ export function parseNeg(
   }
   return [];
 }
+
+export function parseOptNeg(tokens: readonly T.Token[]): T.ParseResult<T.NegativeBlock | undefined>[] {
+  const res = parseNeg(tokens);
+  if (!res.length) {
+    return [{
+      tokens,
+      body: undefined,
+      errors: [],
+    }];
+  }
+  return res
+}

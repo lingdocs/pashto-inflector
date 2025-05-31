@@ -4,19 +4,19 @@ import { findRoot } from "./stem-root-finding";
 
 export function parseVBP(
   tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI,
+  dicitonary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined
 ): T.ParseResult<T.ParsedVBP>[] {
   if (tokens.length === 0) {
     return [];
   }
   return [
-    ...(!ph ? parsePastPart(tokens, dictionary) : []),
-    ...parseAbility(tokens, dictionary, ph),
-  ];
+    ...parseAbility(tokens, dicitonary, ph),
+    ...ph ? [] : parsePastPart(tokens, dicitonary),
+  ]
 }
 
-function parseAbility(
+export function parseAbility(
   tokens: Readonly<T.Token[]>,
   dicitonary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined
@@ -44,7 +44,7 @@ function parseAbility(
     .flatMap((m) => returnParseResult(rest, m));
 }
 
-function parsePastPart(
+export function parsePastPart(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedVBP>[] {

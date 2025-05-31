@@ -20,7 +20,7 @@ const tlul = testDictionary
   .filter((x) => x.entry.e.includes("to go"))[0];
 const manul = testDictionary.verbEntryLookup("منل")[0];
 const pakhawul = testDictionary.verbEntryLookup("پخول")[0];
-const pokh = testDictionary.adjLookup("پوخ")[0];
+// const pokh = testDictionary.adjLookup("پوخ")[0];
 const pakhedul = testDictionary.verbEntryLookup("پخېدل")[0];
 // const gaalul = testDictionary.verbEntryLookup("ګالل")[0];
 const khorul = testDictionary.verbEntryLookup("خوړل")[0];
@@ -1448,9 +1448,9 @@ const sections = [
   seperatingHead,
   irreg3rdMascSing,
   irregularVerbs,
-  ability,
-  perfect,
-  statComp,
+  // ability,
+  // perfect,
+  // statComp,
 ];
 
 sections.forEach((section) => {

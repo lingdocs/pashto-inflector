@@ -1,6 +1,6 @@
 import * as T from "../../../types";
 import { parseKid } from "./parse-kid";
-import { bindParseResult, returnParseResult } from "./utils";
+import { bindParseResult, returnParseResult, returnParseResults, returnParseResultSingle } from "./utils";
 
 export function parseKidsSection(
   tokens: Readonly<T.Token[]>,
@@ -26,11 +26,21 @@ export function parseKidsSection(
       ...(kidDoubled(r, prevKids)
         ? [{ message: `double '${r}' in kids section` }]
         : !kidComesBehind(r, prevKids.at(-1))
-        ? [{ message: "kids section out of order" }]
-        : []),
+          ? [{ message: "kids section out of order" }]
+          : []),
     ];
     return parseKidsSection(tokens, [...prevKids, r], errorsN);
   });
+}
+
+export function parseOptKidsSection(
+  tokens: readonly T.Token[],
+): T.ParseResult<T.ParsedKidsSection | undefined>[] {
+  const res = parseKidsSection(tokens, [], []);
+  if (!res.length) {
+    return [{ tokens, body: undefined, errors: [] }];
+  }
+  return res;
 }
 
 function kidDoubled(k: T.ParsedKid, prev: T.ParsedKid[]): boolean {
