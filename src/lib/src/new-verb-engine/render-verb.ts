@@ -251,11 +251,6 @@ function addEnding({
       aspect: ability ? "perfective" : aspect,
       base,
       verb: ability ? kedulStat : verb,
-      ...(ability
-        ? {
-            abilityAux: true,
-          }
-        : {}),
     };
     if (vb.type === "welded") {
       return {
@@ -332,9 +327,9 @@ function getEnding(
   const [row, col] = getVerbBlockPosFromPerson(person);
   return tenseC === "past"
     ? {
-        long: pastEndings.long[row][col],
-        short: pastEndings.short[row][col],
-      }
+      long: pastEndings.long[row][col],
+      short: pastEndings.short[row][col],
+    }
     : presentEndings[row][col];
 }
 
@@ -414,9 +409,9 @@ function ensure3rdPast(
       .map(({ p, f }) =>
         verb.entry.separationAtP !== undefined && aspect === "perfective"
           ? makePsString(
-              p.slice(verb.entry.separationAtP),
-              f.slice(verb.entry.separationAtF)
-            )
+            p.slice(verb.entry.separationAtP),
+            f.slice(verb.entry.separationAtF)
+          )
           : makePsString(p, f)
       )
       .flatMap((ps) =>

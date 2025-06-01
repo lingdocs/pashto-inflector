@@ -20,7 +20,7 @@ const tlul = testDictionary
   .filter((x) => x.entry.e.includes("to go"))[0];
 const manul = testDictionary.verbEntryLookup("منل")[0];
 const pakhawul = testDictionary.verbEntryLookup("پخول")[0];
-// const pokh = testDictionary.adjLookup("پوخ")[0];
+const pokh = testDictionary.adjLookup("پوخ")[0];
 const pakhedul = testDictionary.verbEntryLookup("پخېدل")[0];
 // const gaalul = testDictionary.verbEntryLookup("ګالل")[0];
 const khorul = testDictionary.verbEntryLookup("خوړل")[0];
@@ -1395,32 +1395,62 @@ const statComp: Section = {
         ],
         kids: [],
       }))
-    }
+    },
     // perfective - adj agreement
-    // {
-    //   input: "پوخ کړي",
-    //   output: getPeople(3, "both").map(person => ({
-    //     blocks: [
-    //       {
-    //         type: "CompPH",
-    //         selection: {
-    //           inflection: ["1"],
-    //           gender: ["fem"],
-    //           selection: {
-    //             type: "adjective",
-    //             entry: pokh,
-    //           }
-    //         }
-    //       },
-    //       {
-    //         type: "VB",
-    //         info: {
-
-    //         }
-    //       }
-    //     ]
-    //   }),
-    // },
+    {
+      input: "پوخ کړي",
+      output: getPeople(3, "both").map(person => ({
+        blocks: [
+          {
+            type: "CompPH",
+            selection: {
+              inflection: [0],
+              gender: ["masc"],
+              given: "پوخ",
+              selection: {
+                type: "adjective",
+                entry: pokh,
+                sandwich: undefined,
+              }
+            }
+          },
+          makeParsedVBE({
+            person,
+            base: "stem",
+            aspect: "perfective",
+            verb: kawulStat,
+          })
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "پخه شي",
+      output: getPeople(3, "both").map(person => ({
+        blocks: [
+          {
+            type: "CompPH",
+            selection: {
+              inflection: [0],
+              gender: ["fem"],
+              given: "پخه",
+              selection: {
+                type: "adjective",
+                entry: pokh,
+                sandwich: undefined,
+              }
+            }
+          },
+          makeParsedVBE({
+            person,
+            base: "stem",
+            aspect: "perfective",
+            verb: kedulStat,
+          })
+        ],
+        kids: [],
+      })),
+    }
     // perfective - others
   ],
 }
@@ -1448,9 +1478,9 @@ const sections = [
   seperatingHead,
   irreg3rdMascSing,
   irregularVerbs,
-  // ability,
-  // perfect,
-  // statComp,
+  ability,
+  perfect,
+  statComp,
 ];
 
 sections.forEach((section) => {
@@ -1545,7 +1575,6 @@ function makeParsedVBE(props: {
   base: "root" | "stem";
   verb: T.VerbEntry;
   imperative?: true;
-  abilityAux?: boolean;
 }): T.ParsedVBE {
   return {
     type: "VB",

@@ -15,8 +15,7 @@ import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { parseComplement } from "../argument-section/parse-complement";
 import { getTransitivity } from "../../verb-info";
 
-// TODO: و ارزول
-
+// TODO: و ارزي
 // TODO: کول verbs!
 // check that aawu stuff is working
 // check oo`azmooy -
@@ -49,6 +48,9 @@ function parseVBEBasic(
     return [];
   }
   const [first, ...rest] = tokens;
+  if (ph?.type === "CompPH") {
+    return parseKawulKedulVBE(tokens, undefined).filter(x => x.body.info.type === "verb" && isStatAux(x.body.info.verb) && x.body.info.base === "stem" && x.body.info.aspect === "perfective")
+  }
   const irregResults = parseIrregularVerb(first.s, ph);
   if (irregResults.length) {
     return returnParseResults(rest, irregResults);
@@ -112,11 +114,11 @@ function parseWelded(
     return [];
   }
   return bindParseResult(complement, (tkns, comp) => {
-    // TODO: remove the last check allow for CompNP once implemented 
+    // TODO: remove the last check allow for CompNP once implemented
     if (typeof comp.selection === "object" && "type" in comp.selection && (comp.selection.type === "sandwich" || comp.selection.type === "possesor" || comp.selection.type === "NP")) {
       return [];
     }
-    const k = parseKawulKedulVBE(tkns, { type: "CompPH", selection: comp.selection });
+    const k = parseKawulKedulVBE(tkns, undefined);
     return bindParseResult(k, (tk, aux) => {
       if (!("aspect" in aux.info)) {
         // purely for type safety because of the badly designed types

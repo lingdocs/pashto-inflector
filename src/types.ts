@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 lingdocs.com
  *
  * This source code is licensed under the GPL3 license found in the
@@ -1378,7 +1378,6 @@ export type VbInfo = {
   base: "stem" | "root";
   verb: VerbEntry;
   imperative?: true;
-  abilityAux?: boolean;
 };
 
 export type ParsedVBE = ParsedVB & {

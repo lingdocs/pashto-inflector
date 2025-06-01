@@ -17,7 +17,7 @@ import { parseNeg, parseOptNeg } from "./parse-negative";
 import { parsePH } from "./parse-ph";
 import { parseVBE } from "./parse-vbe";
 import { parseAbility, parsePastPart, parseVBP } from "./parse-vbp";
-import { isStatAux } from "./parse-verb-helpers";
+import { isKedulStat } from "./parse-verb-helpers";
 // import {
 //   isKedulDynEntry,
 //   isKedulStat,
@@ -116,27 +116,15 @@ function parsePlainVBE(tokens: readonly T.Token[], dictionary: T.DictionaryAPI, 
   const results = parseVBE(tokens, dictionary, front.front.find(isPH));
   return bindParseResult(results, (tkns, vbe) => {
     // TODO: or pass this in as on option to parseVBE so that we only get the plain VBE
-    if (vbe.type !== "VB") {
-      return [];
-    }
     if (vbe.info.type === "equative") {
       return [];
     }
-    const kidsSections = parseKidsSection(tkns, [], []);
-    if (!kidsSections.length) {
-      return returnParseResult<VerbSectionData>(
-        tkns,
-        {
-          blocks: [...front.front, vbe],
-          kids: front.kids,
-        }
-      );
-    }
-    return bindParseResult(kidsSections, (tkns2, { kids }) => {
+    const kidsSections = parseOptKidsSection(tkns);
+    return bindParseResult(kidsSections, (tkns2, kids) => {
       const position = front.front.length + 1;
       return returnParseResult<VerbSectionData>(tkns2, {
         blocks: [...front.front, vbe],
-        kids: [...front.kids, { position, section: kids }],
+        kids: addKids(front.kids, position, kids),
       })
     })
   });
@@ -196,18 +184,15 @@ function parseFlippedAbilityOrPerfect(tokens: readonly T.Token[], dictionary: T.
   const auxs = [
     ...ph ? [] : parseEquative(tokens),
     // ph here is saved for the ability stem, not used for aux
-    ...parseKawulKedulVBE(tokens, undefined),
+    ...parseKawulKedulVBE(tokens, undefined).filter(x => isStatAuxVBE(x.body)),
   ];
   const res: T.ParseResult<VerbSectionData>[] = bindParseResult(auxs, (tkns, aux) => {
-    if (aux.type === "welded") return [];
     const kidsRes = parseOptKidsSection(tkns);
     return bindParseResult(kidsRes, (tkns2, kids) => {
       const position = front.front.length + 1;
       const res = aux.info.type === "equative"
         ? parsePastPart(tkns2, dictionary)
-        : isStatAuxVBE(aux)
-          ? parseAbility(tkns2, dictionary, ph)
-          : [];
+        : parseAbility(tkns2, dictionary, ph)
       return bindParseResult(res, (tkns3, vbp) => {
         const kidsEnd = parseOptKidsSection(tkns3);
         return bindParseResult(kidsEnd, (tkns4, kids2) => {
@@ -240,7 +225,7 @@ function addKids(prev: VerbSectionData["kids"], position: number, toAdd: T.Parse
 }
 
 function isStatAuxVBE(x: T.ParsedVBE): boolean {
-  return x.type === "VB" && x.info.type === "verb" && isStatAux(x.info.verb) && x.info.aspect === "perfective"
+  return x.type === "VB" && x.info.type === "verb" && isKedulStat(x.info.verb) && x.info.aspect === "perfective" && !x.info.imperative
 }
 
 // function parseVerbSectRearR(dictionary: T.DictionaryAPI) {
