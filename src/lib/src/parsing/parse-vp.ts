@@ -733,7 +733,7 @@ function getTenses(
     ) as T.ParsedVBP | undefined;
     const equative = blocks.find(
       (x) => x.type === "VB" && x.info.type === "equative"
-    ) as T.ParsedVBE | undefined;
+    ) as T.ParsedVB | undefined;
     // TODO: Maybe remove (and type) this check because we already prevented
     // these kinds of errors in the parseVerbSection
     if (
@@ -1089,7 +1089,7 @@ function getPeopleFromMiniPronouns(kids: T.ParsedKid[]): T.Person[] {
 
 function getAbilityTenses(
   hasBa: boolean,
-  vbe: T.ParsedVBE,
+  vbe: T.ParsedVB,
   vbp: T.ParsedVBP | undefined
 ): T.AbilityTense[] {
   if (vbe.info.type === "equative") {
@@ -1388,7 +1388,7 @@ function createPossesivePossibilities(b: {
 
 // TODO: this should be replaced with tagging in objects
 function isVBP(x: T.ParsedVBE | T.ParsedVBP): x is T.ParsedVBP {
-  return x.info.type === "ability" || x.info.type === "ppart";
+  return x.type === "VB" && (x.info.type === "ability" || x.info.type === "ppart");
 }
 
 function checkComplementPresence(
@@ -1444,7 +1444,7 @@ function checkForTlulCombos(
   if (!vbe) {
     return { vbp, vbe };
   }
-  if (vbe.info.type === "equative") {
+  if (vbe.type === "VB" && vbe.info.type === "equative") {
     return { vbp, vbe };
   }
   if (!ph || ph.type === "CompPH") {
@@ -1453,6 +1453,8 @@ function checkForTlulCombos(
   if (["را", "ور", "در"].includes(ph.s) || ph.s.startsWith("لاړ")) {
     if (
       !(
+        vbe.type === "VB" &&
+        vbe.info.type === "verb" &&
         isKedulStatEntry(vbe.info.verb.entry) &&
         vbe.info.aspect === "perfective" &&
         vbe.info.base === "stem"

@@ -39,9 +39,7 @@ const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0];
 const sharmawul = testDictionary.verbEntryLookup("شرمول")[0];
 const mur = testDictionary.adjLookup("مړ")[0];
 const sturay = testDictionary.adjLookup("ستړی")[0];
-const murKawul = testDictionary.verbEntryLookup("مړ کول")[0];
 const wraande = testDictionary.queryP("وړاندې")[0] as T.LocativeAdverbEntry;
-const wraandeKawul = testDictionary.verbEntryLookup("وړاندې کول")[0];
 // const sharmedul = testDictionary.verbEntryLookup("شرمېدل")[0];
 
 // TODO: could to more thorough testing of short past participle forms
@@ -1549,7 +1547,6 @@ const statComp: Section = {
           makeWeldedStatComb(person, {
             type: "verb",
             aspect: "imperfective",
-            verb: murKawul,
             base: "stem",
           },
             {
@@ -1574,7 +1571,6 @@ const statComp: Section = {
           makeWeldedStatComb(person, {
             type: "verb",
             aspect: "imperfective",
-            verb: murKawul,
             base: "root",
           },
             {
@@ -1598,7 +1594,7 @@ const statComp: Section = {
         blocks: [
           makeWeldedStatComb(
             person,
-            { type: "verb", aspect: "imperfective", verb: wraandeKawul, base: "stem" },
+            { type: "verb", aspect: "imperfective", base: "stem" },
             {
               type: "complement",
               selection: {
@@ -1619,7 +1615,7 @@ const statComp: Section = {
           { type: "negative", imperative: false },
           makeWeldedStatComb(
             person,
-            { type: "verb", aspect: "imperfective", verb: wraandeKawul, base: "stem" },
+            { type: "verb", aspect: "imperfective", base: "stem" },
             {
               type: "complement",
               selection: {
@@ -1639,7 +1635,7 @@ const statComp: Section = {
         blocks: [
           makeWeldedStatComb(
             person,
-            { type: "verb", aspect: "imperfective", verb: wraandeKawul, base: "stem" },
+            { type: "verb", aspect: "imperfective", base: "stem" },
             {
               type: "complement",
               selection: {
@@ -1799,18 +1795,18 @@ const statComp: Section = {
   ],
 }
 
-function makeWeldedStatComb(person: T.Person, info: T.VbInfo, left: T.ParsedWelded["left"], transitivity: T.Transitivity): T.ParsedVBE {
+function makeWeldedStatComb(person: T.Person, info: Omit<T.VbInfo, "verb">, left: T.ParsedWelded["left"], transitivity: T.Transitivity): T.ParsedVBE {
+  const infoo: T.VbInfo = {
+    ...info,
+    verb: transitivity === "transitive" ? kawulStat : kawulDyn,
+  };
   return {
     type: "welded",
-    person,
-    info,
     left,
     right: {
       type: "parsedRight",
-      info: {
-        ...info,
-        verb: transitivity === "transitive" ? kawulStat : kawulDyn,
-      },
+      person,
+      info: infoo,
     },
   };
 }

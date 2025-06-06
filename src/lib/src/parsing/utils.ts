@@ -284,14 +284,20 @@ export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
 export function isParsedVBP(b: T.ParsedBlock): b is T.ParsedVBP {
   return (
     (b.type === "VB" || b.type === "welded") &&
-    (b.info.type === "ability" || b.info.type === "ppart")
+    (getInfo(b).type === "ability" || getInfo(b).type === "ppart")
   );
+}
+
+export function getInfo(b: T.ParsedVB | T.ParsedWelded | T.ParsedVBP): T.VbInfo | T.VBPartInfo["info"] | T.EqInfo | T.VBAbilityInfo["info"] {
+  return "right" in b
+    ? ("info" in b.right.info ? b.right.info.info : b.right.info)
+    : b.info
 }
 
 export function isParsedVBE(b: T.ParsedBlock): b is T.ParsedVBE {
   return (
     (b.type === "VB" || b.type === "welded") &&
-    (b.info.type === "verb" || b.info.type === "equative")
+    (getInfo(b).type === "verb" || getInfo(b).type === "equative")
   );
 }
 

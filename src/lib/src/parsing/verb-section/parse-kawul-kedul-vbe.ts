@@ -16,7 +16,7 @@ const getForm =
     (kawulKedul: "kawul" | "kedul") =>
       (aspect: T.Aspect) =>
         (base: "stem" | "root") =>
-          (person: T.Person): T.ParsedVBE[] => {
+          (person: T.Person): T.ParsedVB[] => {
             return validVerbs(head, kawulKedul, aspect).map((verb) => {
               return {
                 type: "VB",
@@ -38,7 +38,7 @@ const getForm =
 export function parseKawulKedulVBE(
   tokens: Readonly<T.Token[]>,
   ph: T.ParsedPH | undefined,
-): T.ParseResult<T.ParsedVBE>[] {
+): T.ParseResult<T.ParsedVB>[] {
   if (!tokens.length) {
     return [];
   }
@@ -55,7 +55,7 @@ export function parseKawulKedulVBE(
       (base: "root" | "stem") =>
         (aspect: T.Aspect) =>
           (people: T.Person[]) => {
-            return returnParseResults<T.ParsedVBE>(
+            return returnParseResults<T.ParsedVB>(
               rest,
               people.flatMap(getF(kawulKedul)(aspect)(base))
             );
@@ -67,10 +67,10 @@ export function parseKawulKedulVBE(
           people: ReturnType<typeof getVerbEnding>;
           imperativePeople: ReturnType<typeof getImperativeVerbEnding>;
         }) => {
-          return returnParseResults<T.ParsedVBE>(rest, [
+          return returnParseResults<T.ParsedVB>(rest, [
             ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
             ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
-            ...people.imperativePeople.flatMap<T.ParsedVBE>((person) =>
+            ...people.imperativePeople.flatMap<T.ParsedVB>((person) =>
               getF(kawulKedul)(aspect)("stem")(person).map(addImperative)
             ),
           ]);
@@ -173,7 +173,7 @@ function removePeople(
   };
 }
 
-function addImperative(v: T.ParsedVBE): T.ParsedVBE {
+function addImperative(v: T.ParsedVB): T.ParsedVB {
   if (v.info.type === "equative") {
     throw new Error("tried to make an imperative verb equative");
   }

@@ -1380,12 +1380,12 @@ export type VbInfo = {
   imperative?: true;
 };
 
-export type ParsedVBE = ParsedVB & {
-  person: Person,
-  info: EqInfo | VbInfo;
-}
+export type ParsedVBE = ParsedVB | ParsedWelded;
 
-export type ParsedVB = ParsedVBBasic | ParsedWelded;
+export type ParsedVB = ParsedVBBasic & {
+  person: Person,
+  info: EqInfo | VbInfo,
+};
 
 export type ParsedVBBasic = Omit<VBBasic, "ps">;
 
@@ -1434,6 +1434,7 @@ export type Welded = {
   left: NComp | VBBasic | Welded;
   right: VBBasic | (VBBasic & (VBPartInfo | VBAbilityInfo));
 };
+
 export type ParsedWelded = {
   type: "welded",
   // TODO: is this recursive Welded right there, or does it belong
@@ -1441,6 +1442,7 @@ export type ParsedWelded = {
   left: ParsedComplementSelection | ParsedVBBasic | ParsedWelded;
   right: {
     type: "parsedRight",
+    person: Person,
     info: VbInfo | VBPartInfo | VBAbilityInfo;
   }
 }

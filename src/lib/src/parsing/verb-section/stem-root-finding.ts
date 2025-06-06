@@ -3,7 +3,7 @@ import { entries as splitVerbEntries } from "./../split-verbs";
 import * as tp from "../../type-predicates";
 import memoize from "micro-memoize";
 
-export type BaseInfo = Extract<T.ParsedVBE["info"], { type: "verb" }>;
+export type BaseInfo = Extract<T.ParsedVB["info"], { type: "verb" }>;
 export type StemInfo = Omit<BaseInfo, "base"> & {
   base: "stem";
 };

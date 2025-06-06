@@ -3,6 +3,7 @@ import * as T from "../../../../types";
 import { parseKidsSection, parseOptKidsSection } from "../parse-kids-section";
 import {
   bindParseResult,
+  getInfo,
   isNeg,
   isParsedVBE,
   // isNonOoPh,
@@ -150,7 +151,7 @@ function parsePlainVBE(tokens: readonly T.Token[], dictionary: T.DictionaryAPI, 
   const results = parseVBE(tokens, dictionary, front.front.find(isPH));
   return bindParseResult(results, (tkns, vbe) => {
     // TODO: or pass this in as on option to parseVBE so that we only get the plain VBE
-    if (vbe.info.type === "equative") {
+    if (getInfo(vbe).type !== "verb") {
       return [];
     }
     const blocks = [...front.front, vbe];
@@ -217,9 +218,11 @@ function parseFlippedAbilityOrPerfect(tokens: readonly T.Token[], dictionary: T.
     const kidsRes = parseOptKidsSection(tkns);
     return bindParseResult(kidsRes, (tkns2, kids) => {
       const position = front.front.length + 1;
-      const res = aux.info.type === "equative"
-        ? parsePastPart(tkns2, dictionary)
-        : parseAbility(tkns2, dictionary, ph)
+      const res = aux.type === "welded"
+        ? []
+        : aux.info.type === "equative"
+          ? parsePastPart(tkns2, dictionary)
+          : parseAbility(tkns2, dictionary, ph)
       return bindParseResult(res, (tkns3, vbp) => {
         return [{
           tokens: tkns3,
@@ -248,7 +251,7 @@ function addKids(prev: VerbSectionData["kids"], position: number, toAdd: T.Parse
   ]
 }
 
-function isStatAuxVBE(x: T.ParsedVBE): boolean {
+function isStatAuxVBE(x: T.ParsedVB): boolean {
   return x.type === "VB" && x.info.type === "verb" && isKedulStat(x.info.verb) && x.info.aspect === "perfective" && !x.info.imperative
 }
 
@@ -261,7 +264,7 @@ function checkNegErrors(blocks: VerbSectionBlock[]): T.ParseError[] {
   }
   const vbe = blocks.find(isParsedVBE);
   const neg = negs[0];
-  const isImperative = vbe?.info.type === "verb" && vbe.info.imperative;
+  const isImperative = vbe?.type === "VB" && vbe?.info.type === "verb" && vbe.info.imperative;
   if (neg) {
 
     const negIndex = blocks.findIndex(x => x.type === "negative");

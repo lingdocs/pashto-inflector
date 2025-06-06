@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
 import { getVerbEnding, isStatAux } from "./parse-verb-helpers";
-import { bindParseResult, returnParseResults } from "../utils";
+import { bindParseResult, returnParseResult, returnParseResults } from "../utils";
 import * as tp from "../../type-predicates";
 import { pashtoConsonants } from "../../pashto-consonants";
 import { getImperativeVerbEnding } from "./misc";
@@ -13,7 +13,6 @@ import {
 } from "./stem-root-finding";
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { parseComplement } from "../argument-section/parse-complement";
-import { getTransitivity } from "../../verb-info";
 import { parseOptNeg } from "./parse-negative";
 
 // TODO: و ارزي
@@ -54,7 +53,7 @@ function parseVBEBasic(
   }
   const [first, ...rest] = tokens;
   if (ph?.type === "CompPH") {
-    return parseKawulKedulVBE(tokens, undefined).filter(x => x.body.info.type === "verb" && isStatAux(x.body.info.verb) && x.body.info.aspect === "perfective")
+    return parseKawulKedulVBE(tokens, undefined).filter(x => x.body.type === "VB" && x.body.info.type === "verb" && isStatAux(x.body.info.verb) && x.body.info.aspect === "perfective")
   }
   const irregResults = parseIrregularVerb(first.s, ph);
   if (irregResults.length) {
@@ -136,21 +135,16 @@ function parseWelded(
           if (compTs === undefined) {
             return [];
           }
-          const res = dictionary.verbEntryLookupByL(compTs);
-          const vbe = res.filter(statCompMatchesAux(aux)).map<T.ParsedVBE>((verb) => ({
+          const vbe: T.ParsedVBE = {
             type: "welded",
             left: comp,
             right: {
               type: "parsedRight",
+              person: aux.person,
               info: aux.info as T.VbInfo,
             },
-            person: aux.person,
-            info: {
-              ...aux.info,
-              verb,
-            }
-          }));
-          return returnParseResults(tkns3, vbe, badNeg ? [{ message: "negative cannot go inside welded block" }] : []);
+          };
+          return returnParseResult(tkns3, vbe, badNeg ? [{ message: "negative cannot go inside welded block" }] : []);
         } else {
           return [];
         }
@@ -159,13 +153,13 @@ function parseWelded(
   });
 }
 
-function statCompMatchesAux(aux: T.ParsedVBE) {
-  // TODO: would be nice to have a parsed Aux type      
-  return (e: T.VerbEntry): boolean => {
-    return ("aspect" in aux.info && aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) &&
-      getTransitivity(aux.info.verb.entry) === getTransitivity(e.entry);
-  }
-}
+// function statCompMatchesAux(aux: T.ParsedVBE) {
+//   // TODO: would be nice to have a parsed Aux type      
+//   return (e: T.VerbEntry): boolean => {
+//     return ("aspect" in aux.info && aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) &&
+//       getTransitivity(aux.info.verb.entry) === getTransitivity(e.entry);
+//   }
+// }
 
 function getLFromComplement(comp: T.ParsedComplementSelection): number | undefined {
   if ("inflection" in comp.selection) {
