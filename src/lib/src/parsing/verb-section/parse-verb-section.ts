@@ -4,6 +4,7 @@ import { parseKidsSection, parseOptKidsSection } from "../parse-kids-section";
 import {
   bindParseResult,
   isNeg,
+  isParsedVBE,
   // isNonOoPh,
   // isParsedVBE,
   // isParsedVBP,
@@ -43,6 +44,24 @@ export type VerbSectionFrontData = {
   kids: VerbSectionData["kids"],
 };
 
+// Front section is the PH and Negs in Front
+// then
+// Possible Combos in Rear
+//
+// Basic VBE
+//   [VBE]
+//
+// Ability/Perfect
+// 
+//   1) basic
+//   [VBP] + [NEG]? + [Aux]
+//   2) flipped with neg
+//   [NEG] + [Aux] + [VBP]
+
+// w/ Ability
+// VBP is Ability, Aux is StatAux
+// w/ Perfect
+// VBP is PastPart, Aux is Equative
 
 export function parseVerbSection(
   tokens: readonly T.Token[],
@@ -105,12 +124,27 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
     if (tokens.length === 0) {
       return [];
     }
-    return [
+    const res = [
       ...parsePlainVBE(tokens, dictionary, front),
       ...parseAbilityOrPerfect(tokens, dictionary, front),
     ];
+    // TODO: some kind of do notation would be nice!
+    return bindParseResult(res, (tkns, rear) => {
+      const trailingKids = parseOptKidsSection(tkns);
+      return bindParseResult(trailingKids, (tkns2, kids) => {
+        const trailingNu = parseOptNeg(tkns2);
+        return bindParseResult(trailingNu, (tkns3, nu) => {
+          const blocks = [...rear.blocks, ...nu ? [nu] : []];
+          return returnParseResult(tkns3, {
+            blocks,
+            kids: addKids(rear.kids, rear.blocks.length, kids),
+          }, checkNegErrors(blocks));
+        })
+      });
+    })
   }
 }
+
 
 function parsePlainVBE(tokens: readonly T.Token[], dictionary: T.DictionaryAPI, front: VerbSectionFrontData): T.ParseResult<VerbSectionData>[] {
   const results = parseVBE(tokens, dictionary, front.front.find(isPH));
@@ -119,22 +153,21 @@ function parsePlainVBE(tokens: readonly T.Token[], dictionary: T.DictionaryAPI, 
     if (vbe.info.type === "equative") {
       return [];
     }
-    const kidsSections = parseOptKidsSection(tkns);
-    return bindParseResult(kidsSections, (tkns2, kids) => {
-      const position = front.front.length + 1;
-      return returnParseResult<VerbSectionData>(tkns2, {
-        blocks: [...front.front, vbe],
-        kids: addKids(front.kids, position, kids),
-      })
+    const blocks = [...front.front, vbe];
+    return returnParseResult<VerbSectionData>(tkns, {
+      ...front,
+      blocks,
     })
-  });
+  })
 }
 
 function parseAbilityOrPerfect(tokens: readonly T.Token[], dictionary: T.DictionaryAPI, front: VerbSectionFrontData): T.ParseResult<VerbSectionData>[] {
-  return (front.front.some(isNeg)
-    ? parseFlippedAbilityOrPerfect
-    : parseStraightAbilityOrPerfect
-  )(tokens, dictionary, front);
+  const neg = front.front.some(isNeg);
+  const ph = front.front.some(isPH);
+  return [
+    ...neg ? parseFlippedAbilityOrPerfect(tokens, dictionary, front) : [],
+    ...(neg && ph) || !neg ? parseStraightAbilityOrPerfect(tokens, dictionary, front) : [],
+  ];
 }
 
 function parseStraightAbilityOrPerfect(tokens: readonly T.Token[], dictionary: T.DictionaryAPI, front: VerbSectionFrontData): T.ParseResult<VerbSectionData>[] {
@@ -152,25 +185,19 @@ function parseStraightAbilityOrPerfect(tokens: readonly T.Token[], dictionary: T
             ? parseEquative(tkns4)
             : parseKawulKedulVBE(tkns4, undefined).filter(x => isStatAuxVBE(x.body));
           return bindParseResult(auxRes, (tkns5, aux) => {
-            const kidsR3 = parseOptKidsSection(tkns5);
-            return bindParseResult(kidsR3, (tkns6, kids3) => {
-              return [{
-                tokens: tkns6,
-                body: {
-                  blocks: [...front.front, vbp, ...neg ? [neg] : [], aux],
-                  kids: addKids(
-                    addKids(
-                      addKids(front.kids, position, kids1),
-                      position2,
-                      kids2
-                    ),
-                    position2 + 1,
-                    kids3
-                  )
-                },
-                errors: [],
-              }]
-            })
+            return [{
+              tokens: tkns5,
+              body: {
+                blocks: [...front.front, vbp, ...neg ? [neg] : [], aux],
+                kids:
+                  addKids(
+                    addKids(front.kids, position, kids1),
+                    position2,
+                    kids2
+                  ),
+              },
+              errors: [],
+            }]
           })
         })
       })
@@ -194,17 +221,14 @@ function parseFlippedAbilityOrPerfect(tokens: readonly T.Token[], dictionary: T.
         ? parsePastPart(tkns2, dictionary)
         : parseAbility(tkns2, dictionary, ph)
       return bindParseResult(res, (tkns3, vbp) => {
-        const kidsEnd = parseOptKidsSection(tkns3);
-        return bindParseResult(kidsEnd, (tkns4, kids2) => {
-          return [{
-            tokens: tkns4,
-            body: {
-              blocks: [...front.front, aux, vbp],
-              kids: addKids(addKids(front.kids, position, kids), position + 1, kids2),
-            },
-            errors: [],
-          }];
-        })
+        return [{
+          tokens: tkns3,
+          body: {
+            blocks: [...front.front, aux, vbp],
+            kids: addKids(front.kids, position, kids),
+          },
+          errors: [],
+        }];
       })
     })
   })
@@ -228,258 +252,47 @@ function isStatAuxVBE(x: T.ParsedVBE): boolean {
   return x.type === "VB" && x.info.type === "verb" && isKedulStat(x.info.verb) && x.info.aspect === "perfective" && !x.info.imperative
 }
 
-// function parseVerbSectRearR(dictionary: T.DictionaryAPI) {
-//   return function(
-//     prev: T.ParseResult<VerbSectionData>
-//   ): T.ParseResult<VerbSectionData>[] {
-//     const { hasNeg, VBE, vbeIndex, hasVBP } = scanSection(prev.body.blocks);
-//     const allResults: T.ParseResult<VerbSectionBlock | T.ParsedKidsSection>[] =
-//       [
-//         ...(VBE
-//           ? []
-//           : [
-//             ...parseVBE(
-//               prev.tokens,
-//               dictionary,
-//               hasVBP && prev.body.ph?.type === "PH"
-//                 ? // incase of [PH] + [VBP] before, PH was used up by [VBP]
-//                 undefined
-//                 : prev.body.ph
-//             ),
-//             ...(prev.body.ph ? [] : parseEquative(prev.tokens)),
-//           ]),
-//         ...(!hasVBP ? parseVBP(prev.tokens, dictionary, prev.body.ph) : []),
-//         ...(!hasNeg ? parseNeg(prev.tokens) : []),
-//         ...parseKidsSection(prev.tokens, [], []),
-//       ].filter(ensureVBEAuxOk(prev.body.blocks, vbeIndex));
-//     if (allResults.length === 0) {
-//       return finalChecksOnVerbSection(prev);
-//     }
-//     return bindParseResult(allResults, (tokens, r) => {
-//       if (r.type === "kids") {
-//         const position = prev.body.blocks.length;
-//         return parseVerbSectRearR(dictionary)(
-//           returnParseResultSingle(
-//             tokens,
-//             {
-//               ...prev.body,
-//               kids: [
-//                 ...prev.body.kids,
-//                 {
-//                   position,
-//                   section: r.kids,
-//                 },
-//               ],
-//             },
-//             prev.errors
-//           )
-//         );
-//       }
-//       return parseVerbSectRearR(dictionary)(
-//         returnParseResultSingle<VerbSectionData>(
-//           tokens,
-//           {
-//             ...prev.body,
-//             blocks: [...prev.body.blocks, r],
-//           },
-//           prev.errors
-//         )
-//       );
-//     });
-//   };
-// }
+function checkNegErrors(blocks: VerbSectionBlock[]): T.ParseError[] {
+  const errors: T.ParseError[] = [];
+  const negs = blocks.filter(x => x.type === "negative");
+  const ph = blocks.find(isPH);
+  if (negs.length > 1) {
+    errors.push({ message: `only one negative allowed, you used ${negs.length}` });
+  }
+  const vbe = blocks.find(isParsedVBE);
+  const neg = negs[0];
+  const isImperative = vbe?.info.type === "verb" && vbe.info.imperative;
+  if (neg) {
 
-// function scanSection(blocks: VerbSectionBlock[]): {
-//   hasNeg: boolean;
-//   VBE: T.ParsedVBE | undefined;
-//   vbeIndex: number;
-//   hasVBP: boolean;
-// } {
-//   return blocks.reduce<ReturnType<typeof scanSection>>(
-//     (acc, b, i) => {
-//       if (b.type === "negative") {
-//         return {
-//           ...acc,
-//           hasNeg: true
-//         };
-//       }
-//       if (isParsedVBE(b)) {
-//         return {
-//           ...acc,
-//           VBE: b,
-//           vbeIndex: i,
-//         };
-//       }
-//       if (isParsedVBP(b)) {
-//         return {
-//           ...acc,
-//           hasVBP: true,
-//         };
-//       }
-//       return acc;
-//     },
-//     {
-//       hasNeg: false,
-//       VBE: undefined,
-//       vbeIndex: -1,
-//       hasVBP: false,
-//     }
-//   );
-// }
+    const negIndex = blocks.findIndex(x => x.type === "negative");
+    if (neg.imperative && !isImperative) {
+      errors.push({ message: "Can only use مه with imperative verbs, use نه instead" });
+    } else if (!neg.imperative && isImperative) {
+      errors.push({ message: "Imperative verbs must be used with the مه negative, not نه" })
+    }
 
-// function finalChecksOnVerbSection(
-//   v: T.ParseResult<VerbSectionData>
-// ): T.ParseResult<VerbSectionData>[] {
-//   // && !hasMisusedStatKedul(v.body.blocks);
-//   // TODO: add errors here
-//   return verbSectionOrderOK(v.body.blocks) &&
-//     verbSectionBlocksCompatible(v.body.blocks)
-//     ? [v]
-//     : [];
-// }
-
-// function verbSectionOrderOK(vs: VerbSectionBlock[]): boolean {
-//   const possibilites = [
-//     [isParsedVBE],
-//     [isNeg, isParsedVBE],
-//     [isPH, isParsedVBE],
-//     [isPH, isNeg, isParsedVBE],
-//     [isNeg, isNonOoPh, isParsedVBE],
-//     [isParsedVBP, isParsedVBE],
-//     [isNeg, isParsedVBE, isParsedVBP],
-//     [isParsedVBP, isNeg, isParsedVBE],
-//     // could be more clever with optional isPH here
-//     [isPH, isParsedVBP, isParsedVBE],
-//     [isPH, isNeg, isParsedVBE, isParsedVBP],
-//     [isPH, isParsedVBP, isNeg, isParsedVBE],
-//   ];
-//   return possibilites.some(
-//     (poss) => poss.length === vs.length && zip(poss, vs).every(([p, b]) => p(b))
-//   ); // && !hasMisusedStatKedul(vs)
-// }
-
-// function verbSectionBlocksCompatible(blocks: VerbSectionBlock[]): boolean {
-//   const ph = blocks.find((b): b is T.ParsedPH => b.type === "PH");
-//   const vbp = blocks.find(isParsedVBP);
-//   const vbe = blocks.find(isParsedVBE);
-//   const hasMisusedStatKedul = !!(
-//     ph?.type === "PH" &&
-//     ph.s === "و" &&
-//     !vbp &&
-//     vbe &&
-//     vbe.info.type === "verb" &&
-//     isKedulStatEntry(vbe.info.verb.entry)
-//   );
-//   if (hasMisusedStatKedul) {
-//     return false;
-//   }
-//   return vbp
-//     ? // if there is a VBP present, it needs to be either an ability or perfect form
-//     validAbility(vbp, vbe) || validPerfect(vbp, vbe)
-//     : // otherwise, there should be just be a VBE present
-//     !!vbe;
-// }
-
-// function validAbility(vbp: T.ParsedVBP, vbe: T.ParsedVBE | undefined): boolean {
-//   if (!vbe) {
-//     return false;
-//   }
-//   if (vbe.type !== "VB") {
-//     return false;
-//   }
-//   if (vbp.info.type !== "ability") {
-//     return false;
-//   }
-//   return (
-//     vbe.info.type === "verb" &&
-//     isKedulStat(vbe.info.verb) &&
-//     vbe.info.aspect === "perfective" &&
-//     !vbe.info.imperative
-//   );
-// }
-
-// function validPerfect(vbp: T.ParsedVBP, vbe: T.ParsedVBE | undefined): boolean {
-//   // TODO: allow perfects without the equative
-//   if (!vbe) {
-//     return false;
-//   }
-//   return vbp.info.type === "ppart" && vbe.info.type === "equative";
-// }
-
-/**
- *  Because we could have had a situation where we were parsing
- *
- *  [oo] + [Neg] + [VBE] + [VBP]
- *
- * If the [VBP] shows up we need to make sure that we didn't use
- * the [oo] to make the [VBE] dynamic
- *
- */
-// function ensureVBEAuxOk(
-//   blocks: (VerbSectionBlock | T.ParsedKidsSection)[],
-//   vbeIndex: number
-// ) {
-//   return function(
-//     last: T.ParseResult<VerbSectionBlock | T.ParsedKidsSection>
-//   ): boolean {
-//     if (
-//       last.body.type === "VB" &&
-//       isParsedVBP(last.body) &&
-//       last.body.info.type === "ability" &&
-//       vbeIndex !== -1
-//     ) {
-//       const vbe = blocks[vbeIndex] as T.VBE;
-//       // @ts-ignore - TODO: WHY??
-//       if (!isParsedVBE(vbe)) {
-//         throw new Error("misuse of index to get vbe");
-//       }
-//       if (vbe.info.type === "verb" && isKedulDynEntry(vbe.info.verb.entry)) {
-//         return false;
-//       }
-//     }
-//     return true;
-//   };
-// }
-
-// function checkForStatCompounds(
-//   dictionary: T.DictionaryAPI,
-//   tokens: readonly T.Token[],
-//   vps: T.VPSelectionComplete
-// ): T.ParseResult<T.VPSelectionComplete>[] {
-//   if (!vps.externalComplement) {
-//     return [];
-//   }
-//   const aux = isStatAux(vps.verb.verb);
-//   if (
-//     !aux ||
-//     (aux === "kawul" && vps.verb.transitivity !== "transitive") ||
-//     (aux === "kedul" && vps.verb.transitivity !== "intransitive")
-//   ) {
-//     return [];
-//   }
-//   if (
-//     vps.externalComplement.selection.type === "loc. adv." ||
-//     vps.externalComplement.selection.type === "adjective" ||
-//     vps.externalComplement.selection.type === "comp. noun"
-//   ) {
-//     // adjectives should already be checked for accuracy by the
-//     // parsing of complement. TODO: make sure it's checked to match with
-//     // the target, not just the king
-//     const l = vps.externalComplement.selection.entry.ts;
-//     return returnParseResults(
-//       tokens,
-//       dictionary
-//         .verbEntryLookupByL(l)
-//         .filter(isStatCompound(aux))
-//         .map<T.VPSelectionComplete>((verb) => ({
-//           ...vps,
-//           externalComplement: undefined,
-//           verb: {
-//             ...vps.verb,
-//             verb,
-//           },
-//         }))
-//     );
-//   }
-//   return [];
-// }
+    // only imperfective simple VBE constructions can have the negative at the end
+    if (blocks.length > 2 && negIndex === blocks.length - 1) {
+      errors.push({ message: "negative cannot go at the end of ability/perfect verb section" });
+    }
+    if (ph) {
+      if (ph.type === "CompPH") {
+        if (negIndex !== 1) {
+          errors.push({ message: "negative block should come after complement perfective head" });
+        }
+      } else if (ph.type === "PH") {
+        if (ph.s === "و") {
+          if (negIndex !== 1) {
+            errors.push({ message: "negative must come after و" });
+          }
+        } else {
+          // with other non-oo PHs the negative can go before or after the PH 
+          if (negIndex !== 0 && negIndex !== 1) {
+            errors.push({ message: "negative out of place" });
+          }
+        }
+      }
+    }
+  }
+  return errors;
+}

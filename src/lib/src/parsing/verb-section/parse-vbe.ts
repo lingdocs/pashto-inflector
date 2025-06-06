@@ -14,6 +14,7 @@ import {
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { parseComplement } from "../argument-section/parse-complement";
 import { getTransitivity } from "../../verb-info";
+import { parseOptNeg } from "./parse-negative";
 
 // TODO: و ارزي
 // TODO: کول verbs!
@@ -27,6 +28,10 @@ import { getTransitivity } from "../../verb-info";
 // TODO: why doesn't بلله or وبلله work بلل fem sing past
 
 // پوښتنه وشوه - shouldn't also parse as پوښتنه شوه
+
+
+// TODO: check neg position with new setup
+// TODO: should the welded be with the compound verb in there?
 
 export function parseVBE(
   tokens: Readonly<T.Token[]>,
@@ -49,7 +54,7 @@ function parseVBEBasic(
   }
   const [first, ...rest] = tokens;
   if (ph?.type === "CompPH") {
-    return parseKawulKedulVBE(tokens, undefined).filter(x => x.body.info.type === "verb" && isStatAux(x.body.info.verb) && x.body.info.base === "stem" && x.body.info.aspect === "perfective")
+    return parseKawulKedulVBE(tokens, undefined).filter(x => x.body.info.type === "verb" && isStatAux(x.body.info.verb) && x.body.info.aspect === "perfective")
   }
   const irregResults = parseIrregularVerb(first.s, ph);
   if (irregResults.length) {
@@ -118,36 +123,39 @@ function parseWelded(
     if (typeof comp.selection === "object" && "type" in comp.selection && (comp.selection.type === "sandwich" || comp.selection.type === "possesor" || comp.selection.type === "NP")) {
       return [];
     }
-    const k = parseKawulKedulVBE(tkns, undefined);
-    return bindParseResult(k, (tk, aux) => {
-      if (!("aspect" in aux.info)) {
-        // purely for type safety because of the badly designed types
-        return [];
-      }
-      if (aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) {
-        const compTs = getLFromComplement(comp);
-        if (compTs === undefined) {
+    const misplacedNegative = parseOptNeg(tkns);
+    return bindParseResult(misplacedNegative, (tkns2, badNeg) => {
+      const k = parseKawulKedulVBE(tkns2, undefined);
+      return bindParseResult(k, (tkns3, aux) => {
+        if (!("aspect" in aux.info)) {
+          // purely for type safety because of the badly designed types
           return [];
         }
-        const res = dictionary.verbEntryLookupByL(compTs);
-        const vbe = res.filter(statCompMatchesAux(aux)).map<T.ParsedVBE>((verb) => ({
-          type: "welded",
-          left: comp,
-          right: {
-            type: "parsedRight",
-            info: aux.info as T.VbInfo,
-          },
-          person: aux.person,
-          info: {
-            ...aux.info,
-            verb,
+        if (aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) {
+          const compTs = getLFromComplement(comp);
+          if (compTs === undefined) {
+            return [];
           }
-        }));
-        return returnParseResults(tk, vbe);
-      } else {
-        return [];
-      }
-    });
+          const res = dictionary.verbEntryLookupByL(compTs);
+          const vbe = res.filter(statCompMatchesAux(aux)).map<T.ParsedVBE>((verb) => ({
+            type: "welded",
+            left: comp,
+            right: {
+              type: "parsedRight",
+              info: aux.info as T.VbInfo,
+            },
+            person: aux.person,
+            info: {
+              ...aux.info,
+              verb,
+            }
+          }));
+          return returnParseResults(tkns3, vbe, badNeg ? [{ message: "negative cannot go inside welded block" }] : []);
+        } else {
+          return [];
+        }
+      });
+    })
   });
 }
 

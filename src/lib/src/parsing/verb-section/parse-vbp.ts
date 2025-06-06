@@ -48,6 +48,9 @@ export function parsePastPart(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI
 ): T.ParseResult<T.ParsedVBP>[] {
+  if (!tokens.length) {
+    return [];
+  }
   const [{ s }, ...rest] = tokens;
   const ending: "ی" | "ي" | "ې" = s.at(-1) as "ی" | "ي" | "ې";
   if (!ending || !["ی", "ي", "ې"].includes(ending)) {

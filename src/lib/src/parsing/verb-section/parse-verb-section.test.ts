@@ -38,6 +38,7 @@ const alwatul = testDictionary.verbEntryLookup("الوتل")[0];
 const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0];
 const sharmawul = testDictionary.verbEntryLookup("شرمول")[0];
 const mur = testDictionary.adjLookup("مړ")[0];
+const sturay = testDictionary.adjLookup("ستړی")[0];
 const murKawul = testDictionary.verbEntryLookup("مړ کول")[0];
 const wraande = testDictionary.queryP("وړاندې")[0] as T.LocativeAdverbEntry;
 const wraandeKawul = testDictionary.verbEntryLookup("وړاندې کول")[0];
@@ -62,6 +63,63 @@ const simpleOpts: Section = {
         aspects: ["imperfective"],
         verb: tlul,
       }),
+    },
+    {
+      input: "نه ځم",
+      output: testVBEOutuput({
+        persons: getPeople(1, "sing"),
+        bases: ["stem"],
+        aspects: ["imperfective"],
+        verb: tlul,
+      }).map(x => ({
+        ...x,
+        blocks: [{ type: "negative", imperative: false }, ...x.blocks],
+      }))
+    },
+    {
+      input: "ځم نه",
+      output: testVBEOutuput({
+        persons: getPeople(1, "sing"),
+        bases: ["stem"],
+        aspects: ["imperfective"],
+        verb: tlul,
+      }).map(x => ({
+        ...x,
+        blocks: [...x.blocks, { type: "negative", imperative: false }],
+      }))
+    },
+    {
+      input: "مه ځم",
+      output: [],
+      error: true,
+    },
+    {
+      input: "مه ځه",
+      output: testVBEOutuput({
+        persons: getPeople(2, "sing"),
+        bases: ["stem"],
+        aspects: ["imperfective"],
+        imperative: true,
+        verb: tlul,
+      }).map(x => ({
+        ...x,
+        blocks: [{ type: "negative", imperative: true }, ...x.blocks],
+      }))
+    },
+    {
+      input: "مه ځه مه",
+      output: [],
+      error: true,
+    },
+    {
+      input: "نه ځه",
+      output: [],
+      error: true,
+    },
+    {
+      input: "نه ځم نه",
+      output: [],
+      error: true,
     },
     {
       input: "وهلې",
@@ -176,6 +234,24 @@ const simpleOpts: Section = {
         aspects: ["perfective"],
         verb: manul,
       }),
+    },
+    {
+      input: "ونه منله",
+      output: testVBEOutuput({
+        ph: "و",
+        bases: ["root"],
+        persons: [T.Person.ThirdSingFemale],
+        aspects: ["perfective"],
+        verb: manul,
+      }).map(x => ({
+        ...x,
+        blocks: [x.blocks[0], { type: "negative", imperative: false }, ...x.blocks.slice(1)],
+      })),
+    },
+    {
+      input: "نه ومنله",
+      output: [],
+      error: true,
     },
     {
       input: "مني",
@@ -461,6 +537,32 @@ const simpleIrregStems: Section = {
       }),
     },
     {
+      input: "وانه خلم",
+      output: testVBEOutuput({
+        ph: "وا",
+        bases: ["stem"],
+        aspects: ["perfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }).map(x => ({
+        ...x,
+        blocks: [x.blocks[0], { type: "negative", imperative: false }, ...x.blocks.slice(1)],
+      })),
+    },
+    {
+      input: "نه واخلم",
+      output: testVBEOutuput({
+        ph: "وا",
+        bases: ["stem"],
+        aspects: ["perfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }).map(x => ({
+        ...x,
+        blocks: [{ type: "negative", imperative: false }, ...x.blocks],
+      })),
+    },
+    {
       input: "اخیستم",
       output: testVBEOutuput({
         bases: ["root"],
@@ -468,6 +570,30 @@ const simpleIrregStems: Section = {
         persons: getPeople(1, "sing"),
         verb: akheestul,
       }),
+    },
+    {
+      input: "نه اخیستم",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["imperfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }).map(x => ({
+        ...x,
+        blocks: [{ type: "negative", imperative: false }, ...x.blocks],
+      })),
+    },
+    {
+      input: "اخیستم نه",
+      output: testVBEOutuput({
+        bases: ["root"],
+        aspects: ["imperfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }).map(x => ({
+        ...x,
+        blocks: [...x.blocks, { type: "negative", imperative: false }],
+      })),
     },
     {
       input: "واخیستلم",
@@ -478,6 +604,24 @@ const simpleIrregStems: Section = {
         persons: getPeople(1, "sing"),
         verb: akheestul,
       }),
+    },
+    {
+      input: "وانه خیستلم",
+      output: testVBEOutuput({
+        ph: "وا",
+        bases: ["root"],
+        aspects: ["perfective"],
+        persons: getPeople(1, "sing"),
+        verb: akheestul,
+      }).map(x => ({
+        ...x,
+        blocks: [x.blocks[0], { type: "negative", imperative: false }, ...x.blocks.slice(1)],
+      })),
+    },
+    {
+      input: "واخیستلم نه",
+      output: [],
+      error: true,
     },
     {
       input: "الوځي",
@@ -1019,26 +1163,6 @@ const ability: Section = {
         kids: [],
       })),
     },
-    {
-      input: "ولیدلی شوم",
-      output: getPeople(1, "sing").map((person) => ({
-        blocks: [
-          { type: "PH", s: "و" },
-          makeAbilityVBP({ aspect: "perfective", verb: leedul }),
-          makeParsedVBE({
-            aspect: "perfective",
-            verb: kedulStat,
-            base: "root",
-            person,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "ولیدلی شه",
-      output: [],
-    },
     // with short ability stems
     {
       input: "رسېدای شئ",
@@ -1069,6 +1193,10 @@ const ability: Section = {
         ],
         kids: [],
       })),
+    },
+    {
+      input: "اوښتی شه",
+      output: [],
     },
     // with aspect-ambiguous ability
     {
@@ -1147,6 +1275,53 @@ const ability: Section = {
         ],
         kids: [],
       })),
+    },
+    {
+      input: "لیدلی شم نه",
+      output: [],
+      error: true,
+    },
+    {
+      input: "ونه لیدلی شم",
+      output: getPeople(1, "sing").map((person) => ({
+        blocks: [
+          { type: "PH", s: "و" },
+          { type: "negative", imperative: false },
+          makeAbilityVBP({ aspect: "perfective", verb: leedul }),
+          makeParsedVBE({
+            aspect: "perfective",
+            verb: kedulStat,
+            base: "stem",
+            person,
+          }),
+        ],
+        kids: [],
+      }))
+    },
+    {
+      input: "ولیدلی شم نه",
+      output: [],
+      error: true,
+    },
+    {
+      input: "ولیدلی شوم",
+      output: getPeople(1, "sing").map((person) => ({
+        blocks: [
+          { type: "PH", s: "و" },
+          makeAbilityVBP({ aspect: "perfective", verb: leedul }),
+          makeParsedVBE({
+            aspect: "perfective",
+            verb: kedulStat,
+            base: "root",
+            person,
+          }),
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "ولیدلی شه",
+      output: [],
     },
     {
       input: "نه شم لیدلی",
@@ -1232,6 +1407,47 @@ const perfect: Section = {
           kids: [],
         },
       ],
+    },
+    {
+      input: "ولیدلي ول",
+      output: [],
+    },
+    // with negative
+    {
+      input: "لیدلي نه ول",
+      output: [
+        {
+          blocks: [
+            makePPartVBP(leedul, { gender: "masc", number: "plural" }),
+            { type: "negative", imperative: false },
+            makeEqVBE(T.Person.ThirdPlurMale, "past"),
+          ],
+          kids: [],
+        },
+      ],
+    },
+    {
+      input: "نه ول لیدلي",
+      output: [
+        {
+          blocks: [
+            { type: "negative", imperative: false },
+            makeEqVBE(T.Person.ThirdPlurMale, "past"),
+            makePPartVBP(leedul, { gender: "masc", number: "plural" }),
+          ],
+          kids: [],
+        },
+      ],
+    },
+    {
+      input: "لیدلي مه ول",
+      output: [],
+      error: true,
+    },
+    {
+      input: "لیدلي ول نه",
+      output: [],
+      error: true,
     },
     {
       input: "نه به مې وي اخیستی",
@@ -1396,6 +1612,53 @@ const statComp: Section = {
         kids: [],
       }))
     },
+    {
+      input: "نه وړاندې کوي",
+      output: getPeople(3, "both").map(person => ({
+        blocks: [
+          { type: "negative", imperative: false },
+          makeWeldedStatComb(
+            person,
+            { type: "verb", aspect: "imperfective", verb: wraandeKawul, base: "stem" },
+            {
+              type: "complement",
+              selection: {
+                type: "loc. adv.",
+                entry: wraande,
+              },
+            },
+            "transitive",
+          )
+        ],
+        kids: [],
+      }))
+    },
+    {
+      input: "وړاندې کوي نه",
+      output: getPeople(3, "both").map(person => ({
+        blocks: [
+          makeWeldedStatComb(
+            person,
+            { type: "verb", aspect: "imperfective", verb: wraandeKawul, base: "stem" },
+            {
+              type: "complement",
+              selection: {
+                type: "loc. adv.",
+                entry: wraande,
+              },
+            },
+            "transitive",
+          ),
+          { type: "negative", imperative: false }
+        ],
+        kids: [],
+      }))
+    },
+    {
+      input: "وړاندې نه کوي",
+      output: [],
+      error: true,
+    },
     // perfective - adj agreement
     {
       input: "پوخ کړي",
@@ -1450,8 +1713,89 @@ const statComp: Section = {
         ],
         kids: [],
       })),
-    }
+    },
+    {
+      input: "ستړی شوم",
+      output: getPeople(1, "sing").map(person => ({
+        blocks: [
+          {
+            type: "CompPH",
+            selection: {
+              inflection: [0],
+              gender: ["masc"],
+              given: "ستړی",
+              selection: {
+                type: "adjective",
+                entry: sturay,
+                sandwich: undefined,
+              }
+            }
+          },
+          makeParsedVBE({
+            person,
+            base: "root",
+            aspect: "perfective",
+            verb: kedulStat,
+          })
+        ],
+        kids: [],
+      }))
+    },
     // perfective - others
+    {
+      input: "وړاندې شه",
+      output: getPeople(2, "sing").map(person => ({
+        blocks: [
+          {
+            type: "CompPH",
+            selection: {
+              type: "loc. adv.",
+              entry: wraande,
+            }
+          },
+          makeParsedVBE({
+            person,
+            base: "stem",
+            aspect: "perfective",
+            verb: kedulStat,
+            imperative: true,
+          })
+        ],
+        kids: [],
+      }))
+    },
+    // check the negative position
+    {
+      input: "وړاندې نه شې",
+      output: getPeople(2, "sing").map(person => ({
+        blocks: [
+          {
+            type: "CompPH",
+            selection: {
+              type: "loc. adv.",
+              entry: wraande,
+            }
+          },
+          {
+            type: "negative",
+            imperative: false,
+          },
+          makeParsedVBE({
+            person,
+            base: "stem",
+            aspect: "perfective",
+            verb: kedulStat,
+          })
+        ],
+        kids: [],
+
+      }))
+    },
+    {
+      input: "نه وړاندې شې",
+      output: [],
+      error: true,
+    }
   ],
 }
 
@@ -1485,14 +1829,17 @@ const sections = [
 
 sections.forEach((section) => {
   describe(section.title, () => {
-    section.tests.forEach(({ input, output }) => {
+    section.tests.forEach(({ input, output, error }) => {
       test(input, () => {
         const tokens = tokenizer(input);
         const res = parseVerbSection(tokens, testDictionary)
           .filter((x) => !x.tokens.length)
-          .map(({ body }) => body);
-        // @ts-ignore - issue with linting
-        expect(res).toIncludeSameMembers(output);
+        const errored = res.some(x => x.errors.length);
+        expect(errored).toBe(!!error)
+        if (!errored) {
+          // @ts-ignore - issue with linting
+          expect(res.map(x => x.body)).toIncludeSameMembers(output);
+        }
       });
     });
   });
