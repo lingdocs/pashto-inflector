@@ -1462,6 +1462,46 @@ const perfect: Section = {
         )
       ),
     },
+    {
+      input: "ګرځېدلی یم",
+      output: getPeople(1, "sing").flatMap((person) =>
+        (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
+          (tense) => ({
+            blocks: [
+              makePPartVBP(gardzedul, { gender: "masc", number: "singular" }),
+              makeEqVBE(person, tense),
+            ],
+            kids: [],
+          })
+        ))
+    },
+    {
+      input: "ګرځېدلی به یې",
+      output: getPeople(2, "sing").flatMap((person) =>
+        (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
+          (tense) => ({
+            blocks: [
+              makePPartVBP(gardzedul, { gender: "masc", number: "singular" }),
+              makeEqVBE(person, tense),
+            ],
+            kids: [{ position: 1, section: ["ba"] }],
+          })
+        ))
+    },
+    {
+      input: "لیدلی به مې نه یې",
+      output: getPeople(2, "sing").flatMap(person =>
+        (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
+          (tense) => ({
+            blocks: [
+              makePPartVBP(leedul, { gender: "masc", number: "singular" }),
+              { type: "negative", imperative: false },
+              makeEqVBE(person, tense),
+            ],
+            kids: [{ position: 1, section: ["ba", "me"] }]
+          })
+        ))
+    }
   ],
 };
 

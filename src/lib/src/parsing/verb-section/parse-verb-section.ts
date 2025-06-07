@@ -82,17 +82,19 @@ function parseVerbSectionFront(dictionary: T.DictionaryAPI, prev: T.ParseResult<
   if (!prev.tokens.length) {
     return [prev];
   }
+  const position = prev.body.front.length;
   const allResults: T.ParseResult<T.ParsedPH | T.NegativeBlock | T.ParsedKidsSection>[] = [
     ...prev.body.front.some(isPH) ? [] : parsePH(prev.tokens, dictionary),
     ...prev.body.front.some(isNeg) ? [] : parseNeg(prev.tokens),
-    ...parseKidsSection(prev.tokens, [], []),
+    // don't try to parse a kids section again if we just had one, otherwise you get
+    // unneccessary varients of kids' sections like ["ba", "me"] and ["ba"] ["me"]
+    ...prev.body.kids.at(-1)?.position === position ? [] : parseKidsSection(prev.tokens, [], []),
   ];
   if (!allResults.length) {
     return [prev];
   }
   return bindParseResult(allResults, (tkns, block) => {
     if (block.type === "kids") {
-      const position = prev.body.front.length;
       return parseVerbSectionFront(dictionary, returnParseResultSingle(
         tkns,
         {
@@ -139,7 +141,7 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
           return returnParseResult(tkns3, {
             blocks,
             kids: addKids(rear.kids, rear.blocks.length, kids),
-          }, checkNegErrors(blocks));
+          }, checkNegErrors(blocks)).filter(x => x.tokens.length === 0);
         })
       });
     })
@@ -174,32 +176,23 @@ function parseAbilityOrPerfect(tokens: readonly T.Token[], dictionary: T.Diction
 function parseStraightAbilityOrPerfect(tokens: readonly T.Token[], dictionary: T.DictionaryAPI, front: VerbSectionFrontData): T.ParseResult<VerbSectionData>[] {
   const vbps = parseVBP(tokens, dictionary, front.front.find(isPH));
   return bindParseResult<T.ParsedVBP, VerbSectionData>(vbps, (tkns, vbp) => {
-    const kidsR2 = parseOptKidsSection(tkns);
-    return bindParseResult(kidsR2, (tkns2, kids1) => {
+    const kidsR1 = parseOptKidsSection(tkns);
+    return bindParseResult(kidsR1, (tkns2, kids1) => {
       const position = front.front.length + 1;
       const negs = parseOptNeg(tkns2);
       return bindParseResult(negs, (tkns3, neg) => {
-        const kidsR2 = parseOptKidsSection(tkns3);
-        return bindParseResult(kidsR2, (tkns4, kids2) => {
-          const position2 = position + negs.length;
-          const auxRes = vbp.info.type === "ppart"
-            ? parseEquative(tkns4)
-            : parseKawulKedulVBE(tkns4, undefined).filter(x => isStatAuxVBE(x.body));
-          return bindParseResult(auxRes, (tkns5, aux) => {
-            return [{
-              tokens: tkns5,
-              body: {
-                blocks: [...front.front, vbp, ...neg ? [neg] : [], aux],
-                kids:
-                  addKids(
-                    addKids(front.kids, position, kids1),
-                    position2,
-                    kids2
-                  ),
-              },
-              errors: [],
-            }]
-          })
+        const auxRes = vbp.info.type === "ppart"
+          ? parseEquative(tkns3)
+          : parseKawulKedulVBE(tkns3, undefined).filter(x => isStatAuxVBE(x.body));
+        return bindParseResult(auxRes, (tkns5, aux) => {
+          return [{
+            tokens: tkns5,
+            body: {
+              blocks: [...front.front, vbp, ...neg ? [neg] : [], aux],
+              kids: addKids(front.kids, position, kids1),
+            },
+            errors: [],
+          }]
         })
       })
     })

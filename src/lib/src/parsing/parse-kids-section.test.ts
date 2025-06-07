@@ -6,20 +6,22 @@ const tests: {
   label: string;
   cases: {
     input: string;
-    output: T.ParsedKid[];
-    error?: boolean;
+    output: { err?: boolean; kids: T.ParsedKid[] }[];
+    error?: true;
   }[];
 }[] = [
+  // TODO - with variations - only make the variations where it's actually going to be ambiguous
   {
     label: "basic kids section",
     cases: [
       {
         input: "به",
-        output: ["ba"],
+        output: [{ kids: ["ba"] }],
       },
       {
         input: "به دې",
-        output: ["ba", "de"],
+        // NOTE: output will actually be the varients [["ba", ["ba", "de"]]]
+        output: [{ kids: ["ba"] }, { kids: ["ba", "de"] }],
       },
       {
         input: "",
@@ -27,20 +29,29 @@ const tests: {
       },
       {
         input: "مې دې یې",
-        output: ["me", "de", "ye"],
+        output: [
+          { kids: ["me"] },
+          { kids: ["me", "de"] },
+          { kids: ["me", "de", "ye"] },
+        ],
+      },
+      // don't do the variences in stopping early if the next kid can only be a kid
+      {
+        input: "به مو",
+        output: [{ kids: ["ba", "mU"] }],
       },
       {
         input: "دې به مې",
-        output: ["de", "ba", "me"],
+        output: [{ kids: ["de", "ba", "me"], err: true }],
         error: true,
       },
       {
         input: "مې یې",
-        output: ["me", "ye"],
+        output: [{ kids: ["me"] }, { kids: ["me", "ye"] }],
       },
       {
         input: "دې مې",
-        output: ["de", "me"],
+        output: [{ kids: ["de", "me"], err: true }],
         error: true,
       },
     ],
@@ -50,11 +61,11 @@ const tests: {
     cases: [
       {
         input: "به سړی",
-        output: ["ba"],
+        output: [{ kids: ["ba"] }],
       },
       {
         input: "مې دې واخیسته",
-        output: ["me", "de"],
+        output: [{ kids: ["me"] }, { kids: ["me", "de"] }],
       },
     ],
   },
@@ -62,19 +73,16 @@ const tests: {
 
 tests.forEach(({ label, cases }) => {
   test(label, () => {
-    cases.forEach(({ input, output, error }) => {
+    cases.forEach(({ input, output }) => {
       const tokens = tokenizer(input);
       const parsed = parseKidsSection(tokens, [], []);
       if (output.length) {
-        expect(parsed.length).toBe(1);
-        expect(parsed.map((x) => x.body.kids)).toEqual(
-          output.length ? [output] : []
-        );
-        if (error) {
-          expect(parsed[0].errors.length).toBeTruthy();
-        } else {
-          expect(parsed[0].errors.length).toBe(0);
-        }
+        expect(
+          parsed.map((x) => ({
+            kids: x.body.kids,
+            ...(!!x.errors.length ? { err: true } : {}),
+          })),
+        ).toEqual(output);
       }
     });
   });

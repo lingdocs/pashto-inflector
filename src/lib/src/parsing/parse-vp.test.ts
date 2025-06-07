@@ -1807,9 +1807,9 @@ function makeSubjBlock(content: T.Person | T.NPSelection): T.VPSBlockComplete {
       selection:
         typeof content === "number"
           ? {
-              type: "NP",
-              selection: makePronounSelection(content),
-            }
+            type: "NP",
+            selection: makePronounSelection(content),
+          }
           : content,
     },
   };
@@ -1828,11 +1828,11 @@ function makeObjBlock(
             ? content
             : T.Person.ThirdPlurMale
           : typeof content === "number"
-          ? {
+            ? {
               type: "NP",
               selection: makePronounSelection(content),
             }
-          : content,
+            : content,
     },
   };
 }

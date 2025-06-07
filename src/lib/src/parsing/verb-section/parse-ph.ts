@@ -67,7 +67,9 @@ function parseVerbPH(
   // TODO: maybe it would be better to only do this splitting off of the perfect head
   // if the next thing could be a kids section
   return phs
-    .filter((p) => first.s.startsWith(p) && first.s.length > p.length)
+    .filter((p) => first.s.startsWith(p)
+      // to prevent the split off of و on things like وي ... but could we be more aggressive? needs at least 2 more chars, to prevent ولم etc?
+      && first.s.length > p.length + 1)
     .flatMap((ph) =>
       returnParseResult(
         [
