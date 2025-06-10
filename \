@@ -668,162 +668,143 @@ function getTenses(
   if (vbp) {
     return (vbp.info.type === "ability" ? getAbilityTenses : getPerfectTenses)(
       ba,
-      vbp,
       vbe,
-      // don't need to check that it's the right negative because it should already be
-      // checked from parseVerbSection
-      !!negative,
+      vbp,
     );
   }
-  if (!vbe) {
-    throw new Error("invalid verb input to getTenses");
+  if (!vbe || vbe.type !== "VB") {
+    return [];
   }
-  const { info, person, target } = getMainVerbFromVBE(vbe);
-  const tenses = getTensesFromRootsStems(
-    ba,
-    info.base,
-    info.aspect,
-    !!negative,
-    info.imperative,
-  );
-  const transitivities = getTransitivities(info.verb);
-
-  return tenses.map((tense) => ({
-    tense,
-    transitivities,
-    negative: !!negative,
-    person,
-    target,
-    verb: info.verb,
-    errors: [],
-  }));
-}
-
-function getMainVerbFromVBE(vbe: T.ParsedVBE): {
-  info: T.VbInfo;
-  person: T.Person;
-  target: T.Person[];
-} {
-  if (vbe.type === "VB") {
-    if (vbe.info.type === "equative") {
-      throw new Error("invalid verb processing in getTenses");
+  if (vbe.info.type === "verb") {
+    if (!vbe.info.imperative && negative && negative.imperative) {
+      // TODO: return errors here
+      return [];
     }
-    return {
-      info: vbe.info,
-      person: vbe.person,
-      target: [vbe.person],
-    };
-  }
-  const person = vbe.right.person;
-  const info = vbe.right.info;
-  if ("info" in info) {
-    throw new Error("invalid verb processing in getTenses");
-  }
-  const target = getTarget(vbe.left);
-  return {
-    info,
-    person,
-    target,
-  };
-}
-
-function getTarget(left: T.ParsedWelded["left"]): T.Person[] {
-  if (
-    "type" in left &&
-    left.type === "complement" &&
-    "inflection" in left.selection
-  ) {
-    const plural = left.selection.inflection.includes(1);
-    const singular = left.selection.inflection.includes(0);
-    return left.selection.gender.flatMap((gender) => {
-      const basePeople = [
-        ...(singular ? [0, 2, 4] : []),
-        ...(plural ? [6, 8, 10] : []),
-      ];
-      return gender === "masc" ? basePeople : basePeople.map((x) => x + 1);
-    });
-  }
-  return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-}
-
-function getAbilityTenses(
-  hasBa: boolean,
-  vbp: T.ParsedVBP,
-  vbe: T.ParsedVBE | undefined,
-  negative: boolean,
-): ReturnType<typeof getTenses> {
-  // for type safety
-  if (
-    vbp.info.type !== "ability" ||
-    !vbe ||
-    vbe.type === "welded" ||
-    vbe.info.type !== "verb"
-  ) {
-    throw new Error("incorrect type of verb fed to getAbilityTenses");
-  }
-  const aspects: T.Aspect[] = isAbilityAspectAmbiguousVBP(vbp)
-    ? ["imperfective", "perfective"]
-    : [vbp.info.aspect];
-  // we are assuming from the parser that the vbe is the proper intrans stat aux
-  const base = vbe.info.base;
-  const tenses: T.AbilityTense[] = aspects.map<T.AbilityTense>(
-    (aspect) => `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`,
-  );
-  const verb = vbp.info.verb;
-  return tenses.map((tense) => ({
-    negative,
-    verb,
-    person: vbe.person,
-    target: [vbe.person],
-    tense,
-    transitivities: getTransitivities(verb),
-    errors: [],
-  }));
-}
-
-function getPerfectTenses(
-  hasBa: boolean,
-  vbp: T.ParsedVBP,
-  vbe: T.ParsedVBE | undefined,
-  negative: boolean,
-): ReturnType<typeof getTenses> {
-  // for type safety
-  if (
-    vbp.info.type !== "ppart" ||
-    !vbe ||
-    vbe.type === "welded" ||
-    vbe.info.type !== "equative"
-  ) {
-    throw new Error("incorrect type of verb fet to getPerfcetTenses");
-  }
-  const errors: T.ParseError[] = [];
-  const equativeGenNum = personToGenNum(vbe.person);
-  if (!equals(equativeGenNum, vbp.info.genNum)) {
-    errors.push({
-      message: `equative (${equativeGenNum.gender}. ${equativeGenNum.number}) and past participle (${vbp.info.genNum.gender}. ${vbp.info.genNum.number}) do not agree`,
-    });
-  }
-  const transitivities = getTransitivities(vbp.info.verb);
-  const tense: T.PerfectTense | undefined = getPerfectTense(
-    hasBa,
-    vbe.info.tense,
-  );
-  if (!tense) {
-    errors.push({
-      message: `invalid perfect tense form`,
-    });
-  }
-  return [
-    {
-      tense: tense || `${vbe.info.tense}Perfect`,
+    const abilityTenses = getAbilityTenses(ba, vbe, vbp);
+    if (vbp && !abilityTenses.length) {
+      return [];
+    }
+    const mainV =
+      abilityTenses.length && vbp && vbp.info.type === "ability"
+        ? vbp.info
+        : vbe.info;
+    const aspect = mainV.aspect;
+    if (aspect === "perfective") {
+      if (!ph && mainV.type !== "verb" && isKedulStatEntry(mainV.verb.entry))
+        return [];
+    } else {
+      if (ph) return [];
+    }
+    const tenses = abilityTenses.length
+      ? []
+      : getTensesFromRootsStems(
+          ba,
+          vbe.info.base,
+          vbe.info.aspect,
+          !!negative,
+          vbe.info.imperative,
+        );
+    if (!tenses.length && !abilityTenses.length) {
+      return [];
+    }
+    const transitivities =
+      abilityTenses.length && vbp
+        ? getTransitivities(vbp.info.verb)
+        : getTransitivities(vbe.info.verb);
+    const verbEntry = vbp ? vbp.info.verb : vbe.info.verb;
+    if (!verbEntry) return [];
+    if (abilityTenses.length) {
+      if (!vbp) {
+        throw new Error("VBP should exist in ability verb");
+      }
+      return abilityTenses.map((abilityTense) => ({
+        tense: abilityTense,
+        transitivities,
+        negative: !!negative,
+        person: vbe.person,
+        target: [vbe.person],
+        verb: vbp.info.verb,
+        errors: [],
+      }));
+    }
+    if (!tenses.length) {
+      return [];
+    }
+    return tenses.map((tense) => ({
+      tense,
       transitivities,
       negative: !!negative,
       person: vbe.person,
       target: [vbe.person],
-      verb: vbp.info.verb,
-      errors,
-    },
-  ];
+      verb: verbEntry,
+      errors: [],
+    }));
+  } else {
+    // perfect
+    const errors: T.ParseError[] = [];
+    const pPart = blocks.find(
+      (x) => x.type === "VB" && x.info.type === "ppart",
+    ) as T.ParsedVBP | undefined;
+    const equative = blocks.find(
+      (x) => x.type === "VB" && x.info.type === "equative",
+    ) as T.ParsedVB | undefined;
+    // TODO: Maybe remove (and type) this check because we already prevented
+    // these kinds of errors in the parseVerbSection
+    if (
+      !pPart ||
+      pPart.info.type === "ability" ||
+      !equative ||
+      equative.info.type !== "equative"
+    ) {
+      return [];
+    }
+    const equativeGenNum = personToGenNum(equative.person);
+    if (!equals(equativeGenNum, pPart.info.genNum)) {
+      errors.push({
+        message: `equative (${equativeGenNum.gender}. ${equativeGenNum.number}) and past participle (${pPart.info.genNum.gender}. ${pPart.info.genNum.number}) do not agree`,
+      });
+    }
+    const transitivities = getTransitivities(pPart.info.verb);
+    const tense = getPerfectTense(ba, equative.info.tense);
+    if (!tense) {
+      errors.push({
+        message: `invalid perfect tense form`,
+      });
+    }
+    return [
+      {
+        tense: tense || `${equative.info.tense}Perfect`,
+        transitivities,
+        negative: !!negative,
+        person: equative.person,
+        target: [vbe.person],
+        verb: pPart.info.verb,
+        errors,
+      },
+    ];
+  }
+}
+
+function getAbilityTenses(
+  hasBa: boolean,
+  vbe: T.ParsedVB,
+  vbp: Extract<T.ParsedVBP, { info: { type: "ability" } }>,
+): ReturnType<typeof getTenses> {
+  const aspects: T.Aspect[] = isAbilityAspectAmbiguousVBP(vbp)
+    ? ["imperfective", "perfective"]
+    : [vbp.info.aspect];
+  const base = vbe.info.base;
+  return aspects.map<T.AbilityTense>(
+    (aspect) => `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`,
+  );
+}
+
+function getPerfectTenses(
+  hasBa: boolean,
+  vbe: T.ParsedVBBasic,
+  vbp: Extract<T.ParsedVBP, { info: { type: "ability" } }>,
+): ReturnType<typeof getTenses> {
+  return [];
 }
 
 function checkForDynCompounds(dictionary: T.DictionaryAPI) {

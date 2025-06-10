@@ -22,12 +22,6 @@ import {
 } from "../phrase-building/make-selections";
 import { makeVPSelectionState } from "../phrase-building/verb-selection";
 
-//                        _
-// __      _____  _ __ __| |___
-// \ \ /\ / / _ \| '__/ _` / __|
-//  \ V  V / (_) | | | (_| \__ \
-//   \_/\_/ \___/|_|  \__,_|___/
-
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
 // const kenaastul = testDictionary.verbEntryLookup("کېناستل")[0];
@@ -338,7 +332,7 @@ const transFullForm: Section = {
           },
           form: full,
           externalComplement: undefined,
-        }))
+        })),
       ),
     },
     // perfect
@@ -533,7 +527,7 @@ const intransDropKing: Section = {
           verb: makeVS(tlul, tense),
           externalComplement: undefined,
           form: dropKing,
-        }))
+        })),
       ),
     },
     {
@@ -741,7 +735,7 @@ const transShrinkServant: Section = {
             verb: makeVS(wahul, "presentVerb"),
             form: dropKing,
             externalComplement: undefined,
-          }))
+          })),
         ),
       ],
     },
@@ -780,7 +774,7 @@ const transShrinkServant: Section = {
           },
           form: shrinkServant,
           externalComplement: undefined,
-        }))
+        })),
       ),
     },
     // perfect
@@ -809,7 +803,7 @@ const transShrinkServant: Section = {
             verb: makeVS(wahul, "perfectiveImperative"),
             form: shrinkServant,
             externalComplement: undefined,
-          }))
+          })),
       ),
     },
     {
@@ -834,7 +828,7 @@ const transShrinkServant: Section = {
             },
             form: shrinkServant,
             externalComplement: undefined,
-          }))
+          })),
       ),
     },
     // ability
@@ -864,7 +858,7 @@ const transShrinkServant: Section = {
           },
           form: shrinkServant,
           externalComplement: undefined,
-        }))
+        })),
       ),
     },
   ],
@@ -882,7 +876,7 @@ const transBoth: Section = {
           verb: makeVS(leedul, "presentVerb"),
           form: both,
           externalComplement: undefined,
-        }))
+        })),
       ),
     },
     {
@@ -925,7 +919,7 @@ const transBoth: Section = {
           verb: makeVS(akheestul, "perfectiveImperative"),
           form: both,
           externalComplement: undefined,
-        }))
+        })),
       ),
     },
     // ability
@@ -937,7 +931,7 @@ const transBoth: Section = {
           verb: makeVS(leedul, "presentVerbModal"),
           form: both,
           externalComplement: undefined,
-        }))
+        })),
       ),
     },
     {
@@ -948,7 +942,7 @@ const transBoth: Section = {
           verb: makeVS(leedul, "imperfectivePastModal"),
           form: both,
           externalComplement: undefined,
-        }))
+        })),
       ),
     },
   ],
@@ -1298,7 +1292,7 @@ const complTransFull: Section = {
               },
             },
             form: full,
-          }))
+          })),
       ),
     },
     {
@@ -1319,7 +1313,7 @@ const complTransFull: Section = {
               },
             },
             form: full,
-          }))
+          })),
       ),
     },
   ],
@@ -1490,7 +1484,7 @@ const complTransDropKing: Section = {
               },
             },
             form: dropKing,
-          }))
+          })),
       ),
     },
     {
@@ -1511,7 +1505,7 @@ const complTransDropKing: Section = {
               },
             },
             form: dropKing,
-          }))
+          })),
       ),
     },
   ],
@@ -1558,7 +1552,7 @@ const complTransShrinkServant: Section = {
             },
             form: shrinkServant,
           },
-        ])
+        ]),
       ),
     },
     {
@@ -1695,7 +1689,7 @@ const complTransShrinkServant: Section = {
             },
           },
           form: shrinkServant,
-        }))
+        })),
       ),
     },
   ],
@@ -1742,7 +1736,7 @@ const complTransBoth: Section = {
             externalComplement: undefined,
             form: dropKing,
           },
-        ])
+        ]),
       ),
     },
     {
@@ -1761,7 +1755,7 @@ const complTransBoth: Section = {
             },
           },
           form: both,
-        }))
+        })),
       ),
     },
   ],
@@ -1807,16 +1801,16 @@ function makeSubjBlock(content: T.Person | T.NPSelection): T.VPSBlockComplete {
       selection:
         typeof content === "number"
           ? {
-            type: "NP",
-            selection: makePronounSelection(content),
-          }
+              type: "NP",
+              selection: makePronounSelection(content),
+            }
           : content,
     },
   };
 }
 
 function makeObjBlock(
-  content: "none" | "grammTranThird" | T.Person | T.NPSelection
+  content: "none" | "grammTranThird" | T.Person | T.NPSelection,
 ): T.VPSBlockComplete {
   return {
     key: 24,
@@ -1829,9 +1823,9 @@ function makeObjBlock(
             : T.Person.ThirdPlurMale
           : typeof content === "number"
             ? {
-              type: "NP",
-              selection: makePronounSelection(content),
-            }
+                type: "NP",
+                selection: makePronounSelection(content),
+              }
             : content,
     },
   };
@@ -1839,7 +1833,7 @@ function makeObjBlock(
 
 function makeVS(
   v: T.VerbEntry,
-  tense: T.VerbFormName
+  tense: T.VerbFormName,
 ): T.VerbSelectionComplete {
   const x = {
     ...makeVPSelectionState(v).verb,
