@@ -29,7 +29,13 @@ import {
 } from "../phrase-building/vp-tools";
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
-import { isFirstPerson, isSecondPerson, personToGenNum } from "../misc-helpers";
+import {
+  isFirstPerson,
+  isSecondPerson,
+  personGender,
+  personNumber,
+  personToGenNum,
+} from "../misc-helpers";
 import { ArgumentTypes, equals } from "rambda";
 import { isImperativeTense, isTlulVerb } from "../type-predicates";
 import { isKedulStatEntry } from "./verb-section/parse-verb-helpers";
@@ -41,6 +47,17 @@ import {
 } from "../phrase-building/complement-tools";
 import { personsFromPattern1 } from "./argument-section/parse-noun-word";
 import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
+import { isStatComp } from "../new-verb-engine/rs-helpers";
+
+type Target = {
+  genders: T.Gender[];
+  numbers: T.NounNumber[];
+};
+
+const anyTarget: Target = {
+  genders: ["masc", "fem"],
+  numbers: ["singular", "plural"],
+};
 
 // to hide equatives type-doubling issue
 // shouldn't be opt parsing with demonstratives
@@ -72,6 +89,11 @@ import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
 //  issue with ستړې being an adverb
 // BIG RENDERING ISSUE - سړی shouldn't inflect to سړیانو
 //  change the dictionary back to n. m. anim ?
+
+// then testing for use of statComps
+// سړي ماشومه ستړې کړه
+// TODO: this should NOT turn into a dynamic comp!
+
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
@@ -80,16 +102,18 @@ export function parseVP(
     return [];
   }
   const argument = parseArgumentSection(tokens, dictionary);
-  return bindParseResultWParser(
-    argument,
-    (tokens) => parseVerbSection(tokens, dictionary),
-    (arg, vs, tkns) => {
-      if (tkns.length) {
-        // parseVP should only work when it consumes all the tokens
-        return [];
-      }
-      return combineArgAndVerbSections(tkns, dictionary, arg, vs);
-    },
+  return removeRedundantStatCombos(
+    bindParseResultWParser(
+      argument,
+      (tokens) => parseVerbSection(tokens, dictionary),
+      (arg, vs, tkns) => {
+        if (tkns.length) {
+          // parseVP should only work when it consumes all the tokens
+          return [];
+        }
+        return combineArgAndVerbSections(tkns, dictionary, arg, vs);
+      },
+    ),
   );
 }
 
@@ -105,7 +129,7 @@ function combineArgAndVerbSections(
     ...(arg.complement ? [arg.complement] : []),
   ];
   const ba = kids.some((k) => k === "ba");
-  const tenses = getTenses(vs.blocks, ba);
+  const tenses = getTenses(vs.blocks, ba, dictionary);
   // TODO get errors from the get tenses (perfect verbs not agreeing)
   return createPossesivePossibilities({
     blocks,
@@ -115,7 +139,7 @@ function combineArgAndVerbSections(
     const npsAndAps = blocks.filter((x) => x.type === "NP" || x.type === "AP");
     const exComplement = blocks.find((x) => x.type === "complement");
     return tenses.flatMap(
-      ({ tense, person, transitivities, negative, verb, errors }) => {
+      ({ tense, person, transitivities, negative, verb, errors, target }) => {
         const isPast = isPastTense(tense);
         return transitivities.flatMap<T.ParseResult<T.VPSelectionComplete>>(
           (transitivity): T.ParseResult<T.VPSelectionComplete>[] => {
@@ -143,6 +167,7 @@ function combineArgAndVerbSections(
                   tokens,
                   v,
                   vbePerson: person,
+                  target,
                 }).map(addErrors(errors)),
                 checkForDynCompounds(dictionary),
               );
@@ -156,6 +181,7 @@ function combineArgAndVerbSections(
                   tokens,
                   v,
                   vbePerson: person,
+                  target,
                   isPast,
                 }).map(addErrors(errors)),
                 checkForDynCompounds(dictionary),
@@ -171,6 +197,7 @@ function combineArgAndVerbSections(
                 tokens,
                 v,
                 person,
+                target,
                 isPast,
               }).map(addErrors(errors));
             }
@@ -241,6 +268,7 @@ function finishIntransitive({
   tokens,
   v,
   vbePerson,
+  target,
 }: {
   kidsErrors: T.ParseError[];
   miniPronouns: T.ParsedMiniPronoun[];
@@ -249,6 +277,7 @@ function finishIntransitive({
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
   vbePerson: T.Person;
+  target: Target;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   const nps = npsAndAps.filter((x): x is T.ParsedNP => x.type === "NP");
   const { complement, compPresenceErrors } = checkComplementPresence(
@@ -280,6 +309,7 @@ function finishIntransitive({
       s,
       exComplement: complement,
       vbePerson,
+      target,
     });
     const o = "none" as const;
     const allBlocksTemp: ArgumentTypes<typeof limitNPs>[0] = [
@@ -312,6 +342,7 @@ function finishTransitive({
   tokens,
   v,
   vbePerson,
+  target,
   isPast,
 }: {
   kidsErrors: T.ParseError[];
@@ -321,6 +352,7 @@ function finishTransitive({
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
   vbePerson: T.Person;
+  target: Target;
   isPast: boolean;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   const nps = npsAndAps.filter((x): x is T.ParsedNP => x.type === "NP");
@@ -365,6 +397,7 @@ function finishTransitive({
         exComplement: complement,
         isPast,
         vbePerson,
+        target,
       }),
     ];
     return [
@@ -523,6 +556,7 @@ function finishGrammaticallyTransitive({
   tokens,
   v,
   person,
+  target,
   isPast,
 }: {
   kidsErrors: T.ParseError[];
@@ -531,6 +565,7 @@ function finishGrammaticallyTransitive({
   tokens: Readonly<T.Token[]>;
   v: T.VerbSelectionComplete;
   person: T.Person;
+  target: Target;
   isPast: boolean;
 }): T.ParseResult<T.VPSelectionComplete>[] {
   const nps = npsAndAps.filter((x): x is T.ParsedNP => x.type === "NP");
@@ -560,6 +595,7 @@ function finishGrammaticallyTransitive({
         exComplement: undefined,
         isPast,
         vbePerson: person,
+        target,
       }),
       ...npErrors,
     ];
@@ -644,10 +680,11 @@ function finishGrammTransWNP(subject: T.ParsedNP) {
 function getTenses(
   blocks: VerbSectionBlock[],
   ba: boolean,
+  dictionary: T.DictionaryAPI,
 ): {
   tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
   person: T.Person;
-  target: T.Person[];
+  target: Target;
   transitivities: T.Transitivity[];
   negative: boolean;
   verb: T.VerbEntry;
@@ -676,9 +713,9 @@ function getTenses(
     );
   }
   if (!vbe) {
-    throw new Error("invalid verb input to getTenses");
+    return [];
   }
-  const { info, person, target } = getMainVerbFromVBE(vbe);
+  const { info, person } = getMainVerbFromVBE(vbe);
   const tenses = getTensesFromRootsStems(
     ba,
     info.base,
@@ -687,63 +724,118 @@ function getTenses(
     info.imperative,
   );
   const transitivities = getTransitivities(info.verb);
-
-  return tenses.map((tense) => ({
-    tense,
-    transitivities,
-    negative: !!negative,
-    person,
-    target,
-    verb: info.verb,
-    errors: [],
-  }));
+  const compHead = getCompHead(ph, vbe);
+  // check to see if a stat comp matches up
+  const verbs: { verb: T.VerbEntry; target: Target }[] = compHead
+    ? findStatComp(compHead, info, dictionary)
+    : [{ target: anyTarget, verb: info.verb }];
+  return tenses.flatMap((tense) =>
+    verbs.map(({ target, verb }) => ({
+      tense,
+      transitivities,
+      negative: !!negative,
+      person,
+      target,
+      verb,
+      errors: [],
+    })),
+  );
 }
 
 function getMainVerbFromVBE(vbe: T.ParsedVBE): {
   info: T.VbInfo;
   person: T.Person;
-  target: T.Person[];
 } {
-  if (vbe.type === "VB") {
-    if (vbe.info.type === "equative") {
-      throw new Error("invalid verb processing in getTenses");
-    }
-    return {
-      info: vbe.info,
-      person: vbe.person,
-      target: [vbe.person],
-    };
-  }
-  const person = vbe.right.person;
-  const info = vbe.right.info;
-  if ("info" in info) {
+  if (vbe.type === "VB" && vbe.info.type === "equative") {
     throw new Error("invalid verb processing in getTenses");
   }
-  const target = getTarget(vbe.left);
-  return {
-    info,
-    person,
-    target,
-  };
+  const person = vbe.type === "VB" ? vbe.person : vbe.right.person;
+  const info = vbe.type === "VB" ? vbe.info : vbe.right.info;
+  if ("info" in info || info.type === "equative") {
+    throw new Error("invalid verb processing in getTenses");
+  }
+  return { person, info };
 }
 
-function getTarget(left: T.ParsedWelded["left"]): T.Person[] {
-  if (
-    "type" in left &&
-    left.type === "complement" &&
-    "inflection" in left.selection
-  ) {
-    const plural = left.selection.inflection.includes(1);
-    const singular = left.selection.inflection.includes(0);
-    return left.selection.gender.flatMap((gender) => {
-      const basePeople = [
-        ...(singular ? [0, 2, 4] : []),
-        ...(plural ? [6, 8, 10] : []),
-      ];
-      return gender === "masc" ? basePeople : basePeople.map((x) => x + 1);
-    });
+function getCompHead(
+  ph: T.ParsedPH | undefined,
+  aux: T.ParsedVBE,
+): T.ParsedComplementSelection["selection"] | undefined {
+  if (ph) {
+    if (ph.type === "CompPH") {
+      return ph.selection;
+    } else {
+      return undefined;
+    }
   }
-  return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  if (aux.type !== "welded" || aux.left.type !== "complement") {
+    return undefined;
+  }
+  return aux.left.selection;
+}
+
+function getExtComplementL(
+  comp: T.VPSelectionState["externalComplement"],
+): number | undefined {
+  if (!comp) {
+    return undefined;
+  }
+  if (comp.selection.type === "unselected") {
+    return undefined;
+  }
+  if (
+    comp.selection.type !== "adjective" &&
+    comp.selection.type !== "loc. adv." &&
+    comp.selection.type !== "comp. noun"
+  ) {
+    return undefined;
+  }
+  if (comp.selection.type === "loc. adv.") {
+    return comp.selection.entry.ts;
+  }
+  return comp.selection.entry.ts;
+}
+
+function getComplementL(
+  comp: T.ParsedComplementSelection["selection"],
+): number | undefined {
+  if ("inflection" in comp) {
+    return comp.selection.entry.ts;
+  }
+  // TODO: this will need to include comp nouns as we add them!
+  if (comp.type !== "loc. adv.") {
+    return undefined;
+  }
+  return comp.entry.ts;
+}
+
+function findStatComp(
+  comp: T.ParsedComplementSelection["selection"],
+  aux: T.VbInfo,
+  dictionary: T.DictionaryAPI,
+): { verb: T.VerbEntry; target: Target }[] {
+  const l = getComplementL(comp);
+  if (!l) {
+    return [];
+  }
+  const trans = getTransitivities(aux.verb);
+  const target = getTarget(comp);
+  return dictionary
+    .verbEntryLookupByL(l)
+    .filter((x) => getTransitivities(x).some((t) => trans.includes(t)))
+    .map((verb) => ({ target, verb }));
+}
+
+function getTarget(comp: T.ParsedComplementSelection["selection"]): Target {
+  if ("inflection" in comp) {
+    return {
+      genders: comp.gender,
+      numbers: comp.inflection.flatMap((i) =>
+        i === 0 ? ["singular"] : i === 1 ? ["plural"] : [],
+      ),
+    };
+  }
+  return anyTarget;
 }
 
 function getAbilityTenses(
@@ -752,7 +844,7 @@ function getAbilityTenses(
   vbe: T.ParsedVBE | undefined,
   negative: boolean,
 ): ReturnType<typeof getTenses> {
-  // for type safety
+  // for type safety - but we've already assured this won't happen
   if (
     vbp.info.type !== "ability" ||
     !vbe ||
@@ -774,7 +866,7 @@ function getAbilityTenses(
     negative,
     verb,
     person: vbe.person,
-    target: [vbe.person],
+    target: anyTarget,
     tense,
     transitivities: getTransitivities(verb),
     errors: [],
@@ -819,7 +911,7 @@ function getPerfectTenses(
       transitivities,
       negative: !!negative,
       person: vbe.person,
-      target: [vbe.person],
+      target: anyTarget,
       verb: vbp.info.verb,
       errors,
     },
@@ -999,21 +1091,28 @@ function checkIntransitiveStructure({
   s,
   exComplement,
   vbePerson,
+  target,
 }: {
   s: T.ParsedNP;
   exComplement: T.ParsedComplementSelection | undefined;
   vbePerson: T.Person;
+  target: Target;
 }): T.ParseError[] {
-  const errors: T.ParseError[] = checkComplement(
-    exComplement,
-    getPersonFromNP(s.selection),
-  );
+  const subjPerson = getPersonFromNP(s.selection);
+  const errors: T.ParseError[] = checkComplement(exComplement, subjPerson);
   const winner = winnerOfNpAndCompliment(s.selection, exComplement);
   if (winner.person !== vbePerson) {
     errors.push({
       message: `intransitive verb must agree with ${
         winner.source === "np" ? "subject" : "complement NP in this case."
       }`,
+    });
+  }
+  // TODO: are we sure the stat comp comp matches simply the subject and not the winner?
+  if (!targetMatches(subjPerson, target)) {
+    errors.push({
+      message:
+        "complement of stative compound must match subject in intransitive verb",
     });
   }
   if (s.inflected) {
@@ -1030,12 +1129,14 @@ function checkTransitiveStructure({
   exComplement,
   isPast,
   vbePerson,
+  target,
 }: {
   s: T.ParsedNP;
   o: T.ParsedNP | T.Person.ThirdPlurMale;
   exComplement: T.ParsedComplementSelection | undefined;
   isPast: boolean;
   vbePerson: T.Person;
+  target: Target;
 }): T.ParseError[] {
   const grammTrans = typeof o !== "object";
   const errors: T.ParseError[] = !grammTrans
@@ -1057,6 +1158,11 @@ function checkTransitiveStructure({
     // in the past the verb will agree with the object, unless the compliment takes over
     if (!grammTrans) {
       const winner = winnerOfNpAndCompliment(o.selection, exComplement);
+      if (!targetMatches(winner.person, target)) {
+        errors.push({
+          message: `complement of stative compound must match the object`,
+        });
+      }
       if (winner.person !== vbePerson) {
         errors.push({
           message: `past tense transitive verb must agree with ${
@@ -1070,7 +1176,14 @@ function checkTransitiveStructure({
         });
       }
     } else {
-      if (vbePerson !== T.Person.ThirdPlurMale) {
+      const winner = T.Person.ThirdPlurMale;
+      if (!targetMatches(winner, target)) {
+        errors.push({
+          message:
+            "complement of stative compound in past tense grammatically transitive verb must match third pers. masc. sing. to agree with implied object",
+        });
+      }
+      if (vbePerson !== winner) {
         errors.push({
           message:
             "past tense grammatically transitive verb must be third pers. masc. sing. to agree with implied object",
@@ -1100,6 +1213,19 @@ function checkTransitiveStructure({
               "object of transitive non-past tense verb must not be inflected",
           });
         }
+      }
+      if (!targetMatches(getPersonFromNP(o.selection), target)) {
+        errors.push({
+          message:
+            "complement of stative compound must match object in non-past transitive verbs",
+        });
+      }
+    } else {
+      if (!targetMatches(T.Person.ThirdPlurMale, target)) {
+        errors.push({
+          message:
+            "complement of stative compound must match third pers. masc. sing. to line up with implied object in gramm. trans. non-past verb",
+        });
       }
     }
     if (s.inflected) {
@@ -1532,4 +1658,34 @@ function isAbilityAspectAmbiguousVBP(vbp: T.ParsedVBP): boolean {
     return true;
   }
   return isTlulVerb(vbp.info.verb);
+}
+
+function targetMatches(person: T.Person, target: Target): boolean {
+  const number = personNumber(person);
+  const gender = personGender(person);
+  return target.genders.includes(gender) && target.numbers.includes(number);
+}
+
+/**
+ * if a stative compound is present, this removes the redundant version made with "to make ___ ___" etc.
+ *
+ * ie. if you have "maa pyaala maata kRa"
+ * Then it should only be "I BROKE the cup" and not also "I made the cup broken"
+ */
+function removeRedundantStatCombos(
+  res: T.ParseResult<T.VPSelectionComplete>[],
+): T.ParseResult<T.VPSelectionComplete>[] {
+  return res.filter((r) => {
+    if (r.body.externalComplement) {
+      const compTs = getExtComplementL(r.body.externalComplement);
+      // see if there's a version with the stative compound
+      // TODO: this could be an overly simplistic way of checking
+      return !res.some(
+        (vp) =>
+          isStatComp(vp.body.verb.verb) &&
+          compTs === vp.body.verb.verb.complement?.ts,
+      );
+    }
+    return true;
+  });
 }

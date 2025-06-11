@@ -4,7 +4,7 @@ import { getPersonFromNP, isThirdPerson } from "./vp-tools";
 
 export function winnerOfNpAndCompliment(
   np: T.NPSelection,
-  comp: T.ParsedComplementSelection | undefined
+  comp: T.ParsedComplementSelection | undefined,
 ): { source: "np" | "complement"; person: T.Person } {
   if (!comp || !("type" in comp.selection) || comp.selection.type !== "NP") {
     return { source: "np", person: getPersonFromNP(np) };
@@ -33,7 +33,7 @@ export function complementTakesTarget(
     | T.ComplementSelection
     | T.UnselectedComplementSelection
     | T.ParsedComplementSelection
-    | undefined
+    | undefined,
 ): boolean {
   if (!comp) {
     return false;
@@ -74,7 +74,7 @@ export function complementTakesTarget(
 }
 
 export function parsedCompToCompSelection(
-  comp: T.ParsedComplementSelection | undefined
+  comp: T.ParsedComplementSelection | undefined,
 ): T.ComplementSelection | undefined {
   if (!comp) {
     return comp;
@@ -93,7 +93,7 @@ export function parsedCompToCompSelection(
 
 export function checkComplement(
   comp: T.ParsedComplementSelection | undefined,
-  person: T.Person
+  person: T.Person,
 ): T.ParseError[] {
   if (!comp) {
     return [];
@@ -105,7 +105,7 @@ export function checkComplement(
     const errors: T.ParseError[] = [];
     if (!comp.selection.gender.includes(gender)) {
       errors.push({
-        message: "gender of verb and complement adjective must match",
+        message: "gender of target and complement adjective must match",
       });
     }
     if (
