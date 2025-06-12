@@ -31,7 +31,7 @@ export function entryOfFull(e: T.FullEntry): T.DictionaryEntry {
 
 // just for type safety
 export function noPersInfs<S extends object>(
-  s: T.OptionalPersonInflections<S>
+  s: T.OptionalPersonInflections<S>,
 ): S {
   if ("mascSing" in s) {
     // this path shouldn't be used, just for type safety
@@ -50,7 +50,7 @@ export function ensureVerbConjugation(o: T.VerbOutput): T.VerbConjugation {
 
 export function pickPersInf<T>(
   s: T.OptionalPersonInflections<T>,
-  persInf: T.PersonInflectionsField
+  persInf: T.PersonInflectionsField,
 ): T {
   // @ts-expect-error because ok
   if ("mascSing" in s) {
@@ -92,7 +92,7 @@ export function getFirstSecThird(p: T.Person): 1 | 2 | 3 {
 // }
 
 export function hasPersInfs(
-  info: T.NonComboVerbInfo | T.PassiveRootsAndStems | T.AbilityRootsAndStems
+  info: T.NonComboVerbInfo | T.PassiveRootsAndStems | T.AbilityRootsAndStems,
 ): boolean {
   if ("participle" in info) {
     return (
@@ -112,7 +112,7 @@ export function chooseParticipleInflection(
   pPartInfs:
     | T.SingleOrLengthOpts<T.UnisexInflections>
     | T.SingleOrLengthOpts<T.PsString>,
-  person: T.Person
+  person: T.Person,
 ): T.SingleOrLengthOpts<T.PsString> {
   if ("long" in pPartInfs) {
     return {
@@ -130,7 +130,7 @@ export function chooseParticipleInflection(
 
 export function getPersonNumber(
   gender: T.Gender,
-  number: T.NounNumber
+  number: T.NounNumber,
 ): T.Person {
   const base = gender === "masc" ? 4 : 5;
   return base + (number === "singular" ? 0 : 6);
@@ -141,7 +141,7 @@ export function personFromVerbBlockPos(pos: [number, number]): T.Person {
 }
 
 export function getPersonInflectionsKey(
-  person: T.Person
+  person: T.Person,
 ): T.PersonInflectionsField {
   return `${personGender(person)}${
     personIsPlural(person) ? "Plur" : "Sing"
@@ -160,7 +160,7 @@ export function spaceInForm(form: T.FullForm<T.PsString>): boolean {
 
 export function getPersonFromVerbForm(
   form: T.SingleOrLengthOpts<T.VerbBlock>,
-  person: T.Person
+  person: T.Person,
 ): T.SentenceForm {
   return fmapSingleOrLengthOpts((x) => {
     const [row, col] = getVerbBlockPosFromPerson(person);
@@ -169,7 +169,7 @@ export function getPersonFromVerbForm(
 }
 
 export function getVerbBlockPosFromPerson(
-  person: T.Person
+  person: T.Person,
 ): [0 | 1 | 2 | 3 | 4 | 5, 0 | 1] {
   const plural = personIsPlural(person);
   const row = (plural ? person - 6 : person) as 0 | 1 | 2 | 3 | 4 | 5;
@@ -178,7 +178,7 @@ export function getVerbBlockPosFromPerson(
 }
 
 export function getAuxTransitivity(
-  trans: T.Transitivity
+  trans: T.Transitivity,
 ): "transitive" | "intransitive" {
   return trans === "intransitive" ? "intransitive" : "transitive";
 }
@@ -202,14 +202,14 @@ export function personIsPlural(person: T.Person): boolean {
 
 export function getEnglishPersonInfo(
   person: T.Person,
-  version?: "short" | "long"
+  version?: "short" | "long",
 ): string {
   const p =
     ([0, 1, 6, 7].includes(person)
       ? "1st"
       : [2, 3, 8, 9].includes(person)
-      ? "2nd"
-      : "3rd") + " pers.";
+        ? "2nd"
+        : "3rd") + " pers.";
   const number = personIsPlural(person) ? "plur" : "sing";
   const n = version === "short" ? (number === "plur" ? "pl" : "sg") : number;
   const gender = personGender(person);
@@ -219,7 +219,7 @@ export function getEnglishPersonInfo(
 
 export function getEnglishGenNumInfo(
   gender: T.Gender,
-  number: T.NounNumber
+  number: T.NounNumber,
 ): string {
   return `${gender === "masc" ? "masc" : "fem"} ${
     number === "plural" ? "plur." : "sing."
@@ -238,7 +238,7 @@ export function personToGenNum(p: T.Person): {
 
 export function getEnglishParticipleInflection(
   person: T.Person,
-  version?: "short" | "long"
+  version?: "short" | "long",
 ): string {
   const number = personIsPlural(person) ? "plural" : "singular";
   const n =
@@ -250,10 +250,10 @@ export function getEnglishParticipleInflection(
 
 export function randomNumber(
   minInclusive: number,
-  maxExclusive: number
+  maxExclusive: number,
 ): number {
   return Math.floor(
-    Math.random() * (maxExclusive - minInclusive) + minInclusive
+    Math.random() * (maxExclusive - minInclusive) + minInclusive,
   );
 }
 
@@ -277,7 +277,7 @@ export function isSentenceForm(f: any): boolean {
 }
 
 export function isNounAdjOrVerb(
-  entry: T.DictionaryEntry
+  entry: T.DictionaryEntry,
 ): "nounAdj" | "verb" | false {
   if (!entry.c) {
     return false;
@@ -344,13 +344,13 @@ export function parseEc(ec: string): T.EnglishVerbConjugationEc {
   return items.length === 4
     ? [items[0], items[1], items[2], items[3], items[3]]
     : items.length === 5
-    ? [items[0], items[1], items[2], items[3], items[4]]
-    : makeRegularConjugations(items[0]);
+      ? [items[0], items[1], items[2], items[3], items[4]]
+      : makeRegularConjugations(items[0]);
 }
 
 export function chooseLength<N>(
   x: T.SingleOrLengthOpts<N>,
-  length: "long" | "short"
+  length: "long" | "short",
 ): N {
   // @ts-expect-error because ok
   if ("long" in x) {

@@ -58,6 +58,9 @@ const dalta = testDictionary.otherLookup("p", "دلته")[0] as T.AdverbEntry;
 const jzarul = testDictionary.verbEntryLookup("ژړل")[0] as T.VerbEntry;
 const balul = testDictionary.verbEntryLookup("بلل")[0] as T.VerbEntry;
 const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0] as T.VerbEntry;
+const murKedul = testDictionary.verbEntryLookup("مړ کېدل")[0] as T.VerbEntry;
+
+// TODO: add مړېدل to testDictionary and make sure that مړ کېدم doesn't parse into مړېدم!
 
 //  _            _
 // | |_ ___  ___| |_ ___
@@ -1761,6 +1764,76 @@ const complTransBoth: Section = {
   ],
 };
 
+const intransStatComp: Section = {
+  title: "Intrans Stat Comp",
+  tests: [
+    {
+      input: "زه مړ کېږم",
+      output: [
+        {
+          blocks: [makeSubjBlock(T.Person.FirstSingMale), makeObjBlock("none")],
+          verb: makeVS(murKedul, "presentVerb"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+    {
+      input: "زه مړه کېږم",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock(T.Person.FirstSingFemale),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(murKedul, "presentVerb"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+    {
+      input: "ته مړ شې",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock(T.Person.SecondSingMale),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(murKedul, "subjunctiveVerb"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+    {
+      input: "زه مړ کېدم",
+      output: [
+        {
+          blocks: [makeSubjBlock(T.Person.FirstSingMale), makeObjBlock("none")],
+          verb: makeVS(murKedul, "imperfectivePast"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+    {
+      input: "تاسو مړې کېدلئ",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock(T.Person.SecondPlurFemale),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(murKedul, "imperfectivePast"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+  ],
+};
+
 const sections = [
   intransFullForm,
   transFullForm,
@@ -1777,6 +1850,8 @@ const sections = [
   complTransDropKing,
   complTransShrinkServant,
   complTransBoth,
+  // with stat comp verbs
+  intransStatComp,
 ];
 
 sections.forEach((section) => {

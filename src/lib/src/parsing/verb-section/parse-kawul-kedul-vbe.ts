@@ -1,39 +1,39 @@
 import * as T from "../../../../types";
 import { getVerbEnding } from "./parse-verb-helpers";
 import { kawulStat, kawulDyn, kedulStat, kedulDyn } from "./irreg-verbs";
-import { returnParseResults } from "../utils";
+import { getPeople, returnParseResults } from "../utils";
 import { getImperativeVerbEnding } from "./misc";
 
 // TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat
 type Head = "oo" | "none" | "other";
 function getHead(ph: T.ParsedPH | undefined): Head {
-  return !ph ? "none" : ph.type === "PH" && ph.s === "و" ? "oo" : "other"
+  return !ph ? "none" : ph.type === "PH" && ph.s === "و" ? "oo" : "other";
 }
 
 // TODO: this might be a lot of unnecessary currying
 const getForm =
   (head: Head) =>
-    (kawulKedul: "kawul" | "kedul") =>
-      (aspect: T.Aspect) =>
-        (base: "stem" | "root") =>
-          (person: T.Person): T.ParsedVB[] => {
-            return validVerbs(head, kawulKedul, aspect).map((verb) => {
-              return {
-                type: "VB",
-                info: {
-                  aspect,
-                  base,
-                  type: "verb",
-                  verb,
-                } as const,
-                person,
-              } as const;
-            })
-          };
+  (kawulKedul: "kawul" | "kedul") =>
+  (aspect: T.Aspect) =>
+  (base: "stem" | "root") =>
+  (person: T.Person): T.ParsedVB[] => {
+    return validVerbs(head, kawulKedul, aspect).map((verb) => {
+      return {
+        type: "VB",
+        info: {
+          aspect,
+          base,
+          type: "verb",
+          verb,
+        } as const,
+        person,
+      } as const;
+    });
+  };
 
 // TODO: what about وکولم etc
 
-// TODO: handle cases for وانه شم اخیستی! 
+// TODO: handle cases for وانه شم اخیستی!
 
 export function parseKawulKedulVBE(
   tokens: Readonly<T.Token[]>,
@@ -48,38 +48,47 @@ export function parseKawulKedulVBE(
   }
   const start = first.s.slice(0, -1);
   const ending = first.s.at(-1) || "";
-  const head = getHead(ph)
+  const head = getHead(ph);
   const getF = getForm(head);
   const oneBase =
     (kawulKedul: "kawul" | "kedul") =>
-      (base: "root" | "stem") =>
-        (aspect: T.Aspect) =>
-          (people: T.Person[]) => {
-            return returnParseResults<T.ParsedVB>(
-              rest,
-              people.flatMap(getF(kawulKedul)(aspect)(base))
-            );
-          };
+    (base: "root" | "stem") =>
+    (aspect: T.Aspect) =>
+    (people: T.Person[]) => {
+      return returnParseResults<T.ParsedVB>(
+        rest,
+        people.flatMap(getF(kawulKedul)(aspect)(base)),
+      );
+    };
   const rootAndStem =
     (kawulKedul: "kawul" | "kedul") =>
-      (aspect: T.Aspect) =>
-        (people: {
-          people: ReturnType<typeof getVerbEnding>;
-          imperativePeople: ReturnType<typeof getImperativeVerbEnding>;
-        }) => {
-          return returnParseResults<T.ParsedVB>(rest, [
-            ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
-            ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
-            ...people.imperativePeople.flatMap<T.ParsedVB>((person) =>
-              getF(kawulKedul)(aspect)("stem")(person).map(addImperative)
-            ),
-          ]);
-        };
+    (aspect: T.Aspect) =>
+    (people: {
+      people: ReturnType<typeof getVerbEnding>;
+      imperativePeople: ReturnType<typeof getImperativeVerbEnding>;
+    }) => {
+      return returnParseResults<T.ParsedVB>(rest, [
+        ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
+        ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
+        ...people.imperativePeople.flatMap<T.ParsedVB>((person) =>
+          getF(kawulKedul)(aspect)("stem")(person).map(addImperative),
+        ),
+      ]);
+    };
   if (first.s === "کړ") {
     return oneBase("kawul")("root")("perfective")([T.Person.ThirdSingMale]);
   }
   if (first.s === "کاوه") {
     return oneBase("kawul")("root")("imperfective")([T.Person.ThirdSingMale]);
+  }
+  if (first.s === "کېده") {
+    return oneBase("kedul")("root")("imperfective")([
+      T.Person.ThirdSingMale,
+      T.Person.ThirdSingFemale,
+    ]);
+  }
+  if (first.s === "کېدل") {
+    return oneBase("kedul")("root")("imperfective")([T.Person.ThirdPlurMale]);
   }
   if (first.s === "شو") {
     return [
@@ -119,7 +128,9 @@ export function parseKawulKedulVBE(
   if (start === "کول" && ending !== "ل") {
     return [
       ...oneBase("kawul")("root")("imperfective")(people.root),
-      ...(head === "oo" ? oneBase("kawul")("root")("perfective")(people.root) : []),
+      ...(head === "oo"
+        ? oneBase("kawul")("root")("perfective")(people.root)
+        : []),
     ];
   }
   if (start === "کېږ") {
@@ -127,14 +138,14 @@ export function parseKawulKedulVBE(
       rest,
       imperativePeople
         .flatMap(getF("kedul")("imperfective")("stem"))
-        .map(addImperative)
+        .map(addImperative),
     );
     return [
       ...oneBase("kedul")("stem")("imperfective")(people.stem),
       ...imperative,
     ];
   }
-  if (start === "کېد" && ending !== "ل") {
+  if ((start === "کېد" || start === "کېدل") && ending !== "ل") {
     return oneBase("kedul")("root")("imperfective")(people.root);
   }
   if (start === "ش") {
@@ -142,7 +153,7 @@ export function parseKawulKedulVBE(
       rest,
       imperativePeople
         .flatMap(getF("kedul")("perfective")("stem"))
-        .map(addImperative)
+        .map(addImperative),
     );
     return [
       ...oneBase("kedul")("stem")("perfective")(people.stem),
@@ -155,7 +166,7 @@ export function parseKawulKedulVBE(
   if (start === "شو") {
     // TODO: check to make sure we're removing enough people here??
     return oneBase("kedul")("root")("perfective")(
-      people.root.filter((p) => p !== T.Person.ThirdSingMale)
+      people.root.filter((p) => p !== T.Person.ThirdSingMale),
     );
   }
   return [];
@@ -165,7 +176,7 @@ export function parseKawulKedulVBE(
 // people above??
 function removePeople(
   people: ReturnType<typeof getVerbEnding>,
-  peopleToRemove: ReturnType<typeof getVerbEnding>
+  peopleToRemove: ReturnType<typeof getVerbEnding>,
 ): ReturnType<typeof getVerbEnding> {
   return {
     stem: people.stem.filter((p) => !peopleToRemove.stem.includes(p)),
@@ -189,12 +200,14 @@ function addImperative(v: T.ParsedVB): T.ParsedVB {
 function validVerbs(
   head: Head,
   kawulKedul: "kawul" | "kedul",
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): T.VerbEntry[] {
   // imperfective
   if (aspect === "imperfective") {
-    return head === "none" ?
-      kawulKedul === "kawul" ? [kawulStat, kawulDyn] : [kedulStat, kedulDyn]
+    return head === "none"
+      ? kawulKedul === "kawul"
+        ? [kawulStat, kawulDyn]
+        : [kedulStat, kedulDyn]
       : [];
   }
   // perfective
@@ -206,4 +219,3 @@ function validVerbs(
   }
   return [];
 }
-

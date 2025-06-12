@@ -4,7 +4,7 @@ import { tokenizer } from "../lib/src/parsing/tokenizer";
 import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
 // import { parseKidsSection } from "../lib/src/parsing/parse-kids-section";
-import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
+// import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
 
 function ParserTester(/* { dictionary }: { dictionary: T.DictionaryAPI } */) {

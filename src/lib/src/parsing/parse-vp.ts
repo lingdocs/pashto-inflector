@@ -11,6 +11,8 @@ import {
   bindParseResultWParser,
   canTakeShrunkenPossesor,
   getPeople,
+  isParsedVBE,
+  isParsedVBP,
   isPH,
   returnParseResult,
   returnParseResults,
@@ -139,7 +141,16 @@ function combineArgAndVerbSections(
     const npsAndAps = blocks.filter((x) => x.type === "NP" || x.type === "AP");
     const exComplement = blocks.find((x) => x.type === "complement");
     return tenses.flatMap(
-      ({ tense, person, transitivities, negative, verb, errors, target }) => {
+      ({
+        tense,
+        person,
+        transitivities,
+        negative,
+        verb,
+        errors,
+        target,
+        isCompound,
+      }) => {
         const isPast = isPastTense(tense);
         return transitivities.flatMap<T.ParseResult<T.VPSelectionComplete>>(
           (transitivity): T.ParseResult<T.VPSelectionComplete>[] => {
@@ -154,7 +165,7 @@ function combineArgAndVerbSections(
               negative,
               tense,
               canChangeVoice: transitivity === "transitive",
-              isCompound: false,
+              isCompound,
               voice: "active",
             };
             if (transitivity === "intransitive") {
@@ -689,6 +700,7 @@ function getTenses(
   negative: boolean;
   verb: T.VerbEntry;
   errors: T.ParseError[];
+  isCompound: T.VerbSelectionComplete["isCompound"];
 }[] {
   const negIndex = blocks.findIndex((x) => x.type === "negative");
   const negative: T.NegativeBlock | undefined = blocks[negIndex] as
@@ -696,11 +708,9 @@ function getTenses(
     | undefined;
   const phIndex = blocks.findIndex(isPH);
   // TODO: would be nicer if there were clear taggin gfor "VBP" vs "VBE" !!
-  const vbeIndex = blocks.findIndex((x) => x.type === "VB" && !isVBP(x));
-  const vbpIndex = blocks.findIndex((x) => x.type === "VB" && isVBP(x));
+  const vbeR = blocks.find(isParsedVBE);
+  const vbpR = blocks.find(isParsedVBP);
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
-  const vbeR = vbeIndex !== -1 ? (blocks[vbeIndex] as T.ParsedVBE) : undefined;
-  const vbpR = vbpIndex !== -1 ? (blocks[vbpIndex] as T.ParsedVBP) : undefined;
   const { vbe, vbp } = checkForTlulCombos(ph, vbeR, vbpR);
   if (vbp) {
     return (vbp.info.type === "ability" ? getAbilityTenses : getPerfectTenses)(
@@ -726,11 +736,15 @@ function getTenses(
   const transitivities = getTransitivities(info.verb);
   const compHead = getCompHead(ph, vbe);
   // check to see if a stat comp matches up
-  const verbs: { verb: T.VerbEntry; target: Target }[] = compHead
+  const verbs: {
+    verb: T.VerbEntry;
+    target: Target;
+    isCompound: T.VerbSelectionComplete["isCompound"];
+  }[] = compHead
     ? findStatComp(compHead, info, dictionary)
-    : [{ target: anyTarget, verb: info.verb }];
+    : [{ target: anyTarget, verb: info.verb, isCompound: false }];
   return tenses.flatMap((tense) =>
-    verbs.map(({ target, verb }) => ({
+    verbs.map(({ target, verb, isCompound }) => ({
       tense,
       transitivities,
       negative: !!negative,
@@ -738,6 +752,7 @@ function getTenses(
       target,
       verb,
       errors: [],
+      isCompound,
     })),
   );
 }
@@ -813,7 +828,7 @@ function findStatComp(
   comp: T.ParsedComplementSelection["selection"],
   aux: T.VbInfo,
   dictionary: T.DictionaryAPI,
-): { verb: T.VerbEntry; target: Target }[] {
+): { verb: T.VerbEntry; target: Target; isCompound: "stative" }[] {
   const l = getComplementL(comp);
   if (!l) {
     return [];
@@ -823,7 +838,7 @@ function findStatComp(
   return dictionary
     .verbEntryLookupByL(l)
     .filter((x) => getTransitivities(x).some((t) => trans.includes(t)))
-    .map((verb) => ({ target, verb }));
+    .map((verb) => ({ target, verb, isCompound: "stative" }));
 }
 
 function getTarget(comp: T.ParsedComplementSelection["selection"]): Target {
@@ -870,6 +885,7 @@ function getAbilityTenses(
     tense,
     transitivities: getTransitivities(verb),
     errors: [],
+    isCompound: false,
   }));
 }
 
@@ -914,6 +930,7 @@ function getPerfectTenses(
       target: anyTarget,
       verb: vbp.info.verb,
       errors,
+      isCompound: false,
     },
   ];
 }
@@ -1547,13 +1564,6 @@ function createPossesivePossibilities(b: {
       ...withFirstMiniAsPossesive.flatMap((x) => spreadOutPoss(x, 0)),
     ];
   }
-}
-
-// TODO: this should be replaced with tagging in objects
-function isVBP(x: T.ParsedVBE | T.ParsedVBP): x is T.ParsedVBP {
-  return (
-    x.type === "VB" && (x.info.type === "ability" || x.info.type === "ppart")
-  );
 }
 
 function checkComplementPresence(
