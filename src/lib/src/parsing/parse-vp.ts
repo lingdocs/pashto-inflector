@@ -39,8 +39,16 @@ import {
   personToGenNum,
 } from "../misc-helpers";
 import { ArgumentTypes, equals } from "rambda";
-import { isImperativeTense, isTlulVerb } from "../type-predicates";
-import { isKedulStatEntry } from "./verb-section/parse-verb-helpers";
+import {
+  isImperativeTense,
+  isPerfectTense,
+  isTlulVerb,
+} from "../type-predicates";
+import {
+  isKawulStat,
+  isKedulStat,
+  isKedulStatEntry,
+} from "./verb-section/parse-verb-helpers";
 import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 import {
   checkComplement,
@@ -49,7 +57,7 @@ import {
 } from "../phrase-building/complement-tools";
 import { personsFromPattern1 } from "./argument-section/parse-noun-word";
 import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
-import { isStatComp } from "../new-verb-engine/rs-helpers";
+import { getAspect, isStatComp } from "../new-verb-engine/rs-helpers";
 
 type Target = {
   genders: T.Gender[];
@@ -116,6 +124,7 @@ export function parseVP(
         return combineArgAndVerbSections(tkns, dictionary, arg, vs);
       },
     ),
+    dictionary,
   );
 }
 
@@ -735,16 +744,16 @@ function getTenses(
   );
   const transitivities = getTransitivities(info.verb);
   const compHead = getCompHead(ph, vbe);
+  const target = getTarget(compHead);
   // check to see if a stat comp matches up
   const verbs: {
     verb: T.VerbEntry;
-    target: Target;
     isCompound: T.VerbSelectionComplete["isCompound"];
   }[] = compHead
-    ? findStatComp(compHead, info, dictionary)
-    : [{ target: anyTarget, verb: info.verb, isCompound: false }];
+    ? getStatComp(getComplementL(compHead), info, dictionary, true)
+    : [{ verb: info.verb, isCompound: false }];
   return tenses.flatMap((tense) =>
-    verbs.map(({ target, verb, isCompound }) => ({
+    verbs.map(({ verb, isCompound }) => ({
       tense,
       transitivities,
       negative: !!negative,
@@ -824,25 +833,37 @@ function getComplementL(
   return comp.entry.ts;
 }
 
-function findStatComp(
-  comp: T.ParsedComplementSelection["selection"],
-  aux: T.VbInfo,
+function getStatComp(
+  compL: number | undefined,
+  aux: { verb: T.VerbEntry; aspect: T.Aspect | undefined },
   dictionary: T.DictionaryAPI,
-): { verb: T.VerbEntry; target: Target; isCompound: "stative" }[] {
-  const l = getComplementL(comp);
-  if (!l) {
+  checkSpace: boolean,
+): { verb: T.VerbEntry; isCompound: "stative" }[] {
+  if (compL === undefined) {
     return [];
   }
   const trans = getTransitivities(aux.verb);
-  const target = getTarget(comp);
   return dictionary
-    .verbEntryLookupByL(l)
-    .filter((x) => getTransitivities(x).some((t) => trans.includes(t)))
-    .map((verb) => ({ target, verb, isCompound: "stative" }));
+    .verbEntryLookupByL(compL)
+    .filter(
+      (x) =>
+        getTransitivities(x).some((t) => trans.includes(t)) &&
+        // make sure that if there's a distinct comp it's not one of the
+        // compounds that are joined together. For example
+        // مړه کېږم should not parse as مړېږم
+        !(
+          checkSpace &&
+          aux.aspect === "imperfective" &&
+          !x.entry.p.includes(" ")
+        ),
+    )
+    .map((verb) => ({ verb, isCompound: "stative" }));
 }
 
-function getTarget(comp: T.ParsedComplementSelection["selection"]): Target {
-  if ("inflection" in comp) {
+function getTarget(
+  comp: T.ParsedComplementSelection["selection"] | undefined,
+): Target {
+  if (comp && "inflection" in comp) {
     return {
       genders: comp.gender,
       numbers: comp.inflection.flatMap((i) =>
@@ -1684,17 +1705,42 @@ function targetMatches(person: T.Person, target: Target): boolean {
  */
 function removeRedundantStatCombos(
   res: T.ParseResult<T.VPSelectionComplete>[],
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.VPSelectionComplete>[] {
   return res.filter((r) => {
     if (r.body.externalComplement) {
       const compTs = getExtComplementL(r.body.externalComplement);
+      if (!compTs) {
+        return true;
+      }
       // see if there's a version with the stative compound
       // TODO: this could be an overly simplistic way of checking
-      return !res.some(
-        (vp) =>
-          isStatComp(vp.body.verb.verb) &&
-          compTs === vp.body.verb.verb.complement?.ts,
+      const sc = isKedulStat(r.body.verb.verb) || isKawulStat(r.body.verb.verb);
+      if (!sc) {
+        return true;
+      }
+      const aspect = isPerfectTense(r.body.verb.tense)
+        ? undefined
+        : getAspect(r.body.verb.tense, r.body.verb.negative);
+      const possibleMatchingStatCompVerbs = getStatComp(
+        compTs,
+        {
+          verb: r.body.verb.verb,
+          aspect,
+        },
+        dictionary,
+        false,
       );
+      return !possibleMatchingStatCompVerbs.length;
+      // I think the above is a better strategy and covers the case below
+      // return (
+      //   // !possibleMatchingStatCompVerbs.length &&
+      //   !res.some(
+      //     (vp) =>
+      //       isStatComp(vp.body.verb.verb) &&
+      //       compTs === vp.body.verb.verb.complement?.ts,
+      //   )
+      // );
     }
     return true;
   });
