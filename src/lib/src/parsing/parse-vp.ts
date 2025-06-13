@@ -57,7 +57,7 @@ import {
 } from "../phrase-building/complement-tools";
 import { personsFromPattern1 } from "./argument-section/parse-noun-word";
 import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
-import { getAspect, isStatComp } from "../new-verb-engine/rs-helpers";
+import { getAspect } from "../new-verb-engine/rs-helpers";
 
 type Target = {
   genders: T.Gender[];
@@ -746,14 +746,11 @@ function getTenses(
   const compHead = getCompHead(ph, vbe);
   const target = getTarget(compHead);
   // check to see if a stat comp matches up
-  const verbs: {
-    verb: T.VerbEntry;
-    isCompound: T.VerbSelectionComplete["isCompound"];
-  }[] = compHead
+  const verbs: T.VerbEntry[] = compHead
     ? getStatComp(getComplementL(compHead), info, dictionary, true)
-    : [{ verb: info.verb, isCompound: false }];
+    : [info.verb];
   return tenses.flatMap((tense) =>
-    verbs.map(({ verb, isCompound }) => ({
+    verbs.map((verb) => ({
       tense,
       transitivities,
       negative: !!negative,
@@ -761,9 +758,20 @@ function getTenses(
       target,
       verb,
       errors: [],
-      isCompound,
+      // TODO: this is dumb that we have to use this
+      isCompound: getIsCompound(verb),
     })),
   );
+}
+
+function getIsCompound(verb: T.VerbEntry): T.IsCompound {
+  if (verb.entry.c.includes("stat. comp.")) {
+    return "stative";
+  }
+  if (verb.entry.c.includes("dyn. comp.")) {
+    return "dynamic";
+  }
+  return false;
 }
 
 function getMainVerbFromVBE(vbe: T.ParsedVBE): {
@@ -838,26 +846,23 @@ function getStatComp(
   aux: { verb: T.VerbEntry; aspect: T.Aspect | undefined },
   dictionary: T.DictionaryAPI,
   checkSpace: boolean,
-): { verb: T.VerbEntry; isCompound: "stative" }[] {
+): T.VerbEntry[] {
   if (compL === undefined) {
     return [];
   }
   const trans = getTransitivities(aux.verb);
-  return dictionary
-    .verbEntryLookupByL(compL)
-    .filter(
-      (x) =>
-        getTransitivities(x).some((t) => trans.includes(t)) &&
-        // make sure that if there's a distinct comp it's not one of the
-        // compounds that are joined together. For example
-        // مړه کېږم should not parse as مړېږم
-        !(
-          checkSpace &&
-          aux.aspect === "imperfective" &&
-          !x.entry.p.includes(" ")
-        ),
-    )
-    .map((verb) => ({ verb, isCompound: "stative" }));
+  return dictionary.verbEntryLookupByL(compL).filter(
+    (x) =>
+      getTransitivities(x).some((t) => trans.includes(t)) &&
+      // make sure that if there's a distinct comp it's not one of the
+      // compounds that are joined together. For example
+      // مړه کېږم should not parse as مړېږم
+      !(
+        checkSpace &&
+        aux.aspect === "imperfective" &&
+        !x.entry.p.includes(" ")
+      ),
+  );
 }
 
 function getTarget(

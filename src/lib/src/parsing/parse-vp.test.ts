@@ -59,6 +59,9 @@ const jzarul = testDictionary.verbEntryLookup("ژړل")[0] as T.VerbEntry;
 const balul = testDictionary.verbEntryLookup("بلل")[0] as T.VerbEntry;
 const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0] as T.VerbEntry;
 const murKedul = testDictionary.verbEntryLookup("مړ کېدل")[0] as T.VerbEntry;
+const maredul = testDictionary.verbEntryLookup("مړېدل")[0];
+const murKawul = testDictionary.verbEntryLookup("مړ کول")[0] as T.VerbEntry;
+const marawul = testDictionary.verbEntryLookup("مړول")[0];
 
 // TODO: add مړېدل to testDictionary and make sure that مړ کېدم doesn't parse into مړېدم!
 
@@ -1764,9 +1767,10 @@ const complTransBoth: Section = {
   ],
 };
 
-const intransStatComp: Section = {
-  title: "Intrans Stat Comp",
+const basicStatComp: Section = {
+  title: "Basic Stat Comp",
   tests: [
+    // with seperated and not seperated verbs
     {
       input: "زه مړ کېږم",
       output: [
@@ -1776,6 +1780,32 @@ const intransStatComp: Section = {
           externalComplement: undefined,
           form: full,
         },
+      ],
+    },
+    {
+      input: "زه مړېږم",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+        verb: makeVS(maredul, "presentVerb"),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
+    {
+      input: "زه تا مړ کوم",
+      output: [
+        ...getPeople(1, "sing").map((subj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock(T.Person.SecondSingMale)],
+          verb: makeVS(murKawul, "presentVerb"),
+          externalComplement: undefined,
+          form: full,
+        })),
+        ...getPeople(2, "sing").map((subj) => ({
+          blocks: [makeObjBlock(T.Person.FirstSingMale), makeSubjBlock(subj)],
+          verb: makeVS(murKawul, "imperfectivePast"),
+          externalComplement: undefined,
+          form: full,
+        })),
       ],
     },
     {
@@ -1807,6 +1837,47 @@ const intransStatComp: Section = {
       ],
     },
     {
+      input: "ته مړه شې",
+      output: [murKedul, maredul].map((verb) => ({
+        blocks: [
+          makeSubjBlock(T.Person.SecondSingFemale),
+          makeObjBlock("none"),
+        ],
+        verb: makeVS(verb, "subjunctiveVerb"),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
+    {
+      input: "زه تا مړه کړم",
+      output: [murKawul, marawul].flatMap((verb) => [
+        ...getPeople(1, "sing").map((subj) => ({
+          blocks: [
+            makeSubjBlock(subj),
+            makeObjBlock(T.Person.SecondSingFemale),
+          ],
+          verb: makeVS(verb, "subjunctiveVerb"),
+          externalComplement: undefined,
+          form: full,
+        })),
+        ...getPeople(2, "sing").map((subj) => ({
+          blocks: [makeObjBlock(T.Person.FirstSingFemale), makeSubjBlock(subj)],
+          verb: makeVS(verb, "perfectivePast"),
+          externalComplement: undefined,
+          form: full,
+        })),
+      ]),
+    },
+    {
+      input: "زه تا مړ کړلم",
+      output: getPeople(2, "sing").map((subj) => ({
+        blocks: [makeObjBlock(T.Person.FirstSingMale), makeSubjBlock(subj)],
+        verb: makeVS(murKawul, "perfectivePast"),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
+    {
       input: "زه مړ کېدم",
       output: [
         {
@@ -1816,6 +1887,48 @@ const intransStatComp: Section = {
           form: full,
         },
       ],
+    },
+    {
+      input: "زه تا مړه کولم",
+      output: getPeople(2, "sing").map((subj) => ({
+        blocks: [makeObjBlock(T.Person.FirstSingFemale), makeSubjBlock(subj)],
+        verb: makeVS(murKawul, "imperfectivePast"),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
+    {
+      input: "زه تا مړولم",
+      output: getPeople(2, "sing").flatMap((subj) =>
+        getPeople(1, "sing").map((obj) => ({
+          blocks: [makeObjBlock(obj), makeSubjBlock(subj)],
+          verb: makeVS(marawul, "imperfectivePast"),
+          externalComplement: undefined,
+          form: full,
+        })),
+      ),
+    },
+    {
+      input: "زه یې مړولم",
+      output: getPeople(3, "both").flatMap((subj) =>
+        getPeople(1, "sing").map((obj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock(obj)],
+          verb: makeVS(marawul, "imperfectivePast"),
+          externalComplement: undefined,
+          form: { shrinkServant: true, removeKing: false },
+        })),
+      ),
+    },
+    {
+      input: "مړولم یې",
+      output: getPeople(3, "both").flatMap((subj) =>
+        getPeople(1, "sing").map((obj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock(obj)],
+          verb: makeVS(marawul, "imperfectivePast"),
+          externalComplement: undefined,
+          form: { shrinkServant: true, removeKing: true },
+        })),
+      ),
     },
     {
       input: "تاسو مړې کېدلئ",
@@ -1830,6 +1943,15 @@ const intransStatComp: Section = {
           form: full,
         },
       ],
+    },
+    {
+      input: "تاسو مړېدلئ",
+      output: getPeople(2, "pl").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+        verb: makeVS(maredul, "imperfectivePast"),
+        externalComplement: undefined,
+        form: full,
+      })),
     },
   ],
 };
@@ -1851,7 +1973,9 @@ const sections = [
   complTransShrinkServant,
   complTransBoth,
   // with stat comp verbs
-  intransStatComp,
+  basicStatComp,
+  // perfectStatComp,
+  // abilityStatComp,
 ];
 
 sections.forEach((section) => {
