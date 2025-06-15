@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { getVerbEnding } from "./parse-verb-helpers";
 import { kawulStat, kawulDyn, kedulStat, kedulDyn } from "./irreg-verbs";
-import { getPeople, returnParseResults } from "../utils";
+import { returnParseResults } from "../utils";
 import { getImperativeVerbEnding } from "./misc";
 
 // TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat

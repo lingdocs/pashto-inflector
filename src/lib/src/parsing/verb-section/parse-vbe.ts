@@ -1,7 +1,11 @@
 import * as T from "../../../../types";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
 import { getVerbEnding, isStatAux } from "./parse-verb-helpers";
-import { bindParseResult, returnParseResult, returnParseResults } from "../utils";
+import {
+  bindParseResult,
+  returnParseResult,
+  returnParseResults,
+} from "../utils";
 import * as tp from "../../type-predicates";
 import { pashtoConsonants } from "../../pashto-consonants";
 import { getImperativeVerbEnding } from "./misc";
@@ -28,7 +32,6 @@ import { parseOptNeg } from "./parse-negative";
 
 // پوښتنه وشوه - shouldn't also parse as پوښتنه شوه
 
-
 // TODO: check neg position with new setup
 // TODO: should the welded be with the compound verb in there?
 
@@ -39,21 +42,27 @@ export function parseVBE(
 ): T.ParseResult<T.ParsedVBE>[] {
   return [
     ...parseVBEBasic(tokens, dictionary, ph),
-    ...parseWelded(tokens, dictionary, ph),//tokens, dictionary, ph),
+    ...parseWelded(tokens, dictionary, ph), //tokens, dictionary, ph),
   ];
 }
 
 function parseVBEBasic(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-  ph: T.ParsedPH | undefined
+  ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBE>[] {
   if (tokens.length === 0) {
     return [];
   }
   const [first, ...rest] = tokens;
   if (ph?.type === "CompPH") {
-    return parseKawulKedulVBE(tokens, undefined).filter(x => x.body.type === "VB" && x.body.info.type === "verb" && isStatAux(x.body.info.verb) && x.body.info.aspect === "perfective")
+    return parseKawulKedulVBE(tokens, undefined).filter(
+      (x) =>
+        x.body.type === "VB" &&
+        x.body.info.type === "verb" &&
+        isStatAux(x.body.info.verb) &&
+        x.body.info.aspect === "perfective",
+    );
   }
   const irregResults = parseIrregularVerb(first.s, ph);
   if (irregResults.length) {
@@ -86,7 +95,7 @@ function parseVBEBasic(
           imperative: true,
         },
       })),
-    ])
+    ]),
   );
   const rootRes = returnParseResults(rest, [
     ...findRoot(ph)(base, dictionary).flatMap<T.ParsedVBE>((info) => {
@@ -108,7 +117,7 @@ function parseVBEBasic(
 function parseWelded(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-  ph: T.ParsedPH | undefined
+  ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBE>[] {
   if (ph) {
     return [];
@@ -119,7 +128,13 @@ function parseWelded(
   }
   return bindParseResult(complement, (tkns, comp) => {
     // TODO: remove the last check allow for CompNP once implemented
-    if (typeof comp.selection === "object" && "type" in comp.selection && (comp.selection.type === "sandwich" || comp.selection.type === "possesor" || comp.selection.type === "NP")) {
+    if (
+      typeof comp.selection === "object" &&
+      "type" in comp.selection &&
+      (comp.selection.type === "sandwich" ||
+        comp.selection.type === "possesor" ||
+        comp.selection.type === "NP")
+    ) {
       return [];
     }
     const misplacedNegative = parseOptNeg(tkns);
@@ -130,38 +145,49 @@ function parseWelded(
           // purely for type safety because of the badly designed types
           return [];
         }
-        if (aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) {
+        if (
+          aux.info.aspect === "imperfective" &&
+          isStatAux(aux.info.verb) /*type safety*/
+        ) {
           const compTs = getLFromComplement(comp);
           if (compTs === undefined) {
             return [];
           }
           const vbe: T.ParsedVBE = {
-            type: "welded",
+            type: "weldedVBE",
             left: comp,
             right: {
-              type: "parsedRight",
+              type: "parsedRightVBE",
               person: aux.person,
-              info: aux.info as T.VbInfo,
+              info: aux.info,
             },
           };
-          return returnParseResult(tkns3, vbe, badNeg ? [{ message: "negative cannot go inside welded block" }] : []);
+          return returnParseResult(
+            tkns3,
+            vbe,
+            badNeg
+              ? [{ message: "negative cannot go inside welded block" }]
+              : [],
+          );
         } else {
           return [];
         }
       });
-    })
+    });
   });
 }
 
 // function statCompMatchesAux(aux: T.ParsedVBE) {
-//   // TODO: would be nice to have a parsed Aux type      
+//   // TODO: would be nice to have a parsed Aux type
 //   return (e: T.VerbEntry): boolean => {
 //     return ("aspect" in aux.info && aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) &&
 //       getTransitivity(aux.info.verb.entry) === getTransitivity(e.entry);
 //   }
 // }
 
-function getLFromComplement(comp: T.ParsedComplementSelection): number | undefined {
+export function getLFromComplement(
+  comp: T.ParsedComplementSelection,
+): number | undefined {
   if ("inflection" in comp.selection) {
     return comp.selection.selection.entry.ts;
   }
@@ -175,7 +201,7 @@ function specialThirdPersMascSingForm(
   base: string,
   ending: string,
   dicitonary: T.DictionaryAPI,
-  ph: T.ParsedPH | undefined
+  ph: T.ParsedPH | undefined,
 ): T.ParsedVBE[] {
   if (ending !== "ه" && !pashtoConsonants.includes(ending)) {
     return [];
@@ -221,14 +247,14 @@ function specialThirdPersMascSingForm(
 
   const hardEnding: T.ParsedVBE[] =
     (ending === "د" && ["ې", "و"].some((x) => base.endsWith(x))) ||
-      (ending === "ت" &&
-        ["س", "ښ"].some((x) => base.endsWith(x)) &&
-        base.length > 1)
+    (ending === "ت" &&
+      ["س", "ښ"].some((x) => base.endsWith(x)) &&
+      base.length > 1)
       ? findRoot(ph)(base + ending, dicitonary).map<T.ParsedVBE>((info) => ({
-        type: "VB",
-        person: T.Person.ThirdSingMale,
-        info,
-      }))
+          type: "VB",
+          person: T.Person.ThirdSingMale,
+          info,
+        }))
       : [];
 
   const regular: T.ParsedVBE[] = [
@@ -240,7 +266,7 @@ function specialThirdPersMascSingForm(
     .flatMap((v) => dicitonary.otherLookup("tppp", v, true))
     .filter(
       (e): e is T.VerbDictionaryEntry =>
-        tp.isVerbDictionaryEntry(e) && !e.l && !!e.tppp
+        tp.isVerbDictionaryEntry(e) && !e.l && !!e.tppp,
     )
     .map((entry) => ({
       type: "VB" as const,
@@ -253,12 +279,16 @@ function specialThirdPersMascSingForm(
       } as const,
     }));
 
-  const aawu: T.ParsedVBE[] = (base + ending).endsWith("اوه") && base.length > 2 ?
-    findRoot(ph)(base.slice(0, -2) + "و", dicitonary).map<T.ParsedVBE>(info => ({
-      type: "VB",
-      person: T.Person.ThirdSingMale,
-      info,
-    })) : [];
+  const aawu: T.ParsedVBE[] =
+    (base + ending).endsWith("اوه") && base.length > 2
+      ? findRoot(ph)(base.slice(0, -2) + "و", dicitonary).map<T.ParsedVBE>(
+          (info) => ({
+            type: "VB",
+            person: T.Person.ThirdSingMale,
+            info,
+          }),
+        )
+      : [];
 
   return [...regular, ...hardEnding, ...aawu];
 
@@ -268,12 +298,12 @@ function specialThirdPersMascSingForm(
 function thirdPersSingMascShortFromRoot(
   base: string,
   ending: string,
-  info: RootInfo
+  info: RootInfo,
 ): T.ParsedVBE[] {
   if (info.verb.entry.tppp) {
     return [];
   }
-  if (ending === "ه" && !["ل", "و"].some(char => base.endsWith(char))) {
+  if (ending === "ه" && !["ل", "و"].some((char) => base.endsWith(char))) {
     return [
       {
         type: "VB",
@@ -287,7 +317,7 @@ function thirdPersSingMascShortFromRoot(
 
 function parseIrregularVerb(
   s: string,
-  ph: T.ParsedPH | undefined
+  ph: T.ParsedPH | undefined,
 ): T.ParsedVBE[] {
   if (ph) {
     return [];

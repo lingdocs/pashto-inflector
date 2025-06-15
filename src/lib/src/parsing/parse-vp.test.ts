@@ -1956,6 +1956,57 @@ const basicStatComp: Section = {
   ],
 };
 
+const perfectStatComp: Section = {
+  title: "perfect statComp",
+  tests: [
+    {
+      input: "تا زه مړ کړی یم",
+      output: (
+        ["presentPerfect", "habitualPerfect"] satisfies T.PerfectTense[]
+      ).flatMap((tense) =>
+        getPeople(2, "sing").map((subj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock(T.Person.FirstSingMale)],
+          verb: makeVS(murKawul, tense),
+          externalComplement: undefined,
+          form: full,
+        })),
+      ),
+    },
+    {
+      input: "مونږ مړې شوې ولو",
+      output: [maredul, murKedul].flatMap((verb) => ({
+        blocks: [makeSubjBlock(T.Person.FirstPlurFemale), makeObjBlock("none")],
+        verb: makeVS(verb, "pastPerfect"),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
+    {
+      input: "نه به وي مړ شوی",
+      output: [
+        {
+          blocks: [makeSubjBlock(T.Person.ThirdSingMale), makeObjBlock("none")],
+          verb: {
+            ...makeVS(murKedul, "futurePerfect"),
+            negative: true,
+          },
+          externalComplement: undefined,
+          form: { removeKing: true, shrinkServant: false },
+        },
+      ],
+    },
+    {
+      input: "موړ کړی مې دی",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock(T.Person.ThirdSingMale)],
+        verb: makeVS(marawul, "presentPerfect"),
+        externalComplement: undefined,
+        form: { removeKing: true, shrinkServant: true },
+      })),
+    },
+  ],
+};
+
 const sections = [
   intransFullForm,
   transFullForm,
@@ -1974,7 +2025,7 @@ const sections = [
   complTransBoth,
   // with stat comp verbs
   basicStatComp,
-  // perfectStatComp,
+  perfectStatComp,
   // abilityStatComp,
 ];
 

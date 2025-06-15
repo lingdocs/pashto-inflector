@@ -15,22 +15,22 @@ import { assertNever } from "../misc-helpers";
  */
 export function bindParseResult<C, D>(
   prev: T.ParseResult<C>[],
-  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[]
+  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
   // PERFECTION 🧪
   return cleanOutResults(
-    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors)))
+    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors))),
   );
 }
 
 export function bindParseWithAllErrors<C, D>(
   prev: T.ParseResult<C>[],
-  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[]
+  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
   // PERFECTION 🧪
   // TODO: Do we really need to remove duplicates ?? I don't think so
   return removeDuplicates(
-    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors)))
+    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors))),
   );
 }
 
@@ -48,7 +48,7 @@ export function bindParseWithAllErrors<C, D>(
 export function bindParseResultWParser<C, D, E>(
   prev: T.ParseResult<C>[],
   parser: (tokens: Readonly<T.Token[]>) => T.ParseResult<D>[],
-  f: (res: C, parsed: D, tokens: Readonly<T.Token[]>) => T.ParseResult<E>[]
+  f: (res: C, parsed: D, tokens: Readonly<T.Token[]>) => T.ParseResult<E>[],
 ): T.ParseResult<E>[] {
   const grouped = groupByTokenLength(prev);
   return cleanOutResults(
@@ -57,16 +57,16 @@ export function bindParseResultWParser<C, D, E>(
       return group.flatMap((prev) => {
         return parsed.flatMap((parse) =>
           f(prev.body, parse.body, parse.tokens).map(
-            addErrors([...parse.errors, ...prev.errors])
-          )
+            addErrors([...parse.errors, ...prev.errors]),
+          ),
         );
       });
-    })
+    }),
   );
 }
 
 export function addErrors<C>(errs: T.ParseError[]) {
-  return function(pr: T.ParseResult<C>): T.ParseResult<C> {
+  return function (pr: T.ParseResult<C>): T.ParseResult<C> {
     return {
       tokens: pr.tokens,
       body: pr.body,
@@ -80,7 +80,7 @@ export function toParseError(message: string): T.ParseError {
 }
 
 function groupByTokenLength<D>(
-  results: T.ParseResult<D>[]
+  results: T.ParseResult<D>[],
 ): T.ParseResult<D>[][] {
   const buckets: Record<number, T.ParseResult<D>[]> = {};
   results.forEach((pr) => {
@@ -97,7 +97,7 @@ function groupByTokenLength<D>(
 export function returnParseResults<D>(
   tokens: Readonly<T.Token[]>,
   body: D[],
-  errors?: T.ParseError[]
+  errors?: T.ParseError[],
 ): T.ParseResult<D>[] {
   return body.map<T.ParseResult<D>>((b) => ({
     tokens,
@@ -109,7 +109,7 @@ export function returnParseResults<D>(
 export function returnParseResultSingle<D>(
   tokens: Readonly<T.Token[]>,
   body: D,
-  errors?: T.ParseError[]
+  errors?: T.ParseError[],
 ): T.ParseResult<D> {
   return {
     tokens,
@@ -121,7 +121,7 @@ export function returnParseResultSingle<D>(
 export function returnParseResult<D>(
   tokens: Readonly<T.Token[]>,
   body: D,
-  errors?: T.ParseError[]
+  errors?: T.ParseError[],
 ): T.ParseResult<D>[] {
   return [
     {
@@ -137,7 +137,7 @@ export function returnParseResult<D>(
  * or redundant paths
  */
 export function cleanOutResults<C>(
-  results: T.ParseResult<C>[]
+  results: T.ParseResult<C>[],
 ): T.ParseResult<C>[] {
   if (results.length === 0) {
     return results;
@@ -162,7 +162,7 @@ function removeDuplicates<C>(results: T.ParseResult<C>[]): T.ParseResult<C>[] {
 
 export type Parser<R> = (
   tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI,
 ) => T.ParseResult<R>[];
 
 export function parserCombOr<R>(parsers: Parser<R>[]) {
@@ -181,7 +181,7 @@ export function parserCombOr<R>(parsers: Parser<R>[]) {
 export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
   const r: Parser<R[]> = (
     tokens: Readonly<T.Token[]>,
-    dictionary: T.DictionaryAPI
+    dictionary: T.DictionaryAPI,
   ) => {
     function go(acc: R[], t: Readonly<T.Token[]>): T.ParseResult<R[]>[] {
       const one = parser(t, dictionary);
@@ -203,39 +203,39 @@ export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
 }
 
 export function parserCombSucc2<A, B>(
-  parsers: [Parser<A>, Parser<B>]
+  parsers: [Parser<A>, Parser<B>],
 ): Parser<[A, B]> {
-  return function(
+  return function (
     tokens: Readonly<T.Token[]>,
-    dictionary: T.DictionaryAPI
+    dictionary: T.DictionaryAPI,
   ): T.ParseResult<[A, B]>[] {
     return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
       bindParseResult(parsers[1](t, dictionary), (tk, b) =>
-        returnParseResult(tk, [a, b])
-      )
+        returnParseResult(tk, [a, b]),
+      ),
     );
   };
 }
 
 export function parserCombSucc3<A, B, C>(
-  parsers: [Parser<A>, Parser<B>, Parser<C>]
+  parsers: [Parser<A>, Parser<B>, Parser<C>],
 ): Parser<[A, B, C]> {
-  return function(
+  return function (
     tokens: Readonly<T.Token[]>,
-    dictionary: T.DictionaryAPI
+    dictionary: T.DictionaryAPI,
   ): T.ParseResult<[A, B, C]>[] {
     return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
       bindParseResult(parsers[1](t, dictionary), (tk, b) =>
         bindParseResult(parsers[2](tk, dictionary), (tkn, c) =>
-          returnParseResult(tkn, [a, b, c])
-        )
-      )
+          returnParseResult(tkn, [a, b, c]),
+        ),
+      ),
     );
   };
 }
 
 export function isCompleteResult<C extends object>(
-  r: T.ParseResult<C>
+  r: T.ParseResult<C>,
 ): boolean {
   return !r.tokens.length && !r.errors.length;
 }
@@ -243,14 +243,14 @@ export function isCompleteResult<C extends object>(
 export function removeKeys(a: any): any {
   return JSON.parse(
     JSON.stringify(a, (k, v) =>
-      k === "i" || k === "a" || k === "key" ? undefined : v
-    )
+      k === "i" || k === "a" || k === "key" ? undefined : v,
+    ),
   );
 }
 
 export function getPeople(
   person: 1 | 2 | 3,
-  number: "sing" | "pl" | "both"
+  number: "sing" | "pl" | "both",
 ): T.Person[] {
   const people: T.Person[] =
     person === 1 ? [0, 1, 6, 7] : person === 2 ? [2, 3, 8, 9] : [4, 5, 10, 11];
@@ -283,30 +283,21 @@ export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
 
 export function isParsedVBP(b: T.ParsedBlock): b is T.ParsedVBP {
   return (
-    (b.type === "VB" || b.type === "welded") &&
+    (b.type === "VB" || b.type === "weldedVBP") &&
     (getInfo(b).type === "ability" || getInfo(b).type === "ppart")
   );
 }
 
-export function getInfo(b: T.ParsedVB | T.ParsedWelded | T.ParsedVBP): T.VbInfo | T.VBPartInfo["info"] | T.EqInfo | T.VBAbilityInfo["info"] {
-  return "right" in b
-    ? ("info" in b.right.info ? b.right.info.info : b.right.info)
-    : b.info
+export function getInfo(
+  b: T.ParsedVB | T.ParsedWeldedVBE | T.ParsedWeldedVBP | T.ParsedVBP,
+): T.VbInfo | T.VBPartInfo["info"] | T.EqInfo | T.VBAbilityInfo["info"] {
+  return "right" in b ? b.right.info : b.info;
 }
 
 export function isParsedVBE(b: T.ParsedBlock): b is T.ParsedVBE {
   return (
-    (b.type === "VB" || b.type === "welded") &&
+    (b.type === "VB" || b.type === "weldedVBE") &&
     (getInfo(b).type === "verb" || getInfo(b).type === "equative")
-  );
-}
-
-export function startsVerbSection(b: T.ParsedBlock): boolean {
-  return (
-    b.type === "PH" ||
-    b.type === "VB" ||
-    b.type === "welded" ||
-    b.type === "negative"
   );
 }
 
@@ -340,7 +331,7 @@ function addShrunkenPossesorNP(person: T.Person) {
 }
 
 export function canTakeShrunkenPossesor(
-  b: T.ParsedBlock | T.NPSelection
+  b: T.ParsedBlock | T.NPSelection,
 ): boolean {
   if (b.type === "NP") {
     if (!("selection" in b.selection)) {
@@ -389,7 +380,7 @@ export function canTakeShrunkenPossesor(
  */
 export function addShrunkenPossesor(
   b: T.ParsedBlock,
-  person: T.Person
+  person: T.Person,
 ): T.ParsedBlock {
   const addOnNP = addShrunkenPossesorNP(person);
   if (b.type === "NP") {

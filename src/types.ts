@@ -1341,8 +1341,6 @@ export type ParsedCompPH = {
 // TODO: Make a type that can be used as the welded or PH part of compound verb
 // ie  adj / adv / noun
 
-export type ParsedVBP = Omit<VBP, "ps">;
-
 export type Kid = {
   key: number;
   kid: { type: "ba" } | MiniPronoun;
@@ -1386,11 +1384,13 @@ export type VbInfo = {
   imperative?: true;
 };
 
-export type ParsedVBE = ParsedVB | ParsedWelded;
+export type ParsedVBE = ParsedVB | ParsedWeldedVBE;
+export type ParsedVBP = ParsedVBPBasic | ParsedWeldedVBP;
+export type ParsedVBPBasic = Omit<VBBasic, "ps"> & (VBPartInfo | VBAbilityInfo);
 
 export type ParsedVB = ParsedVBBasic & {
   person: Person;
-  info: EqInfo | VbInfo;
+  info: VbInfo | EqInfo;
 };
 
 export type ParsedVBBasic = Omit<VBBasic, "ps">;
@@ -1441,15 +1441,21 @@ export type Welded = {
   right: VBBasic | (VBBasic & (VBPartInfo | VBAbilityInfo));
 };
 
-export type ParsedWelded = {
-  type: "welded";
-  // TODO: is this recursive Welded right there, or does it belong
-  // on the right if anywhere?
-  left: ParsedComplementSelection | ParsedVBBasic | ParsedWelded;
+export type ParsedWeldedVBP = {
+  type: "weldedVBP";
+  left: ParsedComplementSelection;
   right: {
-    type: "parsedRight";
+    type: "parsedRightWelded";
+  } & VBPartInfo;
+};
+
+export type ParsedWeldedVBE = {
+  type: "weldedVBE";
+  left: ParsedComplementSelection;
+  right: {
+    type: "parsedRightVBE";
     person: Person;
-    info: VbInfo | VBPartInfo | VBAbilityInfo;
+    info: VbInfo;
   };
 };
 

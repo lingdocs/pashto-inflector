@@ -213,12 +213,11 @@ function parseStraightAbilityOrPerfect(
       const position = front.front.length + 1;
       const negs = parseOptNeg(tkns2);
       return bindParseResult(negs, (tkns3, neg) => {
-        const auxRes =
-          vbp.info.type === "ppart"
-            ? parseEquative(tkns3)
-            : parseKawulKedulVBE(tkns3, undefined).filter((x) =>
-                isStatAuxVBE(x.body),
-              );
+        const auxRes = isPPartVBP(vbp)
+          ? parseEquative(tkns3)
+          : parseKawulKedulVBE(tkns3, undefined).filter((x) =>
+              isStatAuxVBE(x.body),
+            );
         return bindParseResult(auxRes, (tkns5, aux) => {
           return [
             {
@@ -234,6 +233,11 @@ function parseStraightAbilityOrPerfect(
       });
     });
   });
+}
+
+export function isPPartVBP(vbp: T.ParsedVBP): boolean {
+  const info = vbp.type === "VB" ? vbp.info : vbp.right.info;
+  return info.type === "ppart";
 }
 
 function parseFlippedAbilityOrPerfect(
@@ -256,10 +260,10 @@ function parseFlippedAbilityOrPerfect(
       return bindParseResult(kidsRes, (tkns2, kids) => {
         const position = front.front.length + 1;
         const res =
-          aux.type === "welded"
+          aux.type === "weldedVBE"
             ? []
             : aux.info.type === "equative"
-              ? parsePastPart(tkns2, dictionary)
+              ? parsePastPart(tkns2, dictionary, ph)
               : parseAbility(tkns2, dictionary, ph);
         return bindParseResult(res, (tkns3, vbp) => {
           return [

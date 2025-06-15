@@ -12,6 +12,7 @@ import {
   wartlul,
 } from "./irreg-verbs";
 import { makeAdjectiveSelection } from "../../phrase-building/make-selections";
+import { getPersonNumber } from "../../misc-helpers";
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
@@ -1863,10 +1864,112 @@ const statComp: Section = {
   ],
 };
 
+const statCompPerfect: Section = {
+  title: "perfect statComp",
+  tests: [
+    {
+      input: "پوخ کړی دی",
+      output: [
+        {
+          blocks: [
+            {
+              type: "weldedVBP",
+              left: {
+                type: "complement",
+                selection: {
+                  inflection: [0],
+                  gender: ["masc"],
+                  given: "پوخ",
+                  selection: {
+                    type: "adjective",
+                    entry: pokh,
+                    sandwich: undefined,
+                  },
+                },
+              },
+              right: {
+                type: "parsedRightWelded",
+                info: {
+                  type: "ppart",
+                  genNum: {
+                    gender: "masc",
+                    number: "singular",
+                  },
+                  verb: kawulStat,
+                },
+              },
+            },
+            {
+              type: "VB",
+              info: {
+                type: "equative",
+                tense: "present",
+              },
+              person: T.Person.ThirdSingMale,
+            },
+          ],
+          kids: [],
+        },
+      ],
+    },
+    {
+      input: "به پخه شوې وي",
+      output: getPeople(3, "both").flatMap((person) =>
+        (
+          ["habitual", "subjunctive"] satisfies T.EquativeTenseWithoutBa[]
+        ).flatMap((tense) =>
+          (
+            ["singular", "plural"] satisfies T.NounNumber[]
+          ).map<VerbSectionData>((number) => ({
+            blocks: [
+              {
+                type: "weldedVBP",
+                left: {
+                  type: "complement",
+                  selection: {
+                    inflection: [0],
+                    gender: ["fem"],
+                    given: "پخه",
+                    selection: {
+                      type: "adjective",
+                      entry: pokh,
+                      sandwich: undefined,
+                    },
+                  },
+                },
+                right: {
+                  type: "parsedRightWelded",
+                  info: {
+                    type: "ppart",
+                    genNum: {
+                      gender: "fem",
+                      number,
+                    },
+                    verb: kedulStat,
+                  },
+                },
+              },
+              {
+                type: "VB",
+                info: {
+                  type: "equative",
+                  tense,
+                },
+                person,
+              },
+            ],
+            kids: [{ position: 0, section: ["ba"] }],
+          })),
+        ),
+      ),
+    },
+  ],
+};
+
 function makeWeldedStatComb(
   person: T.Person,
   info: Omit<T.VbInfo, "verb">,
-  left: T.ParsedWelded["left"],
+  left: T.ParsedWeldedVBE["left"],
   transitivity: T.Transitivity,
 ): T.ParsedVBE {
   const infoo: T.VbInfo = {
@@ -1874,10 +1977,10 @@ function makeWeldedStatComb(
     verb: transitivity === "transitive" ? kawulStat : kawulDyn,
   };
   return {
-    type: "welded",
+    type: "weldedVBE",
     left,
     right: {
-      type: "parsedRight",
+      type: "parsedRightVBE",
       person,
       info: infoo,
     },
@@ -1894,6 +1997,7 @@ const sections = [
   ability,
   perfect,
   statComp,
+  statCompPerfect,
 ];
 
 sections.forEach((section) => {

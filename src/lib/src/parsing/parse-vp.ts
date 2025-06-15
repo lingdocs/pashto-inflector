@@ -103,6 +103,8 @@ const anyTarget: Target = {
 // then testing for use of statComps
 // سړي ماشومه ستړې کړه
 // TODO: this should NOT turn into a dynamic comp!
+//
+// CURRENT WORK: ADD STAT COMP FINDING TO PERFECT TENSE GETTING
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -722,13 +724,15 @@ function getTenses(
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
   const { vbe, vbp } = checkForTlulCombos(ph, vbeR, vbpR);
   if (vbp) {
-    return (vbp.info.type === "ability" ? getAbilityTenses : getPerfectTenses)(
+    const vbpInfo = vbp.type === "VB" ? vbp.info : vbp.right.info;
+    return (vbpInfo.type === "ability" ? getAbilityTenses : getPerfectTenses)(
       ba,
       vbp,
       vbe,
       // don't need to check that it's the right negative because it should already be
       // checked from parseVerbSection
       !!negative,
+      dictionary,
     );
   }
   if (!vbe) {
@@ -781,7 +785,15 @@ function getMainVerbFromVBE(vbe: T.ParsedVBE): {
   if (vbe.type === "VB" && vbe.info.type === "equative") {
     throw new Error("invalid verb processing in getTenses");
   }
-  const person = vbe.type === "VB" ? vbe.person : vbe.right.person;
+  const person =
+    vbe.type === "VB"
+      ? vbe.person
+      : "person" in vbe.right
+        ? vbe.right.person
+        : undefined;
+  if (person === undefined) {
+    throw new Error("invalid verb processing in getTenses");
+  }
   const info = vbe.type === "VB" ? vbe.info : vbe.right.info;
   if ("info" in info || info.type === "equative") {
     throw new Error("invalid verb processing in getTenses");
@@ -800,7 +812,7 @@ function getCompHead(
       return undefined;
     }
   }
-  if (aux.type !== "welded" || aux.left.type !== "complement") {
+  if (aux.type !== "weldedVBE" || aux.left.type !== "complement") {
     return undefined;
   }
   return aux.left.selection;
@@ -887,10 +899,11 @@ function getAbilityTenses(
 ): ReturnType<typeof getTenses> {
   // for type safety - but we've already assured this won't happen
   if (
-    vbp.info.type !== "ability" ||
     !vbe ||
-    vbe.type === "welded" ||
-    vbe.info.type !== "verb"
+    vbp.type === "weldedVBP" ||
+    vbp.info.type !== "ability" ||
+    vbe.type === "weldedVBE" ||
+    vbe.info.type === "equative"
   ) {
     throw new Error("incorrect type of verb fed to getAbilityTenses");
   }
@@ -920,24 +933,36 @@ function getPerfectTenses(
   vbp: T.ParsedVBP,
   vbe: T.ParsedVBE | undefined,
   negative: boolean,
+  dictionary: T.DictionaryAPI,
 ): ReturnType<typeof getTenses> {
   // for type safety
+  const vbpInfo = vbp.type === "VB" ? vbp.info : vbp.right.info;
   if (
-    vbp.info.type !== "ppart" ||
+    vbpInfo.type !== "ppart" ||
     !vbe ||
-    vbe.type === "welded" ||
+    vbe.type === "weldedVBE" ||
     vbe.info.type !== "equative"
   ) {
-    throw new Error("incorrect type of verb fet to getPerfcetTenses");
+    throw new Error("incorrect type of verb fed to getPerfcetTenses");
   }
+  const vbeTense = vbe.info.tense;
   const errors: T.ParseError[] = [];
   const equativeGenNum = personToGenNum(vbe.person);
-  if (!equals(equativeGenNum, vbp.info.genNum)) {
+  if (!equals(equativeGenNum, vbpInfo.genNum)) {
     errors.push({
-      message: `equative (${equativeGenNum.gender}. ${equativeGenNum.number}) and past participle (${vbp.info.genNum.gender}. ${vbp.info.genNum.number}) do not agree`,
+      message: `equative (${equativeGenNum.gender}. ${equativeGenNum.number}) and past participle (${vbpInfo.genNum.gender}. ${vbpInfo.genNum.number}) do not agree`,
     });
   }
-  const transitivities = getTransitivities(vbp.info.verb);
+  const verbs: T.VerbEntry[] =
+    vbp.type === "weldedVBP"
+      ? getStatComp(
+          getComplementL(vbp.left.selection),
+          { verb: vbpInfo.verb, aspect: undefined },
+          dictionary,
+          true,
+        )
+      : [vbpInfo.verb];
+  const transitivities = getTransitivities(vbpInfo.verb);
   const tense: T.PerfectTense | undefined = getPerfectTense(
     hasBa,
     vbe.info.tense,
@@ -947,18 +972,17 @@ function getPerfectTenses(
       message: `invalid perfect tense form`,
     });
   }
-  return [
-    {
-      tense: tense || `${vbe.info.tense}Perfect`,
-      transitivities,
-      negative: !!negative,
-      person: vbe.person,
-      target: anyTarget,
-      verb: vbp.info.verb,
-      errors,
-      isCompound: false,
-    },
-  ];
+  return verbs.map((verb) => ({
+    tense: tense || `${vbeTense}Perfect`,
+    transitivities,
+    negative: !!negative,
+    person: vbe.person,
+    target:
+      vbp.type === "weldedVBP" ? getTarget(vbp.left.selection) : anyTarget,
+    verb,
+    errors,
+    isCompound: getIsCompound(verb),
+  }));
 }
 
 function checkForDynCompounds(dictionary: T.DictionaryAPI) {
@@ -1628,7 +1652,7 @@ function checkForTlulCombos(
   vbp: T.ParsedVBP | undefined,
 ): { vbp: T.ParsedVBP | undefined; vbe: T.ParsedVBE | undefined } {
   function replaceEntry(vbe: T.ParsedVBE, verb: T.VerbEntry): T.ParsedVBE {
-    if (vbe.type === "welded") {
+    if (vbe.type === "weldedVBE") {
       return vbe;
     }
     if (vbe.info.type === "equative") {
@@ -1684,7 +1708,7 @@ function checkForTlulCombos(
 
 // TODO: make sure this is expanded to deal properly with stative compounds
 function isAbilityAspectAmbiguousVBP(vbp: T.ParsedVBP): boolean {
-  if (vbp.type === "welded") {
+  if (vbp.type === "weldedVBP") {
     return false;
   }
   if (vbp.info.type === "ppart") {
