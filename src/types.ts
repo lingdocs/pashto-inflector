@@ -1446,7 +1446,7 @@ export type ParsedWeldedVBP = {
   left: ParsedComplementSelection;
   right: {
     type: "parsedRightWelded";
-  } & VBPartInfo;
+  } & (VBPartInfo | VBAbilityInfo);
 };
 
 export type ParsedWeldedVBE = {

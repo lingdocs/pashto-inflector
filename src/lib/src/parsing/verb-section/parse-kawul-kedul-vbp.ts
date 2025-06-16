@@ -64,7 +64,7 @@ export function parseKawulKedulAbility(
   if (!tokens.length) {
     return [];
   }
-  if (ph && (ph.type === "CompPH" || ph.s !== "و")) {
+  if (ph && ph.type === "PH" && ph.s !== "و") {
     return [];
   }
   const [first, ...rest] = tokens;
@@ -73,7 +73,7 @@ export function parseKawulKedulAbility(
     return [];
   }
   if (base === "کو") {
-    if (ph!) {
+    if (ph) {
       return [];
     }
     return returnParseResults(rest, [
@@ -102,7 +102,7 @@ export function parseKawulKedulAbility(
         info: {
           type: "ability",
           aspect: "perfective",
-          verb: ph ? kawulDyn : kawulStat,
+          verb: ph?.type === "PH" ? kawulDyn : kawulStat,
         },
       },
     ]);

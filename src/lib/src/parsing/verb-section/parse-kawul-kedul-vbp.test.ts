@@ -40,7 +40,7 @@ const kawulPPart: Section = [
   {
     ph: compPH,
     input: "کړی",
-    output: [],
+    output: makeAuxAbility("transitive", ["perfective"], ["stat"]),
   },
   {
     ph: undefined,

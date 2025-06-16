@@ -10,6 +10,7 @@ import {
   bindParseResult,
   bindParseResultWParser,
   canTakeShrunkenPossesor,
+  getInfo,
   getPeople,
   isParsedVBE,
   isParsedVBP,
@@ -729,6 +730,7 @@ function getTenses(
       ba,
       vbp,
       vbe,
+      ph,
       // don't need to check that it's the right negative because it should already be
       // checked from parseVerbSection
       !!negative,
@@ -803,7 +805,7 @@ function getMainVerbFromVBE(vbe: T.ParsedVBE): {
 
 function getCompHead(
   ph: T.ParsedPH | undefined,
-  aux: T.ParsedVBE,
+  aux: T.ParsedVBE | T.ParsedVBP,
 ): T.ParsedComplementSelection["selection"] | undefined {
   if (ph) {
     if (ph.type === "CompPH") {
@@ -812,7 +814,7 @@ function getCompHead(
       return undefined;
     }
   }
-  if (aux.type !== "weldedVBE" || aux.left.type !== "complement") {
+  if (aux.type === "VB" || aux.left.type !== "complement") {
     return undefined;
   }
   return aux.left.selection;
@@ -895,46 +897,61 @@ function getAbilityTenses(
   hasBa: boolean,
   vbp: T.ParsedVBP,
   vbe: T.ParsedVBE | undefined,
+  ph: T.ParsedPH | undefined,
   negative: boolean,
+  dictionary: T.DictionaryAPI,
 ): ReturnType<typeof getTenses> {
   // for type safety - but we've already assured this won't happen
-  if (
-    !vbe ||
-    vbp.type === "weldedVBP" ||
-    vbp.info.type !== "ability" ||
-    vbe.type === "weldedVBE" ||
-    vbe.info.type === "equative"
-  ) {
+  if (!vbe || vbe.type === "weldedVBE" || vbe.info.type === "equative") {
+    throw new Error("incorrect type of verb fed to getAbilityTenses");
+  }
+  const vbpInfo = getInfo(vbp);
+  if (vbpInfo.type !== "ability") {
     throw new Error("incorrect type of verb fed to getAbilityTenses");
   }
   const aspects: T.Aspect[] = isAbilityAspectAmbiguousVBP(vbp)
     ? ["imperfective", "perfective"]
-    : [vbp.info.aspect];
+    : [vbpInfo.aspect];
+
+  const compHead = getCompHead(ph, vbp);
+  const verbs: T.VerbEntry[] = compHead
+    ? getStatComp(
+        getComplementL(compHead),
+        { verb: vbpInfo.verb, aspect: undefined },
+        dictionary,
+        true,
+      )
+    : [vbpInfo.verb];
   // we are assuming from the parser that the vbe is the proper intrans stat aux
   const base = vbe.info.base;
   const tenses: T.AbilityTense[] = aspects.map<T.AbilityTense>(
     (aspect) => `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`,
   );
-  const verb = vbp.info.verb;
-  return tenses.map((tense) => ({
-    negative,
-    verb,
-    person: vbe.person,
-    target: anyTarget,
-    tense,
-    transitivities: getTransitivities(verb),
-    errors: [],
-    isCompound: false,
-  }));
+  return verbs.flatMap((verb) =>
+    tenses.map((tense) => ({
+      negative,
+      verb,
+      person: vbe.person,
+      target: getTarget(compHead),
+      tense,
+      transitivities: getTransitivities(verb),
+      errors: [],
+      isCompound: getIsCompound(verb),
+    })),
+  );
 }
 
 function getPerfectTenses(
   hasBa: boolean,
   vbp: T.ParsedVBP,
   vbe: T.ParsedVBE | undefined,
+  ph: T.ParsedPH | undefined,
   negative: boolean,
   dictionary: T.DictionaryAPI,
 ): ReturnType<typeof getTenses> {
+  if (ph) {
+    return [];
+  }
   // for type safety
   const vbpInfo = vbp.type === "VB" ? vbp.info : vbp.right.info;
   if (

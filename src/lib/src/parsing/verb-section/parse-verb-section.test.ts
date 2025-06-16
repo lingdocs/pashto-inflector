@@ -12,7 +12,6 @@ import {
   wartlul,
 } from "./irreg-verbs";
 import { makeAdjectiveSelection } from "../../phrase-building/make-selections";
-import { getPersonNumber } from "../../misc-helpers";
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];

@@ -1,7 +1,10 @@
 import * as T from "../../../../types";
 import { parseComplement } from "../argument-section/parse-complement";
 import { bindParseResult, returnParseResult } from "./../utils";
-import { parseKawulKedulPPart } from "./parse-kawul-kedul-vbp";
+import {
+  parseKawulKedulAbility,
+  parseKawulKedulPPart,
+} from "./parse-kawul-kedul-vbp";
 import { parseOptNeg } from "./parse-negative";
 import { getLFromComplement } from "./parse-vbe";
 import { isStatAux } from "./parse-verb-helpers";
@@ -23,12 +26,89 @@ export function parseVBP(
 
 export function parseAbility(
   tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
+  ph: T.ParsedPH | undefined,
+): T.ParseResult<T.ParsedVBP>[] {
+  return [
+    ...parseAbilityVB(tokens, dictionary, ph),
+    ...parseAbilityWelded(tokens, dictionary, ph),
+  ];
+}
+
+function parseAbilityWelded(
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
+  ph: T.ParsedPH | undefined,
+): T.ParseResult<T.ParsedVBP>[] {
+  if (ph) {
+    return [];
+  }
+  // TODO: could we just pass in the PH here instead?
+  const complement = parseComplement(tokens, dictionary);
+  if (!complement.length) {
+    return [];
+  }
+  return bindParseResult(complement, (tkns, comp) => {
+    // TODO: remove the last check allow for CompNP once implemented
+    if (
+      typeof comp.selection === "object" &&
+      "type" in comp.selection &&
+      (comp.selection.type === "sandwich" ||
+        comp.selection.type === "possesor" ||
+        comp.selection.type === "NP")
+    ) {
+      return [];
+    }
+    const compTs = getLFromComplement(comp);
+    if (compTs === undefined) {
+      return [];
+    }
+    const misplacedNegative = parseOptNeg(tkns);
+    return bindParseResult(misplacedNegative, (tkns2, badNeg) => {
+      const k: T.ParseResult<T.ParsedVBE | T.ParsedVBPBasic>[] =
+        parseKawulKedulAbility(tkns2, undefined).filter(
+          (x) =>
+            isStatAux(x.body.info.verb) &&
+            x.body.info.type === "ability" &&
+            x.body.info.aspect === "imperfective",
+        );
+      return bindParseResult(k, (tkns3, aux) => {
+        if (aux.type === "weldedVBE") {
+          return [];
+        }
+        if (aux.info.type !== "ability") {
+          return [];
+        }
+        const vbp: T.ParsedWeldedVBP = {
+          type: "weldedVBP",
+          left: comp,
+          right: {
+            type: "parsedRightWelded",
+            info: aux.info,
+          },
+        };
+        return returnParseResult(
+          tkns3,
+          vbp,
+          badNeg ? [{ message: "negative cannot go inside welded block" }] : [],
+        );
+      });
+    });
+  });
+}
+
+export function parseAbilityVB(
+  tokens: Readonly<T.Token[]>,
   dicitonary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBP>[] {
   // TODO: keday
   if (tokens.length === 0) {
     return [];
+  }
+  const kawulKedul = parseKawulKedulAbility(tokens, ph);
+  if (kawulKedul.length) {
+    return kawulKedul;
   }
   const [{ s }, ...rest] = tokens;
   const start = s.endsWith("ای")

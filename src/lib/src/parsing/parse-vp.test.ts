@@ -2007,6 +2007,107 @@ const perfectStatComp: Section = {
   ],
 };
 
+const abilityStatCompTrans: Section = {
+  title: "Ability Stat Comp",
+  tests: [
+    {
+      input: "زه تا مړ کولی شم",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock(T.Person.SecondSingMale)],
+        verb: makeVS(murKawul, "presentVerbModal"),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
+    {
+      input: "زه تا مړ کړای شم",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock(T.Person.SecondSingMale)],
+        verb: makeVS(murKawul, "subjunctiveVerbModal"),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
+    {
+      input: "زه تا مړولی شم",
+      output: getPeople(1, "sing").flatMap((subj) =>
+        getPeople(2, "sing").map((obj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock(obj)],
+          verb: makeVS(marawul, "presentVerbModal"),
+          externalComplement: undefined,
+          form: full,
+        })),
+      ),
+    },
+    {
+      input: "هغوي ښځې مړې کړای شولې",
+      output: [marawul, murKawul].flatMap((verb) => [
+        ...getPeople(3, "pl").flatMap((subj) => ({
+          blocks: [
+            makeSubjBlock(subj),
+            makeObjBlock({
+              type: "NP",
+              selection: {
+                ...makeNounSelection(xudza, undefined),
+                number: "plural",
+              },
+            }),
+          ],
+          verb: makeVS(verb, "perfectivePastModal"),
+          externalComplement: undefined,
+          form: full,
+        })),
+        {
+          blocks: [
+            makeObjBlock(T.Person.ThirdPlurFemale),
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(xudza, undefined),
+            }),
+          ],
+          verb: makeVS(verb, "perfectivePastModal"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ]),
+    },
+    {
+      input: "هغوي ښځې مړې کولای شولې",
+      output: [marawul, murKawul].flatMap((verb) => [
+        ...getPeople(3, "pl").flatMap((subj) => ({
+          blocks: [
+            makeSubjBlock(subj),
+            makeObjBlock({
+              type: "NP",
+              selection: {
+                ...makeNounSelection(xudza, undefined),
+                number: "plural",
+              },
+            }),
+          ],
+          verb: makeVS(verb, "imperfectivePastModal"),
+          externalComplement: undefined,
+          form: full,
+        })),
+        {
+          blocks: [
+            makeObjBlock(T.Person.ThirdPlurFemale),
+            makeSubjBlock({
+              type: "NP",
+              selection: makeNounSelection(xudza, undefined),
+            }),
+          ],
+          verb: makeVS(verb, "imperfectivePastModal"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ]),
+    },
+  ],
+};
+
+// TODO: abilityStatCompIntrans
+
 const sections = [
   intransFullForm,
   transFullForm,
@@ -2027,6 +2128,7 @@ const sections = [
   basicStatComp,
   perfectStatComp,
   // abilityStatComp,
+  abilityStatCompTrans,
 ];
 
 sections.forEach((section) => {
