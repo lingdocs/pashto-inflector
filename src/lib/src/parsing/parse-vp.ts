@@ -58,7 +58,7 @@ import {
 } from "../phrase-building/complement-tools";
 import { personsFromPattern1 } from "./argument-section/parse-noun-word";
 import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
-import { getAspect } from "../new-verb-engine/rs-helpers";
+import { getAspect, isStatComp } from "../new-verb-engine/rs-helpers";
 
 type Target = {
   genders: T.Gender[];
@@ -909,9 +909,6 @@ function getAbilityTenses(
   if (vbpInfo.type !== "ability") {
     throw new Error("incorrect type of verb fed to getAbilityTenses");
   }
-  const aspects: T.Aspect[] = isAbilityAspectAmbiguousVBP(vbp)
-    ? ["imperfective", "perfective"]
-    : [vbpInfo.aspect];
 
   const compHead = getCompHead(ph, vbp);
   const verbs: T.VerbEntry[] = compHead
@@ -924,11 +921,14 @@ function getAbilityTenses(
     : [vbpInfo.verb];
   // we are assuming from the parser that the vbe is the proper intrans stat aux
   const base = vbe.info.base;
-  const tenses: T.AbilityTense[] = aspects.map<T.AbilityTense>(
-    (aspect) => `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`,
-  );
-  return verbs.flatMap((verb) =>
-    tenses.map((tense) => ({
+  return verbs.flatMap((verb) => {
+    const aspects: T.Aspect[] = isAbilityAspectAmbiguousVBP(verb)
+      ? ["imperfective", "perfective"]
+      : [vbpInfo.aspect];
+    const tenses: T.AbilityTense[] = aspects.map<T.AbilityTense>(
+      (aspect) => `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`,
+    );
+    return tenses.map((tense) => ({
       negative,
       verb,
       person: vbe.person,
@@ -937,8 +937,8 @@ function getAbilityTenses(
       transitivities: getTransitivities(verb),
       errors: [],
       isCompound: getIsCompound(verb),
-    })),
-  );
+    }));
+  });
 }
 
 function getPerfectTenses(
@@ -1724,17 +1724,14 @@ function checkForTlulCombos(
 }
 
 // TODO: make sure this is expanded to deal properly with stative compounds
-function isAbilityAspectAmbiguousVBP(vbp: T.ParsedVBP): boolean {
-  if (vbp.type === "weldedVBP") {
-    return false;
-  }
-  if (vbp.info.type === "ppart") {
-    return false;
-  }
-  if (vbp.info.verb.entry.separationAtP) {
+function isAbilityAspectAmbiguousVBP(verb: T.VerbEntry): boolean {
+  if (isStatComp(verb) && getTransitivities(verb).includes("intransitive")) {
     return true;
   }
-  return isTlulVerb(vbp.info.verb);
+  if (verb.entry.separationAtP) {
+    return true;
+  }
+  return isTlulVerb(verb);
 }
 
 function targetMatches(person: T.Person, target: Target): boolean {
