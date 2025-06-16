@@ -1,4 +1,5 @@
 import * as T from "../../../../types";
+import { testDictionary } from "../mini-test-dictionary";
 import { tokenizer } from "../tokenizer";
 import { kawulDyn, kawulStat, kedulStat, kedulDyn } from "./irreg-verbs";
 import { parseKawulKedulVBP } from "./parse-kawul-kedul-vbp";
@@ -6,7 +7,7 @@ import { parseKawulKedulVBP } from "./parse-kawul-kedul-vbp";
 type Section = {
   ph: T.ParsedPH | undefined;
   input: string;
-  output: T.ParsedVBP[];
+  output: T.ParsedVBPBasic[];
 }[];
 
 const oo: T.ParsedPH = {
@@ -14,16 +15,30 @@ const oo: T.ParsedPH = {
   s: "و",
 };
 
+const compPH: T.ParsedPH = {
+  type: "CompPH",
+  selection: {
+    type: "loc. adv.",
+    entry: testDictionary.queryP("وړاندې")[0] as T.LocativeAdverbEntry,
+  },
+};
+
 const kawulPPart: Section = [
   {
     ph: undefined,
     input: "کړی",
-    output: makeAuxPPart("transitive", [
-      { gender: "masc", number: "singular" },
-    ]),
+    output: [
+      ...makeAuxPPart("transitive", [{ gender: "masc", number: "singular" }]),
+      ...makeAuxAbility("transitive", ["perfective"], ["stat"]),
+    ],
   },
   {
     ph: oo,
+    input: "کړی",
+    output: makeAuxAbility("transitive", ["perfective"], ["dyn"]),
+  },
+  {
+    ph: compPH,
     input: "کړی",
     output: [],
   },
@@ -56,6 +71,11 @@ const kedulPPart: Section = [
     output: [],
   },
   {
+    ph: compPH,
+    input: "شوی",
+    output: [],
+  },
+  {
     ph: undefined,
     input: "شوې",
     output: makeAuxPPart("intransitive", [
@@ -72,9 +92,69 @@ const kedulPPart: Section = [
   },
 ];
 
+const kawulAbility: Section = [
+  ...["کولی", "کولای"].map((input) => ({
+    ph: undefined,
+    input,
+    output: makeAuxAbility("transitive", ["imperfective"], ["stat", "dyn"]),
+  })),
+  ...["کولی", "کولای"].map((input) => ({
+    ph: oo,
+    input,
+    output: [],
+  })),
+  ...["کړای", "کړلی", "کړلای"].map((input) => ({
+    ph: undefined,
+    input,
+    output: makeAuxAbility("transitive", ["perfective"], ["stat"]),
+  })),
+  ...["کړای", "کړلی", "کړلای", "کړی"].map((input) => ({
+    ph: oo,
+    input,
+    output: makeAuxAbility("transitive", ["perfective"], ["dyn"]),
+  })),
+  {
+    ph: undefined,
+    input: "کړی",
+    output: [
+      ...makeAuxAbility("transitive", ["perfective"], ["stat"]),
+      ...makeAuxPPart("transitive", [{ gender: "masc", number: "singular" }]),
+    ],
+  },
+  {
+    ph: oo,
+    input: "کړی",
+    output: makeAuxAbility("transitive", ["perfective"], ["dyn"]),
+  },
+];
+
+const kedulAbility: Section = [
+  ...["کېدی", "کېدای", "کېدلی", "کېدلای"].map((input) => ({
+    ph: undefined,
+    input,
+    output: makeAuxAbility(
+      "intransitive",
+      ["imperfective", "perfective"],
+      ["stat", "dyn"],
+    ),
+  })),
+  ...["کېدی", "کېدای", "کېدلی", "کېدلای"].map((input) => ({
+    ph: oo,
+    input,
+    output: [],
+  })),
+  ...["کېدی", "کېدای", "کېدلی", "کېدلای"].map((input) => ({
+    ph: compPH,
+    input,
+    output: [],
+  })),
+];
+
 const sections = {
   kawulPPart,
   kedulPPart,
+  kawulAbility,
+  kedulAbility,
 };
 
 for (const [sectionName, section] of Object.entries(sections)) {
@@ -100,10 +180,34 @@ function showPh(ph: T.ParsedPH | undefined): string {
   return `w. ${ph.s}`;
 }
 
+function makeAuxAbility(
+  transitivity: T.Transitivity,
+  aspects: T.Aspect[],
+  types: ("stat" | "dyn")[],
+): T.ParsedVBPBasic[] {
+  return aspects.flatMap<T.ParsedVBPBasic>((aspect) =>
+    types.map((typ) => ({
+      type: "VB",
+      info: {
+        type: "ability",
+        verb:
+          transitivity === "transitive"
+            ? typ === "dyn"
+              ? kawulDyn
+              : kawulStat
+            : typ === "dyn"
+              ? kedulDyn
+              : kedulStat,
+        aspect,
+      },
+    })),
+  );
+}
+
 function makeAuxPPart(
   transitivity: T.Transitivity,
   genNums: T.GenderNumber[],
-): T.ParsedVBP[] {
+): T.ParsedVBPBasic[] {
   const verbs =
     transitivity === "transitive"
       ? [kawulStat, kawulDyn]
