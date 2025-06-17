@@ -2131,7 +2131,69 @@ const abilityStatCompTrans: Section = {
     },
   ],
 };
-// TODO: test abilityStatCompIntrans
+
+const abilityStatCompIntrans: Section = {
+  title: "ability stat comp intrans",
+  tests: [
+    {
+      input: "زه مړ کېدای شم",
+      output: (
+        ["presentVerbModal", "subjunctiveVerbModal"] satisfies T.AbilityTense[]
+      ).map((tense) => ({
+        blocks: [makeSubjBlock(T.Person.FirstSingMale), makeObjBlock("none")],
+        verb: makeVS(murKedul, tense),
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
+    ...["زه مړ کېدای نه شم", "زه نه شم مړ کېدای"].map((input) => ({
+      input,
+      output: (
+        ["presentVerbModal", "subjunctiveVerbModal"] satisfies T.AbilityTense[]
+      ).map((tense) => ({
+        blocks: [makeSubjBlock(T.Person.FirstSingMale), makeObjBlock("none")],
+        verb: {
+          ...makeVS(murKedul, tense),
+          negative: true,
+        },
+        externalComplement: undefined,
+        form: full,
+      })),
+    })),
+    {
+      input: "زه مړېدای شم",
+      output: getPeople(1, "sing").flatMap((subj) =>
+        (
+          [
+            "presentVerbModal",
+            "subjunctiveVerbModal",
+          ] satisfies T.AbilityTense[]
+        ).map((tense) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: makeVS(maredul, tense),
+          externalComplement: undefined,
+          form: full,
+        })),
+      ),
+    },
+    ...["زه مړېدلی نه شم", "زه نه شم مړېدلی"].map((input) => ({
+      input,
+      output: (
+        ["presentVerbModal", "subjunctiveVerbModal"] satisfies T.AbilityTense[]
+      ).flatMap((tense) =>
+        getPeople(1, "sing").map((subj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: {
+            ...makeVS(maredul, tense),
+            negative: true,
+          },
+          externalComplement: undefined,
+          form: full,
+        })),
+      ),
+    })),
+  ],
+};
 
 const sections = [
   intransFullForm,
@@ -2154,6 +2216,7 @@ const sections = [
   perfectStatComp,
   // abilityStatComp,
   abilityStatCompTrans,
+  abilityStatCompIntrans,
 ];
 
 sections.forEach((section) => {
