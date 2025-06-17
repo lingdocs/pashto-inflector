@@ -2195,6 +2195,10 @@ const abilityStatCompIntrans: Section = {
   ],
 };
 
+// TODO: Basic passive
+// what about لیدل کېږم
+// Should it also be possible to use لیدل as a participle complement for کېدل ? Probably not
+
 const sections = [
   intransFullForm,
   transFullForm,

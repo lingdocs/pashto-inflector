@@ -315,6 +315,10 @@ export function isParsedVBP(b: T.ParsedBlock): b is T.ParsedVBP {
   );
 }
 
+export function isPassive(b: T.ParsedBlock): b is T.ParsedWeldedPassive {
+  return b.type === "weldedPassive";
+}
+
 export function getInfo(
   b: T.ParsedVB | T.ParsedWeldedVBE | T.ParsedWeldedVBP | T.ParsedVBP,
 ): T.VbInfo | T.VBPartInfo["info"] | T.EqInfo | T.VBAbilityInfo["info"] {

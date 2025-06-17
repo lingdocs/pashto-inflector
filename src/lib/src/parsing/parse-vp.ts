@@ -14,6 +14,7 @@ import {
   getPeople,
   isParsedVBE,
   isParsedVBP,
+  isPassive,
   isPH,
   returnParseResult,
   returnParseResults,
@@ -169,6 +170,7 @@ function combineArgAndVerbSections(
         errors,
         target,
         isCompound,
+        voice,
       }) => {
         const isPast = isPastTense(tense);
         return transitivities.flatMap<T.ParseResult<T.VPSelectionComplete>>(
@@ -185,7 +187,7 @@ function combineArgAndVerbSections(
               tense,
               canChangeVoice: transitivity === "transitive",
               isCompound,
-              voice: "active",
+              voice,
             };
             if (transitivity === "intransitive") {
               return bindParseResult(
@@ -721,6 +723,7 @@ function getTenses(
   verb: T.VerbEntry;
   errors: T.ParseError[];
   isCompound: T.VerbSelectionComplete["isCompound"];
+  voice: T.Voice;
 }[] {
   const negIndex = blocks.findIndex((x) => x.type === "negative");
   const negative: T.NegativeBlock | undefined = blocks[negIndex] as
@@ -730,6 +733,7 @@ function getTenses(
   // TODO: would be nicer if there were clear taggin gfor "VBP" vs "VBE" !!
   const vbeR = blocks.find(isParsedVBE);
   const vbpR = blocks.find(isParsedVBP);
+  const passive = blocks.find(isPassive);
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
   const { vbe, vbp } = checkForTlulCombos(ph, vbeR, vbpR);
   if (vbp) {
@@ -745,10 +749,12 @@ function getTenses(
       dictionary,
     );
   }
-  if (!vbe) {
+  const vbeOrPasssive = vbe || passive;
+  // silly type safety thing?
+  if (!vbeOrPasssive) {
     return [];
   }
-  const { info, person } = getMainVerbFromVBE(vbe);
+  const { info, person } = getMainVerbFromVBE(vbeOrPasssive);
   const tenses = getTensesFromRootsStems(
     ba,
     info.base,
@@ -757,12 +763,16 @@ function getTenses(
     info.imperative,
   );
   const transitivities = getTransitivities(info.verb);
-  const compHead = getCompHead(ph, vbe);
+  const compHead = getCompHead(ph, vbeOrPasssive);
   const target = getTarget(compHead);
   // check to see if a stat comp matches up
   const verbs: T.VerbEntry[] = compHead
     ? getStatComp(getComplementL(compHead), info, dictionary, true)
-    : [info.verb];
+    : [
+        vbeOrPasssive.type === "weldedPassive"
+          ? vbeOrPasssive.left.verb
+          : info.verb,
+      ];
   return tenses.flatMap((tense) =>
     verbs.map((verb) => ({
       tense,
@@ -774,6 +784,7 @@ function getTenses(
       errors: [],
       // TODO: this is dumb that we have to use this
       isCompound: getIsCompound(verb),
+      voice: vbeOrPasssive.type === "weldedPassive" ? "passive" : "active",
     })),
   );
 }
@@ -788,10 +799,21 @@ function getIsCompound(verb: T.VerbEntry): T.IsCompound {
   return false;
 }
 
-function getMainVerbFromVBE(vbe: T.ParsedVBE): {
+function getMainVerbFromVBE(vbe: T.ParsedVBE | T.ParsedWeldedPassive): {
   info: T.VbInfo;
   person: T.Person;
 } {
+  // dumb thing we have to do because of TypeScript not understanding something
+  // earlier by the call
+  if (!vbe) {
+    throw new Error("invalid verb processing in getTenses");
+  }
+  if (vbe.type === "weldedPassive") {
+    return {
+      info: vbe.right.info,
+      person: vbe.right.person,
+    };
+  }
   if (vbe.type === "VB" && vbe.info.type === "equative") {
     throw new Error("invalid verb processing in getTenses");
   }
@@ -813,7 +835,7 @@ function getMainVerbFromVBE(vbe: T.ParsedVBE): {
 
 function getCompHead(
   ph: T.ParsedPH | undefined,
-  aux: T.ParsedVBE | T.ParsedVBP,
+  aux: T.ParsedVBE | T.ParsedVBP | T.ParsedWeldedPassive,
 ): T.ParsedComplementSelection["selection"] | undefined {
   if (ph) {
     if (ph.type === "CompPH") {
@@ -822,7 +844,12 @@ function getCompHead(
       return undefined;
     }
   }
-  if (aux.type === "VB" || aux.left.type !== "complement") {
+  // TODO: with stat comp passive implement
+  if (
+    aux.type === "weldedPassive" ||
+    aux.type === "VB" ||
+    aux.left.type !== "complement"
+  ) {
     return undefined;
   }
   return aux.left.selection;
@@ -945,6 +972,8 @@ function getAbilityTenses(
       transitivities: getTransitivities(verb),
       errors: [],
       isCompound: getIsCompound(verb),
+      // TODO implement passive ability
+      voice: "active",
     }));
   });
 }
@@ -1007,6 +1036,8 @@ function getPerfectTenses(
     verb,
     errors,
     isCompound: getIsCompound(verb),
+    // perfect forms are always active
+    voice: "active",
   }));
 }
 

@@ -12,6 +12,7 @@ import {
   wartlul,
 } from "./irreg-verbs";
 import { makeAdjectiveSelection } from "../../phrase-building/make-selections";
+const oo: T.ParsedPH = { type: "PH", s: "و" };
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
@@ -1965,26 +1966,156 @@ const statCompPerfect: Section = {
   ],
 };
 
-function makeWeldedStatComb(
-  person: T.Person,
-  info: Omit<T.VbInfo, "verb">,
-  left: T.ParsedWeldedVBE["left"],
-  transitivity: T.Transitivity,
-): T.ParsedVBE {
-  const infoo: T.VbInfo = {
-    ...info,
-    verb: transitivity === "transitive" ? kawulStat : kawulDyn,
-  };
-  return {
-    type: "weldedVBE",
-    left,
-    right: {
-      type: "parsedRightVBE",
-      person,
-      info: infoo,
+const passiveBasic: Section = {
+  title: "basic passive",
+  tests: [
+    {
+      input: "لیدل کېږم",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [
+          {
+            type: "weldedPassive",
+            left: {
+              type: "passiveLeft",
+              verb: leedul,
+            },
+            right: {
+              type: "parsedRightVBE",
+              person: subj,
+              info: {
+                type: "verb",
+                base: "stem",
+                aspect: "imperfective",
+                verb: kedulStat,
+              },
+            },
+          } satisfies T.ParsedWeldedPassive,
+        ],
+        kids: [],
+      })),
     },
-  };
-}
+    {
+      input: "ولیدل شم",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [
+          oo,
+          {
+            type: "weldedPassive",
+            left: {
+              type: "passiveLeft",
+              verb: leedul,
+            },
+            right: {
+              type: "parsedRightVBE",
+              person: subj,
+              info: {
+                type: "verb",
+                base: "stem",
+                aspect: "perfective",
+                verb: kedulStat,
+              },
+            },
+          } satisfies T.ParsedWeldedPassive,
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "ونه لیدل شم",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [
+          oo,
+          { type: "negative", imperative: false },
+          {
+            type: "weldedPassive",
+            left: {
+              type: "passiveLeft",
+              verb: leedul,
+            },
+            right: {
+              type: "parsedRightVBE",
+              person: subj,
+              info: {
+                type: "verb",
+                base: "stem",
+                aspect: "perfective",
+                verb: kedulStat,
+              },
+            },
+          } satisfies T.ParsedWeldedPassive,
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "وابه نه خیستل شولم",
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [
+          { type: "PH", s: "وا" },
+          { type: "negative", imperative: false },
+          {
+            type: "weldedPassive",
+            left: {
+              type: "passiveLeft",
+              verb: akheestul,
+            },
+            right: {
+              type: "parsedRightVBE",
+              person: subj,
+              info: {
+                type: "verb",
+                base: "root",
+                aspect: "perfective",
+                verb: kedulStat,
+              },
+            },
+          },
+        ],
+        kids: [{ position: 1, section: ["ba"] }],
+      })),
+    },
+    {
+      input: "نه به اخیستل شولم",
+      output: [],
+      error: true,
+    },
+    {
+      input: "لیدل کېدلئ",
+      output: getPeople(2, "pl").map((subj) => ({
+        blocks: [
+          {
+            type: "weldedPassive",
+            left: {
+              type: "passiveLeft",
+              verb: leedul,
+            },
+            right: {
+              type: "parsedRightVBE",
+              person: subj,
+              info: {
+                type: "verb",
+                base: "root",
+                aspect: "imperfective",
+                verb: kedulStat,
+              },
+            },
+          },
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "ولیدل کېدلئ",
+      output: [],
+      error: true,
+    },
+    {
+      input: "ورسېدل شوم",
+      output: [],
+      error: true,
+    },
+  ],
+};
 
 const sections = [
   simpleOpts,
@@ -1997,6 +2128,7 @@ const sections = [
   perfect,
   statComp,
   statCompPerfect,
+  passiveBasic,
 ];
 
 sections.forEach((section) => {
@@ -2017,6 +2149,27 @@ sections.forEach((section) => {
     });
   });
 });
+
+function makeWeldedStatComb(
+  person: T.Person,
+  info: Omit<T.VbInfo, "verb">,
+  left: T.ParsedWeldedVBE["left"],
+  transitivity: T.Transitivity,
+): T.ParsedVBE {
+  const infoo: T.VbInfo = {
+    ...info,
+    verb: transitivity === "transitive" ? kawulStat : kawulDyn,
+  };
+  return {
+    type: "weldedVBE",
+    left,
+    right: {
+      type: "parsedRightVBE",
+      person,
+      info: infoo,
+    },
+  };
+}
 
 function testVBEOutuput(props: {
   ph?: string;

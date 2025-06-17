@@ -1314,6 +1314,7 @@ export type ParsedBlock =
   | ParsedVBP
   | APSelection
   | ParsedComplementSelection
+  | ParsedWeldedPassive
   | NegativeBlock;
 
 export type ParsedKidsSection = {
@@ -1452,11 +1453,22 @@ export type ParsedWeldedVBP = {
 export type ParsedWeldedVBE = {
   type: "weldedVBE";
   left: ParsedComplementSelection;
-  right: {
-    type: "parsedRightVBE";
-    person: Person;
-    info: VbInfo;
+  right: ParsedRightVBE;
+};
+
+type ParsedRightVBE = {
+  type: "parsedRightVBE";
+  person: Person;
+  info: VbInfo;
+};
+
+export type ParsedWeldedPassive = {
+  type: "weldedPassive";
+  left: {
+    type: "passiveLeft";
+    verb: VerbEntry;
   };
+  right: ParsedRightVBE;
 };
 
 export type VHead = PH | NComp;
