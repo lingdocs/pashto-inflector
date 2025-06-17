@@ -115,13 +115,6 @@ export function parseVP(
     return [];
   }
   const argument = parseArgumentSection(tokens, dictionary);
-  // const res = bindParseResult(argument, (tokens, arg) => {
-  //   const vs = parseVerbSection(tokens, dictionary);
-  //   return bindParseResult(vs, (tokens, v) => {
-  //     const fres = combineArgAndVerbSections(tokens, dictionary, arg, v);
-  //     return fres;
-  //   });
-  // });
   return removeRedundantStatCombos(
     bindParseResultWParser(
       argument,
@@ -216,6 +209,12 @@ function combineArgAndVerbSections(
                 }).map(addErrors(errors)),
                 checkForDynCompounds(dictionary),
               );
+              console.log({
+                res: res.filter(
+                  (x) => !x.errors.length && !x.body.externalComplement,
+                ),
+                errors,
+              });
               return res;
             } /* grammaticallyTransitive */ else {
               if (exComplement) {

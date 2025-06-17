@@ -23,6 +23,16 @@ export function bindParseResult<C, D>(
   );
 }
 
+export function bindParseResultDebug<C, D>(
+  prev: T.ParseResult<C>[],
+  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[],
+): T.ParseResult<D>[] {
+  // PERFECTION 🧪
+  return cleanOutResultsDebug(
+    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors))),
+  );
+}
+
 export function bindParseWithAllErrors<C, D>(
   prev: T.ParseResult<C>[],
   f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[],
@@ -142,6 +152,23 @@ export function cleanOutResults<C>(
   if (results.length === 0) {
     return results;
   }
+  let min = Infinity;
+  for (const a of results) {
+    if (a.errors.length < min) {
+      min = a.errors.length;
+    }
+  }
+  const errorsCulled = results.filter((x) => x.errors.length === min);
+  return removeDuplicates(errorsCulled);
+}
+
+export function cleanOutResultsDebug<C>(
+  results: T.ParseResult<C>[],
+): T.ParseResult<C>[] {
+  if (results.length === 0) {
+    return results;
+  }
+  console.log({ results });
   let min = Infinity;
   for (const a of results) {
     if (a.errors.length < min) {

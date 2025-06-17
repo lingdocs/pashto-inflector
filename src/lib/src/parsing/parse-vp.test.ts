@@ -2028,6 +2028,18 @@ const abilityStatCompTrans: Section = {
         form: full,
       })),
     },
+    ...["زه تا مړ کړای نه شم", "زه تا مړ نه شم کړای"].map((input) => ({
+      input,
+      output: getPeople(1, "sing").map((subj) => ({
+        blocks: [makeSubjBlock(subj), makeObjBlock(T.Person.SecondSingMale)],
+        verb: {
+          ...makeVS(murKawul, "subjunctiveVerbModal"),
+          negative: true,
+        },
+        externalComplement: undefined,
+        form: full,
+      })),
+    })),
     {
       input: "زه تا مړولی شم",
       output: getPeople(1, "sing").flatMap((subj) =>
@@ -2039,6 +2051,20 @@ const abilityStatCompTrans: Section = {
         })),
       ),
     },
+    ...["زه تا مړولی نه شم", "زه تا نه شم مړولی"].map((input) => ({
+      input,
+      output: getPeople(1, "sing").flatMap((subj) =>
+        getPeople(2, "sing").map((obj) => ({
+          blocks: [makeSubjBlock(subj), makeObjBlock(obj)],
+          verb: {
+            ...makeVS(marawul, "presentVerbModal"),
+            negative: true,
+          },
+          externalComplement: undefined,
+          form: full,
+        })),
+      ),
+    })),
     {
       input: "هغوي ښځې مړې کړای شولې",
       output: [marawul, murKawul].flatMap((verb) => [
@@ -2105,8 +2131,7 @@ const abilityStatCompTrans: Section = {
     },
   ],
 };
-
-// TODO: abilityStatCompIntrans
+// TODO: test abilityStatCompIntrans
 
 const sections = [
   intransFullForm,
