@@ -21,6 +21,7 @@ import {
   makePronounSelection,
 } from "../phrase-building/make-selections";
 import { makeVPSelectionState } from "../phrase-building/verb-selection";
+import { kedulStat } from "./verb-section/irreg-verbs";
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
@@ -2195,9 +2196,84 @@ const abilityStatCompIntrans: Section = {
   ],
 };
 
-// TODO: Basic passive
-// what about لیدل کېږم
-// Should it also be possible to use لیدل as a participle complement for کېدل ? Probably not
+const basicPassive: Section = {
+  title: "basic passive",
+  tests: [
+    {
+      input: "زه لیدل کېږم",
+      output: getPeople(1, "sing").flatMap((subj) => [
+        {
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: makeVS(kedulStat, "presentVerb"),
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: {
+                type: "participle",
+                verb: leedul,
+                possesor: undefined,
+              },
+            },
+          },
+          form: full,
+        },
+        {
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: {
+            ...makeVS(leedul, "presentVerb"),
+            voice: "passive",
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+      ]),
+    },
+    {
+      input: "زه ولیدل شم",
+      output: getPeople(1, "sing").flatMap((subj) => [
+        {
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: {
+            ...makeVS(leedul, "subjunctiveVerb"),
+            voice: "passive",
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+      ]),
+    },
+    {
+      input: "زه ولیدل شوم",
+      output: getPeople(1, "sing").flatMap((subj) => [
+        {
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: {
+            ...makeVS(leedul, "perfectivePast"),
+            voice: "passive",
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+      ]),
+    },
+    {
+      input: "زه نه لیدل کېدم",
+      output: getPeople(1, "sing").flatMap((subj) => [
+        {
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: {
+            ...makeVS(leedul, "imperfectivePast"),
+            voice: "passive",
+            negative: true,
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+      ]),
+    },
+  ],
+};
 
 const sections = [
   intransFullForm,
@@ -2218,9 +2294,9 @@ const sections = [
   // with stat comp verbs
   basicStatComp,
   perfectStatComp,
-  // abilityStatComp,
   abilityStatCompTrans,
   abilityStatCompIntrans,
+  basicPassive,
 ];
 
 sections.forEach((section) => {

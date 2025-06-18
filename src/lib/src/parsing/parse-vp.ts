@@ -189,7 +189,7 @@ function combineArgAndVerbSections(
               isCompound,
               voice,
             };
-            if (transitivity === "intransitive") {
+            if (transitivity === "intransitive" || voice === "passive") {
               return bindParseResult(
                 finishIntransitive({
                   kidsErrors,
@@ -762,7 +762,13 @@ function getTenses(
     !!negative,
     info.imperative,
   );
-  const transitivities = getTransitivities(info.verb);
+  const transitivities = getTransitivities(info.verb).filter(
+    (x) =>
+      !(
+        vbeOrPasssive.type === "weldedPassive" &&
+        x === "grammatically transitive"
+      ),
+  );
   const compHead = getCompHead(ph, vbeOrPasssive);
   const target = getTarget(compHead);
   // check to see if a stat comp matches up
@@ -810,7 +816,10 @@ function getMainVerbFromVBE(vbe: T.ParsedVBE | T.ParsedWeldedPassive): {
   }
   if (vbe.type === "weldedPassive") {
     return {
-      info: vbe.right.info,
+      info: {
+        ...vbe.right.info,
+        verb: vbe.left.verb,
+      },
       person: vbe.right.person,
     };
   }
