@@ -23,7 +23,7 @@ const empty: ArgSectionData = {
 
 export function parseArgumentSection(
   tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<ArgSectionData>[] {
   if (tokens.length === 0) {
     return [];
@@ -41,7 +41,7 @@ export function parseArgumentSection(
 
 function parseArgSectR(dictionary: T.DictionaryAPI) {
   return function (
-    prev: T.ParseResult<ArgSectionData>
+    prev: T.ParseResult<ArgSectionData>,
   ): T.ParseResult<ArgSectionData>[] {
     function keepGoing(res: T.ParseResult<ArgSectionData>) {
       return [res, ...parseArgSectR(dictionary)(res)];

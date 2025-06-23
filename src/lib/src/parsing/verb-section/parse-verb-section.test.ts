@@ -47,6 +47,9 @@ const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0];
 const sharmawul = testDictionary.verbEntryLookup("شرمول")[0];
 const mur = testDictionary.adjLookup("مړ")[0];
 const mor = testDictionary.adjLookup("موړ")[0];
+const marawul = testDictionary.verbEntryLookup("مړول")[0];
+// const murKawul = testDictionary.verbEntryLookup("مړ کول")[0];
+// const maredul = testDictionary.verbEntryLookup("مړېدل")[0];
 const sturay = testDictionary.adjLookup("ستړی")[0];
 const wraande = testDictionary.queryP("وړاندې")[0] as T.LocativeAdverbEntry;
 // const sharmedul = testDictionary.verbEntryLookup("شرمېدل")[0];
@@ -1976,7 +1979,7 @@ const passiveBasic: Section = {
           {
             type: "weldedPassive",
             left: {
-              type: "passiveLeft",
+              type: "passiveLeftBasic",
               verb: leedul,
             },
             right: {
@@ -2002,7 +2005,7 @@ const passiveBasic: Section = {
           {
             type: "weldedPassive",
             left: {
-              type: "passiveLeft",
+              type: "passiveLeftBasic",
               verb: leedul,
             },
             right: {
@@ -2029,7 +2032,7 @@ const passiveBasic: Section = {
           {
             type: "weldedPassive",
             left: {
-              type: "passiveLeft",
+              type: "passiveLeftBasic",
               verb: leedul,
             },
             right: {
@@ -2056,7 +2059,7 @@ const passiveBasic: Section = {
           {
             type: "weldedPassive",
             left: {
-              type: "passiveLeft",
+              type: "passiveLeftBasic",
               verb: akheestul,
             },
             right: {
@@ -2086,7 +2089,7 @@ const passiveBasic: Section = {
           {
             type: "weldedPassive",
             left: {
-              type: "passiveLeft",
+              type: "passiveLeftBasic",
               verb: leedul,
             },
             right: {
@@ -2117,6 +2120,396 @@ const passiveBasic: Section = {
   ],
 };
 
+const morPH: T.ParsedCompPH = {
+  type: "CompPH",
+  selection: {
+    inflection: [0],
+    gender: ["masc"],
+    given: "موړ",
+    selection: {
+      type: "adjective",
+      entry: mor,
+      sandwich: undefined,
+    },
+  },
+};
+const murPH: T.ParsedCompPH = {
+  type: "CompPH",
+  selection: {
+    inflection: [0],
+    gender: ["masc"],
+    given: "مړ",
+    selection: {
+      type: "adjective",
+      entry: mur,
+      sandwich: undefined,
+    },
+  },
+};
+const passiveStatComp: Section = {
+  title: "stat comp passive",
+  tests: [
+    {
+      input: "مړول کېږم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftBasic",
+                verb: marawul,
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  aspect: "imperfective",
+                  base: "stem",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+    {
+      input: "مړول کېدلم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftBasic",
+                verb: marawul,
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  aspect: "imperfective",
+                  base: "root",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+    {
+      input: "موړ کړای شم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            morPH,
+            {
+              type: "VB",
+              info: {
+                type: "ability",
+                verb: kawulStat,
+                aspect: "perfective",
+              },
+            },
+            makeParsedVBE({
+              person: subj,
+              aspect: "perfective",
+              base: "stem",
+              verb: kedulStat,
+            }),
+          ],
+          kids: [],
+        })),
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            morPH,
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftBasic",
+                verb: kawulStat,
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  base: "stem",
+                  aspect: "perfective",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+    {
+      input: "موړ کړای شولم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            morPH,
+            {
+              type: "VB",
+              info: {
+                type: "ability",
+                verb: kawulStat,
+                aspect: "perfective",
+              },
+            },
+            makeParsedVBE({
+              person: subj,
+              aspect: "perfective",
+              base: "root",
+              verb: kedulStat,
+            }),
+          ],
+          kids: [],
+        })),
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            morPH,
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftBasic",
+                verb: kawulStat,
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  base: "root",
+                  aspect: "perfective",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+    {
+      input: "مړ کول کېږم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftWelded",
+                left: {
+                  type: "complement",
+                  selection: {
+                    inflection: [0],
+                    gender: ["masc"],
+                    given: "مړ",
+                    selection: {
+                      type: "adjective",
+                      entry: mur,
+                      sandwich: undefined,
+                    },
+                  },
+                },
+                right: {
+                  type: "passiveCompKawulAux",
+                },
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  aspect: "imperfective",
+                  base: "stem",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+    {
+      input: "مړ کول کېدلم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftWelded",
+                left: {
+                  type: "complement",
+                  selection: {
+                    inflection: [0],
+                    gender: ["masc"],
+                    given: "مړ",
+                    selection: {
+                      type: "adjective",
+                      entry: mur,
+                      sandwich: undefined,
+                    },
+                  },
+                },
+                right: {
+                  type: "passiveCompKawulAux",
+                },
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  aspect: "imperfective",
+                  base: "root",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+    {
+      input: "مړ کړای شم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            murPH,
+            {
+              type: "VB",
+              info: {
+                type: "ability",
+                verb: kawulStat,
+                aspect: "perfective",
+              },
+            },
+            makeParsedVBE({
+              person: subj,
+              aspect: "perfective",
+              base: "stem",
+              verb: kedulStat,
+            }),
+          ],
+          kids: [],
+        })),
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            murPH,
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftBasic",
+                verb: kawulStat,
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  base: "stem",
+                  aspect: "perfective",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+    {
+      input: "مړ کړای شولم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            murPH,
+            {
+              type: "VB",
+              info: {
+                type: "ability",
+                verb: kawulStat,
+                aspect: "perfective",
+              },
+            },
+            makeParsedVBE({
+              person: subj,
+              aspect: "perfective",
+              base: "root",
+              verb: kedulStat,
+            }),
+          ],
+          kids: [],
+        })),
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            murPH,
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftBasic",
+                verb: kawulStat,
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  base: "root",
+                  aspect: "perfective",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+    {
+      input: "مړ کړل شولم",
+      output: [
+        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+          blocks: [
+            murPH,
+            {
+              type: "weldedPassive",
+              left: {
+                type: "passiveLeftBasic",
+                verb: kawulStat,
+              },
+              right: {
+                type: "parsedRightVBE",
+                person: subj,
+                info: {
+                  type: "verb",
+                  base: "root",
+                  aspect: "perfective",
+                  verb: kedulStat,
+                },
+              },
+            },
+          ],
+          kids: [],
+        })),
+      ],
+    },
+  ],
+};
+
 const sections = [
   simpleOpts,
   simpleIntrans,
@@ -2129,6 +2522,7 @@ const sections = [
   statComp,
   statCompPerfect,
   passiveBasic,
+  passiveStatComp,
 ];
 
 sections.forEach((section) => {

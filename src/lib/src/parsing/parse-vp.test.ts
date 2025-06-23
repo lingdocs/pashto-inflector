@@ -2275,6 +2275,87 @@ const basicPassive: Section = {
   ],
 };
 
+const statCompPassiveBasic: Section = {
+  title: "stat comp passive",
+  tests: [
+    {
+      input: "زه مړول کېږم",
+      output: getPeople(1, "sing").flatMap((subj) => [
+        {
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: {
+            ...makeVS(marawul, "presentVerb"),
+            voice: "passive",
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+        {
+          blocks: [makeSubjBlock(subj), makeObjBlock("none")],
+          verb: makeVS(kedulStat, "presentVerb"),
+          externalComplement: {
+            type: "complement",
+            selection: {
+              type: "NP",
+              selection: {
+                type: "participle",
+                verb: marawul,
+                possesor: undefined,
+              },
+            },
+          },
+          form: full,
+        },
+      ]),
+    },
+    ...["کړای", "کړلای", "کړل"].map<Section["tests"][number]>((kraay) => ({
+      input: `زه موړ ${kraay} شم`,
+      output: [
+        {
+          blocks: [makeSubjBlock(T.Person.FirstSingMale), makeObjBlock("none")],
+          verb: {
+            ...makeVS(marawul, "subjunctiveVerb"),
+            voice: "passive",
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    })),
+    {
+      input: "زه مړ کول کېدلم",
+      output: [
+        {
+          blocks: [makeSubjBlock(T.Person.FirstSingMale), makeObjBlock("none")],
+          verb: {
+            ...makeVS(murKawul, "imperfectivePast"),
+            voice: "passive",
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+    {
+      input: "زه مړه کول کېدم",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock(T.Person.FirstSingFemale),
+            makeObjBlock("none"),
+          ],
+          verb: {
+            ...makeVS(murKawul, "imperfectivePast"),
+            voice: "passive",
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+  ],
+};
+
 const sections = [
   intransFullForm,
   transFullForm,
@@ -2297,6 +2378,7 @@ const sections = [
   abilityStatCompTrans,
   abilityStatCompIntrans,
   basicPassive,
+  statCompPassiveBasic,
 ];
 
 sections.forEach((section) => {

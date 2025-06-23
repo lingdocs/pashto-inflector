@@ -9,7 +9,9 @@ import { parseParticiple } from "./parse-participle";
 export function parseNP(
   tokens: Readonly<T.Token[]>,
   dicitonary: T.DictionaryAPI,
-  possesor: T.PossesorSelection | undefined
+  possesor: T.PossesorSelection | undefined,
+  /** to avoid recursion errors with the complement parsing */
+  lookForComp: boolean,
 ): T.ParseResult<T.ParsedNP>[] {
   if (tokens.length === 0) {
     return [];
@@ -28,7 +30,7 @@ export function parseNP(
       | {
           inflected: boolean;
           selection: T.ParticipleSelection;
-        }
+        },
   ): T.ParsedNP {
     return {
       type: "NP",
@@ -43,6 +45,6 @@ export function parseNP(
   return fmapParseResult(makeNPSl, [
     ...(!possesor ? parsePronoun(tokens) : []),
     ...parseNoun(tokens, dicitonary, possesor),
-    ...parseParticiple(tokens, dicitonary, possesor),
+    ...parseParticiple(tokens, dicitonary, possesor, lookForComp),
   ]);
 }

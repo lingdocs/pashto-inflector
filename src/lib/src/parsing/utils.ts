@@ -474,3 +474,42 @@ export function addShrunkenPossesor(
   }
   throw new Error(`Can't add possesive to ${b.type} block`);
 }
+
+export function getStatComp(
+  compL: number | undefined,
+  aux: { verb: T.VerbEntry; aspect: T.Aspect | undefined },
+  dictionary: T.DictionaryAPI,
+  checkSpace: boolean,
+): T.VerbEntry[] {
+  if (compL === undefined) {
+    return [];
+  }
+  const trans = getTransitivities(aux.verb);
+  return dictionary.verbEntryLookupByL(compL).filter(
+    (x) =>
+      getTransitivities(x).some((t) => trans.includes(t)) &&
+      // make sure that if there's a distinct comp it's not one of the
+      // compounds that are joined together. For example
+      // مړه کېږم should not parse as مړېږم
+      !(
+        checkSpace &&
+        aux.aspect === "imperfective" &&
+        !x.entry.p.includes(" ")
+      ),
+  );
+}
+
+export function getTransitivities(v: T.VerbEntry): T.Transitivity[] {
+  const transitivities: T.Transitivity[] = [];
+  const opts = v.entry.c.split("/");
+  opts.forEach((opt) => {
+    if (opt.includes("gramm. trans")) {
+      transitivities.push("grammatically transitive");
+    } else if (opt.includes("intran")) {
+      transitivities.push("intransitive");
+    } else if (opt.includes("trans")) {
+      transitivities.push("transitive");
+    }
+  });
+  return transitivities;
+}

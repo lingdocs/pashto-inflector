@@ -12,6 +12,8 @@ import {
   canTakeShrunkenPossesor,
   getInfo,
   getPeople,
+  getStatComp,
+  getTransitivities,
   isParsedVBE,
   isParsedVBP,
   isPassive,
@@ -58,7 +60,13 @@ import {
   winnerOfNpAndCompliment,
 } from "../phrase-building/complement-tools";
 import { personsFromPattern1 } from "./argument-section/parse-noun-word";
-import { dartlul, raatlul, tlul, wartlul } from "./verb-section/irreg-verbs";
+import {
+  dartlul,
+  kawulStat,
+  raatlul,
+  tlul,
+  wartlul,
+} from "./verb-section/irreg-verbs";
 import { getAspect, isStatComp } from "../new-verb-engine/rs-helpers";
 
 type Target = {
@@ -754,7 +762,11 @@ function getTenses(
   if (!vbeOrPasssive) {
     return [];
   }
-  const { info, person } = getMainVerbFromVBE(vbeOrPasssive);
+  const { info, person, target, verbs } = getMainVerb(
+    ph,
+    vbeOrPasssive,
+    dictionary,
+  );
   const tenses = getTensesFromRootsStems(
     ba,
     info.base,
@@ -762,36 +774,28 @@ function getTenses(
     !!negative,
     info.imperative,
   );
-  const transitivities = getTransitivities(info.verb).filter(
-    (x) =>
-      !(
-        vbeOrPasssive.type === "weldedPassive" &&
-        x === "grammatically transitive"
-      ),
-  );
-  const compHead = getCompHead(ph, vbeOrPasssive);
-  const target = getTarget(compHead);
-  // check to see if a stat comp matches up
-  const verbs: T.VerbEntry[] = compHead
-    ? getStatComp(getComplementL(compHead), info, dictionary, true)
-    : [
-        vbeOrPasssive.type === "weldedPassive"
-          ? vbeOrPasssive.left.verb
-          : info.verb,
-      ];
-  return tenses.flatMap((tense) =>
-    verbs.map((verb) => ({
-      tense,
-      transitivities,
-      negative: !!negative,
-      person,
-      target,
-      verb,
-      errors: [],
-      // TODO: this is dumb that we have to use this
-      isCompound: getIsCompound(verb),
-      voice: vbeOrPasssive.type === "weldedPassive" ? "passive" : "active",
-    })),
+  return verbs.flatMap((verb) =>
+    tenses.map((tense) => {
+      const transitivities = getTransitivities(verb).filter(
+        (x) =>
+          !(
+            vbeOrPasssive.type === "weldedPassive" &&
+            x === "grammatically transitive"
+          ),
+      );
+      return {
+        tense,
+        transitivities,
+        negative: !!negative,
+        person,
+        target,
+        verb,
+        errors: [],
+        // TODO: this is dumb that we have to use this
+        isCompound: getIsCompound(verb),
+        voice: vbeOrPasssive.type === "weldedPassive" ? "passive" : "active",
+      };
+    }),
   );
 }
 
@@ -805,41 +809,30 @@ function getIsCompound(verb: T.VerbEntry): T.IsCompound {
   return false;
 }
 
-function getMainVerbFromVBE(vbe: T.ParsedVBE | T.ParsedWeldedPassive): {
+function getMainVerb(
+  ph: T.ParsedPH | undefined,
+  vbeOrPassive: T.ParsedVBE | T.ParsedWeldedPassive,
+  dictionary: T.DictionaryAPI,
+): {
   info: T.VbInfo;
   person: T.Person;
+  target: Target;
+  verbs: T.VerbEntry[];
 } {
-  // dumb thing we have to do because of TypeScript not understanding something
-  // earlier by the call
-  if (!vbe) {
-    throw new Error("invalid verb processing in getTenses");
+  const compHead = getCompHead(ph, vbeOrPassive);
+  const target = getTarget(compHead);
+  const { info, person } =
+    vbeOrPassive.type === "VB" ? vbeOrPassive : vbeOrPassive.right;
+  if (info.type === "equative") {
+    throw new Error("type error in getMainVerb");
   }
-  if (vbe.type === "weldedPassive") {
-    return {
-      info: {
-        ...vbe.right.info,
-        verb: vbe.left.verb,
-      },
-      person: vbe.right.person,
-    };
-  }
-  if (vbe.type === "VB" && vbe.info.type === "equative") {
-    throw new Error("invalid verb processing in getTenses");
-  }
-  const person =
-    vbe.type === "VB"
-      ? vbe.person
-      : "person" in vbe.right
-        ? vbe.right.person
-        : undefined;
-  if (person === undefined) {
-    throw new Error("invalid verb processing in getTenses");
-  }
-  const info = vbe.type === "VB" ? vbe.info : vbe.right.info;
-  if ("info" in info || info.type === "equative") {
-    throw new Error("invalid verb processing in getTenses");
-  }
-  return { person, info };
+  const verbs = getVerbsWStatComp(compHead, info, dictionary, vbeOrPassive);
+  return {
+    info,
+    person,
+    target,
+    verbs,
+  };
 }
 
 function getCompHead(
@@ -853,12 +846,14 @@ function getCompHead(
       return undefined;
     }
   }
+  if (aux.type === "weldedPassive") {
+    if (aux.left.type === "passiveLeftWelded") {
+      return aux.left.left.selection;
+    }
+    return undefined;
+  }
   // TODO: with stat comp passive implement
-  if (
-    aux.type === "weldedPassive" ||
-    aux.type === "VB" ||
-    aux.left.type !== "complement"
-  ) {
+  if (aux.type === "VB" || aux.left.type !== "complement") {
     return undefined;
   }
   return aux.left.selection;
@@ -899,30 +894,6 @@ function getComplementL(
   return comp.entry.ts;
 }
 
-function getStatComp(
-  compL: number | undefined,
-  aux: { verb: T.VerbEntry; aspect: T.Aspect | undefined },
-  dictionary: T.DictionaryAPI,
-  checkSpace: boolean,
-): T.VerbEntry[] {
-  if (compL === undefined) {
-    return [];
-  }
-  const trans = getTransitivities(aux.verb);
-  return dictionary.verbEntryLookupByL(compL).filter(
-    (x) =>
-      getTransitivities(x).some((t) => trans.includes(t)) &&
-      // make sure that if there's a distinct comp it's not one of the
-      // compounds that are joined together. For example
-      // مړه کېږم should not parse as مړېږم
-      !(
-        checkSpace &&
-        aux.aspect === "imperfective" &&
-        !x.entry.p.includes(" ")
-      ),
-  );
-}
-
 function getTarget(
   comp: T.ParsedComplementSelection["selection"] | undefined,
 ): Target {
@@ -955,6 +926,7 @@ function getAbilityTenses(
   }
 
   const compHead = getCompHead(ph, vbp);
+  // TODO: make sure we can do imperfective ability like مړ کولی شم
   const verbs: T.VerbEntry[] = compHead
     ? getStatComp(
         getComplementL(compHead),
@@ -1450,21 +1422,6 @@ function getTensesFromRootsStems(
   return [tenseFromAspectBaseBa(aspect, base, hasBa)];
 }
 
-function getTransitivities(v: T.VerbEntry): T.Transitivity[] {
-  const transitivities: T.Transitivity[] = [];
-  const opts = v.entry.c.split("/");
-  opts.forEach((opt) => {
-    if (opt.includes("gramm. trans")) {
-      transitivities.push("grammatically transitive");
-    } else if (opt.includes("intran")) {
-      transitivities.push("intransitive");
-    } else if (opt.includes("trans")) {
-      transitivities.push("transitive");
-    }
-  });
-  return transitivities;
-}
-
 function getPerfectTense(
   ba: boolean,
   tense: T.EquativeTenseWithoutBa,
@@ -1835,4 +1792,60 @@ function removeRedundantStatCombos(
     }
     return true;
   });
+}
+
+function getVerbsWStatComp(
+  compHead: T.ParsedComplementSelection["selection"] | undefined,
+  info: T.VbInfo,
+  dictionary: T.DictionaryAPI,
+  vbeOrPassive: T.ParsedVBE | T.ParsedWeldedPassive,
+): T.VerbEntry[] {
+  return compHead
+    ? // perfective
+      getStatComp(
+        getComplementL(compHead),
+        {
+          verb: vbeOrPassive.type === "weldedPassive" ? kawulStat : info.verb,
+          aspect: info.aspect,
+        },
+        dictionary,
+        true,
+      )
+    : // imperfective
+      vbeOrPassive.type === "weldedPassive"
+      ? getStatCompFromWeldedPassive(vbeOrPassive, dictionary)
+      : vbeOrPassive.type === "weldedVBE"
+        ? getStatCompFromWeldedVBE(vbeOrPassive, dictionary)
+        : vbeOrPassive.info.type === "verb"
+          ? [vbeOrPassive.info.verb]
+          : [];
+}
+
+function getStatCompFromWeldedPassive(
+  pass: T.ParsedWeldedPassive,
+  dictionary: T.DictionaryAPI,
+): T.VerbEntry[] {
+  if (pass.left.type === "passiveLeftBasic") {
+    return [pass.left.verb];
+  }
+  const compL = getComplementL(pass.left.left.selection);
+  return getStatComp(
+    compL,
+    { verb: kawulStat, aspect: pass.right.info.aspect },
+    dictionary,
+    true,
+  );
+}
+
+function getStatCompFromWeldedVBE(
+  vbe: T.ParsedWeldedVBE,
+  dictionary: T.DictionaryAPI,
+): T.VerbEntry[] {
+  const compL = getComplementL(vbe.left.selection);
+  return getStatComp(
+    compL,
+    { verb: vbe.right.info.verb, aspect: vbe.right.info.aspect },
+    dictionary,
+    true,
+  );
 }

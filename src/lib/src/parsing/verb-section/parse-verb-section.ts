@@ -16,6 +16,7 @@ import {
   returnParseResults,
   returnParseResultSingle,
 } from "../utils";
+import { kawulStat } from "./irreg-verbs";
 import { parseEquative } from "./parse-equative";
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { parseNeg, parseOptNeg } from "./parse-negative";
@@ -151,7 +152,7 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
     const res = [
       ...parsePlainVBE(front, vbes),
       ...parseAbilityOrPerfect(tokens, dictionary, front),
-      ...parsePassive(front, vbes),
+      ...parsePassive(front, vbes, tokens),
     ];
     // TODO: some kind of do notation would be nice!
     return bindParseResult(res, (tkns, rear) => {
@@ -194,6 +195,96 @@ function parsePlainVBE(
 function parsePassive(
   front: VerbSectionFrontData,
   vbes: T.ParseResult<T.ParsedVBE>[],
+  tokens: readonly T.Token[],
+): T.ParseResult<VerbSectionData>[] {
+  const ph = front.front.find(isPH);
+  return ph?.type === "CompPH"
+    ? parseStatCompPassive(front, tokens)
+    : parseBasicPassive(front, vbes);
+}
+
+function parseStatCompPassive(
+  front: VerbSectionFrontData,
+  tokens: readonly T.Token[],
+): T.ParseResult<VerbSectionData>[] {
+  const kraays: T.ParseResult<{ type: "kraay" }>[] = parseKraay(tokens);
+  if (kraays.length) {
+    return bindParseResult(kraays, (tkns2) => {
+      const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
+        (x) =>
+          x.body.info.type === "verb" &&
+          isKedulStat(x.body.info.verb) &&
+          x.body.info.aspect === "perfective",
+      );
+      return bindParseResult(auxs, (tkns3, aux) => {
+        if (aux.info.type !== "verb") {
+          return [];
+        }
+        const passive: T.ParsedWeldedPassive = {
+          type: "weldedPassive",
+          left: {
+            type: "passiveLeftBasic",
+            verb: kawulStat,
+          },
+          right: {
+            type: "parsedRightVBE",
+            info: aux.info,
+            person: aux.person,
+          },
+        };
+        const blocks = [...front.front, passive];
+        return returnParseResult(tkns3, {
+          ...front,
+          blocks,
+        });
+      });
+    });
+  }
+  const compPH = front.front.at(-1);
+  if (compPH?.type !== "CompPH") {
+    return [];
+  }
+
+  const kawuls: T.ParseResult<{ type: "kawul" }>[] = parseKawulStraight(tokens);
+  return bindParseResult(kawuls, (tkns2) => {
+    const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
+      (x) =>
+        x.body.info.type === "verb" &&
+        isKedulStat(x.body.info.verb) &&
+        x.body.info.aspect === "imperfective",
+    );
+    return bindParseResult(auxs, (tkns3, aux) => {
+      if (aux.info.type !== "verb") {
+        return [];
+      }
+      const passive: T.ParsedWeldedPassive = {
+        type: "weldedPassive",
+        left: {
+          type: "passiveLeftWelded",
+          left: {
+            type: "complement",
+            // TODO: should the type for selection be narrower?
+            selection: compPH.selection,
+          },
+          right: {
+            type: "passiveCompKawulAux",
+          },
+        },
+        right: {
+          type: "parsedRightVBE",
+          info: aux.info,
+          person: aux.person,
+        },
+      };
+      const blocks = [...front.front.slice(0, -1), passive];
+      return returnParseResult(tkns3, { ...front, blocks });
+    });
+  });
+}
+
+function parseBasicPassive(
+  front: VerbSectionFrontData,
+  vbes: T.ParseResult<T.ParsedVBE>[],
 ): T.ParseResult<VerbSectionData>[] {
   return bindParseResult(vbes, (tkns, vbe) => {
     if (vbe.type === "weldedVBE") {
@@ -234,7 +325,7 @@ function parsePassive(
       const passive: T.ParsedWeldedPassive = {
         type: "weldedPassive",
         left: {
-          type: "passiveLeft",
+          type: "passiveLeftBasic",
           verb,
         },
         right: {
@@ -256,6 +347,32 @@ function parsePassive(
       );
     });
   });
+}
+
+function parseKraay(
+  tokens: readonly T.Token[],
+): T.ParseResult<{ type: "kraay" }>[] {
+  if (tokens.length === 0) {
+    return [];
+  }
+  const [{ s }, ...rest] = tokens;
+  if (s === "کړای" || s === "کړلای" || s === "کړل") {
+    return returnParseResult(rest, { type: "kraay" });
+  }
+  return [];
+}
+
+function parseKawulStraight(
+  tokens: readonly T.Token[],
+): T.ParseResult<{ type: "kawul" }>[] {
+  if (tokens.length === 0) {
+    return [];
+  }
+  const [{ s }, ...rest] = tokens;
+  if (s === "کول") {
+    return returnParseResult(rest, { type: "kawul" });
+  }
+  return [];
 }
 
 function parseAbilityOrPerfect(

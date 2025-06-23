@@ -4,6 +4,8 @@ import { tokenizer } from "../lib/src/parsing/tokenizer";
 import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
 import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
+import { parseParticiple } from "../lib/src/parsing/argument-section/parse-participle";
+import { parseNPAP } from "../lib/src/parsing/argument-section/parse-npap";
 // import { parseKidsSection } from "../lib/src/parsing/parse-kids-section";
 // import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
@@ -17,7 +19,7 @@ function ParserTester({
   entryFeeder: T.EntryFeeder,
 }) {
   const [text, setText] = useState<string>("");
-  const [result, setResult] = useState<T.ParseResult<T.VPSelectionComplete>[]>([]);
+  const [result, setResult] = useState<T.ParseResult<any>[]>([]);
   function handleInput(value: string) {
     if (!value) {
       setText("");
@@ -25,7 +27,7 @@ function ParserTester({
       return;
     }
     const tokens = tokenizer(value);
-    const res = parseVP(tokens, testDictionary)// .filter((x) => !x.tokens.length);
+    const res = parseVP(tokens, testDictionary);
     setText(value);
     setResult(res);
   }

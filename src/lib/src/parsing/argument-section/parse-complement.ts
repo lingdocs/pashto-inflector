@@ -10,7 +10,7 @@ import { bindParseResult } from "../utils";
 
 export function parseComplement(
   tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedComplementSelection>[] {
   // TODO: error message for inflected complements
   return fmapParseResult(
@@ -26,23 +26,23 @@ export function parseComplement(
             ? [{ type: "loc. adv.", entry: a.entry }]
             : [];
         },
-        parseAdverb(tokens, dictionary)
+        parseAdverb(tokens, dictionary),
       ),
       ...parseNPWPoss(tokens, dictionary),
       // TODO: parse complement noun
-    ]
+    ],
   );
 }
 
 function parseNPWPoss(
   tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.NPSelection>[] {
   const possesor = parsePossesor(tokens, dictionary);
   const np = !possesor.length
-    ? parseNP(tokens, dictionary, undefined)
+    ? parseNP(tokens, dictionary, undefined, false)
     : bindParseResult<T.PossesorSelection, T.ParsedNP>(possesor, (tokens, p) =>
-      parseNP(tokens, dictionary, p)
-    );
+        parseNP(tokens, dictionary, p, false),
+      );
   return fFlatMapParseResult((x) => (x.inflected ? [] : [x.selection]), np);
 }

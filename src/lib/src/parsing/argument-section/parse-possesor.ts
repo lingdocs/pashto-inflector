@@ -20,7 +20,7 @@ const contractions: [string[], T.Person[]][] = [
 
 export function parsePossesor(
   tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.PossesorSelection>[] {
   if (tokens.length === 0) {
     return [];
@@ -34,7 +34,7 @@ export function parsePossesor(
 
 function parsePossesorR(
   dictionary: T.DictionaryAPI,
-  prev: T.ParseResult<T.PossesorSelection | undefined>
+  prev: T.ParseResult<T.PossesorSelection | undefined>,
 ): T.ParseResult<T.PossesorSelection>[] {
   if (prev.tokens.length === 0) {
     if (prev.body) {
@@ -55,7 +55,7 @@ function parsePossesorR(
       return [];
     }
     return bindParseResult(contractions, (tkns, p) =>
-      parsePossesorR(dictionary, returnParseResultSingle(tkns, p))
+      parsePossesorR(dictionary, returnParseResultSingle(tkns, p)),
     );
   }
   const [first, ...rest] = prev.tokens;
@@ -63,7 +63,7 @@ function parsePossesorR(
   // then later (if possessor || contractions)
 
   if (first.s === "د") {
-    const np = parseNP(rest, dictionary, undefined);
+    const np = parseNP(rest, dictionary, undefined, true);
     return bindParseResult(np, (tkns, body) => {
       const possesor: T.PossesorSelection = addPoss(prev.body, {
         type: "possesor",
@@ -97,7 +97,7 @@ function parsePossesorR(
 
 function addPoss(
   possesor: T.PossesorSelection | undefined,
-  possesorOf: T.PossesorSelection
+  possesorOf: T.PossesorSelection,
 ): T.PossesorSelection {
   return {
     ...possesorOf,
@@ -116,7 +116,7 @@ function addPoss(
 }
 
 function parseContractions(
-  tokens: Readonly<T.Token[]>
+  tokens: Readonly<T.Token[]>,
 ): T.ParseResult<T.PossesorSelection>[] {
   const [first, ...rest] = tokens;
   const c = contractions.find(([ps]) => ps.includes(first.s));
@@ -135,6 +135,6 @@ function parseContractions(
           person,
         },
       },
-    })
+    }),
   );
 }

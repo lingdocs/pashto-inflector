@@ -6,7 +6,7 @@ import { bindParseResult } from "./../utils";
 
 export function parseNPAP(
   s: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.APSelection | T.ParsedNP>[] {
   if (s.length === 0) {
     return [];
@@ -14,7 +14,7 @@ export function parseNPAP(
   const possesor = parsePossesor(s, dictionary);
   if (!possesor.length) {
     return [
-      ...parseNP(s, dictionary, undefined),
+      ...parseNP(s, dictionary, undefined, true),
       ...parseAP(s, dictionary, undefined),
     ];
   }
@@ -22,9 +22,9 @@ export function parseNPAP(
     possesor,
     (tokens, p) => {
       return [
-        ...parseNP(tokens, dictionary, p),
+        ...parseNP(tokens, dictionary, p, true),
         ...parseAP(tokens, dictionary, p),
       ];
-    }
+    },
   );
 }

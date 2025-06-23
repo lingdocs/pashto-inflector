@@ -14,7 +14,7 @@ import { bindParseResult } from "../utils";
 export function parseSandwich(
   s: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-  possesor: T.PossesorSelection | undefined
+  possesor: T.PossesorSelection | undefined,
 ): T.ParseResult<T.SandwichSelection<T.Sandwich>>[] {
   if (s.length === 0) {
     return [];
@@ -23,10 +23,15 @@ export function parseSandwich(
   const [first, ...rest] = s;
 
   const startMatches = sandwiches.filter(
-    (x) => x.before && x.before.p === first.s
+    (x) => x.before && x.before.p === first.s,
   );
   // TODO: this could be be really repetitive...
-  const nps = parseNP(startMatches.length ? rest : s, dictionary, possesor);
+  const nps = parseNP(
+    startMatches.length ? rest : s,
+    dictionary,
+    possesor,
+    !!startMatches.length,
+  );
   return bindParseResult(nps, (tokens, np) => {
     if (!tokens.length) {
       return [];

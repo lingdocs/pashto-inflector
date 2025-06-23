@@ -1464,11 +1464,25 @@ type ParsedRightVBE = {
 
 export type ParsedWeldedPassive = {
   type: "weldedPassive";
-  left: {
-    type: "passiveLeft";
-    verb: VerbEntry;
-  };
+  left: ParsedPassiveLeft;
   right: ParsedRightVBE;
+};
+
+export type ParsedPassiveLeft =
+  | ParsedPassiveLeftBasic
+  | ParsedPassiveLeftWelded;
+
+export type ParsedPassiveLeftBasic = {
+  type: "passiveLeftBasic";
+  verb: VerbEntry;
+};
+
+export type ParsedPassiveLeftWelded = {
+  type: "passiveLeftWelded";
+  left: ParsedComplementSelection;
+  right: {
+    type: "passiveCompKawulAux";
+  };
 };
 
 export type VHead = PH | NComp;
