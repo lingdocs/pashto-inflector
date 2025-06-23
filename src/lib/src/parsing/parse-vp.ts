@@ -124,13 +124,6 @@ export function parseVP(
     return [];
   }
   const argument = parseArgumentSection(tokens, dictionary);
-  // const res = bindParseResult(argument, (tokens, arg) => {
-  //   const vs = parseVerbSection(tokens, dictionary);
-  //   return bindParseResult(vs, (tokens, v) => {
-  //     const fres = combineArgAndVerbSections(tokens, dictionary, arg, v);
-  //     return fres;
-  //   });
-  // });
   return removeRedundantStatCombos(
     bindParseResultWParser(
       argument,

@@ -4,10 +4,6 @@ import { tokenizer } from "../lib/src/parsing/tokenizer";
 import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
 import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
-import { parseParticiple } from "../lib/src/parsing/argument-section/parse-participle";
-import { parseNPAP } from "../lib/src/parsing/argument-section/parse-npap";
-// import { parseKidsSection } from "../lib/src/parsing/parse-kids-section";
-// import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
 import EditableVP from "../components/src/vp-explorer/EditableVP";
 

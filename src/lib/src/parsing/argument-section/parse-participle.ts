@@ -15,6 +15,8 @@ type ParticipleResult = {
   selection: T.ParticipleSelection;
 };
 
+// TODO: parse participles with dynamic compounds
+
 // TODO: should have adverbs with participle
 // TODO: NOTE this does not work with compound verbs yet
 export function parseParticiple(
