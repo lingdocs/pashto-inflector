@@ -1,22 +1,16 @@
 import * as T from "../../../types";
 import { parseArgumentSection } from "./argument-section/parse-argument-section";
-import {
-  parseVerbSection,
-  VerbSectionBlock,
-} from "./verb-section/parse-verb-section";
+import { parseVerbSection } from "./verb-section/parse-verb-section";
 import {
   addErrors,
   addShrunkenPossesor,
   bindParseResult,
   bindParseResultWParser,
   canTakeShrunkenPossesor,
-  getInfo,
   getPeople,
   getStatComp,
   getTransitivities,
-  isParsedVBE,
   isParsedVBP,
-  isPassive,
   isPH,
   returnParseResult,
   returnParseResults,

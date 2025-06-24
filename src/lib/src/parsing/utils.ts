@@ -487,7 +487,12 @@ export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
   return b.type === "PH" && !["و", "وا"].includes(b.s);
 }
 
-export function isParsedVBB(b: T.ParsedBlock): b is T.ParsedV<T.ParsedVBB> {
+export function isParsedVBB(
+  b: T.ParsedBlock,
+): b is T.ParsedV<T.ParsedVBB> | T.ParsedVBBAux {
+  if (b.type === "parsed vbb aux") {
+    return true;
+  }
   if (b.type !== "parsedV") {
     return false;
   }

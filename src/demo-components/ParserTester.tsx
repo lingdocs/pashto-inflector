@@ -6,6 +6,7 @@ import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
 import EditableVP from "../components/src/vp-explorer/EditableVP";
+import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
 
 function ParserTester({
   opts,
@@ -23,7 +24,7 @@ function ParserTester({
       return;
     }
     const tokens = tokenizer(value);
-    const res = parseVP(tokens, testDictionary);
+    const res = parseVerbSection(tokens, testDictionary);
     setText(value);
     setResult(res);
   }
@@ -46,7 +47,7 @@ function ParserTester({
         />
       </div>
       <JsonEditor data={result} />
-      {result.map(x => x.body).map((res, i) => (
+      {/* result.map(x => x.body).map((res, i) => (
         <div key={`res ${i}`}>
           <EditableVP
             opts={opts}
@@ -60,7 +61,7 @@ function ParserTester({
             <JsonEditor data={res} />
           </details>
         </div>
-      ))}
+      )) */}
     </div>
   );
 }

@@ -1310,7 +1310,7 @@ export type Block = {
 export type ParsedVerbSectionBlock =
   | ParsedPH
   | ParsedV<VerbX>
-  | ParsedVBB
+  | ParsedVBBAux
   | NegativeBlock;
 
 export type ParsedBlock =
@@ -1458,6 +1458,11 @@ export type ParsedVBPBasicAbility = {
 };
 
 export type ParsedVBB = ParsedVBBVerb | ParsedVBBEq;
+
+export type ParsedVBBAux = {
+  type: "parsed vbb aux";
+  content: ParsedVBB;
+};
 
 export type ParsedVBBVerb = {
   type: "parsed vbb verb";
