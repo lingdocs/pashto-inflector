@@ -8,7 +8,7 @@ import {
 } from "../utils";
 import * as tp from "../../type-predicates";
 import { pashtoConsonants } from "../../pashto-consonants";
-import { getImperativeVerbEnding } from "./misc";
+import { getImperativeVerbEnding, wrapInActiveV } from "./misc";
 import {
   findRoot,
   findStem,
@@ -18,6 +18,7 @@ import {
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { parseComplement } from "../argument-section/parse-complement";
 import { parseOptNeg } from "./parse-negative";
+import { fmapParseResult } from "../../fp-ps";
 
 // TODO: و ارزي
 // TODO: کول verbs!
@@ -39,38 +40,50 @@ export function parseVBE(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
-): T.ParseResult<T.ParsedVBE>[] {
-  return [
-    ...parseVBEBasic(tokens, dictionary, ph),
+): T.ParseResult<{
+  type: "parsedV";
+  content: T.ActiveVBasic<T.ParsedVBBVerb> | T.ActiveVWeld<T.ParsedVBBVerb>;
+}>[] {
+  const res: T.ParseResult<
+    T.ActiveVBasic<T.ParsedVBBVerb> | T.ActiveVWeld<T.ParsedVBBVerb>
+  >[] = [
+    ...parseVBBBasic(tokens, dictionary, ph),
     ...parseWelded(tokens, dictionary, ph), //tokens, dictionary, ph),
   ];
+  return fmapParseResult(
+    (content) => ({ type: "parsedV" as const, content }),
+    res,
+  );
 }
 
-function parseVBEBasic(
+function parseVBBBasic(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
-): T.ParseResult<T.ParsedVBE>[] {
+): T.ParseResult<T.ActiveVBasic<T.ParsedVBBVerb>>[] {
   if (tokens.length === 0) {
     return [];
   }
   const [first, ...rest] = tokens;
   if (ph?.type === "CompPH") {
-    return parseKawulKedulVBE(tokens, undefined).filter(
-      (x) =>
-        x.body.type === "VB" &&
-        x.body.info.type === "verb" &&
-        isStatAux(x.body.info.verb) &&
-        x.body.info.aspect === "perfective",
+    return fmapParseResult(
+      wrapInActiveV,
+      parseKawulKedulVBE(tokens, undefined).filter(
+        (x) =>
+          isStatAux(x.body.info.verb) && x.body.info.aspect === "perfective",
+      ),
     );
   }
   const irregResults = parseIrregularVerb(first.s, ph);
   if (irregResults.length) {
-    return returnParseResults(rest, irregResults);
+    return fmapParseResult(
+      wrapInActiveV,
+      returnParseResults(rest, irregResults),
+    );
   }
   const kawulKedul = parseKawulKedulVBE(tokens, ph);
   if (kawulKedul.length) {
-    return kawulKedul;
+    return fmapParseResult(wrapInActiveV, kawulKedul);
   }
   // TODO: AFTER THIS MAKE SURE WE DON'T PARSE ANY KAWUL/KEDUL VERBS!
   // then prevent the other things from using kawul / kedul
@@ -79,46 +92,48 @@ function parseVBEBasic(
   const { stem, root } = getVerbEnding(ending);
   // todo imperative for seperating
   const imperative = getImperativeVerbEnding(ending);
-  const stemRes = returnParseResults(
-    rest,
-    findStem(ph)(base, dictionary).flatMap<T.ParsedVBE>((info) => [
-      ...stem.map<T.ParsedVBE>((person) => ({
-        type: "VB",
-        person,
+  const stemRes: T.ParsedVBBVerb[] = findStem(ph)(base, dictionary).flatMap(
+    (info) => [
+      ...stem.map<T.ParsedVBBVerb>((person) => ({
+        type: "parsed vbb verb",
         info,
+        person,
       })),
-      ...imperative.map<T.ParsedVBE>((person) => ({
-        type: "VB",
+      ...imperative.map<T.ParsedVBBVerb>((person) => ({
+        type: "parsed vbb verb",
         person,
         info: {
           ...info,
           imperative: true,
         },
       })),
-    ]),
+    ],
   );
-  const rootRes = returnParseResults(rest, [
-    ...findRoot(ph)(base, dictionary).flatMap<T.ParsedVBE>((info) => {
+  const rootRes: T.ParsedVBBVerb[] = [
+    ...findRoot(ph)(base, dictionary).flatMap<T.ParsedVBBVerb>((info) => {
       const shortThird = thirdPersSingMascShortFromRoot(base, ending, info);
       return [
         ...shortThird,
-        ...root.map<T.ParsedVBE>((person) => ({
-          type: "VB",
+        ...root.map((person) => ({
+          type: "parsed vbb verb" as const,
           person,
           info,
         })),
       ];
     }),
     ...specialThirdPersMascSingForm(base, ending, dictionary, ph),
-  ]);
-  return [...stemRes, ...rootRes];
+  ];
+  return fmapParseResult(
+    wrapInActiveV,
+    returnParseResults(rest, [...stemRes, ...rootRes]),
+  );
 }
 
 function parseWelded(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
-): T.ParseResult<T.ParsedVBE>[] {
+): T.ParseResult<T.ActiveVWeld<T.ParsedVBBVerb>>[] {
   if (ph) {
     return [];
   }
@@ -153,13 +168,16 @@ function parseWelded(
           if (compTs === undefined) {
             return [];
           }
-          const vbe: T.ParsedVBE = {
-            type: "weldedVBE",
-            left: comp,
-            right: {
-              type: "parsedRightVBE",
-              person: aux.person,
-              info: aux.info,
+          const vbe: T.ActiveVWeld<T.ParsedVBBVerb> = {
+            type: "active welded",
+            content: {
+              left: comp,
+
+              right: {
+                type: "parsed vbb verb",
+                person: aux.person,
+                info: aux.info,
+              },
             },
           };
           return returnParseResult(
@@ -176,14 +194,6 @@ function parseWelded(
     });
   });
 }
-
-// function statCompMatchesAux(aux: T.ParsedVBE) {
-//   // TODO: would be nice to have a parsed Aux type
-//   return (e: T.VerbEntry): boolean => {
-//     return ("aspect" in aux.info && aux.info.aspect === "imperfective" && isStatAux(aux.info.verb) /*type safety*/) &&
-//       getTransitivity(aux.info.verb.entry) === getTransitivity(e.entry);
-//   }
-// }
 
 export function getLFromComplement(
   comp: T.ParsedComplementSelection,
@@ -202,7 +212,7 @@ function specialThirdPersMascSingForm(
   ending: string,
   dicitonary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
-): T.ParsedVBE[] {
+): T.ParsedVBBVerb[] {
   if (ending !== "ه" && !pashtoConsonants.includes(ending)) {
     return [];
   }
@@ -245,19 +255,21 @@ function specialThirdPersMascSingForm(
   //     },
   //   }));
 
-  const hardEnding: T.ParsedVBE[] =
+  const hardEnding: T.ParsedVBBVerb[] =
     (ending === "د" && ["ې", "و"].some((x) => base.endsWith(x))) ||
     (ending === "ت" &&
       ["س", "ښ"].some((x) => base.endsWith(x)) &&
       base.length > 1)
-      ? findRoot(ph)(base + ending, dicitonary).map<T.ParsedVBE>((info) => ({
-          type: "VB",
-          person: T.Person.ThirdSingMale,
-          info,
-        }))
+      ? findRoot(ph)(base + ending, dicitonary).map<T.ParsedVBBVerb>(
+          (info) => ({
+            type: "parsed vbb verb",
+            person: T.Person.ThirdSingMale,
+            info,
+          }),
+        )
       : [];
 
-  const regular: T.ParsedVBE[] = [
+  const regular: T.ParsedVBBVerb[] = [
     base + ending,
     ...(ending === "ه" ? [base] : []),
   ]
@@ -269,7 +281,7 @@ function specialThirdPersMascSingForm(
         tp.isVerbDictionaryEntry(e) && !e.l && !!e.tppp,
     )
     .map((entry) => ({
-      type: "VB" as const,
+      type: "parsed vbb verb",
       person: T.Person.ThirdSingMale,
       info: {
         type: "verb",
@@ -279,11 +291,11 @@ function specialThirdPersMascSingForm(
       } as const,
     }));
 
-  const aawu: T.ParsedVBE[] =
+  const aawu: T.ParsedVBBVerb[] =
     (base + ending).endsWith("اوه") && base.length > 2
-      ? findRoot(ph)(base.slice(0, -2) + "و", dicitonary).map<T.ParsedVBE>(
+      ? findRoot(ph)(base.slice(0, -2) + "و", dicitonary).map<T.ParsedVBBVerb>(
           (info) => ({
-            type: "VB",
+            type: "parsed vbb verb",
             person: T.Person.ThirdSingMale,
             info,
           }),
@@ -299,14 +311,14 @@ function thirdPersSingMascShortFromRoot(
   base: string,
   ending: string,
   info: RootInfo,
-): T.ParsedVBE[] {
+): T.ParsedVBBVerb[] {
   if (info.verb.entry.tppp) {
     return [];
   }
   if (ending === "ه" && !["ل", "و"].some((char) => base.endsWith(char))) {
     return [
       {
-        type: "VB",
+        type: "parsed vbb verb",
         person: T.Person.ThirdSingMale,
         info,
       },
@@ -318,14 +330,14 @@ function thirdPersSingMascShortFromRoot(
 function parseIrregularVerb(
   s: string,
   ph: T.ParsedPH | undefined,
-): T.ParsedVBE[] {
+): T.ParsedVBBVerb[] {
   if (ph) {
     return [];
   }
   if (["ته", "راته", "ورته", "درته"].includes(s)) {
     return [
       {
-        type: "VB",
+        type: "parsed vbb verb",
         info: {
           aspect: "imperfective",
           base: "root",

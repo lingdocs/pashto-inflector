@@ -9,7 +9,7 @@ import { getPPartGenNums } from "./parse-vbp";
 export function parseKawulKedulVBP(
   tokens: Readonly<T.Token[]>,
   ph: T.ParsedPH | undefined,
-): T.ParseResult<T.ParsedVBPBasic>[] {
+): T.ParseResult<T.ParsedVBP>[] {
   if (!tokens.length) {
     return [];
   }
@@ -22,7 +22,7 @@ export function parseKawulKedulVBP(
 
 export function parseKawulKedulPPart(
   tokens: readonly T.Token[],
-): T.ParseResult<T.ParsedVBPBasic>[] {
+): T.ParseResult<T.ParsedVBPBasicPart>[] {
   if (!tokens.length) {
     return [];
   }
@@ -42,10 +42,10 @@ export function parseKawulKedulPPart(
     : [kedulStat, kedulDyn];
   return returnParseResults(
     rest,
-    verbs.flatMap<T.ParsedVBPBasic>((verb) =>
-      genNums.flatMap<T.ParsedVBPBasic>((genNum) => [
+    verbs.flatMap((verb) =>
+      genNums.flatMap((genNum) => [
         {
-          type: "VB",
+          type: "parsed vbp basic part",
           info: {
             type: "ppart",
             verb,
@@ -60,7 +60,7 @@ export function parseKawulKedulPPart(
 export function parseKawulKedulAbility(
   tokens: readonly T.Token[],
   ph: T.ParsedPH | undefined,
-): T.ParseResult<T.ParsedVBPBasic>[] {
+): T.ParseResult<T.ParsedVBPBasicAbility>[] {
   if (!tokens.length) {
     return [];
   }
@@ -78,7 +78,7 @@ export function parseKawulKedulAbility(
     }
     return returnParseResults(rest, [
       {
-        type: "VB",
+        type: "parsed vbp basic ability",
         info: {
           type: "ability",
           aspect: "imperfective",
@@ -86,7 +86,7 @@ export function parseKawulKedulAbility(
         },
       },
       {
-        type: "VB",
+        type: "parsed vbp basic ability",
         info: {
           type: "ability",
           aspect: "imperfective",
@@ -98,7 +98,7 @@ export function parseKawulKedulAbility(
   if (base === "کړ") {
     return returnParseResults(rest, [
       {
-        type: "VB",
+        type: "parsed vbp basic ability",
         info: {
           type: "ability",
           aspect: "perfective",
@@ -115,7 +115,7 @@ export function parseKawulKedulAbility(
       rest,
       [kedulDyn, kedulStat].flatMap((verb) =>
         (["imperfective", "perfective"] satisfies T.Aspect[]).map((aspect) => ({
-          type: "VB",
+          type: "parsed vbp basic ability",
           info: {
             type: "ability",
             aspect,

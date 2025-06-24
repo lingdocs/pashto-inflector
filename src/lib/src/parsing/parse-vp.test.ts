@@ -22,6 +22,7 @@ import {
 } from "../phrase-building/make-selections";
 import { makeVPSelectionState } from "../phrase-building/verb-selection";
 import { kedulStat } from "./verb-section/irreg-verbs";
+const kraayVars = ["کړل", "کړای", "کړی"];
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
@@ -2356,6 +2357,39 @@ const statCompPassiveBasic: Section = {
   ],
 };
 
+const statCompPassivePerfect: Section = {
+  title: "stat comp passive ability",
+  tests: [
+    ...kraayVars.map<Section["tests"][number]>((krul) => ({
+      input: `ښځې مړې ${krul} شوې دي`,
+      output: [
+        {
+          blocks: [
+            makeSubjBlock({
+              type: "NP",
+              selection: {
+                ...makeNounSelection(xudza, undefined),
+                number: "plural",
+              },
+            }),
+          ],
+          verb: {
+            ...makeVS(murKawul, "presentPerfect"),
+            voice: "passive",
+          },
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    })),
+  ],
+};
+
+const statCompPassiveAbility: Section = {
+  title: "stat comp passive ability",
+  tests: [],
+};
+
 const sections = [
   intransFullForm,
   transFullForm,
@@ -2379,6 +2413,7 @@ const sections = [
   abilityStatCompIntrans,
   basicPassive,
   statCompPassiveBasic,
+  // statCompPassivePerfect,
 ];
 
 sections.forEach((section) => {

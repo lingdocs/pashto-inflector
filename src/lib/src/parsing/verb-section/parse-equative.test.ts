@@ -86,15 +86,15 @@ tests.forEach(([input, output]) => {
   });
 });
 
-function makeEqs({ persons, tenses }: EqInfo): T.ParsedVBE[] {
+function makeEqs({ persons, tenses }: EqInfo): T.ParsedVBBEq[] {
   return persons.flatMap((person) =>
     tenses.map((tense) => ({
-      type: "VB",
+      type: "parsed vbb eq",
       info: {
         type: "equative",
         tense,
       },
       person,
-    }))
+    })),
   );
 }

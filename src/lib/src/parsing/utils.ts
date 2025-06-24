@@ -1,5 +1,6 @@
 import * as T from "../../../types";
 import { assertNever } from "../misc-helpers";
+import { getInfoFromV } from "./verb-section/vblock-tools";
 
 /**
  * Monadic binding for ParseResult[]
@@ -288,50 +289,6 @@ export function getPeople(
       : people;
 }
 
-export function isPH(b: T.ParsedBlock): b is T.ParsedPH {
-  return b.type === "PH" || b.type === "CompPH";
-}
-
-export function isCompPH(b: T.ParsedBlock): b is T.ParsedCompPH {
-  return b.type === "CompPH";
-}
-
-export function isNeg(b: T.ParsedBlock): b is T.NegativeBlock {
-  return b.type === "negative";
-}
-
-export function isOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
-  return b.type === "PH" && ["و", "وا"].includes(b.s);
-}
-
-export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
-  return b.type === "PH" && !["و", "وا"].includes(b.s);
-}
-
-export function isParsedVBP(b: T.ParsedBlock): b is T.ParsedVBP {
-  return (
-    (b.type === "VB" || b.type === "weldedVBP") &&
-    (getInfo(b).type === "ability" || getInfo(b).type === "ppart")
-  );
-}
-
-export function isPassive(b: T.ParsedBlock): b is T.ParsedWeldedPassive {
-  return b.type === "weldedPassive";
-}
-
-export function getInfo(
-  b: T.ParsedVB | T.ParsedWeldedVBE | T.ParsedWeldedVBP | T.ParsedVBP,
-): T.VbInfo | T.VBPartInfo["info"] | T.EqInfo | T.VBAbilityInfo["info"] {
-  return "right" in b ? b.right.info : b.info;
-}
-
-export function isParsedVBE(b: T.ParsedBlock): b is T.ParsedVBE {
-  return (
-    (b.type === "VB" || b.type === "weldedVBE") &&
-    (getInfo(b).type === "verb" || getInfo(b).type === "equative")
-  );
-}
-
 function addShrunkenPossesorNP(person: T.Person) {
   return (b: T.NPSelection): T.NPSelection => {
     if (b.selection.type === "pronoun") {
@@ -512,4 +469,36 @@ export function getTransitivities(v: T.VerbEntry): T.Transitivity[] {
     }
   });
   return transitivities;
+}
+
+export function isPH(b: T.ParsedBlock): b is T.ParsedPH {
+  return b.type === "PH" || b.type === "CompPH";
+}
+
+export function isCompPH(b: T.ParsedBlock): b is T.ParsedCompPH {
+  return b.type === "CompPH";
+}
+
+export function isOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
+  return b.type === "PH" && ["و", "وا"].includes(b.s);
+}
+
+export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
+  return b.type === "PH" && !["و", "وا"].includes(b.s);
+}
+
+export function isParsedVBB(b: T.ParsedBlock): b is T.ParsedV<T.ParsedVBB> {
+  if (b.type !== "parsedV") {
+    return false;
+  }
+  const info = getInfoFromV(b);
+  return info.type === "verb" || info.type === "equative";
+}
+
+export function isParsedVBP(b: T.ParsedBlock): b is T.ParsedV<T.ParsedVBP> {
+  if (b.type !== "parsedV") {
+    return false;
+  }
+  const info = getInfoFromV(b);
+  return info.type === "ppart" || info.type === "ability";
 }

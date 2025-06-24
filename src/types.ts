@@ -1307,15 +1307,17 @@ export type Block = {
     | VHead;
 };
 
+export type ParsedVerbSectionBlock =
+  | ParsedPH
+  | ParsedV<VerbX>
+  | ParsedVBB
+  | NegativeBlock;
+
 export type ParsedBlock =
   | ParsedNP
-  | ParsedPH
-  | ParsedVBE
-  | ParsedVBP
   | APSelection
   | ParsedComplementSelection
-  | ParsedWeldedPassive
-  | NegativeBlock;
+  | ParsedVerbSectionBlock;
 
 export type ParsedKidsSection = {
   type: "kids";
@@ -1385,17 +1387,6 @@ export type VbInfo = {
   imperative?: true;
 };
 
-export type ParsedVBE = ParsedVB | ParsedWeldedVBE;
-export type ParsedVBP = ParsedVBPBasic | ParsedWeldedVBP;
-export type ParsedVBPBasic = Omit<VBBasic, "ps"> & (VBPartInfo | VBAbilityInfo);
-
-export type ParsedVB = ParsedVBBasic & {
-  person: Person;
-  info: VbInfo | EqInfo;
-};
-
-export type ParsedVBBasic = Omit<VBBasic, "ps">;
-
 /** A VB block used for ability verbs or perfect (past participle)
  * get optionally swapped in order with the VBE when used with negative
  */
@@ -1442,46 +1433,99 @@ export type Welded = {
   right: VBBasic | (VBBasic & (VBPartInfo | VBAbilityInfo));
 };
 
-export type ParsedWeldedVBP = {
-  type: "weldedVBP";
-  left: ParsedComplementSelection;
-  right: {
-    type: "parsedRightWelded";
-  } & (VBPartInfo | VBAbilityInfo);
+//  ____                         _  __     __        _
+// |  _ \ __ _ _ __ ___  ___  __| | \ \   / /__ _ __| |__
+// | |_) / _` | '__/ __|/ _ \/ _` |  \ \ / / _ \ '__| '_ \
+// |  __/ (_| | |  \__ \  __/ (_| |   \ V /  __/ |  | |_) |
+// |_|   \__,_|_|  |___/\___|\__,_|    \_/ \___|_|  |_.__/
+
+//  ____  _            _
+// | __ )| | ___   ___| | _____
+// |  _ \| |/ _ \ / __| |/ / __|
+// | |_) | | (_) | (__|   <\__ \
+// |____/|_|\___/ \___|_|\_\___/
+
+export type ParsedVBP = ParsedVBPBasicPart | ParsedVBPBasicAbility;
+
+export type ParsedVBPBasicPart = {
+  type: "parsed vbp basic part";
+  info: VBPartInfo["info"];
 };
 
-export type ParsedWeldedVBE = {
-  type: "weldedVBE";
-  left: ParsedComplementSelection;
-  right: ParsedRightVBE;
+export type ParsedVBPBasicAbility = {
+  type: "parsed vbp basic ability";
+  info: VBAbilityInfo["info"];
 };
 
-type ParsedRightVBE = {
-  type: "parsedRightVBE";
-  person: Person;
+export type ParsedVBB = ParsedVBBVerb | ParsedVBBEq;
+
+export type ParsedVBBVerb = {
+  type: "parsed vbb verb";
   info: VbInfo;
+  person: Person;
 };
 
-export type ParsedWeldedPassive = {
-  type: "weldedPassive";
-  left: ParsedPassiveLeft;
-  right: ParsedRightVBE;
+export type ParsedVBBEq = {
+  type: "parsed vbb eq";
+  info: EqInfo;
+  person: Person;
 };
 
-export type ParsedPassiveLeft =
-  | ParsedPassiveLeftBasic
-  | ParsedPassiveLeftWelded;
+// The blocks of the verb section are formed as follows:
+//
+// For regular tenses:
+// f(VBB)
+// For perfect/ability:
+// f(VBP) + VBB
+//
+// Where f is:
+// f(x) =
+//   | active basic = ActiveVBasic<x>
+//   | active welded = ActiveVWeld<x>
+//   | passive welded = PassiveVBasic<x>
+//   | passive double welded = PassiveVWeld<x>
 
-export type ParsedPassiveLeftBasic = {
-  type: "passiveLeftBasic";
-  verb: VerbEntry;
+export type VerbX = ParsedVBB | ParsedVBP;
+
+export type ParsedV<X extends VerbX> = {
+  type: "parsedV";
+  content:
+    | ActiveVBasic<X>
+    | ActiveVWeld<X>
+    | PassiveVWeld<X>
+    | PassiveVDoubWeld<X>;
 };
 
-export type ParsedPassiveLeftWelded = {
-  type: "passiveLeftWelded";
-  left: ParsedComplementSelection;
-  right: {
-    type: "passiveCompKawulAux";
+export type ActiveVBasic<X extends VerbX> = {
+  type: "active basic";
+  content: X;
+};
+
+export type ActiveVWeld<X extends VerbX> = {
+  type: "active welded";
+  content: {
+    left: ParsedComplementSelection;
+    right: X;
+  };
+};
+
+export type PassiveVWeld<X extends VerbX> = {
+  type: "passive welded";
+  content: {
+    left: VerbEntry;
+    right: X;
+  };
+};
+
+export type PassiveVDoubWeld<X extends VerbX> = {
+  type: "passive doub welded";
+  content: {
+    left: {
+      type: "passive welded left";
+      complement: ParsedComplementSelection;
+      aspect: Aspect;
+    };
+    right: X;
   };
 };
 

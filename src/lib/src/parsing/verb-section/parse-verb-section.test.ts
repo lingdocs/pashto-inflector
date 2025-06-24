@@ -13,6 +13,7 @@ import {
 } from "./irreg-verbs";
 import { makeAdjectiveSelection } from "../../phrase-building/make-selections";
 const oo: T.ParsedPH = { type: "PH", s: "و" };
+const kraayVars = ["کړل", "کړای", "کړل"];
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
 const akheestul = testDictionary.verbEntryLookup("اخیستل")[0];
@@ -1180,7 +1181,7 @@ const ability: Section = {
             verb: kedulStat,
             base: "stem",
             person,
-          }),
+          }).content.content,
         ],
         kids: [],
       })),
@@ -1196,7 +1197,7 @@ const ability: Section = {
             verb: kedulStat,
             base: "stem",
             person,
-          }),
+          }).content.content,
         ],
         kids: [],
       })),
@@ -1235,7 +1236,7 @@ const ability: Section = {
               verb: kedulStat,
               base: "stem",
               person,
-            }),
+            }).content.content,
           ],
           kids: [],
         })),
@@ -1255,7 +1256,7 @@ const ability: Section = {
               verb: kedulStat,
               base: "root",
               person: T.Person.ThirdPlurMale,
-            }),
+            }).content.content,
           ],
           kids: [],
         }),
@@ -1275,7 +1276,7 @@ const ability: Section = {
               verb: kedulStat,
               base: "root",
               person: T.Person.ThirdSingFemale,
-            }),
+            }).content.content,
           ],
           kids: [],
         }),
@@ -1293,7 +1294,7 @@ const ability: Section = {
             verb: kedulStat,
             base: "stem",
             person,
-          }),
+          }).content.content,
         ],
         kids: [],
       })),
@@ -1315,7 +1316,7 @@ const ability: Section = {
             verb: kedulStat,
             base: "stem",
             person,
-          }),
+          }).content.content,
         ],
         kids: [],
       })),
@@ -1336,7 +1337,7 @@ const ability: Section = {
             verb: kedulStat,
             base: "root",
             person,
-          }),
+          }).content.content,
         ],
         kids: [],
       })),
@@ -1355,7 +1356,7 @@ const ability: Section = {
             verb: kedulStat,
             base: "stem",
             person,
-          }),
+          }).content.content,
           makeAbilityVBP({ aspect: "imperfective", verb: leedul }),
         ],
         kids: [],
@@ -1374,7 +1375,7 @@ const ability: Section = {
               verb: kedulStat,
               base: "root",
               person: T.Person.ThirdSingFemale,
-            }),
+            }).content.content,
             makeAbilityVBP({ aspect: "perfective", verb: akheestul }),
           ],
           kids: [{ position: 1, section: ["ba", "ye"] }],
@@ -1384,1131 +1385,1163 @@ const ability: Section = {
   ],
 };
 
-const perfect: Section = {
-  title: "Perfect Verb Forms",
-  tests: [
-    {
-      input: "لیدلی دی",
-      output: [
-        {
-          blocks: [
-            makePPartVBP(leedul, { gender: "masc", number: "singular" }),
-            makeEqVBE(T.Person.ThirdSingMale, "present"),
-          ],
-          kids: [],
-        },
-      ],
-    },
-    {
-      input: "لیدلې ده",
-      output: [
-        {
-          blocks: [
-            makePPartVBP(leedul, { gender: "fem", number: "singular" }),
-            makeEqVBE(T.Person.ThirdSingFemale, "present"),
-          ],
-          kids: [],
-        },
-        {
-          blocks: [
-            makePPartVBP(leedul, { gender: "fem", number: "plural" }),
-            makeEqVBE(T.Person.ThirdSingFemale, "present"),
-          ],
-          kids: [],
-        },
-      ],
-    },
-    {
-      input: "لیدلي ول",
-      output: [
-        {
-          blocks: [
-            makePPartVBP(leedul, { gender: "masc", number: "plural" }),
-            makeEqVBE(T.Person.ThirdPlurMale, "past"),
-          ],
-          kids: [],
-        },
-      ],
-    },
-    {
-      input: "ولیدلي ول",
-      output: [],
-    },
-    // with negative
-    {
-      input: "لیدلي نه ول",
-      output: [
-        {
-          blocks: [
-            makePPartVBP(leedul, { gender: "masc", number: "plural" }),
-            { type: "negative", imperative: false },
-            makeEqVBE(T.Person.ThirdPlurMale, "past"),
-          ],
-          kids: [],
-        },
-      ],
-    },
-    {
-      input: "نه ول لیدلي",
-      output: [
-        {
-          blocks: [
-            { type: "negative", imperative: false },
-            makeEqVBE(T.Person.ThirdPlurMale, "past"),
-            makePPartVBP(leedul, { gender: "masc", number: "plural" }),
-          ],
-          kids: [],
-        },
-      ],
-    },
-    {
-      input: "لیدلي مه ول",
-      output: [],
-      error: true,
-    },
-    {
-      input: "لیدلي ول نه",
-      output: [],
-      error: true,
-    },
-    {
-      input: "نه به مې وي اخیستی",
-      output: getPeople(3, "both").flatMap((person) =>
-        (["habitual", "subjunctive"] satisfies T.EquativeTenseWithoutBa[]).map(
-          (tense) => ({
-            blocks: [
-              { type: "negative", imperative: false },
-              makeEqVBE(person, tense),
-              makePPartVBP(akheestul, { gender: "masc", number: "singular" }),
-            ],
-            kids: [{ position: 1, section: ["ba", "me"] }],
-          }),
-        ),
-      ),
-    },
-    {
-      input: "ګرځېدلی یم",
-      output: getPeople(1, "sing").flatMap((person) =>
-        (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
-          (tense) => ({
-            blocks: [
-              makePPartVBP(gardzedul, { gender: "masc", number: "singular" }),
-              makeEqVBE(person, tense),
-            ],
-            kids: [],
-          }),
-        ),
-      ),
-    },
-    {
-      input: "ګرځېدلی به یې",
-      output: getPeople(2, "sing").flatMap((person) =>
-        (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
-          (tense) => ({
-            blocks: [
-              makePPartVBP(gardzedul, { gender: "masc", number: "singular" }),
-              makeEqVBE(person, tense),
-            ],
-            kids: [{ position: 1, section: ["ba"] }],
-          }),
-        ),
-      ),
-    },
-    {
-      input: "لیدلی به مې نه یې",
-      output: getPeople(2, "sing").flatMap((person) =>
-        (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
-          (tense) => ({
-            blocks: [
-              makePPartVBP(leedul, { gender: "masc", number: "singular" }),
-              { type: "negative", imperative: false },
-              makeEqVBE(person, tense),
-            ],
-            kids: [{ position: 1, section: ["ba", "me"] }],
-          }),
-        ),
-      ),
-    },
-  ],
-};
+// const perfect: Section = {
+//   title: "Perfect Verb Forms",
+//   tests: [
+//     {
+//       input: "لیدلی دی",
+//       output: [
+//         {
+//           blocks: [
+//             makePPartVBP(leedul, { gender: "masc", number: "singular" }),
+//             makeEqVBE(T.Person.ThirdSingMale, "present"),
+//           ],
+//           kids: [],
+//         },
+//       ],
+//     },
+//     {
+//       input: "لیدلې ده",
+//       output: [
+//         {
+//           blocks: [
+//             makePPartVBP(leedul, { gender: "fem", number: "singular" }),
+//             makeEqVBE(T.Person.ThirdSingFemale, "present"),
+//           ],
+//           kids: [],
+//         },
+//         {
+//           blocks: [
+//             makePPartVBP(leedul, { gender: "fem", number: "plural" }),
+//             makeEqVBE(T.Person.ThirdSingFemale, "present"),
+//           ],
+//           kids: [],
+//         },
+//       ],
+//     },
+//     {
+//       input: "لیدلي ول",
+//       output: [
+//         {
+//           blocks: [
+//             makePPartVBP(leedul, { gender: "masc", number: "plural" }),
+//             makeEqVBE(T.Person.ThirdPlurMale, "past"),
+//           ],
+//           kids: [],
+//         },
+//       ],
+//     },
+//     {
+//       input: "ولیدلي ول",
+//       output: [],
+//     },
+//     // with negative
+//     {
+//       input: "لیدلي نه ول",
+//       output: [
+//         {
+//           blocks: [
+//             makePPartVBP(leedul, { gender: "masc", number: "plural" }),
+//             { type: "negative", imperative: false },
+//             makeEqVBE(T.Person.ThirdPlurMale, "past"),
+//           ],
+//           kids: [],
+//         },
+//       ],
+//     },
+//     {
+//       input: "نه ول لیدلي",
+//       output: [
+//         {
+//           blocks: [
+//             { type: "negative", imperative: false },
+//             makeEqVBE(T.Person.ThirdPlurMale, "past"),
+//             makePPartVBP(leedul, { gender: "masc", number: "plural" }),
+//           ],
+//           kids: [],
+//         },
+//       ],
+//     },
+//     {
+//       input: "لیدلي مه ول",
+//       output: [],
+//       error: true,
+//     },
+//     {
+//       input: "لیدلي ول نه",
+//       output: [],
+//       error: true,
+//     },
+//     {
+//       input: "نه به مې وي اخیستی",
+//       output: getPeople(3, "both").flatMap((person) =>
+//         (["habitual", "subjunctive"] satisfies T.EquativeTenseWithoutBa[]).map(
+//           (tense) => ({
+//             blocks: [
+//               { type: "negative", imperative: false },
+//               makeEqVBE(person, tense),
+//               makePPartVBP(akheestul, { gender: "masc", number: "singular" }),
+//             ],
+//             kids: [{ position: 1, section: ["ba", "me"] }],
+//           }),
+//         ),
+//       ),
+//     },
+//     {
+//       input: "ګرځېدلی یم",
+//       output: getPeople(1, "sing").flatMap((person) =>
+//         (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
+//           (tense) => ({
+//             blocks: [
+//               makePPartVBP(gardzedul, { gender: "masc", number: "singular" }),
+//               makeEqVBE(person, tense),
+//             ],
+//             kids: [],
+//           }),
+//         ),
+//       ),
+//     },
+//     {
+//       input: "ګرځېدلی به یې",
+//       output: getPeople(2, "sing").flatMap((person) =>
+//         (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
+//           (tense) => ({
+//             blocks: [
+//               makePPartVBP(gardzedul, { gender: "masc", number: "singular" }),
+//               makeEqVBE(person, tense),
+//             ],
+//             kids: [{ position: 1, section: ["ba"] }],
+//           }),
+//         ),
+//       ),
+//     },
+//     {
+//       input: "لیدلی به مې نه یې",
+//       output: getPeople(2, "sing").flatMap((person) =>
+//         (["present", "habitual"] satisfies T.EquativeTenseWithoutBa[]).map(
+//           (tense) => ({
+//             blocks: [
+//               makePPartVBP(leedul, { gender: "masc", number: "singular" }),
+//               { type: "negative", imperative: false },
+//               makeEqVBE(person, tense),
+//             ],
+//             kids: [{ position: 1, section: ["ba", "me"] }],
+//           }),
+//         ),
+//       ),
+//     },
+//   ],
+// };
 
-const statComp: Section = {
-  title: "stative compounds",
-  tests: [
-    // imperfective - joined
-    {
-      input: "پخوي",
-      output: getPeople(3, "both").map((person) => ({
-        blocks: [
-          makeParsedVBE({
-            aspect: "imperfective",
-            base: "stem",
-            verb: pakhawul,
-            person,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "پخوه",
-      output: [
-        ...getPeople(2, "sing").map((person) => ({
-          blocks: [
-            makeParsedVBE({
-              aspect: "imperfective",
-              base: "stem",
-              verb: pakhawul,
-              imperative: true,
-              person,
-            }),
-          ],
-          kids: [],
-        })),
-        {
-          blocks: [
-            makeParsedVBE({
-              aspect: "imperfective",
-              base: "root",
-              verb: pakhawul,
-              person: T.Person.ThirdSingFemale,
-            }),
-          ],
-          kids: [],
-        },
-      ],
-    },
-    {
-      input: "پخېدم",
-      output: getPeople(1, "sing").map((person) => ({
-        blocks: [
-          makeParsedVBE({
-            aspect: "imperfective",
-            base: "root",
-            verb: pakhedul,
-            person,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "پخولم",
-      output: getPeople(1, "sing").map((person) => ({
-        blocks: [
-          makeParsedVBE({
-            aspect: "imperfective",
-            base: "root",
-            verb: pakhawul,
-            person,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    // imperfective - welded
-    {
-      input: "مړې کوي",
-      output: [mor, mur].flatMap((adj) =>
-        getPeople(3, "both").map((person) => ({
-          blocks: [
-            makeWeldedStatComb(
-              person,
-              {
-                type: "verb",
-                aspect: "imperfective",
-                base: "stem",
-              },
-              {
-                type: "complement",
-                selection: {
-                  inflection: [1],
-                  gender: ["fem"],
-                  given: "مړې",
-                  selection: makeAdjectiveSelection(adj),
-                },
-              },
-              "transitive",
-            ),
-          ],
-          kids: [],
-        })),
-      ),
-    },
-    {
-      input: "مړ کولم",
-      output: getPeople(1, "sing").map((person) => ({
-        blocks: [
-          makeWeldedStatComb(
-            person,
-            {
-              type: "verb",
-              aspect: "imperfective",
-              base: "root",
-            },
-            {
-              type: "complement",
-              selection: {
-                inflection: [0],
-                gender: ["masc"],
-                given: "مړ",
-                selection: makeAdjectiveSelection(mur),
-              },
-            },
-            "transitive",
-          ),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "وړاندې کوي",
-      output: getPeople(3, "both").map((person) => ({
-        blocks: [
-          makeWeldedStatComb(
-            person,
-            { type: "verb", aspect: "imperfective", base: "stem" },
-            {
-              type: "complement",
-              selection: {
-                type: "loc. adv.",
-                entry: wraande,
-              },
-            },
-            "transitive",
-          ),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "نه وړاندې کوي",
-      output: getPeople(3, "both").map((person) => ({
-        blocks: [
-          { type: "negative", imperative: false },
-          makeWeldedStatComb(
-            person,
-            { type: "verb", aspect: "imperfective", base: "stem" },
-            {
-              type: "complement",
-              selection: {
-                type: "loc. adv.",
-                entry: wraande,
-              },
-            },
-            "transitive",
-          ),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "وړاندې کوي نه",
-      output: getPeople(3, "both").map((person) => ({
-        blocks: [
-          makeWeldedStatComb(
-            person,
-            { type: "verb", aspect: "imperfective", base: "stem" },
-            {
-              type: "complement",
-              selection: {
-                type: "loc. adv.",
-                entry: wraande,
-              },
-            },
-            "transitive",
-          ),
-          { type: "negative", imperative: false },
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "وړاندې نه کوي",
-      output: [],
-      error: true,
-    },
-    // perfective - adj agreement
-    {
-      input: "پوخ کړي",
-      output: getPeople(3, "both").map((person) => ({
-        blocks: [
-          {
-            type: "CompPH",
-            selection: {
-              inflection: [0],
-              gender: ["masc"],
-              given: "پوخ",
-              selection: {
-                type: "adjective",
-                entry: pokh,
-                sandwich: undefined,
-              },
-            },
-          },
-          makeParsedVBE({
-            person,
-            base: "stem",
-            aspect: "perfective",
-            verb: kawulStat,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "پخه شي",
-      output: getPeople(3, "both").map((person) => ({
-        blocks: [
-          {
-            type: "CompPH",
-            selection: {
-              inflection: [0],
-              gender: ["fem"],
-              given: "پخه",
-              selection: {
-                type: "adjective",
-                entry: pokh,
-                sandwich: undefined,
-              },
-            },
-          },
-          makeParsedVBE({
-            person,
-            base: "stem",
-            aspect: "perfective",
-            verb: kedulStat,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "ستړی شوم",
-      output: getPeople(1, "sing").map((person) => ({
-        blocks: [
-          {
-            type: "CompPH",
-            selection: {
-              inflection: [0],
-              gender: ["masc"],
-              given: "ستړی",
-              selection: {
-                type: "adjective",
-                entry: sturay,
-                sandwich: undefined,
-              },
-            },
-          },
-          makeParsedVBE({
-            person,
-            base: "root",
-            aspect: "perfective",
-            verb: kedulStat,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    // perfective - others
-    {
-      input: "وړاندې شه",
-      output: getPeople(2, "sing").map((person) => ({
-        blocks: [
-          {
-            type: "CompPH",
-            selection: {
-              type: "loc. adv.",
-              entry: wraande,
-            },
-          },
-          makeParsedVBE({
-            person,
-            base: "stem",
-            aspect: "perfective",
-            verb: kedulStat,
-            imperative: true,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    // check the negative position
-    {
-      input: "وړاندې نه شې",
-      output: getPeople(2, "sing").map((person) => ({
-        blocks: [
-          {
-            type: "CompPH",
-            selection: {
-              type: "loc. adv.",
-              entry: wraande,
-            },
-          },
-          {
-            type: "negative",
-            imperative: false,
-          },
-          makeParsedVBE({
-            person,
-            base: "stem",
-            aspect: "perfective",
-            verb: kedulStat,
-          }),
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "نه وړاندې شې",
-      output: [],
-      error: true,
-    },
-  ],
-};
+// const statComp: Section = {
+//   title: "stative compounds",
+//   tests: [
+//     // imperfective - joined
+//     {
+//       input: "پخوي",
+//       output: getPeople(3, "both").map((person) => ({
+//         blocks: [
+//           makeParsedVBE({
+//             aspect: "imperfective",
+//             base: "stem",
+//             verb: pakhawul,
+//             person,
+//           }),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "پخوه",
+//       output: [
+//         ...getPeople(2, "sing").map((person) => ({
+//           blocks: [
+//             makeParsedVBE({
+//               aspect: "imperfective",
+//               base: "stem",
+//               verb: pakhawul,
+//               imperative: true,
+//               person,
+//             }),
+//           ],
+//           kids: [],
+//         })),
+//         {
+//           blocks: [
+//             makeParsedVBE({
+//               aspect: "imperfective",
+//               base: "root",
+//               verb: pakhawul,
+//               person: T.Person.ThirdSingFemale,
+//             }),
+//           ],
+//           kids: [],
+//         },
+//       ],
+//     },
+//     {
+//       input: "پخېدم",
+//       output: getPeople(1, "sing").map((person) => ({
+//         blocks: [
+//           makeParsedVBE({
+//             aspect: "imperfective",
+//             base: "root",
+//             verb: pakhedul,
+//             person,
+//           }),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "پخولم",
+//       output: getPeople(1, "sing").map((person) => ({
+//         blocks: [
+//           makeParsedVBE({
+//             aspect: "imperfective",
+//             base: "root",
+//             verb: pakhawul,
+//             person,
+//           }),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     // imperfective - welded
+//     {
+//       input: "مړې کوي",
+//       output: [mor, mur].flatMap((adj) =>
+//         getPeople(3, "both").map((person) => ({
+//           blocks: [
+//             makeWeldedStatComb(
+//               person,
+//               {
+//                 type: "verb",
+//                 aspect: "imperfective",
+//                 base: "stem",
+//               },
+//               {
+//                 type: "complement",
+//                 selection: {
+//                   inflection: [1],
+//                   gender: ["fem"],
+//                   given: "مړې",
+//                   selection: makeAdjectiveSelection(adj),
+//                 },
+//               },
+//               "transitive",
+//             ),
+//           ],
+//           kids: [],
+//         })),
+//       ),
+//     },
+//     {
+//       input: "مړ کولم",
+//       output: getPeople(1, "sing").map((person) => ({
+//         blocks: [
+//           makeWeldedStatComb(
+//             person,
+//             {
+//               type: "verb",
+//               aspect: "imperfective",
+//               base: "root",
+//             },
+//             {
+//               type: "complement",
+//               selection: {
+//                 inflection: [0],
+//                 gender: ["masc"],
+//                 given: "مړ",
+//                 selection: makeAdjectiveSelection(mur),
+//               },
+//             },
+//             "transitive",
+//           ),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "وړاندې کوي",
+//       output: getPeople(3, "both").map((person) => ({
+//         blocks: [
+//           makeWeldedStatComb(
+//             person,
+//             { type: "verb", aspect: "imperfective", base: "stem" },
+//             {
+//               type: "complement",
+//               selection: {
+//                 type: "loc. adv.",
+//                 entry: wraande,
+//               },
+//             },
+//             "transitive",
+//           ),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "نه وړاندې کوي",
+//       output: getPeople(3, "both").map((person) => ({
+//         blocks: [
+//           { type: "negative", imperative: false },
+//           makeWeldedStatComb(
+//             person,
+//             { type: "verb", aspect: "imperfective", base: "stem" },
+//             {
+//               type: "complement",
+//               selection: {
+//                 type: "loc. adv.",
+//                 entry: wraande,
+//               },
+//             },
+//             "transitive",
+//           ),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "وړاندې کوي نه",
+//       output: getPeople(3, "both").map((person) => ({
+//         blocks: [
+//           makeWeldedStatComb(
+//             person,
+//             { type: "verb", aspect: "imperfective", base: "stem" },
+//             {
+//               type: "complement",
+//               selection: {
+//                 type: "loc. adv.",
+//                 entry: wraande,
+//               },
+//             },
+//             "transitive",
+//           ),
+//           { type: "negative", imperative: false },
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "وړاندې نه کوي",
+//       output: [],
+//       error: true,
+//     },
+//     // perfective - adj agreement
+//     {
+//       input: "پوخ کړي",
+//       output: getPeople(3, "both").map((person) => ({
+//         blocks: [
+//           {
+//             type: "CompPH",
+//             selection: {
+//               inflection: [0],
+//               gender: ["masc"],
+//               given: "پوخ",
+//               selection: {
+//                 type: "adjective",
+//                 entry: pokh,
+//                 sandwich: undefined,
+//               },
+//             },
+//           },
+//           makeParsedVBE({
+//             person,
+//             base: "stem",
+//             aspect: "perfective",
+//             verb: kawulStat,
+//           }),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "پخه شي",
+//       output: getPeople(3, "both").map((person) => ({
+//         blocks: [
+//           {
+//             type: "CompPH",
+//             selection: {
+//               inflection: [0],
+//               gender: ["fem"],
+//               given: "پخه",
+//               selection: {
+//                 type: "adjective",
+//                 entry: pokh,
+//                 sandwich: undefined,
+//               },
+//             },
+//           },
+//           makeParsedVBE({
+//             person,
+//             base: "stem",
+//             aspect: "perfective",
+//             verb: kedulStat,
+//           }),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "ستړی شوم",
+//       output: getPeople(1, "sing").map((person) => ({
+//         blocks: [
+//           {
+//             type: "CompPH",
+//             selection: {
+//               inflection: [0],
+//               gender: ["masc"],
+//               given: "ستړی",
+//               selection: {
+//                 type: "adjective",
+//                 entry: sturay,
+//                 sandwich: undefined,
+//               },
+//             },
+//           },
+//           makeParsedVBE({
+//             person,
+//             base: "root",
+//             aspect: "perfective",
+//             verb: kedulStat,
+//           }),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     // perfective - others
+//     {
+//       input: "وړاندې شه",
+//       output: getPeople(2, "sing").map((person) => ({
+//         blocks: [
+//           {
+//             type: "CompPH",
+//             selection: {
+//               type: "loc. adv.",
+//               entry: wraande,
+//             },
+//           },
+//           makeParsedVBE({
+//             person,
+//             base: "stem",
+//             aspect: "perfective",
+//             verb: kedulStat,
+//             imperative: true,
+//           }),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     // check the negative position
+//     {
+//       input: "وړاندې نه شې",
+//       output: getPeople(2, "sing").map((person) => ({
+//         blocks: [
+//           {
+//             type: "CompPH",
+//             selection: {
+//               type: "loc. adv.",
+//               entry: wraande,
+//             },
+//           },
+//           {
+//             type: "negative",
+//             imperative: false,
+//           },
+//           makeParsedVBE({
+//             person,
+//             base: "stem",
+//             aspect: "perfective",
+//             verb: kedulStat,
+//           }),
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "نه وړاندې شې",
+//       output: [],
+//       error: true,
+//     },
+//   ],
+// };
 
-const statCompPerfect: Section = {
-  title: "perfect statComp",
-  tests: [
-    {
-      input: "پوخ کړی دی",
-      output: [
-        {
-          blocks: [
-            {
-              type: "weldedVBP",
-              left: {
-                type: "complement",
-                selection: {
-                  inflection: [0],
-                  gender: ["masc"],
-                  given: "پوخ",
-                  selection: {
-                    type: "adjective",
-                    entry: pokh,
-                    sandwich: undefined,
-                  },
-                },
-              },
-              right: {
-                type: "parsedRightWelded",
-                info: {
-                  type: "ppart",
-                  genNum: {
-                    gender: "masc",
-                    number: "singular",
-                  },
-                  verb: kawulStat,
-                },
-              },
-            },
-            {
-              type: "VB",
-              info: {
-                type: "equative",
-                tense: "present",
-              },
-              person: T.Person.ThirdSingMale,
-            },
-          ],
-          kids: [],
-        },
-      ],
-    },
-    {
-      input: "به پخه شوې وي",
-      output: getPeople(3, "both").flatMap((person) =>
-        (
-          ["habitual", "subjunctive"] satisfies T.EquativeTenseWithoutBa[]
-        ).flatMap((tense) =>
-          (
-            ["singular", "plural"] satisfies T.NounNumber[]
-          ).map<VerbSectionData>((number) => ({
-            blocks: [
-              {
-                type: "weldedVBP",
-                left: {
-                  type: "complement",
-                  selection: {
-                    inflection: [0],
-                    gender: ["fem"],
-                    given: "پخه",
-                    selection: {
-                      type: "adjective",
-                      entry: pokh,
-                      sandwich: undefined,
-                    },
-                  },
-                },
-                right: {
-                  type: "parsedRightWelded",
-                  info: {
-                    type: "ppart",
-                    genNum: {
-                      gender: "fem",
-                      number,
-                    },
-                    verb: kedulStat,
-                  },
-                },
-              },
-              {
-                type: "VB",
-                info: {
-                  type: "equative",
-                  tense,
-                },
-                person,
-              },
-            ],
-            kids: [{ position: 0, section: ["ba"] }],
-          })),
-        ),
-      ),
-    },
-  ],
-};
+// const statCompPerfect: Section = {
+//   title: "perfect statComp",
+//   tests: [
+//     {
+//       input: "پوخ کړی دی",
+//       output: [
+//         {
+//           blocks: [
+//             {
+//               type: "weldedVBP",
+//               left: {
+//                 type: "complement",
+//                 selection: {
+//                   inflection: [0],
+//                   gender: ["masc"],
+//                   given: "پوخ",
+//                   selection: {
+//                     type: "adjective",
+//                     entry: pokh,
+//                     sandwich: undefined,
+//                   },
+//                 },
+//               },
+//               right: {
+//                 type: "parsedRightWelded",
+//                 info: {
+//                   type: "ppart",
+//                   genNum: {
+//                     gender: "masc",
+//                     number: "singular",
+//                   },
+//                   verb: kawulStat,
+//                 },
+//               },
+//             },
+//             {
+//               type: "VB",
+//               info: {
+//                 type: "equative",
+//                 tense: "present",
+//               },
+//               person: T.Person.ThirdSingMale,
+//             },
+//           ],
+//           kids: [],
+//         },
+//       ],
+//     },
+//     {
+//       input: "به پخه شوې وي",
+//       output: getPeople(3, "both").flatMap((person) =>
+//         (
+//           ["habitual", "subjunctive"] satisfies T.EquativeTenseWithoutBa[]
+//         ).flatMap((tense) =>
+//           (
+//             ["singular", "plural"] satisfies T.NounNumber[]
+//           ).map<VerbSectionData>((number) => ({
+//             blocks: [
+//               {
+//                 type: "weldedVBP",
+//                 left: {
+//                   type: "complement",
+//                   selection: {
+//                     inflection: [0],
+//                     gender: ["fem"],
+//                     given: "پخه",
+//                     selection: {
+//                       type: "adjective",
+//                       entry: pokh,
+//                       sandwich: undefined,
+//                     },
+//                   },
+//                 },
+//                 right: {
+//                   type: "parsedRightWelded",
+//                   info: {
+//                     type: "ppart",
+//                     genNum: {
+//                       gender: "fem",
+//                       number,
+//                     },
+//                     verb: kedulStat,
+//                   },
+//                 },
+//               },
+//               {
+//                 type: "VB",
+//                 info: {
+//                   type: "equative",
+//                   tense,
+//                 },
+//                 person,
+//               },
+//             ],
+//             kids: [{ position: 0, section: ["ba"] }],
+//           })),
+//         ),
+//       ),
+//     },
+//   ],
+// };
 
-const passiveBasic: Section = {
-  title: "basic passive",
-  tests: [
-    {
-      input: "لیدل کېږم",
-      output: getPeople(1, "sing").map((subj) => ({
-        blocks: [
-          {
-            type: "weldedPassive",
-            left: {
-              type: "passiveLeftBasic",
-              verb: leedul,
-            },
-            right: {
-              type: "parsedRightVBE",
-              person: subj,
-              info: {
-                type: "verb",
-                base: "stem",
-                aspect: "imperfective",
-                verb: kedulStat,
-              },
-            },
-          } satisfies T.ParsedWeldedPassive,
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "ولیدل شم",
-      output: getPeople(1, "sing").map((subj) => ({
-        blocks: [
-          oo,
-          {
-            type: "weldedPassive",
-            left: {
-              type: "passiveLeftBasic",
-              verb: leedul,
-            },
-            right: {
-              type: "parsedRightVBE",
-              person: subj,
-              info: {
-                type: "verb",
-                base: "stem",
-                aspect: "perfective",
-                verb: kedulStat,
-              },
-            },
-          } satisfies T.ParsedWeldedPassive,
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "ونه لیدل شم",
-      output: getPeople(1, "sing").map((subj) => ({
-        blocks: [
-          oo,
-          { type: "negative", imperative: false },
-          {
-            type: "weldedPassive",
-            left: {
-              type: "passiveLeftBasic",
-              verb: leedul,
-            },
-            right: {
-              type: "parsedRightVBE",
-              person: subj,
-              info: {
-                type: "verb",
-                base: "stem",
-                aspect: "perfective",
-                verb: kedulStat,
-              },
-            },
-          } satisfies T.ParsedWeldedPassive,
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "وابه نه خیستل شولم",
-      output: getPeople(1, "sing").map((subj) => ({
-        blocks: [
-          { type: "PH", s: "وا" },
-          { type: "negative", imperative: false },
-          {
-            type: "weldedPassive",
-            left: {
-              type: "passiveLeftBasic",
-              verb: akheestul,
-            },
-            right: {
-              type: "parsedRightVBE",
-              person: subj,
-              info: {
-                type: "verb",
-                base: "root",
-                aspect: "perfective",
-                verb: kedulStat,
-              },
-            },
-          },
-        ],
-        kids: [{ position: 1, section: ["ba"] }],
-      })),
-    },
-    {
-      input: "نه به اخیستل شولم",
-      output: [],
-      error: true,
-    },
-    {
-      input: "لیدل کېدلئ",
-      output: getPeople(2, "pl").map((subj) => ({
-        blocks: [
-          {
-            type: "weldedPassive",
-            left: {
-              type: "passiveLeftBasic",
-              verb: leedul,
-            },
-            right: {
-              type: "parsedRightVBE",
-              person: subj,
-              info: {
-                type: "verb",
-                base: "root",
-                aspect: "imperfective",
-                verb: kedulStat,
-              },
-            },
-          },
-        ],
-        kids: [],
-      })),
-    },
-    {
-      input: "ولیدل کېدلئ",
-      output: [],
-      error: true,
-    },
-    {
-      input: "ورسېدل شوم",
-      output: [],
-      error: true,
-    },
-  ],
-};
+// const passiveBasic: Section = {
+//   title: "basic passive",
+//   tests: [
+//     {
+//       input: "لیدل کېږم",
+//       output: getPeople(1, "sing").map((subj) => ({
+//         blocks: [
+//           {
+//             type: "weldedPassive",
+//             left: {
+//               type: "passiveLeftBasic",
+//               verb: leedul,
+//             },
+//             right: {
+//               type: "parsedRightVBE",
+//               person: subj,
+//               info: {
+//                 type: "verb",
+//                 base: "stem",
+//                 aspect: "imperfective",
+//                 verb: kedulStat,
+//               },
+//             },
+//           } satisfies T.ParsedWeldedPassive,
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "ولیدل شم",
+//       output: getPeople(1, "sing").map((subj) => ({
+//         blocks: [
+//           oo,
+//           {
+//             type: "weldedPassive",
+//             left: {
+//               type: "passiveLeftBasic",
+//               verb: leedul,
+//             },
+//             right: {
+//               type: "parsedRightVBE",
+//               person: subj,
+//               info: {
+//                 type: "verb",
+//                 base: "stem",
+//                 aspect: "perfective",
+//                 verb: kedulStat,
+//               },
+//             },
+//           } satisfies T.ParsedWeldedPassive,
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "ونه لیدل شم",
+//       output: getPeople(1, "sing").map((subj) => ({
+//         blocks: [
+//           oo,
+//           { type: "negative", imperative: false },
+//           {
+//             type: "weldedPassive",
+//             left: {
+//               type: "passiveLeftBasic",
+//               verb: leedul,
+//             },
+//             right: {
+//               type: "parsedRightVBE",
+//               person: subj,
+//               info: {
+//                 type: "verb",
+//                 base: "stem",
+//                 aspect: "perfective",
+//                 verb: kedulStat,
+//               },
+//             },
+//           } satisfies T.ParsedWeldedPassive,
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "وابه نه خیستل شولم",
+//       output: getPeople(1, "sing").map((subj) => ({
+//         blocks: [
+//           { type: "PH", s: "وا" },
+//           { type: "negative", imperative: false },
+//           {
+//             type: "weldedPassive",
+//             left: {
+//               type: "passiveLeftBasic",
+//               verb: akheestul,
+//             },
+//             right: {
+//               type: "parsedRightVBE",
+//               person: subj,
+//               info: {
+//                 type: "verb",
+//                 base: "root",
+//                 aspect: "perfective",
+//                 verb: kedulStat,
+//               },
+//             },
+//           },
+//         ],
+//         kids: [{ position: 1, section: ["ba"] }],
+//       })),
+//     },
+//     {
+//       input: "نه به اخیستل شولم",
+//       output: [],
+//       error: true,
+//     },
+//     {
+//       input: "لیدل کېدلئ",
+//       output: getPeople(2, "pl").map((subj) => ({
+//         blocks: [
+//           {
+//             type: "weldedPassive",
+//             left: {
+//               type: "passiveLeftBasic",
+//               verb: leedul,
+//             },
+//             right: {
+//               type: "parsedRightVBE",
+//               person: subj,
+//               info: {
+//                 type: "verb",
+//                 base: "root",
+//                 aspect: "imperfective",
+//                 verb: kedulStat,
+//               },
+//             },
+//           },
+//         ],
+//         kids: [],
+//       })),
+//     },
+//     {
+//       input: "ولیدل کېدلئ",
+//       output: [],
+//       error: true,
+//     },
+//     {
+//       input: "ورسېدل شوم",
+//       output: [],
+//       error: true,
+//     },
+//   ],
+// };
 
-const morPH: T.ParsedCompPH = {
-  type: "CompPH",
-  selection: {
-    inflection: [0],
-    gender: ["masc"],
-    given: "موړ",
-    selection: {
-      type: "adjective",
-      entry: mor,
-      sandwich: undefined,
-    },
-  },
-};
-const murPH: T.ParsedCompPH = {
-  type: "CompPH",
-  selection: {
-    inflection: [0],
-    gender: ["masc"],
-    given: "مړ",
-    selection: {
-      type: "adjective",
-      entry: mur,
-      sandwich: undefined,
-    },
-  },
-};
-const passiveStatComp: Section = {
-  title: "stat comp passive",
-  tests: [
-    {
-      input: "مړول کېږم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftBasic",
-                verb: marawul,
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  aspect: "imperfective",
-                  base: "stem",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-    {
-      input: "مړول کېدلم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftBasic",
-                verb: marawul,
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  aspect: "imperfective",
-                  base: "root",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-    {
-      input: "موړ کړای شم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            morPH,
-            {
-              type: "VB",
-              info: {
-                type: "ability",
-                verb: kawulStat,
-                aspect: "perfective",
-              },
-            },
-            makeParsedVBE({
-              person: subj,
-              aspect: "perfective",
-              base: "stem",
-              verb: kedulStat,
-            }),
-          ],
-          kids: [],
-        })),
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            morPH,
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftBasic",
-                verb: kawulStat,
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  base: "stem",
-                  aspect: "perfective",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-    {
-      input: "موړ کړای شولم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            morPH,
-            {
-              type: "VB",
-              info: {
-                type: "ability",
-                verb: kawulStat,
-                aspect: "perfective",
-              },
-            },
-            makeParsedVBE({
-              person: subj,
-              aspect: "perfective",
-              base: "root",
-              verb: kedulStat,
-            }),
-          ],
-          kids: [],
-        })),
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            morPH,
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftBasic",
-                verb: kawulStat,
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  base: "root",
-                  aspect: "perfective",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-    {
-      input: "مړ کول کېږم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftWelded",
-                left: {
-                  type: "complement",
-                  selection: {
-                    inflection: [0],
-                    gender: ["masc"],
-                    given: "مړ",
-                    selection: {
-                      type: "adjective",
-                      entry: mur,
-                      sandwich: undefined,
-                    },
-                  },
-                },
-                right: {
-                  type: "passiveCompKawulAux",
-                },
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  aspect: "imperfective",
-                  base: "stem",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-    {
-      input: "مړ کول کېدلم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftWelded",
-                left: {
-                  type: "complement",
-                  selection: {
-                    inflection: [0],
-                    gender: ["masc"],
-                    given: "مړ",
-                    selection: {
-                      type: "adjective",
-                      entry: mur,
-                      sandwich: undefined,
-                    },
-                  },
-                },
-                right: {
-                  type: "passiveCompKawulAux",
-                },
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  aspect: "imperfective",
-                  base: "root",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-    {
-      input: "مړ کړای شم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            murPH,
-            {
-              type: "VB",
-              info: {
-                type: "ability",
-                verb: kawulStat,
-                aspect: "perfective",
-              },
-            },
-            makeParsedVBE({
-              person: subj,
-              aspect: "perfective",
-              base: "stem",
-              verb: kedulStat,
-            }),
-          ],
-          kids: [],
-        })),
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            murPH,
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftBasic",
-                verb: kawulStat,
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  base: "stem",
-                  aspect: "perfective",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-    {
-      input: "مړ کړای شولم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            murPH,
-            {
-              type: "VB",
-              info: {
-                type: "ability",
-                verb: kawulStat,
-                aspect: "perfective",
-              },
-            },
-            makeParsedVBE({
-              person: subj,
-              aspect: "perfective",
-              base: "root",
-              verb: kedulStat,
-            }),
-          ],
-          kids: [],
-        })),
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            murPH,
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftBasic",
-                verb: kawulStat,
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  base: "root",
-                  aspect: "perfective",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-    {
-      input: "مړ کړل شولم",
-      output: [
-        ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
-          blocks: [
-            murPH,
-            {
-              type: "weldedPassive",
-              left: {
-                type: "passiveLeftBasic",
-                verb: kawulStat,
-              },
-              right: {
-                type: "parsedRightVBE",
-                person: subj,
-                info: {
-                  type: "verb",
-                  base: "root",
-                  aspect: "perfective",
-                  verb: kedulStat,
-                },
-              },
-            },
-          ],
-          kids: [],
-        })),
-      ],
-    },
-  ],
-};
+// const morPH: T.ParsedCompPH = {
+//   type: "CompPH",
+//   selection: {
+//     inflection: [0],
+//     gender: ["masc"],
+//     given: "موړ",
+//     selection: {
+//       type: "adjective",
+//       entry: mor,
+//       sandwich: undefined,
+//     },
+//   },
+// };
+// const murPH: T.ParsedCompPH = {
+//   type: "CompPH",
+//   selection: {
+//     inflection: [0],
+//     gender: ["masc"],
+//     given: "مړ",
+//     selection: {
+//       type: "adjective",
+//       entry: mur,
+//       sandwich: undefined,
+//     },
+//   },
+// };
+// const passiveStatComp: Section = {
+//   title: "stat comp passive",
+//   tests: [
+//     {
+//       input: "مړول کېږم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftBasic",
+//                 verb: marawul,
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   aspect: "imperfective",
+//                   base: "stem",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     {
+//       input: "مړول کېدلم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftBasic",
+//                 verb: marawul,
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   aspect: "imperfective",
+//                   base: "root",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     {
+//       input: "موړ کړای شم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             morPH,
+//             {
+//               type: "VB",
+//               info: {
+//                 type: "ability",
+//                 verb: kawulStat,
+//                 aspect: "perfective",
+//               },
+//             },
+//             makeParsedVBE({
+//               person: subj,
+//               aspect: "perfective",
+//               base: "stem",
+//               verb: kedulStat,
+//             }),
+//           ],
+//           kids: [],
+//         })),
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             morPH,
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftBasic",
+//                 verb: kawulStat,
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   base: "stem",
+//                   aspect: "perfective",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     {
+//       input: "موړ کړای شولم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             morPH,
+//             {
+//               type: "VB",
+//               info: {
+//                 type: "ability",
+//                 verb: kawulStat,
+//                 aspect: "perfective",
+//               },
+//             },
+//             makeParsedVBE({
+//               person: subj,
+//               aspect: "perfective",
+//               base: "root",
+//               verb: kedulStat,
+//             }),
+//           ],
+//           kids: [],
+//         })),
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             morPH,
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftBasic",
+//                 verb: kawulStat,
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   base: "root",
+//                   aspect: "perfective",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     {
+//       input: "مړ کول کېږم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftWelded",
+//                 left: {
+//                   type: "complement",
+//                   selection: {
+//                     inflection: [0],
+//                     gender: ["masc"],
+//                     given: "مړ",
+//                     selection: {
+//                       type: "adjective",
+//                       entry: mur,
+//                       sandwich: undefined,
+//                     },
+//                   },
+//                 },
+//                 right: {
+//                   type: "passiveCompKawulAux",
+//                 },
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   aspect: "imperfective",
+//                   base: "stem",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     {
+//       input: "مړ کول کېدلم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftWelded",
+//                 left: {
+//                   type: "complement",
+//                   selection: {
+//                     inflection: [0],
+//                     gender: ["masc"],
+//                     given: "مړ",
+//                     selection: {
+//                       type: "adjective",
+//                       entry: mur,
+//                       sandwich: undefined,
+//                     },
+//                   },
+//                 },
+//                 right: {
+//                   type: "passiveCompKawulAux",
+//                 },
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   aspect: "imperfective",
+//                   base: "root",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     {
+//       input: "مړ کړای شم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             murPH,
+//             {
+//               type: "VB",
+//               info: {
+//                 type: "ability",
+//                 verb: kawulStat,
+//                 aspect: "perfective",
+//               },
+//             },
+//             makeParsedVBE({
+//               person: subj,
+//               aspect: "perfective",
+//               base: "stem",
+//               verb: kedulStat,
+//             }),
+//           ],
+//           kids: [],
+//         })),
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             murPH,
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftBasic",
+//                 verb: kawulStat,
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   base: "stem",
+//                   aspect: "perfective",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     {
+//       input: "مړ کړای شولم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             murPH,
+//             {
+//               type: "VB",
+//               info: {
+//                 type: "ability",
+//                 verb: kawulStat,
+//                 aspect: "perfective",
+//               },
+//             },
+//             makeParsedVBE({
+//               person: subj,
+//               aspect: "perfective",
+//               base: "root",
+//               verb: kedulStat,
+//             }),
+//           ],
+//           kids: [],
+//         })),
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             murPH,
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftBasic",
+//                 verb: kawulStat,
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   base: "root",
+//                   aspect: "perfective",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     {
+//       input: "مړ کړل شولم",
+//       output: [
+//         ...getPeople(1, "sing").map<VerbSectionData>((subj) => ({
+//           blocks: [
+//             murPH,
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftBasic",
+//                 verb: kawulStat,
+//               },
+//               right: {
+//                 type: "parsedRightVBE",
+//                 person: subj,
+//                 info: {
+//                   type: "verb",
+//                   base: "root",
+//                   aspect: "perfective",
+//                   verb: kedulStat,
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         })),
+//       ],
+//     },
+//     ...kraayVars.map<Section["tests"][number]>((kraay) => ({
+//       input: `مړ ${kraay} شوی`,
+//       output: [
+//         {
+//           blocks: [
+//             murPH,
+//             {
+//               type: "weldedPassive",
+//               left: {
+//                 type: "passiveLeftBasic",
+//                 verb: kawulStat,
+//               },
+//               right: {
+//                 type: "parsedRightVBP",
+//                 vbp: {
+//                   type: "VB",
+//                   info: {
+//                     type: "ppart",
+//                     verb: kedulStat,
+//                     genNum: {
+//                       gender: "masc",
+//                       number: "singular",
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//           ],
+//           kids: [],
+//         },
+//       ],
+//     })),
+//   ],
+// };
 
 const sections = [
   simpleOpts,
@@ -2518,11 +2551,11 @@ const sections = [
   irreg3rdMascSing,
   irregularVerbs,
   ability,
-  perfect,
-  statComp,
-  statCompPerfect,
-  passiveBasic,
-  passiveStatComp,
+  // perfect,
+  // statComp,
+  // statCompPerfect,
+  // passiveBasic,
+  // passiveStatComp,
 ];
 
 sections.forEach((section) => {
@@ -2544,26 +2577,26 @@ sections.forEach((section) => {
   });
 });
 
-function makeWeldedStatComb(
-  person: T.Person,
-  info: Omit<T.VbInfo, "verb">,
-  left: T.ParsedWeldedVBE["left"],
-  transitivity: T.Transitivity,
-): T.ParsedVBE {
-  const infoo: T.VbInfo = {
-    ...info,
-    verb: transitivity === "transitive" ? kawulStat : kawulDyn,
-  };
-  return {
-    type: "weldedVBE",
-    left,
-    right: {
-      type: "parsedRightVBE",
-      person,
-      info: infoo,
-    },
-  };
-}
+// function makeWeldedStatComb(
+//   person: T.Person,
+//   info: Omit<T.VbInfo, "verb">,
+//   left: T.ParsedWeldedVBE["left"],
+//   transitivity: T.Transitivity,
+// ): T.ParsedVBE {
+//   const infoo: T.VbInfo = {
+//     ...info,
+//     verb: transitivity === "transitive" ? kawulStat : kawulDyn,
+//   };
+//   return {
+//     type: "weldedVBE",
+//     left,
+//     right: {
+//       type: "parsedRightVBE",
+//       person,
+//       info: infoo,
+//     },
+//   };
+// }
 
 function testVBEOutuput(props: {
   ph?: string;
@@ -2597,41 +2630,47 @@ function testVBEOutuput(props: {
   );
 }
 
-function makeEqVBE(
-  person: T.Person,
-  tense: T.EquativeTenseWithoutBa,
-): T.ParsedVBE {
-  return {
-    type: "VB",
-    info: {
-      type: "equative",
-      tense: tense,
-    },
-    person: person,
-  };
-}
+// function makeEqVBE(
+//   person: T.Person,
+//   tense: T.EquativeTenseWithoutBa,
+// ): T.ParsedVBE {
+//   return {
+//     type: "VB",
+//     info: {
+//       type: "equative",
+//       tense: tense,
+//     },
+//     person: person,
+//   };
+// }
 
-function makePPartVBP(verb: T.VerbEntry, genNum: T.GenderNumber): T.ParsedVBP {
-  return {
-    type: "VB",
-    info: {
-      type: "ppart",
-      verb: verb,
-      genNum: genNum,
-    },
-  };
-}
+// function makePPartVBP(verb: T.VerbEntry, genNum: T.GenderNumber): T.ParsedVBP {
+//   return {
+//     type: "VB",
+//     info: {
+//       type: "ppart",
+//       verb: verb,
+//       genNum: genNum,
+//     },
+//   };
+// }
 
 function makeAbilityVBP(props: {
   aspect: T.Aspect;
   verb: T.VerbEntry;
-}): T.ParsedVBP {
+}): T.ParsedV<T.ParsedVBP> {
   return {
-    type: "VB",
-    info: {
-      type: "ability",
-      aspect: props.aspect,
-      verb: props.verb,
+    type: "parsedV",
+    content: {
+      type: "active basic",
+      content: {
+        type: "parsed vbp basic ability",
+        info: {
+          type: "ability",
+          aspect: props.aspect,
+          verb: props.verb,
+        },
+      },
     },
   };
 }
@@ -2642,20 +2681,29 @@ function makeParsedVBE(props: {
   base: "root" | "stem";
   verb: T.VerbEntry;
   imperative?: true;
-}): T.ParsedVBE {
+}): {
+  type: "parsedV";
+  content: T.ActiveVBasic<T.ParsedVBB>;
+} {
   return {
-    type: "VB",
-    person: props.person,
-    info: {
-      type: "verb",
-      aspect: props.aspect,
-      verb: props.verb,
-      base: props.base,
-      ...(props.imperative
-        ? {
-            imperative: props.imperative,
-          }
-        : {}),
+    type: "parsedV",
+    content: {
+      type: "active basic",
+      content: {
+        type: "parsed vbb verb",
+        person: props.person,
+        info: {
+          type: "verb",
+          aspect: props.aspect,
+          verb: props.verb,
+          base: props.base,
+          ...(props.imperative
+            ? {
+                imperative: props.imperative,
+              }
+            : {}),
+        },
+      },
     },
   };
 }

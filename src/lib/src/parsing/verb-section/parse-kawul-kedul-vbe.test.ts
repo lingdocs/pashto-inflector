@@ -8,7 +8,7 @@ import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 type Section = {
   ph: T.ParsedPH | undefined;
   input: string;
-  output: T.ParsedVBE[];
+  output: T.ParsedVBBVerb[];
 }[];
 
 const oo: T.ParsedPH = {
@@ -748,7 +748,7 @@ function makeAux(trans: "transitive" | "intransitive") {
     aspects: T.Aspect[],
     bases: ("root" | "stem")[],
     imperative?: boolean,
-  ): T.ParsedVBE[] {
+  ): T.ParsedVBBVerb[] {
     const verbs = toKeys(statDyn).map((sd) => vBank[trans][sd]);
     return people.flatMap((person) =>
       bases.flatMap((base) =>
@@ -775,9 +775,9 @@ function makeParsedVBE(props: {
   verb: T.VerbEntry;
   imperative?: boolean;
   abilityaux?: boolean;
-}): T.ParsedVBE {
+}): T.ParsedVBBVerb {
   return {
-    type: "VB",
+    type: "parsed vbb verb",
     person: props.person,
     info: {
       type: "verb",

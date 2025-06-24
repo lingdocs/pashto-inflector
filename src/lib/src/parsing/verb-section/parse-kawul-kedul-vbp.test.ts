@@ -7,7 +7,7 @@ import { parseKawulKedulVBP } from "./parse-kawul-kedul-vbp";
 type Section = {
   ph: T.ParsedPH | undefined;
   input: string;
-  output: T.ParsedVBPBasic[];
+  output: T.ParsedVBP[];
 }[];
 
 const oo: T.ParsedPH = {
@@ -184,10 +184,10 @@ function makeAuxAbility(
   transitivity: T.Transitivity,
   aspects: T.Aspect[],
   types: ("stat" | "dyn")[],
-): T.ParsedVBPBasic[] {
-  return aspects.flatMap<T.ParsedVBPBasic>((aspect) =>
+): T.ParsedVBPBasicAbility[] {
+  return aspects.flatMap<T.ParsedVBPBasicAbility>((aspect) =>
     types.map((typ) => ({
-      type: "VB",
+      type: "parsed vbp basic ability",
       info: {
         type: "ability",
         verb:
@@ -207,14 +207,14 @@ function makeAuxAbility(
 function makeAuxPPart(
   transitivity: T.Transitivity,
   genNums: T.GenderNumber[],
-): T.ParsedVBPBasic[] {
+): T.ParsedVBPBasicPart[] {
   const verbs =
     transitivity === "transitive"
       ? [kawulStat, kawulDyn]
       : [kedulStat, kedulDyn];
   return verbs.flatMap((verb) =>
     genNums.map((genNum) => ({
-      type: "VB",
+      type: "parsed vbp basic part",
       info: {
         type: "ppart",
         genNum,

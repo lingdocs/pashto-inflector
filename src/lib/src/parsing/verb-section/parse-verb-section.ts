@@ -1,44 +1,25 @@
-// import { zip } from "rambda";
 import * as T from "../../../../types";
-import { getTransitivity } from "../../verb-info";
+import { fmapParseResult } from "../../fp-ps";
 import { parseKidsSection, parseOptKidsSection } from "../parse-kids-section";
 import {
   bindParseResult,
-  getInfo,
-  isNeg,
-  isParsedVBE,
+  isParsedVBB,
   isParsedVBP,
-  // isNonOoPh,
-  // isParsedVBE,
-  // isParsedVBP,
   isPH,
   returnParseResult,
-  returnParseResults,
   returnParseResultSingle,
 } from "../utils";
-import { kawulStat } from "./irreg-verbs";
 import { parseEquative } from "./parse-equative";
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { parseNeg, parseOptNeg } from "./parse-negative";
 import { parsePH } from "./parse-ph";
 import { parseVBE } from "./parse-vbe";
 import { parseVBP } from "./parse-vbp";
+import { getInfoFromV } from "./vblock-tools";
 import { isKedulStat } from "./parse-verb-helpers";
-// import {
-//   isKedulDynEntry,
-//   isKedulStat,
-//   isKedulStatEntry,
-// } from "./parse-verb-helpers";
-
-export type VerbSectionBlock =
-  | T.ParsedPH
-  | T.ParsedVBE
-  | T.ParsedVBP
-  | T.ParsedWeldedPassive
-  | T.NegativeBlock;
 
 export type VerbSectionData = {
-  blocks: VerbSectionBlock[];
+  blocks: T.ParsedVerbSectionBlock[];
   kids: {
     position: number;
     section: T.ParsedKid[];
@@ -100,7 +81,9 @@ function parseVerbSectionFront(
     T.ParsedPH | T.NegativeBlock | T.ParsedKidsSection
   >[] = [
     ...(prev.body.front.some(isPH) ? [] : parsePH(prev.tokens, dictionary)),
-    ...(prev.body.front.some(isNeg) ? [] : parseNeg(prev.tokens)),
+    ...(prev.body.front.some((x) => x.type === "negative")
+      ? []
+      : parseNeg(prev.tokens)),
     // don't try to parse a kids section again if we just had one, otherwise you get
     // unneccessary varients of kids' sections like ["ba", "me"] and ["ba"] ["me"]
     ...(prev.body.kids.at(-1)?.position === position
@@ -150,9 +133,9 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
 
     const vbes = parseVBE(tokens, dictionary, front.front.find(isPH));
     const res = [
-      ...parsePlainVBE(front, vbes),
+      ...parseBasicTense(front, vbes),
       ...parseAbilityOrPerfect(tokens, dictionary, front),
-      ...parsePassive(front, vbes, tokens),
+      // ...parsePassive(front, vbes, tokens),
     ];
     // TODO: some kind of do notation would be nice!
     return bindParseResult(res, (tkns, rear) => {
@@ -175,13 +158,13 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
   };
 }
 
-function parsePlainVBE(
+function parseBasicTense(
   front: VerbSectionFrontData,
-  vbes: T.ParseResult<T.ParsedVBE>[],
+  vbes: T.ParseResult<T.ParsedV<T.ParsedVBBVerb>>[],
 ): T.ParseResult<VerbSectionData>[] {
   return bindParseResult(vbes, (tkns, vbe) => {
     // TODO: or pass this in as on option to parseVBE so that we only get the plain VBE
-    if (getInfo(vbe).type !== "verb") {
+    if (getInfoFromV(vbe).type !== "verb") {
       return [];
     }
     const blocks = [...front.front, vbe];
@@ -192,195 +175,226 @@ function parsePlainVBE(
   });
 }
 
-function parsePassive(
-  front: VerbSectionFrontData,
-  vbes: T.ParseResult<T.ParsedVBE>[],
-  tokens: readonly T.Token[],
-): T.ParseResult<VerbSectionData>[] {
-  const ph = front.front.find(isPH);
-  return ph?.type === "CompPH"
-    ? parseStatCompPassive(front, tokens)
-    : parseBasicPassive(front, vbes);
-}
+// function parsePassive(
+//   front: VerbSectionFrontData,
+//   vbes: T.ParseResult<T.ParsedVBE>[],
+//   tokens: readonly T.Token[],
+// ): T.ParseResult<VerbSectionData>[] {
+//   const ph = front.front.find(isPH);
+//   return ph?.type === "CompPH"
+//     ? parseStatCompPassive(front, tokens)
+//     : parseBasicPassive(front, vbes);
+// }
 
-function parseStatCompPassive(
-  front: VerbSectionFrontData,
-  tokens: readonly T.Token[],
-): T.ParseResult<VerbSectionData>[] {
-  const kraays: T.ParseResult<{ type: "kraay" }>[] = parseKraay(tokens);
-  if (kraays.length) {
-    return bindParseResult(kraays, (tkns2) => {
-      const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
-        (x) =>
-          x.body.info.type === "verb" &&
-          isKedulStat(x.body.info.verb) &&
-          x.body.info.aspect === "perfective",
-      );
-      return bindParseResult(auxs, (tkns3, aux) => {
-        if (aux.info.type !== "verb") {
-          return [];
-        }
-        const passive: T.ParsedWeldedPassive = {
-          type: "weldedPassive",
-          left: {
-            type: "passiveLeftBasic",
-            verb: kawulStat,
-          },
-          right: {
-            type: "parsedRightVBE",
-            info: aux.info,
-            person: aux.person,
-          },
-        };
-        const blocks = [...front.front, passive];
-        return returnParseResult(tkns3, {
-          ...front,
-          blocks,
-        });
-      });
-    });
-  }
-  const compPH = front.front.at(-1);
-  if (compPH?.type !== "CompPH") {
-    return [];
-  }
+// function parseStatCompPassive(
+//   front: VerbSectionFrontData,
+//   tokens: readonly T.Token[],
+// ): T.ParseResult<VerbSectionData>[] {
+//   const kraays: T.ParseResult<{ type: "kraay" }>[] = parseKraay(tokens);
+//   if (kraays.length) {
+//     return bindParseResult(kraays, (tkns2) => {
+//       const auxs: T.ParseResult<T.ParsedVB | T.ParsedVBP>[] = [
+//         ...parseKawulKedulVBE(tkns2, undefined).filter(
+//           (x) =>
+//             x.body.info.type === "verb" &&
+//             isKedulStat(x.body.info.verb) &&
+//             x.body.info.aspect === "perfective",
+//         ),
+//         ...parseKawulKedulVBP(tkns2, undefined).filter(
+//           (x) => x.body.info.type === "ppart" && isKedulStat(x.body.info.verb),
+//         ),
+//       ];
 
-  const kawuls: T.ParseResult<{ type: "kawul" }>[] = parseKawulStraight(tokens);
-  return bindParseResult(kawuls, (tkns2) => {
-    const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
-      (x) =>
-        x.body.info.type === "verb" &&
-        isKedulStat(x.body.info.verb) &&
-        x.body.info.aspect === "imperfective",
-    );
-    return bindParseResult(auxs, (tkns3, aux) => {
-      if (aux.info.type !== "verb") {
-        return [];
-      }
-      const passive: T.ParsedWeldedPassive = {
-        type: "weldedPassive",
-        left: {
-          type: "passiveLeftWelded",
-          left: {
-            type: "complement",
-            // TODO: should the type for selection be narrower?
-            selection: compPH.selection,
-          },
-          right: {
-            type: "passiveCompKawulAux",
-          },
-        },
-        right: {
-          type: "parsedRightVBE",
-          info: aux.info,
-          person: aux.person,
-        },
-      };
-      const blocks = [...front.front.slice(0, -1), passive];
-      return returnParseResult(tkns3, { ...front, blocks });
-    });
-  });
-}
+//       function makePassiveRight(
+//         aux: T.ParsedVB | T.ParsedVBP,
+//       ): T.ParsedRightVBE | T.ParsedRightVBP {
+//         if (aux.info.type === "verb") {
+//           // now we know this must be a perfective kedul aux
+//           // @ts-ignore - for some reason we have to do this
+//           const perfAux: T.ParsedVB = aux;
+//           if (perfAux.info.type === "equative") {
+//             throw new Error("improper verb flow in passive parsing");
+//           }
+//           return {
+//             type: "parsedRightVBE",
+//             info: perfAux.info,
+//             person: perfAux.person,
+//           };
+//         } else if (aux.info.type === "ppart") {
+//           // now we know this must be a perfect kedul aux
+//           // @ts-ignore - for some reason we have to do this
+//           const ppartAux: T.ParsedVBP = aux;
+//           if (ppartAux.info.type === "ability") {
+//             throw new Error("mmmm");
+//           }
+//           return {
+//             type: "parsedRightVBP",
+//             vbp: ppartAux,
+//           };
+//         }
+//         throw new Error("improper verb flow in passive parsing 2");
+//       }
 
-function parseBasicPassive(
-  front: VerbSectionFrontData,
-  vbes: T.ParseResult<T.ParsedVBE>[],
-): T.ParseResult<VerbSectionData>[] {
-  return bindParseResult(vbes, (tkns, vbe) => {
-    if (vbe.type === "weldedVBE") {
-      return [];
-    }
-    if (vbe.info.type === "equative") {
-      return [];
-    }
-    if (vbe.info.base === "stem") {
-      return [];
-    }
-    if (vbe.info.imperative) {
-      return [];
-    }
-    if (vbe.person !== T.Person.ThirdPlurMale) {
-      return [];
-    }
-    const { verb, aspect } = vbe.info;
-    const auxs = parseKawulKedulVBE(tkns, undefined).filter(
-      (x) => x.body.info.type === "verb" && isKedulStat(x.body.info.verb),
-    );
-    return bindParseResult(auxs, (tkns2, aux) => {
-      // for type safety
-      if (aux.info.type !== "verb") {
-        return [];
-      }
-      const errors: T.ParseError[] = [];
-      if (getTransitivity(verb.entry) === "intransitive") {
-        errors.push({
-          message: `intransitive verbs cannot be used with the passive form`,
-        });
-      }
-      if (aux.info.aspect !== aspect) {
-        errors.push({
-          message: `${aspect} passive requires ${aspect} auxilary kedul verb`,
-        });
-      }
-      const passive: T.ParsedWeldedPassive = {
-        type: "weldedPassive",
-        left: {
-          type: "passiveLeftBasic",
-          verb,
-        },
-        right: {
-          type: "parsedRightVBE",
-          info: aux.info,
-          person: aux.person,
-        },
-      };
-      const blocks = [...front.front, passive];
-      return returnParseResults(
-        tkns2,
-        [
-          {
-            ...front,
-            blocks,
-          },
-        ],
-        errors,
-      );
-    });
-  });
-}
+//       return bindParseResult(auxs, (tkns3, aux) => {
+//         // bit silly we have to use this function here because of trouble with type narrowing
+//         const right = makePassiveRight(aux);
+//         const passive: T.ParsedWeldedPassive = {
+//           type: "weldedPassive",
+//           left: {
+//             type: "passiveLeftBasic",
+//             verb: kawulStat,
+//           },
+//           right,
+//         };
+//         const blocks = [...front.front, passive];
+//         return returnParseResult(tkns3, {
+//           ...front,
+//           blocks,
+//         });
+//       });
+//     });
+//   }
+//   const compPH = front.front.at(-1);
+//   if (compPH?.type !== "CompPH") {
+//     return [];
+//   }
 
-function parseKraay(
-  tokens: readonly T.Token[],
-): T.ParseResult<{ type: "kraay" }>[] {
-  if (tokens.length === 0) {
-    return [];
-  }
-  const [{ s }, ...rest] = tokens;
-  if (s === "کړای" || s === "کړلای" || s === "کړل") {
-    return returnParseResult(rest, { type: "kraay" });
-  }
-  return [];
-}
+//   const kawuls: T.ParseResult<{ type: "kawul" }>[] = parseKawulStraight(tokens);
+//   return bindParseResult(kawuls, (tkns2) => {
+//     const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
+//       (x) =>
+//         x.body.info.type === "verb" &&
+//         isKedulStat(x.body.info.verb) &&
+//         x.body.info.aspect === "imperfective",
+//     );
+//     return bindParseResult(auxs, (tkns3, aux) => {
+//       if (aux.info.type !== "verb") {
+//         return [];
+//       }
+//       const passive: T.ParsedWeldedPassive = {
+//         type: "weldedPassive",
+//         left: {
+//           type: "passiveLeftWelded",
+//           left: {
+//             type: "complement",
+//             // TODO: should the type for selection be narrower?
+//             selection: compPH.selection,
+//           },
+//           right: {
+//             type: "passiveCompKawulAux",
+//           },
+//         },
+//         right: {
+//           type: "parsedRightVBE",
+//           info: aux.info,
+//           person: aux.person,
+//         },
+//       };
+//       const blocks = [...front.front.slice(0, -1), passive];
+//       return returnParseResult(tkns3, { ...front, blocks });
+//     });
+//   });
+// }
 
-function parseKawulStraight(
-  tokens: readonly T.Token[],
-): T.ParseResult<{ type: "kawul" }>[] {
-  if (tokens.length === 0) {
-    return [];
-  }
-  const [{ s }, ...rest] = tokens;
-  if (s === "کول") {
-    return returnParseResult(rest, { type: "kawul" });
-  }
-  return [];
-}
+// function parseBasicPassive(
+//   front: VerbSectionFrontData,
+//   vbes: T.ParseResult<T.ParsedVBE>[],
+// ): T.ParseResult<VerbSectionData>[] {
+//   return bindParseResult(vbes, (tkns, vbe) => {
+//     if (vbe.type === "weldedVBE") {
+//       return [];
+//     }
+//     if (vbe.info.type === "equative") {
+//       return [];
+//     }
+//     if (vbe.info.base === "stem") {
+//       return [];
+//     }
+//     if (vbe.info.imperative) {
+//       return [];
+//     }
+//     if (vbe.person !== T.Person.ThirdPlurMale) {
+//       return [];
+//     }
+//     const { verb, aspect } = vbe.info;
+//     const auxs = parseKawulKedulVBE(tkns, undefined).filter(
+//       (x) => x.body.info.type === "verb" && isKedulStat(x.body.info.verb),
+//     );
+//     return bindParseResult(auxs, (tkns2, aux) => {
+//       // for type safety
+//       if (aux.info.type !== "verb") {
+//         return [];
+//       }
+//       const errors: T.ParseError[] = [];
+//       if (getTransitivity(verb.entry) === "intransitive") {
+//         errors.push({
+//           message: `intransitive verbs cannot be used with the passive form`,
+//         });
+//       }
+//       if (aux.info.aspect !== aspect) {
+//         errors.push({
+//           message: `${aspect} passive requires ${aspect} auxilary kedul verb`,
+//         });
+//       }
+//       const passive: T.ParsedWeldedPassive = {
+//         type: "weldedPassive",
+//         left: {
+//           type: "passiveLeftBasic",
+//           verb,
+//         },
+//         right: {
+//           type: "parsedRightVBE",
+//           info: aux.info,
+//           person: aux.person,
+//         },
+//       };
+//       const blocks = [...front.front, passive];
+//       return returnParseResults(
+//         tkns2,
+//         [
+//           {
+//             ...front,
+//             blocks,
+//           },
+//         ],
+//         errors,
+//       );
+//     });
+//   });
+// }
+
+// function parseKraay(
+//   tokens: readonly T.Token[],
+// ): T.ParseResult<{ type: "kraay" }>[] {
+//   if (tokens.length === 0) {
+//     return [];
+//   }
+//   const [{ s }, ...rest] = tokens;
+//   if (s === "کړای" || s === "کړلای" || s === "کړل") {
+//     return returnParseResult(rest, { type: "kraay" });
+//   }
+//   return [];
+// }
+
+// function parseKawulStraight(
+//   tokens: readonly T.Token[],
+// ): T.ParseResult<{ type: "kawul" }>[] {
+//   if (tokens.length === 0) {
+//     return [];
+//   }
+//   const [{ s }, ...rest] = tokens;
+//   if (s === "کول") {
+//     return returnParseResult(rest, { type: "kawul" });
+//   }
+//   return [];
+// }
 
 function parseAbilityOrPerfect(
   tokens: readonly T.Token[],
   dictionary: T.DictionaryAPI,
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
-  const neg = front.front.some(isNeg);
+  const neg = front.front.some((x) => x.type === "negative");
   const ph = front.front.some(isPH);
   return [
     ...(neg ? parseFlippedAbilityOrPerfect(tokens, dictionary, front) : []),
@@ -396,37 +410,45 @@ function parseStraightAbilityOrPerfect(
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
   const vbps = parseVBP(tokens, dictionary, front.front.find(isPH), "either");
-  return bindParseResult<T.ParsedVBP, VerbSectionData>(vbps, (tkns, vbp) => {
-    const kidsR1 = parseOptKidsSection(tkns);
-    return bindParseResult(kidsR1, (tkns2, kids1) => {
-      const position = front.front.length + 1;
-      const negs = parseOptNeg(tkns2);
-      return bindParseResult(negs, (tkns3, neg) => {
-        const auxRes = isPPartVBP(vbp)
-          ? parseEquative(tkns3)
-          : parseKawulKedulVBE(tkns3, undefined).filter((x) =>
-              isStatAuxVBE(x.body),
-            );
-        return bindParseResult(auxRes, (tkns5, aux) => {
-          return [
-            {
-              tokens: tkns5,
-              body: {
-                blocks: [...front.front, vbp, ...(neg ? [neg] : []), aux],
-                kids: addKids(front.kids, position, kids1),
-              },
-              errors: [],
+  return bindParseResult<T.ParsedV<T.ParsedVBP>, VerbSectionData>(
+    vbps,
+    (tkns, vbp) => {
+      const kidsR1 = parseOptKidsSection(tkns);
+      return bindParseResult(kidsR1, (tkns2, kids1) => {
+        const position = front.front.length + 1;
+        const negs = parseOptNeg(tkns2);
+        return bindParseResult(negs, (tkns3, neg) => {
+          const auxRes: T.ParseResult<T.ParsedVBB>[] =
+            getInfoFromV(vbp).type === "ppart"
+              ? parseEquative(tkns3)
+              : parseKawulKedulVBE(tkns3, undefined).filter((x) =>
+                  isStatAuxVBE(x.body),
+                );
+          return bindParseResult(
+            fmapParseResult(
+              (x): T.ParsedV<T.ParsedVBB> => ({
+                type: "parsedV",
+                content: { type: "active basic", content: x },
+              }),
+              auxRes,
+            ),
+            (tkns5, aux) => {
+              return [
+                {
+                  tokens: tkns5,
+                  body: {
+                    blocks: [...front.front, vbp, ...(neg ? [neg] : []), aux],
+                    kids: addKids(front.kids, position, kids1),
+                  },
+                  errors: [],
+                },
+              ];
             },
-          ];
+          );
         });
       });
-    });
-  });
-}
-
-export function isPPartVBP(vbp: T.ParsedVBP): boolean {
-  const info = vbp.type === "VB" ? vbp.info : vbp.right.info;
-  return info.type === "ppart";
+    },
+  );
 }
 
 function parseFlippedAbilityOrPerfect(
@@ -435,44 +457,37 @@ function parseFlippedAbilityOrPerfect(
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
   const ph = front.front.find(isPH);
-  const auxs = [
+  const auxs: T.ParseResult<T.ParsedVBBVerb | T.ParsedVBBEq>[] = [
     ...(ph ? [] : parseEquative(tokens)),
     // ph here is saved for the ability stem, not used for aux
     ...parseKawulKedulVBE(tokens, undefined).filter((x) =>
       isStatAuxVBE(x.body),
     ),
   ];
-  const res: T.ParseResult<VerbSectionData>[] = bindParseResult(
-    auxs,
-    (tkns, aux) => {
-      const kidsRes = parseOptKidsSection(tkns);
-      return bindParseResult(kidsRes, (tkns2, kids) => {
-        const position = front.front.length + 1;
-        const res =
-          aux.type === "weldedVBE"
-            ? []
-            : parseVBP(
-                tkns2,
-                dictionary,
-                ph,
-                aux.info.type === "equative" ? "ppart" : "ability",
-              );
-        return bindParseResult(res, (tkns3, vbp) => {
-          return [
-            {
-              tokens: tkns3,
-              body: {
-                blocks: [...front.front, aux, vbp],
-                kids: addKids(front.kids, position, kids),
-              },
-              errors: [],
+  return bindParseResult(auxs, (tkns, aux) => {
+    const kidsRes = parseOptKidsSection(tkns);
+    return bindParseResult(kidsRes, (tkns2, kids) => {
+      const position = front.front.length + 1;
+      const res = parseVBP(
+        tkns2,
+        dictionary,
+        ph,
+        aux.info.type === "equative" ? "ppart" : "ability",
+      );
+      return bindParseResult(res, (tkns3, vbp) => {
+        return [
+          {
+            tokens: tkns3,
+            body: {
+              blocks: [...front.front, aux, vbp],
+              kids: addKids(front.kids, position, kids),
             },
-          ];
-        });
+            errors: [],
+          },
+        ];
       });
-    },
-  );
-  return res;
+    });
+  });
 }
 
 function addKids(
@@ -492,17 +507,15 @@ function addKids(
   ];
 }
 
-function isStatAuxVBE(x: T.ParsedVB): boolean {
+function isStatAuxVBE(x: T.ParsedVBBVerb): boolean {
   return (
-    x.type === "VB" &&
-    x.info.type === "verb" &&
     isKedulStat(x.info.verb) &&
     x.info.aspect === "perfective" &&
     !x.info.imperative
   );
 }
 
-function checkNegErrors(blocks: VerbSectionBlock[]): T.ParseError[] {
+function checkNegErrors(blocks: T.ParsedVerbSectionBlock[]): T.ParseError[] {
   const errors: T.ParseError[] = [];
   const negs = blocks.filter((x) => x.type === "negative");
   const ph = blocks.find(isPH);
@@ -511,11 +524,15 @@ function checkNegErrors(blocks: VerbSectionBlock[]): T.ParseError[] {
       message: `only one negative allowed, you used ${negs.length}`,
     });
   }
-  const vbe = blocks.find(isParsedVBE);
+  const vbe = blocks.find(isParsedVBB);
+  if (!vbe) {
+    throw new Error("VBE not found while checking for negatives");
+  }
   const vbp = blocks.find(isParsedVBP);
   const neg = negs[0];
-  const isImperative =
-    vbe?.type === "VB" && vbe?.info.type === "verb" && vbe.info.imperative;
+  const vbeInfo = getInfoFromV(vbe);
+
+  const isImperative = vbeInfo.type === "verb" && vbeInfo.imperative;
   if (neg) {
     const negIndex = blocks.findIndex((x) => x.type === "negative");
     if (neg.imperative && !isImperative) {
@@ -541,7 +558,7 @@ function checkNegErrors(blocks: VerbSectionBlock[]): T.ParseError[] {
       // but it might be good to do something a little more robust here
       if (
         ph.type === "CompPH" &&
-        (!vbp || (vbp && getInfo(vbp).type !== "ability"))
+        (!vbp || (vbp && getInfoFromV(vbp).type !== "ability"))
       ) {
         if (negIndex !== 1) {
           errors.push({

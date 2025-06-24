@@ -17,3 +17,10 @@ export function getImperativeVerbEnding(e: string): T.Person[] {
   }
   return [];
 }
+
+export function wrapInActiveV<X extends T.VerbX>(x: X): T.ActiveVBasic<X> {
+  return {
+    type: "active basic",
+    content: x,
+  };
+}

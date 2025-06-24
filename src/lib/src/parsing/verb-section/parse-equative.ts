@@ -9,17 +9,20 @@ export type EqInfo = {
 const allPersons: T.Person[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export function parseEquative(
-  tokens: Readonly<T.Token[]>
-): T.ParseResult<T.ParsedVBE>[] {
+  tokens: Readonly<T.Token[]>,
+): T.ParseResult<T.ParsedVBBEq>[] {
   if (tokens.length === 0) {
     return [];
   }
   const [{ s }, ...rest] = tokens;
-  function eqMaker({ tenses, persons }: EqInfo): T.ParseResult<T.ParsedVBE>[] {
+  function eqMaker({
+    tenses,
+    persons,
+  }: EqInfo): T.ParseResult<T.ParsedVBBEq>[] {
     return tenses.flatMap((tense) =>
       persons.map((person) =>
-        returnParseResultSingle(rest, makeEqVBE(tense, person))
-      )
+        returnParseResultSingle(rest, makeEqVBE(tense, person)),
+      ),
     );
   }
   if (s === "وای" || s === "وی") {
@@ -121,11 +124,11 @@ function getThirdPersEqs(s: string): EqInfo[] {
     const persons = getThirdPastEndings(s.at(-1) || "");
     return persons.length
       ? [
-        {
-          persons,
-          tenses: ["past"],
-        },
-      ]
+          {
+            persons,
+            tenses: ["past"],
+          },
+        ]
       : [];
   }
   return [];
@@ -159,10 +162,10 @@ function getFirstSecPersonsEndings(s: string): T.Person[] {
 
 function makeEqVBE(
   tense: T.EquativeTenseWithoutBa,
-  person: T.Person
-): T.ParsedVBE {
+  person: T.Person,
+): T.ParsedVBBEq {
   return {
-    type: "VB",
+    type: "parsed vbb eq",
     info: {
       type: "equative",
       tense,
