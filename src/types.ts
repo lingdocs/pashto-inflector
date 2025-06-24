@@ -1528,7 +1528,6 @@ export type PassiveVDoubWeld<X extends VerbX> = {
     left: {
       type: "passive welded left";
       complement: ParsedComplementSelection;
-      aspect: Aspect;
     };
     right: X;
   };

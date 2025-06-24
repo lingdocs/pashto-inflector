@@ -131,11 +131,9 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
       return [];
     }
 
-    const vbes = parseVBE(tokens, dictionary, front.front.find(isPH));
     const res = [
-      ...parseBasicTense(front, vbes),
+      ...parseBasicTense(tokens, dictionary, front),
       ...parseAbilityOrPerfect(tokens, dictionary, front),
-      // ...parsePassive(front, vbes, tokens),
     ];
     // TODO: some kind of do notation would be nice!
     return bindParseResult(res, (tkns, rear) => {
@@ -143,7 +141,10 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
       return bindParseResult(trailingKids, (tkns2, kids) => {
         const trailingNu = parseOptNeg(tkns2);
         return bindParseResult(trailingNu, (tkns3, nu) => {
-          const blocks = [...rear.blocks, ...(nu ? [nu] : [])];
+          const blocks = removeExtraPHFromPassiveDoubleW([
+            ...rear.blocks,
+            ...(nu ? [nu] : []),
+          ]);
           return returnParseResult(
             tkns3,
             {
@@ -159,9 +160,11 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
 }
 
 function parseBasicTense(
+  tokens: readonly T.Token[],
+  dictionary: T.DictionaryAPI,
   front: VerbSectionFrontData,
-  vbes: T.ParseResult<T.ParsedV<T.ParsedVBBVerb>>[],
 ): T.ParseResult<VerbSectionData>[] {
+  const vbes = parseVBE(tokens, dictionary, front.front.find(isPH));
   return bindParseWithAllErrors(vbes, (tkns, vbe) => {
     // TODO: or pass this in as on option to parseVBE so that we only get the plain VBE
     if (getInfoFromV(vbe).type !== "verb") {
@@ -367,4 +370,17 @@ function checkNegErrors(blocks: T.ParsedVerbSectionBlock[]): T.ParseError[] {
     }
   }
   return errors;
+}
+
+function removeExtraPHFromPassiveDoubleW(
+  blocks: T.ParsedVerbSectionBlock[],
+): T.ParsedVerbSectionBlock[] {
+  if (
+    blocks.some(
+      (x) => x.type === "parsedV" && x.content.type === "passive doub welded",
+    )
+  ) {
+    return blocks.filter((x) => !isPH(x));
+  }
+  return blocks;
 }

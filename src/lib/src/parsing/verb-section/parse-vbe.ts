@@ -1,5 +1,5 @@
 import * as T from "../../../../types";
-import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
+import { dartlul, kawulStat, raatlul, tlul, wartlul } from "./irreg-verbs";
 import { getVerbEnding, isKedulStat, isStatAux } from "./parse-verb-helpers";
 import {
   bindParseResult,
@@ -37,6 +37,11 @@ import { getTransitivity } from "../../verb-info";
 // TODO: check neg position with new setup
 // TODO: should the welded be with the compound verb in there?
 
+/**
+ * Parses a ParsedV<ParsedVBBVerb>
+ * IMPORTANT: after using this you need to remove the extra
+ * PH in the blocks if it was consumed to make a PassiveVDoubleWelded
+ */
 export function parseVBE(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
@@ -46,7 +51,7 @@ export function parseVBE(
   const res: T.ParseResult<T.ParsedV<T.ParsedVBBVerb>["content"]>[] = [
     ...vbbs,
     ...parseWelded(tokens, dictionary, ph), //tokens, dictionary, ph),
-    ...parseBasicPassiveWelded(vbbs),
+    ...parseBasicPassiveWelded(tokens, vbbs, ph),
     ...parseStatPassiveWelded(ph, tokens),
   ];
   return fmapParseResult(
@@ -357,8 +362,13 @@ function parseIrregularVerb(
 }
 
 function parseBasicPassiveWelded(
+  tokens: readonly T.Token[],
   vbes: T.ParseResult<T.ActiveVBasic<T.ParsedVBBVerb>>[],
+  ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.PassiveVWeld<T.ParsedVBBVerb>>[] {
+  if (ph?.type === "CompPH") {
+    return parsePerfectiveStatRear(tokens);
+  }
   return bindParseResult(vbes, (tkns, vbe) => {
     const { info, person } = vbe.content;
     if (info.base !== "root") {
@@ -401,79 +411,41 @@ function parseBasicPassiveWelded(
   });
 }
 
+function parsePerfectiveStatRear(
+  tokens: readonly T.Token[],
+): T.ParseResult<T.PassiveVWeld<T.ParsedVBBVerb>>[] {
+  if (tokens.length === 0) {
+    return [];
+  }
+  const kraays = parseKraay(tokens);
+  return bindParseResult(kraays, (tkns2) => {
+    const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
+      (x) =>
+        isKedulStat(x.body.info.verb) && x.body.info.aspect === "perfective",
+    );
+    return bindParseResult(auxs, (tkns3, aux) =>
+      returnParseResult(tkns3, {
+        type: "passive welded",
+        content: {
+          left: kawulStat,
+          right: {
+            type: "parsed vbb verb",
+            info: aux.info,
+            person: aux.person,
+          },
+        },
+      }),
+    );
+  });
+}
+
 function parseStatPassiveWelded(
   ph: T.ParsedPH | undefined,
   tokens: readonly T.Token[],
 ): T.ParseResult<T.PassiveVDoubWeld<T.ParsedVBBVerb>>[] {
-  // if (!ph) {
-  //   return [];
-  // }
-  // if (ph.type !== "CompPH") {
-  //   return [];
-  // }
-  // const kraays: T.ParseResult<{ type: "kraay" }>[] = parseKraay(tokens);
-  // if (kraays.length) {
-  //   return bindParseResult(kraays, (tkns2) => {
-  //     const auxs: T.ParseResult<T.ParsedVBBVerb>[] = [
-  //       ...parseKawulKedulVBE(tkns2, undefined).filter(
-  //         (x) =>
-  //           isKedulStat(x.body.info.verb) &&
-  //           x.body.info.aspect === "perfective",
-  //       ),
-  //       // ...parseKawulKedulVBP(tkns2, undefined).filter(
-  //       //   (x) => x.body.info.type === "ppart" && isKedulStat(x.body.info.verb),
-  //       // ),
-  //     ];
-
-  //     function makePassiveRight(
-  //       aux: T.ParsedVB | T.ParsedVBP,
-  //     ): T.ParsedRightVBE | T.ParsedRightVBP {
-  //       if (aux.info.type === "verb") {
-  //         // now we know this must be a perfective kedul aux
-  //         // @ts-ignore - for some reason we have to do this
-  //         const perfAux: T.ParsedVB = aux;
-  //         if (perfAux.info.type === "equative") {
-  //           throw new Error("improper verb flow in passive parsing");
-  //         }
-  //         return {
-  //           type: "parsedRightVBE",
-  //           info: perfAux.info,
-  //           person: perfAux.person,
-  //         };
-  //       } else if (aux.info.type === "ppart") {
-  //         // now we know this must be a perfect kedul aux
-  //         // @ts-ignore - for some reason we have to do this
-  //         const ppartAux: T.ParsedVBP = aux;
-  //         if (ppartAux.info.type === "ability") {
-  //           throw new Error("mmmm");
-  //         }
-  //         return {
-  //           type: "parsedRightVBP",
-  //           vbp: ppartAux,
-  //         };
-  //       }
-  //       throw new Error("improper verb flow in passive parsing 2");
-  //     }
-
-  //     return bindParseResult(auxs, (tkns3, aux) => {
-  //       // bit silly we have to use this function here because of trouble with type narrowing
-  //       const right = makePassiveRight(aux);
-  //       const passive: T.ParsedWeldedPassive = {
-  //         type: "weldedPassive",
-  //         left: {
-  //           type: "passiveLeftBasic",
-  //           verb: kawulStat,
-  //         },
-  //         right,
-  //       };
-  //       const blocks = [...front.front, passive];
-  //       return returnParseResult(tkns3, {
-  //         ...front,
-  //         blocks,
-  //       });
-  //     });
-  //   });
-  // }
+  // TODO: PROBLEM TO SOLVE!
+  // We can use the ph here, but we need to make sure that
+  //  1. The ph in the VerbBlocks gets eaten up somewhere
   if (ph?.type !== "CompPH") {
     return [];
   }
@@ -496,7 +468,6 @@ function parseStatPassiveWelded(
               type: "complement",
               selection: ph.selection,
             },
-            aspect: "imperfective",
           },
           right: {
             type: "parsed vbb verb",
@@ -522,6 +493,77 @@ function parseKraay(
   }
   return [];
 }
+
+//
+// if (!ph) {
+//   return [];
+// }
+// if (ph.type !== "CompPH") {
+//   return [];
+// }
+// const kraays: T.ParseResult<{ type: "kraay" }>[] = parseKraay(tokens);
+// if (kraays.length) {
+//   return bindParseResult(kraays, (tkns2) => {
+//     const auxs: T.ParseResult<T.ParsedVBBVerb>[] = [
+//       ...parseKawulKedulVBE(tkns2, undefined).filter(
+//         (x) =>
+//           isKedulStat(x.body.info.verb) &&
+//           x.body.info.aspect === "perfective",
+//       ),
+//       // ...parseKawulKedulVBP(tkns2, undefined).filter(
+//       //   (x) => x.body.info.type === "ppart" && isKedulStat(x.body.info.verb),
+//       // ),
+//     ];
+
+//     function makePassiveRight(
+//       aux: T.ParsedVB | T.ParsedVBP,
+//     ): T.ParsedRightVBE | T.ParsedRightVBP {
+//       if (aux.info.type === "verb") {
+//         // now we know this must be a perfective kedul aux
+//         // @ts-ignore - for some reason we have to do this
+//         const perfAux: T.ParsedVB = aux;
+//         if (perfAux.info.type === "equative") {
+//           throw new Error("improper verb flow in passive parsing");
+//         }
+//         return {
+//           type: "parsedRightVBE",
+//           info: perfAux.info,
+//           person: perfAux.person,
+//         };
+//       } else if (aux.info.type === "ppart") {
+//         // now we know this must be a perfect kedul aux
+//         // @ts-ignore - for some reason we have to do this
+//         const ppartAux: T.ParsedVBP = aux;
+//         if (ppartAux.info.type === "ability") {
+//           throw new Error("mmmm");
+//         }
+//         return {
+//           type: "parsedRightVBP",
+//           vbp: ppartAux,
+//         };
+//       }
+//       throw new Error("improper verb flow in passive parsing 2");
+//     }
+
+//     return bindParseResult(auxs, (tkns3, aux) => {
+//       // bit silly we have to use this function here because of trouble with type narrowing
+//       const right = makePassiveRight(aux);
+//       const passive: T.ParsedWeldedPassive = {
+//         type: "weldedPassive",
+//         left: {
+//           type: "passiveLeftBasic",
+//           verb: kawulStat,
+//         },
+//         right,
+//       };
+//       const blocks = [...front.front, passive];
+//       return returnParseResult(tkns3, {
+//         ...front,
+//         blocks,
+//       });
+//     });
+//   });
+// }
 
 function parseKawulStraight(
   tokens: readonly T.Token[],
