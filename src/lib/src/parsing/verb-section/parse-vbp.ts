@@ -8,8 +8,8 @@ import {
   parseKawulKedulPPart,
 } from "./parse-kawul-kedul-vbp";
 import { parseOptNeg } from "./parse-negative";
-import { getLFromComplement } from "./parse-vbe";
-import { isStatAux } from "./parse-verb-helpers";
+import { getLFromComplement, parseKraay, parseVBBBasic } from "./parse-vbe";
+import { isKawulStat, isKedulStat, isStatAux } from "./parse-verb-helpers";
 import { findRoot } from "./stem-root-finding";
 
 export function parseVBP(
@@ -23,15 +23,20 @@ export function parseVBP(
   }
   const types = type === "either" ? (["ability", "ppart"] as const) : [type];
   const res: T.ParseResult<
-    T.ActiveVBasic<T.ParsedVBP> | T.ActiveVWeld<T.ParsedVBP>
+    | T.ActiveVBasic<T.ParsedVBP>
+    | T.ActiveVWeld<T.ParsedVBP>
+    | T.PassiveVWeld<T.ParsedVBP>
   >[] = types.flatMap((type) => [
-    ...parseAbilityOrPPartVB(tokens, dictionary, ph, type),
-    ...parseAbilityOrPPartWelded(tokens, dictionary, ph, type),
+    ...parseActiveVBP(tokens, dictionary, ph, type),
+    ...parseActiveWeldedVBP(tokens, dictionary, ph, type),
+    // TODO: here this is inefficient cause we're gonna have to try to parse the VBE inside again
+    ...parsePassiveWeldedVBP(tokens, dictionary, ph, type),
+    ...parsePassiveDoubleWeldedVBP(tokens, dictionary, ph, type),
   ]);
   return fmapParseResult((content) => ({ type: "parsedV", content }), res);
 }
 
-function parseAbilityOrPPartVB(
+function parseActiveVBP(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
@@ -104,7 +109,164 @@ function parseAbilityOrPPartVBInside(
   }
 }
 
-function parseAbilityOrPPartWelded(
+function parsePassiveWeldedVBP(
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
+  ph: T.ParsedPH | undefined,
+  type: "ability" | "ppart",
+): T.ParseResult<T.PassiveVWeld<T.ParsedVBP>>[] {
+  if (tokens.length === 0) {
+    return [];
+  }
+  if (ph) {
+    return [];
+  }
+  const vbes = fmapParseResult(
+    (v) => v.content,
+    parseVBBBasic(tokens, dictionary, ph),
+  );
+  return bindParseResult(vbes, (tkns2, vbe) => {
+    if (isKawulStat(vbe.info.verb) || isKedulStat(vbe.info.verb)) {
+      return [];
+    }
+    if (
+      vbe.info.base !== "root" ||
+      vbe.person !== T.Person.ThirdPlurMale ||
+      vbe.info.imperative ||
+      // just to be clear - we shouldn't need this because we didn't allow
+      // the vbes to be parsed if a PH was present
+      vbe.info.aspect === "perfective"
+    ) {
+      return [];
+    }
+    if (type === "ability") {
+      const auxs = parseKawulKedulAbility(tkns2, undefined).filter((x) =>
+        isKedulStat(x.body.info.verb),
+      );
+      return bindParseResult(auxs, (tkns3, aux) => {
+        return returnParseResult(tkns3, {
+          type: "passive welded" as const,
+          content: {
+            left: vbe.info.verb,
+            right: aux,
+          },
+        });
+      });
+    }
+    return bindParseResult(vbes, (tkns2, vbe) => {
+      const auxs = parseKawulKedulPPart(tkns2).filter((x) =>
+        isKedulStat(x.body.info.verb),
+      );
+      return bindParseResult(auxs, (tkns3, aux) => {
+        const b: T.PassiveVWeld<T.ParsedVBP> = {
+          type: "passive welded",
+          content: {
+            left: vbe.info.verb,
+            right: aux,
+          },
+        };
+        return returnParseResult(tkns3, b);
+      });
+    });
+  });
+}
+
+function parsePassiveDoubleWeldedVBP(
+  tokens: Readonly<T.Token[]>,
+  dictionary: T.DictionaryAPI,
+  ph: T.ParsedPH | undefined,
+  type: "ability" | "ppart",
+): T.ParseResult<T.PassiveVDoubWeld<T.ParsedVBP>>[] {
+  if (tokens.length === 0) {
+    return [];
+  }
+  if (ph) {
+    return [];
+  }
+  // ability can take kRul or kawul depending on aspect
+  // ppart takes kraay
+  // GOOD QUESTION - ستنول شوي دي vs ستانه کړای شوي دي
+  const comps = parseComplement(tokens, dictionary);
+  return bindParseResult(comps, (tkns, comp) => {
+    const ks = parseK(tkns);
+    return bindParseResult(ks, (tkns2, k) => {
+      if (type === "ppart" && k === "kawul") {
+        return [];
+      }
+      if (type === "ability" && k === "kRaay") {
+        return [];
+      }
+      if (type === "ppart") {
+        const auxs = parseKawulKedulPPart(tkns2).filter((x) =>
+          isKedulStat(x.body.info.verb),
+        );
+        return bindParseResult(auxs, (tkns3, aux) => {
+          const b: T.PassiveVDoubWeld<T.ParsedVBPBasicPart> = {
+            type: "passive doub welded",
+            content: {
+              left: {
+                type: "passive welded left",
+                complement: comp,
+              },
+              right: aux,
+            },
+          };
+          return returnParseResult(tkns3, b);
+        });
+      }
+      const auxs = parseKawulKedulAbility(tkns2, undefined).filter((x) =>
+        isKedulStat(x.body.info.verb),
+      );
+      return bindParseResult(auxs, (tkns3, aux) => {
+        // for some reason we have to type this more generally to get the function to type-check
+        const b: T.PassiveVDoubWeld<T.ParsedVBP> = {
+          type: "passive doub welded",
+          content: {
+            left: {
+              type: "passive welded left",
+              complement: comp,
+            },
+            right: aux,
+          },
+        };
+        return returnParseResult(tkns3, b);
+      });
+    });
+  });
+}
+
+function parseK(
+  tokens: readonly T.Token[],
+): T.ParseResult<"kawul" | "kRul" | "kRaay">[] {
+  if (!tokens.length) {
+    return [];
+  }
+  const [{ s }, ...rest] = tokens;
+  if (s === "کول") {
+    return returnParseResult(rest, "kawul");
+  }
+  if (s === "کړل") {
+    return returnParseResult(rest, "kRul");
+  }
+  if (["کړای", "کړلای", "کړی", "کړلی"].includes(s)) {
+    return returnParseResult(rest, "kRaay");
+  }
+  return [];
+}
+
+function parseKawulStraight(
+  tokens: readonly T.Token[],
+): T.ParseResult<"kawul">[] {
+  if (!tokens.length) {
+    return [];
+  }
+  if (tokens[0].s === "کول") {
+    return returnParseResult(tokens.slice(1), "kawul");
+  }
+  return [];
+}
+
+function parseActiveWeldedVBP(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
@@ -164,6 +326,7 @@ function parseAbilityOrPPartWelded(
     });
   });
 }
+
 export function getPPartGenNums(s: string): T.GenderNumber[] {
   const ending: "ی" | "ي" | "ې" = s.at(-1) as "ی" | "ي" | "ې";
   if (!ending || !["ی", "ي", "ې"].includes(ending)) {

@@ -1,6 +1,11 @@
 import * as T from "../../../../types";
 import { dartlul, kawulStat, raatlul, tlul, wartlul } from "./irreg-verbs";
-import { getVerbEnding, isKedulStat, isStatAux } from "./parse-verb-helpers";
+import {
+  getVerbEnding,
+  isKawulStat,
+  isKedulStat,
+  isStatAux,
+} from "./parse-verb-helpers";
 import {
   bindParseResult,
   returnParseResult,
@@ -60,7 +65,7 @@ export function parseVBE(
   );
 }
 
-function parseVBBBasic(
+export function parseVBBBasic(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
@@ -371,13 +376,14 @@ function parseBasicPassiveWelded(
   }
   return bindParseResult(vbes, (tkns, vbe) => {
     const { info, person } = vbe.content;
-    if (info.base !== "root") {
+    if (
+      info.base !== "root" ||
+      person !== T.Person.ThirdPlurMale ||
+      info.imperative
+    ) {
       return [];
     }
-    if (info.imperative) {
-      return [];
-    }
-    if (person !== T.Person.ThirdPlurMale) {
+    if (isKawulStat(info.verb) || isKedulStat(info.verb)) {
       return [];
     }
     const auxs = parseKawulKedulVBE(tkns, undefined).filter(
@@ -481,7 +487,7 @@ function parseStatPassiveWelded(
   });
 }
 
-function parseKraay(
+export function parseKraay(
   tokens: readonly T.Token[],
 ): T.ParseResult<{ type: "kraay" }>[] {
   if (tokens.length === 0) {
