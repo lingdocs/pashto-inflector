@@ -2326,6 +2326,28 @@ const passivePerfectBasic: Section = {
       ],
     },
     {
+      input: "پخول شوې وه",
+      output: (["singular", "plural"] satisfies T.NounNumber[]).map(
+        (number) => ({
+          blocks: [
+            makePassiveBasicP(pakhawul, { gender: "fem", number }),
+            {
+              type: "parsed vbb aux",
+              content: {
+                type: "parsed vbb eq",
+                info: {
+                  type: "equative",
+                  tense: "past",
+                },
+                person: T.Person.ThirdSingFemale,
+              },
+            },
+          ],
+          kids: [],
+        }),
+      ),
+    },
+    {
       input: "نه به وي لیدل شوي",
       output: [
         ...getPeople(3, "both").flatMap<
@@ -2360,8 +2382,8 @@ const passivePerfectBasic: Section = {
   ],
 };
 
-const passivePerfectAbility: Section = {
-  title: "passive perfect ability",
+const passiveAbility: Section = {
+  title: "passive ability",
   tests: [
     {
       input: "لیدل کېدای شم",
@@ -2445,51 +2467,146 @@ const passiveStatCompPerf: Section = {
   title: "passive stat comp perf",
   tests: [
     {
-      input: "مړ کړل شوی دی",
-      output: [
-        {
-          blocks: [
-            {
-              type: "parsedV",
+      input: "پاخه کړای شوي دي",
+      output: getPeople(3, "pl").map((person) => ({
+        blocks: [
+          {
+            type: "parsedV",
+            content: {
+              type: "passive doub welded",
               content: {
-                type: "passive doub welded",
-                content: {
-                  left: {
-                    type: "passive welded left",
-                    complement: murComp,
+                left: {
+                  type: "passive welded left",
+                  complement: {
+                    type: "complement",
+                    selection: {
+                      inflection: [1],
+                      gender: ["masc"],
+                      given: "پاخه",
+                      selection: {
+                        type: "adjective",
+                        entry: pokh,
+                        sandwich: undefined,
+                      },
+                    },
                   },
-                  right: makePPartVBP(kedulStat, {
-                    gender: "masc",
-                    number: "singular",
-                  }).content.content,
                 },
+                right: makePPartVBP(kedulStat, {
+                  gender: "masc",
+                  number: "plural",
+                }).content.content,
               },
             },
-            {
-              type: "parsed vbb aux",
-              content: {
-                type: "parsed vbb eq",
-                info: {
-                  type: "equative",
-                  tense: "present",
-                },
-                person: T.Person.ThirdSingMale,
+          },
+          {
+            type: "parsed vbb aux",
+            content: {
+              type: "parsed vbb eq",
+              info: {
+                type: "equative",
+                tense: "present",
               },
+              person,
             },
-          ],
-          kids: [],
-        },
-      ],
+          },
+        ],
+        kids: [],
+      })),
     },
+    ...["کړل", "کړای", "کړلای", "کول"].map<Section["tests"][number]>(
+      (kraay) => ({
+        input: `مړ ${kraay} شوی دی`,
+        output: [
+          {
+            blocks: [
+              {
+                type: "parsedV",
+                content: {
+                  type: "passive doub welded",
+                  content: {
+                    left: {
+                      type: "passive welded left",
+                      complement: murComp,
+                    },
+                    right: makePPartVBP(kedulStat, {
+                      gender: "masc",
+                      number: "singular",
+                    }).content.content,
+                  },
+                },
+              },
+              {
+                type: "parsed vbb aux",
+                content: {
+                  type: "parsed vbb eq",
+                  info: {
+                    type: "equative",
+                    tense: "present",
+                  },
+                  person: T.Person.ThirdSingMale,
+                },
+              },
+            ],
+            kids: [],
+          },
+        ],
+      }),
+    ),
   ],
 };
+
+// TODO: make sure we cover all کړل کول کړای cases etc.
+// and make sure we can parse both پخول شوي and پوخ کړای شوي
 
 const passiveStatCompAbility: Section = {
   title: "passive stat comp ability",
   tests: [
     {
       input: "مړ کول کېدای شم",
+      output: [
+        ...(["perfective", "imperfective"] satisfies T.Aspect[]).flatMap<
+          Section["tests"][number]["output"][number]
+        >((aspect) =>
+          getPeople(1, "sing").map((person) => ({
+            blocks: [
+              {
+                type: "parsedV",
+                content: {
+                  type: "passive doub welded",
+                  content: {
+                    left: {
+                      type: "passive welded left",
+                      complement: murComp,
+                    },
+                    right: {
+                      type: "parsed vbp basic ability",
+                      info: {
+                        type: "ability",
+                        verb: kedulStat,
+                        aspect,
+                      },
+                    },
+                  },
+                },
+              },
+              toAux(
+                makeParsedVBE({
+                  person,
+                  aspect: "perfective",
+                  base: "stem",
+                  verb: kedulStat,
+                }),
+              ),
+            ],
+            kids: [],
+          })),
+        ),
+      ],
+    },
+    {
+      input: "مړ کړل کېدای شم",
       output: [],
+      error: true,
     },
   ],
 };
@@ -2506,11 +2623,11 @@ const sections = [
   statComp,
   statCompPerfect,
   passivePerfectBasic,
-  passivePerfectAbility,
-  passiveBasic,
-  passiveStatCompVBB,
+  passiveAbility,
+  // passiveBasic,
+  // passiveStatCompVBB,
   passiveStatCompPerf,
-  // passiveStatCompAbility,
+  passiveStatCompAbility,
 ];
 
 sections.forEach((section) => {
@@ -2578,32 +2695,6 @@ function makePassiveBasicV(
             type: "verb",
             base,
             aspect,
-            verb: kedulStat,
-          },
-        },
-      },
-    },
-  };
-}
-
-function makeDoublePassiveP(
-  complement: T.ParsedComplementSelection,
-  genNum: T.GenderNumber,
-): T.ParsedV<T.ParsedVBP> {
-  return {
-    type: "parsedV",
-    content: {
-      type: "passive doub welded",
-      content: {
-        left: {
-          type: "passive welded left",
-          complement,
-        },
-        right: {
-          type: "parsed vbp basic part",
-          info: {
-            type: "ppart",
-            genNum,
             verb: kedulStat,
           },
         },

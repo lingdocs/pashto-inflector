@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { kawulStat, kawulDyn, kedulStat, kedulDyn } from "./irreg-verbs";
 import { returnParseResults } from "../utils";
-import { getPPartGenNums } from "./parse-vbp";
+import { getPPartGenNums } from "./misc";
 
 // TODO: do we ever really need this umbrella function?
 // or are we always just parsing eithre PPart or Ability ??

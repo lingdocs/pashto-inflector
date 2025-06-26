@@ -6,7 +6,7 @@ import {
   returnParseResults,
 } from "../utils";
 import { kawulStat, kedulStat } from "../verb-section/irreg-verbs";
-import { getLFromComplement } from "../verb-section/parse-vbe";
+import { getLFromComplement } from "../verb-section/misc";
 import { shortVerbEndConsonant } from "./../verb-section/misc";
 import { parseComplement } from "./parse-complement";
 

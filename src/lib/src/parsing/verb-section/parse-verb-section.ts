@@ -13,10 +13,10 @@ import { parseEquative } from "./parse-equative";
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { parseNeg, parseOptNeg } from "./parse-negative";
 import { parsePH } from "./parse-ph";
-import { parseVBE } from "./parse-vbe";
-import { parseVBP } from "./parse-vbp";
 import { getInfoFromV } from "./vblock-tools";
 import { isKedulStat } from "./parse-verb-helpers";
+import { parseVerbX } from "./parse-verb-x";
+import { parseVBBBasic, parseVBPBasic } from "./parse-vb-base";
 
 export type VerbSectionData = {
   blocks: T.ParsedVerbSectionBlock[];
@@ -45,7 +45,7 @@ export type VerbSectionFrontData = {
 //   2) flipped with neg
 //   [NEG] + [Aux] + [VBP]
 
-// w/ Ability
+// Ability
 // VBP is Ability, Aux is StatAux
 // w/ Perfect
 // VBP is PastPart, Aux is Equative
@@ -164,7 +164,8 @@ function parseBasicTense(
   dictionary: T.DictionaryAPI,
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
-  const vbes = parseVBE(tokens, dictionary, front.front.find(isPH));
+  const ph = front.front.find(isPH);
+  const vbes = parseVerbX(tokens, dictionary, ph, parseVBBBasic, "basic");
   return bindParseWithAllErrors(vbes, (tkns, vbe) => {
     // TODO: or pass this in as on option to parseVBE so that we only get the plain VBE
     if (getInfoFromV(vbe).type !== "verb") {
@@ -198,7 +199,10 @@ function parseStraightAbilityOrPerfect(
   dictionary: T.DictionaryAPI,
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
-  const vbps = parseVBP(tokens, dictionary, front.front.find(isPH), "either");
+  const ph = front.front.find(isPH);
+  const vbps = (["ability", "perfect"] as const).flatMap((category) =>
+    parseVerbX(tokens, dictionary, ph, parseVBPBasic(category), category),
+  );
   return bindParseResult<T.ParsedV<T.ParsedVBP>, VerbSectionData>(
     vbps,
     (tkns, vbp) => {
@@ -253,11 +257,13 @@ function parseFlippedAbilityOrPerfect(
     const kidsRes = parseOptKidsSection(tkns);
     return bindParseResult(kidsRes, (tkns2, kids) => {
       const position = front.front.length + 1;
-      const res = parseVBP(
+      const category = aux.info.type === "equative" ? "perfect" : "ability";
+      const res = parseVerbX(
         tkns2,
         dictionary,
         ph,
-        aux.info.type === "equative" ? "ppart" : "ability",
+        parseVBPBasic(category),
+        category,
       );
       return bindParseResult(res, (tkns3, vbp) => {
         return [
