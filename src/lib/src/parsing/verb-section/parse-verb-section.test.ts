@@ -2624,8 +2624,8 @@ const sections = [
   statCompPerfect,
   passivePerfectBasic,
   passiveAbility,
-  // passiveBasic,
-  // passiveStatCompVBB,
+  passiveBasic,
+  passiveStatCompVBB,
   passiveStatCompPerf,
   passiveStatCompAbility,
 ];

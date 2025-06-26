@@ -126,13 +126,8 @@ export function parseVBPBasic(type: "ability" | "perfect") {
         }))
         .flatMap((m) => returnParseResult(rest, m));
     } else {
-      if (ph?.type === "CompPH") {
-        const kawulKedul = parseKawulKedulPPart(tokens).filter(
-          (x) => isKawulStat(x.body.info.verb) || isKedulStat(x.body.info.verb),
-        );
-        if (kawulKedul.length) {
-          return kawulKedul;
-        }
+      if (ph) {
+        return [];
       }
       const [{ s }, ...rest] = tokens;
       const genNums = getPPartGenNums(s);

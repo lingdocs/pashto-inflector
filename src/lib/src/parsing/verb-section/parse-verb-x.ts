@@ -13,6 +13,7 @@ import {
 } from "./parse-kawul-kedul-vbp";
 import { parseVBBBasic } from "./parse-vb-base";
 import { getTransitivity } from "../../verb-info";
+import { kawulStat } from "./irreg-verbs";
 
 type XParser<X> = (
   tokens: readonly T.Token[],
@@ -32,14 +33,36 @@ export function parseVerbX<X extends T.VerbX>(
   if (tokens.length === 0) {
     return [];
   }
-  const xs = parseX(tokens, dictionary, ph);
   const res: T.ParseResult<T.ParsedV<X>["content"]>[] = [
-    ...fmapParseResult(wrapInActiveV, xs),
+    ...parseActive<X>(tokens, dictionary, ph, category, parseX),
     ...parseActiveWelded<X>(tokens, dictionary, ph, category),
     ...parsePassiveWeldedX<X>(tokens, dictionary, ph, category),
     ...parsePassiveDoubleWeldedX<X>(tokens, ph, category),
   ];
   return fmapParseResult((content) => ({ type: "parsedV", content }), res);
+}
+
+function parseActive<X extends T.VerbX>(
+  tokens: readonly T.Token[],
+  dictionary: T.DictionaryAPI,
+  ph: T.ParsedPH | undefined,
+  category: Category,
+  parseX: XParser<X>,
+): T.ParseResult<T.ActiveVBasic<X>>[] {
+  const xs =
+    category === "ability" && ph?.type === "CompPH"
+      ? (fmapParseResult(
+          wrapInActiveV,
+          parseKawulKedulAbility(tokens, undefined).filter(
+            (x) =>
+              isKawulStat(x.body.info.verb) &&
+              x.body.info.aspect === "perfective",
+          ),
+        ) as T.ParseResult<T.ActiveVBasic<X>>[])
+      : category === "perfect" && ph?.type === "CompPH"
+        ? []
+        : fmapParseResult(wrapInActiveV, parseX(tokens, dictionary, ph));
+  return xs;
 }
 
 function parseActiveWelded<X extends T.VerbX>(
@@ -81,6 +104,19 @@ function parseActiveWelded<X extends T.VerbX>(
                 isStatAux(x.body.info.verb),
               ) as T.ParseResult<X>[]);
       return bindParseResult(ks, (tkns3, aux) => {
+        if (category === "perfect" && aux.info.type !== "ppart") {
+          return [];
+        }
+        if (category === "perfect") {
+          const vbp: T.ActiveVWeld<X> = {
+            type: "active welded",
+            content: {
+              left: comp,
+              right: aux,
+            },
+          };
+          return returnParseResult(tkns3, vbp);
+        }
         if (!("aspect" in aux.info)) {
           // purely for type safety because of the badly designed types
           return [];
@@ -139,9 +175,31 @@ function parsePassiveWeldedX<X extends T.VerbX>(
   if (tokens.length === 0) {
     return [];
   }
-  if (ph) {
-    return [];
+  if (ph?.type === "CompPH" && category === "basic") {
+    // passive stat comp perfective
+    const ks = parseK(tokens);
+    return bindParseResult(ks, (tkns2, k) => {
+      if (k === "kawul") {
+        return [];
+      }
+      const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
+        (x) =>
+          isKedulStat(x.body.info.verb) && x.body.info.aspect === "perfective",
+      );
+      console.log({ ks, auxs });
+      return bindParseResult(auxs, (tkns3, aux) => {
+        const res = {
+          type: "passive welded",
+          content: {
+            left: kawulStat,
+            right: aux,
+          },
+        } as T.PassiveVWeld<X>;
+        return returnParseResult(tkns3, res);
+      });
+    });
   }
+  // passive basic
   const vbes = parseVBBBasic(tokens, dictionary, ph);
   return bindParseResult(vbes, (tkns2, vbe) => {
     if (isKawulStat(vbe.info.verb) || isKedulStat(vbe.info.verb)) {
@@ -150,10 +208,7 @@ function parsePassiveWeldedX<X extends T.VerbX>(
     if (
       vbe.info.base !== "root" ||
       vbe.person !== T.Person.ThirdPlurMale ||
-      vbe.info.imperative ||
-      // just to be clear - we shouldn't need this because we didn't allow
-      // the vbes to be parsed if a PH was present
-      vbe.info.aspect === "perfective"
+      vbe.info.imperative
     ) {
       return [];
     }
