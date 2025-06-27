@@ -3,8 +3,6 @@ import { parseKidsSection, parseOptKidsSection } from "../parse-kids-section";
 import {
   bindParseResult,
   bindParseWithAllErrors,
-  isParsedVBB,
-  isParsedVBP,
   isPH,
   returnParseResult,
   returnParseResultSingle,
@@ -319,15 +317,14 @@ function checkNegErrors(blocks: T.ParsedVerbSectionBlock[]): T.ParseError[] {
       message: `only one negative allowed, you used ${negs.length}`,
     });
   }
-  const vbe = blocks.find(isParsedVBB);
-  if (!vbe) {
-    throw new Error("VBE not found while checking for negatives");
+  const vx = blocks.find((x) => x.type === "parsedV");
+  if (!vx) {
+    throw new Error("VerbX not found while checking for negatives");
   }
-  const vbp = blocks.find(isParsedVBP);
   const neg = negs[0];
-  const vbeInfo = vbe.type === "parsedV" ? getInfoFromV(vbe) : vbe.content.info;
+  const vxInfo = getInfoFromV(vx);
 
-  const isImperative = vbeInfo.type === "verb" && vbeInfo.imperative;
+  const isImperative = vxInfo.type === "verb" && vxInfo.imperative;
   if (neg) {
     const negIndex = blocks.findIndex((x) => x.type === "negative");
     if (neg.imperative && !isImperative) {
@@ -351,10 +348,7 @@ function checkNegErrors(blocks: T.ParsedVerbSectionBlock[]): T.ParseError[] {
       // not checking it with the ability ones because it was already sort of enforced
       // by the flipped/non flipped ability / perfect parsing pattern
       // but it might be good to do something a little more robust here
-      if (
-        ph.type === "CompPH" &&
-        (!vbp || (vbp && getInfoFromV(vbp).type !== "ability"))
-      ) {
+      if (ph.type === "CompPH" && vxInfo.type !== "ability") {
         if (negIndex !== 1) {
           errors.push({
             message:

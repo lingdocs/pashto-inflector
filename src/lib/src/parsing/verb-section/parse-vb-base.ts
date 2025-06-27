@@ -1,5 +1,5 @@
 import * as T from "../../../../types";
-import { getVerbEnding, isKawulStat, isKedulStat } from "./parse-verb-helpers";
+import { getVerbEnding } from "./parse-verb-helpers";
 import { returnParseResults, returnParseResult } from "../utils";
 import { getImperativeVerbEnding } from "./misc";
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
@@ -12,10 +12,7 @@ import {
   withAlephAdded,
   RootInfo,
 } from "./stem-root-finding";
-import {
-  parseKawulKedulAbility,
-  parseKawulKedulPPart,
-} from "./parse-kawul-kedul-vbp";
+import { parseKawulKedulAbility } from "./parse-kawul-kedul-vbp";
 
 // TODO: و ارزي
 // check that aawu stuff is working

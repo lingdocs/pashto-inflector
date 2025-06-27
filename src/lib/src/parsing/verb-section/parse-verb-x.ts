@@ -49,20 +49,18 @@ function parseActive<X extends T.VerbX>(
   category: Category,
   parseX: XParser<X>,
 ): T.ParseResult<T.ActiveVBasic<X>>[] {
-  const xs =
-    category === "ability" && ph?.type === "CompPH"
-      ? (fmapParseResult(
-          wrapInActiveV,
-          parseKawulKedulAbility(tokens, undefined).filter(
-            (x) =>
-              isKawulStat(x.body.info.verb) &&
-              x.body.info.aspect === "perfective",
-          ),
-        ) as T.ParseResult<T.ActiveVBasic<X>>[])
-      : category === "perfect" && ph?.type === "CompPH"
-        ? []
-        : fmapParseResult(wrapInActiveV, parseX(tokens, dictionary, ph));
-  return xs;
+  return category === "ability" && ph?.type === "CompPH"
+    ? (fmapParseResult(
+        wrapInActiveV,
+        parseKawulKedulAbility(tokens, undefined).filter(
+          (x) =>
+            isKawulStat(x.body.info.verb) &&
+            x.body.info.aspect === "perfective",
+        ),
+      ) as T.ParseResult<T.ActiveVBasic<X>>[])
+    : category === "perfect" && ph?.type === "CompPH"
+      ? []
+      : fmapParseResult(wrapInActiveV, parseX(tokens, dictionary, ph));
 }
 
 function parseActiveWelded<X extends T.VerbX>(
@@ -186,7 +184,6 @@ function parsePassiveWeldedX<X extends T.VerbX>(
         (x) =>
           isKedulStat(x.body.info.verb) && x.body.info.aspect === "perfective",
       );
-      console.log({ ks, auxs });
       return bindParseResult(auxs, (tkns3, aux) => {
         const res = {
           type: "passive welded",
@@ -281,9 +278,6 @@ function parsePassiveDoubleWeldedX<X extends T.VerbX>(
   ph: T.ParsedPH | undefined,
   category: Category,
 ): T.ParseResult<T.PassiveVDoubWeld<X>>[] {
-  // TODO: PROBLEM TO SOLVE!
-  // We can use the ph here, but we need to make sure that
-  //  1. The ph in the VerbBlocks gets eaten up somewhere
   if (ph?.type !== "CompPH") {
     return [];
   }

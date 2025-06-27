@@ -10,7 +10,6 @@ import {
   getPeople,
   getStatComp,
   getTransitivities,
-  isParsedVBP,
   isPH,
   returnParseResult,
   returnParseResults,
@@ -30,6 +29,7 @@ import {
 import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import {
+  assertNever,
   isFirstPerson,
   isSecondPerson,
   personGender,
@@ -42,27 +42,22 @@ import {
   isPerfectTense,
   isTlulVerb,
 } from "../type-predicates";
-import {
-  isKawulStat,
-  isKedulStat,
-  isKedulStatEntry,
-} from "./verb-section/parse-verb-helpers";
+import { isKawulStat, isKedulStat } from "./verb-section/parse-verb-helpers";
 import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 import {
   checkComplement,
   parsedCompToCompSelection,
   winnerOfNpAndCompliment,
 } from "../phrase-building/complement-tools";
-import { personsFromPattern1 } from "./argument-section/parse-noun-word";
-import {
-  dartlul,
-  kawulStat,
-  raatlul,
-  tlul,
-  wartlul,
-} from "./verb-section/irreg-verbs";
+// import { personsFromPattern1 } from "./argument-section/parse-noun-word";
+// import {
+//   dartlul,
+//   kawulStat,
+//   raatlul,
+//   tlul,
+//   wartlul,
+// } from "./verb-section/irreg-verbs";
 import { getAspect, isStatComp } from "../new-verb-engine/rs-helpers";
-import { getVerbInfo } from "../verb-info";
 
 type Target = {
   genders: T.Gender[];
@@ -110,6 +105,8 @@ const anyTarget: Target = {
 // TODO: this should NOT turn into a dynamic comp!
 //
 // CURRENT WORK: ADD STAT COMP FINDING TO PERFECT TENSE GETTING
+
+// TODO: TLUL COMPOUND CHECKING!
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -707,7 +704,7 @@ function finishGrammTransWNP(subject: T.ParsedNP) {
 }
 
 function getTenses(
-  blocks: VerbSectionBlock[],
+  blocks: T.ParsedVerbSectionBlock[],
   ba: boolean,
   dictionary: T.DictionaryAPI,
 ): {
@@ -726,18 +723,19 @@ function getTenses(
     | T.NegativeBlock
     | undefined;
   const phIndex = blocks.findIndex(isPH);
-  // TODO: would be nicer if there were clear taggin gfor "VBP" vs "VBE" !!
-  const vbeR = blocks.find(isParsedVBE);
-  const vbpR = blocks.find(isParsedVBP);
-  // const passive = blocks.find(isPassive);
-  const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
-  const { vbe, vbp } = checkForTlulCombos(ph, vbeR, vbpR);
-  if (!vbe) {
+  const vx = blocks.find((x) => x.type === "parsedV");
+  if (!vx) {
     return [];
   }
-  const { info, person, target, verbs } = getMainVerb(ph, vbe, vbp, dictionary);
+  const vbbAux = blocks.find((x) => x.type === "parsed vbb aux");
+  const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
+  const { info, person, target, passive, errors, verbs } = getMainVerb(
+    ph,
+    vx,
+    vbbAux,
+    dictionary,
+  );
   const tenses = getTensesFromRootsStems(ba, info, !!negative);
-  const passive = vbe.type === 3;
   return verbs.flatMap((verb) =>
     tenses.map((tense) => {
       const transitivities = getTransitivities(verb).filter(
@@ -750,7 +748,7 @@ function getTenses(
         person,
         target,
         verb,
-        errors: [],
+        errors,
         // TODO: this is dumb that we have to use this
         isCompound: getIsCompound(verb),
         voice: passive ? "passive" : "active",
@@ -771,102 +769,165 @@ function getIsCompound(verb: T.VerbEntry): T.IsCompound {
 
 function getMainVerb(
   ph: T.ParsedPH | undefined,
-  vbe: T.ParsedVBE,
-  vbp: T.ParsedVBP | undefined,
+  vx: T.ParsedV<T.VerbX>,
+  vbbAux: T.ParsedVBBAux | undefined,
   dictionary: T.DictionaryAPI,
 ): {
   info: (T.VbInfo & { ability: boolean }) | T.EqInfo;
   person: T.Person;
   target: Target;
+  passive: boolean;
+  errors: T.ParseError[];
   verbs: T.VerbEntry[];
 } {
-  const compHead = getCompHead(ph, vbp || vbe);
+  const compHead = getCompHead(ph, vx);
   const target = getTarget(compHead);
-  const { info, person } = getMainInfo(vbe, vbp);
-  const verbs = getVerbsWStatComp(compHead, info, dictionary, vbeOrPassive);
+  const { info, person, errors, passive } = getMainInfo(vx, vbbAux);
+  // TODO: this is a problem here that doesn't work for getting the transitivity of the comp verb
+  const verbs = getVerbsWStatComp(compHead, info, dictionary);
   return {
     info,
     person,
     target,
+    errors,
     verbs,
+    passive,
   };
 }
 
+type MainVerbInfo = T.VbInfo & { ability: boolean };
+type MainEqInfo = T.EqInfo;
+
 function getMainInfo(
-  vbe: T.ParsedVBE,
-  vbp: T.ParsedVBP | undefined,
-): { info: (T.VbInfo & { ability: boolean }) | T.EqInfo; person: T.Person } {
-  const vbeInfo =
-    vbe.type === "VB"
-      ? { info: vbe.info, person: vbe.person }
-      : vbe.type === "weldedVBE"
-        ? { info: vbe.right.info, person: vbe.right.person }
-        : undefined;
-  if (!vbeInfo) {
-    throw new Error("wrong type of vbe / vbp combo passed into getInfo A");
-  }
-  if (vbp) {
-    const vbpInfo = vbp.type === "VB" ? vbp.info : vbp.right.info;
-    if (!vbeInfo) {
-      throw new Error("wrong type of vbe / vbp combo passed into getInfo B");
-    }
-    if (vbpInfo.type === "ppart") {
-      if (vbeInfo.info.type !== "equative") {
-        throw new Error("wrong type of vbe / vbp combo passed into getInfo C");
-      }
-      return {
-        info: vbeInfo.info,
-        person: vbeInfo.person,
-      };
-    }
-    if (vbeInfo.info.type !== "verb") {
-      throw new Error("wrong type of vbe / vbp combo passed into getInfo D");
-    }
+  vx: T.ParsedV<T.VerbX>,
+  vbbAux: T.ParsedVBBAux | undefined,
+): {
+  info: MainVerbInfo | MainEqInfo;
+  person: T.Person;
+  passive: boolean;
+  errors: T.ParseError[];
+} {
+  function getBasicInfo(
+    vbb: T.ParsedVBBVerb,
+    passive: boolean,
+  ): ReturnType<typeof getMainInfo> {
     return {
       info: {
-        ...vbeInfo.info,
-        ability: true,
-      },
-      person: vbeInfo.person,
-    };
-  }
-  if (vbeInfo.info.type === "verb") {
-    return {
-      info: {
-        ...vbeInfo.info,
+        ...vbb.info,
         ability: false,
       },
-      person: vbeInfo.person,
+      person: vbb.person,
+      passive,
+      errors: [],
     };
   }
-  return {
-    info: vbeInfo.info,
-    person: vbeInfo.person,
-  };
+  function getAbilityInfo(
+    v: T.ParsedVBPBasicAbility,
+    passive: boolean,
+  ): ReturnType<typeof getMainInfo> {
+    if (vbbAux?.content.type !== "parsed vbb verb") {
+      throw new Error("we should have found an aux kedul verb here");
+    }
+    return {
+      info: {
+        ...vbbAux.content.info,
+        aspect: v.info.aspect,
+        ability: true,
+      },
+      person: vbbAux.content.person,
+      passive,
+      errors: [],
+    };
+  }
+  function getPerfectInfo(
+    v: T.ParsedVBPBasicPart,
+    passive: boolean,
+  ): ReturnType<typeof getMainInfo> {
+    if (vbbAux?.content.type !== "parsed vbb eq") {
+      throw new Error("we should have found an equative here");
+    }
+
+    const partGenNum = v.info.genNum;
+    const eqGenNum = personToGenNum(vbbAux.content.person);
+    const errors: T.ParseError[] = !equals(partGenNum, eqGenNum)
+      ? [
+          {
+            message: `equative (${eqGenNum.gender}. ${eqGenNum.number}) and past participle (${partGenNum.gender}. ${partGenNum.number}) do not agree`,
+          },
+        ]
+      : [];
+    return {
+      info: vbbAux.content.info,
+      person: vbbAux.content.person,
+      passive,
+      errors,
+    };
+  }
+  if (vx.content.type === "active basic") {
+    if (vx.content.content.type === "parsed vbb eq") {
+      throw new Error("we should not find an equative here!");
+    }
+    if (vx.content.content.type === "parsed vbb verb") {
+      return getBasicInfo(vx.content.content, false);
+    }
+    if (vx.content.content.type === "parsed vbp basic ability") {
+      return getAbilityInfo(vx.content.content, false);
+    }
+    if (vx.content.content.type === "parsed vbp basic part") {
+      return getPerfectInfo(vx.content.content, false);
+    }
+    assertNever(vx.content.content, "unknown ParsedV type");
+  }
+  if (vx.content.type === "active welded") {
+    if (vx.content.content.right.type === "parsed vbb eq") {
+      throw new Error("shouldn't find an eq here B");
+    }
+    if (vx.content.content.right.type === "parsed vbb verb") {
+      return getBasicInfo(vx.content.content.right, false);
+    }
+    if (vx.content.content.right.type === "parsed vbp basic part") {
+      return getPerfectInfo(vx.content.content.right, false);
+    }
+    if (vx.content.content.right.type === "parsed vbp basic ability") {
+      return getAbilityInfo(vx.content.content.right, false);
+    }
+    assertNever(vx.content.content.right, "unknown ParsedV type");
+  }
+  if (
+    vx.content.type === "passive welded" ||
+    vx.content.type === "passive doub welded"
+  ) {
+    if (vx.content.content.right.type === "parsed vbb eq") {
+      throw new Error("shouldn't find an eq here B");
+    }
+    if (vx.content.content.right.type === "parsed vbb verb") {
+      return getBasicInfo(vx.content.content.right, true);
+    }
+    if (vx.content.content.right.type === "parsed vbp basic part") {
+      return getPerfectInfo(vx.content.content.right, true);
+    }
+    if (vx.content.content.right.type === "parsed vbp basic ability") {
+      return getAbilityInfo(vx.content.content.right, true);
+    }
+    assertNever(vx.content.content.right, "unknown ParsedV type");
+  }
+  assertNever(vx.content, "unknown ParsedV type");
 }
 
 function getCompHead(
   ph: T.ParsedPH | undefined,
-  aux: T.ParsedVBE | T.ParsedVBP | T.ParsedWeldedPassive,
+  vx: T.ParsedV<T.VerbX>,
 ): T.ParsedComplementSelection["selection"] | undefined {
   if (ph) {
-    if (ph.type === "CompPH") {
-      return ph.selection;
-    } else {
-      return undefined;
-    }
+    return ph.type === "CompPH" ? ph.selection : undefined;
   }
-  if (aux.type === "weldedPassive") {
-    if (aux.left.type === "passiveLeftWelded") {
-      return aux.left.left.selection;
-    }
-    return undefined;
+  if (vx.content.type === "active welded") {
+    return vx.content.content.left.selection;
   }
-  // TODO: with stat comp passive implement
-  if (aux.type === "VB" || aux.left.type !== "complement") {
-    return undefined;
+  if (vx.content.type === "passive doub welded") {
+    return vx.content.content.left.complement.selection;
   }
-  return aux.left.selection;
+  return undefined;
 }
 
 function getExtComplementL(
@@ -916,120 +977,6 @@ function getTarget(
     };
   }
   return anyTarget;
-}
-
-function getAbilityTenses(
-  hasBa: boolean,
-  vbp: T.ParsedVBP,
-  vbe: T.ParsedVBE | undefined,
-  ph: T.ParsedPH | undefined,
-  negative: boolean,
-  dictionary: T.DictionaryAPI,
-): ReturnType<typeof getTenses> {
-  // for type safety - but we've already assured this won't happen
-  if (!vbe || vbe.type === "weldedVBE" || vbe.info.type === "equative") {
-    throw new Error("incorrect type of verb fed to getAbilityTenses");
-  }
-  const vbpInfo = getInfo(vbp);
-  if (vbpInfo.type !== "ability") {
-    throw new Error("incorrect type of verb fed to getAbilityTenses");
-  }
-
-  const compHead = getCompHead(ph, vbp);
-  // TODO: make sure we can do imperfective ability like مړ کولی شم
-  const verbs: T.VerbEntry[] = compHead
-    ? getStatComp(
-        getComplementL(compHead),
-        { verb: vbpInfo.verb, aspect: undefined },
-        dictionary,
-        true,
-      )
-    : [vbpInfo.verb];
-  // we are assuming from the parser that the vbe is the proper intrans stat aux
-  const base = vbe.info.base;
-  return verbs.flatMap((verb) => {
-    const aspects: T.Aspect[] = isAbilityAspectAmbiguousVBP(verb)
-      ? ["imperfective", "perfective"]
-      : [vbpInfo.aspect];
-    const tenses: T.AbilityTense[] = aspects.map<T.AbilityTense>(
-      (aspect) => `${tenseFromAspectBaseBa(aspect, base, hasBa)}Modal`,
-    );
-    return tenses.map((tense) => ({
-      negative,
-      verb,
-      person: vbe.person,
-      target: getTarget(compHead),
-      tense,
-      transitivities: getTransitivities(verb),
-      errors: [],
-      isCompound: getIsCompound(verb),
-      // TODO implement passive ability
-      voice: "active",
-    }));
-  });
-}
-
-function getPerfectTenses(
-  hasBa: boolean,
-  vbp: T.ParsedVBP,
-  vbe: T.ParsedVBE | undefined,
-  ph: T.ParsedPH | undefined,
-  negative: boolean,
-  dictionary: T.DictionaryAPI,
-): ReturnType<typeof getTenses> {
-  if (ph) {
-    return [];
-  }
-  // for type safety
-  const vbpInfo = vbp.type === "VB" ? vbp.info : vbp.right.info;
-  if (
-    vbpInfo.type !== "ppart" ||
-    !vbe ||
-    vbe.type === "weldedVBE" ||
-    vbe.info.type !== "equative"
-  ) {
-    throw new Error("incorrect type of verb fed to getPerfcetTenses");
-  }
-  const vbeTense = vbe.info.tense;
-  const errors: T.ParseError[] = [];
-  const equativeGenNum = personToGenNum(vbe.person);
-  if (!equals(equativeGenNum, vbpInfo.genNum)) {
-    errors.push({
-      message: `equative (${equativeGenNum.gender}. ${equativeGenNum.number}) and past participle (${vbpInfo.genNum.gender}. ${vbpInfo.genNum.number}) do not agree`,
-    });
-  }
-  const verbs: T.VerbEntry[] =
-    vbp.type === "weldedVBP"
-      ? getStatComp(
-          getComplementL(vbp.left.selection),
-          { verb: vbpInfo.verb, aspect: undefined },
-          dictionary,
-          true,
-        )
-      : [vbpInfo.verb];
-  const transitivities = getTransitivities(vbpInfo.verb);
-  const tense: T.PerfectTense | undefined = getPerfectTense(
-    hasBa,
-    vbe.info.tense,
-  );
-  if (!tense) {
-    errors.push({
-      message: `invalid perfect tense form`,
-    });
-  }
-  return verbs.map((verb) => ({
-    tense: tense || `${vbeTense}Perfect`,
-    transitivities,
-    negative: !!negative,
-    person: vbe.person,
-    target:
-      vbp.type === "weldedVBP" ? getTarget(vbp.left.selection) : anyTarget,
-    verb,
-    errors,
-    isCompound: getIsCompound(verb),
-    // perfect forms are always active
-    voice: "active",
-  }));
 }
 
 function checkForDynCompounds(dictionary: T.DictionaryAPI) {
@@ -1666,73 +1613,6 @@ function checkComplementPresence(
   return { complement: exComplement, compPresenceErrors: [] };
 }
 
-/**
- * This is just needed to turn the VBEs into proper tlul words,
- * if we have an ability VBP it will already be correct. This is not
- * the clearest and cleanest workflow, it probably would be better
- * to get the proper verb in the VBE in the first place, but this is
- * what we're working with for now
- */
-function checkForTlulCombos(
-  ph: T.ParsedPH | undefined,
-  vbe: T.ParsedVBE | undefined,
-  vbp: T.ParsedVBP | undefined,
-): { vbp: T.ParsedVBP | undefined; vbe: T.ParsedVBE | undefined } {
-  function replaceEntry(vbe: T.ParsedVBE, verb: T.VerbEntry): T.ParsedVBE {
-    if (vbe.type === "weldedVBE") {
-      return vbe;
-    }
-    if (vbe.info.type === "equative") {
-      return vbe;
-    }
-    return {
-      ...vbe,
-      info: {
-        ...vbe.info,
-        verb,
-      },
-    };
-  }
-  if (!vbe) {
-    return { vbp, vbe };
-  }
-  if (vbe.type === "VB" && vbe.info.type === "equative") {
-    return { vbp, vbe };
-  }
-  if (!ph || ph.type === "CompPH") {
-    return { vbp, vbe };
-  }
-  if (["را", "ور", "در"].includes(ph.s) || ph.s.startsWith("لاړ")) {
-    if (
-      !(
-        vbe.type === "VB" &&
-        vbe.info.type === "verb" &&
-        isKedulStatEntry(vbe.info.verb.entry) &&
-        vbe.info.aspect === "perfective" &&
-        vbe.info.base === "stem"
-      )
-    ) {
-      return { vbe, vbp };
-    }
-    const personsFromLar = personsFromPattern1("لاړ", ph.s);
-    // TOOD: could do error handling here
-    if (personsFromLar.includes(vbe.person)) {
-      return { vbe: replaceEntry(vbe, tlul), vbp };
-    }
-    if (ph.s === "را") {
-      return { vbe: replaceEntry(vbe, raatlul), vbp };
-    }
-    if (ph.s === "در") {
-      return { vbe: replaceEntry(vbe, dartlul), vbp };
-    }
-    if (ph.s === "ور") {
-      return { vbe: replaceEntry(vbe, wartlul), vbp };
-    }
-    return { vbe, vbp };
-  }
-  return { vbe, vbp };
-}
-
 // TODO: make sure this is expanded to deal properly with stative compounds
 function isAbilityAspectAmbiguousVBP(verb: T.VerbEntry): boolean {
   if (isStatComp(verb) && getTransitivities(verb).includes("intransitive")) {
@@ -1801,55 +1681,18 @@ function removeRedundantStatCombos(
 
 function getVerbsWStatComp(
   compHead: T.ParsedComplementSelection["selection"] | undefined,
-  info: T.VbInfo & { ability: true },
-  dictionary: T.DictionaryAPI,
-  vbeOrPassive: T.ParsedVBE | T.ParsedWeldedPassive,
-): T.VerbEntry[] {
-  return compHead
-    ? // perfective
-      getStatComp(
-        getComplementL(compHead),
-        {
-          verb: vbeOrPassive.type === "weldedPassive" ? kawulStat : info.verb,
-          aspect: info.aspect,
-        },
-        dictionary,
-        true,
-      )
-    : // imperfective
-      vbeOrPassive.type === "weldedPassive"
-      ? getStatCompFromWeldedPassive(vbeOrPassive, dictionary)
-      : vbeOrPassive.type === "weldedVBE"
-        ? getStatCompFromWeldedVBE(vbeOrPassive, dictionary)
-        : vbeOrPassive.info.type === "verb"
-          ? [vbeOrPassive.info.verb]
-          : [];
-}
-
-function getStatCompFromWeldedPassive(
-  pass: T.ParsedWeldedPassive,
+  info: MainVerbInfo | MainEqInfo,
   dictionary: T.DictionaryAPI,
 ): T.VerbEntry[] {
-  if (pass.left.type === "passiveLeftBasic") {
-    return [pass.left.verb];
+  if (!compHead || info.type === "equative") {
+    return [];
   }
-  const compL = getComplementL(pass.left.left.selection);
   return getStatComp(
-    compL,
-    { verb: kawulStat, aspect: pass.right.info.aspect },
-    dictionary,
-    true,
-  );
-}
-
-function getStatCompFromWeldedVBE(
-  vbe: T.ParsedWeldedVBE,
-  dictionary: T.DictionaryAPI,
-): T.VerbEntry[] {
-  const compL = getComplementL(vbe.left.selection);
-  return getStatComp(
-    compL,
-    { verb: vbe.right.info.verb, aspect: vbe.right.info.aspect },
+    getComplementL(compHead),
+    {
+      verb: info.verb,
+      aspect: info.aspect,
+    },
     dictionary,
     true,
   );

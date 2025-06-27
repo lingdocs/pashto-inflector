@@ -486,24 +486,3 @@ export function isOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
 export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
   return b.type === "PH" && !["و", "وا"].includes(b.s);
 }
-
-export function isParsedVBB(
-  b: T.ParsedBlock,
-): b is T.ParsedV<T.ParsedVBB> | T.ParsedVBBAux {
-  if (b.type === "parsed vbb aux") {
-    return true;
-  }
-  if (b.type !== "parsedV") {
-    return false;
-  }
-  const info = getInfoFromV(b);
-  return info.type === "verb" || info.type === "equative";
-}
-
-export function isParsedVBP(b: T.ParsedBlock): b is T.ParsedV<T.ParsedVBP> {
-  if (b.type !== "parsedV") {
-    return false;
-  }
-  const info = getInfoFromV(b);
-  return info.type === "ppart" || info.type === "ability";
-}
