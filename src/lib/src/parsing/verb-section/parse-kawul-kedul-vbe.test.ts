@@ -541,6 +541,16 @@ const kedulPerfective: Section = [
       ["stem"],
     ),
   },
+  ...["لاړ", "لاړه", "لاړې", "ور", "در", "را"].map<Section[number]>((s) => ({
+    ph: { type: "PH", s },
+    input: "شم",
+    output: makeAuxKedul(
+      getPeople(1, "sing"),
+      "stat",
+      ["perfective"],
+      ["stem"],
+    ),
+  })),
   {
     ph: oo,
     input: "شم",

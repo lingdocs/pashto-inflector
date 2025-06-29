@@ -21,7 +21,12 @@ import {
   makePronounSelection,
 } from "../phrase-building/make-selections";
 import { makeVPSelectionState } from "../phrase-building/verb-selection";
-import { kedulStat } from "./verb-section/irreg-verbs";
+import {
+  dartlul,
+  kedulStat,
+  raatlul,
+  wartlul,
+} from "./verb-section/irreg-verbs";
 const kraayVars = ["کړل", "کړای", "کړی"];
 
 const leedul = testDictionary.verbEntryLookup("لیدل")[0];
@@ -2148,11 +2153,11 @@ const abilityStatCompIntrans: Section = {
         form: full,
       })),
     },
-    ...["زه مړ کېدای نه شم", "زه نه شم مړ کېدای"].map((input) => ({
-      input,
+    {
+      input: `زه نه شم مړ کېدای`,
       output: (
         ["presentVerbModal", "subjunctiveVerbModal"] satisfies T.AbilityTense[]
-      ).map((tense) => ({
+      ).map<T.VPSelectionComplete>((tense) => ({
         blocks: [makeSubjBlock(T.Person.FirstSingMale), makeObjBlock("none")],
         verb: {
           ...makeVS(murKedul, tense),
@@ -2161,7 +2166,21 @@ const abilityStatCompIntrans: Section = {
         externalComplement: undefined,
         form: full,
       })),
-    })),
+    },
+    {
+      input: "زه نه شم مړه کېدلای",
+      output: (
+        ["presentVerbModal", "subjunctiveVerbModal"] satisfies T.AbilityTense[]
+      ).map<T.VPSelectionComplete>((tense) => ({
+        blocks: [makeSubjBlock(T.Person.FirstSingFemale), makeObjBlock("none")],
+        verb: {
+          ...makeVS(murKedul, tense),
+          negative: true,
+        },
+        externalComplement: undefined,
+        form: full,
+      })),
+    },
     {
       input: "زه مړېدای شم",
       output: getPeople(1, "sing").flatMap((subj) =>
@@ -2383,49 +2402,184 @@ const statCompPassivePerfect: Section = {
 };
 
 // TODO: can't get this to pass
-// const statCompPassiveAbility: Section = {
-//   title: "stat comp passive ability",
-//   tests: [
-//     {
-//       input: "زه مړول کېدای شم",
-//       output: getPeople(1, "sing").flatMap((person) =>
-//         (
-//           [
-//             "presentVerbModal",
-//             "subjunctiveVerbModal",
-//           ] satisfies T.AbilityTense[]
-//         ).flatMap<T.VPSelectionComplete>((tense) => [
-//           {
-//             blocks: [makeSubjBlock(person), makeObjBlock("none")],
-//             kids: [],
-//             verb: {
-//               ...makeVS(marawul, tense),
-//               passive: true,
-//             },
-//             externalComplement: undefined,
-//             form: full,
-//           },
-//           {
-//             blocks: [makeSubjBlock(person), makeObjBlock("none")],
-//             verb: makeVS(kedulStat, tense),
-//             externalComplement: {
-//               type: "complement",
-//               selection: {
-//                 type: "NP",
-//                 selection: {
-//                   type: "participle",
-//                   verb: marawul,
-//                   possesor: undefined,
-//                 },
-//               },
-//             },
-//             form: full,
-//           },
-//         ]),
-//       ),
-//     },
-//   ],
-// };
+const statCompPassiveAbility: Section = {
+  title: "stat comp passive ability",
+  tests: [
+    {
+      input: "زه مړول کېدای شم",
+      output: getPeople(1, "sing").flatMap((person) =>
+        (
+          [
+            "presentVerbModal",
+            "subjunctiveVerbModal",
+          ] satisfies T.AbilityTense[]
+        ).flatMap<T.VPSelectionComplete>((tense) => [
+          {
+            blocks: [
+              {
+                key: 1,
+                block: {
+                  type: "subjectSelection",
+                  selection: {
+                    type: "NP",
+                    selection: {
+                      type: "pronoun",
+                      distance: "far",
+                      person: person,
+                    },
+                  },
+                },
+              },
+              {
+                key: 2,
+                block: {
+                  type: "objectSelection",
+                  selection: "none",
+                },
+              },
+            ],
+            verb: {
+              type: "verb",
+              verb: kedulStat,
+              transitivity: "intransitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense,
+              canChangeVoice: false,
+              isCompound: false,
+              voice: "active",
+            },
+            externalComplement: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: {
+                  type: "participle",
+                  verb: marawul,
+                  possesor: undefined,
+                },
+              },
+            },
+            form: {
+              shrinkServant: false,
+              removeKing: false,
+            },
+          },
+          {
+            blocks: [
+              {
+                key: 0,
+                block: {
+                  type: "subjectSelection",
+                  selection: {
+                    type: "NP",
+                    selection: {
+                      type: "pronoun",
+                      distance: "far",
+                      person,
+                    },
+                  },
+                },
+              },
+              {
+                key: 1,
+                block: {
+                  type: "objectSelection",
+                  selection: "none",
+                },
+              },
+            ],
+            externalComplement: undefined,
+            verb: {
+              type: "verb",
+              verb: marawul,
+              transitivity: "transitive",
+              canChangeTransitivity: false,
+              canChangeStatDyn: false,
+              negative: false,
+              tense,
+              canChangeVoice: true,
+              isCompound: "stative",
+              voice: "passive",
+            },
+            form: {
+              shrinkServant: false,
+              removeKing: false,
+            },
+          },
+        ]),
+      ),
+    },
+  ],
+};
+
+const tlulSubjunctives: Section = {
+  title: "tlul subjunctives",
+  tests: [
+    {
+      input: "زه لاړ شم",
+      output: [
+        {
+          blocks: [makeSubjBlock(T.Person.FirstSingMale), makeObjBlock("none")],
+          verb: makeVS(tlul, "subjunctiveVerb"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+    {
+      input: "زه لاړه شم",
+      output: [
+        {
+          blocks: [
+            makeSubjBlock(T.Person.FirstSingFemale),
+            makeObjBlock("none"),
+          ],
+          verb: makeVS(tlul, "subjunctiveVerb"),
+          externalComplement: undefined,
+          form: full,
+        },
+      ],
+    },
+    {
+      input: "راشو",
+      output: getPeople(1, "pl").map((person) => ({
+        blocks: [makeSubjBlock(person), makeObjBlock("none")],
+        verb: makeVS(raatlul, "subjunctiveVerb"),
+        externalComplement: undefined,
+        form: { removeKing: true, shrinkServant: false },
+      })),
+    },
+    {
+      input: "راشه",
+      output: getPeople(2, "sing").map((person) => ({
+        blocks: [makeSubjBlock(person), makeObjBlock("none")],
+        verb: makeVS(raatlul, "perfectiveImperative"),
+        externalComplement: undefined,
+        form: { removeKing: true, shrinkServant: false },
+      })),
+    },
+    {
+      input: "ورشه",
+      output: getPeople(2, "sing").map((person) => ({
+        blocks: [makeSubjBlock(person), makeObjBlock("none")],
+        verb: makeVS(wartlul, "perfectiveImperative"),
+        externalComplement: undefined,
+        form: { removeKing: true, shrinkServant: false },
+      })),
+    },
+    {
+      input: "درشي",
+      output: getPeople(3, "both").map((person) => ({
+        blocks: [makeSubjBlock(person), makeObjBlock("none")],
+        verb: makeVS(dartlul, "subjunctiveVerb"),
+        externalComplement: undefined,
+        form: { removeKing: true, shrinkServant: false },
+      })),
+    },
+  ],
+};
 
 const sections = [
   intransFullForm,
@@ -2436,6 +2590,8 @@ const sections = [
   transBoth,
   grammTransFull,
   grammTransShort,
+  // special tlul subjunctives
+  tlulSubjunctives,
   // with complements
   complIntransFull,
   complTransFull,
@@ -2451,7 +2607,7 @@ const sections = [
   basicPassive,
   statCompPassiveBasic,
   statCompPassivePerfect,
-  // statCompPassiveAbility,
+  statCompPassiveAbility,
 ];
 
 sections.forEach((section) => {

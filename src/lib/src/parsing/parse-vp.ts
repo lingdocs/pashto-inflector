@@ -59,6 +59,7 @@ import {
 import { getAspect, isStatComp } from "../new-verb-engine/rs-helpers";
 import { isKawulStat, isKedulStat } from "./verb-section/parse-verb-helpers";
 import { kawulStat } from "./verb-section/irreg-verbs";
+import { tlul, raatlul, dartlul, wartlul } from "./verb-section/irreg-verbs";
 
 type Target = {
   genders: T.Gender[];
@@ -104,10 +105,6 @@ const anyTarget: Target = {
 // then testing for use of statComps
 // سړي ماشومه ستړې کړه
 // TODO: this should NOT turn into a dynamic comp!
-//
-// CURRENT WORK: ADD STAT COMP FINDING TO PERFECT TENSE GETTING
-
-// TODO: TLUL COMPOUND CHECKING!
 
 export function parseVP(
   tokens: Readonly<T.Token[]>,
@@ -786,8 +783,11 @@ function getMainVerb(
   errors: T.ParseError[];
   verbs: T.VerbEntry[];
 } {
+  const tlulCombos = checkForTlulCombosSubj(ph, vx);
+  if (tlulCombos) {
+    return tlulCombos;
+  }
   const compHead = getCompHead(ph, vx);
-
   const target = getTarget(compHead);
   const { info, person, errors, passive, verb } = getMainInfo(vx, vbbAux);
   // TODO: this is a problem here that doesn't work for getting the transitivity of the comp verb
@@ -799,6 +799,62 @@ function getMainVerb(
     errors,
     verbs: compHead ? verbs : [verb],
     passive,
+  };
+}
+
+const tlulVerbsDict: Record<string, { verb: T.VerbEntry; target: Target }> = {
+  لاړ: {
+    verb: tlul,
+    target: { genders: ["masc"], numbers: ["singular", "plural"] },
+  },
+  لاړه: { verb: tlul, target: { genders: ["fem"], numbers: ["singular"] } },
+  لاړې: { verb: tlul, target: { genders: ["fem"], numbers: ["plural"] } },
+  را: {
+    verb: raatlul,
+    target: { genders: ["masc", "fem"], numbers: ["singular", "plural"] },
+  },
+  در: {
+    verb: dartlul,
+    target: { genders: ["masc", "fem"], numbers: ["singular", "plural"] },
+  },
+  ور: {
+    verb: wartlul,
+    target: { genders: ["masc", "fem"], numbers: ["singular", "plural"] },
+  },
+};
+
+function checkForTlulCombosSubj(
+  ph: T.ParsedPH | undefined,
+  vx: T.ParsedV<T.VerbX>,
+): ReturnType<typeof getMainVerb> | undefined {
+  if (ph?.type !== "PH") {
+    return undefined;
+  }
+  if (vx.content.type !== "active basic") {
+    return undefined;
+  }
+  if (
+    vx.content.content.type !== "parsed vbb verb" ||
+    !isKedulStat(vx.content.content.info.verb) ||
+    vx.content.content.info.aspect !== "perfective"
+  ) {
+    return undefined;
+  }
+  const match = tlulVerbsDict[ph.s];
+  if (!match) {
+    return undefined;
+  }
+  return {
+    info: {
+      ...vx.content.content.info,
+      verb: match.verb,
+      ability: false,
+    },
+    person: vx.content.content.person,
+    target: match.target,
+    verbs: [match.verb],
+    passive: false,
+    errors: [],
   };
 }
 

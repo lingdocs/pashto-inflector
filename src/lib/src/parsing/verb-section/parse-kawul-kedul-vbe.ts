@@ -5,9 +5,20 @@ import { returnParseResults } from "../utils";
 import { getImperativeVerbEnding } from "./misc";
 
 // TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat
-type Head = "oo" | "none" | "other";
+type Head = "oo" | "tlul" | "none" | "other";
 function getHead(ph: T.ParsedPH | undefined): Head {
-  return !ph ? "none" : ph.type === "PH" && ph.s === "و" ? "oo" : "other";
+  if (!ph) {
+    return "none";
+  }
+  if (ph.type === "PH") {
+    if (ph.s === "و") {
+      return "oo";
+    }
+    if (["لاړ", "لاړه", "لاړې", "ور", "در", "را"].includes(ph.s)) {
+      return "tlul";
+    }
+  }
+  return "other";
 }
 
 // TODO: this might be a lot of unnecessary currying
@@ -17,7 +28,7 @@ const getForm =
   (aspect: T.Aspect) =>
   (base: "stem" | "root") =>
   (person: T.Person): T.ParsedVBBVerb[] => {
-    return validVerbs(head, kawulKedul, aspect).map((verb) => {
+    return validVerbs(head, kawulKedul, aspect, base).map((verb) => {
       return {
         type: "parsed vbb verb",
         info: {
@@ -198,6 +209,7 @@ function validVerbs(
   head: Head,
   kawulKedul: "kawul" | "kedul",
   aspect: T.Aspect,
+  base: "stem" | "root",
 ): T.VerbEntry[] {
   // imperfective
   if (aspect === "imperfective") {
@@ -210,6 +222,9 @@ function validVerbs(
   // perfective
   if (head === "oo") {
     return kawulKedul === "kawul" ? [kawulDyn] : [kedulDyn];
+  }
+  if (head === "tlul") {
+    return base === "stem" && kawulKedul === "kedul" ? [kedulStat] : [];
   }
   if (head === "none") {
     return kawulKedul === "kawul" ? [kawulStat] : [kedulStat];
