@@ -442,18 +442,25 @@ export function getStatComp(
     return [];
   }
   const trans = getTransitivities(aux.verb);
-  return dictionary.verbEntryLookupByL(compL).filter(
-    (x) =>
-      getTransitivities(x).some((t) => trans.includes(t)) &&
-      // make sure that if there's a distinct comp it's not one of the
-      // compounds that are joined together. For example
-      // مړه کېږم should not parse as مړېږم
-      !(
-        checkSpace &&
-        aux.aspect === "imperfective" &&
-        !x.entry.p.includes(" ")
-      ),
-  );
+  return dictionary
+    .verbEntryLookupByL(compL)
+    .filter(
+      (x) =>
+        getTransitivities(x).some((t) => trans.includes(t)) &&
+        !(
+          checkSpace &&
+          aux.aspect === "imperfective" &&
+          ![" کېدل", " کول"].some((e) => x.entry.p.endsWith(e))
+        ),
+    );
+  // make sure that if there's a distinct comp it's not one of the
+  // compounds that are joined together. For example
+  // مړه کېږم should not parse as مړېږم
+  // !(
+  //   checkSpace &&
+  //   aux.aspect === "imperfective" &&
+  //   !x.entry.p.includes(" ")
+  // ),
 }
 
 export function getTransitivities(v: T.VerbEntry): T.Transitivity[] {

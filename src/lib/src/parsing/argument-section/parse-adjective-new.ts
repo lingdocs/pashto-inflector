@@ -6,7 +6,7 @@ import { parseInflectableWord } from "./parse-inflectable-word";
 
 export function parseAdjective(
   tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.InflectableBaseParse<T.AdjectiveSelection>>[] {
   if (tokens.length === 0) {
     return [];
@@ -14,7 +14,7 @@ export function parseAdjective(
   const adjectives = parseInflectableWord(
     tokens,
     dictionary,
-    tp.isAdjectiveEntry
+    tp.isAdjectiveEntry,
   );
   return fmapParseResult(
     (r) => ({
@@ -23,6 +23,6 @@ export function parseAdjective(
       given: r.given,
       selection: makeAdjectiveSelection(r.selection as T.AdjectiveEntry),
     }),
-    adjectives
+    adjectives,
   );
 }

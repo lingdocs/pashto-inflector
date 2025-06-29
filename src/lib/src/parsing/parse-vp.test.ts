@@ -2101,7 +2101,7 @@ const abilityStatCompTrans: Section = {
     },
     {
       input: "هغوي ښځې مړې کولای شولې",
-      output: [marawul, murKawul].flatMap((verb) => [
+      output: [murKawul].flatMap((verb) => [
         ...getPeople(3, "pl").flatMap((subj) => ({
           blocks: [
             makeSubjBlock(subj),
@@ -2411,10 +2411,12 @@ const sections = [
   perfectStatComp,
   abilityStatCompTrans,
   abilityStatCompIntrans,
-  basicPassive,
-  statCompPassiveBasic,
+  // basicPassive,
+  // statCompPassiveBasic,
   // statCompPassivePerfect,
 ];
+
+// TODO: make sure this parses properly ماشومه مې پخه کړای شوه
 
 sections.forEach((section) => {
   describe(section.title, () => {

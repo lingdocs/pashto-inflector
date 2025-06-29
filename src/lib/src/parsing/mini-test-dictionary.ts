@@ -22,7 +22,7 @@ function nounLookup(p: string): T.NounEntry[] {
 function otherLookup(
   key: keyof T.DictionaryEntry,
   p: string,
-  regex?: boolean
+  regex?: boolean,
 ): T.DictionaryEntry[] {
   if (regex) {
     const { $regex: regex } = variationRegex(p);
@@ -34,7 +34,7 @@ function otherLookup(
 function specialPluralLookup(p: string): T.NounEntry[] {
   const { $regex: regex } = variationRegex(p);
   return entries.filter(
-    (e) => (e.ppp?.match(regex) || e.app?.match(regex)) && isNounEntry(e)
+    (e) => (e.ppp?.match(regex) || e.app?.match(regex)) && isNounEntry(e),
   ) as T.NounEntry[];
 }
 
@@ -45,10 +45,10 @@ function verbEntryLookup(p: string): T.VerbEntry[] {
     .map<T.VerbEntry>((entry) =>
       entry.l
         ? {
-          entry,
-          complement: entries.find((e) => e.ts === entry.l),
-        }
-        : { entry }
+            entry,
+            complement: entries.find((e) => e.ts === entry.l),
+          }
+        : { entry },
     );
 }
 
@@ -59,10 +59,10 @@ function verbEntryLookupByL(l: number): T.VerbEntry[] {
     .map<T.VerbEntry>((entry) =>
       entry.l
         ? {
-          entry,
-          complement: entries.find((e) => e.ts === entry.l),
-        }
-        : { entry }
+            entry,
+            complement: entries.find((e) => e.ts === entry.l),
+          }
+        : { entry },
     );
 }
 

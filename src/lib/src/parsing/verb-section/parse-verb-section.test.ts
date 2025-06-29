@@ -1886,6 +1886,113 @@ const statComp: Section = {
       output: [],
       error: true,
     },
+    {
+      input: "مړه کېږم",
+      output: [
+        ...getPeople(1, "sing").flatMap<
+          Section["tests"][number]["output"][number]
+        >((person) => [
+          {
+            blocks: [
+              {
+                type: "parsedV",
+                content: {
+                  type: "active welded",
+                  content: {
+                    left: {
+                      type: "complement",
+                      selection: {
+                        inflection: [0],
+                        gender: ["fem"],
+                        given: "مړه",
+                        selection: {
+                          type: "adjective",
+                          entry: mor,
+                          sandwich: undefined,
+                        },
+                      },
+                    },
+                    right: makeParsedVBE({
+                      person,
+                      verb: kedulStat,
+                      aspect: "imperfective",
+                      base: "stem",
+                    }).content.content,
+                  },
+                },
+              },
+            ],
+            kids: [],
+          },
+          // TODO: could make this not appear in parsing because it would be silly/impossible to have
+          // a complement with an inflection
+          {
+            blocks: [
+              {
+                type: "parsedV",
+                content: {
+                  type: "active welded",
+                  content: {
+                    left: {
+                      type: "complement",
+                      selection: {
+                        inflection: [1],
+                        gender: ["masc"],
+                        given: "مړه",
+                        selection: {
+                          type: "adjective",
+                          entry: mur,
+                          sandwich: undefined,
+                        },
+                      },
+                    },
+                    right: makeParsedVBE({
+                      person,
+                      verb: kedulStat,
+                      aspect: "imperfective",
+                      base: "stem",
+                    }).content.content,
+                  },
+                },
+              },
+            ],
+            kids: [],
+          },
+          {
+            blocks: [
+              {
+                type: "parsedV",
+                content: {
+                  type: "active welded",
+                  content: {
+                    left: {
+                      type: "complement",
+                      selection: {
+                        inflection: [0],
+                        gender: ["fem"],
+                        given: "مړه",
+                        selection: {
+                          type: "adjective",
+                          entry: mur,
+                          sandwich: undefined,
+                        },
+                      },
+                    },
+                    right: makeParsedVBE({
+                      person,
+                      verb: kedulStat,
+                      aspect: "imperfective",
+                      base: "stem",
+                    }).content.content,
+                  },
+                },
+              },
+            ],
+            kids: [],
+          },
+        ]),
+      ],
+    },
   ],
 };
 

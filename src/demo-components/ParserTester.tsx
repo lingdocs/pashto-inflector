@@ -24,7 +24,7 @@ function ParserTester({
       return;
     }
     const tokens = tokenizer(value);
-    const res = parseVerbSection(tokens, testDictionary);
+    const res = parseVP(tokens, testDictionary);
     setText(value);
     setResult(res);
   }
@@ -47,7 +47,7 @@ function ParserTester({
         />
       </div>
       <JsonEditor data={result} />
-      {/* result.map(x => x.body).map((res, i) => (
+      {result.map(x => x.body).map((res, i) => (
         <div key={`res ${i}`}>
           <EditableVP
             opts={opts}
@@ -61,7 +61,7 @@ function ParserTester({
             <JsonEditor data={res} />
           </details>
         </div>
-      )) */}
+      ))}
     </div>
   );
 }

@@ -42,7 +42,6 @@ import {
   isPerfectTense,
   isTlulVerb,
 } from "../type-predicates";
-import { isKawulStat, isKedulStat } from "./verb-section/parse-verb-helpers";
 import { dynamicAuxVerbs } from "../dyn-comp-aux-verbs";
 import {
   checkComplement,
@@ -58,6 +57,7 @@ import {
 //   wartlul,
 // } from "./verb-section/irreg-verbs";
 import { getAspect, isStatComp } from "../new-verb-engine/rs-helpers";
+import { isKawulStat, isKedulStat } from "./verb-section/parse-verb-helpers";
 
 type Target = {
   genders: T.Gender[];
@@ -116,6 +116,7 @@ export function parseVP(
     return [];
   }
   const argument = parseArgumentSection(tokens, dictionary);
+  // removeRedundantStatCombos(
   return removeRedundantStatCombos(
     bindParseResultWParser(
       argument,
@@ -130,6 +131,8 @@ export function parseVP(
     ),
     dictionary,
   );
+  // dictionary,
+  // );
 }
 
 function combineArgAndVerbSections(
@@ -144,7 +147,12 @@ function combineArgAndVerbSections(
     ...(arg.complement ? [arg.complement] : []),
   ];
   const ba = kids.some((k) => k === "ba");
-  const tenses = getTenses(vs.blocks, ba, dictionary);
+  const tenses = getTenses(
+    vs.blocks,
+    ba,
+    dictionary,
+    blocks.find((x) => x.type === "complement"),
+  );
   // TODO get errors from the get tenses (perfect verbs not agreeing)
   return createPossesivePossibilities({
     blocks,
@@ -153,6 +161,9 @@ function combineArgAndVerbSections(
     const miniPronouns = getMiniPronouns(kids);
     const npsAndAps = blocks.filter((x) => x.type === "NP" || x.type === "AP");
     const exComplement = blocks.find((x) => x.type === "complement");
+
+    // with مړه کېږم somehow there are tenses being created that are losing the
+    // Comp Head or ExComplement
     return tenses.flatMap(
       ({
         tense,
@@ -735,9 +746,8 @@ function getTenses(
     vbbAux,
     dictionary,
   );
-  const tenses = getTensesFromRootsStems(ba, info, !!negative);
   return verbs.flatMap((verb) =>
-    tenses.map((tense) => {
+    getTensesFromRootsStems(ba, info, !!negative, verb).map((tense) => {
       const transitivities = getTransitivities(verb).filter(
         (x) => !(passive && x === "grammatically transitive"),
       );
@@ -781,16 +791,17 @@ function getMainVerb(
   verbs: T.VerbEntry[];
 } {
   const compHead = getCompHead(ph, vx);
+
   const target = getTarget(compHead);
-  const { info, person, errors, passive } = getMainInfo(vx, vbbAux);
+  const { info, person, errors, passive, verb } = getMainInfo(vx, vbbAux);
   // TODO: this is a problem here that doesn't work for getting the transitivity of the comp verb
-  const verbs = getVerbsWStatComp(compHead, info, dictionary);
+  const verbs = getVerbsWStatComp(compHead, verb, info, dictionary);
   return {
     info,
     person,
     target,
     errors,
-    verbs,
+    verbs: compHead ? verbs : [verb],
     passive,
   };
 }
@@ -803,6 +814,7 @@ function getMainInfo(
   vbbAux: T.ParsedVBBAux | undefined,
 ): {
   info: MainVerbInfo | MainEqInfo;
+  verb: T.VerbEntry;
   person: T.Person;
   passive: boolean;
   errors: T.ParseError[];
@@ -816,6 +828,7 @@ function getMainInfo(
         ...vbb.info,
         ability: false,
       },
+      verb: vbb.info.verb,
       person: vbb.person,
       passive,
       errors: [],
@@ -834,6 +847,7 @@ function getMainInfo(
         aspect: v.info.aspect,
         ability: true,
       },
+      verb: v.info.verb,
       person: vbbAux.content.person,
       passive,
       errors: [],
@@ -857,6 +871,7 @@ function getMainInfo(
         ]
       : [];
     return {
+      verb: v.info.verb,
       info: vbbAux.content.info,
       person: vbbAux.content.person,
       passive,
@@ -1362,6 +1377,7 @@ function getTensesFromRootsStems(
   hasBa: boolean,
   info: (T.VbInfo & { ability: boolean }) | T.EqInfo,
   negative: boolean,
+  verb: T.VerbEntry,
 ): (T.VerbTense | T.ImperativeTense | T.PerfectTense | T.AbilityTense)[] {
   if (info.type === "equative") {
     const et = getEquativeTense(hasBa, info.tense);
@@ -1379,8 +1395,16 @@ function getTensesFromRootsStems(
       ? ["imperfectiveImperative"]
       : ["perfectiveImperative"];
   }
-  const baseTense = tenseFromAspectBaseBa(info.aspect, info.base, hasBa);
-  return info.ability ? [baseTense] : [`${baseTense}Modal`];
+  const aspects: T.Aspect[] =
+    info.ability && isAbilityAspectAmbiguousVBP(verb)
+      ? ["imperfective", "perfective"]
+      : [info.aspect];
+  const baseTenses = aspects.map((aspect) =>
+    tenseFromAspectBaseBa(aspect, info.base, hasBa),
+  );
+  return !info.ability
+    ? baseTenses
+    : baseTenses.map<T.AbilityTense>((bt) => `${bt}Modal`);
 }
 
 function getEquativeTense(
@@ -1613,7 +1637,6 @@ function checkComplementPresence(
   return { complement: exComplement, compPresenceErrors: [] };
 }
 
-// TODO: make sure this is expanded to deal properly with stative compounds
 function isAbilityAspectAmbiguousVBP(verb: T.VerbEntry): boolean {
   if (isStatComp(verb) && getTransitivities(verb).includes("intransitive")) {
     return true;
@@ -1681,17 +1704,19 @@ function removeRedundantStatCombos(
 
 function getVerbsWStatComp(
   compHead: T.ParsedComplementSelection["selection"] | undefined,
+  verb: T.VerbEntry,
   info: MainVerbInfo | MainEqInfo,
   dictionary: T.DictionaryAPI,
 ): T.VerbEntry[] {
-  if (!compHead || info.type === "equative") {
+  if (!compHead) {
     return [];
   }
+
   return getStatComp(
     getComplementL(compHead),
     {
-      verb: info.verb,
-      aspect: info.aspect,
+      verb,
+      aspect: info.type === "equative" ? undefined : info.aspect,
     },
     dictionary,
     true,
