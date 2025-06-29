@@ -6,7 +6,6 @@ import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
 import EditableVP from "../components/src/vp-explorer/EditableVP";
-import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
 
 function ParserTester({
   opts,

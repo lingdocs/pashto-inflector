@@ -1,6 +1,5 @@
 import * as T from "../../../types";
 import { assertNever } from "../misc-helpers";
-import { getInfoFromV } from "./verb-section/vblock-tools";
 
 /**
  * Monadic binding for ParseResult[]
