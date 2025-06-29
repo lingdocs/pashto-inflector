@@ -58,6 +58,7 @@ import {
 // } from "./verb-section/irreg-verbs";
 import { getAspect, isStatComp } from "../new-verb-engine/rs-helpers";
 import { isKawulStat, isKedulStat } from "./verb-section/parse-verb-helpers";
+import { kawulStat } from "./verb-section/irreg-verbs";
 
 type Target = {
   genders: T.Gender[];
@@ -147,12 +148,7 @@ function combineArgAndVerbSections(
     ...(arg.complement ? [arg.complement] : []),
   ];
   const ba = kids.some((k) => k === "ba");
-  const tenses = getTenses(
-    vs.blocks,
-    ba,
-    dictionary,
-    blocks.find((x) => x.type === "complement"),
-  );
+  const tenses = getTenses(vs.blocks, ba, dictionary);
   // TODO get errors from the get tenses (perfect verbs not agreeing)
   return createPossesivePossibilities({
     blocks,
@@ -795,7 +791,7 @@ function getMainVerb(
   const target = getTarget(compHead);
   const { info, person, errors, passive, verb } = getMainInfo(vx, vbbAux);
   // TODO: this is a problem here that doesn't work for getting the transitivity of the comp verb
-  const verbs = getVerbsWStatComp(compHead, verb, info, dictionary);
+  const verbs = getVerbsWStatComp(compHead, verb, info, dictionary, passive);
   return {
     info,
     person,
@@ -908,10 +904,50 @@ function getMainInfo(
     }
     assertNever(vx.content.content.right, "unknown ParsedV type");
   }
-  if (
-    vx.content.type === "passive welded" ||
-    vx.content.type === "passive doub welded"
-  ) {
+  if (vx.content.type === "passive welded") {
+    if (vx.content.content.right.type === "parsed vbb eq") {
+      throw new Error("shouldn't find an eq here B");
+    }
+    const verb = vx.content.content.left;
+    if (vx.content.content.right.type === "parsed vbb verb") {
+      return getBasicInfo(
+        {
+          ...vx.content.content.right,
+          info: {
+            ...vx.content.content.right.info,
+            verb,
+          },
+        },
+        true,
+      );
+    }
+    if (vx.content.content.right.type === "parsed vbp basic part") {
+      return getPerfectInfo(
+        {
+          ...vx.content.content.right,
+          info: {
+            ...vx.content.content.right.info,
+            verb,
+          },
+        },
+        true,
+      );
+    }
+    if (vx.content.content.right.type === "parsed vbp basic ability") {
+      return getAbilityInfo(
+        {
+          ...vx.content.content.right,
+          info: {
+            ...vx.content.content.right.info,
+            verb,
+          },
+        },
+        true,
+      );
+    }
+    assertNever(vx.content.content.right, "unknown ParsedV type");
+  }
+  if (vx.content.type === "passive doub welded") {
     if (vx.content.content.right.type === "parsed vbb eq") {
       throw new Error("shouldn't find an eq here B");
     }
@@ -924,7 +960,7 @@ function getMainInfo(
     if (vx.content.content.right.type === "parsed vbp basic ability") {
       return getAbilityInfo(vx.content.content.right, true);
     }
-    assertNever(vx.content.content.right, "unknown ParsedV type");
+    assertNever(vx.content.content.right, "unknown passive doub welded type");
   }
   assertNever(vx.content, "unknown ParsedV type");
 }
@@ -1707,6 +1743,7 @@ function getVerbsWStatComp(
   verb: T.VerbEntry,
   info: MainVerbInfo | MainEqInfo,
   dictionary: T.DictionaryAPI,
+  passive: boolean,
 ): T.VerbEntry[] {
   if (!compHead) {
     return [];
@@ -1715,7 +1752,7 @@ function getVerbsWStatComp(
   return getStatComp(
     getComplementL(compHead),
     {
-      verb,
+      verb: passive && isKedulStat(verb) ? kawulStat : verb,
       aspect: info.type === "equative" ? undefined : info.aspect,
     },
     dictionary,

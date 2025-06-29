@@ -2358,37 +2358,74 @@ const statCompPassiveBasic: Section = {
 };
 
 const statCompPassivePerfect: Section = {
-  title: "stat comp passive ability",
-  tests: [
-    ...kraayVars.map<Section["tests"][number]>((krul) => ({
-      input: `ښځې مړې ${krul} شوې دي`,
-      output: [
-        {
-          blocks: [
-            makeSubjBlock({
-              type: "NP",
-              selection: {
-                ...makeNounSelection(xudza, undefined),
-                number: "plural",
-              },
-            }),
-          ],
-          verb: {
-            ...makeVS(murKawul, "presentPerfect"),
-            voice: "passive",
+  title: "stat comp passive perfect",
+  tests: kraayVars.map<Section["tests"][number]>((krul) => ({
+    input: `ښځې مړې ${krul} شوې دي`,
+    output: [marawul, murKawul].map((verb) => ({
+      blocks: [
+        makeSubjBlock({
+          type: "NP",
+          selection: {
+            ...makeNounSelection(xudza, undefined),
+            number: "plural",
           },
-          externalComplement: undefined,
-          form: full,
-        },
+        }),
+        makeObjBlock("none"),
       ],
+      verb: {
+        ...makeVS(verb, "presentPerfect"),
+        voice: "passive",
+      },
+      externalComplement: undefined,
+      form: full,
     })),
-  ],
+  })),
 };
 
-const statCompPassiveAbility: Section = {
-  title: "stat comp passive ability",
-  tests: [],
-};
+// TODO: can't get this to pass
+// const statCompPassiveAbility: Section = {
+//   title: "stat comp passive ability",
+//   tests: [
+//     {
+//       input: "زه مړول کېدای شم",
+//       output: getPeople(1, "sing").flatMap((person) =>
+//         (
+//           [
+//             "presentVerbModal",
+//             "subjunctiveVerbModal",
+//           ] satisfies T.AbilityTense[]
+//         ).flatMap<T.VPSelectionComplete>((tense) => [
+//           {
+//             blocks: [makeSubjBlock(person), makeObjBlock("none")],
+//             kids: [],
+//             verb: {
+//               ...makeVS(marawul, tense),
+//               passive: true,
+//             },
+//             externalComplement: undefined,
+//             form: full,
+//           },
+//           {
+//             blocks: [makeSubjBlock(person), makeObjBlock("none")],
+//             verb: makeVS(kedulStat, tense),
+//             externalComplement: {
+//               type: "complement",
+//               selection: {
+//                 type: "NP",
+//                 selection: {
+//                   type: "participle",
+//                   verb: marawul,
+//                   possesor: undefined,
+//                 },
+//               },
+//             },
+//             form: full,
+//           },
+//         ]),
+//       ),
+//     },
+//   ],
+// };
 
 const sections = [
   intransFullForm,
@@ -2411,12 +2448,11 @@ const sections = [
   perfectStatComp,
   abilityStatCompTrans,
   abilityStatCompIntrans,
-  // basicPassive,
-  // statCompPassiveBasic,
-  // statCompPassivePerfect,
+  basicPassive,
+  statCompPassiveBasic,
+  statCompPassivePerfect,
+  // statCompPassiveAbility,
 ];
-
-// TODO: make sure this parses properly ماشومه مې پخه کړای شوه
 
 sections.forEach((section) => {
   describe(section.title, () => {
