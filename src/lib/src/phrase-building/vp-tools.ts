@@ -138,13 +138,13 @@ export function isInvalidSubjObjCombo(subj: T.Person, obj: T.Person): boolean {
 // }
 
 export function getPersonFromNP(
-  np: T.NPSelection | T.Rendered<T.NPSelection>
+  np: T.NPSelection | T.Rendered<T.NPSelection>,
 ): T.Person;
 export function getPersonFromNP(
-  np: T.NPSelection | T.Rendered<T.NPSelection> | T.ObjectNP
+  np: T.NPSelection | T.Rendered<T.NPSelection> | T.ObjectNP,
 ): T.Person | undefined;
 export function getPersonFromNP(
-  np: T.NPSelection | T.Rendered<T.NPSelection> | T.ObjectNP
+  np: T.NPSelection | T.Rendered<T.NPSelection> | T.ObjectNP,
 ): T.Person | undefined {
   if (np === "none") {
     return undefined;
@@ -161,8 +161,8 @@ export function getPersonFromNP(
       ? T.Person.ThirdPlurMale
       : T.Person.ThirdPlurFemale
     : np.selection.gender === "masc"
-    ? T.Person.ThirdSingMale
-    : T.Person.ThirdSingFemale;
+      ? T.Person.ThirdSingMale
+      : T.Person.ThirdSingFemale;
 }
 
 export function removeBa(ps: T.PsString): T.PsString {
@@ -170,7 +170,7 @@ export function removeBa(ps: T.PsString): T.PsString {
 }
 
 export function getTenseFromVerbSelection(
-  vs: T.VerbSelection
+  vs: T.VerbSelection,
 ): T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense {
   function verbTenseToModalTense(tn: T.VerbTense): T.AbilityTense {
     if (tn === "presentVerb") {
@@ -228,12 +228,12 @@ export function perfectTenseHasBa(tense: T.PerfectTense): boolean {
 
 export function removeDuplicates(psv: T.PsString[]): T.PsString[] {
   return psv.filter(
-    (ps, i, arr) => i === arr.findIndex((t) => psStringEquals(t, ps))
+    (ps, i, arr) => i === arr.findIndex((t) => psStringEquals(t, ps)),
   );
 }
 
 export function switchSubjObj<
-  V extends T.VPSelectionState | T.VPSelectionComplete
+  V extends T.VPSelectionState | T.VPSelectionComplete,
 >(vps: V): V {
   const subject = getSubjectSelection(vps.blocks).selection;
   const object = getObjectSelection(vps.blocks).selection;
@@ -249,7 +249,7 @@ export function switchSubjObj<
       ...vps,
       blocks: adjustObjectSelection(
         adjustSubjectSelection(object)(vps.blocks),
-        subject
+        subject,
       ),
     };
   }
@@ -260,13 +260,13 @@ export function switchSubjObj<
     ...vps,
     blocks: adjustObjectSelection(
       adjustSubjectSelection(object)(vps.blocks),
-      subject
+      subject,
     ),
   };
 }
 
 export function completeVPSelection(
-  vps: T.VPSelectionState
+  vps: T.VPSelectionState,
 ): T.VPSelectionComplete | undefined {
   if (!VPSBlocksAreComplete(vps.blocks)) {
     return undefined;
@@ -282,16 +282,16 @@ export function completeVPSelection(
 }
 
 export function uncompleteVPSelection(
-  vps: T.VPSelectionComplete
+  vps: T.VPSelectionComplete,
 ): T.VPSelectionState {
   const tense = vps.verb.tense;
   const tenseCategory = isVerbTense(tense)
     ? "basic"
     : isPerfectTense(tense)
-    ? "perfect"
-    : isImperativeTense(tense)
-    ? "imperative"
-    : "modal";
+      ? "perfect"
+      : isImperativeTense(tense)
+        ? "imperative"
+        : "modal";
   return {
     ...vps,
     verb: {
@@ -300,8 +300,8 @@ export function uncompleteVPSelection(
         tenseCategory === "basic"
           ? (tense as T.VerbTense)
           : tenseCategory === "modal"
-          ? (tense.slice(0, -5) as T.VerbTense)
-          : "presentVerb",
+            ? (tense.slice(0, -5) as T.VerbTense)
+            : "presentVerb",
       perfectTense:
         tenseCategory === "perfect"
           ? (tense as T.PerfectTense)
@@ -325,7 +325,7 @@ export function isThirdPerson(p: T.Person): boolean {
 }
 
 export function ensure2ndPersSubjPronounAndNoConflict(
-  vps: T.VPSelectionState
+  vps: T.VPSelectionState,
 ): T.VPSelectionState {
   const subject = getSubjectSelection(vps.blocks).selection;
   const object = getObjectSelection(vps.blocks).selection;
@@ -386,7 +386,7 @@ export function ensure2ndPersSubjPronounAndNoConflict(
             ...object.selection,
             person: getNon2ndPersPronoun(),
           },
-        }
+        },
       ),
     };
   }
@@ -414,7 +414,7 @@ export function ensureNoHangingR(b: T.Block[]): T.Block[] {
             },
           },
         }
-      : x
+      : x,
   );
 }
 

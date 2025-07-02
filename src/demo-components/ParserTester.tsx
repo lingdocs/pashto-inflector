@@ -1,11 +1,10 @@
 import { useState } from "react";
 import * as T from "../types";
 import { tokenizer } from "../lib/src/parsing/tokenizer";
-import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
 import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
-import EditableVP from "../components/src/vp-explorer/EditableVP";
+import { PhraseDisplay } from "../components/src/PhraseDisplay";
 
 function ParserTester({
   opts,
@@ -45,16 +44,14 @@ function ParserTester({
           onChange={(e) => handleInput(e.target.value)}
         />
       </div>
-      <JsonEditor data={result} />
-      {result.map(x => x.body).map((res, i) => (
+      {/* TODO: SHOW POSSIBLE ERRORS */}
+
+      {result.map((res, i) => (
         <div key={`res ${i}`}>
-          <EditableVP
-            opts={opts}
-            entryFeeder={entryFeeder}
-            allVariations={true}
-          >
-            {uncompleteVPSelection(res)}
-          </EditableVP>
+          {res.errors.length > 0 && <div className="alert alert-danger">
+            {res.errors.map(x => <div className="my-2" key={`i-${x.message}`}>{x.message}</div>)}
+          </div>}
+          <PhraseDisplay phrase={res.body} opts={opts} entryFeeder={entryFeeder} />
           <details>
             <summary>AST</summary>
             <JsonEditor data={res} />

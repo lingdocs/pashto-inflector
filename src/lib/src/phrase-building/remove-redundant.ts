@@ -1,25 +1,61 @@
 import * as T from "../../../types";
-import { compileVP } from "./compile";
+import { compileEP, compileVP } from "./compile";
+import { renderEP } from "./render-ep";
 import { renderVP } from "./render-vp";
 
 export function removeRedundantVPSs(
-  vs: T.VPSelectionComplete[]
-): T.VPSelectionComplete[] {
-  const versions = vs.map((x) => compileVP(renderVP(x), x.form));
-  const toRemove = new Set<number>();
-  versions.forEach((a, i) => {
-    const duplicates = findAllIndices(
-      versions.slice(i + 1),
-      (b) => !toRemove.has(i) && isDuplicate(a, b)
-    );
-    duplicates.forEach((d) => toRemove.add(d + i + 1));
-  });
-  return vs.reduce<T.VPSelectionComplete[]>((acc, v, i) => {
-    if (toRemove.has(i)) {
-      return acc;
-    }
-    return [...acc, v];
-  }, []);
+  vs: (T.VPSelectionComplete | T.EPSelectionComplete)[],
+): (T.VPSelectionComplete | T.EPSelectionComplete)[] {
+  const { vps, eps } = vs.reduce(
+    (acc, x) => {
+      if ("predicate" in x) {
+        return {
+          ...acc,
+          eps: [...acc.eps, x],
+        };
+      }
+      return {
+        ...acc,
+        vps: [...acc.vps, x],
+      };
+    },
+    { vps: [] as T.VPSelectionComplete[], eps: [] as T.EPSelectionComplete[] },
+  );
+  const vpsRed = (() => {
+    const versions = vps.map((x) => compileVP(renderVP(x), x.form));
+    const toRemove = new Set<number>();
+    versions.forEach((a, i) => {
+      const duplicates = findAllIndices(
+        versions.slice(i + 1),
+        (b) => !toRemove.has(i) && isDuplicate(a, b),
+      );
+      duplicates.forEach((d) => toRemove.add(d + i + 1));
+    });
+    return vps.reduce<T.VPSelectionComplete[]>((acc, v, i) => {
+      if (toRemove.has(i)) {
+        return acc;
+      }
+      return [...acc, v];
+    }, []);
+  })();
+  const epsRed = (() => {
+    const versions = eps.map((x) => compileEP(renderEP(x)));
+    const toRemove = new Set<number>();
+    versions.forEach((a, i) => {
+      const duplicates = findAllIndices(
+        versions.slice(i + 1),
+        (b) => !toRemove.has(i) && isDuplicate(a, b),
+      );
+      duplicates.forEach((d) => toRemove.add(d + i + 1));
+    });
+    return eps.reduce<T.EPSelectionComplete[]>((acc, v, i) => {
+      if (toRemove.has(i)) {
+        return acc;
+      }
+      return [...acc, v];
+    }, []);
+  })();
+  return [...vpsRed, ...epsRed];
 }
 
 function isDuplicate(
@@ -27,7 +63,7 @@ function isDuplicate(
     ps: T.SingleOrLengthOpts<T.PsString[]>;
     e?: string[];
   },
-  b: { ps: T.SingleOrLengthOpts<T.PsString[]>; e?: string[] }
+  b: { ps: T.SingleOrLengthOpts<T.PsString[]>; e?: string[] },
 ): boolean {
   if (!a.e || !b.e) {
     return false;
@@ -38,7 +74,7 @@ function isDuplicate(
   return a.e.every(
     (x, i) =>
       removeGenderGloss(x) === removeGenderGloss(b.e ? b.e[i] : "") &&
-      JSON.stringify(a.ps) === JSON.stringify(b.ps)
+      JSON.stringify(a.ps) === JSON.stringify(b.ps),
   );
 }
 

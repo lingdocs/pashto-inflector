@@ -57,8 +57,8 @@ function EditableVP({
             editing
               ? handleReset
               : () => {
-                  setEditing(true);
-                }
+                setEditing(true);
+              }
           }
         >
           {!editing ? <EditIcon /> : <i className="fas fa-undo" />}

@@ -28,8 +28,8 @@ export function statCompImperfectiveSpace(v: T.VerbEntryNoFVars): boolean {
 }
 
 export function makeComplement(
-  e: T.DictionaryEntryNoFVars,
-  { gender, number }: T.GenderNumber
+  e: T.DictionaryEntryNoFVars | T.AdjectiveEntry,
+  { gender, number }: T.GenderNumber,
 ): T.NComp {
   if (isAdjectiveEntry(e)) {
     const infs = inflectWord(e);
@@ -102,7 +102,7 @@ export function vEntry(e: any, c?: any): T.VerbEntryNoFVars {
  */
 export function verbEndingConcat(
   ps: T.PsString[],
-  end: T.PsString[]
+  end: T.PsString[],
 ): T.PsString[] {
   if (ps[0].f === "shw" && end[0].f === "oo") {
     return [{ p: "شو", f: "shoo" }];
@@ -119,13 +119,13 @@ export function verbEndingConcat(
         return v;
       }
       return concatPsString(v, e);
-    })
+    }),
   );
 }
 
 export function weld(
   left: T.Welded["left"],
-  right: T.VB | T.VBP | T.NComp
+  right: T.VB | T.VBP | T.NComp,
 ): T.Welded {
   if (right.type === "welded") {
     return weld(weld(left, right.left), right.right);
@@ -196,7 +196,7 @@ export function tlulPerfectiveStem(person: {
       {
         type: "PH",
         ps: inflectPattern1({ p: "لاړ", f: "láaR" }, person).map((x) =>
-          concatPsString(x, " ")
+          concatPsString(x, " "),
         )[0],
       },
     ],
@@ -217,7 +217,7 @@ export const abilityEnding: T.PsString[] = [
 export function addAbilityEnding(
   vb: T.VB,
   verb: T.VerbEntry,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): T.VBP {
   if (vb.type === "welded") {
     return {
@@ -242,7 +242,7 @@ export function addAbilityEnding(
     /* istanbul ignore next */
     if (!("long" in vb.ps)) {
       throw new Error(
-        "should have long and short form for adding to ability ending"
+        "should have long and short form for adding to ability ending",
       );
     }
     return {
@@ -286,10 +286,10 @@ export function possiblePPartLengths(vba: T.VBNoLenghts<T.VB>): T.VB {
       ? // special thing for اېښودل - پرېښودل
         [3, 4]
       : wrul.includes(infinitive.p) ||
-        (shortenableEndings.includes(infinitive.p.slice(-3)) &&
-          infinitive.p.slice(-4) !== "استل")
-      ? [1, 2]
-      : [0, 0];
+          (shortenableEndings.includes(infinitive.p.slice(-3)) &&
+            infinitive.p.slice(-4) !== "استل")
+        ? [1, 2]
+        : [0, 0];
   if (trimP) {
     return {
       type: "VB",
@@ -304,7 +304,7 @@ export function possiblePPartLengths(vba: T.VBNoLenghts<T.VB>): T.VB {
 
 export function addOptionalTailsToPassive(
   vb: T.VBNoLenghts<T.VB>,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): T.VBNoLenghts<T.VB> {
   if (aspect !== "perfective" || vb.type !== "VB" || vb.ps[0].p !== "کړل") {
     return vb;
@@ -335,7 +335,7 @@ export function getLongVB(vb: T.VB): T.VBNoLenghts<T.VB> {
 
 export function getAspect(
   tense: T.VerbTense | T.AbilityTense | T.ImperativeTense,
-  negative: boolean
+  negative: boolean,
 ): T.Aspect {
   if (isImperativeTense(tense) && negative) {
     return "imperfective";
@@ -360,21 +360,21 @@ export function isKedul(v: T.VerbEntry): boolean {
 }
 
 export function perfectTenseToEquative(
-  t: T.PerfectTense
+  t: T.PerfectTense,
 ): keyof typeof equativeEndings {
   return t === "presentPerfect"
     ? "present"
     : t === "futurePerfect"
-    ? "habitual"
-    : t === "habitualPerfect"
-    ? "habitual"
-    : t === "pastPerfect"
-    ? "past"
-    : t === "pastSubjunctivePerfect"
-    ? "pastSubjunctive"
-    : t === "wouldBePerfect"
-    ? "past"
-    : t === "wouldHaveBeenPerfect"
-    ? "pastSubjunctive"
-    : "subjunctive";
+      ? "habitual"
+      : t === "habitualPerfect"
+        ? "habitual"
+        : t === "pastPerfect"
+          ? "past"
+          : t === "pastSubjunctivePerfect"
+            ? "pastSubjunctive"
+            : t === "wouldBePerfect"
+              ? "past"
+              : t === "wouldHaveBeenPerfect"
+                ? "pastSubjunctive"
+                : "subjunctive";
 }

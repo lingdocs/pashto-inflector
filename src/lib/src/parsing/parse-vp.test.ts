@@ -61,7 +61,10 @@ const kor = testDictionary.nounLookup("کور")[0];
 const kitaab = testDictionary.nounLookup("کتاب")[0];
 const stoonza = testDictionary.nounLookup("ستونزه")[0];
 const paroon = testDictionary.otherLookup("p", "پرون")[0] as T.AdverbEntry;
-const dalta = testDictionary.otherLookup("p", "دلته")[0] as T.AdverbEntry;
+const dalta = testDictionary.otherLookup(
+  "p",
+  "دلته",
+)[0] as T.LocativeAdverbEntry;
 const jzarul = testDictionary.verbEntryLookup("ژړل")[0] as T.VerbEntry;
 const balul = testDictionary.verbEntryLookup("بلل")[0] as T.VerbEntry;
 const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0] as T.VerbEntry;
@@ -69,6 +72,7 @@ const murKedul = testDictionary.verbEntryLookup("مړ کېدل")[0] as T.VerbEnt
 const maredul = testDictionary.verbEntryLookup("مړېدل")[0];
 const murKawul = testDictionary.verbEntryLookup("مړ کول")[0] as T.VerbEntry;
 const marawul = testDictionary.verbEntryLookup("مړول")[0];
+const sturay = testDictionary.adjLookup("ستړی")[0];
 
 // TODO: add مړېدل to testDictionary and make sure that مړ کېدم doesn't parse into مړېدم!
 
@@ -89,7 +93,7 @@ type Section = {
   title: string;
   tests: {
     input: string;
-    output: T.VPSelectionComplete[];
+    output: (T.VPSelectionComplete | T.EPSelectionComplete)[];
     error?: boolean;
   }[];
 };
@@ -2278,8 +2282,8 @@ const basicPassive: Section = {
       ]),
     },
     {
-      input: "زه نه لیدل کېدم",
-      output: getPeople(1, "sing").flatMap((subj) => [
+      input: ["ته نه لیدل کېدې"][0],
+      output: getPeople(2, "sing").flatMap((subj) => [
         {
           blocks: [makeSubjBlock(subj), makeObjBlock("none")],
           verb: {
@@ -2581,6 +2585,225 @@ const tlulSubjunctives: Section = {
   ],
 };
 
+const equativeFull: Section = {
+  title: "equative full",
+  tests: [
+    {
+      input: "سړی ستړی دی",
+      output: [
+        {
+          blocks: [
+            {
+              key: 0,
+              block: {
+                type: "subjectSelection",
+                selection: {
+                  type: "NP",
+                  selection: makeNounSelection(saray, undefined),
+                },
+              },
+            },
+          ],
+          predicate: {
+            type: "complement",
+            selection: {
+              type: "adjective",
+              entry: sturay,
+              sandwich: undefined,
+            },
+          },
+          equative: {
+            tense: "present",
+            negative: false,
+          },
+          omitSubject: false,
+        },
+      ],
+    },
+    {
+      input: "سړي به ستړي وي",
+      output: [
+        {
+          blocks: [
+            {
+              key: 0,
+              block: {
+                type: "subjectSelection",
+                selection: {
+                  type: "NP",
+                  selection: {
+                    ...makeNounSelection(saray, undefined),
+                    number: "plural",
+                  },
+                },
+              },
+            },
+          ],
+          predicate: {
+            type: "complement",
+            selection: {
+              type: "adjective",
+              entry: sturay,
+              sandwich: undefined,
+            },
+          },
+          equative: {
+            tense: "future",
+            negative: false,
+          },
+          omitSubject: false,
+        },
+      ],
+    },
+    {
+      input: "سړی ستړې دی",
+      output: [],
+      error: true,
+    },
+    {
+      input: "ښځه ستړې ده",
+      output: [
+        {
+          blocks: [
+            {
+              key: 0,
+              block: {
+                type: "subjectSelection",
+                selection: {
+                  type: "NP",
+                  selection: makeNounSelection(xudza, undefined),
+                },
+              },
+            },
+          ],
+          predicate: {
+            type: "complement",
+            selection: {
+              type: "adjective",
+              entry: sturay,
+              sandwich: undefined,
+            },
+          },
+          equative: {
+            tense: "present",
+            negative: false,
+          },
+          omitSubject: false,
+        },
+      ],
+    },
+    {
+      input: "ښځه ستړې دی",
+      output: [],
+      error: true,
+    },
+    {
+      input: "ښځه ستړې نه ده",
+      output: [
+        {
+          blocks: [
+            {
+              key: 0,
+              block: {
+                type: "subjectSelection",
+                selection: {
+                  type: "NP",
+                  selection: makeNounSelection(xudza, undefined),
+                },
+              },
+            },
+          ],
+          predicate: {
+            type: "complement",
+            selection: {
+              type: "adjective",
+              entry: sturay,
+              sandwich: undefined,
+            },
+          },
+          equative: {
+            tense: "present",
+            negative: true,
+          },
+          omitSubject: false,
+        },
+      ],
+    },
+    {
+      input: "ښځه نه ستړې ده",
+      output: [],
+      error: true,
+    },
+  ],
+};
+
+const equativeOmitSubj: Section = {
+  title: "equative omit subject",
+  tests: [
+    {
+      input: "ستړی دی",
+      output: [
+        {
+          blocks: [
+            {
+              key: 0,
+              block: {
+                type: "subjectSelection",
+                selection: {
+                  type: "NP",
+                  selection: makePronounSelection(T.Person.ThirdSingMale),
+                },
+              },
+            },
+          ],
+          predicate: {
+            type: "complement",
+            selection: {
+              type: "adjective",
+              entry: sturay,
+              sandwich: undefined,
+            },
+          },
+          equative: {
+            tense: "present",
+            negative: false,
+          },
+          omitSubject: true,
+        },
+      ],
+    },
+    {
+      input: "دلته دي",
+      output: getPeople(3, "pl").map<T.EPSelectionComplete>((person) => ({
+        blocks: [
+          {
+            key: 0,
+            block: {
+              type: "subjectSelection",
+              selection: {
+                type: "NP",
+                selection: makePronounSelection(person),
+              },
+            },
+          },
+        ],
+        predicate: {
+          type: "complement",
+          selection: {
+            type: "loc. adv.",
+            entry: dalta,
+          },
+        },
+        equative: {
+          tense: "present",
+          negative: false,
+        },
+        omitSubject: true,
+      })),
+    },
+  ],
+};
+
 const sections = [
   intransFullForm,
   transFullForm,
@@ -2608,17 +2831,27 @@ const sections = [
   statCompPassiveBasic,
   statCompPassivePerfect,
   statCompPassiveAbility,
+  // equative phrases
+  equativeFull,
+  equativeOmitSubj,
 ];
 
 sections.forEach((section) => {
   describe(section.title, () => {
-    section.tests.forEach(({ input, output }) => {
+    section.tests.forEach(({ input, output, error }) => {
       test(input, () => {
         const tokens = tokenizer(input);
-        const res = parseVP(tokens, testDictionary)
-          .filter((x) => !x.tokens.length)
-          .map(({ body }) => body);
-        expect(removeKeys(res)).toIncludeSameMembers(removeKeys(output));
+        const res = parseVP(tokens, testDictionary).filter(
+          (x) => !x.tokens.length,
+        );
+        if (error) {
+          expect(res.some((x) => x.errors.length));
+        } else {
+          expect(removeKeys(res.map((x) => x.body))).toIncludeSameMembers(
+            removeKeys(output),
+          );
+          expect(!res.some((x) => x.errors.length));
+        }
       });
     });
   });

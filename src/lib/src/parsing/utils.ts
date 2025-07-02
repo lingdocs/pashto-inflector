@@ -17,7 +17,12 @@ export function bindParseResult<C, D>(
   prev: T.ParseResult<C>[],
   f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
+  // const grouped = groupByTokenLength(prev);
+  // if (grouped.length > 1 || grouped.length === 0) {
+  //   console.log({ grouped });
+  // }
   // PERFECTION 🧪
+
   return cleanOutResults(
     prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors))),
   );
@@ -29,6 +34,7 @@ export function bindParseResultDebug<C, D>(
 ): T.ParseResult<D>[] {
   // PERFECTION 🧪
   return cleanOutResultsDebug(
+    // TODO: do the groupByTokenLengthHERE!
     prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors))),
   );
 }

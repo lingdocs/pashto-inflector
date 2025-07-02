@@ -5,14 +5,14 @@ import { parseVP } from "./parse-vp";
 
 export function parsePhrase(
   s: T.Token[],
-  dicitonary: T.DictionaryAPI
+  dicitonary: T.DictionaryAPI,
 ): {
   success: // | {
   //     inflected: boolean;
   //     selection: T.NPSelection;
   //   }
   // | Omit<T.VBE, "ps">
-  T.VPSelectionComplete[];
+  (T.VPSelectionComplete | T.EPSelectionComplete)[];
   errors: string[];
 } {
   const res = [

@@ -132,6 +132,7 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
     const res = [
       ...parseBasicTense(tokens, dictionary, front),
       ...parseAbilityOrPerfect(tokens, dictionary, front),
+      ...parseEquativeSection(tokens, front),
     ];
     // TODO: some kind of do notation would be nice!
     return bindParseResult(res, (tkns, rear) => {
@@ -155,6 +156,28 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
       });
     });
   };
+}
+
+function parseEquativeSection(
+  tokens: readonly T.Token[],
+  front: VerbSectionFrontData,
+): T.ParseResult<VerbSectionData>[] {
+  if (front.front.find(isPH)) {
+    return [];
+  }
+  const eqs = parseEquative(tokens);
+  return bindParseResult(eqs, (tkns2, eq) => {
+    return returnParseResult(tkns2, {
+      blocks: [
+        ...front.front,
+        {
+          type: "parsed vbb aux",
+          content: eq,
+        },
+      ],
+      kids: front.kids,
+    });
+  });
 }
 
 function parseBasicTense(
@@ -318,10 +341,26 @@ function checkNegErrors(blocks: T.ParsedVerbSectionBlock[]): T.ParseError[] {
     });
   }
   const vx = blocks.find((x) => x.type === "parsedV");
-  if (!vx) {
-    throw new Error("VerbX not found while checking for negatives");
-  }
   const neg = negs[0];
+  // for equative phrases
+  if (!vx) {
+    if (neg) {
+      const negIndex = blocks.findIndex((x) => x.type === "negative");
+      const vbbAuxIndex = blocks.findIndex((x) => x.type === "parsed vbb aux");
+      if (vbbAuxIndex === -1) {
+        throw new Error(`no vx or vbbAux found while checking for negatives`);
+      }
+      if (vbbAuxIndex !== negIndex + 1) {
+        errors.push({ message: "negative must go before the equative" });
+      }
+      if (neg.imperative) {
+        errors.push({
+          message: "with equative phrases the نه negative must be used, not مه",
+        });
+      }
+    }
+    return errors;
+  }
   const vxInfo = getInfoFromV(vx);
 
   const isImperative = vxInfo.type === "verb" && vxInfo.imperative;

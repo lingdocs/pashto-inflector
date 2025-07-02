@@ -30,6 +30,7 @@ import { makePronounSelection } from "../phrase-building/make-selections";
 import { isFirstOrSecondPersPronoun } from "../phrase-building/render-vp";
 import {
   assertNever,
+  getEnglishPersonInfo,
   isFirstPerson,
   isSecondPerson,
   personGender,
@@ -106,10 +107,12 @@ const anyTarget: Target = {
 // سړي ماشومه ستړې کړه
 // TODO: this should NOT turn into a dynamic comp!
 
+type PhraseSelection = T.VPSelectionComplete | T.EPSelectionComplete;
+
 export function parseVP(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-): T.ParseResult<T.VPSelectionComplete>[] {
+): T.ParseResult<PhraseSelection>[] {
   if (tokens.length === 0) {
     return [];
   }
@@ -138,14 +141,25 @@ function combineArgAndVerbSections(
   dictionary: T.DictionaryAPI,
   arg: ReturnType<typeof parseArgumentSection>[number]["body"],
   vs: ReturnType<typeof parseVerbSection>[number]["body"],
-): T.ParseResult<T.VPSelectionComplete>[] {
+): T.ParseResult<PhraseSelection>[] {
   const [kids, kidsErrors] = consolidateKidsSection(arg, vs.kids);
   const blocks = [
     ...arg.npsAndAps,
     ...(arg.complement ? [arg.complement] : []),
   ];
   const ba = kids.some((k) => k === "ba");
-  const tenses = getTenses(vs.blocks, ba, dictionary);
+  const { tenses, eq } = getTenses(vs.blocks, ba, dictionary);
+  if (eq) {
+    if (tokens.length) {
+      return [];
+    }
+    return finishEquative(
+      arg.npsAndAps,
+      arg.complement,
+      eq,
+      vs.blocks.some((x) => x.type === "negative"),
+    );
+  }
   // TODO get errors from the get tenses (perfect verbs not agreeing)
   return createPossesivePossibilities({
     blocks,
@@ -235,6 +249,63 @@ function combineArgAndVerbSections(
         );
       },
     );
+  });
+}
+
+function finishEquative(
+  blocks: (T.ParsedNP | T.APSelection)[],
+  comp: T.ParsedComplementSelection | undefined,
+  eq: { tense: T.EquativeTense; person: T.Person },
+  negative: boolean,
+): T.ParseResult<T.EPSelectionComplete>[] {
+  const errors: T.ParseError[] = [];
+  const nps = blocks.filter((x) => x.type === "NP");
+  if (nps.length > 1) {
+    return [];
+  }
+  if (!comp) {
+    return [];
+  }
+  if (nps.length && nps[0].inflected) {
+    errors.push({
+      message: "subject in an equative phrase cannot be inflected",
+    });
+  }
+  const subjects: T.ParsedNP[] = nps.length
+    ? [nps[0]]
+    : makeShadowPronouns(false, eq.person, comp);
+  return subjects.flatMap((subject) => {
+    const winner = winnerOfNpAndCompliment(subject.selection, comp);
+    if (winner.person !== eq.person) {
+      errors.push({
+        message: `equative must agree with ${
+          winner.source === "np" ? "subject" : "complement NP in this case."
+        }, the equative must me ${getEnglishPersonInfo(winner.person)}`,
+      });
+    }
+    if (winner.source === "np") {
+      const target = getTarget(comp.selection);
+      const subjPerson = getPersonFromNP(subject.selection);
+      if (!targetMatches(subjPerson, target)) {
+        errors.push({
+          message: `complement must match subj.`,
+        });
+      }
+    }
+    const predicate = parsedCompToCompSelection(comp);
+    if (!predicate) {
+      return [];
+    }
+    const selection: T.EPSelectionComplete = {
+      blocks: mapEqOutNpAndAps(nps.length ? blocks : [subject, ...blocks]),
+      equative: {
+        tense: eq.tense,
+        negative,
+      },
+      predicate,
+      omitSubject: !nps.length,
+    };
+    return returnParseResult([], selection, errors);
   });
 }
 
@@ -350,7 +421,7 @@ function finishIntransitive({
       (x) => typeof x === "object" && x.type === "NP",
     );
     const allBlocks = allBlocksTemp.toSpliced(subjPosition + 1, 0, o);
-    const blocks = mapOutnpsAndAps(["S"], limitNPs(allBlocks, 1));
+    const blocks = mapOutNpsAndAps(["S"], limitNPs(allBlocks, 1));
     return {
       tokens,
       body: {
@@ -478,7 +549,7 @@ function getTransPossibilitiesWNoNPs({
         //  the blocks for simplicity's sake
         s,
         o,
-        blocks: mapOutnpsAndAps(["S", "O"], [s, o, ...aps]),
+        blocks: mapOutNpsAndAps(["S", "O"], [s, o, ...aps]),
         form,
       },
       errors,
@@ -537,7 +608,7 @@ function getTransPossibilitiesWOneNP(
             s,
             o,
             // insert the generated pronoun NP so order is always S O
-            blocks: mapOutnpsAndAps(
+            blocks: mapOutNpsAndAps(
               ["S", "O"],
               npsAndAps.toSpliced(insertFilledAt, 0, f),
             ),
@@ -565,7 +636,7 @@ function getTransPossibilitiesWTwoNPs(nps: T.ParsedNP[]) {
         body: {
           s,
           o,
-          blocks: mapOutnpsAndAps(
+          blocks: mapOutNpsAndAps(
             !flip ? ["S", "O"] : ["O", "S"],
             limitNPs(npsAndAps, 2),
           ),
@@ -671,7 +742,7 @@ function finishGrammTransWNoNPs({
       body: {
         s,
         o,
-        blocks: mapOutnpsAndAps(["S", "O"], [s, o, ...aps]),
+        blocks: mapOutNpsAndAps(["S", "O"], [s, o, ...aps]),
         form,
       },
       errors,
@@ -698,7 +769,7 @@ function finishGrammTransWNP(subject: T.ParsedNP) {
         body: {
           s: subject,
           o: object,
-          blocks: mapOutnpsAndAps(["S", "O"], [subject, object, ...aps]),
+          blocks: mapOutNpsAndAps(["S", "O"], [subject, object, ...aps]),
           form,
         },
         errors,
@@ -712,16 +783,19 @@ function getTenses(
   ba: boolean,
   dictionary: T.DictionaryAPI,
 ): {
-  tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
-  person: T.Person;
-  target: Target;
-  transitivities: T.Transitivity[];
-  negative: boolean;
-  verb: T.VerbEntry;
-  errors: T.ParseError[];
-  isCompound: T.VerbSelectionComplete["isCompound"];
-  voice: T.Voice;
-}[] {
+  tenses: {
+    tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense;
+    person: T.Person;
+    target: Target;
+    transitivities: T.Transitivity[];
+    negative: boolean;
+    verb: T.VerbEntry;
+    errors: T.ParseError[];
+    isCompound: T.VerbSelectionComplete["isCompound"];
+    voice: T.Voice;
+  }[];
+  eq: { tense: T.EquativeTense; person: T.Person } | undefined;
+} {
   const negIndex = blocks.findIndex((x) => x.type === "negative");
   const negative: T.NegativeBlock | undefined = blocks[negIndex] as
     | T.NegativeBlock
@@ -729,7 +803,21 @@ function getTenses(
   const phIndex = blocks.findIndex(isPH);
   const vx = blocks.find((x) => x.type === "parsedV");
   if (!vx) {
-    return [];
+    const eq = blocks.find((x) => x.type === "parsed vbb aux");
+    if (eq?.content.type !== "parsed vbb eq") {
+      return { tenses: [], eq: undefined };
+    }
+    const tense = getEquativeTense(ba, eq.content.info.tense);
+    if (!tense) {
+      return { tenses: [], eq: undefined };
+    }
+    return {
+      tenses: [],
+      eq: {
+        tense,
+        person: eq.content.person,
+      },
+    };
   }
   const vbbAux = blocks.find((x) => x.type === "parsed vbb aux");
   const ph = phIndex !== -1 ? (blocks[phIndex] as T.ParsedPH) : undefined;
@@ -739,25 +827,27 @@ function getTenses(
     vbbAux,
     dictionary,
   );
-  return verbs.flatMap((verb) =>
-    getTensesFromRootsStems(ba, info, !!negative, verb).map((tense) => {
-      const transitivities = getTransitivities(verb).filter(
-        (x) => !(passive && x === "grammatically transitive"),
-      );
-      return {
-        tense,
-        transitivities,
-        negative: !!negative,
-        person,
-        target,
-        verb,
-        errors,
-        // TODO: this is dumb that we have to use this
-        isCompound: getIsCompound(verb),
-        voice: passive ? "passive" : "active",
-      };
-    }),
+  const tenses = verbs.flatMap<ReturnType<typeof getTenses>["tenses"][number]>(
+    (verb) =>
+      getTensesFromRootsStems(ba, info, !!negative, verb).map((tense) => {
+        const transitivities = getTransitivities(verb).filter(
+          (x) => !(passive && x === "grammatically transitive"),
+        );
+        return {
+          tense,
+          transitivities,
+          negative: !!negative,
+          person,
+          target,
+          verb,
+          errors,
+          // TODO: this is dumb that we have to use this
+          isCompound: getIsCompound(verb),
+          voice: passive ? "passive" : ("active" as const),
+        };
+      }),
   );
+  return { tenses, eq: undefined };
 }
 
 function getIsCompound(verb: T.VerbEntry): T.IsCompound {
@@ -1519,11 +1609,17 @@ function getEquativeTense(
   return tense;
 }
 
+function mapEqOutNpAndAps(
+  blocks: (T.ParsedNP | T.APSelection)[],
+): T.EPSBlockComplete[] {
+  return mapOutNpsAndAps(["S"], blocks) as T.EPSBlockComplete[];
+}
+
 /**
  * Make existing NP blocks into the Subject and Object selection
  * in the given order
  */
-function mapOutnpsAndAps(
+function mapOutNpsAndAps(
   npOrder: ("S" | "O")[],
   blocks: (T.APSelection | T.ParsedNP | T.Person.ThirdPlurMale | "none")[],
 ): T.VPSBlockComplete[] {
@@ -1752,10 +1848,13 @@ function targetMatches(person: T.Person, target: Target): boolean {
  * Then it should only be "I BROKE the cup" and not also "I made the cup broken"
  */
 function removeRedundantStatCombos(
-  res: T.ParseResult<T.VPSelectionComplete>[],
+  res: T.ParseResult<PhraseSelection>[],
   dictionary: T.DictionaryAPI,
-): T.ParseResult<T.VPSelectionComplete>[] {
+): T.ParseResult<PhraseSelection>[] {
   return res.filter((r) => {
+    if ("equative" in r.body) {
+      return true;
+    }
     if (r.body.externalComplement) {
       const compTs = getExtComplementL(r.body.externalComplement);
       if (!compTs) {

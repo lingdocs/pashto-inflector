@@ -15,6 +15,7 @@ import { parsePhrase } from "../lib/src/parsing/parse-phrase";
 import { entryFeeder } from "./entryFeeder";
 import { removeRedundantVPSs } from "../lib/src/phrase-building/remove-redundant";
 import { useDebouncedCallback } from "use-debounce";
+import { EPDisplay } from "../components/library";
 
 const working = [
   "phrases with simple verbs",
@@ -29,14 +30,14 @@ const working = [
   "ability verbs",
   "dynamic compound verbs",
   "verbs with complements",
+  "equative phrases",
+  "stative compound verbs",
+  "passive verbs",
 ];
 
 const todo = [
-  "equative verbs",
-  "stative compound verbs",
   "adjectival participles",
   "relative clauses",
-  "passive verbs",
   "quantifiers",
   "approximate spelling",
 ];
@@ -67,6 +68,11 @@ const examples = [
   "زه د هغه زاړه سړي د کاریګر شوم",
   "ډوډۍ مې پخه کړه",
   "ستړې ښځې مې ولیدې",
+  "ډوډۍ مې پخه کړای شوه",
+  "خلک ستانه نه کړل شي",
+  "زه نه لیدل کېدم",
+  "زه د زاړه سړي زوی یم",
+  "ستړې یم",
 ];
 
 function ParserDemo({
@@ -172,19 +178,20 @@ function ParserDemo({
         </>
       )}
       {result.map((res, i) => (
-        <div key={`res ${i}`}>
-          <EditableVP
-            opts={opts}
-            entryFeeder={entryFeeder}
-            allVariations={true}
-          >
-            {uncompleteVPSelection(res)}
-          </EditableVP>
-          <details>
-            <summary>AST</summary>
-            <JsonEditor data={res} />
-          </details>
-        </div>
+        ("predicate" in res) ? <EPDisplay opts={opts} setOmitSubject={false} justify="left" eps={res} /> :
+          <div key={`res ${i}`}>
+            <EditableVP
+              opts={opts}
+              entryFeeder={entryFeeder}
+              allVariations={true}
+            >
+              {uncompleteVPSelection(res)}
+            </EditableVP>
+            <details>
+              <summary>AST</summary>
+              <JsonEditor data={res} />
+            </details>
+          </div>
       ))}
     </div>
   );

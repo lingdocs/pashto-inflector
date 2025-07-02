@@ -386,6 +386,58 @@ const simpleOpts: Section = {
   ],
 };
 
+const equativeSection: Section = {
+  title: "equative section",
+  tests: [
+    {
+      input: "دی",
+      output: [
+        {
+          blocks: [
+            {
+              type: "parsed vbb aux",
+              content: {
+                type: "parsed vbb eq",
+                info: {
+                  type: "equative",
+                  tense: "present",
+                },
+                person: T.Person.ThirdSingMale,
+              },
+            },
+          ],
+          kids: [],
+        },
+      ],
+    },
+    {
+      input: "نه ولم",
+      output: getPeople(1, "sing").map((person) => ({
+        blocks: [
+          { type: "negative", imperative: false },
+          {
+            type: "parsed vbb aux",
+            content: {
+              type: "parsed vbb eq",
+              info: {
+                type: "equative",
+                tense: "past",
+              },
+              person,
+            },
+          },
+        ],
+        kids: [],
+      })),
+    },
+    {
+      input: "مه یم",
+      output: [],
+      error: true,
+    },
+  ],
+};
+
 const simpleIntrans: Section = {
   title: "basic VBE intransitive forms",
   tests: [
@@ -2720,6 +2772,7 @@ const passiveStatCompAbility: Section = {
 
 const sections = [
   simpleOpts,
+  equativeSection,
   simpleIntrans,
   simpleIrregStems,
   seperatingHead,
