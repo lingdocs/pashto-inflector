@@ -1,14 +1,16 @@
 import { makeAdjectiveSelection } from "../../phrase-building/make-selections";
 import * as T from "../../../../types";
-import { lookup, wordQuery } from "./../lookup";
 import { parseAdjective } from "./parse-adjective";
 import { tokenizer } from "./../tokenizer";
+import { testDictionary } from "./../mini-test-dictionary";
 
-const ghut = wordQuery("غټ", "adj");
-const sturey = wordQuery("ستړی", "adj");
-const narey = wordQuery("نری", "adj");
-const zor = wordQuery("زوړ", "adj");
-const sheen = wordQuery("شین", "adj");
+const khufa = testDictionary.adjLookup("خفه")[0];
+const ghut = testDictionary.adjLookup("غټ")[0];
+const sturey = testDictionary.adjLookup("ستړی")[0];
+const naray = testDictionary.adjLookup("نری")[0];
+const zor = testDictionary.adjLookup("زوړ")[0];
+const sheen = testDictionary.adjLookup("شین")[0];
+const xu = testDictionary.adjLookup("ښه")[0];
 
 const tests: {
   category: string;
@@ -31,6 +33,21 @@ const tests: {
             selection: makeAdjectiveSelection(ghut),
             inflection: [0, 1],
             gender: ["masc"],
+          },
+        ],
+      },
+      {
+        input: "ښه",
+        output: [
+          {
+            selection: makeAdjectiveSelection(xu),
+            inflection: [0, 1],
+            gender: ["masc"],
+          },
+          {
+            selection: makeAdjectiveSelection(xu),
+            inflection: [0],
+            gender: ["fem"],
           },
         ],
       },
@@ -108,7 +125,7 @@ const tests: {
         input: "نری",
         output: [
           {
-            selection: makeAdjectiveSelection(narey),
+            selection: makeAdjectiveSelection(naray),
             inflection: [0],
             gender: ["masc"],
           },
@@ -118,7 +135,7 @@ const tests: {
         input: "نري",
         output: [
           {
-            selection: makeAdjectiveSelection(narey),
+            selection: makeAdjectiveSelection(naray),
             inflection: [1],
             gender: ["masc"],
           },
@@ -128,7 +145,7 @@ const tests: {
         input: "نرۍ",
         output: [
           {
-            selection: makeAdjectiveSelection(narey),
+            selection: makeAdjectiveSelection(naray),
             inflection: [0, 1],
             gender: ["fem"],
           },
@@ -138,7 +155,7 @@ const tests: {
         input: "نرو",
         output: [
           {
-            selection: makeAdjectiveSelection(narey),
+            selection: makeAdjectiveSelection(naray),
             inflection: [2],
             gender: ["masc", "fem"],
           },
@@ -148,8 +165,23 @@ const tests: {
         input: "نریو",
         output: [
           {
-            selection: makeAdjectiveSelection(narey),
+            selection: makeAdjectiveSelection(naray),
             inflection: [2],
+            gender: ["masc", "fem"],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    category: "non-inflecting",
+    cases: [
+      {
+        input: "خفه",
+        output: [
+          {
+            selection: makeAdjectiveSelection(khufa),
+            inflection: [0, 1, 2],
             gender: ["masc", "fem"],
           },
         ],
@@ -258,14 +290,15 @@ describe("parsing adjectives", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const possibilities = parseAdjective(tokens, lookup).map((x) => x.body);
-        expect(
-          possibilities.map((x) => {
-            // eslint-disable-next-line
-            const { given, ...rest } = x;
-            return rest;
-          })
-        ).toEqual(output);
+        const possibilities = parseAdjective(tokens, testDictionary).map(
+          (x) => x.body,
+        );
+        expect(possibilities).toEqual(
+          output.map((o) => ({
+            ...o,
+            given: input,
+          })),
+        );
       });
     });
   });

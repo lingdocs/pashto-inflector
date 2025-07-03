@@ -1,6 +1,6 @@
 import * as T from "../../../../types";
 import { makeNounSelection } from "../../phrase-building/make-selections";
-import { parseAdjective } from "./parse-adjective-new";
+import { parseAdjective } from "./parse-adjective";
 import { parseDeterminer } from "./parse-determiner";
 import { parseNounWord } from "./parse-noun-word";
 import {
@@ -20,7 +20,7 @@ type NounResult = { inflected: boolean; selection: T.NounSelection };
 export function parseNoun(
   tokens: Readonly<T.Token[]>,
   dictionary: T.DictionaryAPI,
-  possesor: T.PossesorSelection | undefined
+  possesor: T.PossesorSelection | undefined,
 ): T.ParseResult<NounResult>[] {
   if (tokens.length === 0) {
     return [];
@@ -35,7 +35,7 @@ export function parseNoun(
     const wNoun = fmapParseResult<
       [
         T.InflectableBaseParse<T.AdjectiveSelection>[],
-        T.ParsedNounWord<T.NounEntry>
+        T.ParsedNounWord<T.NounEntry>,
       ],
       [
         {
@@ -43,15 +43,15 @@ export function parseNoun(
           determiners: T.InflectableBaseParse<T.DeterminerSelection>[];
         },
         T.InflectableBaseParse<T.AdjectiveSelection>[],
-        T.ParsedNounWord<T.NounEntry>
+        T.ParsedNounWord<T.NounEntry>,
       ]
     >(
       ([adj, noun]) =>
         [{ withNoun: true, determiners: dts }, adj, noun] as const,
       parserCombSucc2([parserCombMany(parseAdjective), parseNounWord])(
         tkns,
-        dictionary
-      )
+        dictionary,
+      ),
     );
     return [...wNoun, ...demWOutNoun];
   });
@@ -65,7 +65,7 @@ export function parseNoun(
           [...adjectives, ...determiners.determiners],
           nounWord.gender,
           nounWord.inflected,
-          nounWord.plural
+          nounWord.plural,
         ),
         ...checkForDeterminerDuplicates(determiners.determiners),
       ];
@@ -94,12 +94,12 @@ export function parseNoun(
           errors,
         },
       ];
-    }
+    },
   );
 }
 
 function getLoneDeterminer(
-  dts: T.InflectableBaseParse<T.DeterminerSelection>[]
+  dts: T.InflectableBaseParse<T.DeterminerSelection>[],
 ): T.InflectableBaseParse<T.DeterminerSelection> | undefined {
   if (dts.length !== 1) {
     return undefined;
@@ -117,7 +117,7 @@ function getLoneDeterminer(
 
 function makeDemWOutNoun(
   tokens: Readonly<T.Token[]>,
-  d: T.InflectableBaseParse<T.DeterminerSelection>
+  d: T.InflectableBaseParse<T.DeterminerSelection>,
 ): T.ParseResult<
   Readonly<
     [
@@ -126,7 +126,7 @@ function makeDemWOutNoun(
         determiners: T.InflectableBaseParse<T.DeterminerSelection>[];
       },
       T.InflectableBaseParse<T.AdjectiveSelection>[],
-      T.ParsedNounWord<T.NounEntry>
+      T.ParsedNounWord<T.NounEntry>,
     ]
   >
 >[] {
@@ -144,12 +144,12 @@ function makeDemWOutNoun(
   }));
   return returnParseResults(
     tokens,
-    options.map((n) => [{ withNoun: false, determiners: [d] }, [], n] as const)
+    options.map((n) => [{ withNoun: false, determiners: [d] }, [], n] as const),
   );
 }
 
 function getPossibleNounsFromDet(
-  d: T.InflectableBaseParse<T.DeterminerSelection>
+  d: T.InflectableBaseParse<T.DeterminerSelection>,
 ) {
   // cases
   // TODO: this could be done by inferring from the inflection info
@@ -182,29 +182,29 @@ function getPossibleNounsFromDet(
             gender,
             plural,
             inflected: d.inflection.includes(1),
-          }))
+          })),
         )
       : d.inflection.includes(2)
-      ? [
-          { gender: "masc", plural: true, inflected: true },
-          { gender: "fem", plural: true, inflected: true },
-        ]
-      : d.gender.flatMap<{
-          gender: T.Gender;
-          plural: boolean;
-          inflected: boolean;
-        }>((gender) => [
-          { gender, plural: false, inflected: false },
-          { gender, plural: true, inflected: false },
-          ...(d.inflection.includes(1)
-            ? [{ gender, plural: false, inflected: true }]
-            : []),
-        ]);
+        ? [
+            { gender: "masc", plural: true, inflected: true },
+            { gender: "fem", plural: true, inflected: true },
+          ]
+        : d.gender.flatMap<{
+            gender: T.Gender;
+            plural: boolean;
+            inflected: boolean;
+          }>((gender) => [
+            { gender, plural: false, inflected: false },
+            { gender, plural: true, inflected: false },
+            ...(d.inflection.includes(1)
+              ? [{ gender, plural: false, inflected: true }]
+              : []),
+          ]);
   return possibilites;
 }
 
 function checkForDeterminerDuplicates(
-  determiners: T.InflectableBaseParse<T.DeterminerSelection>[]
+  determiners: T.InflectableBaseParse<T.DeterminerSelection>[],
 ): T.ParseError[] {
   // from https://flexiple.com/javascript/find-duplicates-javascript-array
   const array = determiners.map((d) => d.selection.determiner.p);
@@ -225,7 +225,7 @@ export function adjDetsMatch(
   ads: T.InflectableBaseParse<T.AdjectiveSelection | T.DeterminerSelection>[],
   gender: T.Gender,
   inflected: boolean,
-  plural: boolean
+  plural: boolean,
 ): T.ParseError[] {
   // TODO: will need to do special cases for په  کې etc
   return ads.flatMap<T.ParseError>((x) => {
@@ -252,8 +252,8 @@ function showInflection(inf: 0 | 1 | 2): string {
   return inf === 0
     ? "plain"
     : inf === 1
-    ? "first inflection"
-    : "second inflection";
+      ? "first inflection"
+      : "second inflection";
 }
 
 function isDemonstrative(x: T.Determiner): boolean {

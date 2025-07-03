@@ -103,9 +103,7 @@ const anyTarget: Target = {
 // BIG RENDERING ISSUE - سړی shouldn't inflect to سړیانو
 //  change the dictionary back to n. m. anim ?
 
-// then testing for use of statComps
-// سړي ماشومه ستړې کړه
-// TODO: this should NOT turn into a dynamic comp!
+// BIG ISSUE - ښه doesn't give us the feminine targets!
 
 type PhraseSelection = T.VPSelectionComplete | T.EPSelectionComplete;
 

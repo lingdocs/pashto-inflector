@@ -69,12 +69,12 @@ export function compileEP(EP: T.EPRendered): {
 export function compileEP(
   EP: T.EPRendered,
   combineLengths: true,
-  blankOut?: BlankoutOptions
+  blankOut?: BlankoutOptions,
 ): { ps: T.PsString[]; e?: string[] };
 export function compileEP(
   EP: T.EPRendered,
   combineLengths?: boolean,
-  blankOut?: BlankoutOptions
+  blankOut?: BlankoutOptions,
 ): { ps: T.SingleOrLengthOpts<T.PsString[]>; e?: string[] } {
   const psResult = compileEPPs(EP.blocks, EP.kids, EP.omitSubject, blankOut);
   return {
@@ -85,19 +85,19 @@ export function compileEP(
 
 export function compileVP(
   VP: T.VPRendered,
-  form: T.FormVersion
+  form: T.FormVersion,
 ): { ps: T.SingleOrLengthOpts<T.PsString[]>; e?: string[] };
 export function compileVP(
   VP: T.VPRendered,
   form: T.FormVersion,
   combineLengths: boolean,
-  blankOut?: BlankoutOptions
+  blankOut?: BlankoutOptions,
 ): { ps: T.PsString[]; e?: string[] };
 export function compileVP(
   VP: T.VPRendered,
   form: T.FormVersion,
   combineLengths?: boolean,
-  blankOut?: BlankoutOptions
+  blankOut?: BlankoutOptions,
 ): { ps: T.SingleOrLengthOpts<T.PsString[]>; e?: string[] } {
   // const verb = getVerbFromBlocks(VP.blocks).block;
   const psResult = compileVPPs(VP.blocks, VP.kids, form, VP.king, blankOut);
@@ -106,7 +106,7 @@ export function compileVP(
     ps: combineLengths ? flattenLengths(psResult) : psResult,
     // TODO: English doesn't quite work for dynamic compounds in passive voice
     e: /* (verb.voice === "passive" && VP.isCompound === "dynamic") ? undefined : */ compileEnglishVP(
-      VP
+      VP,
     ),
   };
 }
@@ -116,14 +116,14 @@ function compileVPPs(
   kids: T.Kid[],
   form: T.FormVersion,
   king: "subject" | "object" | "complement",
-  blankOut?: BlankoutOptions
+  blankOut?: BlankoutOptions,
 ): T.PsString[] {
   const subjectPerson =
     getSubjectSelectionFromBlocks(blocks).selection.selection.person;
   const blocksWKids = putKidsInKidsSection(
     filterForVisibleBlocksVP(blocks, form, king),
     kids,
-    !!blankOut?.ba
+    !!blankOut?.ba,
   );
   return combineIntoText(blocksWKids, subjectPerson, blankOut);
 }
@@ -132,7 +132,7 @@ function compileEPPs(
   blocks: T.Block[][],
   kids: T.Kid[],
   omitSubject: boolean,
-  blankOut?: BlankoutOptions
+  blankOut?: BlankoutOptions,
 ): T.SingleOrLengthOpts<T.PsString[]> {
   if (hasEquativeWithLengths(blocks)) {
     return {
@@ -140,13 +140,13 @@ function compileEPPs(
         specifyEquativeLength(blocks, "long"),
         kids,
         omitSubject,
-        blankOut
+        blankOut,
       ) as T.PsString[],
       short: compileEPPs(
         specifyEquativeLength(blocks, "short"),
         kids,
         omitSubject,
-        blankOut
+        blankOut,
       ) as T.PsString[],
     };
   }
@@ -155,21 +155,21 @@ function compileEPPs(
   const blocksWKids = putKidsInKidsSection(
     omitSubject
       ? blocks.map((blks) =>
-          blks.filter((b) => b.block.type !== "subjectSelection")
+          blks.filter((b) => b.block.type !== "subjectSelection"),
         )
       : blocks,
     kids,
-    !!blankOut?.kidsSection
+    !!blankOut?.kidsSection,
   );
   return removeDuplicates(
-    combineIntoText(blocksWKids, subjectPerson, blankOut)
+    combineIntoText(blocksWKids, subjectPerson, blankOut),
   );
 }
 
 export function filterForVisibleBlocksVP(
   blocks: T.Block[][],
   form: T.FormVersion,
-  king: "subject" | "object" | "complement"
+  king: "subject" | "object" | "complement",
 ): T.Block[][] {
   const servant = king === "object" ? "subject" : "object";
   return blocks.map((blks) =>
@@ -195,13 +195,13 @@ export function filterForVisibleBlocksVP(
         return false;
       }
       return true;
-    })
+    }),
   );
 }
 
 export function filterForVisibleBlocksEP(
   blocks: T.Block[][],
-  omitSubject: boolean
+  omitSubject: boolean,
 ): T.Block[][] {
   if (!omitSubject) return blocks;
   return blocks.map((blks) =>
@@ -210,29 +210,29 @@ export function filterForVisibleBlocksEP(
         return false;
       }
       return true;
-    })
+    }),
   );
 }
 
 export function combineIntoText(
   piecesWVars: (T.Block | T.Kid | T.PsString)[][],
   subjectPerson: T.Person,
-  blankOut?: BlankoutOptions
+  blankOut?: BlankoutOptions,
 ): T.PsString[] {
   return removeDuplicates(
     piecesWVars.flatMap((pieces) => {
       const psVarsBlocks = getPsVarsBlocks(
         applyBlankOut(pieces, blankOut),
-        subjectPerson
+        subjectPerson,
       );
       return concatAll(monoidPsStringWVars)(psVarsBlocks);
-    })
+    }),
   );
 }
 
 export function getPsVarsBlocks(
   pieces: (T.Block | T.Kid | T.PsString)[],
-  subjectPerson: T.Person
+  subjectPerson: T.Person,
 ): T.PsString[][] {
   const space = [{ p: " ", f: " " }];
   const phToCliticNegSpace = [{ p: "", f: "-" }];
@@ -249,16 +249,16 @@ export function getPsVarsBlocks(
       ...(i === endIndex
         ? []
         : "block" in x && x.block.type === "PH"
-        ? "kid" in next || ("block" in next && next.block.type === "negative")
-          ? [phToCliticNegSpace]
-          : []
-        : [space]),
+          ? "kid" in next || ("block" in next && next.block.type === "negative")
+            ? [phToCliticNegSpace]
+            : []
+          : [space]),
     ];
   }, []);
 }
 function applyBlankOut(
   pieces: (T.Block | T.Kid | T.PsString)[],
-  blankOut: BlankoutOptions | undefined
+  blankOut: BlankoutOptions | undefined,
 ): (T.Block | T.Kid | T.PsString)[] {
   if (!blankOut) return pieces;
   return pieces.map((x) => {
@@ -281,7 +281,7 @@ function applyBlankOut(
 
 function getPsFromPiece(
   piece: T.Block | T.Kid,
-  subjectPerson: T.Person
+  subjectPerson: T.Person,
 ): T.PsString[] {
   if ("block" in piece) {
     if (piece.block.type === "negative") {
@@ -333,7 +333,7 @@ function getPsFromPiece(
         // TODO: Kinda cheating
         return getPashtoFromRendered(
           { type: "AP", selection: piece.block.selection },
-          false
+          false,
         );
       }
       if (piece.block.selection.type === "possesor") {
@@ -378,7 +378,7 @@ function getPsFromWelded(v: T.Welded): T.PsString[] {
   const left = getPsFromSide(v.left);
   const right = getPsFromSide(v.right);
   return left.flatMap((leftVar) =>
-    right.flatMap((rightVar) => concatPsString(leftVar, " ", rightVar))
+    right.flatMap((rightVar) => concatPsString(leftVar, " ", rightVar)),
   );
 }
 
@@ -414,7 +414,7 @@ function getEngComplement(blocks: T.Block[][]): string | undefined {
 function putKidsInKidsSection(
   blocksWVars: T.Block[][],
   kids: T.Kid[],
-  enforceKidsSectionBlankout: boolean
+  enforceKidsSectionBlankout: boolean,
 ): (T.Block | T.Kid | T.PsString)[][] {
   function insert(blocks: T.Block[]): (T.Block | T.Kid | T.PsString)[] {
     const first = blocks[0];
@@ -441,7 +441,7 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
       object?: string;
       APs: string;
       complement: string | undefined;
-    }
+    },
   ): string {
     return (
       e.replace("$SUBJ", subject).replace("$OBJ", object || "") +
@@ -459,8 +459,8 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
     typeof obj === "object"
       ? obj
       : obj === "none" || obj === T.Person.ThirdPlurMale
-      ? ""
-      : undefined;
+        ? ""
+        : undefined;
   const engAPs = getEngAPs(VP.blocks);
   const engComplement = getEngComplement(VP.blocks);
   // require all English parts for making the English phrase
@@ -473,7 +473,7 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
             object: engObj ? getEnglishFromRendered(engObj) : "",
             APs: engAPs,
             complement: engComplement,
-          })
+          }),
         )
         .map(capitalizeFirstLetter)
     : undefined;
@@ -486,7 +486,7 @@ function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
       subject,
       predicate,
       APs,
-    }: { subject: string; predicate: string; APs: string }
+    }: { subject: string; predicate: string; APs: string },
   ): string {
     return e.replace("$SUBJ", subject).replace("$PRED", predicate || "") + APs;
   }
@@ -503,18 +503,18 @@ function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
             subject: engSubj,
             predicate: engPred,
             APs: engAPs,
-          })
+          }),
         )
       : undefined;
   return b?.map(capitalizeFirstLetter);
 }
 
 export function checkForMiniPronounsError(
-  s: T.EPSelectionState | T.VPSelectionState
+  s: T.EPSelectionState | T.VPSelectionState,
 ): undefined | string {
   function findDuplicateMiniP(mp: T.MiniPronoun[]): T.MiniPronoun | undefined {
     const duplicates = mp.filter(
-      (item, index) => mp.findIndex((m) => item.ps.p === m.ps.p) !== index
+      (item, index) => mp.findIndex((m) => item.ps.p === m.ps.p) !== index,
     );
     if (duplicates.length === 0) return undefined;
     return duplicates[0];
@@ -544,7 +544,7 @@ export function checkForMiniPronounsError(
 }
 
 function findPossesivesInNP(
-  NP: T.Rendered<T.NPSelection> | T.ObjectNP | undefined
+  NP: T.Rendered<T.NPSelection> | T.ObjectNP | undefined,
 ): T.Rendered<T.NPSelection>[] {
   if (NP === undefined) return [];
   if (typeof NP !== "object") return [];
@@ -563,26 +563,26 @@ function findPossesivesInNP(
 }
 
 function findPossesivesInAdjectives(
-  a: T.Rendered<T.AdjectiveSelection>[]
+  a: T.Rendered<T.AdjectiveSelection>[],
 ): T.Rendered<T.NPSelection>[] {
   return a.reduce(
     (accum, curr): T.Rendered<T.NPSelection>[] => [
       ...accum,
       ...findPossesivesInAdjective(curr),
     ],
-    [] as T.Rendered<T.NPSelection>[]
+    [] as T.Rendered<T.NPSelection>[],
   );
 }
 
 function findPossesivesInAdjective(
-  a: T.Rendered<T.AdjectiveSelection>
+  a: T.Rendered<T.AdjectiveSelection>,
 ): T.Rendered<T.NPSelection>[] {
   if (!a.sandwich) return [];
   return findPossesivesInNP(a.sandwich.inside);
 }
 
 export function flattenLengths(
-  r: T.SingleOrLengthOpts<T.PsString[]>
+  r: T.SingleOrLengthOpts<T.PsString[]>,
 ): T.PsString[] {
   if ("long" in r) {
     // because we want to use the short shwul and past equatives as the default

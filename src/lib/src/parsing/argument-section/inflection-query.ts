@@ -19,7 +19,7 @@ import { equals } from "rambda";
 
 export function getInflectionQueries(
   s: string,
-  noun: boolean
+  noun: boolean,
 ): {
   search: Partial<T.DictionaryEntry>;
   details: {
@@ -387,6 +387,14 @@ export function getInflectionQueries(
   if (s.endsWith("ه")) {
     queries.push({
       search: { p: s.slice(0, -1) },
+      details: {
+        inflection: [0],
+        gender: ["fem"],
+        predicate: isPattern1Entry,
+      },
+    });
+    queries.push({
+      search: { p: s },
       details: {
         inflection: [0],
         gender: ["fem"],

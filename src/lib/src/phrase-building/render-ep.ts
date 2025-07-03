@@ -25,7 +25,7 @@ export function renderEP(EP: T.EPSelectionComplete): T.EPRendered {
     kids,
     englishBase: equativeBuilders[EP.equative.tense](
       englishEquativePerson,
-      EP.equative.negative
+      EP.equative.negative,
     ),
     omitSubject: EP.omitSubject,
   };
@@ -55,10 +55,10 @@ function getEPSBlocksAndKids(EP: T.EPSelectionComplete): {
       }),
       makeBlock(equative),
     ],
-    EP.equative.negative
+    EP.equative.negative,
   );
   const miniPronouns = findPossesivesToShrink(
-    removeOrKeepSubject([...EP.blocks, EP.predicate], EP.omitSubject)
+    removeOrKeepSubject([...EP.blocks, EP.predicate], EP.omitSubject),
   );
   const kids: T.Kid[] = orderKids([
     ...(equative.equative.hasBa ? [makeKid({ type: "ba" })] : []),
@@ -94,11 +94,11 @@ function insertNegative(blocks: T.Block[], negative: boolean): T.Block[][] {
 
 function removeOrKeepSubject(
   blocks: (T.EPSBlockComplete | T.ComplementSelection)[],
-  omitSubject: boolean
+  omitSubject: boolean,
 ): (T.EPSBlockComplete | T.ComplementSelection)[] {
   if (!omitSubject) return blocks;
   return blocks.filter(
-    (b) => !("block" in b && b.block.type === "subjectSelection")
+    (b) => !("block" in b && b.block.type === "subjectSelection"),
   );
 }
 
@@ -112,10 +112,10 @@ export function getEquativeForm(tense: T.EquativeTense): {
     tense === "future"
       ? "habitual"
       : tense === "wouldBe"
-      ? "past"
-      : tense === "wouldHaveBeen"
-      ? "pastSubjunctive"
-      : tense;
+        ? "past"
+        : tense === "wouldHaveBeen"
+          ? "pastSubjunctive"
+          : tense;
   return {
     hasBa,
     form: g.equativeEndings[baseTense],
@@ -149,7 +149,7 @@ function renderEPSBlocks(blocks: T.EPSBlockComplete[]): T.Block[] {
         "subject",
         "none",
         false,
-        "no"
+        "no",
       ),
     });
   });
@@ -157,7 +157,7 @@ function renderEPSBlocks(blocks: T.EPSBlockComplete[]): T.Block[] {
 
 function renderEquative(
   es: T.EquativeSelection,
-  king: T.Person
+  king: T.Person,
 ): T.EquativeRendered {
   const { form, hasBa } = getEquativeForm(es.tense);
   const ps = getPersonFromVerbForm(form, king);
@@ -189,7 +189,7 @@ const equativeBuilders: Record<
     return [
       `$SUBJ ${getEnglishConj(p, g.englishEquative.present)}${not(n)} $PRED`,
       `...that $SUBJ ${getEnglishConj(p, g.englishEquative.present)}${not(
-        n
+        n,
       )} $PRED`,
       `$SUBJ should${not(n)} be $PRED`,
     ];
@@ -198,7 +198,7 @@ const equativeBuilders: Record<
     return [
       `$SUBJ will${not(n)} be $PRED`,
       `I betcha $SUBJ ${getEnglishConj(p, g.englishEquative.present)}${not(
-        n
+        n,
       )} $PRED`,
     ];
   },
@@ -212,7 +212,7 @@ const equativeBuilders: Record<
       `$SUBJ would ${n ? "not " : ""}be $PRED`,
       `$SUBJ would ${n ? "not " : ""}have been $PRED`,
       `$SUBJ ${getEnglishConj(p, g.englishEquative.past)} probably${not(
-        n
+        n,
       )} $PRED`,
     ];
   },
@@ -251,7 +251,7 @@ function getEnglishConj(p: T.Person, e: string | T.EnglishBlock): string {
 // }
 
 export function completeEPSelection(
-  eps: T.EPSelectionState
+  eps: T.EPSelectionState,
 ): T.EPSelectionComplete | undefined {
   if (!EPSBlocksAreComplete(eps.blocks)) {
     return undefined;

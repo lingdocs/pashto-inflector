@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { fFlatMapParseResult, fmapParseResult } from "../../fp-ps";
 import { isLocativeAdverbEntry } from "../../type-predicates";
-import { parseAdjective } from "./parse-adjective-new";
+import { parseAdjective } from "./parse-adjective";
 import { parseAdverb } from "./parse-adverb";
 import { parseNP } from "./parse-np";
 import { parsePossesor } from "./parse-possesor";

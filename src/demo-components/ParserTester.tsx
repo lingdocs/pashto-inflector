@@ -44,18 +44,14 @@ function ParserTester({
           onChange={(e) => handleInput(e.target.value)}
         />
       </div>
-      {/* TODO: SHOW POSSIBLE ERRORS */}
 
+      <JsonEditor data={result} />
       {result.map((res, i) => (
         <div key={`res ${i}`}>
           {res.errors.length > 0 && <div className="alert alert-danger">
             {res.errors.map(x => <div className="my-2" key={`i-${x.message}`}>{x.message}</div>)}
           </div>}
           <PhraseDisplay phrase={res.body} opts={opts} entryFeeder={entryFeeder} />
-          <details>
-            <summary>AST</summary>
-            <JsonEditor data={res} />
-          </details>
         </div>
       ))}
     </div>
