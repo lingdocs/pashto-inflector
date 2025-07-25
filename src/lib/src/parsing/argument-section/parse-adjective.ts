@@ -2,13 +2,14 @@ import * as T from "../../../../types";
 import { fmapParseResult } from "../../fp-ps";
 import { makeAdjectiveSelection } from "../../phrase-building/make-selections";
 import * as tp from "../../type-predicates";
+import { tokensExist } from "../utils";
 import { parseInflectableWord } from "./parse-inflectable-word";
 
 export function parseAdjective(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.InflectableBaseParse<T.AdjectiveSelection>>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   const adjectives = parseInflectableWord(

@@ -1,13 +1,17 @@
 import * as T from "../../../../types";
+import { getOneToken } from "../utils";
 
 type Result = ReturnType<typeof parsePronoun>[number];
 
 // TODO: add chaa
-export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
+export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
   inflected: boolean;
   selection: T.PronounSelection;
 }>[] {
-  const [{ s }, ...rest] = tokens;
+  const [s, rest] = getOneToken(tokens);
+  if (!s) {
+    return [];
+  }
   if (s === "زه") {
     return [0, 1].map((person) => ({
       tokens: rest,
@@ -176,8 +180,8 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             },
           },
           errors: [],
-        })
-      )
+        }),
+      ),
     );
   } else if (["تاسو", "تاسې"].includes(s)) {
     return [false, true].flatMap<Result>((inflected) =>
@@ -193,8 +197,8 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             },
           },
           errors: [],
-        })
-      )
+        }),
+      ),
     );
   } else if (["هغوي", "هغوی"].includes(s)) {
     return [false, true].flatMap<Result>((inflected) =>
@@ -210,8 +214,8 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             },
           },
           errors: [],
-        })
-      )
+        }),
+      ),
     );
   } else if (["دوي", "دوی"].includes(s)) {
     return [false, true].flatMap<Result>((inflected) =>
@@ -227,8 +231,8 @@ export function parsePronoun(tokens: Readonly<T.Token[]>): T.ParseResult<{
             },
           },
           errors: [],
-        })
-      )
+        }),
+      ),
     );
   }
 

@@ -6,9 +6,5 @@ export function tokenizer(s: string): Token[] {
     .trim()
     .split(/ +/)
     .filter((x) => x);
-  const indexed: { i: number; s: string }[] = [];
-  for (let i = 0; i < words.length; i++) {
-    indexed.push({ i, s: words[i] });
-  }
-  return indexed;
+  return words as Token[];
 }

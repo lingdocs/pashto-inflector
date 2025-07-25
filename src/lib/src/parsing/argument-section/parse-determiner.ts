@@ -1,49 +1,49 @@
 import * as T from "../../../../types";
 import { determiners } from "../../../../types";
 import * as tp from "../../type-predicates";
-import { returnParseResult, returnParseResults } from "../utils";
+import { getOneToken, returnParseResult, returnParseResults } from "../utils";
 
 export const parseDeterminer: T.Parser<
   T.InflectableBaseParse<T.DeterminerSelection>
 > = (
-  tokens: Readonly<T.Token[]>
+  tokens: T.Tokens,
   // eslint-disable-next-line
   // dictionary: T.DictionaryAPI
 ) => {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
   const demonstrative = parseDemonstrative(first);
   if (demonstrative.length) {
     return returnParseResults(rest, demonstrative);
   }
 
-  if (first.s.endsWith("و")) {
-    const determiner = determiners.find((d) => d.p === first.s.slice(0, -1));
+  if (first.endsWith("و")) {
+    const determiner = determiners.find((d) => d.p === first.slice(0, -1));
     if (!determiner) return [];
     if (!isInflectingDet(determiner)) return [];
     return returnParseResult(rest, {
       inflection: [2],
       gender: ["masc", "fem"],
-      given: first.s,
+      given: first,
       selection: {
         type: "determiner",
         determiner,
       },
     });
   }
-  if (first.s.endsWith("ې")) {
-    const determinerExact = determiners.find((d) => d.p === first.s);
+  if (first.endsWith("ې")) {
+    const determinerExact = determiners.find((d) => d.p === first);
     const determinerInflected = determiners.find(
-      (d) => d.p === first.s.slice(0, -1)
+      (d) => d.p === first.slice(0, -1),
     );
     return [
       ...(determinerExact
         ? returnParseResult(rest, {
             inflection: [0, 1, 2],
             gender: ["masc", "fem"],
-            given: first.s,
+            given: first,
             selection: {
               type: "determiner",
               determiner: determinerExact,
@@ -54,7 +54,7 @@ export const parseDeterminer: T.Parser<
         ? returnParseResult(rest, {
             inflection: [1] satisfies (0 | 1 | 2)[],
             gender: ["fem"],
-            given: first.s,
+            given: first,
             selection: {
               type: "determiner",
               determiner: determinerInflected,
@@ -65,13 +65,13 @@ export const parseDeterminer: T.Parser<
   }
   const exact: T.ParseResult<T.InflectableBaseParse<T.DeterminerSelection>>[] =
     (() => {
-      const determiner = determiners.find((d) => d.p === first.s);
+      const determiner = determiners.find((d) => d.p === first);
       if (!determiner) return [];
       const canInflect = isInflectingDet(determiner);
       return returnParseResult(rest, {
         inflection: canInflect ? [0, 1] : [0, 1, 2],
         gender: canInflect ? ["masc"] : ["masc", "fem"],
-        given: first.s,
+        given: first,
         selection: {
           type: "determiner",
           determiner,
@@ -81,14 +81,14 @@ export const parseDeterminer: T.Parser<
   const aEnding: T.ParseResult<
     T.InflectableBaseParse<T.DeterminerSelection>
   >[] = (() => {
-    if (first.s.endsWith("ه")) {
-      const determiner = determiners.find((d) => d.p === first.s.slice(0, -1));
+    if (first.endsWith("ه")) {
+      const determiner = determiners.find((d) => d.p === first.slice(0, -1));
       if (!determiner) return [];
       if (!isInflectingDet(determiner)) return [];
       return returnParseResult(rest, {
         inflection: [0],
         gender: ["fem"],
-        given: first.s,
+        given: first,
         selection: {
           type: "determiner",
           determiner,
@@ -101,17 +101,14 @@ export const parseDeterminer: T.Parser<
 };
 
 function parseDemonstrative(
-  token: Readonly<T.Token>
+  token: T.Token,
 ): T.InflectableBaseParse<T.DeterminerSelection>[] {
-  if (!token.s) {
-    return [];
-  }
-  if (token.s === "دا") {
+  if (token === "دا") {
     return [
       {
         inflection: [0],
         gender: ["masc", "fem"],
-        given: token.s,
+        given: token,
         selection: {
           type: "determiner",
           determiner: { p: "دا", f: "daa", type: "det", demonstrative: true },
@@ -119,12 +116,12 @@ function parseDemonstrative(
       },
     ];
   }
-  if (token.s === "دې") {
+  if (token === "دې") {
     return [
       {
         inflection: [1, 2],
         gender: ["masc", "fem"],
-        given: token.s,
+        given: token,
         selection: {
           type: "determiner",
           determiner: { p: "دا", f: "daa", type: "det", demonstrative: true },
@@ -132,26 +129,26 @@ function parseDemonstrative(
       },
     ];
   }
-  const ending = token.s.charAt(token.s.length - 1);
+  const ending = token.charAt(token.length - 1);
   const demonstrative: T.Determiner | undefined = (() => {
-    if (token.s.length !== 3 && ["ه", "ې", "و"].includes(ending)) {
+    if (token.length !== 3 && ["ه", "ې", "و"].includes(ending)) {
       return undefined;
     }
-    return token.s.startsWith("هغ")
+    return token.startsWith("هغ")
       ? ({
           p: "هغه",
           f: "hágha",
           type: "det",
           demonstrative: true,
         } as const)
-      : token.s.startsWith("دغ")
-      ? ({
-          p: "دغه",
-          f: "dágha",
-          type: "det",
-          demonstrative: true,
-        } as const)
-      : undefined;
+      : token.startsWith("دغ")
+        ? ({
+            p: "دغه",
+            f: "dágha",
+            type: "det",
+            demonstrative: true,
+          } as const)
+        : undefined;
   })();
   if (!demonstrative) {
     return [];
@@ -161,7 +158,7 @@ function parseDemonstrative(
       {
         inflection: [0, 1],
         gender: ["masc"],
-        given: token.s,
+        given: token,
         selection: {
           type: "determiner",
           determiner: demonstrative,
@@ -170,7 +167,7 @@ function parseDemonstrative(
       {
         inflection: [0],
         gender: ["fem"],
-        given: token.s,
+        given: token,
         selection: {
           type: "determiner",
           determiner: demonstrative,
@@ -183,7 +180,7 @@ function parseDemonstrative(
       {
         inflection: [1],
         gender: ["fem"],
-        given: token.s,
+        given: token,
         selection: {
           type: "determiner",
           determiner: demonstrative,
@@ -196,7 +193,7 @@ function parseDemonstrative(
       {
         inflection: [2],
         gender: ["masc", "fem"],
-        given: token.s,
+        given: token,
         selection: {
           type: "determiner",
           determiner: demonstrative,

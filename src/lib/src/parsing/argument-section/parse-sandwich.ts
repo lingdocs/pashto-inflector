@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { sandwiches } from "../../sandwiches";
 import { parseNP } from "./parse-np";
-import { bindParseResult } from "../utils";
+import { bindParseResult, getOneToken, tokensExist } from "../utils";
 
 // NOTE: prepositions can be dropped if there's a postposition
 
@@ -12,38 +12,36 @@ import { bindParseResult } from "../utils";
 // TODO: 3. matches only preposition (and there is no postposition)
 
 export function parseSandwich(
-  s: Readonly<T.Token[]>,
+  s: T.Tokens,
   dictionary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined,
 ): T.ParseResult<T.SandwichSelection<T.Sandwich>>[] {
-  if (s.length === 0) {
+  const [first, rest] = getOneToken(s);
+  if (!first) {
     return [];
   }
-
-  const [first, ...rest] = s;
-
   const startMatches = sandwiches.filter(
-    (x) => x.before && x.before.p === first.s,
+    (x) => x.before && x.before.p === first,
   );
   // TODO: this could be be really repetitive...
   const nps = parseNP(
-    startMatches.length ? rest : s,
+    startMatches.length ? { ...s, position: s.position + 1 } : s,
     dictionary,
     possesor,
     !!startMatches.length,
   );
   return bindParseResult(nps, (tokens, np) => {
-    if (!tokens.length) {
+    if (!tokensExist(tokens)) {
       return [];
     }
     const sandMatches = (
       startMatches.length ? startMatches : sandwiches
-    ).filter((x) => x.after && x.after.p === tokens[0].s);
+    ).filter((x) => x.after && x.after.p === first);
     const errors: T.ParseError[] = np.inflected
       ? []
       : [{ message: "NP inside sandwich must be inflected" }];
     return sandMatches.map((s) => ({
-      tokens: tokens.slice(1),
+      tokens: rest,
       body: {
         ...s,
         inside: np.selection,

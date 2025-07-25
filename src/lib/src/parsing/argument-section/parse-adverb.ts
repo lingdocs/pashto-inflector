@@ -1,37 +1,37 @@
 import * as T from "../../../../types";
 import { isAdverbEntry, isLocativeAdverbEntry } from "../../type-predicates";
-import { returnParseResultSingle } from "./../utils";
+import { getOneToken, returnParseResultSingle } from "./../utils";
 
 export function parseAdverb(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.AdverbSelection>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  const adverbs = dictionary.queryP(first.s).filter(isAdverbEntry);
+  const adverbs = dictionary.queryP(first).filter(isAdverbEntry);
   return adverbs.map((entry) =>
     returnParseResultSingle(rest, {
       type: "adverb",
       entry,
-    })
+    }),
   );
 }
 
 export function parseLocAdverb(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.LocativeAdverbSelection>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  const adverbs = dictionary.queryP(first.s).filter(isLocativeAdverbEntry);
+  const adverbs = dictionary.queryP(first).filter(isLocativeAdverbEntry);
   return adverbs.map((entry) =>
     returnParseResultSingle(rest, {
       type: "loc. adv." as const,
       entry,
-    })
+    }),
   );
 }

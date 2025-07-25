@@ -5,10 +5,10 @@ import { parsePossesor } from "./parse-possesor";
 import { bindParseResult } from "./../utils";
 
 export function parseNPAP(
-  s: Readonly<T.Token[]>,
+  s: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.APSelection | T.ParsedNP>[] {
-  if (s.length === 0) {
+  if (s.position >= s.tokens.length - 1) {
     return [];
   }
   const possesor = parsePossesor(s, dictionary);

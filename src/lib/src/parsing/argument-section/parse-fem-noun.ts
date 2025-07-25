@@ -2,15 +2,20 @@ import * as T from "../../../../types";
 import { andSuccTp } from "../../fp-ps";
 import { pashtoConsonants } from "../../pashto-consonants";
 import * as tp from "../../type-predicates";
-import { parserCombOr, returnParseResults } from "../utils";
+import {
+  getOneToken,
+  parserCombOr,
+  returnParseResults,
+  tokensExist,
+} from "../utils";
 
 type FemNounBaseParse = T.InflectableBaseParse<T.FemNounEntry>;
 
 export function parseFemNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   return parserCombOr([
@@ -22,34 +27,34 @@ export function parseFemNoun(
   ])(tokens, dictionary);
 }
 function plainPlural(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
   const plurLookup = (p: string) =>
     dictionary
       .queryP(p)
       .filter(andSuccTp(tp.isFemNounEntry, tp.isPluralNounEntry));
-  const plain = plurLookup(first.s).map<FemNounBaseParse>((selection) => ({
+  const plain = plurLookup(first).map<FemNounBaseParse>((selection) => ({
     inflection: [0],
     gender: ["fem"],
     selection,
-    given: first.s,
+    given: first,
   }));
-  const inflected = first.s.endsWith("و")
+  const inflected = first.endsWith("و")
     ? (() => {
-        const base = first.s.slice(0, -1);
-        const guesses = [first.s, base + "ه", base + "ې"];
+        const base = first.slice(0, -1);
+        const guesses = [first, base + "ه", base + "ې"];
         return guesses
           .flatMap(plurLookup)
           .map<FemNounBaseParse>((selection) => ({
             inflection: [2],
             gender: ["fem"],
             selection,
-            given: first.s,
+            given: first,
           }));
       })()
     : [];
@@ -57,59 +62,55 @@ function plainPlural(
 }
 
 function parsePattern1(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
   const p1Lookup = (p: string) =>
     dictionary
       .queryP(p)
       .filter(andSuccTp(tp.isFemNounEntry, tp.isPattern1Entry));
-  const plain = ["ه", "ع"].some((v) => first.s.endsWith(v))
-    ? p1Lookup(first.s).map<FemNounBaseParse>((selection) => ({
+  const plain = ["ه", "ع"].some((v) => first.endsWith(v))
+    ? p1Lookup(first).map<FemNounBaseParse>((selection) => ({
         inflection: [0],
         gender: ["fem"],
         selection,
-        given: first.s,
+        given: first,
       }))
     : [];
-  const withoutA = pashtoConsonants.includes(first.s[first.s.length - 1])
-    ? p1Lookup(first.s).map<FemNounBaseParse>((selection) => ({
+  const withoutA = pashtoConsonants.includes(first[first.length - 1])
+    ? p1Lookup(first).map<FemNounBaseParse>((selection) => ({
         inflection: [0],
         gender: ["fem"],
         selection,
-        given: first.s,
+        given: first,
       }))
     : [];
-  const inflected = first.s.endsWith("ې")
+  const inflected = first.endsWith("ې")
     ? (() => {
-        const base = first.s.slice(0, -1);
+        const base = first.slice(0, -1);
         const lookups = [
           ...p1Lookup(base + "ه"),
-          ...(["ح", "ع"].some((v) => first.s.at(-2) === v)
-            ? p1Lookup(base)
-            : []),
+          ...(["ح", "ع"].some((v) => first.at(-2) === v) ? p1Lookup(base) : []),
         ];
         return lookups.map<FemNounBaseParse>((selection) => ({
           inflection: [1],
           gender: ["fem"],
           selection,
-          given: first.s,
+          given: first,
         }));
       })()
     : [];
-  const doubleInflected = first.s.endsWith("و")
-    ? p1Lookup(first.s.slice(0, -1) + "ه").map<FemNounBaseParse>(
-        (selection) => ({
-          inflection: [2],
-          gender: ["fem"],
-          selection,
-          given: first.s,
-        })
-      )
+  const doubleInflected = first.endsWith("و")
+    ? p1Lookup(first.slice(0, -1) + "ه").map<FemNounBaseParse>((selection) => ({
+        inflection: [2],
+        gender: ["fem"],
+        selection,
+        given: first,
+      }))
     : [];
   return returnParseResults(rest, [
     ...plain,
@@ -120,21 +121,21 @@ function parsePattern1(
 }
 
 function parsePattern2(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.endsWith("ې")) {
+  if (first.endsWith("ې")) {
     return dictionary
-      .queryP(first.s)
+      .queryP(first)
       .filter(
         andSuccTp(
           andSuccTp(tp.isFemNounEntry, tp.isPattern2Entry),
-          tp.isSingularEntry
-        )
+          tp.isSingularEntry,
+        ),
       )
       .map((selection) => ({
         tokens: rest,
@@ -142,14 +143,14 @@ function parsePattern2(
           inflection: [0, 1],
           gender: ["fem"],
           selection,
-          given: first.s,
+          given: first,
         },
         errors: [],
       }));
-  } else if (first.s.endsWith("و")) {
-    const eGuess = first.s.endsWith("یو")
-      ? first.s.slice(0, -1)
-      : first.s.slice(0, -1) + "ې";
+  } else if (first.endsWith("و")) {
+    const eGuess = first.endsWith("یو")
+      ? first.slice(0, -1)
+      : first.slice(0, -1) + "ې";
     return dictionary
       .queryP(eGuess)
       .filter(andSuccTp(tp.isFemNounEntry, tp.isPattern2Entry))
@@ -159,7 +160,7 @@ function parsePattern2(
           inflection: [2],
           gender: ["fem"],
           selection,
-          given: first.s,
+          given: first,
         },
         errors: [],
       }));
@@ -168,21 +169,21 @@ function parsePattern2(
 }
 
 function parsePattern3(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.endsWith("ۍ")) {
+  if (first.endsWith("ۍ")) {
     return dictionary
-      .queryP(first.s)
+      .queryP(first)
       .filter(
         andSuccTp(
           andSuccTp(tp.isFemNounEntry, tp.isPattern3Entry),
-          tp.isSingularEntry
-        )
+          tp.isSingularEntry,
+        ),
       )
       .map((selection) => ({
         tokens: rest,
@@ -190,14 +191,14 @@ function parsePattern3(
           inflection: [0, 1],
           gender: ["fem"],
           selection,
-          given: first.s,
+          given: first,
         },
         errors: [],
       }));
-  } else if (first.s.endsWith("و")) {
-    const eGuess = first.s.endsWith("یو")
-      ? first.s.slice(0, -2) + "ۍ"
-      : first.s.slice(0, -1) + "ۍ";
+  } else if (first.endsWith("و")) {
+    const eGuess = first.endsWith("یو")
+      ? first.slice(0, -2) + "ۍ"
+      : first.slice(0, -1) + "ۍ";
     return dictionary
       .queryP(eGuess)
       .filter(andSuccTp(tp.isFemNounEntry, tp.isPattern3Entry))
@@ -207,7 +208,7 @@ function parsePattern3(
           inflection: [2],
           gender: ["fem"],
           selection,
-          given: first.s,
+          given: first,
         },
         errors: [],
       }));
@@ -216,16 +217,16 @@ function parsePattern3(
 }
 
 function parseEeEnding(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.endsWith("ي")) {
+  if (first.endsWith("ي")) {
     return dictionary
-      .queryP(first.s)
+      .queryP(first)
       .filter(tp.isPattern6FemEntry)
       .map((selection) => ({
         tokens: rest,
@@ -233,13 +234,13 @@ function parseEeEnding(
           inflection: [0],
           gender: ["fem"],
           selection,
-          given: first.s,
+          given: first,
         },
         errors: [],
       }));
-  } else if (first.s.endsWith("ۍ")) {
+  } else if (first.endsWith("ۍ")) {
     return dictionary
-      .queryP(first.s.slice(0, -1) + "ي")
+      .queryP(first.slice(0, -1) + "ي")
       .filter(tp.isPattern6FemEntry)
       .map((selection) => ({
         tokens: rest,
@@ -247,14 +248,14 @@ function parseEeEnding(
           inflection: [1],
           gender: ["fem"],
           selection,
-          given: first.s,
+          given: first,
         },
         errors: [],
       }));
-  } else if (first.s.endsWith("و")) {
-    const eGuess = first.s.endsWith("یو")
-      ? first.s.slice(0, -2) + "ي"
-      : first.s.slice(0, -1) + "ي";
+  } else if (first.endsWith("و")) {
+    const eGuess = first.endsWith("یو")
+      ? first.slice(0, -2) + "ي"
+      : first.slice(0, -1) + "ي";
     return dictionary
       .queryP(eGuess)
       .filter(tp.isPattern6FemEntry)
@@ -264,7 +265,7 @@ function parseEeEnding(
           inflection: [2],
           gender: ["fem"],
           selection,
-          given: first.s,
+          given: first,
         },
         errors: [],
       }));

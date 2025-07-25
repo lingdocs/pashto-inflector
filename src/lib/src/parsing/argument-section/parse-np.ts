@@ -3,17 +3,18 @@ import { parsePronoun } from "./parse-pronoun";
 import { parseNoun } from "./parse-noun";
 import { fmapParseResult } from "../../fp-ps";
 import { parseParticiple } from "./parse-participle";
+import { tokensExist } from "../utils";
 
 // TODO: THIS gets called four times off the bat so it could get
 // memoized
 export function parseNP(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dicitonary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined,
   /** to avoid recursion errors with the complement parsing */
   lookForComp: boolean,
 ): T.ParseResult<T.ParsedNP>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
 

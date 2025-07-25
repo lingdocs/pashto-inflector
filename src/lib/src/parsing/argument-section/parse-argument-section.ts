@@ -22,15 +22,15 @@ const empty: ArgSectionData = {
 // we are losing the errors from the NPs
 
 export function parseArgumentSection(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<ArgSectionData>[] {
-  if (tokens.length === 0) {
+  if (tokens.position >= tokens.tokens.length - 1) {
     return [];
   }
   return [
     // also give an option to keep parsing without an argument section
-    returnParseResultSingle(tokens, empty),
+    returnParseResultSingle(tokens.position, empty),
     ...parseArgSectR(dictionary)({
       tokens,
       body: empty,

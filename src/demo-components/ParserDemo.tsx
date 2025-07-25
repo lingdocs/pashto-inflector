@@ -1,21 +1,11 @@
 import { useState } from "react";
 import * as T from "../types";
-// import { parsePhrase } from "../lib/src/parsing/parse-phrase";
 import { tokenizer } from "../lib/src/parsing/tokenizer";
-// import { NPDisplay } from "../components/library";
-import EditableVP from "../components/src/vp-explorer/EditableVP";
-import { uncompleteVPSelection } from "../lib/src/phrase-building/vp-tools";
-import { JsonEditor } from "json-edit-react";
-// import { renderNounSelection } from "../lib/src/phrase-building/render-np";
-// import { NPBlock } from "../components/src/blocks/Block";
-// import { getEnglishFromRendered } from "../lib/src/phrase-building/np-tools";
 import { parsePhrase } from "../lib/src/parsing/parse-phrase";
-//import { renderVP } from "../lib/src/phrase-building/render-vp";
-// import VPDisplay from "../components/src/vp-explorer/VPDisplay";
-import { entryFeeder } from "./entryFeeder";
 import { removeRedundantVPSs } from "../lib/src/phrase-building/remove-redundant";
 import { useDebouncedCallback } from "use-debounce";
-import { EPDisplay } from "../components/library";
+import { NewPhraseDisplay } from "../components/src/phrase-display/PhraseDisplay";
+import { standardizePashto } from "../components/dist/lib/library";
 
 const working = [
   "phrases with simple verbs",
@@ -177,22 +167,7 @@ function ParserDemo({
           <div className="text-center">Did you mean:</div>
         </>
       )}
-      {result.map((res, i) => (
-        ("predicate" in res) ? <EPDisplay opts={opts} setOmitSubject={false} justify="left" eps={res} /> :
-          <div key={`res ${i}`}>
-            <EditableVP
-              opts={opts}
-              entryFeeder={entryFeeder}
-              allVariations={true}
-            >
-              {uncompleteVPSelection(res)}
-            </EditableVP>
-            <details>
-              <summary>AST</summary>
-              <JsonEditor data={res} />
-            </details>
-          </div>
-      ))}
+      <NewPhraseDisplay opts={opts} phrases={result} dictionary={dictionary} toMatch={standardizePashto(text.trim())} />
     </div>
   );
 }

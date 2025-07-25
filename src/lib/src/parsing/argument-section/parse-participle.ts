@@ -1,9 +1,11 @@
 import * as T from "../../../../types";
 import {
   bindParseResult,
+  getOneToken,
   getStatComp,
   returnParseResult,
   returnParseResults,
+  tokensExist,
 } from "../utils";
 import { kawulStat, kedulStat } from "../verb-section/irreg-verbs";
 import { getLFromComplement } from "../verb-section/misc";
@@ -20,7 +22,7 @@ type ParticipleResult = {
 // TODO: should have adverbs with participle
 // TODO: NOTE this does not work with compound verbs yet
 export function parseParticiple(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dicitonary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined,
   lookForComp: boolean,
@@ -34,23 +36,23 @@ export function parseParticiple(
 }
 
 function parseJoinedPart(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dicitonary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined,
 ): T.ParseResult<ParticipleResult>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (!["ل", "و"].includes(first.s.at(-1) || "")) {
+  if (!["ل", "و"].includes(first.at(-1) || "")) {
     return [];
   }
-  const inflected = first.s.endsWith("و");
+  const inflected = first.endsWith("و");
 
   return [
-    ...dicitonary.verbEntryLookup(inflected ? first.s.slice(0, -1) : first.s),
-    ...(inflected && shortVerbEndConsonant.includes(first.s.at(-2) || "")
-      ? dicitonary.verbEntryLookup(first.s.slice(0, -1) + "ل")
+    ...dicitonary.verbEntryLookup(inflected ? first.slice(0, -1) : first),
+    ...(inflected && shortVerbEndConsonant.includes(first.at(-2) || "")
+      ? dicitonary.verbEntryLookup(first.slice(0, -1) + "ل")
       : []),
   ].map<T.ParseResult<ParticipleResult>>((verb) => ({
     tokens: rest,
@@ -67,11 +69,11 @@ function parseJoinedPart(
 }
 
 function parseStativeCompSepPart(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dicitonary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined,
 ): T.ParseResult<ParticipleResult>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   const comps = parseComplement(tokens, dicitonary);
@@ -126,31 +128,31 @@ function parseStativeCompSepPart(
 }
 
 function parseCompAuxPart(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
 ): T.ParseResult<{ inflected: boolean; transitivity: T.Transitivity }>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [{ s }, ...rest] = tokens;
-  if (s === "کېدل") {
+  if (first === "کېدل") {
     return returnParseResult(rest, {
       inflected: false,
       transitivity: "intransitive",
     });
   }
-  if (["کېدلو", "کېدو"].includes(s)) {
+  if (["کېدلو", "کېدو"].includes(first)) {
     return returnParseResult(rest, {
       inflected: true,
       transitivity: "intransitive",
     });
   }
-  if (s === "کول") {
+  if (first === "کول") {
     return returnParseResult(rest, {
       inflected: false,
       transitivity: "transitive",
     });
   }
-  if (s === "کولو") {
+  if (first === "کولو") {
     return returnParseResult(rest, {
       inflected: true,
       transitivity: "transitive",

@@ -15,7 +15,7 @@ import { assertNever } from "../misc-helpers";
  */
 export function bindParseResult<C, D>(
   prev: T.ParseResult<C>[],
-  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[],
+  f: (tokens: T.Tokens, r: C) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
   // const grouped = groupByTokenLength(prev);
   // if (grouped.length > 1 || grouped.length === 0) {
@@ -30,7 +30,7 @@ export function bindParseResult<C, D>(
 
 export function bindParseResultDebug<C, D>(
   prev: T.ParseResult<C>[],
-  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[],
+  f: (tokens: T.Tokens, r: C) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
   // PERFECTION 🧪
   return cleanOutResultsDebug(
@@ -41,7 +41,7 @@ export function bindParseResultDebug<C, D>(
 
 export function bindParseWithAllErrors<C, D>(
   prev: T.ParseResult<C>[],
-  f: (tokens: Readonly<T.Token[]>, r: C) => T.ParseResult<D>[],
+  f: (tokens: T.Tokens, r: C) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
   // PERFECTION 🧪
   // TODO: Do we really need to remove duplicates ?? I don't think so
@@ -63,8 +63,8 @@ export function bindParseWithAllErrors<C, D>(
  **/
 export function bindParseResultWParser<C, D, E>(
   prev: T.ParseResult<C>[],
-  parser: (tokens: Readonly<T.Token[]>) => T.ParseResult<D>[],
-  f: (res: C, parsed: D, tokens: Readonly<T.Token[]>) => T.ParseResult<E>[],
+  parser: (tokens: T.Tokens) => T.ParseResult<D>[],
+  f: (res: C, parsed: D, tokens: T.Tokens) => T.ParseResult<E>[],
 ): T.ParseResult<E>[] {
   const grouped = groupByTokenLength(prev);
   return cleanOutResults(
@@ -100,7 +100,7 @@ function groupByTokenLength<D>(
 ): T.ParseResult<D>[][] {
   const buckets: Record<number, T.ParseResult<D>[]> = {};
   results.forEach((pr) => {
-    const l = pr.tokens.length;
+    const l = pr.tokens.position;
     if (!buckets[l]) {
       buckets[l] = [pr];
     } else {
@@ -111,7 +111,7 @@ function groupByTokenLength<D>(
 }
 
 export function returnParseResults<D>(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   body: D[],
   errors?: T.ParseError[],
 ): T.ParseResult<D>[] {
@@ -123,7 +123,7 @@ export function returnParseResults<D>(
 }
 
 export function returnParseResultSingle<D>(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   body: D,
   errors?: T.ParseError[],
 ): T.ParseResult<D> {
@@ -135,7 +135,7 @@ export function returnParseResultSingle<D>(
 }
 
 export function returnParseResult<D>(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   body: D,
   errors?: T.ParseError[],
 ): T.ParseResult<D>[] {
@@ -194,12 +194,12 @@ function removeDuplicates<C>(results: T.ParseResult<C>[]): T.ParseResult<C>[] {
 }
 
 export type Parser<R> = (
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ) => T.ParseResult<R>[];
 
 export function parserCombOr<R>(parsers: Parser<R>[]) {
-  return (tokens: Readonly<T.Token[]>, dictionary: T.DictionaryAPI) =>
+  return (tokens: T.Tokens, dictionary: T.DictionaryAPI) =>
     parsers.flatMap((p) => p(tokens, dictionary));
 }
 
@@ -212,11 +212,8 @@ export function parserCombOr<R>(parsers: Parser<R>[]) {
  * @returns
  */
 export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
-  const r: Parser<R[]> = (
-    tokens: Readonly<T.Token[]>,
-    dictionary: T.DictionaryAPI,
-  ) => {
-    function go(acc: R[], t: Readonly<T.Token[]>): T.ParseResult<R[]>[] {
+  const r: Parser<R[]> = (tokens: T.Tokens, dictionary: T.DictionaryAPI) => {
+    function go(acc: R[], t: T.Tokens): T.ParseResult<R[]>[] {
       const one = parser(t, dictionary);
       if (one.length === 0) {
         return returnParseResult(t, acc);
@@ -239,7 +236,7 @@ export function parserCombSucc2<A, B>(
   parsers: [Parser<A>, Parser<B>],
 ): Parser<[A, B]> {
   return function (
-    tokens: Readonly<T.Token[]>,
+    tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
   ): T.ParseResult<[A, B]>[] {
     return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
@@ -254,7 +251,7 @@ export function parserCombSucc3<A, B, C>(
   parsers: [Parser<A>, Parser<B>, Parser<C>],
 ): Parser<[A, B, C]> {
   return function (
-    tokens: Readonly<T.Token[]>,
+    tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
   ): T.ParseResult<[A, B, C]>[] {
     return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
@@ -270,7 +267,7 @@ export function parserCombSucc3<A, B, C>(
 export function isCompleteResult<C extends object>(
   r: T.ParseResult<C>,
 ): boolean {
-  return !r.tokens.length && !r.errors.length;
+  return r.tokens.position === r.tokens.tokens.length - 1 && !r.errors.length;
 }
 
 export function removeKeys(a: any): any {
@@ -497,4 +494,22 @@ export function isOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
 
 export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
   return b.type === "PH" && !["و", "وا"].includes(b.s);
+}
+
+export function tokensExist(tokens: T.Tokens): boolean {
+  return tokens.position < tokens.tokens.length - 1;
+}
+
+export function getOneToken(
+  tokens: T.Tokens,
+): [T.Token, T.Tokens] | [undefined, undefined] {
+  if (tokens.position >= tokens.tokens.length - 1) {
+    return [undefined, undefined];
+  }
+  const first = tokens.tokens[tokens.position];
+  const rest: T.Tokens = {
+    tokens: tokens.tokens,
+    position: tokens.position + 1,
+  };
+  return [first, rest];
 }

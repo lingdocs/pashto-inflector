@@ -1,6 +1,10 @@
 import * as T from "../../../../types";
 import { parseNP } from "./parse-np";
-import { bindParseResult, returnParseResultSingle } from "../utils";
+import {
+  bindParseResult,
+  getOneToken,
+  returnParseResultSingle,
+} from "../utils";
 
 // TODO: maybe contractions should just be male to cut down on the
 // alternative sentences
@@ -19,10 +23,10 @@ const contractions: [string[], T.Person[]][] = [
 ];
 
 export function parsePossesor(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.PossesorSelection>[] {
-  if (tokens.length === 0) {
+  if (tokens.position >= tokens.tokens.length - 1) {
     return [];
   }
   return parsePossesorR(dictionary, {
@@ -36,7 +40,7 @@ function parsePossesorR(
   dictionary: T.DictionaryAPI,
   prev: T.ParseResult<T.PossesorSelection | undefined>,
 ): T.ParseResult<T.PossesorSelection>[] {
-  if (prev.tokens.length === 0) {
+  if (prev.tokens.position >= prev.tokens.tokens.length - 1) {
     if (prev.body) {
       // need to do this for ts inference
       return [
@@ -58,11 +62,15 @@ function parsePossesorR(
       parsePossesorR(dictionary, returnParseResultSingle(tkns, p)),
     );
   }
-  const [first, ...rest] = prev.tokens;
+  const first = prev.tokens.tokens[prev.tokens.position];
+  const rest: T.Tokens = {
+    ...prev.tokens,
+    position: prev.tokens.position + 1,
+  };
   // parse contraction
   // then later (if possessor || contractions)
 
-  if (first.s === "د") {
+  if (first === "د") {
     const np = parseNP(rest, dictionary, undefined, true);
     return bindParseResult(np, (tkns, body) => {
       const possesor: T.PossesorSelection = addPoss(prev.body, {
@@ -116,10 +124,13 @@ function addPoss(
 }
 
 function parseContractions(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
 ): T.ParseResult<T.PossesorSelection>[] {
-  const [first, ...rest] = tokens;
-  const c = contractions.find(([ps]) => ps.includes(first.s));
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
+    return [];
+  }
+  const c = contractions.find(([ps]) => ps.includes(first));
   if (!c) {
     return [];
   }

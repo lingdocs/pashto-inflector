@@ -9,7 +9,7 @@ import { parseSandwich } from "./parse-sandwich";
 import { bindParseResult } from "../utils";
 
 export function parseComplement(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedComplementSelection>[] {
   // TODO: error message for inflected complements

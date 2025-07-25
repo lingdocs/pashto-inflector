@@ -8,6 +8,7 @@ import {
   parserCombMany,
   parserCombSucc2,
   returnParseResults,
+  tokensExist,
 } from "../utils";
 import { fmapParseResult } from "../../fp-ps";
 import { testDictionary } from "../mini-test-dictionary";
@@ -18,11 +19,11 @@ const xudza = testDictionary.nounLookup("ښځه")[0];
 type NounResult = { inflected: boolean; selection: T.NounSelection };
 
 export function parseNoun(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined,
 ): T.ParseResult<NounResult>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   const determiners = parserCombMany(parseDeterminer)(tokens, dictionary);
@@ -116,7 +117,7 @@ function getLoneDeterminer(
 }
 
 function makeDemWOutNoun(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   d: T.InflectableBaseParse<T.DeterminerSelection>,
 ): T.ParseResult<
   Readonly<

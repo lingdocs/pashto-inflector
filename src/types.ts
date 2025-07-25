@@ -1274,7 +1274,7 @@ export type DictionaryAPI = {
 };
 
 export type Parser<R> = (
-  tokens: Readonly<Token[]>,
+  tokens: Tokens,
   dictionary: DictionaryAPI,
 ) => ParseResult<R>[];
 
@@ -1565,19 +1565,21 @@ export type OtherComp = {
   ps: PsString;
 };
 
-export type Token = {
-  i: number;
-  s: string;
-};
+export type Token = string & { ___brand: "a token" };
 
 export type ParseError = {
   message: string;
-  token?: Token;
+  position?: [number, number];
 };
 
 /** a tuple containing the [left over tokens, parse result, errors associated with the result] */
 export type ParseResult<P> = {
-  tokens: Readonly<Token[]>;
+  tokens: Tokens;
   body: P;
   errors: ParseError[];
+};
+
+export type Tokens = {
+  tokens: Readonly<Token[]>;
+  position: number;
 };
