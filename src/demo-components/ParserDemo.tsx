@@ -5,7 +5,7 @@ import { parsePhrase } from "../lib/src/parsing/parse-phrase";
 import { removeRedundantVPSs } from "../lib/src/phrase-building/remove-redundant";
 import { useDebouncedCallback } from "use-debounce";
 import { NewPhraseDisplay } from "../components/src/phrase-display/PhraseDisplay";
-import { standardizePashto } from "../components/dist/lib/library";
+import { standardizePashto } from "../lib/src/standardize-pashto";
 
 const working = [
   "phrases with simple verbs",
