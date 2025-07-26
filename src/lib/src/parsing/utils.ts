@@ -267,7 +267,7 @@ export function parserCombSucc3<A, B, C>(
 export function isCompleteResult<C extends object>(
   r: T.ParseResult<C>,
 ): boolean {
-  return r.tokens.position === r.tokens.tokens.length - 1 && !r.errors.length;
+  return !tokensExist(r.tokens) && !r.errors.length;
 }
 
 export function removeKeys(a: any): any {
@@ -497,13 +497,13 @@ export function isNonOoPh(b: T.ParsedBlock): b is T.ParsedVerbPH {
 }
 
 export function tokensExist(tokens: T.Tokens): boolean {
-  return tokens.position < tokens.tokens.length - 1;
+  return tokens.position < tokens.tokens.length;
 }
 
 export function getOneToken(
   tokens: T.Tokens,
 ): [T.Token, T.Tokens] | [undefined, undefined] {
-  if (tokens.position >= tokens.tokens.length - 1) {
+  if (!tokensExist(tokens)) {
     return [undefined, undefined];
   }
   const first = tokens.tokens[tokens.position];
@@ -512,4 +512,19 @@ export function getOneToken(
     position: tokens.position + 1,
   };
   return [first, rest];
+}
+
+export function getTwoTokens(
+  tokens: T.Tokens,
+): [T.Token, T.Token, T.Tokens] | [undefined, undefined, undefined] {
+  if (tokens.position >= tokens.tokens.length - 1) {
+    return [undefined, undefined, undefined];
+  }
+  const first = tokens.tokens[tokens.position];
+  const second = tokens.tokens[tokens.position + 1];
+  const rest: T.Tokens = {
+    tokens: tokens.tokens,
+    position: tokens.position + 2,
+  };
+  return [first, second, rest];
 }

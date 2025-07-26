@@ -1,16 +1,16 @@
 import * as T from "../../../../types";
 import { kawulStat, kawulDyn, kedulStat, kedulDyn } from "./irreg-verbs";
-import { returnParseResults } from "../utils";
+import { getOneToken, returnParseResults, tokensExist } from "../utils";
 import { getPPartGenNums } from "./misc";
 
 // TODO: do we ever really need this umbrella function?
 // or are we always just parsing eithre PPart or Ability ??
 
 export function parseKawulKedulVBP(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBP>[] {
-  if (!tokens.length) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   return [
@@ -21,23 +21,23 @@ export function parseKawulKedulVBP(
 }
 
 export function parseKawulKedulPPart(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
 ): T.ParseResult<T.ParsedVBPBasicPart>[] {
-  if (!tokens.length) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.length !== 3) {
+  if (first.length !== 3) {
     return [];
   }
-  if (!["کړ", "شو"].some((x) => first.s.startsWith(x))) {
+  if (!["کړ", "شو"].some((x) => first.startsWith(x))) {
     return [];
   }
-  const genNums = getPPartGenNums(first.s);
+  const genNums = getPPartGenNums(first);
   if (!genNums.length) {
     return [];
   }
-  const verbs = first.s.startsWith("ک")
+  const verbs = first.startsWith("ک")
     ? [kawulStat, kawulDyn]
     : [kedulStat, kedulDyn];
   return returnParseResults(
@@ -58,17 +58,17 @@ export function parseKawulKedulPPart(
 }
 
 export function parseKawulKedulAbility(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBPBasicAbility>[] {
-  if (!tokens.length) {
-    return [];
-  }
   if (ph && ph.type === "PH" && ph.s !== "و") {
     return [];
   }
-  const [first, ...rest] = tokens;
-  const { base, ending } = getAbilityBase(first.s);
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
+    return [];
+  }
+  const { base, ending } = getAbilityBase(first);
   if (!ending) {
     return [];
   }

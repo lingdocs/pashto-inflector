@@ -1,7 +1,7 @@
 import * as T from "../../../types";
 import { testDictionary } from "./mini-test-dictionary";
 import { tokenizer } from "./tokenizer";
-import { getPeople, removeKeys } from "./utils";
+import { getPeople, removeKeys, tokensExist } from "./utils";
 import { parseVP } from "./parse-vp";
 // import {
 //   kedulDyn,
@@ -2842,7 +2842,7 @@ sections.forEach((section) => {
       test(input, () => {
         const tokens = tokenizer(input);
         const res = parseVP(tokens, testDictionary).filter(
-          (x) => !x.tokens.length,
+          (x) => !tokensExist(x.tokens),
         );
         if (error) {
           expect(res.some((x) => x.errors.length));

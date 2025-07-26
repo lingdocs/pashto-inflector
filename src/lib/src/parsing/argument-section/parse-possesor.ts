@@ -4,6 +4,7 @@ import {
   bindParseResult,
   getOneToken,
   returnParseResultSingle,
+  tokensExist,
 } from "../utils";
 
 // TODO: maybe contractions should just be male to cut down on the
@@ -26,7 +27,7 @@ export function parsePossesor(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.PossesorSelection>[] {
-  if (tokens.position >= tokens.tokens.length - 1) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   return parsePossesorR(dictionary, {
@@ -40,7 +41,7 @@ function parsePossesorR(
   dictionary: T.DictionaryAPI,
   prev: T.ParseResult<T.PossesorSelection | undefined>,
 ): T.ParseResult<T.PossesorSelection>[] {
-  if (prev.tokens.position >= prev.tokens.tokens.length - 1) {
+  if (!tokensExist(prev.tokens)) {
     if (prev.body) {
       // need to do this for ts inference
       return [
@@ -62,11 +63,10 @@ function parsePossesorR(
       parsePossesorR(dictionary, returnParseResultSingle(tkns, p)),
     );
   }
-  const first = prev.tokens.tokens[prev.tokens.position];
-  const rest: T.Tokens = {
-    ...prev.tokens,
-    position: prev.tokens.position + 1,
-  };
+  const [first, rest] = getOneToken(prev.tokens);
+  if (!first) {
+    return [];
+  }
   // parse contraction
   // then later (if possessor || contractions)
 

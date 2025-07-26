@@ -1,7 +1,11 @@
 import * as T from "../../../../types";
 import { parseKidsSection } from "./../parse-kids-section";
 import { parseNPAP } from "./parse-npap";
-import { bindParseWithAllErrors, returnParseResultSingle } from "./../utils";
+import {
+  bindParseWithAllErrors,
+  returnParseResultSingle,
+  tokensExist,
+} from "./../utils";
 import { parseComplement } from "./parse-complement";
 import { assertNever } from "../../misc-helpers";
 
@@ -25,12 +29,12 @@ export function parseArgumentSection(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<ArgSectionData>[] {
-  if (tokens.position >= tokens.tokens.length - 1) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   return [
     // also give an option to keep parsing without an argument section
-    returnParseResultSingle(tokens.position, empty),
+    returnParseResultSingle(tokens, empty),
     ...parseArgSectR(dictionary)({
       tokens,
       body: empty,

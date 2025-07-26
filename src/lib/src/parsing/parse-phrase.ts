@@ -1,10 +1,11 @@
 import * as T from "../../../types";
 import { parseVP } from "./parse-vp";
+import { tokensExist } from "./utils";
 
 // شو should not be sheyaano !!
 
 export function parsePhrase(
-  s: T.Token[],
+  s: T.Tokens,
   dicitonary: T.DictionaryAPI,
 ): {
   success: // | {
@@ -21,7 +22,7 @@ export function parsePhrase(
     ...parseVP(s, dicitonary),
   ];
 
-  const success = res.filter((x) => !x.tokens.length).map((x) => x.body);
+  const success = res.filter((x) => !tokensExist(x.tokens)).map((x) => x.body);
   return {
     success,
     errors: [

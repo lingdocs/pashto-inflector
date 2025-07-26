@@ -7,13 +7,13 @@ import { parseInflectableWord } from "./../argument-section/parse-inflectable-wo
 import { parseFemNoun } from "./../argument-section/parse-fem-noun";
 import { parsePluralEndingNoun } from "./parse-plural-ending-noun";
 import { parseIrregularPlural } from "./../argument-section/parse-irregular-plural";
-import { parserCombOr } from "./../utils";
+import { parserCombOr, tokensExist } from "./../utils";
 
 export const parseNounWord: T.Parser<T.ParsedNounWord<T.NounEntry>> = (
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ) => {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   const withoutPluralEndings = fFlatMapParseResult(
@@ -21,23 +21,23 @@ export const parseNounWord: T.Parser<T.ParsedNounWord<T.NounEntry>> = (
     [
       ...parseInflectableWord(tokens, dictionary, isNounEntry),
       ...parseFemNoun(tokens, dictionary),
-    ]
+    ],
   );
   return [
     ...withoutPluralEndings,
     ...parserCombOr([parsePluralEndingNoun, parseIrregularPlural])(
       tokens,
-      dictionary
+      dictionary,
     ),
   ];
 };
 
 function inflectableBaseParseToNounWordResults<N extends T.NounEntry>(
-  wr: T.InflectableBaseParse<N>
+  wr: T.InflectableBaseParse<N>,
 ): T.ParsedNounWord<N>[] {
   function gendersWorkWithSelection(
     genders: T.Gender[],
-    selection: T.NounSelection
+    selection: T.NounSelection,
   ): T.Gender[] {
     return genders.filter((g) => {
       if (selection.genderCanChange) {
@@ -48,7 +48,7 @@ function inflectableBaseParseToNounWordResults<N extends T.NounEntry>(
   }
   const possibleGenders = gendersWorkWithSelection(
     wr.gender,
-    makeNounSelection(wr.selection, undefined)
+    makeNounSelection(wr.selection, undefined),
   );
   return possibleGenders.flatMap((gender) =>
     wr.inflection.flatMap((inflection) =>
@@ -59,16 +59,16 @@ function inflectableBaseParseToNounWordResults<N extends T.NounEntry>(
           gender,
           given: wr.given,
           entry: wr.selection,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 }
 
 function convertInflection(
   inflection: 0 | 1 | 2,
   entry: T.NounEntry,
-  gender: T.Gender
+  gender: T.Gender,
 ): {
   inflected: boolean;
   number: T.NounNumber;

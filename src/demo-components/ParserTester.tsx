@@ -4,11 +4,10 @@ import { tokenizer } from "../lib/src/parsing/tokenizer";
 import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
-import { PhraseDisplay } from "../components/src/PhraseDisplay";
 
 function ParserTester({
-  opts,
-  entryFeeder,
+  // opts,
+  // entryFeeder,
 }: {
   opts: T.TextOptions,
   entryFeeder: T.EntryFeeder,
@@ -46,14 +45,14 @@ function ParserTester({
       </div>
 
       <JsonEditor data={result} />
-      {result.map((res, i) => (
+      {/* result.map((res, i) => (
         <div key={`res ${i}`}>
           {res.errors.length > 0 && <div className="alert alert-danger">
             {res.errors.map(x => <div className="my-2" key={`i-${x.message}`}>{x.message}</div>)}
           </div>}
           <PhraseDisplay phrase={res.body} opts={opts} entryFeeder={entryFeeder} />
         </div>
-      ))}
+      ))*/}
     </div>
   );
 }

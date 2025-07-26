@@ -35,7 +35,7 @@ export function parseComplement(
 }
 
 function parseNPWPoss(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.NPSelection>[] {
   const possesor = parsePossesor(tokens, dictionary);

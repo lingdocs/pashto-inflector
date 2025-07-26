@@ -13,6 +13,7 @@ import {
   isPH,
   returnParseResult,
   returnParseResults,
+  tokensExist,
 } from "./utils";
 import {
   getObjectSelection,
@@ -108,10 +109,10 @@ const anyTarget: Target = {
 type PhraseSelection = T.VPSelectionComplete | T.EPSelectionComplete;
 
 export function parseVP(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<PhraseSelection>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   const argument = parseArgumentSection(tokens, dictionary);
@@ -121,7 +122,7 @@ export function parseVP(
       argument,
       (tokens) => parseVerbSection(tokens, dictionary),
       (arg, vs, tkns) => {
-        if (tkns.length) {
+        if (tokensExist(tkns)) {
           // parseVP should only work when it consumes all the tokens
           return [];
         }
@@ -135,7 +136,7 @@ export function parseVP(
 }
 
 function combineArgAndVerbSections(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   arg: ReturnType<typeof parseArgumentSection>[number]["body"],
   vs: ReturnType<typeof parseVerbSection>[number]["body"],
@@ -148,10 +149,11 @@ function combineArgAndVerbSections(
   const ba = kids.some((k) => k === "ba");
   const { tenses, eq } = getTenses(vs.blocks, ba, dictionary);
   if (eq) {
-    if (tokens.length) {
+    if (tokensExist(tokens)) {
       return [];
     }
     return finishEquative(
+      tokens,
       arg.npsAndAps,
       arg.complement,
       eq,
@@ -251,6 +253,7 @@ function combineArgAndVerbSections(
 }
 
 function finishEquative(
+  tokens: T.Tokens,
   blocks: (T.ParsedNP | T.APSelection)[],
   comp: T.ParsedComplementSelection | undefined,
   eq: { tense: T.EquativeTense; person: T.Person },
@@ -303,7 +306,7 @@ function finishEquative(
       predicate,
       omitSubject: !nps.length,
     };
-    return returnParseResult([], selection, errors);
+    return returnParseResult(tokens, selection, errors);
   });
 }
 
@@ -350,7 +353,7 @@ type TransitivePossibility = {
 };
 
 type MakeTransPossibilitiesProps = {
-  tokens: readonly T.Token[];
+  tokens: T.Tokens;
   miniPronouns: T.ParsedMiniPronoun[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   vbePerson: T.Person;
@@ -373,7 +376,7 @@ function finishIntransitive({
   miniPronouns: T.ParsedMiniPronoun[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   exComplement: T.ParsedComplementSelection | undefined;
-  tokens: Readonly<T.Token[]>;
+  tokens: T.Tokens;
   v: T.VerbSelectionComplete;
   vbePerson: T.Person;
   target: Target;
@@ -448,7 +451,7 @@ function finishTransitive({
   miniPronouns: T.ParsedMiniPronoun[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   exComplement: T.ParsedComplementSelection | undefined;
-  tokens: Readonly<T.Token[]>;
+  tokens: T.Tokens;
   v: T.VerbSelectionComplete;
   vbePerson: T.Person;
   target: Target;
@@ -661,7 +664,7 @@ function finishGrammaticallyTransitive({
   kidsErrors: T.ParseError[];
   miniPronouns: T.ParsedMiniPronoun[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
-  tokens: Readonly<T.Token[]>;
+  tokens: T.Tokens;
   v: T.VerbSelectionComplete;
   person: T.Person;
   target: Target;
@@ -1176,7 +1179,7 @@ function getTarget(
 
 function checkForDynCompounds(dictionary: T.DictionaryAPI) {
   return function (
-    tokens: readonly T.Token[],
+    tokens: T.Tokens,
     vps: T.VPSelectionComplete,
   ): T.ParseResult<T.VPSelectionComplete>[] {
     if (vps.verb.transitivity !== "transitive") {

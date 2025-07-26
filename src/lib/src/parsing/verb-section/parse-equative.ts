@@ -1,5 +1,5 @@
 import * as T from "../../../../types";
-import { getPeople, returnParseResultSingle } from "./../utils";
+import { getOneToken, getPeople, returnParseResultSingle } from "./../utils";
 
 export type EqInfo = {
   persons: T.Person[];
@@ -9,26 +9,32 @@ export type EqInfo = {
 const allPersons: T.Person[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export function parseEquative(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
 ): T.ParseResult<T.ParsedVBBEq>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [{ s }, ...rest] = tokens;
   function eqMaker({
     tenses,
     persons,
   }: EqInfo): T.ParseResult<T.ParsedVBBEq>[] {
+    // type checking issue with lambda below
+    if (!rest) {
+      return [];
+    }
     return tenses.flatMap((tense) =>
       persons.map((person) =>
         returnParseResultSingle(rest, makeEqVBE(tense, person)),
       ),
     );
   }
-  if (s === "وای" || s === "وی") {
+  if (first === "وای" || first === "وی") {
     return eqMaker({ tenses: ["pastSubjunctive"], persons: allPersons });
   }
-  return [...getThirdPersEqs(s), ...getFstSndPersEqs(s)].flatMap(eqMaker);
+  return [...getThirdPersEqs(first), ...getFstSndPersEqs(first)].flatMap(
+    eqMaker,
+  );
 }
 
 function getFstSndPersEqs(s: string): EqInfo[] {

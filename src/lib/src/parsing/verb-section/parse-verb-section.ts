@@ -6,6 +6,7 @@ import {
   isPH,
   returnParseResult,
   returnParseResultSingle,
+  tokensExist,
 } from "../utils";
 import { parseEquative } from "./parse-equative";
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
@@ -49,10 +50,10 @@ export type VerbSectionFrontData = {
 // VBP is PastPart, Aux is Equative
 
 export function parseVerbSection(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<VerbSectionData>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   const fronts = parseVerbSectionFront(
@@ -71,7 +72,7 @@ function parseVerbSectionFront(
   dictionary: T.DictionaryAPI,
   prev: T.ParseResult<VerbSectionFrontData>,
 ): T.ParseResult<VerbSectionFrontData>[] {
-  if (!prev.tokens.length) {
+  if (!tokensExist(prev.tokens)) {
     return [prev];
   }
   const position = prev.body.front.length;
@@ -122,13 +123,12 @@ function parseVerbSectionFront(
 
 function parseVerbSectionRear(front: VerbSectionFrontData) {
   return function (
-    tokens: readonly T.Token[],
+    tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
   ): T.ParseResult<VerbSectionData>[] {
-    if (tokens.length === 0) {
+    if (!tokensExist(tokens)) {
       return [];
     }
-
     const res = [
       ...parseBasicTense(tokens, dictionary, front),
       ...parseAbilityOrPerfect(tokens, dictionary, front),
@@ -151,7 +151,7 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
               kids: addKids(rear.kids, rear.blocks.length, kids),
             },
             checkNegErrors(blocks),
-          ).filter((x) => x.tokens.length === 0);
+          ).filter((x) => !tokensExist(x.tokens));
         });
       });
     });
@@ -159,9 +159,12 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
 }
 
 function parseEquativeSection(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
+  if (!tokensExist(tokens)) {
+    return [];
+  }
   if (front.front.find(isPH)) {
     return [];
   }
@@ -181,7 +184,7 @@ function parseEquativeSection(
 }
 
 function parseBasicTense(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
@@ -201,7 +204,7 @@ function parseBasicTense(
 }
 
 function parseAbilityOrPerfect(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
@@ -216,7 +219,7 @@ function parseAbilityOrPerfect(
 }
 
 function parseStraightAbilityOrPerfect(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
@@ -262,10 +265,13 @@ function parseStraightAbilityOrPerfect(
 }
 
 function parseFlippedAbilityOrPerfect(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
+  if (!tokensExist(tokens)) {
+    return [];
+  }
   const ph = front.front.find(isPH);
   const auxs: T.ParseResult<T.ParsedVBBVerb | T.ParsedVBBEq>[] = [
     ...(ph ? [] : parseEquative(tokens)),

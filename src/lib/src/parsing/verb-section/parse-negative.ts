@@ -1,20 +1,18 @@
 import * as T from "../../../../types";
-import { returnParseResult } from "../utils";
+import { getOneToken, returnParseResult } from "../utils";
 
-export function parseNeg(
-  tokens: Readonly<T.Token[]>
-): T.ParseResult<T.NegativeBlock>[] {
-  if (tokens.length === 0) {
+export function parseNeg(tokens: T.Tokens): T.ParseResult<T.NegativeBlock>[] {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [{ s }, ...rest] = tokens;
-  if (s === "نه") {
+  if (first === "نه") {
     return returnParseResult(rest, {
       type: "negative",
       imperative: false,
     });
   }
-  if (s === "مه") {
+  if (first === "مه") {
     return returnParseResult(rest, {
       type: "negative",
       imperative: true,
@@ -23,14 +21,18 @@ export function parseNeg(
   return [];
 }
 
-export function parseOptNeg(tokens: readonly T.Token[]): T.ParseResult<T.NegativeBlock | undefined>[] {
+export function parseOptNeg(
+  tokens: T.Tokens,
+): T.ParseResult<T.NegativeBlock | undefined>[] {
   const res = parseNeg(tokens);
   if (!res.length) {
-    return [{
-      tokens,
-      body: undefined,
-      errors: [],
-    }];
+    return [
+      {
+        tokens,
+        body: undefined,
+        errors: [],
+      },
+    ];
   }
-  return res
+  return res;
 }

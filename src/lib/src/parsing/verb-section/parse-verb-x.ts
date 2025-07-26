@@ -2,7 +2,12 @@ import * as T from "../../../../types";
 import { fmapParseResult } from "../../fp-ps";
 import { getLFromComplement, wrapInActiveV } from "./misc";
 import { parseComplement } from "../argument-section/parse-complement";
-import { bindParseResult, returnParseResult } from "../utils";
+import {
+  bindParseResult,
+  getOneToken,
+  returnParseResult,
+  tokensExist,
+} from "../utils";
 import { parseOptNeg } from "./parse-negative";
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { isKawulStat, isKedulStat, isStatAux } from "./parse-verb-helpers";
@@ -16,7 +21,7 @@ import { getTransitivity } from "../../verb-info";
 import { kawulStat } from "./irreg-verbs";
 
 type XParser<X> = (
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
 ) => T.ParseResult<X>[];
@@ -24,13 +29,13 @@ type XParser<X> = (
 type Category = "basic" | "ability" | "perfect";
 
 export function parseVerbX<X extends T.VerbX>(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
   parseX: XParser<X>,
   category: Category,
 ): T.ParseResult<T.ParsedV<X>>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   const res: T.ParseResult<T.ParsedV<X>["content"]>[] = [
@@ -43,7 +48,7 @@ export function parseVerbX<X extends T.VerbX>(
 }
 
 function parseActive<X extends T.VerbX>(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
   category: Category,
@@ -64,7 +69,7 @@ function parseActive<X extends T.VerbX>(
 }
 
 function parseActiveWelded<X extends T.VerbX>(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
   category: Category,
@@ -165,12 +170,12 @@ function parseActiveWelded<X extends T.VerbX>(
 }
 
 function parsePassiveWeldedX<X extends T.VerbX>(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
   category: Category,
 ): T.ParseResult<T.PassiveVWeld<X>>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   if (ph?.type === "CompPH" && category === "basic") {
@@ -274,7 +279,7 @@ function parsePassiveWeldedX<X extends T.VerbX>(
 }
 
 function parsePassiveDoubleWeldedX<X extends T.VerbX>(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   ph: T.ParsedPH | undefined,
   category: Category,
 ): T.ParseResult<T.PassiveVDoubWeld<X>>[] {
@@ -370,20 +375,18 @@ function parsePassiveDoubleWeldedX<X extends T.VerbX>(
   });
 }
 
-function parseK(
-  tokens: readonly T.Token[],
-): T.ParseResult<"kawul" | "kRul" | "kRaay">[] {
-  if (!tokens.length) {
+function parseK(tokens: T.Tokens): T.ParseResult<"kawul" | "kRul" | "kRaay">[] {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [{ s }, ...rest] = tokens;
-  if (s === "کول") {
+  if (first === "کول") {
     return returnParseResult(rest, "kawul");
   }
-  if (s === "کړل") {
+  if (first === "کړل") {
     return returnParseResult(rest, "kRul");
   }
-  if (["کړای", "کړلای", "کړی", "کړلی"].includes(s)) {
+  if (["کړای", "کړلای", "کړی", "کړلی"].includes(first)) {
     return returnParseResult(rest, "kRaay");
   }
   return [];

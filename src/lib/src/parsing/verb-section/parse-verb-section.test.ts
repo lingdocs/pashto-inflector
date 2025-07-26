@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { testDictionary } from "../mini-test-dictionary";
 import { tokenizer } from "../tokenizer";
-import { getPeople } from "../utils";
+import { getPeople, tokensExist } from "../utils";
 import { parseVerbSection, VerbSectionData } from "./parse-verb-section";
 import {
   kawulDyn,
@@ -2796,7 +2796,7 @@ sections.forEach((section) => {
       test(input, () => {
         const tokens = tokenizer(input);
         const res = parseVerbSection(tokens, testDictionary).filter(
-          (x) => !x.tokens.length,
+          (x) => !tokensExist(x.tokens),
         );
         const errored = res.some((x) => x.errors.length);
         expect(errored).toBe(!!error);

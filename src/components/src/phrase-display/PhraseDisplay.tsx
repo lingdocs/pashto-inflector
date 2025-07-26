@@ -42,6 +42,20 @@ function MainPhraseDisplay({ phrases, opts, toMatch }: {
   const phrase = phrases[chosen];
   const rendered = "predicate" in phrase ? renderEP(phrase) : renderVP(phrase);
   const text = rendered.type === "EPRendered" ? compileEP(rendered) : compileVP(rendered, rendered.form);
+  function moveChosenBack() {
+    setChosen(o => {
+      if (o === 0) {
+        return phrases.length - 1;
+      }
+      return (o - 1);
+    })
+  }
+  function moveChosenForward() {
+    setChosen(o => {
+      return (o + 1) % phrases.length;
+    });
+  }
+  console.log({ phrases, chosen });
   return (
     <div className={`text-left mt-1`}>
       <div className="d-flex flex-row mb-2">
@@ -64,13 +78,17 @@ function MainPhraseDisplay({ phrases, opts, toMatch }: {
           script={script}
         />
       }
-      {text.e && (
-        <div
-          className={`text-muted mt-2 text-left`}
-        >
-          {text.e.map((e, i) => <div key={i}>{e}</div>)}
-        </div>
-      )}
+      <div className="d-flex flex-row">
+        <div onClick={moveChosenBack} className="clickable fas fa-chevron-left mt-3 mr-2" />
+        {text.e && (
+          <div
+            className={`text-muted mt-2 text-left`}
+          >
+            {text.e.map((e, i) => <div key={i}>{e}</div>)}
+          </div>
+        )}
+        <div onClick={moveChosenForward} className="clickable fas fa-chevron-right mt-3 ml-2" />
+      </div>
     </div>);
 }
 
@@ -92,8 +110,10 @@ function CompiledPTextDisplay(props: {
     </div>
   }
   const matching = props.toMatch ? flattened.findIndex(x => x.p === props.toMatch) : -1;
+  const secondBestMatching = props.toMatch && matching !== -1 ? flattened.findIndex(x => x.p.replaceAll(" ", "") === props.toMatch?.replaceAll(" ", "")) : -1;
+  const match = matching === -1 ? secondBestMatching : matching;
   // TODO: could do a more efficient thing than this
-  const pss = matching === -1 ? flattened : [flattened[matching], ...flattened.filter((_, i) => i !== matching)];
+  const pss = match === -1 ? flattened : [flattened[match], ...flattened.filter((_, i) => i !== match)];
   return <div className="mt-2">
     <div className="d-flex flex-row align-items-center">
       <div className="mr-2 clickable" onClick={() => setShowVars(x => !x)}>{showVars ? caretDown : caretRight}</div>

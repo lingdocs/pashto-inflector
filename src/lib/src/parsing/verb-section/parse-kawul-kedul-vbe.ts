@@ -1,7 +1,7 @@
 import * as T from "../../../../types";
 import { getVerbEnding } from "./parse-verb-helpers";
 import { kawulStat, kawulDyn, kedulStat, kedulDyn } from "./irreg-verbs";
-import { returnParseResults } from "../utils";
+import { getOneToken, returnParseResults } from "../utils";
 import { getImperativeVerbEnding } from "./misc";
 
 // TODO: WHY DOES کېدلې only provide 3rd f. pl. for stat
@@ -47,18 +47,18 @@ const getForm =
 // TODO: handle cases for وانه شم اخیستی!
 
 export function parseKawulKedulVBE(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBBVerb>[] {
-  if (!tokens.length) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s[0] !== "ک" && first.s[0] !== "ش") {
+  if (first[0] !== "ک" && first[0] !== "ش") {
     return [];
   }
-  const start = first.s.slice(0, -1);
-  const ending = first.s.at(-1) || "";
+  const start = first.slice(0, -1);
+  const ending = first.at(-1) || "";
   const head = getHead(ph);
   const getF = getForm(head);
   const oneBase =
@@ -86,22 +86,22 @@ export function parseKawulKedulVBE(
         ),
       ]);
     };
-  if (first.s === "کړ") {
+  if (first === "کړ") {
     return oneBase("kawul")("root")("perfective")([T.Person.ThirdSingMale]);
   }
-  if (first.s === "کاوه") {
+  if (first === "کاوه") {
     return oneBase("kawul")("root")("imperfective")([T.Person.ThirdSingMale]);
   }
-  if (first.s === "کېده") {
+  if (first === "کېده") {
     return oneBase("kedul")("root")("imperfective")([
       T.Person.ThirdSingMale,
       T.Person.ThirdSingFemale,
     ]);
   }
-  if (first.s === "کېدل") {
+  if (first === "کېدل") {
     return oneBase("kedul")("root")("imperfective")([T.Person.ThirdPlurMale]);
   }
-  if (first.s === "شو") {
+  if (first === "شو") {
     return [
       ...oneBase("kedul")("stem")("perfective")([
         T.Person.FirstPlurMale,

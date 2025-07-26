@@ -17,7 +17,6 @@ export function parseNP(
   if (!tokensExist(tokens)) {
     return [];
   }
-
   function makeNPSl(
     a:
       | {

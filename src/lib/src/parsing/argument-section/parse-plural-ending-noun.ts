@@ -6,13 +6,18 @@ import {
   hasShwaEnding,
 } from "../../p-text-helpers";
 import * as tp from "../../type-predicates";
-import { returnParseResults } from "../utils";
+import {
+  getOneToken,
+  getTwoTokens,
+  returnParseResults,
+  tokensExist,
+} from "../utils";
 
 export function parsePluralEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   // TODO: should maybe differentiate animate and inanimate aan endings ?
@@ -88,17 +93,17 @@ export function parsePluralEndingNoun(
 // }
 
 function parseOonaEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (!first.s.endsWith("ونه") && !first.s.endsWith("ونو")) {
+  if (!first.endsWith("ونه") && !first.endsWith("ونو")) {
     return [];
   }
-  const withoutOona = first.s.slice(0, -3);
+  const withoutOona = first.slice(0, -3);
   const consonantEnding = dictionary
     .queryP(withoutOona)
     .filter(
@@ -106,7 +111,7 @@ function parseOonaEndingNoun(
         tp.isMascNounEntry(e) &&
         endsInConsonant(e) &&
         !e.ppp &&
-        tp.isSingularEntry(e)
+        tp.isSingularEntry(e),
     ) as T.MascNounEntry[];
   const shwaEnding = dictionary
     .queryP(withoutOona + "ه")
@@ -115,14 +120,14 @@ function parseOonaEndingNoun(
         tp.isMascNounEntry(e) &&
         hasShwaEnding(e) &&
         !e.ppp &&
-        tp.isSingularEntry(e)
+        tp.isSingularEntry(e),
     ) as T.MascNounEntry[];
   const body = [...consonantEnding, ...shwaEnding].map<
     T.ParsedNounWord<T.MascNounEntry>
   >((entry) => ({
-    inflected: first.s.endsWith("ونو"),
+    inflected: first.endsWith("ونو"),
     gender: "masc",
-    given: first.s,
+    given: first,
     plural: true,
     entry,
   }));
@@ -130,51 +135,51 @@ function parseOonaEndingNoun(
 }
 
 function parseAanEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.endsWith("ان")) {
-    const withoutAan = first.s.slice(0, -2);
+  if (first.endsWith("ان")) {
+    const withoutAan = first.slice(0, -2);
     const consonantEnding = dictionary
       .queryP(withoutAan)
       .filter(
         (e) =>
-          tp.isMascNounEntry(e) && endsInConsonant(e) && tp.isSingularEntry(e)
+          tp.isMascNounEntry(e) && endsInConsonant(e) && tp.isSingularEntry(e),
       ) as T.MascNounEntry[];
     const shwaEnding = dictionary
       .queryP(withoutAan + "ه")
       .filter(
         (e) =>
-          tp.isMascNounEntry(e) && hasShwaEnding(e) && tp.isSingularEntry(e)
+          tp.isMascNounEntry(e) && hasShwaEnding(e) && tp.isSingularEntry(e),
       ) as T.MascNounEntry[];
     const body = [...consonantEnding, ...shwaEnding].map<
       T.ParsedNounWord<T.MascNounEntry>
     >((entry) => ({
       inflected: false,
       gender: "masc",
-      given: first.s,
+      given: first,
       plural: true,
       entry,
     }));
     return returnParseResults(rest, body);
   }
-  if (first.s.endsWith("انو")) {
-    const withoutAano = first.s.slice(0, -3);
+  if (first.endsWith("انو")) {
+    const withoutAano = first.slice(0, -3);
     const consonantEnding = dictionary
       .queryP(withoutAano)
       .filter(
         (e) =>
-          tp.isMascNounEntry(e) && endsInConsonant(e) && tp.isSingularEntry(e)
+          tp.isMascNounEntry(e) && endsInConsonant(e) && tp.isSingularEntry(e),
       ) as T.MascNounEntry[];
     const shwaEnding = dictionary
       .queryP(withoutAano + "ه")
       .filter(
         (e) =>
-          tp.isMascNounEntry(e) && hasShwaEnding(e) && tp.isSingularEntry(e)
+          tp.isMascNounEntry(e) && hasShwaEnding(e) && tp.isSingularEntry(e),
       ) as T.MascNounEntry[];
     const body = [...consonantEnding, ...shwaEnding].flatMap<
       T.ParsedNounWord<T.MascNounEntry>
@@ -182,7 +187,7 @@ function parseAanEndingNoun(
       {
         inflected: true,
         gender: "masc",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
       },
@@ -191,7 +196,7 @@ function parseAanEndingNoun(
             {
               inflected: true,
               gender: "fem",
-              given: first.s,
+              given: first,
               plural: true,
               entry,
             } satisfies T.ParsedNounWord<T.MascNounEntry>,
@@ -204,15 +209,15 @@ function parseAanEndingNoun(
 }
 
 function parseAaneEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.endsWith("انې")) {
-    const withoutAane = first.s.slice(0, -3);
+  if (first.endsWith("انې")) {
+    const withoutAane = first.slice(0, -3);
     const unisexAy = dictionary
       .queryP(withoutAane)
       .filter(tp.isUnisexAnimNounEntry);
@@ -220,10 +225,10 @@ function parseAaneEndingNoun(
       (entry) => ({
         inflected: false,
         gender: "fem",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
-      })
+      }),
     );
     return returnParseResults(rest, body);
   }
@@ -231,89 +236,92 @@ function parseAaneEndingNoun(
 }
 
 function parseGaanEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.endsWith("ګان")) {
+  if (first.endsWith("ګان")) {
     const body = dictionary
-      .queryP(first.s.slice(0, -3))
+      .queryP(first.slice(0, -3))
       .filter(
-        (e) => tp.isMascNounEntry(e) && endsInAaOrOo(e) && tp.isSingularEntry(e)
+        (e) =>
+          tp.isMascNounEntry(e) && endsInAaOrOo(e) && tp.isSingularEntry(e),
       )
       .map<T.ParsedNounWord<T.MascNounEntry>>((entry) => ({
         inflected: false,
         gender: "masc",
-        given: first.s,
+        given: first,
         plural: true,
         entry: entry as T.MascNounEntry,
       }));
     return returnParseResults(rest, body);
   }
-  if (first.s.endsWith("ګانو")) {
+  if (first.endsWith("ګانو")) {
     const body = dictionary
-      .queryP(first.s.slice(0, -4))
+      .queryP(first.slice(0, -4))
       .filter(
-        (e) => tp.isMascNounEntry(e) && endsInAaOrOo(e) && tp.isSingularEntry(e)
+        (e) =>
+          tp.isMascNounEntry(e) && endsInAaOrOo(e) && tp.isSingularEntry(e),
       )
       .map<T.ParsedNounWord<T.MascNounEntry>>((entry) => ({
         inflected: true,
         gender: "masc",
-        given: first.s,
+        given: first,
         plural: true,
         entry: entry as T.MascNounEntry,
       }));
     return returnParseResults(rest, body);
   }
-  if (tokens.length >= 2) {
-    const [first, next, ...rest] = tokens;
-    if (next.s === "ګان") {
-      const body = dictionary
-        .queryP(first.s)
-        .filter(
-          (e) =>
-            tp.isMascNounEntry(e) && endsInAaOrOo(e) && tp.isSingularEntry(e)
-        )
-        .map<T.ParsedNounWord<T.MascNounEntry>>((entry) => ({
-          inflected: false,
-          gender: "masc",
-          given: first.s + " " + next.s,
-          plural: true,
-          entry: entry as T.MascNounEntry,
-        }));
-      return returnParseResults(rest, body);
-    }
-    if (next.s === "ګانو") {
-      const body = dictionary
-        .queryP(first.s)
-        .filter(
-          (e) =>
-            tp.isMascNounEntry(e) && endsInAaOrOo(e) && tp.isSingularEntry(e)
-        )
-        .map<T.ParsedNounWord<T.MascNounEntry>>((entry) => ({
-          inflected: true,
-          gender: "masc",
-          given: first.s + " " + next.s,
-          plural: true,
-          entry: entry as T.MascNounEntry,
-        }));
-      return returnParseResults(rest, body);
-    }
+  const [a, b, leftOver] = getTwoTokens(tokens);
+  if (!a) {
+    return [];
+  }
+  if (b === "ګان") {
+    const body = dictionary
+      .queryP(a)
+      .filter(
+        (e) =>
+          tp.isMascNounEntry(e) && endsInAaOrOo(e) && tp.isSingularEntry(e),
+      )
+      .map<T.ParsedNounWord<T.MascNounEntry>>((entry) => ({
+        inflected: false,
+        gender: "masc",
+        given: a + " " + b,
+        plural: true,
+        entry: entry as T.MascNounEntry,
+      }));
+    return returnParseResults(leftOver, body);
+  }
+  if (b === "ګانو") {
+    const body = dictionary
+      .queryP(a)
+      .filter(
+        (e) =>
+          tp.isMascNounEntry(e) && endsInAaOrOo(e) && tp.isSingularEntry(e),
+      )
+      .map<T.ParsedNounWord<T.MascNounEntry>>((entry) => ({
+        inflected: true,
+        gender: "masc",
+        given: a + " " + b,
+        plural: true,
+        entry: entry as T.MascNounEntry,
+      }));
+    return returnParseResults(leftOver, body);
   }
   return [];
 }
 
 function parseGaaneEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.FemNounEntry>>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
   const canTakeGaane = (e: T.DictionaryEntry): e is T.FemNounEntry =>
     tp.isFemNounEntry(e) &&
     tp.isSingularEntry(e) &&
@@ -324,100 +332,101 @@ function parseGaaneEndingNoun(
         { p: "ې", f: "e" },
         { p: "ي", f: "ee" },
       ],
-      e
+      e,
     );
-  if (first.s.endsWith("یګانې")) {
+  if (first.endsWith("یګانې")) {
     const body = dictionary
-      .queryP(first.s.slice(0, -5) + "ي")
+      .queryP(first.slice(0, -5) + "ي")
       .filter(canTakeGaane)
       .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
         inflected: false,
         gender: "fem",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
       }));
     return returnParseResults(rest, body);
   }
-  if (first.s.endsWith("ګانې")) {
+  if (first.endsWith("ګانې")) {
     const body = dictionary
-      .queryP(first.s.slice(0, -4))
+      .queryP(first.slice(0, -4))
       .filter(canTakeGaane)
       .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
         inflected: false,
         gender: "fem",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
       }));
     return returnParseResults(rest, body);
   }
-  if (first.s.endsWith("یګانو")) {
+  if (first.endsWith("یګانو")) {
     const body = dictionary
-      .queryP(first.s.slice(0, -5) + "ي")
+      .queryP(first.slice(0, -5) + "ي")
       .filter(canTakeGaane)
       .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
         inflected: true,
         gender: "fem",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
       }));
     return returnParseResults(rest, body);
   }
-  if (first.s.endsWith("ګانو")) {
+  if (first.endsWith("ګانو")) {
     const body = dictionary
-      .queryP(first.s.slice(0, -4))
+      .queryP(first.slice(0, -4))
       .filter(canTakeGaane)
       .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
         inflected: true,
         gender: "fem",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
       }));
     return returnParseResults(rest, body);
   }
-  if (tokens.length >= 2) {
-    const [first, next, ...rest] = tokens;
-    if (next.s === "ګانې") {
-      const body = dictionary
-        .queryP(first.s)
-        .filter(canTakeGaane)
-        .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
-          inflected: false,
-          gender: "fem",
-          given: first.s + " " + next.s,
-          plural: true,
-          entry,
-        }));
-      return returnParseResults(rest, body);
-    }
-    if (next.s === "ګانو") {
-      const body = dictionary
-        .queryP(first.s)
-        .filter(canTakeGaane)
-        .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
-          inflected: true,
-          gender: "fem",
-          given: first.s + " " + next.s,
-          plural: true,
-          entry,
-        }));
-      return returnParseResults(rest, body);
-    }
+  const [a, b, leftOver] = getTwoTokens(tokens);
+  if (!a) {
+    return [];
+  }
+  if (b === "ګانې") {
+    const body = dictionary
+      .queryP(a)
+      .filter(canTakeGaane)
+      .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
+        inflected: false,
+        gender: "fem",
+        given: a + " " + b,
+        plural: true,
+        entry,
+      }));
+    return returnParseResults(leftOver, body);
+  }
+  if (b === "ګانو") {
+    const body = dictionary
+      .queryP(a)
+      .filter(canTakeGaane)
+      .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
+        inflected: true,
+        gender: "fem",
+        given: a + " " + b,
+        plural: true,
+        entry,
+      }));
+    return returnParseResults(leftOver, body);
   }
   return [];
 }
 
 function parseWeEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.FemNounEntry>>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
   const canTakeWe = (e: T.DictionaryEntry): e is T.FemNounEntry =>
     tp.isFemNounEntry(e) &&
     tp.isSingularEntry(e) &&
@@ -427,84 +436,85 @@ function parseWeEndingNoun(
         { p: "ا", f: "aa" },
         { p: "ې", f: "e" },
       ],
-      e
+      e,
     );
-  if (first.s.endsWith("وې")) {
+  if (first.endsWith("وې")) {
     const body = dictionary
-      .queryP(first.s.slice(0, -2))
+      .queryP(first.slice(0, -2))
       .filter(canTakeWe)
       .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
         inflected: false,
         gender: "fem",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
       }));
     return returnParseResults(rest, body);
-  } else if (first.s.endsWith("وو")) {
+  } else if (first.endsWith("وو")) {
     const body = dictionary
-      .queryP(first.s.slice(0, -2))
+      .queryP(first.slice(0, -2))
       .filter(canTakeWe)
       .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
         inflected: true,
         gender: "fem",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
       }));
     return returnParseResults(rest, body);
   }
-  if (tokens.length >= 2) {
-    const [first, next, ...rest] = tokens;
-    if (next.s === "وې") {
-      const body = dictionary
-        .queryP(first.s)
-        .filter(canTakeWe)
-        .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
-          inflected: false,
-          gender: "fem",
-          given: first.s + " " + next.s,
-          plural: true,
-          entry,
-        }));
-      return returnParseResults(rest, body);
-    }
-    if (next.s === "وو") {
-      const body = dictionary
-        .queryP(first.s)
-        .filter(canTakeWe)
-        .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
-          inflected: true,
-          gender: "fem",
-          given: first.s + " " + next.s,
-          plural: true,
-          entry,
-        }));
-      return returnParseResults(rest, body);
-    }
+  const [a, b, leftOver] = getTwoTokens(tokens);
+  if (!a) {
+    return [];
+  }
+  if (b === "وې") {
+    const body = dictionary
+      .queryP(a)
+      .filter(canTakeWe)
+      .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
+        inflected: false,
+        gender: "fem",
+        given: a + " " + b,
+        plural: true,
+        entry,
+      }));
+    return returnParseResults(leftOver, body);
+  }
+  if (b === "وو") {
+    const body = dictionary
+      .queryP(a)
+      .filter(canTakeWe)
+      .map<T.ParsedNounWord<T.FemNounEntry>>((entry) => ({
+        inflected: true,
+        gender: "fem",
+        given: a + " " + b,
+        plural: true,
+        entry,
+      }));
+    return returnParseResults(leftOver, body);
   }
   return [];
 }
 
 function parseIYaanEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.endsWith("یان")) {
-    const withoutIYaan = first.s.slice(0, -3);
+  if (first.endsWith("یان")) {
+    const withoutIYaan = first.slice(0, -3);
     const eeEnding = dictionary
       .queryP(withoutIYaan + "ي")
       .filter(
-        (e) => tp.isMascNounEntry(e) && tp.isSingularEntry(e)
+        (e) => tp.isMascNounEntry(e) && tp.isSingularEntry(e),
       ) as T.MascNounEntry[];
     const pattern3Anim = dictionary
       .queryP(withoutIYaan + "ی")
       .filter(
-        (e) => tp.isMascNounEntry(e) && tp.isPattern3Entry(e)
+        (e) => tp.isMascNounEntry(e) && tp.isPattern3Entry(e),
       ) as T.MascNounEntry[];
     return returnParseResults(
       rest,
@@ -512,24 +522,24 @@ function parseIYaanEndingNoun(
         (entry) => ({
           inflected: false,
           gender: "masc",
-          given: first.s,
+          given: first,
           plural: true,
           entry: entry as T.MascNounEntry,
-        })
-      )
+        }),
+      ),
     );
   }
-  if (first.s.endsWith("یانو")) {
-    const withoutIYaano = first.s.slice(0, -4);
+  if (first.endsWith("یانو")) {
+    const withoutIYaano = first.slice(0, -4);
     const eeEnding = dictionary
       .queryP(withoutIYaano + "ي")
       .filter(
-        (e) => tp.isMascNounEntry(e) && tp.isSingularEntry(e)
+        (e) => tp.isMascNounEntry(e) && tp.isSingularEntry(e),
       ) as T.MascNounEntry[];
     const pattern3Anim = dictionary
       .queryP(withoutIYaano + "ی")
       .filter(
-        (e) => tp.isMascNounEntry(e) && tp.isPattern3Entry(e)
+        (e) => tp.isMascNounEntry(e) && tp.isPattern3Entry(e),
       ) as T.MascNounEntry[];
     return returnParseResults(
       rest,
@@ -538,7 +548,7 @@ function parseIYaanEndingNoun(
           {
             inflected: true,
             gender: "masc",
-            given: first.s,
+            given: first,
             plural: true,
             entry: entry as T.MascNounEntry,
           },
@@ -547,36 +557,36 @@ function parseIYaanEndingNoun(
                 {
                   inflected: true,
                   gender: "fem",
-                  given: first.s,
+                  given: first,
                   plural: true,
                   entry: entry as T.UnisexNounEntry,
                 } satisfies T.ParsedNounWord<T.MascNounEntry>,
               ]
             : []),
-        ]
-      )
+        ],
+      ),
     );
   }
   return [];
 }
 
 function parseIYaaneEndingNoun(
-  tokens: Readonly<T.Token[]>,
-  dictionary: T.DictionaryAPI
+  tokens: T.Tokens,
+  dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry | T.FemNounEntry>>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (first.s.endsWith("یانې")) {
-    const withoutIYaane = first.s.slice(0, -4);
+  if (first.endsWith("یانې")) {
+    const withoutIYaane = first.slice(0, -4);
     const eeEnding = dictionary
       .queryP(withoutIYaane + "ي")
       .filter(tp.isFemNounEntry);
     const pattern3UnisexAnim = dictionary
       .queryP(withoutIYaane + "ی")
       .filter(
-        (e) => tp.isUnisexNounEntry(e) && tp.isPattern3Entry(e)
+        (e) => tp.isUnisexNounEntry(e) && tp.isPattern3Entry(e),
       ) as T.MascNounEntry[];
     const pattern3Fem = dictionary
       .queryP(withoutIYaane + "ۍ")
@@ -588,14 +598,14 @@ function parseIYaaneEndingNoun(
       >((entry) => ({
         inflected: false,
         gender: "masc",
-        given: first.s,
+        given: first,
         plural: true,
         entry,
-      }))
+      })),
     );
   }
-  if (first.s.endsWith("یانو")) {
-    const withoutIYaano = first.s.slice(0, -4);
+  if (first.endsWith("یانو")) {
+    const withoutIYaano = first.slice(0, -4);
     const eeEnding = dictionary
       .queryP(withoutIYaano + "ي")
       .filter((e) => tp.isFemNounEntry(e) && tp.isSingularEntry(e));
@@ -608,11 +618,11 @@ function parseIYaaneEndingNoun(
         (entry) => ({
           inflected: true,
           gender: "masc",
-          given: first.s,
+          given: first,
           plural: true,
           entry,
-        })
-      )
+        }),
+      ),
     );
   }
   return [];

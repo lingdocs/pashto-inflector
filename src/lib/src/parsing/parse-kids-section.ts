@@ -1,15 +1,15 @@
 import * as T from "../../../types";
 import { parseKid } from "./parse-kid";
-import { bindParseResult, returnParseResult } from "./utils";
+import { bindParseResult, returnParseResult, tokensExist } from "./utils";
 
 const unambiguousKids = ["به", "مې", "مو"];
 
 export function parseKidsSection(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   prevKids: T.ParsedKid[],
   errors: T.ParseError[],
 ): T.ParseResult<T.ParsedKidsSection>[] {
-  if (tokens.length === 0) {
+  if (!tokensExist(tokens)) {
     return [];
   }
   const parsedKid = parseKid(tokens);
@@ -28,7 +28,9 @@ export function parseKidsSection(
     ];
     // return one option of stopping with current kids section, and try one option of keeping on going
     const kidsSoFar = [...prevKids, r];
-    const forSureKeepParsing = unambiguousKids.includes(tokens[0]?.s);
+    const forSureKeepParsing = unambiguousKids.includes(
+      tokens.tokens[tokens.position],
+    );
     return [
       ...(!forSureKeepParsing
         ? returnParseResult(
@@ -43,7 +45,7 @@ export function parseKidsSection(
 }
 
 export function parseOptKidsSection(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
 ): T.ParseResult<T.ParsedKidsSection | undefined>[] {
   const res = parseKidsSection(tokens, [], []);
   if (!res.length) {

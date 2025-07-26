@@ -9,7 +9,7 @@ import { parseNoun } from "./parse-noun";
 import { tokenizer } from "../tokenizer";
 // import { isCompleteResult } from "./utils";
 import { testDictionary } from "../mini-test-dictionary";
-import { cleanOutResults } from "../utils";
+import { cleanOutResults, tokensExist } from "../utils";
 
 const saray = testDictionary.nounLookup("سړی")[0];
 const dostee = testDictionary.nounLookup("دوستي")[0];
@@ -1745,7 +1745,7 @@ describe("parsing nouns", () => {
         const tokens = tokenizer(input);
         const res = parseNoun(tokens, testDictionary, undefined).flatMap(
           // only take the ones that used all the tokens
-          ({ body, tokens }) => (tokens.length === 0 ? [body] : [])
+          ({ body, tokens }) => (!tokensExist(tokens) ? [body] : []),
         );
         expect(res).toEqual(output);
       });
@@ -2203,8 +2203,8 @@ const determinerTests: DeterminerTest[] = [
           noun,
           determiner: daa,
           hideNoun: true,
-        }))
-      )
+        })),
+      ),
     ),
   },
   {
@@ -2217,8 +2217,8 @@ const determinerTests: DeterminerTest[] = [
           noun,
           determiner: daa,
           hideNoun: true,
-        }))
-      )
+        })),
+      ),
     ),
   },
   ...[
@@ -2255,8 +2255,8 @@ const determinerTests: DeterminerTest[] = [
                   },
                 ]
               : []),
-          ]
-        )
+          ],
+        ),
       ),
     },
     {
@@ -2278,7 +2278,7 @@ const determinerTests: DeterminerTest[] = [
           noun,
           determiner,
           hideNoun: true,
-        }))
+        })),
       ),
     },
   ]),
@@ -2290,8 +2290,8 @@ describe("parsing determiners with nouns", () => {
       const tokens = tokenizer(input);
       const res = cleanOutResults(
         parseNoun(tokens, testDictionary, undefined).filter(
-          (x) => !x.tokens.length
-        )
+          (x) => !tokensExist(x.tokens),
+        ),
       );
 
       const expected = result.map<{
@@ -2317,7 +2317,7 @@ describe("parsing determiners with nouns", () => {
       }));
       expect(
         !!res.length &&
-          res.every((x, i) => !!x.errors.length === !!result[i].error)
+          res.every((x, i) => !!x.errors.length === !!result[i].error),
       ).toBe(true);
       expect(res.map((x) => x.body)).toIncludeSameMembers(expected);
     });
@@ -2331,11 +2331,11 @@ describe("parsing nouns with adjectives and determiners", () => {
         const tokens = tokenizer(input);
         const res = cleanOutResults(
           parseNoun(tokens, testDictionary, undefined).filter(
-            (x) => !x.tokens.length
-          )
+            (x) => !tokensExist(x.tokens),
+          ),
         );
         expect(
-          !!res.length && res.every((x) => !!x.errors.length === !!error)
+          !!res.length && res.every((x) => !!x.errors.length === !!error),
         ).toBe(true);
         expect(res.map((x) => x.body)).toIncludeSameMembers(output);
       });

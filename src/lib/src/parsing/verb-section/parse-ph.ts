@@ -2,7 +2,7 @@ import * as T from "../../../../types";
 import { fmapParseResult } from "../../fp-ps";
 import { parseAdjective } from "../argument-section/parse-adjective";
 import { parseLocAdverb } from "../argument-section/parse-adverb";
-import { returnParseResult } from "../utils";
+import { getOneToken, returnParseResult } from "../utils";
 
 const phs = [
   "و",
@@ -24,14 +24,14 @@ const phs = [
 ];
 
 export function parsePH(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedPH>[] {
   return [...parseVerbPH(tokens), ...parseCompPH(tokens, dictionary)];
 }
 
 function parseCompPH(
-  tokens: Readonly<T.Token[]>,
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedCompPH>[] {
   const res: T.ParseResult<T.ParsedCompPH["selection"]>[] = [
@@ -47,17 +47,15 @@ function parseCompPH(
   );
 }
 
-function parseVerbPH(
-  tokens: Readonly<T.Token[]>,
-): T.ParseResult<T.ParsedVerbPH>[] {
-  if (tokens.length === 0) {
+function parseVerbPH(tokens: T.Tokens): T.ParseResult<T.ParsedVerbPH>[] {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
-  if (phs.includes(first.s)) {
+  if (phs.includes(first)) {
     return returnParseResult(rest, {
       type: "PH",
-      s: first.s,
+      s: first,
     });
   }
   // TODO: maybe it would be better to only do this splitting off of the perfect head
@@ -65,19 +63,26 @@ function parseVerbPH(
   return phs
     .filter(
       (p) =>
-        first.s.startsWith(p) &&
+        first.startsWith(p) &&
         // to prevent the split off of و on things like وي ... but could we be more aggressive? needs at least 2 more chars, to prevent ولم etc?
-        first.s.length > p.length + 1,
+        first.length > p.length + 1,
     )
     .flatMap((ph) =>
       returnParseResult(
-        [
-          {
-            ...first,
-            s: first.s.slice(ph.length),
-          },
-          ...rest,
-        ],
+        {
+          // need to modify the tokens here because we ripped the PH head off one
+          tokens: [
+            // don't touch the tokens before the postion
+            ...tokens.tokens.slice(0, tokens.position),
+            // make the broken off PH into a seperate token
+            tokens.tokens[tokens.position].slice(0, ph.length) as T.Token,
+            // make the piece after the broken off PH into a seperate token
+            tokens.tokens[tokens.position].slice(ph.length) as T.Token,
+            // put the rest of the tokens in
+            ...tokens.tokens.slice(tokens.position + 1),
+          ],
+          position: tokens.position + 1,
+        },
         {
           type: "PH",
           s: ph,

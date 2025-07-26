@@ -1,6 +1,6 @@
 import * as T from "../../../../types";
 import { getVerbEnding } from "./parse-verb-helpers";
-import { returnParseResults, returnParseResult } from "../utils";
+import { returnParseResults, returnParseResult, getOneToken } from "../utils";
 import { getImperativeVerbEnding } from "./misc";
 import { parseKawulKedulVBE } from "./parse-kawul-kedul-vbe";
 import { dartlul, raatlul, tlul, wartlul } from "./irreg-verbs";
@@ -29,20 +29,20 @@ import { parseKawulKedulAbility } from "./parse-kawul-kedul-vbp";
 // TODO: check neg position with new setup
 // TODO: should the welded be with the compound verb in there?
 export function parseVBBBasic(
-  tokens: readonly T.Token[],
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBBVerb>[] {
-  if (tokens.length === 0) {
+  const [first, rest] = getOneToken(tokens);
+  if (!first) {
     return [];
   }
-  const [first, ...rest] = tokens;
   if (ph?.type === "CompPH") {
     return parseKawulKedulVBE(tokens, undefined).filter(
       (x) => x.body.info.verb && x.body.info.aspect === "perfective",
     );
   }
-  const irregResults = parseIrregularVerb(first.s, ph);
+  const irregResults = parseIrregularVerb(first, ph);
   if (irregResults.length) {
     return returnParseResults(rest, irregResults);
   }
@@ -52,8 +52,8 @@ export function parseVBBBasic(
   }
   // TODO: AFTER THIS MAKE SURE WE DON'T PARSE ANY KAWUL/KEDUL VERBS!
   // then prevent the other things from using kawul / kedul
-  const ending = first.s.at(-1) || "";
-  const base = ending === "ل" ? first.s : first.s.slice(0, -1);
+  const ending = first.at(-1) || "";
+  const base = ending === "ل" ? first : first.slice(0, -1);
   const { stem, root } = getVerbEnding(ending);
   // todo imperative for seperating
   const imperative = getImperativeVerbEnding(ending);
@@ -93,11 +93,12 @@ export function parseVBBBasic(
 
 export function parseVBPBasic(type: "ability" | "perfect") {
   return function (
-    tokens: Readonly<T.Token[]>,
+    tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
     ph: T.ParsedPH | undefined,
   ): T.ParseResult<T.ParsedVBP>[] {
-    if (tokens.length === 0) {
+    const [first, rest] = getOneToken(tokens);
+    if (!first) {
       return [];
     }
     if (type === "ability") {
@@ -105,11 +106,10 @@ export function parseVBPBasic(type: "ability" | "perfect") {
       if (kawulKedul.length) {
         return kawulKedul;
       }
-      const [{ s }, ...rest] = tokens;
-      const start = s.endsWith("ای")
-        ? s.slice(0, -2)
-        : s.endsWith("ی")
-          ? s.slice(0, -1)
+      const start = first.endsWith("ای")
+        ? first.slice(0, -2)
+        : first.endsWith("ی")
+          ? first.slice(0, -1)
           : "";
       if (!start) return [];
       return findRoot(ph)(start, dictionary)
@@ -126,10 +126,9 @@ export function parseVBPBasic(type: "ability" | "perfect") {
       if (ph) {
         return [];
       }
-      const [{ s }, ...rest] = tokens;
-      const genNums = getPPartGenNums(s);
+      const genNums = getPPartGenNums(first);
       // TODO: ALSO HANDLE SHORT FORMS
-      const wOutEnd = s.slice(0, -1);
+      const wOutEnd = first.slice(0, -1);
       // TODO: irreg part or just leave that to shúway ?
       const matches = [
         ...dictionary.verbEntryLookup(wOutEnd),

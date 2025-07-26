@@ -1,5 +1,5 @@
 import * as T from "../../../types";
-import { parseKidsSection } from "./parse-kids-section";
+import { parseKidsSection, parseOptKidsSection } from "./parse-kids-section";
 import { tokenizer } from "./tokenizer";
 
 const tests: {
@@ -71,11 +71,31 @@ const tests: {
   },
 ];
 
+const testsForOpt: {
+  label: string;
+  cases: {
+    input: string;
+    output: { err?: boolean; kids: T.ParsedKid[] }[] | undefined;
+    error?: true;
+  }[];
+}[] = [
+  {
+    label: "Parse optional kids section",
+    cases: [
+      {
+        input: "زه ځم",
+        output: undefined,
+      },
+    ],
+  },
+];
+
 tests.forEach(({ label, cases }) => {
   test(label, () => {
     cases.forEach(({ input, output }) => {
       const tokens = tokenizer(input);
       const parsed = parseKidsSection(tokens, [], []);
+      const parsedFromOpt = parseOptKidsSection(tokens);
       if (output.length) {
         expect(
           parsed.map((x) => ({
@@ -83,6 +103,25 @@ tests.forEach(({ label, cases }) => {
             ...(!!x.errors.length ? { err: true } : {}),
           })),
         ).toEqual(output);
+        expect(
+          parsedFromOpt.map((x) => ({
+            kids: x.body?.kids,
+            ...(!!x.errors.length ? { err: true } : {}),
+          })),
+        ).toEqual([...output, { kids: undefined }]);
+      }
+    });
+  });
+});
+
+testsForOpt.forEach(({ label, cases }) => {
+  test(label, () => {
+    cases.forEach(({ input, output }) => {
+      const tokens = tokenizer(input);
+      const parsed = parseOptKidsSection(tokens);
+      if (output === undefined) {
+        expect(parsed.length).toBe(1);
+        expect(parsed[0].body).toBe(undefined);
       }
     });
   });

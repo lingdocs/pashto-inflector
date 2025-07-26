@@ -1,10 +1,13 @@
-import { Token } from "../../../types";
+import * as T from "../../../types";
 import { standardizePashto } from "../standardize-pashto";
 
-export function tokenizer(s: string): Token[] {
-  const words = standardizePashto(s)
+export function tokenizer(s: string): T.Tokens {
+  const tokens = standardizePashto(s)
     .trim()
     .split(/ +/)
     .filter((x) => x);
-  return words as Token[];
+  return {
+    position: 0,
+    tokens: tokens as T.Token[],
+  };
 }

@@ -1,6 +1,7 @@
 import * as T from "../../../../types";
 import { testDictionary } from "../mini-test-dictionary";
 import { tokenizer } from "../tokenizer";
+import { tokensExist } from "../utils";
 import { kawulDyn, kawulStat, kedulStat, kedulDyn } from "./irreg-verbs";
 import { parseKawulKedulVBP } from "./parse-kawul-kedul-vbp";
 
@@ -163,7 +164,7 @@ for (const [sectionName, section] of Object.entries(sections)) {
       test(`${input} ${showPh(ph)}`, () => {
         const tokens = tokenizer(input);
         const result = parseKawulKedulVBP(tokens, ph);
-        expect(result.every((x) => !x.errors.length && !x.tokens.length));
+        expect(result.every((x) => !x.errors.length && !tokensExist(x.tokens)));
         expect(result.map((x) => x.body)).toIncludeSameMembers(output);
       });
     });
