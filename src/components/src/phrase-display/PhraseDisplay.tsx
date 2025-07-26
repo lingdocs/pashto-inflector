@@ -55,7 +55,6 @@ function MainPhraseDisplay({ phrases, opts, toMatch }: {
       return (o + 1) % phrases.length;
     });
   }
-  console.log({ phrases, chosen });
   return (
     <div className={`text-left mt-1`}>
       <div className="d-flex flex-row mb-2">
@@ -79,7 +78,7 @@ function MainPhraseDisplay({ phrases, opts, toMatch }: {
         />
       }
       <div className="d-flex flex-row">
-        <div onClick={moveChosenBack} className="clickable fas fa-chevron-left mt-3 mr-2" />
+        {phrases.length > 1 && <div onClick={moveChosenBack} className="clickable fas fa-chevron-left mt-3 mr-2" />}
         {text.e && (
           <div
             className={`text-muted mt-2 text-left`}
@@ -87,7 +86,7 @@ function MainPhraseDisplay({ phrases, opts, toMatch }: {
             {text.e.map((e, i) => <div key={i}>{e}</div>)}
           </div>
         )}
-        <div onClick={moveChosenForward} className="clickable fas fa-chevron-right mt-3 ml-2" />
+        {phrases.length > 1 && <div onClick={moveChosenForward} className="clickable fas fa-chevron-right mt-3 ml-2" />}
       </div>
     </div>);
 }
