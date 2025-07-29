@@ -63,7 +63,7 @@ const predicate = O.optic_<T.EPSelectionState>().prop("predicate");
 export default function epsReducer(
   eps: T.EPSelectionState,
   action: EpsReducerAction,
-  sendAlert?: (msg: string) => void
+  sendAlert?: (msg: string) => void,
 ): T.EPSelectionState {
   if (action.type === "set subject") {
     const subject = action.payload;
@@ -127,7 +127,7 @@ export default function epsReducer(
       const pronoun = subject.selection.person;
       const newPronoun = movePersonNumber(
         movePersonGender(pronoun, gender),
-        number
+        number,
       );
       return {
         ...eps,
@@ -151,10 +151,10 @@ export default function epsReducer(
     return ensureMiniPronounsOk(eps, n, sendAlert);
   }
   if (action.type === "set equative") {
-    O.set(equative)(action.payload)(
+    return O.set(equative)(action.payload)(
       O.set(blocks)(
-        !action.payload.negative ? removeHeetsDet(eps.blocks) : eps.blocks
-      )(eps)
+        !action.payload.negative ? removeHeetsDet(eps.blocks) : eps.blocks,
+      )(eps),
     );
   }
   if (action.type === "insert new AP") {
@@ -180,7 +180,7 @@ export default function epsReducer(
 function ensureMiniPronounsOk(
   old: T.EPSelectionState,
   eps: T.EPSelectionState,
-  sendAlert?: (msg: string) => void
+  sendAlert?: (msg: string) => void,
 ): T.EPSelectionState {
   const error = checkForMiniPronounsError(eps);
   if (error) {

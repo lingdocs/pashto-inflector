@@ -1,6 +1,6 @@
 {
   "name": "pashto-inflector-website",
-  "version": "8.0.1",
+  "version": "8.0.2",
   "type": "module",
   "scripts": {
     "patch": "npm version patch --no-git-tag-version && cd src/lib && npm version patch --no-git-tag-version && cd ../components && npm version patch --no-git-tag-version",
@@ -22,6 +22,7 @@
     "@fortawesome/fontawesome-free": "^5.15.2",
     "bootstrap": "4.6.1",
     "json-edit-react": "^1.25.0",
+    "levenshtein-edit-distance": "^3.0.1",
     "react": "^18.3.1",
     "react-bootstrap": "1.5.1",
     "react-dom": "^18.3.1",

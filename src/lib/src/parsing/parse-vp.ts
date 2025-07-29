@@ -73,7 +73,8 @@ const anyTarget: Target = {
   numbers: ["singular", "plural"],
 };
 
-// لاړ should work
+// TODO!! mini-pronoun possesives in equative parsing!!
+
 // waawredula for RAINED ?!
 
 // to hide equatives type-doubling issue

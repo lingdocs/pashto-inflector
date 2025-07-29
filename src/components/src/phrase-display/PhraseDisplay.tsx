@@ -5,18 +5,36 @@ import { tokenizer } from "../../../lib/src/parsing/tokenizer";
 import * as T from "../../../types";
 import { renderEP } from "../../../lib/src/phrase-building/render-ep";
 import { renderVP } from "../../../lib/src/phrase-building/render-vp";
-import { compileEP, compileVP, Examples, flattenLengths } from "../../library";
+import { compileEP, compileVP, flattenLengths } from "../../../lib/src/phrase-building/compile";
+import Examples from "../../../components/src/text-display/Examples";
+import VPPicker from "../../../components/src/vp-explorer/VPPicker";
 import ModeSelect, { Mode, ScriptSelect } from "../selects/DisplayModeSelect";
 import RenderedBlocksDisplay from "../blocks/RenderedBlocksDisplay";
+import { uncompleteVPSelection } from "../../../lib/src/phrase-building/vp-tools";
+import useStickyState from "../useStickyState";
+import EPPicker from "../ep-explorer/EPPicker";
+import AbbreviationFormSelector from "../vp-explorer/AbbreviationFormSelector";
+import epsReducer from "../../../lib/src/phrase-building/eps-reducer";
+import { vpsReducer } from "../../library";
 
-export function NewPhraseDisplay({ opts, phrases, toMatch }: {
+// TODO: REMOVE LIBRARY IMPORTS
+
+export function NewPhraseDisplay({ opts, phrases, toMatch, entryFeeder, setPhrase }: {
   opts: T.TextOptions,
   phrases: string | (T.VPSelectionComplete | T.EPSelectionComplete)[],
+  setPhrase: (phrase: T.VPSelectionState | T.EPSelectionState) => void,
   toMatch: string | undefined,
+  entryFeeder: T.EntryFeeder,
   dictionary: T.DictionaryAPI,
 }) {
   const phraseSelection = getPhraseSelection(phrases, dictionary);
-  return phraseSelection.map(phrase => <MainPhraseDisplay phrase={phrase} opts={opts} toMatch={toMatch} />);
+  return phraseSelection.map(phrase => <MainPhraseDisplay
+    phrase={phrase}
+    opts={opts}
+    toMatch={toMatch}
+    entryFeeder={entryFeeder}
+    setPhrase={setPhrase}
+  />);
 }
 
 function getPhraseSelection(phrase: string | (T.VPSelectionComplete | T.EPSelectionComplete)[], dictionary: T.DictionaryAPI): (T.VPSelectionComplete | T.EPSelectionComplete)[] {
@@ -28,37 +46,90 @@ function getPhraseSelection(phrase: string | (T.VPSelectionComplete | T.EPSelect
   return phrase;
 }
 
-function MainPhraseDisplay({ phrase, opts, toMatch }: {
+function MainPhraseDisplay({ phrase, opts, toMatch, entryFeeder, setPhrase }: {
+  entryFeeder: T.EntryFeeder,
   phrase: T.VPSelectionComplete | T.EPSelectionComplete,
   toMatch: string | undefined,
   opts: T.TextOptions,
+  setPhrase: (phrase: T.VPSelectionState | T.EPSelectionState) => void,
 }) {
-  const [mode, setMode] = useState<Mode>("text")
+  const [mode, setMode] = useStickyState<Mode>("text", "phrase-display-mode");
+  const [editing, setEditing] = useState<boolean>(false);
   const [script, setScript] = useState<"p" | "f">("p");
   const rendered = "predicate" in phrase ? renderEP(phrase) : renderVP(phrase);
   const text = rendered.type === "EPRendered" ? compileEP(rendered) : compileVP(rendered, rendered.form);
+  function handleSetForm(form: T.FormVersion) {
+    if ("predicate" in phrase) {
+      setPhrase(epsReducer(phrase, { type: "set omitSubject", payload: form.removeKing ? "true" : "false" }));
+    } else {
+      setPhrase(vpsReducer(entryFeeder)(uncompleteVPSelection(phrase), { type: "set form", payload: form }));
+    }
+  }
   return (
     <div className={`text-left mt-3`}>
-      <div className="d-flex flex-row mb-2">
+      {(
+        <div
+          className="text-left clickable mb-2"
+          style={{ marginBottom: editing ? "0.5rem" : "-0.5rem" }}
+          onClick={
+            editing
+              ? () => {
+                setEditing(false);
+              }
+              : () => {
+                setEditing(true);
+              }
+          }
+        >
+          {!editing ? <i className="fas fa-edit" /> : <i className="fas fa-undo" />}
+        </div>
+      )}
+
+      {editing && ("predicate" in phrase ? <EPPicker
+        entryFeeder={entryFeeder}
+        opts={opts}
+        onChange={setPhrase}
+        eps={phrase}
+      />
+        :
+        <VPPicker
+          opts={opts}
+          entryFeeder={entryFeeder}
+          vps={uncompleteVPSelection(phrase)}
+          onChange={setPhrase}
+        />
+      )}
+      <div className="d-flex flex-row my-2">
         <ModeSelect value={mode} onChange={setMode} />
         {mode === "blocks" && (
           <ScriptSelect value={script} onChange={setScript} />
         )}
+        {editing && <AbbreviationFormSelector
+          adjustable={rendered.type === "EPRendered" ? "king" : rendered.whatsAdjustable}
+          form={rendered.type === "EPRendered" ? {
+            shrinkServant: false,
+            removeKing: rendered.omitSubject,
+          } : rendered.form}
+          onChange={handleSetForm}
+          inline={true}
+        />}
       </div>
-      {mode === "text" ? (
-        <CompiledPTextDisplay
-          opts={opts}
-          text={text.ps}
-          toMatch={toMatch}
-        />
-      ) :
-        <RenderedBlocksDisplay
-          opts={opts}
-          rendered={rendered}
-          justify={"left"}
-          script={script}
-        />
-      }
+      <div>
+        {mode === "text" ? (
+          <CompiledPTextDisplay
+            opts={opts}
+            text={text.ps}
+            toMatch={toMatch}
+          />
+        ) :
+          <RenderedBlocksDisplay
+            opts={opts}
+            rendered={rendered}
+            justify={"left"}
+            script={script}
+          />
+        }
+      </div>
       <div className="d-flex flex-row">
         {text.e && (
           <div
@@ -88,9 +159,7 @@ function CompiledPTextDisplay(props: {
       </Examples>
     </div>
   }
-  const matching = props.toMatch ? flattened.findIndex(x => x.p === props.toMatch) : -1;
-  const secondBestMatching = props.toMatch && matching !== -1 ? flattened.findIndex(x => x.p.replaceAll(" ", "") === props.toMatch?.replaceAll(" ", "")) : -1;
-  const match = matching === -1 ? secondBestMatching : matching;
+  const match = props.toMatch ? flattened.findIndex(x => x.p.replaceAll(" ", "") === props.toMatch?.replaceAll(" ", "")) : -1;
   // TODO: could do a more efficient thing than this
   const pss = match === -1 ? flattened : [flattened[match], ...flattened.filter((_, i) => i !== match)];
   return <div className="mt-2">

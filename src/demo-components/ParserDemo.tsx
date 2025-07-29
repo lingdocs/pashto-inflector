@@ -6,6 +6,10 @@ import { removeRedundantVPSs } from "../lib/src/phrase-building/remove-redundant
 import { useDebouncedCallback } from "use-debounce";
 import { NewPhraseDisplay } from "../components/src/phrase-display/PhraseDisplay";
 import { standardizePashto } from "../lib/src/standardize-pashto";
+import { completeVPSelection } from "../lib/src/phrase-building/vp-tools";
+import { renderVP } from "../lib/src/phrase-building/render-vp";
+import { compileEP, compileVP, flattenLengths } from "../lib/src/phrase-building/compile";
+import { completeEPSelection, renderEP } from "../lib/src/phrase-building/render-ep";
 
 const working = [
   "phrases with simple verbs",
@@ -67,7 +71,7 @@ const examples = [
 
 function ParserDemo({
   opts,
-  // entryFeeder,
+  entryFeeder,
   dictionary,
 }: {
   opts: T.TextOptions;
@@ -105,6 +109,23 @@ function ParserDemo({
     setErrors([]);
     setNoneFound(false);
     debounced(value);
+  }
+  function setPhrase(phrase: T.EPSelectionState | T.VPSelectionState) {
+    if ("predicate" in phrase) {
+      const EP = completeEPSelection(phrase);
+      if (!EP) return;
+      setResult([EP]);
+      const rendered = renderEP(EP);
+      const compiled = compileEP(rendered);
+      setText(flattenLengths(compiled.ps)[0].p);
+      return;
+    }
+    const VP = completeVPSelection(phrase);
+    if (!VP) return;
+    setResult([VP]);
+    const rendered = renderVP(VP);
+    const compiled = compileVP(rendered, VP.form);
+    setText(flattenLengths(compiled.ps)[0].p);
   }
   return (
     <div className="mt-3" style={{ marginBottom: "1000px" }}>
@@ -167,7 +188,14 @@ function ParserDemo({
           <div className="text-center">Did you mean:</div>
         </>
       )}
-      <NewPhraseDisplay opts={opts} phrases={result} dictionary={dictionary} toMatch={standardizePashto(text.trim())} />
+      <NewPhraseDisplay
+        entryFeeder={entryFeeder}
+        setPhrase={setPhrase}
+        opts={opts}
+        phrases={result}
+        dictionary={dictionary}
+        toMatch={standardizePashto(text.trim())}
+      />
     </div>
   );
 }
