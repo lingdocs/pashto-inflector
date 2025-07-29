@@ -36,9 +36,16 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const kingNP = king === "subject" ? subject : object;
   const complementWins = complementTakesTarget(kingNP, complement);
   const kingPerson = getPersonFromNP(kingNP);
-  const complementPerson = getPersonFromNP(
-    typeof object === "object" ? object : subject,
-  );
+  const complementPerson =
+    complement &&
+    complement.selection.type !== "unselected" &&
+    complement.selection.type === "NP"
+      ? getPersonFromNP(
+          complement.selection,
+          // TODO: check why I ever did this ?!
+          // typeof object === "object" ? object : subject,
+        )
+      : undefined;
   // TODO: more elegant way of handling this type safety
   if (kingPerson === undefined) {
     throw new Error("king of sentance does not exist");

@@ -2845,12 +2845,12 @@ sections.forEach((section) => {
           (x) => !tokensExist(x.tokens),
         );
         if (error) {
-          expect(res.some((x) => x.errors.length));
+          expect(res.some((x) => x.errors.length)).toBe(true);
         } else {
           expect(removeKeys(res.map((x) => x.body))).toIncludeSameMembers(
             removeKeys(output),
           );
-          expect(!res.some((x) => x.errors.length));
+          expect(!res.some((x) => x.errors.length)).toBe(true);
         }
       });
     });

@@ -268,7 +268,7 @@ function addEnding({
   }
   function addToVBBasicEnd(
     vb: T.VBBasic,
-    end: T.SingleOrLengthOpts<T.PsString[]>
+    end: T.SingleOrLengthOpts<T.PsString[]>,
   ): T.VBBasic {
     if ("long" in vb.ps) {
       // exceptional ending for راتلل, ورتلل, درتلل
@@ -303,7 +303,7 @@ function addEnding({
               : verbEndingConcat(ps, endShort),
           mini: (ps) => verbEndingConcat(ps, endShort),
         },
-        vb.ps
+        vb.ps,
       ),
     };
   }
@@ -312,7 +312,7 @@ function addEnding({
 function getEnding(
   person: T.Person,
   tenseC: "present" | "past" | "imperative",
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ) {
   if (tenseC === "imperative") {
     if (!isSecondPerson(person)) {
@@ -327,9 +327,9 @@ function getEnding(
   const [row, col] = getVerbBlockPosFromPerson(person);
   return tenseC === "past"
     ? {
-      long: pastEndings.long[row][col],
-      short: pastEndings.short[row][col],
-    }
+        long: pastEndings.long[row][col],
+        short: pastEndings.short[row][col],
+      }
     : presentEndings[row][col];
 }
 
@@ -338,7 +338,7 @@ function ensure3rdPast(
   rs: T.PsString[],
   ending: T.PsString[],
   verb: T.VerbEntry,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): T.PsString[] {
   if (isKedul(verb)) {
     return aspect === "perfective"
@@ -384,9 +384,9 @@ function ensure3rdPast(
   }
   if (verb.entry.tppp && verb.entry.tppf) {
     const tpps = splitPsByVarients(
-      makePsString(verb.entry.tppp, verb.entry.tppf)
+      makePsString(verb.entry.tppp, verb.entry.tppf),
     ).map((ps) =>
-      !verb.entry.sepOo && aspect === "perfective" ? takeOffAaStart(ps) : ps
+      !verb.entry.sepOo && aspect === "perfective" ? takeOffAaStart(ps) : ps,
     );
     if (verb.entry.p === "وړل" && aspect === "perfective") {
       return [
@@ -409,18 +409,18 @@ function ensure3rdPast(
       .map(({ p, f }) =>
         verb.entry.separationAtP !== undefined && aspect === "perfective"
           ? makePsString(
-            p.slice(verb.entry.separationAtP),
-            f.slice(verb.entry.separationAtF)
-          )
-          : makePsString(p, f)
+              p.slice(verb.entry.separationAtP),
+              f.slice(verb.entry.separationAtF),
+            )
+          : makePsString(p, f),
       )
       .flatMap((ps) =>
         endsInConsonant(ps) && lastVowelNotAorO(ps.f)
           ? [ps, concatPsString(ps, { p: "ه", f: "u" })]
-          : [ps]
+          : [ps],
       )
       .map((ps) =>
-        aspect === "imperfective" ? accentOnNFromEnd(ps, 0) : removeAccents(ps)
+        aspect === "imperfective" ? accentOnNFromEnd(ps, 0) : removeAccents(ps),
       );
     // if it ends in a consonant, the special form will also have another
     // variation ending with a ه - u
@@ -451,7 +451,7 @@ function ensure3rdPast(
 }
 
 function removeAbility(
-  tense: T.VerbTense | T.AbilityTense | T.ImperativeTense
+  tense: T.VerbTense | T.AbilityTense | T.ImperativeTense,
 ): T.VerbTense | T.ImperativeTense {
   return tense.replace("Modal", "") as T.VerbTense | T.ImperativeTense;
 }
