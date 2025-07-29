@@ -37,7 +37,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const complementWins = complementTakesTarget(kingNP, complement);
   const kingPerson = getPersonFromNP(kingNP);
   const complementPerson = getPersonFromNP(
-    typeof object === "object" ? object : subject
+    typeof object === "object" ? object : subject,
   );
   // TODO: more elegant way of handling this type safety
   if (kingPerson === undefined) {
@@ -64,8 +64,8 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
               : "transitive"
           ]
         : VP.verb.dynAuxVerb
-        ? VP.verb.dynAuxVerb
-        : VP.verb.verb,
+          ? VP.verb.dynAuxVerb
+          : VP.verb.verb,
     tense: VP.verb.tense,
     subject: subjectPerson,
     object: objectPerson,
@@ -76,7 +76,7 @@ export function renderVP(VP: T.VPSelectionComplete): T.VPRendered {
   const VBwNeg = insertNegative(
     vbs,
     VP.verb.negative,
-    isImperativeTense(VP.verb.tense)
+    isImperativeTense(VP.verb.tense),
   );
   // just enter the negative in the verb blocks
   return {
@@ -110,7 +110,7 @@ function getVPKids(
     | T.UnselectedComplementSelection
     | undefined,
   form: T.FormVersion,
-  king: "subject" | "object"
+  king: "subject" | "object",
 ): T.Kid[] {
   const subject = getSubjectSelection(blocks).selection;
   const objectS = getObjectSelection(blocks).selection;
@@ -134,7 +134,7 @@ function getVPKids(
 function removeAbbreviated(
   blocks: T.VPSBlockComplete[],
   form: T.FormVersion,
-  king: "subject" | "object"
+  king: "subject" | "object",
 ): T.VPSBlockComplete[] {
   return blocks.filter(({ block }) => {
     if (block.type === "subjectSelection") {
@@ -152,7 +152,7 @@ function removeAbbreviated(
 export function insertNegative(
   blocks: T.VerbRenderedOutput,
   negative: boolean,
-  imperative: boolean
+  imperative: boolean,
 ): T.Block[][] {
   if (!negative) {
     return [blocks.flat().map(makeBlock)];
@@ -231,7 +231,7 @@ function renderVPBlocks(
     inflectObject: boolean;
     king: "subject" | "object" | "complement";
     complementPerson: T.Person | undefined;
-  }
+  },
 ): T.Block[] {
   const object = getObjectSelection(blocks);
   const subject = getSubjectSelection(blocks);
@@ -255,7 +255,7 @@ function renderVPBlocks(
             "subject",
             config.king === "subject" ? "king" : "servant",
             false,
-            "no"
+            "no",
           ),
         }),
       ];
@@ -278,7 +278,7 @@ function renderVPBlocks(
         "object",
         config.king === "object" ? "king" : "servant",
         false,
-        "no"
+        "no",
       );
       return [
         ...blocks,
@@ -300,15 +300,15 @@ function renderVPBlocks(
         renderComplementSelection(
           block,
           // just for typesafety // TODO: only include the person if we're doing an adjective
-          config.complementPerson ?? T.Person.FirstSingMale
-        )
+          config.complementPerson ?? T.Person.FirstSingMale,
+        ),
       ),
     ];
   }, [] as T.Block[]);
 }
 
 function whatsAdjustable(
-  VP: T.VPSelectionComplete
+  VP: T.VPSelectionComplete,
 ): "both" | "king" | "servant" {
   // TODO: intransitive dynamic compounds?
   return VP.verb.isCompound === "dynamic" ||
@@ -318,20 +318,20 @@ function whatsAdjustable(
       ? "servant"
       : "king"
     : VP.verb.transitivity === "transitive"
-    ? VP.verb.voice === "active"
-      ? "both"
-      : "king"
-    : VP.verb.transitivity === "intransitive"
-    ? "king"
-    : // grammTrans
-    isPastTense(VP.verb.tense)
-    ? "servant"
-    : "king";
+      ? VP.verb.voice === "active"
+        ? "both"
+        : "king"
+      : VP.verb.transitivity === "intransitive"
+        ? "king"
+        : // grammTrans
+          isPastTense(VP.verb.tense)
+          ? "servant"
+          : "king";
 }
 
 export function getKingAndServant(
   isPast: boolean,
-  isTransitive: boolean
+  isTransitive: boolean,
 ):
   | { king: "subject"; servant: "object" }
   | { king: "object"; servant: "subject" }
@@ -351,7 +351,7 @@ export function getKingAndServant(
 }
 
 export function isFirstOrSecondPersPronoun(
-  o: "none" | T.NPSelection | T.Person.ThirdPlurMale
+  o: "none" | T.NPSelection | T.Person.ThirdPlurMale,
 ): boolean {
   if (typeof o !== "object") return false;
   if (o.selection.type !== "pronoun") return false;

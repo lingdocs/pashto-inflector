@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { dictionary } from "../../../lib/src/dictionary/dictionary";
 import { parseVP } from "../../../lib/src/parsing/parse-vp";
 import { tokenizer } from "../../../lib/src/parsing/tokenizer";
@@ -36,6 +36,9 @@ function MainPhraseDisplay({ phrases, opts, toMatch }: {
   const [chosen, setChosen] = useState<number>(0);
   const [mode, setMode] = useState<Mode>("text")
   const [script, setScript] = useState<"p" | "f">("p");
+  useEffect(() => {
+    setChosen(0);
+  }, [phrases]);
   if (phrases.length === 0) {
     return [];
   }

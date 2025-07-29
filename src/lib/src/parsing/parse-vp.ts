@@ -73,14 +73,8 @@ const anyTarget: Target = {
   numbers: ["singular", "plural"],
 };
 
-// ____ ___ ____   ____  ____   ___  ____  _     _____ __  __
-// | __ )_ _/ ___| |  _ \|  _ \ / _ \| __ )| |   | ____|  \/  |
-// |  _ \| | |  _  | |_) | |_) | | | |  _ \| |   |  _| | |\/| |
-// | |_) | | |_| | |  __/|  _ <| |_| | |_) | |___| |___| |  | |
-// |____/___\____| |_|   |_| \_\\___/|____/|_____|_____|_|  |_|
-
-// daa khabure me spukaway balulay day
-// is not parsing right!!!
+// لاړ should work
+// waawredula for RAINED ?!
 
 // to hide equatives type-doubling issue
 // shouldn't be opt parsing with demonstratives

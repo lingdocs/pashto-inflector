@@ -100,7 +100,14 @@ export function compileVP(
   blankOut?: BlankoutOptions,
 ): { ps: T.SingleOrLengthOpts<T.PsString[]>; e?: string[] } {
   // const verb = getVerbFromBlocks(VP.blocks).block;
-  const psResult = compileVPPs(VP.blocks, VP.kids, form, VP.king, blankOut);
+  const psResult = compileVPPs(
+    VP.blocks,
+    VP.kids,
+    form,
+    VP.king,
+    VP.servant,
+    blankOut,
+  );
   return {
     // TODO: unneccessary because the lengths are already flattened
     ps: combineLengths ? flattenLengths(psResult) : psResult,
@@ -116,12 +123,13 @@ function compileVPPs(
   kids: T.Kid[],
   form: T.FormVersion,
   king: "subject" | "object" | "complement",
+  servant: "subject" | "object" | undefined,
   blankOut?: BlankoutOptions,
 ): T.PsString[] {
   const subjectPerson =
     getSubjectSelectionFromBlocks(blocks).selection.selection.person;
   const blocksWKids = putKidsInKidsSection(
-    filterForVisibleBlocksVP(blocks, form, king),
+    filterForVisibleBlocksVP(blocks, form, king, servant),
     kids,
     !!blankOut?.ba,
   );
@@ -170,8 +178,8 @@ export function filterForVisibleBlocksVP(
   blocks: T.Block[][],
   form: T.FormVersion,
   king: "subject" | "object" | "complement",
+  servant: "subject" | "object" | undefined,
 ): T.Block[][] {
-  const servant = king === "object" ? "subject" : "object";
   return blocks.map((blks) =>
     blks.filter((block) => {
       if (form.removeKing) {
