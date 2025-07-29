@@ -27,8 +27,8 @@ function RenderedBlocksDisplay({
   const blocksWVars: T.Block[][] = Array.isArray(rendered)
     ? rendered
     : "omitSubject" in rendered
-    ? filterForVisibleBlocksEP(rendered.blocks, rendered.omitSubject)
-    : filterForVisibleBlocksVP(rendered.blocks, rendered.form, rendered.king);
+      ? filterForVisibleBlocksEP(rendered.blocks, rendered.omitSubject)
+      : filterForVisibleBlocksVP(rendered.blocks, rendered.form, rendered.king, rendered.servant);
   const king = "king" in rendered ? rendered.king : undefined;
   const blocks = blocksWVars[variation];
   function handleVariationChange() {
@@ -36,14 +36,12 @@ function RenderedBlocksDisplay({
   }
   return (
     <div
-      className={`d-flex flex-row justify-content-${
-        justify ? justify : "center"
-      }`}
+      className={`d-flex flex-row justify-content-${justify ? justify : "center"
+        }`}
     >
       <div
-        className={`d-flex flex-row${
-          script === "p" ? "-reverse" : ""
-        } justify-content-left align-items-end mt-3 pb-2`}
+        className={`d-flex flex-row${script === "p" ? "-reverse" : ""
+          } justify-content-left align-items-end mt-3 pb-2`}
         style={{ overflowX: "auto" }}
       >
         <div key={blocks[0].key} className="mr-2">
@@ -95,9 +93,8 @@ function KidsSection({
   return kids.length > 0 ? (
     <div className="text-center mx-1 mr-3" style={{ paddingBottom: "1rem" }}>
       <div
-        className={`d-flex flex-row${
-          script === "p" ? "-reverse" : ""
-        } mb-3 justify-content-center`}
+        className={`d-flex flex-row${script === "p" ? "-reverse" : ""
+          } mb-3 justify-content-center`}
       >
         {kids.map((kid) => (
           <KidDisplay key={kid.key} opts={opts} kid={kid} script={script} />
