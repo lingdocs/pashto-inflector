@@ -519,6 +519,52 @@ const simpleIntrans: Section = {
   ],
 };
 
+const simpleIrreg: Section = {
+  title: "simple irreg",
+  tests: [
+    {
+      input: "لاړ",
+      output: testVBEOutuput({
+        ph: "لا",
+        bases: ["root"],
+        aspects: ["perfective"],
+        persons: [T.Person.ThirdSingMale],
+        verb: tlul,
+      }),
+    },
+    ...["لاړلې", "لاړې"].map((input) => ({
+      input,
+      output: testVBEOutuput({
+        ph: "لا",
+        bases: ["root"],
+        aspects: ["perfective"],
+        persons: [...getPeople(2, "sing"), T.Person.ThirdPlurFemale],
+        verb: tlul,
+      }),
+    })),
+    {
+      input: "لاړل",
+      output: testVBEOutuput({
+        ph: "لا",
+        bases: ["root"],
+        aspects: ["perfective"],
+        persons: [T.Person.ThirdPlurMale],
+        verb: tlul,
+      }),
+    },
+    ...["لاړم", "لاړلم"].map((input) => ({
+      input,
+      output: testVBEOutuput({
+        ph: "لا",
+        bases: ["root"],
+        aspects: ["perfective"],
+        persons: getPeople(1, "sing"),
+        verb: tlul,
+      }),
+    })),
+  ],
+};
+
 const simpleIrregStems: Section = {
   title: "simple irregular stems",
   tests: [
@@ -2775,6 +2821,7 @@ const sections = [
   equativeSection,
   simpleIntrans,
   simpleIrregStems,
+  simpleIrreg,
   seperatingHead,
   irreg3rdMascSing,
   irregularVerbs,

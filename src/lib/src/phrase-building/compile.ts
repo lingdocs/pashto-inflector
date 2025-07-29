@@ -6,7 +6,7 @@ import {
 } from "../p-text-helpers";
 import { negativeParticle } from "../grammar-units";
 import * as grammarUnits from "../grammar-units";
-import { ensureNoHangingR, removeDuplicates } from "./vp-tools";
+import { removeDuplicates } from "./vp-tools";
 import { getEnglishFromRendered, getPashtoFromRendered } from "./np-tools";
 import { completeEPSelection, renderEP } from "./render-ep";
 import { completeVPSelection } from "./vp-tools";
@@ -430,7 +430,7 @@ function putKidsInKidsSection(
     return [
       first,
       ...(enforceKidsSectionBlankout ? [kidsBlank] : kids),
-      ...ensureNoHangingR(rest),
+      ...rest,
     ];
   }
   return blocksWVars.map(insert);

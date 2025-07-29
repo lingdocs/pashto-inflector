@@ -19,7 +19,6 @@ import { parseKawulKedulAbility } from "./parse-kawul-kedul-vbp";
 // check oo`azmooy -
 //  TODO: proper use of sepOo (hasBreakawayAleph) when checking for perfective roots/stems
 // check څاته
-// TODO: هغه لاړ
 // TODO: لاړې etc - check if botlul etc bo-ba-de-dzee is working
 // TODO: don't have کول کېدل in split-verbs
 // TODO: why doesn't بلله or وبلله work بلل fem sing past
@@ -158,6 +157,20 @@ function parseIrregularVerb(
   s: string,
   ph: T.ParsedPH | undefined,
 ): T.ParsedVBBVerb[] {
+  if (ph && ph.type === "PH" && ph.s === "لا" && s === "ړ") {
+    return [
+      {
+        type: "parsed vbb verb",
+        info: {
+          aspect: "perfective",
+          base: "root",
+          type: "verb",
+          verb: tlul,
+        },
+        person: T.Person.ThirdSingMale,
+      },
+    ];
+  }
   if (ph) {
     return [];
   }

@@ -2,7 +2,7 @@ import * as T from "../../../../types";
 import { fmapParseResult } from "../../fp-ps";
 import { parseAdjective } from "../argument-section/parse-adjective";
 import { parseLocAdverb } from "../argument-section/parse-adverb";
-import { getOneToken, returnParseResult } from "../utils";
+import { getOneToken, returnParseResult, returnParseResults } from "../utils";
 
 const phs = [
   "و",
@@ -18,10 +18,9 @@ const phs = [
   "ور",
   "پرا",
   "لا",
-  "لاړ",
-  "لاړه",
-  "لاړې",
 ];
+
+const laars = ["لاړ", "لاړه", "لاړې"];
 
 export function parsePH(
   tokens: T.Tokens,
@@ -52,6 +51,28 @@ function parseVerbPH(tokens: T.Tokens): T.ParseResult<T.ParsedVerbPH>[] {
   if (!first) {
     return [];
   }
+  if (laars.includes(first)) {
+    return [
+      ...returnParseResults<T.ParsedVerbPH>(splitOffHead("لا", tokens), [
+        {
+          type: "PH",
+          s: "لا",
+        },
+      ]),
+      ...returnParseResults<T.ParsedVerbPH>(
+        {
+          ...tokens,
+          position: tokens.position + 1,
+        },
+        [
+          {
+            type: "PH",
+            s: first,
+          },
+        ],
+      ),
+    ];
+  }
   if (phs.includes(first)) {
     return returnParseResult(rest, {
       type: "PH",
@@ -68,25 +89,25 @@ function parseVerbPH(tokens: T.Tokens): T.ParseResult<T.ParsedVerbPH>[] {
         first.length > p.length + 1,
     )
     .flatMap((ph) =>
-      returnParseResult(
-        {
-          // need to modify the tokens here because we ripped the PH head off one
-          tokens: [
-            // don't touch the tokens before the postion
-            ...tokens.tokens.slice(0, tokens.position),
-            // make the broken off PH into a seperate token
-            tokens.tokens[tokens.position].slice(0, ph.length) as T.Token,
-            // make the piece after the broken off PH into a seperate token
-            tokens.tokens[tokens.position].slice(ph.length) as T.Token,
-            // put the rest of the tokens in
-            ...tokens.tokens.slice(tokens.position + 1),
-          ],
-          position: tokens.position + 1,
-        },
-        {
-          type: "PH",
-          s: ph,
-        } as const,
-      ),
+      returnParseResult(splitOffHead(ph, tokens), {
+        type: "PH",
+        s: ph,
+      } as const),
     );
+}
+
+function splitOffHead(ph: string, tokens: T.Tokens): T.Tokens {
+  return {
+    tokens: [
+      // don't touch the tokens before the postion
+      ...tokens.tokens.slice(0, tokens.position),
+      // make the broken off PH into a seperate token
+      tokens.tokens[tokens.position].slice(0, ph.length) as T.Token,
+      // make the piece after the broken off PH into a seperate token
+      tokens.tokens[tokens.position].slice(ph.length) as T.Token,
+      // put the rest of the tokens in
+      ...tokens.tokens.slice(tokens.position + 1),
+    ],
+    position: tokens.position + 1,
+  };
 }

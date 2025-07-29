@@ -123,7 +123,7 @@ function getAbilityRs(
   aspect: T.Aspect,
   rs: "root" | "stem",
   voice: T.Voice,
-  genderNum: T.GenderNumber
+  genderNum: T.GenderNumber,
 ): [[] | [T.VHead], [T.VBP, T.VB]] {
   // https://grammar.lingdocs.com/verbs/ability/#exceptions
   const losesAspect =
@@ -143,7 +143,7 @@ function getAbilityRs(
 export function getPastParticiple(
   verb: T.VerbEntry,
   voice: T.Voice,
-  { gender, number }: { gender: T.Gender; number: T.NounNumber }
+  { gender, number }: { gender: T.Gender; number: T.NounNumber },
 ): T.VBP {
   const v = removeFVarientsFromVerb(verb);
   if (voice === "passive") {
@@ -156,7 +156,7 @@ export function getPastParticiple(
         getPastParticiple(statVerb[vTransitivity(verb)], voice, {
           gender,
           number,
-        })
+        }),
       ),
       info: {
         type: "ppart",
@@ -183,7 +183,7 @@ export function getPastParticiple(
   const basicRoot = getRoot(
     removeFVarientsFromVerb(verb),
     { gender, number },
-    "imperfective"
+    "imperfective",
   )[1][0];
   const longRoot = getLongVB(basicRoot) as T.VBNoLenghts<T.VB>;
   const rootWLengths = possiblePPartLengths(longRoot);
@@ -205,7 +205,7 @@ export function getPastParticiple(
   };
 
   function addTail(
-    ps: T.SingleOrLengthOpts<T.PsString[]>
+    ps: T.SingleOrLengthOpts<T.PsString[]>,
   ): T.SingleOrLengthOpts<T.PsString[]> {
     return fmapSingleOrLengthOpts((x) => {
       const withTail = concatPsString(x[0], { p: "ی", f: "ay" });
@@ -216,13 +216,13 @@ export function getPastParticiple(
 
 function getPassivePp(
   verb: T.VerbEntryNoFVars,
-  genderNumber: T.GenderNumber
+  genderNumber: T.GenderNumber,
 ): T.VBP {
   if (isStatComp(verb) && verb.complement) {
     return {
       ...weld(
         makeComplement(verb.complement, genderNumber),
-        getPassivePp(statVerb.transitive, genderNumber)
+        getPassivePp(statVerb.transitive, genderNumber),
       ),
       info: {
         type: "ppart",
@@ -234,13 +234,13 @@ function getPassivePp(
   const basicRoot = getRoot(
     verb,
     genderNumber,
-    isKawulVerb(verb) ? "perfective" : "imperfective"
+    isKawulVerb(verb) ? "perfective" : "imperfective",
   )[1][0];
   const longRoot = getLongVB(basicRoot);
   const kedulVb = getPastParticiple(
     statVerb.intransitive,
     "active",
-    genderNumber
+    genderNumber,
   );
   return {
     ...weld(longRoot, kedulVb),
@@ -257,7 +257,7 @@ function getPassivePp(
 function getRoot(
   verb: T.VerbEntryNoFVars,
   genderNum: T.GenderNumber,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): [[T.VHead] | [], [T.VB]] {
   if (
     verb.complement &&
@@ -267,7 +267,7 @@ function getRoot(
     const auxStem = getRoot(
       statVerb[vTransitivity(verb)],
       genderNum,
-      aspect
+      aspect,
     )[1][0] as T.VBBasic;
     const complement = makeComplement(verb.complement, genderNum);
     return aspect === "perfective"
@@ -278,7 +278,7 @@ function getRoot(
     const auxStem = getRoot(
       statVerb.transitive,
       genderNum,
-      "perfective"
+      "perfective",
     )[1][0] as T.VBBasic;
     const ph: T.PH = {
       type: "PH",
@@ -295,7 +295,7 @@ function getRoot(
       : removeAccents(
           verb.entry.prp && verb.entry.prf
             ? makePsString(verb.entry.prp, verb.entry.prf)
-            : makePsString(verb.entry.p, verb.entry.f)
+            : makePsString(verb.entry.p, verb.entry.f),
         );
   const [perfectiveHead, rest] =
     aspect === "perfective" ? getPerfectiveHead(base, verb) : [undefined, base];
@@ -341,7 +341,7 @@ function getRoot(
 function getStem(
   verb: T.VerbEntryNoFVars,
   genderNum: T.GenderNumber,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): [[T.VHead] | [], [T.VB]] {
   const statComp = isStatComp(verb);
   if (
@@ -352,7 +352,7 @@ function getStem(
     const auxStem = getStem(
       statVerb[vTransitivity(verb)],
       genderNum,
-      aspect
+      aspect,
     )[1][0] as T.VBBasic;
     const complement = makeComplement(verb.complement, genderNum);
     return aspect === "perfective"
@@ -363,7 +363,7 @@ function getStem(
     const auxStem = getStem(
       statVerb.transitive,
       genderNum,
-      "perfective"
+      "perfective",
     )[1][0] as T.VBBasic;
     const ph: T.PH = {
       type: "PH",
@@ -390,10 +390,10 @@ function getStem(
         ? // with irregular perfective stem
           makePsString(verb.entry.ssp, verb.entry.ssf)
         : verb.entry.psp && verb.entry.psf
-        ? // with perfective stem based on irregular perfective root
-          makePsString(verb.entry.psp, verb.entry.psf)
-        : // with regular infinitive based perfective stem
-          removeL(makePsString(verb.entry.p, verb.entry.f));
+          ? // with perfective stem based on irregular perfective root
+            makePsString(verb.entry.psp, verb.entry.psf)
+          : // with regular infinitive based perfective stem
+            removeL(makePsString(verb.entry.p, verb.entry.f));
     const [perfectiveHead, rest] = getPerfectiveHead(base, verb);
     return [
       perfectiveHead ? [perfectiveHead] : [],
@@ -410,12 +410,12 @@ function getStem(
     verb.entry.psp && verb.entry.psf
       ? [makePsString(verb.entry.psp, verb.entry.psf)]
       : vTransitivity(verb) === "intransitive" && rawBase.p.endsWith("ېد")
-      ? edulIntransBase(verb)
-      : isKawulVerb(verb) ||
-        statComp ||
-        (countSyllables(rawBase) > 1 && rawBase.f.endsWith("aw"))
-      ? [addTrailingAccent(rawBase)]
-      : [rawBase];
+        ? edulIntransBase(verb)
+        : isKawulVerb(verb) ||
+            statComp ||
+            (countSyllables(rawBase) > 1 && rawBase.f.endsWith("aw"))
+          ? [addTrailingAccent(rawBase)]
+          : [rawBase];
   return [
     [],
     [
@@ -426,7 +426,7 @@ function getStem(
     ],
   ];
   function splitEdulIntans(
-    ps: T.SingleOrLengthOpts<T.PsString[]>
+    ps: T.SingleOrLengthOpts<T.PsString[]>,
   ): [[T.PH] | [], [T.VB]] {
     const [ph, long] =
       "long" in ps
@@ -456,7 +456,7 @@ function getPassiveRs(
   verb: T.VerbEntryNoFVars,
   aspect: T.Aspect,
   rs: "root" | "stem",
-  genderNumber: T.GenderNumber
+  genderNumber: T.GenderNumber,
 ): [[] | [T.VHead], [T.VB]] {
   const [vHead, [basicRoot]] = getRoot(verb, genderNumber, aspect);
   const longRoot = addOptionalTailsToPassive(getLongVB(basicRoot), aspect);
@@ -474,7 +474,7 @@ function getPassiveRs(
 // TODO: This is a nasty and messy way to do it with the length options included
 export function getPerfectiveHead(
   base: T.PsString,
-  v: T.VerbEntryNoFVars
+  v: T.VerbEntryNoFVars,
 ): [T.PH, T.PsString] | [undefined, T.PsString] {
   // if ((verb.entry.ssp && verb.entry.ssf) || verb.entry.separationAtP) {
   //     // handle split
@@ -487,7 +487,7 @@ export function getPerfectiveHead(
           p: base.p.slice(0, v.entry.separationAtP),
           f: base.f.slice(0, v.entry.separationAtF),
         },
-        0
+        0,
       ),
     };
     const rest = {
@@ -499,30 +499,32 @@ export function getPerfectiveHead(
   const [ph, rest]: [T.PH | undefined, T.PsString] = v.entry.noOo
     ? [undefined, base]
     : v.entry.sepOo
-    ? [{ type: "PH", ps: { p: "و ", f: "óo`" } }, base]
-    : ["آ", "ا"].includes(base.p.charAt(0)) && base.f.charAt(0) === "a"
-    ? [{ type: "PH", ps: { p: "وا", f: "wáa" } }, removeAStart(base)]
-    : ["óo", "oo"].includes(base.f.slice(0, 2))
-    ? [{ type: "PH", ps: { p: "و", f: "wÚ" } }, base]
-    : ["ée", "ee"].includes(base.f.slice(0, 2)) && base.p.slice(0, 2) === "ای"
-    ? [
-        { type: "PH", ps: { p: "وي", f: "wée" } },
-        {
-          p: base.p.slice(2),
-          f: base.f.slice(2),
-        },
-      ]
-    : ["é", "e"].includes(base.f.slice(0, 2)) && base.p.slice(0, 2) === "اې"
-    ? [
-        { type: "PH", ps: { p: "وي", f: "wé" } },
-        {
-          p: base.p.slice(2),
-          f: base.f.slice(1),
-        },
-      ]
-    : ["ó", "o"].includes(base.f[0]) && base.p.slice(0, 2) === "او"
-    ? [{ type: "PH", ps: { p: "و", f: "óo`" } }, base]
-    : [{ type: "PH", ps: { p: "و", f: "óo" } }, base];
+      ? [{ type: "PH", ps: { p: "و ", f: "óo`" } }, base]
+      : ["آ", "ا"].includes(base.p.charAt(0)) && base.f.charAt(0) === "a"
+        ? [{ type: "PH", ps: { p: "وا", f: "wáa" } }, removeAStart(base)]
+        : ["óo", "oo"].includes(base.f.slice(0, 2))
+          ? [{ type: "PH", ps: { p: "و", f: "wÚ" } }, base]
+          : ["ée", "ee"].includes(base.f.slice(0, 2)) &&
+              base.p.slice(0, 2) === "ای"
+            ? [
+                { type: "PH", ps: { p: "وي", f: "wée" } },
+                {
+                  p: base.p.slice(2),
+                  f: base.f.slice(2),
+                },
+              ]
+            : ["é", "e"].includes(base.f.slice(0, 2)) &&
+                base.p.slice(0, 2) === "اې"
+              ? [
+                  { type: "PH", ps: { p: "وي", f: "wé" } },
+                  {
+                    p: base.p.slice(2),
+                    f: base.f.slice(1),
+                  },
+                ]
+              : ["ó", "o"].includes(base.f[0]) && base.p.slice(0, 2) === "او"
+                ? [{ type: "PH", ps: { p: "و", f: "óo`" } }, base]
+                : [{ type: "PH", ps: { p: "و", f: "óo" } }, base];
   return [ph, removeAccents(rest)];
   function removeAStart(ps: T.PsString) {
     return {
@@ -533,7 +535,7 @@ export function getPerfectiveHead(
 }
 
 function edulIntransBase(
-  v: T.VerbEntryNoFVars
+  v: T.VerbEntryNoFVars,
 ): T.SingleOrLengthOpts<T.PsString[]> {
   const base = trimOffPs(makePsString(v.entry.p, v.entry.f), 3, 4);
   const long: T.PsString[] = [concatPsString(base, { p: "ېږ", f: "éG" })];

@@ -1,7 +1,7 @@
 import * as T from "../../../types";
 import { mapVerbRenderedOutput } from "../fp-ps";
 import { removeAccents } from "../accent-helpers";
-import { ensureNoHangingR, getPersonFromNP, isPastTense } from "./vp-tools";
+import { getPersonFromNP, isPastTense } from "./vp-tools";
 import { isImperativeTense, isPattern4Entry } from "../type-predicates";
 import { renderVerb } from "../new-verb-engine/render-verb";
 import { renderEnglishVPBase } from "./english-vp-rendering";
@@ -185,8 +185,7 @@ export function insertNegative(
   }
   if (nonStandPerfectiveSplit) {
     return [
-      // special case to handle نه لاړ  (can't say لا نه ړ)
-      insertFromEnd(ensureNoHangingR(blocksNoAccentA), neg, 1),
+      insertFromEnd(blocksNoAccentA, neg, 1),
       insertFromEnd(blocksNoAccentA, neg, 2),
     ];
   } else {
