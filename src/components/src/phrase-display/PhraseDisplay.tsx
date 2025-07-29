@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { dictionary } from "../../../lib/src/dictionary/dictionary";
 import { parseVP } from "../../../lib/src/parsing/parse-vp";
 import { tokenizer } from "../../../lib/src/parsing/tokenizer";
@@ -16,7 +16,7 @@ export function NewPhraseDisplay({ opts, phrases, toMatch }: {
   dictionary: T.DictionaryAPI,
 }) {
   const phraseSelection = getPhraseSelection(phrases, dictionary);
-  return <MainPhraseDisplay phrases={phraseSelection} opts={opts} toMatch={toMatch} />;
+  return phraseSelection.map(phrase => <MainPhraseDisplay phrase={phrase} opts={opts} toMatch={toMatch} />);
 }
 
 function getPhraseSelection(phrase: string | (T.VPSelectionComplete | T.EPSelectionComplete)[], dictionary: T.DictionaryAPI): (T.VPSelectionComplete | T.EPSelectionComplete)[] {
@@ -28,38 +28,17 @@ function getPhraseSelection(phrase: string | (T.VPSelectionComplete | T.EPSelect
   return phrase;
 }
 
-function MainPhraseDisplay({ phrases, opts, toMatch }: {
-  phrases: (T.VPSelectionComplete | T.EPSelectionComplete)[],
+function MainPhraseDisplay({ phrase, opts, toMatch }: {
+  phrase: T.VPSelectionComplete | T.EPSelectionComplete,
   toMatch: string | undefined,
   opts: T.TextOptions,
 }) {
-  const [chosen, setChosen] = useState<number>(0);
   const [mode, setMode] = useState<Mode>("text")
   const [script, setScript] = useState<"p" | "f">("p");
-  useEffect(() => {
-    setChosen(0);
-  }, [phrases]);
-  if (phrases.length === 0) {
-    return [];
-  }
-  const phrase = phrases[chosen];
   const rendered = "predicate" in phrase ? renderEP(phrase) : renderVP(phrase);
   const text = rendered.type === "EPRendered" ? compileEP(rendered) : compileVP(rendered, rendered.form);
-  function moveChosenBack() {
-    setChosen(o => {
-      if (o === 0) {
-        return phrases.length - 1;
-      }
-      return (o - 1);
-    })
-  }
-  function moveChosenForward() {
-    setChosen(o => {
-      return (o + 1) % phrases.length;
-    });
-  }
   return (
-    <div className={`text-left mt-1`}>
+    <div className={`text-left mt-3`}>
       <div className="d-flex flex-row mb-2">
         <ModeSelect value={mode} onChange={setMode} />
         {mode === "blocks" && (
@@ -81,7 +60,6 @@ function MainPhraseDisplay({ phrases, opts, toMatch }: {
         />
       }
       <div className="d-flex flex-row">
-        {phrases.length > 1 && <div onClick={moveChosenBack} className="clickable fas fa-chevron-left mt-3 mr-2" />}
         {text.e && (
           <div
             className={`text-muted mt-2 text-left`}
@@ -89,7 +67,6 @@ function MainPhraseDisplay({ phrases, opts, toMatch }: {
             {text.e.map((e, i) => <div key={i}>{e}</div>)}
           </div>
         )}
-        {phrases.length > 1 && <div onClick={moveChosenForward} className="clickable fas fa-chevron-right mt-3 ml-2" />}
       </div>
     </div>);
 }
