@@ -46,6 +46,10 @@ const tests: {
         error: true,
       },
       {
+        input: "مې مې",
+        output: [{ kids: ["me", "me"], err: true }],
+      },
+      {
         input: "مې یې",
         output: [{ kids: ["me"] }, { kids: ["me", "ye"] }],
       },

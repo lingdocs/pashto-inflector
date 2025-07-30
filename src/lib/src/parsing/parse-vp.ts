@@ -1808,7 +1808,9 @@ function createPossesivePossibilities(b: {
       // using the second mini-pronoun as a prossesive
       ...withSecondMiniAsPossesive,
       // using both mini pronouns as possesives
-      ...withFirstMiniAsPossesive.flatMap((x) => spreadOutPoss(x, 0)),
+      ...withFirstMiniAsPossesive.flatMap((x) =>
+        x.kids.length ? spreadOutPoss(x, 0) : [],
+      ),
     ];
   }
 }

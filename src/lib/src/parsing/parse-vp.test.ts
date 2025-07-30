@@ -2844,6 +2844,11 @@ const equativeWPossessives: Section = {
       output: [],
       error: true,
     },
+    {
+      input: "کور مې مې کتاب دی",
+      output: [],
+      error: true,
+    },
   ],
 };
 
