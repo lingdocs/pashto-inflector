@@ -4,6 +4,8 @@ import { tokenizer } from "../lib/src/parsing/tokenizer";
 import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
+import { parseKidsSection, parseOptKidsSection } from "../lib/src/parsing/parse-kids-section";
+import { parseVerbSection } from "../lib/src/parsing/verb-section/parse-verb-section";
 
 function ParserTester({
   // opts,
@@ -21,7 +23,7 @@ function ParserTester({
       return;
     }
     const tokens = tokenizer(value);
-    const res = parseVP(tokens, testDictionary);
+    const res = parseVerbSection(tokens, testDictionary);
     setText(value);
     setResult(res);
   }

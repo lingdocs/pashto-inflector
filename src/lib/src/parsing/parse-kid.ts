@@ -1,25 +1,24 @@
 import * as T from "../../../types";
 import { getOneToken, returnParseResult } from "./utils";
 
-export function parseKid(tokens: T.Tokens): T.ParseResult<T.ParsedKid>[] {
+export function parseKid(
+  tokens: T.Tokens,
+): T.ParseResult<T.ParsedKid | undefined>[] {
   const [first, rest] = getOneToken(tokens);
   if (!first) {
     return [];
   }
-  if (first === "به") {
-    return returnParseResult(rest, "ba");
-  }
-  if (first === "یې") {
-    return returnParseResult(rest, "ye");
-  }
-  if (first === "مې") {
-    return returnParseResult(rest, "me");
-  }
-  if (first === "دې") {
-    return returnParseResult(rest, "de");
-  }
-  if (first === "مو") {
-    return returnParseResult(rest, "mU");
-  }
-  return [];
+  const res: T.ParseResult<T.ParsedKid>[] =
+    first === "به"
+      ? returnParseResult(rest, "ba")
+      : first === "یې"
+        ? returnParseResult(rest, "ye")
+        : first === "مې"
+          ? returnParseResult(rest, "me")
+          : first === "دې"
+            ? returnParseResult(rest, "de")
+            : first === "مو"
+              ? returnParseResult(rest, "mU")
+              : [];
+  return res;
 }

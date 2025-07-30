@@ -75,7 +75,7 @@ const testsForOpt: {
   label: string;
   cases: {
     input: string;
-    output: { err?: boolean; kids: T.ParsedKid[] }[] | undefined;
+    output: ({ err?: boolean; kids: T.ParsedKid[] } | undefined)[];
     error?: true;
   }[];
 }[] = [
@@ -84,7 +84,11 @@ const testsForOpt: {
     cases: [
       {
         input: "زه ځم",
-        output: undefined,
+        output: [undefined],
+      },
+      {
+        input: "یې",
+        output: [{ kids: ["ye"] }, undefined],
       },
     ],
   },

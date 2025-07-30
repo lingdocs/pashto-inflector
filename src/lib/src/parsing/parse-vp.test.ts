@@ -15,6 +15,7 @@ import { parseVP } from "./parse-vp";
 //   makeSubjectSelectionComplete,
 // } from "../phrase-building/blocks-utils";
 import {
+  makeAdjectiveSelection,
   makeAdverbSelection,
   makeNounSelection,
   makePossesorSelection,
@@ -73,6 +74,7 @@ const maredul = testDictionary.verbEntryLookup("مړېدل")[0];
 const murKawul = testDictionary.verbEntryLookup("مړ کول")[0] as T.VerbEntry;
 const marawul = testDictionary.verbEntryLookup("مړول")[0];
 const sturay = testDictionary.adjLookup("ستړی")[0];
+const ghut = testDictionary.adjLookup("غټ")[0];
 
 // TODO: add مړېدل to testDictionary and make sure that مړ کېدم doesn't parse into مړېدم!
 
@@ -2589,6 +2591,23 @@ const equativeFull: Section = {
   title: "equative full",
   tests: [
     {
+      input: "ته ستړی یې",
+      output: (["present", "habitual"] satisfies T.EquativeTense[]).map(
+        (tense) => ({
+          blocks: [makeSubjBlock(T.Person.SecondSingMale)],
+          predicate: {
+            type: "complement",
+            selection: makeAdjectiveSelection(sturay),
+          },
+          equative: {
+            tense,
+            negative: false,
+          },
+          omitSubject: false,
+        }),
+      ),
+    },
+    {
       input: "سړی ستړی دی",
       output: [
         {
@@ -2737,6 +2756,97 @@ const equativeFull: Section = {
   ],
 };
 
+const equativeWPossessives: Section = {
+  title: "equative with possessives",
+  tests: [
+    {
+      input: "کور مې غټ دی",
+      output: getPeople(1, "sing").map((poss) => ({
+        blocks: [
+          makeSubjBlock({
+            type: "NP",
+            selection: {
+              ...makeNounSelection(kor, undefined),
+              possesor: {
+                type: "possesor",
+                shrunken: true,
+                np: {
+                  type: "NP",
+                  selection: makePronounSelection(poss),
+                },
+              },
+            },
+          }),
+        ],
+        predicate: {
+          type: "complement",
+          selection: makeAdjectiveSelection(ghut),
+        },
+        equative: {
+          tense: "present",
+          negative: false,
+        },
+        omitSubject: false,
+      })),
+    },
+    {
+      input: "کتاب مې دې کور دی",
+      output: getPeople(1, "sing").flatMap((possA) =>
+        getPeople(2, "sing").flatMap<T.EPSelectionComplete>((possB) =>
+          [
+            [possA, possB],
+            [possB, possA],
+          ].flatMap<T.EPSelectionComplete>(([pA, pB]) => ({
+            blocks: [
+              makeSubjBlock({
+                type: "NP",
+                selection: {
+                  ...makeNounSelection(kitaab, undefined),
+                  possesor: {
+                    type: "possesor",
+                    shrunken: true,
+                    np: {
+                      type: "NP",
+                      selection: makePronounSelection(pA),
+                    },
+                  },
+                },
+              }),
+            ],
+            predicate: {
+              type: "complement",
+              selection: {
+                type: "NP",
+                selection: {
+                  ...makeNounSelection(kor, undefined),
+                  possesor: {
+                    type: "possesor",
+                    shrunken: true,
+                    np: {
+                      type: "NP",
+                      selection: makePronounSelection(pB),
+                    },
+                  },
+                },
+              },
+            },
+            equative: {
+              tense: "present",
+              negative: false,
+            },
+            omitSubject: false,
+          })),
+        ),
+      ),
+    },
+    {
+      input: "ته مې ستړی یې",
+      output: [],
+      error: true,
+    },
+  ],
+};
+
 const equativeOmitSubj: Section = {
   title: "equative omit subject",
   tests: [
@@ -2834,6 +2944,7 @@ const sections = [
   // equative phrases
   equativeFull,
   equativeOmitSubj,
+  equativeWPossessives,
 ];
 
 sections.forEach((section) => {
@@ -2857,7 +2968,10 @@ sections.forEach((section) => {
   });
 });
 
-function makeSubjBlock(content: T.Person | T.NPSelection): T.VPSBlockComplete {
+function makeSubjBlock(content: T.Person | T.NPSelection): {
+  key: number;
+  block: T.SubjectSelectionComplete;
+} {
   return {
     key: 23,
     block: {

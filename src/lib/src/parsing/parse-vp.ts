@@ -74,6 +74,7 @@ const anyTarget: Target = {
 };
 
 // TODO!! mini-pronoun possesives in equative parsing!!
+// TODO!! پخې مې کړلې - renders as پخی مې کړلې
 
 // waawredula for RAINED ?!
 
@@ -154,15 +155,18 @@ function combineArgAndVerbSections(
     if (tokensExist(tokens)) {
       return [];
     }
-    return finishEquative(
-      tokens,
-      arg.npsAndAps,
-      arg.complement,
-      eq,
-      vs.blocks.some((x) => x.type === "negative"),
+    return createPossesivePossibilities({ blocks, kids }).flatMap(
+      ({ kids, blocks }) => {
+        return finishEquative(
+          tokens,
+          blocks,
+          getMiniPronouns(kids),
+          eq,
+          vs.blocks.some((x) => x.type === "negative"),
+        );
+      },
     );
   }
-  // TODO get errors from the get tenses (perfect verbs not agreeing)
   return createPossesivePossibilities({
     blocks,
     kids,
@@ -256,13 +260,15 @@ function combineArgAndVerbSections(
 
 function finishEquative(
   tokens: T.Tokens,
-  blocks: (T.ParsedNP | T.APSelection)[],
-  comp: T.ParsedComplementSelection | undefined,
+  blocks: T.ParsedBlock[],
+  miniPronouns: T.ParsedMiniPronoun[],
   eq: { tense: T.EquativeTense; person: T.Person },
   negative: boolean,
 ): T.ParseResult<T.EPSelectionComplete>[] {
-  const errors: T.ParseError[] = [];
+  const errors: T.ParseError[] = [...ensureNoMiniPronouns(miniPronouns)];
   const nps = blocks.filter((x) => x.type === "NP");
+  const npsAndAps = blocks.filter((x) => x.type === "NP" || x.type === "AP");
+  const comp = blocks.find((x) => x.type === "complement");
   if (nps.length > 1) {
     return [];
   }
@@ -300,7 +306,9 @@ function finishEquative(
       return [];
     }
     const selection: T.EPSelectionComplete = {
-      blocks: mapEqOutNpAndAps(nps.length ? blocks : [subject, ...blocks]),
+      blocks: mapEqOutNpAndAps(
+        nps.length ? npsAndAps : [subject, ...npsAndAps],
+      ),
       equative: {
         tense: eq.tense,
         negative,

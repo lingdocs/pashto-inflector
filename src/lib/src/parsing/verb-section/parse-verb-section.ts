@@ -1,5 +1,9 @@
 import * as T from "../../../../types";
-import { parseKidsSection, parseOptKidsSection } from "../parse-kids-section";
+import {
+  parseKidsSection,
+  parseOptKidsSection,
+  unambiguousKids,
+} from "../parse-kids-section";
 import {
   bindParseResult,
   bindParseWithAllErrors,
@@ -94,17 +98,24 @@ function parseVerbSectionFront(
   }
   return bindParseResult(allResults, (tkns, block) => {
     if (block.type === "kids") {
-      return parseVerbSectionFront(
-        dictionary,
-        returnParseResultSingle(
-          tkns,
-          {
-            ...prev.body,
-            kids: addKids(prev.body.kids, position, block),
-          },
-          prev.errors,
+      return [
+        ...parseVerbSectionFront(
+          dictionary,
+          returnParseResultSingle(
+            tkns,
+            {
+              ...prev.body,
+              kids: addKids(prev.body.kids, position, block),
+            },
+            prev.errors,
+          ),
         ),
-      );
+        // also have the kid's secion not parsed if there's some ambiguity if they were kids or not
+        // like with 'ye' etc.
+        ...(!unambiguousKids.some((x) => block.kids.includes(x as T.ParsedKid))
+          ? [prev]
+          : []),
+      ];
     }
     // if block was PH return version with ph parsed, and also return version
     // with leaving it for the verb ahead
