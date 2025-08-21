@@ -70,6 +70,10 @@ export function bindParseResultWParser<C, D, E>(
   return cleanOutResults(
     grouped.flatMap((group) => {
       const parsed = cleanOutResults(parser(group[0].tokens));
+      // console.log(group.length);
+      // if (group.length > 1) {
+      //   console.log(`Saved ${group.length - 1} parses`);
+      // }
       return group.flatMap((prev) => {
         return parsed.flatMap((parse) =>
           f(prev.body, parse.body, parse.tokens).map(

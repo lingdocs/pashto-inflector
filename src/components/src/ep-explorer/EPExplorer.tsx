@@ -7,7 +7,6 @@ import epsReducer from "../../../lib/src/phrase-building/eps-reducer";
 import { useEffect, useRef, useState } from "react";
 import { completeEPSelection } from "../../../lib/src/phrase-building/render-ep";
 import { makeEPSBlocks } from "../../../lib/src/phrase-building/blocks-utils";
-// @ts-expect-error types not working for this
 import autoAnimate from "@formkit/auto-animate";
 import LZString from "lz-string";
 import EPPicker from "./EPPicker";

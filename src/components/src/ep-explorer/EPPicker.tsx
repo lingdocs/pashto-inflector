@@ -8,7 +8,6 @@ import epsReducer, {
 import { useEffect, useRef } from "react";
 import { completeEPSelection } from "../../../lib/src/phrase-building/render-ep";
 import APPicker from "../block-pickers/APPicker";
-// @ts-expect-error types not working for this
 import autoAnimate from "@formkit/auto-animate";
 
 function EPPicker({

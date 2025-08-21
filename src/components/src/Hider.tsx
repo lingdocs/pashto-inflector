@@ -9,7 +9,6 @@
 import { createElement, useEffect, useRef } from "react";
 import classNames from "classnames";
 import * as T from "../../types";
-// @ts-expect-error types needed
 import autoAnimate from "@formkit/auto-animate";
 
 const caretRight = (
@@ -78,9 +77,8 @@ function Hider(props: {
           {` `}
           {props.aspect ? (
             <i
-              className={`fas fa-${
-                props.aspect === "imperfective" ? "video" : "camera"
-              }`}
+              className={`fas fa-${props.aspect === "imperfective" ? "video" : "camera"
+                }`}
             />
           ) : (
             ""
