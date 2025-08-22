@@ -601,7 +601,7 @@ export function getInflectionQueries(
   const coallated: ReturnType<typeof getInflectionQueries> = [];
 
   for (const q of queries) {
-    const existing = coallated.find((x) => equals(x.search, q.search));
+    const existing = coallated.find((x) => equals(x.search)(q.search));
     if (existing) {
       existing.details.push(q.details);
     } else {

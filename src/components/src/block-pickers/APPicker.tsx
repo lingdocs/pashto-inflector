@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import * as T from "../../../types";
+import type { JSX } from "react";
+import type * as T from "../../../types";
 import SandwichPicker from "../block-pickers/SandwichPicker";
 import AdverbPicker from "./AdverbPicker";
 type APType = "adverb" | "sandwich";

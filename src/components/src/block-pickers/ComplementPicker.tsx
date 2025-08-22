@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { JSX } from "react";
 import * as T from "../../../types";
 import AdjectivePicker from "./AdjectivePicker";
 import LocativeAdverbPicker from "./LocativeAdverbPicker";

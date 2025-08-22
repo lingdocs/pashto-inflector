@@ -22,8 +22,7 @@ import {
   specifyEquativeLength,
 } from "./blocks-utils";
 import { assertNever, blank, kidsBlank } from "../misc-helpers";
-import { monoidPsString, monoidPsStringWVars } from "../fp-ps";
-import { concatAll } from "fp-ts/lib/Monoid";
+import { concatAll, monoidPsString, monoidPsStringWVars } from "../fp-ps";
 import { getEnglishWord } from "../get-english-word";
 
 type BlankoutOptions = {

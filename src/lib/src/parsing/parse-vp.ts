@@ -38,7 +38,7 @@ import {
   personNumber,
   personToGenNum,
 } from "../misc-helpers";
-import { ArgumentTypes, equals } from "rambda";
+import { equals } from "rambda";
 import {
   isImperativeTense,
   isPerfectTense,
@@ -424,7 +424,7 @@ function finishIntransitive({
       target,
     });
     const o = "none" as const;
-    const allBlocksTemp: ArgumentTypes<typeof limitNPs>[0] = [
+    const allBlocksTemp: Parameters<typeof limitNPs>[0] = [
       ...(np ? [] : [s]),
       ...npsAndAps,
     ];
@@ -789,6 +789,7 @@ function finishGrammTransWNP(subject: T.ParsedNP) {
   };
 }
 
+// TODO: the new one is missing errors
 function getTenses(
   blocks: T.ParsedVerbSectionBlock[],
   ba: boolean,
@@ -1016,7 +1017,7 @@ function getMainInfo(
 
     const partGenNum = v.info.genNum;
     const eqGenNum = personToGenNum(vbbAux.content.person);
-    const errors: T.ParseError[] = !equals(partGenNum, eqGenNum)
+    const errors: T.ParseError[] = !equals(partGenNum)(eqGenNum)
       ? [
           {
             message: `equative (${eqGenNum.gender}. ${eqGenNum.number}) and past participle (${partGenNum.gender}. ${partGenNum.number}) do not agree`,

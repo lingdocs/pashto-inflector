@@ -1,4 +1,5 @@
 import PronounPicker from "./NPPronounPicker";
+import type { JSX } from "react";
 import NounPicker from "./NPNounPicker";
 import ParticiplePicker from "./NPParticiplePicker";
 import { randomPerson } from "../../../lib/src/np-tools";

@@ -5,10 +5,8 @@ import ComplementPicker from "../block-pickers/ComplementPicker";
 import epsReducer, {
   EpsReducerAction,
 } from "../../../lib/src/phrase-building/eps-reducer";
-import { useEffect, useRef } from "react";
 import { completeEPSelection } from "../../../lib/src/phrase-building/render-ep";
 import APPicker from "../block-pickers/APPicker";
-import autoAnimate from "@formkit/auto-animate";
 
 function EPPicker({
   opts,
@@ -21,12 +19,6 @@ function EPPicker({
   onChange: (eps: T.EPSelectionState) => void;
   entryFeeder: T.EntryFeeder;
 }) {
-  const parent = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (parent.current) {
-      autoAnimate(parent.current);
-    }
-  }, [parent]);
   function adjustEps(action: EpsReducerAction) {
     onChange(epsReducer(eps, action));
   }
@@ -40,7 +32,6 @@ function EPPicker({
         + AP
       </div>
       <div
-        ref={parent}
         className="d-flex flex-row justify-content-around flex-wrap"
         style={{ marginLeft: "-0.5rem", marginRight: "-0.5rem" }}
       >

@@ -1,6 +1,6 @@
 import { mapPsString } from "../../../lib/src/p-text-helpers";
 import * as T from "../../../types";
-import { psJSXMap2 } from "./jsx-map";
+import { PsJSX, psJSXMap2 } from "./jsx-map";
 //import { psJSXMap } from "./jsx-map";
 
 /**
@@ -9,13 +9,13 @@ import { psJSXMap2 } from "./jsx-map";
  * ❌ زه ځې ❌
  *
  */
-export function addErrorToPs<P extends T.PsString | T.PsJSX>(ps: P): P {
+export function addErrorToPs<P extends T.PsString | PsJSX>(ps: P): P {
   const addXs = (x: string) => `❌ ${x} ❌`;
   if (typeof ps.p === "object") {
     // @ts-expect-error - this is right
     return psJSXMap2(ps, addXs, true);
   }
-  // @ts-expect-error - missed it
+  // @ts-expect-error
   const wError = mapPsString(addXs, ps);
   // @ts-expect-error - ts is wrong here
   return wError;

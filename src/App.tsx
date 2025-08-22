@@ -23,7 +23,7 @@ import ParserDemo from "./demo-components/ParserDemo";
 import TextDisplayDemo from "./demo-components/TextDisplayDemo";
 import ParserTester from "./demo-components/ParserTester";
 // import InflectionTable from "./components/src/InflectionsTable";
-const SHOW_PARSER_TESTER = false;
+const SHOW_PARSER_TESTER = true;
 
 function App() {
   const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(
@@ -188,9 +188,7 @@ function App() {
         show={showingTextOptions}
         onHide={() => setShowingTextOptions(false)}
       >
-        {/* @ts-expect-error strange react-bootstrap issue */}
         <Modal.Header closeButton>
-          {/* @ts-expect-error strange react-bootstrap issue */}
           <Modal.Title>Settings</Modal.Title>
         </Modal.Header>
         <Modal.Body>

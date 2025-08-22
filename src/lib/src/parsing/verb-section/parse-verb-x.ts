@@ -38,6 +38,15 @@ export function parseVerbX<X extends T.VerbX>(
   if (!tokensExist(tokens)) {
     return [];
   }
+  const active = parseActive<X>(tokens, dictionary, ph, category, parseX);
+  const activeWelded = parseActiveWelded<X>(tokens, dictionary, ph, category);
+  const passiveWelded = parsePassiveWeldedX<X>(
+    tokens,
+    dictionary,
+    ph,
+    category,
+  );
+  const passiveDoubleW = parsePassiveDoubleWeldedX<X>(tokens, ph, category);
   const res: T.ParseResult<T.ParsedV<X>["content"]>[] = [
     ...parseActive<X>(tokens, dictionary, ph, category, parseX),
     ...parseActiveWelded<X>(tokens, dictionary, ph, category),
@@ -54,18 +63,21 @@ function parseActive<X extends T.VerbX>(
   category: Category,
   parseX: XParser<X>,
 ): T.ParseResult<T.ActiveVBasic<X>>[] {
-  return category === "ability" && ph?.type === "CompPH"
-    ? (fmapParseResult(
-        wrapInActiveV,
-        parseKawulKedulAbility(tokens, undefined).filter(
-          (x) =>
-            isKawulStat(x.body.info.verb) &&
-            x.body.info.aspect === "perfective",
-        ),
-      ) as T.ParseResult<T.ActiveVBasic<X>>[])
-    : category === "perfect" && ph?.type === "CompPH"
-      ? []
-      : fmapParseResult(wrapInActiveV, parseX(tokens, dictionary, ph));
+  const res =
+    category === "ability" && ph?.type === "CompPH"
+      ? (fmapParseResult(
+          wrapInActiveV,
+          parseKawulKedulAbility(tokens, undefined).filter(
+            (x) =>
+              isKawulStat(x.body.info.verb) &&
+              x.body.info.aspect === "perfective",
+          ),
+        ) as T.ParseResult<T.ActiveVBasic<X>>[])
+      : category === "perfect" && ph?.type === "CompPH"
+        ? []
+        : fmapParseResult(wrapInActiveV, parseX(tokens, dictionary, ph));
+  // TODO: somehow the new version is missing the perfect/active forms of leedulay! (compared to the old)
+  return res;
 }
 
 function parseActiveWelded<X extends T.VerbX>(

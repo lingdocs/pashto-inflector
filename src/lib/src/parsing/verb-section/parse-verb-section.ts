@@ -140,11 +140,10 @@ function parseVerbSectionRear(front: VerbSectionFrontData) {
     if (!tokensExist(tokens)) {
       return [];
     }
-    const res = [
-      ...parseBasicTense(tokens, dictionary, front),
-      ...parseAbilityOrPerfect(tokens, dictionary, front),
-      ...parseEquativeSection(tokens, front),
-    ];
+    const basic = parseBasicTense(tokens, dictionary, front);
+    const abilPerf = parseAbilityOrPerfect(tokens, dictionary, front);
+    const equative = parseEquativeSection(tokens, front);
+    const res = [...basic, ...abilPerf, ...equative];
     // TODO: some kind of do notation would be nice!
     return bindParseResult(res, (tkns, rear) => {
       const trailingKids = parseOptKidsSection(tkns);

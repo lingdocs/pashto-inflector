@@ -56,17 +56,17 @@ export function concatPsString(
   >
 ): T.FullForm<T.PsString> {
   const hasPersonInflections = items.some(
-    (x) => x && typeof x !== "string" && "mascSing" in x
+    (x) => x && typeof x !== "string" && "mascSing" in x,
   );
   if (hasPersonInflections) {
     const forceInflection = (
       arr: Array<T.FullForm<T.PsString> | string | undefined>,
-      inflection: T.PersonInflectionsField
+      inflection: T.PersonInflectionsField,
     ): Array<T.SingleOrLengthOpts<T.PsString> | string | undefined> =>
       arr.map((element) =>
         element && typeof element !== "string" && "mascSing" in element
           ? element[inflection]
-          : element
+          : element,
       );
     return {
       mascSing: concatPsString(...forceInflection(items, "mascSing")),
@@ -80,20 +80,20 @@ export function concatPsString(
     | T.SingleOrLengthOpts<T.PsString>
   )[];
   const hasLengthOptions = itemsWOutPersInfs.some(
-    (x) => x && typeof x !== "string" && "long" in x
+    (x) => x && typeof x !== "string" && "long" in x,
   );
   if (hasLengthOptions) {
     const forceLength = (
       arr: Array<T.SingleOrLengthOpts<T.PsString> | string | undefined>,
-      length: "long" | "short" | "mini"
+      length: "long" | "short" | "mini",
     ): Array<T.PsString | string | undefined> =>
       arr.map((element) =>
         element && typeof element !== "string" && "long" in element
           ? element[length] || element.short
-          : element
+          : element,
       );
     const hasMini = itemsWOutPersInfs.some(
-      (x) => typeof x !== "string" && "mini" in x
+      (x) => typeof x !== "string" && "mini" in x,
     );
     return {
       ...(hasMini
@@ -103,22 +103,22 @@ export function concatPsString(
                 items as Array<
                   T.SingleOrLengthOpts<T.PsString> | string | undefined
                 >,
-                "mini"
-              )
+                "mini",
+              ),
             ),
           }
         : {}),
       short: concatPsString(
         ...forceLength(
           items as Array<T.SingleOrLengthOpts<T.PsString> | string | undefined>,
-          "short"
-        )
+          "short",
+        ),
       ),
       long: concatPsString(
         ...forceLength(
           items as Array<T.SingleOrLengthOpts<T.PsString> | string | undefined>,
-          "long"
-        )
+          "long",
+        ),
       ),
     };
   }
@@ -153,7 +153,7 @@ export function concatPsString(
 export function trimOffPs(
   ps: T.PsString,
   pOff: number,
-  fOff: number
+  fOff: number,
 ): T.PsString {
   return {
     p: pOff === 0 ? ps.p : ps.p.slice(0, -pOff),
@@ -168,7 +168,7 @@ export function trimOffPs(
  * @returns
  */
 export function splitDoubleWord(
-  w: T.DictionaryEntryNoFVars
+  w: T.DictionaryEntryNoFVars,
 ): [T.DictionaryEntryNoFVars, T.DictionaryEntryNoFVars] {
   const pSplit = w.p.split(" ");
   const fSplit = w.f.split(" ");
@@ -191,7 +191,7 @@ export function splitDoubleWord(
 
 export function psFunction(
   ps: T.PsString,
-  func: (s: string) => string
+  func: (s: string) => string,
 ): T.PsString {
   return makePsString(func(ps.p), func(ps.f));
 }
@@ -211,7 +211,7 @@ export function psRemove(ps: T.PsString, remove: T.PsString): T.PsString {
 export function psInsertWord(
   ps: T.PsString,
   toInsert: T.PsString,
-  pos: number
+  pos: number,
 ): T.PsString {
   const pWords = ps.p.split(" ");
   const fWords = ps.f.split(" ");
@@ -230,15 +230,15 @@ export function psInsertWord(
 export function ensureBaAt(ps: T.PsString, pos: number): T.PsString;
 export function ensureBaAt(
   ps: T.SingleOrLengthOpts<T.PsString>,
-  pos: number
+  pos: number,
 ): T.SingleOrLengthOpts<T.PsString>;
 export function ensureBaAt(
   ps: T.FullForm<T.PsString>,
-  pos: number
+  pos: number,
 ): T.FullForm<T.PsString>;
 export function ensureBaAt(
   ps: T.FullForm<T.PsString>,
-  pos: number
+  pos: number,
 ): T.FullForm<T.PsString> {
   if ("mascSing" in ps) {
     return {
@@ -278,7 +278,7 @@ export function isAllOne(block: T.VerbBlock | T.ImperativeBlock): boolean {
       isTheSame &&
       psStringEquals(row[0][0], src[0][0][0]) &&
       psStringEquals(row[1][0], src[1][0][0]),
-    true
+    true,
   ) as unknown as boolean;
 }
 
@@ -303,7 +303,7 @@ export function removeEndingL(s: T.PsString): T.PsString {
 function getMatchingInflection(
   infs: T.UnisexInflections,
   persNum: number,
-  singPlur: number
+  singPlur: number,
 ): T.PsString {
   return infs[persNum % 2 === 0 ? "masc" : "fem"][singPlur][0];
 }
@@ -346,17 +346,17 @@ type toAddToFormLengthChosen = Array<
 export function addToForm(
   toAdd: toAddToForm,
   base: T.VerbForm,
-  disableLCheck?: boolean
+  disableLCheck?: boolean,
 ): T.VerbForm;
 export function addToForm(
   toAdd: toAddToForm,
   base: T.ImperativeForm,
-  disableLCheck?: boolean
+  disableLCheck?: boolean,
 ): T.ImperativeForm;
 export function addToForm(
   toAdd: toAddToForm,
   base: T.VerbForm | T.ImperativeForm,
-  disableLCheck?: boolean
+  disableLCheck?: boolean,
 ): T.VerbForm | T.ImperativeForm {
   function startsWithBa(ps: T.PsString): boolean {
     const start = makePsString(ps.p.slice(0, 3), ps.f.slice(0, 3));
@@ -370,7 +370,7 @@ export function addToForm(
   // TODO: Weird stuff with overloading throwing errors
   function makeNonObjectMatrixForm(
     base: T.VerbBlock | T.LengthOptions<T.VerbBlock>,
-    presObject?: "mascSing" | "mascPlur" | "femSing" | "femPlur"
+    presObject?: "mascSing" | "mascPlur" | "femSing" | "femPlur",
   ): T.SingleOrLengthOpts<T.VerbBlock>;
   function makeNonObjectMatrixForm(
     base:
@@ -378,22 +378,22 @@ export function addToForm(
       | T.LengthOptions<T.ImperativeBlock>
       | T.VerbBlock
       | T.LengthOptions<T.VerbBlock>,
-    presObject?: "mascSing" | "mascPlur" | "femSing" | "femPlur"
+    presObject?: "mascSing" | "mascPlur" | "femSing" | "femPlur",
   ): T.SingleOrLengthOpts<T.ImperativeBlock>;
   function makeNonObjectMatrixForm(
     base:
       | T.SingleOrLengthOpts<T.VerbBlock>
       | T.SingleOrLengthOpts<T.ImperativeBlock>,
-    presObject?: "mascSing" | "mascPlur" | "femSing" | "femPlur"
+    presObject?: "mascSing" | "mascPlur" | "femSing" | "femPlur",
   ):
     | T.SingleOrLengthOpts<T.VerbBlock>
     | T.SingleOrLengthOpts<T.ImperativeBlock> {
     function makeLengthOption(
-      length: "short" | "long" | "mini"
+      length: "short" | "long" | "mini",
     ): T.ImperativeBlock;
     function makeLengthOption(length: "short" | "long" | "mini"): T.VerbBlock;
     function makeLengthOption(
-      length: "short" | "long" | "mini"
+      length: "short" | "long" | "mini",
     ): T.ImperativeForm | T.VerbBlock {
       // If the base is long and there are also length options in toAdd,
       // then make the short and long versions of the base as variations on each item
@@ -403,7 +403,7 @@ export function addToForm(
           Array.isArray(cur) && !isVerbBlock(cur)
             ? Math.max(acc, cur.length)
             : acc,
-        1
+        1,
       );
       const b =
         "long" in base
@@ -419,18 +419,18 @@ export function addToForm(
               | T.SingleOrLengthOpts<T.PsString>[]
               | T.VerbBlock;
             return arr.map((e: any) =>
-              "long" in e ? e[length] || e.short : e
+              "long" in e ? e[length] || e.short : e,
             );
           }
           return element;
-        }
+        },
       );
       const makeItem = (
         ps: T.PsString,
         persNum: number,
         singPlur: number,
         variation: number,
-        verbBlock?: boolean
+        verbBlock?: boolean,
       ): T.PsString => {
         const add = addingLengthChosen.map((e) => {
           if (e === " ") return e;
@@ -448,7 +448,7 @@ export function addToForm(
             return getMatchingInflection(
               f,
               persNum as number,
-              singPlur as number
+              singPlur as number,
             );
           }
           if ("mascSing" in f) {
@@ -461,8 +461,8 @@ export function addToForm(
         return length === "long" && verbBlock && ps.p === "ل" && !disableLCheck
           ? concatPsString(...add)
           : startsWithBa(ps)
-          ? concatPsString(baParticle, " ", ...add, removeBa(ps))
-          : concatPsString(...add, ps);
+            ? concatPsString(baParticle, " ", ...add, removeBa(ps))
+            : concatPsString(...add, ps);
       };
       if (b.length === 6) {
         return b.map((person, persNum) =>
@@ -474,18 +474,18 @@ export function addToForm(
                 return [
                   ...vars,
                   ...varIndexes.map((varIndex) =>
-                    makeItem(ps, persNum, singPlur, varIndex, true)
+                    makeItem(ps, persNum, singPlur, varIndex, true),
                   ),
                 ];
-              }, []) as unknown as T.ArrayOneOrMore<T.PsString>
-          )
+              }, []) as unknown as T.ArrayOneOrMore<T.PsString>,
+          ),
         ) as T.VerbBlock;
       }
       // TODO: CHECK IF THE IMPERATIVE BLOCKS WORK??
       return mapImperativeBlock(
         (ps, persNumber, singPlur) =>
           makeItem(ps, persNumber as number, singPlur as number, 0),
-        b
+        b,
       );
     }
     const useLengthOptions =
@@ -493,7 +493,7 @@ export function addToForm(
       toAdd.some(
         (element) =>
           (element !== " " && "long" in element) ||
-          (Array.isArray(element) && element.some((e) => "long" in e))
+          (Array.isArray(element) && element.some((e) => "long" in e)),
       );
     if (useLengthOptions) {
       // might be totally unneccessary...
@@ -535,24 +535,24 @@ export function addToForm(
 
 function mapImperativeBlock(
   f: (ps: T.PsString, i?: number, j?: number) => T.PsString,
-  block: T.ImperativeBlock
+  block: T.ImperativeBlock,
 ): T.ImperativeBlock {
   return block.map((person, i) =>
-    person.map((item, j) => item.map((variation) => f(variation, i, j)))
+    person.map((item, j) => item.map((variation) => f(variation, i, j))),
   ) as T.ImperativeBlock;
 }
 
 export function mapVerbBlock(
   f: (ps: T.PsString, i?: number, j?: number) => T.PsString,
-  block: T.VerbBlock
+  block: T.VerbBlock,
 ): T.VerbBlock {
   return block.map((person, i) =>
-    person.map((item, j) => item.map((variation) => f(variation, i, j)))
+    person.map((item, j) => item.map((variation) => f(variation, i, j))),
   ) as T.VerbBlock;
 }
 
 export function unisexInfToObjectMatrix(
-  inf: T.UnisexInflections
+  inf: T.UnisexInflections,
 ): T.OptionalPersonInflections<T.PsString> {
   return {
     mascSing: inf.masc[0][0],
@@ -564,23 +564,23 @@ export function unisexInfToObjectMatrix(
 
 export function concatPlurals(
   a: T.PluralInflections,
-  b: T.PluralInflections
+  b: T.PluralInflections,
 ): T.PluralInflections {
   function concatPsArraysWSpace(
     a: T.ArrayOneOrMore<T.PsString>,
-    b: T.ArrayOneOrMore<T.PsString>
+    b: T.ArrayOneOrMore<T.PsString>,
   ): T.ArrayOneOrMore<T.PsString> {
     if (a.length !== b.length) {
       throw new Error("arrays of plural/vocative inflections are different!");
     }
     return a.map((x, i) =>
-      concatPsString(x, " ", b[i])
+      concatPsString(x, " ", b[i]),
     ) as T.ArrayOneOrMore<T.PsString>;
   }
 
   function concatPluralSet(
     a: T.PluralInflectionSet,
-    b: T.PluralInflectionSet
+    b: T.PluralInflectionSet,
   ): T.PluralInflectionSet {
     return [concatPsArraysWSpace(a[0], b[0]), concatPsArraysWSpace(a[1], b[1])];
   }
@@ -602,22 +602,22 @@ export function concatPlurals(
 
 export function concatInflections(
   comp: T.PsString | T.SingleOrLengthOpts<T.UnisexInflections>,
-  infs: T.SingleOrLengthOpts<T.UnisexInflections>
+  infs: T.SingleOrLengthOpts<T.UnisexInflections>,
 ): T.SingleOrLengthOpts<T.UnisexInflections> {
   const containsLengthOptions = "long" in infs || "long" in comp;
   const ensureL = <T extends object>(
     x: T.SingleOrLengthOpts<T>,
-    length: "short" | "long"
+    length: "short" | "long",
   ): T => ("long" in x ? x[length] : x);
   if (containsLengthOptions) {
     return {
       short: concatInflections(
         ensureL(comp, "short"),
-        ensureL(infs, "short")
+        ensureL(infs, "short"),
       ) as T.UnisexInflections,
       long: concatInflections(
         ensureL(comp, "long"),
-        ensureL(infs, "long")
+        ensureL(infs, "long"),
       ) as T.UnisexInflections,
     };
   }
@@ -629,7 +629,7 @@ export function concatInflections(
       inf.map((variation) => {
         const c = "masc" in complement ? complement[gender][i][0] : complement;
         return concatPsString(c, " ", variation);
-      })
+      }),
     ) as T.ArrayFixed<T.ArrayOneOrMore<T.PsString>, 3>;
   return {
     masc: mapGender("masc"),
@@ -650,22 +650,22 @@ export function yulEndingInfinitive(s: T.PsString): boolean {
 
 export function allOnePersonInflection(
   block: T.ImperativeForm,
-  person: T.Person
+  person: T.Person,
 ): T.SingleOrLengthOpts<T.ImperativeBlock>;
 export function allOnePersonInflection(
   block: T.VerbForm,
-  person: T.Person
+  person: T.Person,
 ): T.SingleOrLengthOpts<T.VerbBlock>;
 export function allOnePersonInflection(
   block: T.SingleOrLengthOpts<T.UnisexInflections>,
-  person: T.Person
+  person: T.Person,
 ): T.SingleOrLengthOpts<T.UnisexInflections>;
 export function allOnePersonInflection(
   block:
     | T.VerbForm
     | T.ImperativeForm
     | T.SingleOrLengthOpts<T.UnisexInflections>,
-  person: T.Person
+  person: T.Person,
 ):
   | T.SingleOrLengthOpts<T.VerbBlock>
   | T.SingleOrLengthOpts<T.ImperativeBlock>
@@ -683,7 +683,7 @@ export function hasShwaEnding({ f }: T.PsString): boolean {
 
 export function choosePersInf<T extends object>(
   x: T.FullForm<T>,
-  persInf: T.PersonInflectionsField
+  persInf: T.PersonInflectionsField,
 ): T.SingleOrLengthOpts<T> {
   if ("mascSing" in x) {
     return x[persInf];
@@ -693,25 +693,25 @@ export function choosePersInf<T extends object>(
 
 export function allOnePersonVerbForm(
   block: T.VerbForm,
-  person: T.Person
+  person: T.Person,
 ): T.VerbForm {
   if ("mascSing" in block) {
     return {
       mascSing: allOnePersonVerbForm(
         block.mascSing,
-        person
+        person,
       ) as T.SingleOrLengthOpts<T.VerbBlock>,
       mascPlur: allOnePersonVerbForm(
         block.mascPlur,
-        person
+        person,
       ) as T.SingleOrLengthOpts<T.VerbBlock>,
       femSing: allOnePersonVerbForm(
         block.femSing,
-        person
+        person,
       ) as T.SingleOrLengthOpts<T.VerbBlock>,
       femPlur: allOnePersonVerbForm(
         block.femPlur,
-        person
+        person,
       ) as T.SingleOrLengthOpts<T.VerbBlock>,
     };
   }
@@ -745,7 +745,7 @@ export function allOnePersonVerbForm(
  * @param inflections
  */
 export function allMascFirstInflection(
-  inflections: T.SingleOrLengthOpts<T.UnisexInflections>
+  inflections: T.SingleOrLengthOpts<T.UnisexInflections>,
 ): T.SingleOrLengthOpts<T.UnisexInflections> {
   if ("long" in inflections) {
     return {
@@ -779,7 +779,7 @@ export function complementInflects(inf: T.UnisexInflections): boolean {
 export function psStringEquals(
   ps1: T.PsString,
   ps2: T.PsString,
-  ignoreAccents?: boolean
+  ignoreAccents?: boolean,
 ): boolean {
   const [p1, p2] = ignoreAccents
     ? [removeAccents(ps1), removeAccents(ps2)]
@@ -800,23 +800,23 @@ export function clamp(s: string, chars = 20): string {
 
 export function addEnglish(
   english: T.EnglishBlock | string,
-  ps: T.VerbBlock
+  ps: T.VerbBlock,
 ): T.VerbBlock;
 export function addEnglish(
   english: T.EnglishBlock | string,
-  ps: T.ImperativeBlock
+  ps: T.ImperativeBlock,
 ): T.ImperativeBlock;
 export function addEnglish(
   english: T.EnglishBlock | string,
-  ps: T.ArrayOneOrMore<T.PsString>
+  ps: T.ArrayOneOrMore<T.PsString>,
 ): T.ArrayOneOrMore<T.PsString>;
 export function addEnglish(
   english: T.EnglishBlock | string,
-  ps: T.SentenceForm
+  ps: T.SentenceForm,
 ): T.SentenceForm;
 export function addEnglish(
   english: T.EnglishBlock | string,
-  ps: T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString>
+  ps: T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString>,
 ): T.VerbBlock | T.ImperativeBlock | T.ArrayOneOrMore<T.PsString>;
 export function addEnglish(
   english: T.EnglishBlock | string,
@@ -824,7 +824,7 @@ export function addEnglish(
     | T.VerbBlock
     | T.ImperativeBlock
     | T.ArrayOneOrMore<T.PsString>
-    | T.SentenceForm
+    | T.SentenceForm,
 ):
   | T.VerbBlock
   | T.ImperativeBlock
@@ -848,7 +848,7 @@ export function addEnglish(
         // @ts-expect-error because
         e: typeof english === "string" ? english : english[i][j],
       }),
-      ps as T.VerbBlock
+      ps as T.VerbBlock,
     );
   }
   if (Array.isArray(ps[0]) && ps.length === 2) {
@@ -858,7 +858,7 @@ export function addEnglish(
         // @ts-expect-error because
         e: typeof english === "string" ? english : english[i][j],
       }),
-      ps as T.ImperativeBlock
+      ps as T.ImperativeBlock,
     );
   }
   const line = ps as T.ArrayOneOrMore<T.PsString>;
@@ -900,21 +900,21 @@ export function removeHead(head: T.PsString, ps: T.PsString): T.PsString {
 
 export function uniquePsStringArray(arr: T.PsString[]): T.PsString[] {
   return [...new Set(arr.map((o) => JSON.stringify(o)))].map((string) =>
-    JSON.parse(string)
+    JSON.parse(string),
   ) as T.PsString[];
 }
 
 export function splitOffLeapfrogWordFull(
-  ps: T.SingleOrLengthOpts<T.PsString[]>
+  ps: T.SingleOrLengthOpts<T.PsString[]>,
 ): [T.SingleOrLengthOpts<T.PsString[]>, T.SingleOrLengthOpts<T.PsString[]>] {
   if ("long" in ps) {
     const [shortA, shortB] = splitOffLeapfrogWordFull(ps.short) as [
       T.PsString[],
-      T.PsString[]
+      T.PsString[],
     ];
     const [longA, longB] = splitOffLeapfrogWordFull(ps.long) as [
       T.PsString[],
-      T.PsString[]
+      T.PsString[],
     ];
     return [
       { long: longA, short: shortA },
@@ -929,7 +929,7 @@ export function splitOffLeapfrogWordFull(
         [...accum[1], back],
       ];
     },
-    [[], []] as [T.PsString[], T.PsString[]]
+    [[], []] as [T.PsString[], T.PsString[]],
   );
 }
 
@@ -938,31 +938,31 @@ export function splitOffLeapfrogWord(ps: T.PsString): [T.PsString, T.PsString] {
   const fWords = ps.f.split(" ");
   const beginning = makePsString(
     pWords.slice(0, -1).join(" "),
-    fWords.slice(0, -1).join(" ")
+    fWords.slice(0, -1).join(" "),
   );
   const end = makePsString(
     pWords.slice(-1).join(" "),
-    fWords.slice(-1).join(" ")
+    fWords.slice(-1).join(" "),
   );
   return [beginning, end];
 }
 
 export function removeObjComp(
   comp: T.PsString | undefined,
-  ps: T.PsString
+  ps: T.PsString,
 ): T.PsString {
   if (!comp) {
     return ps;
   }
   return makePsString(
     ps.p.replace(comp.p + " ", ""),
-    ps.f.replace(comp.f + " ", "")
+    ps.f.replace(comp.f + " ", ""),
   );
 }
 
 export function psStringContains(
   ps: T.PsString,
-  searchFor: T.PsString
+  searchFor: T.PsString,
 ): boolean {
   return ps.p.includes(searchFor.p) && ps.f.includes(searchFor.f);
 }
@@ -986,7 +986,7 @@ export function ensureShortWurShwaShift(ps: T.PsString): T.PsString {
 
 export function ensureUnisexInflections(
   infs: T.InflectorOutput,
-  w: T.DictionaryEntryNoFVars
+  w: T.DictionaryEntryNoFVars,
 ): {
   inflections: T.UnisexInflections;
   plural?: T.PluralInflections;
@@ -1062,7 +1062,7 @@ export function endsInConsonant(w: T.PsString): boolean {
         { p: "ای", f: "aay" },
         { p: "وی", f: "ooy" },
       ],
-      w
+      w,
     ) ||
     endsWith([{ p: "ه", f: "h" }], w) ||
     endsWith([{ p: "و", f: "w" }], w)
@@ -1106,7 +1106,7 @@ export function addOEnding(ps: T.PsString): T.ArrayOneOrMore<T.PsString> {
   return [
     concatPsString(
       base,
-      makePsString("و", hasAccents(lastLetter.f) ? "ó" : "o")
+      makePsString("و", hasAccents(lastLetter.f) ? "ó" : "o"),
     ),
   ];
 }
@@ -1117,7 +1117,7 @@ export function addOEnding(ps: T.PsString): T.ArrayOneOrMore<T.PsString> {
  */
 export function mapPsString<T, P extends T.PsString>(
   f: (s: string) => T,
-  ps: P
+  ps: P,
 ): Omit<P, "p" | "f"> & { p: T; f: T } {
   return {
     ...ps,
@@ -1134,7 +1134,7 @@ export function mapPsString<T, P extends T.PsString>(
  */
 export function splitPsByVarients(w: T.PsString): T.ArrayOneOrMore<T.PsString> {
   const { p, f } = mapPsString(splitVarients, w);
-  return zipWith(makePsString, p, f) as T.ArrayOneOrMore<T.PsString>;
+  return zipWith(makePsString, p)(f) as T.ArrayOneOrMore<T.PsString>;
 }
 
 export function splitVarients(s: string) {
@@ -1146,7 +1146,7 @@ export function splitVarients(s: string) {
  */
 export function isInVarients(
   vars: string | false | undefined,
-  search: string | false | undefined
+  search: string | false | undefined,
 ): boolean {
   if (!vars || !search) return false;
   return splitVarients(vars).includes(search);
@@ -1166,7 +1166,7 @@ export function isUnisexSet<X>(inf: T.GenderedSet<X>): inf is T.UnisexSet<X> {
 }
 
 export function isPluralInflections(
-  inf: T.PluralInflections | T.Inflections
+  inf: T.PluralInflections | T.Inflections,
 ): inf is T.PluralInflections {
   if ("masc" in inf) {
     return inf.masc.length === 2;
@@ -1187,21 +1187,21 @@ export function endsWith(
   ending:
     | (T.PsString | { p: string | string[] } | { f: string | string[] })
     | (T.PsString | { p: string | string[] } | { f: string | string[] })[],
-  ps?: boolean
+  ps?: boolean,
 ): (ps: T.PsString) => boolean;
 export function endsWith(
   ending:
     | (T.PsString | { p: string | string[] } | { f: string | string[] })
     | (T.PsString | { p: string | string[] } | { f: string | string[] })[],
   ps: T.PsString,
-  matchAccent?: boolean
+  matchAccent?: boolean,
 ): boolean;
 export function endsWith(
   ending:
     | (T.PsString | { p: string | string[] } | { f: string | string[] })
     | (T.PsString | { p: string | string[] } | { f: string | string[] })[],
   ps: T.PsString | undefined | boolean,
-  matchAccent?: boolean | undefined
+  matchAccent?: boolean | undefined,
 ): boolean | ((ps: T.PsString) => boolean) {
   // curried version
   if (ps === undefined || typeof ps === "boolean") {
@@ -1247,7 +1247,7 @@ export function psStringFromEntry(entry: T.PsString): T.PsString {
 
 export function getLength<U extends object>(
   x: T.SingleOrLengthOpts<U>,
-  length: "long" | "short" | "mini"
+  length: "long" | "short" | "mini",
 ): U {
   if ("long" in x) {
     const s = x[length];

@@ -3,13 +3,13 @@ import { endsWith, psStringFromEntry } from "../p-text-helpers";
 import { isPattern1Entry } from "../type-predicates";
 import { accentOnNFromEnd, countSyllables } from "../accent-helpers";
 import { monoidPsString } from "../fp-ps";
-import { concatAll } from "fp-ts/lib/Monoid";
+import { concatAll } from "../fp-ps";
 
 export function mayoOnWord(
   isMayoSandwich: "req" | "opt" | "no" | undefined,
   entry: T.InflectableEntry,
   gender: T.Gender,
-  number: T.NounNumber
+  number: T.NounNumber,
 ): "req" | "opt" | "no" {
   return isMayoSandwich &&
     isMayoSandwich !== "no" &&

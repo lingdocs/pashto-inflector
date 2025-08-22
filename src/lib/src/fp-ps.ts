@@ -1,46 +1,46 @@
-import { Eq, struct } from "fp-ts/Eq";
-import { Semigroup } from "fp-ts/Semigroup";
-import { Monoid } from "fp-ts/Monoid";
-import { concatAll } from "fp-ts/lib/Monoid";
-import * as S from "fp-ts/string";
 import * as T from "../../types";
 
-export const eqPsString: Eq<T.PsString> = struct({
-  p: S.Eq,
-  f: S.Eq,
-});
-
-export const eqPsStringWVars: Eq<T.PsString[]> = {
-  equals: (x, y) => {
-    return (
-      x.length === y.length && x.every((a, i) => eqPsString.equals(a, y[i]))
-    );
-  },
+export type Semigroup<X> = {
+  concat: (x: X, y: X) => X;
 };
 
-export const semigroupPsStringWVars: Semigroup<T.PsString[]> = {
-  concat: (x, y) =>
-    x.flatMap((a) => y.map((b) => semigroupPsString.concat(a, b))),
+export type Monoid<X> = {
+  concat: Semigroup<X>["concat"];
+  empty: X;
+};
+
+export type Eq<X> = {
+  equals: (a: X, b: X) => boolean;
 };
 
 export const semigroupPsString: Semigroup<T.PsString> = {
-  concat: (x, y) => ({
+  concat: (x: T.PsString, y: T.PsString) => ({
     p: x.p + y.p,
     f: x.f + y.f,
   }),
 };
 
+const semigroupPsStringWVars: Semigroup<T.PsString[]> = {
+  concat: (x: T.PsString[], y: T.PsString[]) =>
+    x.flatMap((a) => y.map((b) => semigroupPsString.concat(a, b))),
+};
+
 export const semigroupInflectionSet: Semigroup<T.InflectionSet> = {
   concat: (x, y) =>
     y.map((yy: T.ArrayOneOrMore<T.PsString>, i) =>
-      concatAll(monoidPsStringWVars)([x[i], [{ p: " ", f: " " }], yy])
+      concatAll(monoidPsStringWVars)([x[i], [{ p: " ", f: " " }], yy]),
     ) as T.ArrayFixed<T.ArrayOneOrMore<T.PsString>, 3>,
+};
+
+export const monoidInflectionSet: Monoid<T.InflectionSet> = {
+  concat: semigroupInflectionSet.concat,
+  empty: [[{ p: "", f: "" }], [{ p: "", f: "" }], [{ p: "", f: "" }]],
 };
 
 export const semigroupPluralInflectionSet: Semigroup<T.PluralInflectionSet> = {
   concat: (x, y) =>
     y.map((yy: T.ArrayOneOrMore<T.PsString>, i) =>
-      concatAll(monoidPsStringWVars)([x[i], [{ p: " ", f: " " }], yy])
+      concatAll(monoidPsStringWVars)([x[i], [{ p: " ", f: " " }], yy]),
     ) as T.ArrayFixed<T.ArrayOneOrMore<T.PsString>, 2>,
 };
 
@@ -57,9 +57,27 @@ export const monoidPsStringWVars: Monoid<T.PsString[]> = {
   empty: [monoidPsString.empty],
 };
 
+export function concatAll<X>(monoid: Monoid<X>) {
+  return function (arr: X[]): X {
+    return arr.reduce((acc, curr) => monoid.concat(acc, curr), monoid.empty);
+  };
+}
+
+export const eqPsString: Eq<T.PsString> = {
+  equals: (a, b) => a.p === b.p && a.f === b.f,
+};
+
+export const eqPsStringWVars: Eq<T.PsString[]> = {
+  equals: (x, y) => {
+    return (
+      x.length === y.length && x.every((a, i) => eqPsString.equals(a, y[i]))
+    );
+  },
+};
+
 export function fmapParseResult<A extends object, B extends object>(
   f: (x: A) => B,
-  x: T.ParseResult<A>[]
+  x: T.ParseResult<A>[],
 ): T.ParseResult<B>[] {
   return x.map<T.ParseResult<B>>((xi) => ({
     tokens: xi.tokens,
@@ -70,7 +88,7 @@ export function fmapParseResult<A extends object, B extends object>(
 
 export function fmapParseResultSing<A extends object, B extends object>(
   f: (x: A) => B,
-  x: T.ParseResult<A>
+  x: T.ParseResult<A>,
 ): T.ParseResult<B> {
   return {
     tokens: x.tokens,
@@ -81,7 +99,7 @@ export function fmapParseResultSing<A extends object, B extends object>(
 
 export function fFlatMapParseResult<A extends object, B extends object>(
   f: (x: A) => B[],
-  x: T.ParseResult<A>[]
+  x: T.ParseResult<A>[],
 ): T.ParseResult<B>[] {
   return x.flatMap<T.ParseResult<B>>((xi) => {
     const bodies = f(xi.body);
@@ -95,7 +113,7 @@ export function fFlatMapParseResult<A extends object, B extends object>(
 
 export function fmapSingleOrLengthOpts<A, B>(
   f: (x: A) => B,
-  x: T.SingleOrLengthOpts<A>
+  x: T.SingleOrLengthOpts<A>,
 ): T.SingleOrLengthOpts<B> {
   if (x && typeof x === "object" && "long" in x) {
     return {
@@ -128,7 +146,7 @@ export function applyPsString(
         p: (x: string) => string;
         f: (x: string) => string;
       },
-  x: T.PsString
+  x: T.PsString,
 ): T.PsString {
   if ("p" in f && "f" in f) {
     return {
@@ -163,7 +181,7 @@ export function mapGen<A, B>(f: (x: A) => B, x: A): B {
  */
 export function applySingleOrLengthOpts<A, B>(
   f: T.SingleOrLengthOpts<(a: A) => B>,
-  a: T.SingleOrLengthOpts<A>
+  a: T.SingleOrLengthOpts<A>,
 ): T.SingleOrLengthOpts<B> {
   if (f && "long" in f) {
     if (a && typeof a === "object" && "long" in a) {
@@ -186,7 +204,7 @@ export function applySingleOrLengthOpts<A, B>(
 
 export function mapInflections(
   f: (x: T.PsString) => T.PsString,
-  inf: T.UnisexInflections
+  inf: T.UnisexInflections,
 ): T.UnisexInflections {
   function handleSide(inf: T.InflectionSet): T.InflectionSet {
     return inf.map((x) => x.map(f)) as T.ArrayFixed<
@@ -202,7 +220,7 @@ export function mapInflections(
 
 export function mapVerbRenderedOutput(
   f: (a: T.PsString) => T.PsString,
-  [a, b]: T.VerbRenderedOutput
+  [a, b]: T.VerbRenderedOutput,
 ): T.VerbRenderedOutput {
   return [fmapVHead(a), fmapVE(b)];
   function fmapVHead([v]: [T.VHead] | []): [T.VHead] | [] {
@@ -262,7 +280,7 @@ export function mapVerbRenderedOutput(
  */
 export function orTp<A, B extends A, C extends A>(
   f: (x: A) => x is B,
-  g: (x: A) => x is C
+  g: (x: A) => x is C,
 ): (x: A) => x is B | C {
   return (x: A) => f(x) || g(x);
 }
@@ -272,7 +290,7 @@ export function orTp<A, B extends A, C extends A>(
  */
 export function andTp<A, B extends A, C extends A>(
   f: (x: A) => x is B,
-  g: (x: A) => x is C
+  g: (x: A) => x is C,
 ): (x: A) => x is B & C {
   return (x: A) => f(x) && g(x);
 }
@@ -284,7 +302,7 @@ export function andTp<A, B extends A, C extends A>(
  */
 export function andSuccTp<A, B extends A, C extends B>(
   f: (x: A) => x is B,
-  g: (x: B) => x is C
+  g: (x: B) => x is C,
 ): (x: A) => x is B & C {
   return (x: A) => f(x) && g(x);
 }

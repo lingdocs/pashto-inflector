@@ -1,12 +1,12 @@
-import { semigroupInflectionSet } from "./fp-ps";
 import {
-  concatAll as concatAllSemigroup,
-  Semigroup,
-} from "fp-ts/lib/Semigroup";
+  concatAll,
+  monoidInflectionSet,
+  semigroupInflectionSet,
+} from "./fp-ps";
 import * as T from "../../types";
 
 export function joinInflectorOutputs(
-  outs: { inflected: T.InflectorOutput; orig: T.DictionaryEntryNoFVars }[]
+  outs: { inflected: T.InflectorOutput; orig: T.DictionaryEntryNoFVars }[],
 ): T.InflectorOutput {
   const [a, b] = outs;
   if (a === undefined || b === undefined) {
@@ -15,7 +15,7 @@ export function joinInflectorOutputs(
   if (a.inflected && b.inflected) {
     const inflections = joinInflections(
       a.inflected.inflections,
-      b.inflected.inflections
+      b.inflected.inflections,
     );
     // NOT GOING TO TRY TO JOIN ALL THE PLURALS AND VOCATIVE CAUSE IT GETS
     // TOO COMPLICATED - STARTS TO BECOME ALMOST LIKE A PHRASE BUILDER
@@ -56,13 +56,15 @@ export function joinInflectorOutputs(
 
 function joinInflections(
   a: T.Inflections | undefined,
-  b: T.Inflections | undefined
+  b: T.Inflections | undefined,
 ): T.Inflections | undefined {
   if (!a && !b) {
     return undefined;
   }
   if (a && b) {
-    return concatGenderSet(joinFromSemigroup(semigroupInflectionSet))(a, b);
+    return concatGenderSet<T.InflectionSet>((a, b) =>
+      semigroupInflectionSet.concat(a, b),
+    )(a, b);
   }
   return undefined;
 }
@@ -104,11 +106,5 @@ function concatGenderSet<J>(cf: (a: J, b: J) => J) {
     }
     // TODO !!
     return a;
-  };
-}
-
-function joinFromSemigroup<J>(semi: Semigroup<J>) {
-  return function (a: J, b: J): J {
-    return concatAllSemigroup(semi)(a)([b]);
   };
 }

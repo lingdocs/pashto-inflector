@@ -26,11 +26,11 @@ export function buildVerbChart({
 } {
   const allPersons = imperative
     ? [
-        T.Person.SecondSingMale,
-        T.Person.SecondSingFemale,
-        T.Person.SecondPlurMale,
-        T.Person.SecondPlurFemale,
-      ]
+      T.Person.SecondSingMale,
+      T.Person.SecondSingFemale,
+      T.Person.SecondPlurMale,
+      T.Person.SecondPlurFemale,
+    ]
     : ([...Array(12).keys()] as T.Person[]);
   const isPast = isPastTense(tense);
   const objNP: T.Rendered<T.NPSelection> | undefined = objectNP
@@ -44,8 +44,8 @@ export function buildVerbChart({
         transitivity === "intransitive"
           ? { subject: person, object: undefined }
           : transitivity === "transitive" && isPast
-          ? { object: person, subject: 0 }
-          : { subject: person, object: p ?? 0 };
+            ? { object: person, subject: 0 }
+            : { subject: person, object: p ?? 0 };
       return renderVerb({
         verb,
         tense,
@@ -108,25 +108,25 @@ export function buildVerbChart({
 
 const vIsLength =
   (length: T.Length) =>
-  ({ vbs }: T.RenderVerbOutput): boolean => {
-    const v = vbs[1][0];
-    // there are a number of parts of the verb that could be considered
-    // to be length variations
-    // but we will take the first main verb block as the point of length variation
-    // w reg verbs - wahúlm vs. wahúm
-    //   (when welded, the right side of the block)
-    // w ability or perfect - kawúley shum vs. kawéy shum
-    function checkVBForLengths(v: T.VB): boolean {
-      if (v.type === "welded") {
-        return checkVBForLengths(v.right);
+    ({ vbs }: T.RenderVerbOutput): boolean => {
+      const v = vbs[1][0];
+      // there are a number of parts of the verb that could be considered
+      // to be length variations
+      // but we will take the first main verb block as the point of length variation
+      // w reg verbs - wahúlm vs. wahúm
+      //   (when welded, the right side of the block)
+      // w ability or perfect - kawúley shum vs. kawéy shum
+      function checkVBForLengths(v: T.VB): boolean {
+        if (v.type === "welded") {
+          return checkVBForLengths(v.right);
+        }
+        if (length === "mini" && "mini" in v.ps && v.ps.mini) {
+          return true;
+        }
+        return length in v.ps;
       }
-      if (length === "mini" && "mini" in v.ps && v.ps.mini) {
-        return true;
-      }
-      return length in v.ps;
-    }
-    return checkVBForLengths(v);
-  };
+      return checkVBForLengths(v);
+    };
 
 function grabLength(
   length: T.Length,
@@ -195,6 +195,6 @@ function conflateIfNoCompGenNumDiff(
     "femPlur",
     "mascPlur",
   ] as T.PersonInflectionsField[];
-  const diffExists = toCheck.some((f) => !equals(v[f], v.mascSing));
+  const diffExists = toCheck.some((f) => !equals(v[f])(v.mascSing));
   return diffExists ? v : v.mascSing;
 }

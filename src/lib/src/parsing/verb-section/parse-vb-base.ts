@@ -111,7 +111,7 @@ export function parseVBPBasic(type: "ability" | "perfect") {
           ? first.slice(0, -1)
           : "";
       if (!start) return [];
-      return findRoot(ph)(start, dictionary)
+      const res = findRoot(ph)(start, dictionary)
         .map<T.ParsedVBPBasicAbility>((root) => ({
           type: "parsed vbp basic ability",
           info: {
@@ -121,6 +121,7 @@ export function parseVBPBasic(type: "ability" | "perfect") {
           },
         }))
         .flatMap((m) => returnParseResult(rest, m));
+      return res;
     } else {
       if (ph) {
         return [];

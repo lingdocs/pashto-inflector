@@ -9,9 +9,11 @@
 import Pashto from "./Pashto";
 import Phonetics from "./Phonetics";
 import * as T from "../../../types";
+import type { JSX } from "react";
 import { ReactNode } from "react";
 import { addErrorToPs } from "./utils";
 import psmd from "./psmd";
+import { PsJSX } from "./jsx-map";
 
 type PsStringWSub = T.PsString & { sub?: ReactNode; error?: boolean };
 
@@ -36,17 +38,17 @@ function EnglishContent({
   );
 }
 
-type ExampleContent = T.PsJSX | PsStringWSub;
+type ExampleContent = PsJSX | PsStringWSub;
 type SingleOrArray<T> = T | T[];
 
 function Examples(
   props: (
     | {
-        ex: SingleOrArray<ExampleContent>;
-      }
+      ex: SingleOrArray<ExampleContent>;
+    }
     | {
-        children: SingleOrArray<ExampleContent>;
-      }
+      children: SingleOrArray<ExampleContent>;
+    }
   ) & {
     opts: T.TextOptions;
     lineHeight?: 0 | 1 | 2 | 3 | 4;
@@ -56,7 +58,7 @@ function Examples(
   const examples = "children" in props ? props.children : props.ex;
   const Example = ({ children: text }: { children: ExampleContent }) => {
     const psA = "error" in text && text.error ? addErrorToPs(text) : text;
-    // @ts-expect-error - bad ts
+    // @ts-ignore
     const psB = props.md ? psmd(psA) : psA;
     return (
       <div

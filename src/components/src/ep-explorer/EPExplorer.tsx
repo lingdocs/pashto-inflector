@@ -4,10 +4,9 @@ import EPDisplay from "./EPDisplay";
 import ButtonSelect from "../selects/ButtonSelect";
 import EqChartsDisplay from "./EqChartsDisplay";
 import epsReducer from "../../../lib/src/phrase-building/eps-reducer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { completeEPSelection } from "../../../lib/src/phrase-building/render-ep";
 import { makeEPSBlocks } from "../../../lib/src/phrase-building/blocks-utils";
-import autoAnimate from "@formkit/auto-animate";
 import LZString from "lz-string";
 import EPPicker from "./EPPicker";
 const epPhraseURLParam = "ep";
@@ -43,12 +42,6 @@ function EPExplorer(props: {
   //     // setAlertMsg,
   // ] = useState<string | undefined>(undefined);
   const [showClipped, setShowClipped] = useState<string>("");
-  const parent = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (parent.current) {
-      autoAnimate(parent.current);
-    }
-  }, [parent]);
   useEffect(() => {
     const EPSFromUrl = getEPSFromUrl();
     if (EPSFromUrl) {

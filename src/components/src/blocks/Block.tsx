@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import type { JSX } from "react"
 import classNames from "classnames";
 import { getEnglishFromRendered } from "../../../lib/src/phrase-building/np-tools";
 import {

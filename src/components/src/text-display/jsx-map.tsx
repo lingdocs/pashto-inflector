@@ -7,9 +7,18 @@
  */
 
 import * as T from "../../../types";
+import type { JSX } from "react";
+
+
+export type PsJSX = {
+  p: JSX.Element;
+  f: JSX.Element;
+  e?: JSX.Element | string;
+  sub?: JSX.Element | string;
+};
 
 export function psJSXMap2<T>(
-  ps: T.PsJSX,
+  ps: PsJSX,
   f: (s: string) => T,
   onlyPf?: boolean
 ) {
@@ -18,13 +27,13 @@ export function psJSXMap2<T>(
     f: jsxMap(ps.f, f),
     ...(ps.e
       ? {
-          e: onlyPf ? ps.e : jsxMap(ps.e, f),
-        }
+        e: onlyPf ? ps.e : jsxMap(ps.e, f),
+      }
       : {}),
     ...(ps.sub
       ? {
-          e: onlyPf ? ps.sub : jsxMap(ps.sub, f),
-        }
+        e: onlyPf ? ps.sub : jsxMap(ps.sub, f),
+      }
       : {}),
   };
 }
@@ -42,8 +51,8 @@ function jsxMap<T>(j: JSX.Element | string, f: (s: string) => T): JSX.Element {
         typeof ch === "string"
           ? f(ch)
           : Array.isArray(ch)
-          ? ch.map((x) => jsxMap(x, f))
-          : jsxMap(ch, f),
+            ? ch.map((x) => jsxMap(x, f))
+            : jsxMap(ch, f),
     },
   };
 }
@@ -60,7 +69,7 @@ function jsxMap<T>(j: JSX.Element | string, f: (s: string) => T): JSX.Element {
  * @returns
  */
 export function psJSXMap(
-  ps: T.PsJSX,
+  ps: PsJSX,
   target: "p" | "f",
   dealWithString: (ps: T.PsString) => string | JSX.Element
 ): JSX.Element {
@@ -76,38 +85,38 @@ export function psJSXMap(
         children:
           typeof base.props.children === "string"
             ? dealWithString({
-                p: (target === "p" ? base : sec).props.children,
-                f: (target === "p" ? sec : base).props.children,
-              })
+              p: (target === "p" ? base : sec).props.children,
+              f: (target === "p" ? sec : base).props.children,
+            })
             : base.props.children.map
-            ? base.props.children.map((x: string | JSX.Element, i: number) =>
+              ? base.props.children.map((x: string | JSX.Element, i: number) =>
                 typeof x === "string"
                   ? dealWithString({
+                    p: target === "p" ? x : sec.props.children[i],
+                    f: target === "p" ? sec.props.children[i] : x,
+                  })
+                  : psJSXMap(
+                    {
                       p: target === "p" ? x : sec.props.children[i],
                       f: target === "p" ? sec.props.children[i] : x,
-                    })
-                  : psJSXMap(
-                      {
-                        p: target === "p" ? x : sec.props.children[i],
-                        f: target === "p" ? sec.props.children[i] : x,
-                      },
-                      target,
-                      dealWithString
-                    )
+                    },
+                    target,
+                    dealWithString
+                  )
               )
-            : typeof base.props.children === "string"
-            ? dealWithString({
-                p: target === "p" ? base.props.children : sec.props.children,
-                f: target === "p" ? sec.props.children : base.props.children,
-              })
-            : psJSXMap(
-                {
+              : typeof base.props.children === "string"
+                ? dealWithString({
                   p: target === "p" ? base.props.children : sec.props.children,
                   f: target === "p" ? sec.props.children : base.props.children,
-                },
-                target,
-                dealWithString
-              ),
+                })
+                : psJSXMap(
+                  {
+                    p: target === "p" ? base.props.children : sec.props.children,
+                    f: target === "p" ? sec.props.children : base.props.children,
+                  },
+                  target,
+                  dealWithString
+                ),
       },
     };
   } catch (e) {

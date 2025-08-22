@@ -40,10 +40,10 @@ import { pipe } from "rambda";
  */
 export function addDiacritics(
   { p, f }: T.PsString,
-  ignoreCommas?: true
+  ignoreCommas?: true,
 ): T.PsString {
   const phonemes: Phoneme[] = splitFIntoPhonemes(
-    !ignoreCommas ? removeFVarients(f) : f
+    !ignoreCommas ? removeFVarients(f) : f,
   );
   const { pIn, pOut } = phonemes.reduce(processPhoneme, {
     pOut: "",
@@ -62,14 +62,14 @@ function processPhoneme(
   acc: DiacriticsAccumulator,
   phoneme: Phoneme,
   i: number,
-  phonemes: Phoneme[]
+  phonemes: Phoneme[],
 ): DiacriticsAccumulator {
   const state =
     acc.pIn.slice(0, 5) === " ... "
       ? advanceP(acc, 5)
       : acc.pIn[0] === " "
-      ? advanceP(acc)
-      : acc;
+        ? advanceP(acc)
+        : acc;
 
   const { phonemeInfo, diacritic, phs, prevPLetter } = stateInfo({
     state,
@@ -78,64 +78,66 @@ function processPhoneme(
     phonemes,
   });
 
+  // prettier-ignore
   return phs === PhonemeStatus.LeadingLongVowel
-    ? pipe(advanceP, addP(phonemeInfo.diacritic), advanceP)(state)
+    ? pipe(state, advanceP, addP(phonemeInfo.diacritic), advanceP)
     : phs === PhonemeStatus.LeadingConsonantOrShortVowel
-    ? pipe(advanceP, addP(diacritic))(state)
+    ? pipe(state, advanceP, addP(diacritic))
     : phs === PhonemeStatus.DoubleConsonantTashdeed
-    ? pipe(prevPLetter === " " ? reverseP : addP(""), addP(tashdeed))(state)
+    ? pipe(state, prevPLetter === " " ? reverseP : addP(""), addP(tashdeed))
     : phs === PhonemeStatus.EndingWithHayHim
-    ? pipe(advanceP, addP(phoneme === "u" ? hamzaAbove : sukun))(state)
+    ? pipe(state, advanceP, addP(phoneme === "u" ? hamzaAbove : sukun))
     : phs === PhonemeStatus.DirectMatch
-    ? pipe(addP(diacritic), advanceP)(state)
+    ? pipe(state, addP(diacritic), advanceP)
     : phs === PhonemeStatus.DirectMatchAfterSukun
-    ? pipe(addP(sukun), advanceP)(state)
+    ? pipe(state, addP(sukun), advanceP)
     : phs === PhonemeStatus.PersianSilentWWithAa
-    ? pipe(addP("("), advanceP, addP(")"), advanceP)(state)
+    ? pipe(state, addP("("), advanceP, addP(")"), advanceP)
     : phs === PhonemeStatus.ArabicWasla
-    ? pipe(addP(zer), overwriteP(wasla))(state)
+    ? pipe(state, addP(zer), overwriteP(wasla))
     : phs === PhonemeStatus.Izafe
-    ? pipe(reverseP, addP(zer))(state)
+    ? pipe(state, reverseP, addP(zer))
     : phs === PhonemeStatus.EndOfDuParticle
-    ? pipe(reverseP, addP(zwarakay))(state)
+    ? pipe(state, reverseP, addP(zwarakay))
     : phs === PhonemeStatus.ShortAEndingAfterHeem
-    ? pipe(prevPLetter === " " ? reverseP : addP(""), addP(zwar))(state)
+    ? pipe(state, prevPLetter === " " ? reverseP : addP(""), addP(zwar))
     : phs === PhonemeStatus.EndingWithHayHimFromSukun
-    ? pipe(addP(sukun), advanceP)(state)
+    ? pipe(state, addP(sukun), advanceP)
     : phs === PhonemeStatus.AlefDaggarEnding
-    ? pipe(advanceP, advanceP)(state)
+    ? pipe(state, advanceP, advanceP)
     : phs === PhonemeStatus.LongAinVowelMissingComma
-    ? pipe(addP(diacritic), advanceP, addP(diacritic))(state)
+    ? pipe(state, addP(diacritic), advanceP, addP(diacritic))
     : phs === PhonemeStatus.ShortAinVowelMissingComma
-    ? pipe(addP(diacritic), advanceP)(state)
+    ? pipe(state, addP(diacritic), advanceP)
     : phs === PhonemeStatus.ShortAinVowelMissingCommaAfterAlefStart
-    ? pipe(advanceP, advanceP)(state)
+    ? pipe(state, advanceP, advanceP)
     : phs === PhonemeStatus.AinWithLongAAtBeginning
-    ? pipe(advanceP, advanceP)(state)
+    ? pipe(state, advanceP, advanceP)
     : phs === PhonemeStatus.AlefWithHamza
-    ? pipe(advanceP)(state)
+    ? pipe(state, advanceP)
     : phs === PhonemeStatus.ShortVowel
     ? pipe(
+        state,
         advanceForHamzaMid,
         addP(phonemeInfo.diacritic),
         // TODO THIS?
         advanceForHamza
-      )(state)
+      )
     : phs === PhonemeStatus.ShortAForAlefBeforeFathatan
-    ? pipe(advanceP)(state)
+    ? pipe(state, advanceP)
     : phs === PhonemeStatus.NOnFathatan
-    ? pipe(advanceP)(state)
+    ? pipe(state, advanceP)
     : phs === PhonemeStatus.HamzaOnWow
-    ? pipe(advanceP, addP(hamzaAbove), addP(diacritic))(state)
+    ? pipe(state, advanceP, addP(hamzaAbove), addP(diacritic))
     : phs === PhonemeStatus.ArabicDefiniteArticleUl
-    ? pipe(advanceP, addP(pesh), advanceP)(state)
+    ? pipe(state, advanceP, addP(pesh), advanceP)
     : phs === PhonemeStatus.OoPrefix
-    ? pipe(advanceP, addP(pesh))(state)
+    ? pipe(state, advanceP, addP(pesh))
     : phs === PhonemeStatus.GlottalStopBeforeOo
-    ? pipe(advanceP, addP(hamzaAbove))(state)
+    ? pipe(state, advanceP, addP(hamzaAbove))
     : phs === PhonemeStatus.OoAfterGlottalStopOo
-    ? pipe(advanceP)(state)
+    ? pipe(state, advanceP)
     : phs === PhonemeStatus.SilentAinAfterAlef
-    ? pipe(advanceP, advanceP)(state)
+    ? pipe(state, advanceP, advanceP)
     : state;
 }

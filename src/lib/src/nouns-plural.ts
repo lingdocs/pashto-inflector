@@ -18,7 +18,7 @@ import * as T from "../../types";
 import { isMascNounEntry, isPattern1Entry } from "./type-predicates";
 
 function makePashtoPlural(
-  word: T.DictionaryEntryNoFVars
+  word: T.DictionaryEntryNoFVars,
 ): T.PluralInflections | undefined {
   if (!(word.ppp && word.ppf)) return undefined;
   const base = splitPsByVarients(makePsString(word.ppp, word.ppf));
@@ -36,7 +36,7 @@ function makePashtoPlural(
 }
 
 function makeBundledPlural(
-  word: T.DictionaryEntry
+  word: T.DictionaryEntry,
 ): T.PluralInflections | undefined {
   if (isMascNounEntry(word) && isPattern1Entry(word) && endsInConsonant(word)) {
     const w = makePsString(word.p, word.f);
@@ -53,7 +53,7 @@ function makeBundledPlural(
 }
 
 function makeArabicPlural(
-  word: T.DictionaryEntryNoFVars
+  word: T.DictionaryEntryNoFVars,
 ): T.PluralInflections | undefined {
   if (!(word.apf && word.app)) return undefined;
   const w = makePsString(word.app, word.apf);
@@ -73,13 +73,13 @@ function makeArabicPlural(
 }
 
 export function makePlural(
-  w: T.DictionaryEntryNoFVars
+  w: T.DictionaryEntryNoFVars,
 ):
   | { plural: T.PluralInflections; bundledPlural?: T.PluralInflections }
   | { arabicPlural: T.PluralInflections; bundledPlural?: T.PluralInflections }
   | undefined {
   function addSecondInf(
-    plur: T.ArrayOneOrMore<T.PsString> | T.PsString
+    plur: T.ArrayOneOrMore<T.PsString> | T.PsString,
   ): T.PluralInflectionSet {
     if (!Array.isArray(plur)) {
       return addSecondInf([plur]);
@@ -115,7 +115,7 @@ export function makePlural(
   const bundledPlural = makeBundledPlural(w);
   function addMascPluralSuffix(
     animate?: boolean,
-    shortSquish?: boolean
+    shortSquish?: boolean,
   ): T.PluralInflectionSet {
     if (shortSquish && (w.infap === undefined || w.infaf === undefined)) {
       throw new Error(`no irregular inflection info for ${w.p} - ${w.ts}`);
@@ -124,9 +124,9 @@ export function makePlural(
       shortSquish
         ? makePsString(
             (w.infap as string).slice(0, -1),
-            (w.infaf as string).slice(0, -1)
+            (w.infaf as string).slice(0, -1),
           )
-        : w
+        : w,
     );
     const base = hasShwaEnding(b)
       ? makePsString(b.p.slice(0, -1), b.f.slice(0, -1))
@@ -136,8 +136,8 @@ export function makePlural(
         base,
         animate && !shortSquish
           ? { p: "ان", f: "áan" }
-          : { p: "ونه", f: "óona" }
-      )
+          : { p: "ونه", f: "óona" },
+      ),
     );
   }
   function addAnimUnisexPluralSuffix(): T.UnisexSet<T.PluralInflectionSet> {
@@ -157,7 +157,7 @@ export function makePlural(
       concatPsString(
         base,
         { p: "یان", f: "iyáan" },
-        gender === "fem" ? { p: "ې", f: "e" } : ""
+        gender === "fem" ? { p: "ې", f: "e" } : "",
       ),
     ];
     return [
@@ -224,10 +224,10 @@ export function makePlural(
   const type = w.c?.includes("unisex")
     ? "unisex noun"
     : w.c?.includes("n. m.")
-    ? "masc noun"
-    : w.c?.includes("n. f.")
-    ? "fem noun"
-    : "other";
+      ? "masc noun"
+      : w.c?.includes("n. f.")
+        ? "fem noun"
+        : "other";
   if (pashtoPlural) {
     return {
       plural: pashtoPlural,

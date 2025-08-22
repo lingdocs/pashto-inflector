@@ -10,13 +10,14 @@ import Pashto from "./Pashto";
 import Phonetics from "./Phonetics";
 import * as T from "../../../types";
 import { addErrorToPs } from "./utils";
+import { PsJSX } from "./jsx-map";
 
 const InlinePs = ({
   ps,
   opts,
   error,
 }: {
-  ps: T.PsString | (T.PsJSX & { e?: string });
+  ps: T.PsString | (PsJSX & { e?: string });
   opts: T.TextOptions;
   error?: boolean;
 }) => {

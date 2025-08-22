@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import type { JSX } from "react";
 import { StyleHTMLAttributes } from "react";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
@@ -23,8 +24,8 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: {
     "placeholder" in props
       ? props.placeholder
       : "search" in props.entryFeeder
-      ? "Search Pashto"
-      : "Search…";
+        ? "Search Pashto"
+        : "Search…";
   function makeOption(e: E | T.DictionaryEntry) {
     if ("entry" in e) {
       return (props.isVerbSelect ? makeVerbSelectOption : makeSelectOption)(
@@ -232,9 +233,8 @@ function makeDeterminerOption(d: T.Determiner): {
 
 function makeSandwichOption(s: T.Sandwich): { label: string; value: string } {
   return {
-    label: `${s.before ? s.before.p : ""} ... ${s.after ? s.after.p : ""} (${
-      s.e
-    })`,
+    label: `${s.before ? s.before.p : ""} ... ${s.after ? s.after.p : ""} (${s.e
+      })`,
     value: JSON.stringify(s),
   };
 }

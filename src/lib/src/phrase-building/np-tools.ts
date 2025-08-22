@@ -2,8 +2,7 @@ import { assertNever, isFirstPerson, isSecondPerson } from "../misc-helpers";
 import * as T from "../../../types";
 import { concatPsString } from "../p-text-helpers";
 import { flattenLengths } from "./compile";
-import { monoidPsStringWVars } from "../fp-ps";
-import { concatAll } from "fp-ts/lib/Monoid";
+import { monoidPsStringWVars, concatAll } from "../fp-ps";
 import { getEnglishWord } from "../get-english-word";
 
 function getBaseWDetsAndAdjs(

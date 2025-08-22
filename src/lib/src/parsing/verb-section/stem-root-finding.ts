@@ -34,9 +34,8 @@ export function findImperfectiveRoot(
   if (["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
     return [];
   }
-  const reg = [s, s + "ل"]
-    .flatMap(dictionary.verbEntryLookup)
-    .filter((e) => isMergedCompOrSimple(e.entry));
+  const regA = [s, s + "ل"].flatMap(dictionary.verbEntryLookup);
+  const reg = regA.filter((e) => isMergedCompOrSimple(e.entry));
   return reg.map((verb) => ({
     type: "verb",
     aspect: "imperfective",

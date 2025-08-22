@@ -32,8 +32,7 @@ import {
   getSubjectSelectionFromBlocks,
   getSubjectSelection,
 } from "../../../lib/src/phrase-building/blocks-utils";
-import { concatAll } from "fp-ts/lib/Monoid";
-import { monoidPsStringWVars } from "../../../lib/src/fp-ps";
+import { concatAll, monoidPsStringWVars } from "../../../lib/src/fp-ps";
 
 const correctEmoji = [
   "✅",
@@ -68,20 +67,20 @@ const stageLength = 5;
 
 type QuizState = (
   | {
-      stage: "multiple choice";
-      answer: {
-        ps: T.SingleOrLengthOpts<T.PsString[]>;
-        e?: string[] | undefined;
-      };
-      options: T.PsString[];
-    }
+    stage: "multiple choice";
+    answer: {
+      ps: T.SingleOrLengthOpts<T.PsString[]>;
+      e?: string[] | undefined;
+    };
+    options: T.PsString[];
+  }
   | {
-      stage: "blanks";
-      answer: {
-        ps: T.PsString[];
-        withBa: boolean;
-      };
-    }
+    stage: "blanks";
+    answer: {
+      ps: T.PsString[];
+      withBa: boolean;
+    };
+  }
 ) & {
   qNumber: number;
   vps: T.VPSelectionComplete;
@@ -119,7 +118,7 @@ function VPExplorerQuiz(props: {
       "p" in a
         ? isInAnswer(a, quizState.answer)
         : // @ts-expect-error // TODO: CLEANUP
-          blanksAnswerCorrect(a, quizState.answer);
+        blanksAnswerCorrect(a, quizState.answer);
     setAnswerBlank("");
     setWithBa(false);
     if (correct) {
@@ -369,9 +368,8 @@ function ProgressBar({ quizState }: { quizState: QuizState }) {
     <div className="mb-3">
       <div className="progress mb-1" style={{ height: "3px" }}>
         <div
-          className={`progress-bar bg-${
-            quizState.result === "fail" ? "danger" : "primary"
-          }`}
+          className={`progress-bar bg-${quizState.result === "fail" ? "danger" : "primary"
+            }`}
           role="progressbar"
           style={{ width: getProgressWidth() }}
         />
@@ -456,8 +454,8 @@ function tickQuizState(
   const stage = beatFirstStage
     ? "blanks"
     : "stage" in startingWith
-    ? startingWith.stage
-    : "multiple choice";
+      ? startingWith.stage
+      : "multiple choice";
   const blanksAnswer = getBlanksAnswer(newVps);
   if (stage === "blanks") {
     return {
@@ -556,9 +554,9 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
     oldSubj === undefined
       ? undefined
       : {
-          subj: oldSubj,
-          obj: oldObj,
-        }
+        subj: oldSubj,
+        obj: oldObj,
+      }
   );
   const t = getTenseFromVerbSelection(vps.verb);
   const verb: T.VerbSelectionComplete = {
@@ -584,13 +582,13 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
         )) ||
         vpsObj === undefined
         ? {
-            type: "NP",
-            selection: {
-              type: "pronoun",
-              distance: "far",
-              person: obj,
-            },
-          }
+          type: "NP",
+          selection: {
+            type: "pronoun",
+            distance: "far",
+            person: obj,
+          },
+        }
         : vpsObj
     ),
     verb,
@@ -619,28 +617,28 @@ function getRandomVPSelection(mix: MixType = "both") {
       selection:
         subject?.selection.type === "pronoun"
           ? {
-              ...subject.selection,
-              person: subj,
-            }
+            ...subject.selection,
+            person: subj,
+          }
           : {
-              type: "pronoun",
-              distance: "far",
-              person: subj,
-            },
+            type: "pronoun",
+            distance: "far",
+            person: subj,
+          },
     };
     const randObj: T.NPSelection = {
       type: "NP",
       selection:
         typeof object === "object" && object.selection.type === "pronoun"
           ? {
-              ...object.selection,
-              person: obj,
-            }
+            ...object.selection,
+            person: obj,
+          }
           : {
-              type: "pronoun",
-              distance: "far",
-              person: obj,
-            },
+            type: "pronoun",
+            distance: "far",
+            person: obj,
+          },
     };
     // ensure that the verb selection is complete
     if (mix === "tenses") {

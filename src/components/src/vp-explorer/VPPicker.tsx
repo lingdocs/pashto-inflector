@@ -18,7 +18,6 @@ import {
 import { roleIcon } from "../role-icons";
 import VPExplorerExplanationModal from "./VPExplorerExplanationModal";
 import APPicker from "../block-pickers/APPicker";
-// import autoAnimate from "@formkit/auto-animate";
 import {
   getObjectSelection,
   getSubjectSelection,
@@ -43,9 +42,6 @@ function VPPicker({
   entryFeeder: T.EntryFeeder;
 }) {
   const parent = useRef<HTMLDivElement>(null);
-  // useEffect(() => {
-  //     parent.current && autoAnimate(parent.current);
-  // }, [parent]);
   const [showingExplanation, setShowingExplanation] = useState<
     { role: "servant" | "king"; item: "subject" | "object" } | false
   >(false);
@@ -73,13 +69,13 @@ function VPPicker({
   const phraseIsComplete = !!VPS;
   const rendered = VPS
     ? (() => {
-        try {
-          return renderVP(VPS);
-        } catch (e) {
-          console.error(e);
-          return undefined;
-        }
-      })()
+      try {
+        return renderVP(VPS);
+      } catch (e) {
+        console.error(e);
+        return undefined;
+      }
+    })()
     : undefined;
   const servantIsShrunk = includesShrunkenServant(rendered?.kids);
   const isPast = isPastTense(
@@ -108,9 +104,9 @@ function VPPicker({
               payload: vps.externalComplement
                 ? undefined
                 : {
-                    type: "complement",
-                    selection: { type: "unselected" },
-                  },
+                  type: "complement",
+                  selection: { type: "unselected" },
+                },
             })
           }
         >
@@ -131,10 +127,10 @@ function VPPicker({
               style={{
                 background:
                   servantIsShrunk &&
-                  ((roles.servant === "subject" &&
-                    block?.type === "subjectSelection") ||
-                    (roles.servant === "object" &&
-                      block?.type === "objectSelection"))
+                    ((roles.servant === "subject" &&
+                      block?.type === "subjectSelection") ||
+                      (roles.servant === "object" &&
+                        block?.type === "objectSelection"))
                     ? shrunkenBackground
                     : "inherit",
               }}
@@ -144,8 +140,8 @@ function VPPicker({
                 style={{ height: "1rem" }}
               >
                 {i > 0 &&
-                !isNoObject(blocks[i - 1].block) &&
-                !isGenStatCompNoun(block) ? (
+                  !isNoObject(blocks[i - 1].block) &&
+                  !isGenStatCompNoun(block) ? (
                   <div
                     className="small clickable ml-1"
                     onClick={() =>
@@ -161,8 +157,8 @@ function VPPicker({
                   <div />
                 )}
                 {i < vps.blocks.length - 1 &&
-                !isNoObject(blocks[i + 1].block) &&
-                !isGenStatCompNoun(block) ? (
+                  !isNoObject(blocks[i + 1].block) &&
+                  !isGenStatCompNoun(block) ? (
                   <div
                     className="small clickable mr-1"
                     onClick={() =>

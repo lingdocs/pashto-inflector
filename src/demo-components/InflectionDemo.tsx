@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import * as T from "../types";
+import type * as T from "../types";
+import type { JSX } from "react";
 import InlinePs from "../components/src/text-display/InlinePs";
 import EntrySelect from "../components/src/selects/EntrySelect";
 import * as tp from "../lib/src/type-predicates";
@@ -29,51 +30,51 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
     value: T.InflectionPattern | "all";
     label: JSX.Element | string;
   }[] = [
-    {
-      value: "all",
-      label: "all types",
-    },
-    {
-      value: 0,
-      label: "no inflection",
-    },
-    {
-      value: 1,
-      label: "basic",
-    },
-    {
-      value: 2,
-      label: (
-        <>
-          unstressed <InlinePs opts={opts} ps={{ p: "ی", f: "ay" }} />
-        </>
-      ),
-    },
-    {
-      value: 3,
-      label: (
-        <>
-          stressed <InlinePs opts={opts} ps={{ p: "ی", f: "áy" }} />
-        </>
-      ),
-    },
-    {
-      value: 4,
-      label: '"Pashtoon" pattern',
-    },
-    {
-      value: 5,
-      label: "short squish",
-    },
-    {
-      value: 6,
-      label: (
-        <>
-          fem. inan. <InlinePs opts={opts} ps={{ p: "ي", f: "ee" }} />
-        </>
-      ),
-    },
-  ];
+      {
+        value: "all",
+        label: "all types",
+      },
+      {
+        value: 0,
+        label: "no inflection",
+      },
+      {
+        value: 1,
+        label: "basic",
+      },
+      {
+        value: 2,
+        label: (
+          <>
+            unstressed <InlinePs opts={opts} ps={{ p: "ی", f: "ay" }} />
+          </>
+        ),
+      },
+      {
+        value: 3,
+        label: (
+          <>
+            stressed <InlinePs opts={opts} ps={{ p: "ی", f: "áy" }} />
+          </>
+        ),
+      },
+      {
+        value: 4,
+        label: '"Pashtoon" pattern',
+      },
+      {
+        value: 5,
+        label: "short squish",
+      },
+      {
+        value: 6,
+        label: (
+          <>
+            fem. inan. <InlinePs opts={opts} ps={{ p: "ي", f: "ee" }} />
+          </>
+        ),
+      },
+    ];
   const entries = (nounsAdjs as (T.NounEntry | T.AdjectiveEntry)[]).filter(
     tp.isPattern(pattern)
   );
@@ -233,17 +234,17 @@ function inflectionSubUrl(pattern: T.InflectionPattern): string {
   return pattern === 0
     ? ""
     : pattern === 1
-    ? "#1-basic"
-    : pattern === 2
-    ? "#2-words-ending-in-an-unstressed-ی---ey"
-    : pattern === 3
-    ? "#3-words-ending-in-a-stressed-ی---éy"
-    : pattern === 4
-    ? "#4-words-with-the-pashtoon-pattern"
-    : pattern === 5
-    ? "#5-shorter-words-that-squish"
-    : // : pattern === 6
-      "#6-inanimate-feminine-nouns-ending-in-ي---ee";
+      ? "#1-basic"
+      : pattern === 2
+        ? "#2-words-ending-in-an-unstressed-ی---ey"
+        : pattern === 3
+          ? "#3-words-ending-in-a-stressed-ی---éy"
+          : pattern === 4
+            ? "#4-words-with-the-pashtoon-pattern"
+            : pattern === 5
+              ? "#5-shorter-words-that-squish"
+              : // : pattern === 6
+              "#6-inanimate-feminine-nouns-ending-in-ي---ee";
 }
 
 export default InflectionDemo;

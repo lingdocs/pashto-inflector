@@ -50,7 +50,7 @@ type Plurals =
 
 export function getInfsAndVocative(
   entryR: T.DictionaryEntryNoFVars | T.Determiner,
-  plurals: Plurals
+  plurals: Plurals,
 ):
   | {
       inflections?: T.Inflections;
@@ -88,8 +88,8 @@ export function getInfsAndVocative(
     isDeterminerEntry(entry)
       ? "unisex"
       : isMascNounEntry(entry)
-      ? "masc"
-      : "fem";
+        ? "masc"
+        : "fem";
   if (pattern === 0) {
     return false;
   }
@@ -110,7 +110,7 @@ export function getInfsAndVocative(
 
 function familialMascVocative(
   entry: T.MascNounEntry,
-  plurals: Plurals
+  plurals: Plurals,
 ): T.PluralInflections | undefined {
   if (endsInConsonant(entry) || hasShwaEnding(entry)) {
     const plr = genderPlural("masc", plurals);
@@ -160,7 +160,7 @@ const patternFuncs: Record<
 
 function addPlurals(
   x: T.ArrayOneOrMore<T.PsString>,
-  plurals: T.PsString[]
+  plurals: T.PsString[],
 ): T.ArrayOneOrMore<T.PsString> {
   if (!plurals) {
     return x;
@@ -197,7 +197,7 @@ function vocFemAnimException({
 }: PatternInput): T.PluralInflections {
   if (!entry.ppp || !entry.ppf) {
     throw new Error(
-      "plural missing for feminine animate exception noun " + entry.p
+      "plural missing for feminine animate exception noun " + entry.p,
     );
   }
   const base =
@@ -229,7 +229,10 @@ function pattern1Masc({
   const shwaEnding = hasShwaEnding(entry);
   const base = mapGen(
     (ps) => (countSyllables(entry) === 1 ? accentOnNFromEnd(ps, 0) : ps),
-    mapPsString((x: string): string => (shwaEnding ? x.slice(0, -1) : x), entry)
+    mapPsString(
+      (x: string): string => (shwaEnding ? x.slice(0, -1) : x),
+      entry,
+    ),
   );
   if (shwaEnding && entry.f.endsWith("ú")) {
     const inflections: T.InflectionSet = [
@@ -265,7 +268,7 @@ function pattern1Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
         : ps,
     hasFemEnding
       ? mapPsString((x) => x.slice(0, -1), entry)
-      : psStringFromEntry(entry)
+      : psStringFromEntry(entry),
   );
   if (
     endsWith(
@@ -273,7 +276,7 @@ function pattern1Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
         { p: "ع", f: "a" },
         { p: "ع", f: "a'" },
       ],
-      entry
+      entry,
     ) &&
     !["ا", "ی", "ې"].includes(e.p.at(-2) || "")
   ) {
@@ -281,7 +284,7 @@ function pattern1Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
       {
         f: (f) => f.slice(0, f.endsWith("'") ? -2 : -1),
       },
-      entry
+      entry,
     );
     if (endAccented) {
       const inflections: T.InflectionSet = [
@@ -312,7 +315,7 @@ function pattern1Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
       {
         f: (f) => f.slice(0, -1),
       },
-      entry
+      entry,
     );
     if (accentIsOnEnd(entry)) {
       const inflections: T.InflectionSet = [
@@ -392,7 +395,7 @@ function pattern2Masc({
 function pattern2Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
   const base = makePsString(
     entry.p.slice(0, -1),
-    entry.f.slice(0, entry.f.endsWith("ay") ? -2 : -1)
+    entry.f.slice(0, entry.f.endsWith("ay") ? -2 : -1),
   );
   const inflections: T.InflectionSet = [
     [concatPs(base, e)],
@@ -412,7 +415,7 @@ function pattern3Masc({
   const base = makePsString(
     entry.p.slice(0, -1),
     // shouldn't be accents here but remove just to be sure
-    removeAccents(entry.f.slice(0, -2))
+    removeAccents(entry.f.slice(0, -2)),
   );
   const baseSyls = countSyllables(base);
   const inflections: T.InflectionSet = [
@@ -436,7 +439,7 @@ function pattern3Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
   const base = makePsString(
     entry.p.slice(0, -1),
     // shouldn't be accents here but remove just to be sure
-    removeAccents(entry.f.slice(0, -2))
+    removeAccents(entry.f.slice(0, -2)),
   );
   const baseSyls = countSyllables(base);
   const plain: T.ArrayOneOrMore<T.PsString> = [
@@ -460,7 +463,7 @@ function pattern4Masc({
   const base = countSyllables(entry) === 1 ? accentOnNFromEnd(entry, 0) : entry;
   const firstInf = accentOnNFromEnd(
     makePsString(entry.infap || "", entry.infaf || ""),
-    0
+    0,
   );
   const secondBase = makePsString(entry.infbp || "", entry.infbf || "");
   const inflections: T.InflectionSet = [
@@ -482,7 +485,7 @@ function pattern4Masc({
         [
           concatPs(
             mapPsString((x) => x.slice(0, -1), base),
-            á
+            á,
           ),
         ],
         addPlurals(inflections[2], plurals),
@@ -540,7 +543,7 @@ function pattern5Fem({ entry, plurals }: PatternInput): InflectionsAndVocative {
 
 function aggregateInfsAndVoc(
   masc: InflectionsAndVocative | undefined,
-  fem: InflectionsAndVocative | undefined
+  fem: InflectionsAndVocative | undefined,
 ): {
   inflections?: T.Inflections;
   vocative?: T.PluralInflections;

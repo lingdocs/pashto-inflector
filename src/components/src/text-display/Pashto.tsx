@@ -8,7 +8,7 @@
 
 import { convertSpelling } from "../../../lib/src/convert-spelling";
 import { phoneticsToDiacritics } from "../../../lib/src/phonetics-to-diacritics";
-import { psJSXMap } from "./jsx-map";
+import { PsJSX, psJSXMap } from "./jsx-map";
 import * as T from "../../../types";
 
 const Pashto = ({
@@ -16,7 +16,7 @@ const Pashto = ({
   ps,
 }: {
   opts: T.TextOptions;
-  ps: T.PsString | T.PsJSX;
+  ps: T.PsString | PsJSX;
 }) => {
   function convertText(ps: T.PsString, opts: T.TextOptions): string {
     const p = opts.diacritics
@@ -31,9 +31,9 @@ const Pashto = ({
   return (
     <span className="p-text" dir="rtl" style={style} lang="ps">
       {typeof ps.p !== "string" && typeof ps.f !== "string"
-        ? psJSXMap(ps as T.PsJSX, "p", (ps: T.PsString) =>
-            convertText(ps, opts)
-          )
+        ? psJSXMap(ps as PsJSX, "p", (ps: T.PsString) =>
+          convertText(ps, opts)
+        )
         : convertText(ps as T.PsString, opts)}
     </span>
   );

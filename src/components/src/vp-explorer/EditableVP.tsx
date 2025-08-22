@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import VPDisplay from "./VPDisplay";
 import VPPicker from "./VPPicker";

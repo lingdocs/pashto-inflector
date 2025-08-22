@@ -1,4 +1,5 @@
 import * as T from "../../../types";
+import type { JSX } from "react";
 import InlinePs from "./../text-display/InlinePs";
 
 export default function HumanReadableInflectionPattern(
