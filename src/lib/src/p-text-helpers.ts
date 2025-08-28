@@ -295,8 +295,8 @@ export function removeEndingL(s: T.PsString): T.PsString {
   };
   if (!lOnEnd()) return s;
   return {
-    p: s.p.substr(0, s.p.length - 1),
-    f: s.f.substr(0, s.f.length - 2),
+    p: s.p.slice(0, s.p.length - 1),
+    f: s.f.slice(0, s.f.length - 2),
   };
 }
 
@@ -468,8 +468,7 @@ export function addToForm(
         return b.map((person, persNum) =>
           person.map(
             (item, singPlur) =>
-              // @ts-expect-error because
-              item.reduce((vars, ps) => {
+              item.reduce<T.PsString[]>((vars, ps: T.PsString) => {
                 const varIndexes = [...Array(multiplyEachVariationBy).keys()];
                 return [
                   ...vars,
@@ -477,7 +476,7 @@ export function addToForm(
                     makeItem(ps, persNum, singPlur, varIndex, true),
                   ),
                 ];
-              }, []) as unknown as T.ArrayOneOrMore<T.PsString>,
+              }, []) as T.ArrayOneOrMore<T.PsString>,
           ),
         ) as T.VerbBlock;
       }
@@ -493,7 +492,15 @@ export function addToForm(
       toAdd.some(
         (element) =>
           (element !== " " && "long" in element) ||
-          (Array.isArray(element) && element.some((e) => "long" in e)),
+          (Array.isArray(element) &&
+            element.some(
+              (
+                e:
+                  | T.VerbBlock[number]
+                  | T.PsString
+                  | T.SingleOrLengthOpts<T.PsString>,
+              ) => "long" in e,
+            )),
       );
     if (useLengthOptions) {
       // might be totally unneccessary...

@@ -1,7 +1,18 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "downlevelIteration": true,
+    "lib": [
+      "DOM",
+      "ES2021",
+      "ES2022",
+      "ES2023",
+      "ESNext"
+    ]
+  },
 }

@@ -38,15 +38,6 @@ export function parseVerbX<X extends T.VerbX>(
   if (!tokensExist(tokens)) {
     return [];
   }
-  const active = parseActive<X>(tokens, dictionary, ph, category, parseX);
-  const activeWelded = parseActiveWelded<X>(tokens, dictionary, ph, category);
-  const passiveWelded = parsePassiveWeldedX<X>(
-    tokens,
-    dictionary,
-    ph,
-    category,
-  );
-  const passiveDoubleW = parsePassiveDoubleWeldedX<X>(tokens, ph, category);
   const res: T.ParseResult<T.ParsedV<X>["content"]>[] = [
     ...parseActive<X>(tokens, dictionary, ph, category, parseX),
     ...parseActiveWelded<X>(tokens, dictionary, ph, category),

@@ -1,19 +1,35 @@
 {
-  "name": "pashto-inflector-website",
-  "version": "8.0.3",
+  "name": "@lingdocs/pashto-inflector",
+  "version": "9.0.3",
   "type": "module",
+  "license": "(MIT OR Apache-2.0)",
+  "publishConfig": {
+    "registry": "https://npm.lingdocs.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lingdocs/pashto-inflector.git"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
   "scripts": {
-    "patch": "npm version patch --no-git-tag-version && cd src/lib && npm version patch --no-git-tag-version && cd ../components && npm version patch --no-git-tag-version",
-    "minor": "npm version minor --no-git-tag-version && cd src/lib && npm version minor --no-git-tag-version && cd ../components && npm version minor --no-git-tag-version",
-    "major": "npm version major --no-git-tag-version && cd src/lib && npm version major --no-git-tag-version && cd ../components && npm version major --no-git-tag-version",
+    "patch": "npm version patch --no-git-tag-version",
+    "minor": "npm version minor --no-git-tag-version",
+    "major": "npm version major --no-git-tag-version",
     "dev": "vite",
     "lint": "eslint .",
     "test": "jest",
     "preview": "vite preview",
-    "install-all": "npm install --legacy-peer-deps && cd src/lib && npm install && cd ../components && npm install --legacy-peer-deps && cd ../.. && npm run get-words",
+    "type-check": "tsc --noEmit",
     "build-website": "npm run get-words && tsc && vite build",
     "get-words": "tsx get-words.ts && tsx get-mini-dict-and-split-verbs.ts",
     "check-all-inflections": "tsx check-all-inflections.ts"
+  },
+  "exports": {
+    ".": "./src/components/library.ts",
+    "./lib": "./src/lib/library.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
@@ -34,12 +50,12 @@
     "use-debounce": "^10.0.5"
   },
   "devDependencies": {
-    "@eslint/js": "^9.33.0",
+    "@eslint/js": "^9.34.0",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.1.11",
-    "@types/react-dom": "^19.1.7",
+    "@types/react-dom": "^19.1.8",
     "@vitejs/plugin-react": "^5.0.1",
-    "eslint": "^9.33.0",
+    "eslint": "^9.34.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
@@ -48,9 +64,9 @@
     "jest-extended": "^6.0.0",
     "ts-jest": "^29.4.1",
     "tsc-alias": "^1.8.16",
-    "tsx": "^4.20.4",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.40.0",
+    "typescript-eslint": "^8.41.0",
     "vite": "^7.1.3"
   }
 }

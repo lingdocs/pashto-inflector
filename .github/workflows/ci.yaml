@@ -1,4 +1,4 @@
-name: Publish
+CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  ci:
     runs-on: ubuntu-latest
     env:
       LINGDOCS_DICTIONARY_URL: ${{ secrets.LINGDOCS_DICTIONARY_URL }}
@@ -16,8 +16,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
+      - name: test and typecheck
+        run: |
+          npm install && \
+          npm run get-words && \
+          npm run type-check && \
+          npm run test
       - name: Check if version has been updated
         id: check
         uses: EndBug/version-check@v2
@@ -26,14 +32,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish when version changed
         if: steps.check.outputs.changed == 'true'
-        run: |
-          npm run install-all
-          npm run build-lib
-          npm run build-components
-          npm urn test --silent
-          cp .npmrc src/lib
-          cp .npmrc src/components
-          cd src/lib
-          npm publish
-          cd ../components
-          npm publish
+        run: npm publish
+      # - TODO name: Deploy to netlify

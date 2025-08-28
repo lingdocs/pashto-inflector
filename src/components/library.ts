@@ -32,6 +32,7 @@ import NPDisplay from "./src/vp-explorer/NPDisplay";
 import HumanReadableInflectionPattern from "./src/tables/HumanReadableInflectionPattern";
 import { psJSXMap } from "./src/text-display/jsx-map";
 import genderColors from "./src/gender-colors";
+import { PsJSX } from "./src/text-display/jsx-map";
 
 // this library also includes everything from the core inflect library
 export * from "../lib/library";
@@ -84,4 +85,5 @@ export {
   HumanReadableInflectionPattern,
   psJSXMap,
   genderColors,
+  type PsJSX,
 };

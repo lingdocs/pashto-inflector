@@ -5,11 +5,10 @@ export default {
     "^.+.tsx?$": [
       "ts-jest",
       {
-        tsconfig: "tsconfig.app.json",
+        tsconfig: "tsconfig.json",
         diagnostics: false,
       },
     ],
   },
   setupFilesAfterEnv: ["./testSetup.ts"],
 };
-

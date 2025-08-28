@@ -1,7 +1,11 @@
 import * as T from "../../../types";
 import { inflectWord } from "../pashto-inflector";
 import * as grammarUnits from "../grammar-units";
-import { getVerbBlockPosFromPerson, getPersonNumber } from "../misc-helpers";
+import {
+  getVerbBlockPosFromPerson,
+  getPersonNumber,
+  hasKey,
+} from "../misc-helpers";
 import { concatPsString, psStringFromEntry } from "../p-text-helpers";
 import { getEnglishParticiple } from "../np-tools";
 import { getEnglishWord } from "../get-english-word";
@@ -24,6 +28,7 @@ import { addMayo, mayoOnWord } from "./mayo-utils";
 // my seeing women...
 // seeing my women...
 // the women seeing me...
+//
 
 export function renderNPSelection(
   NP: T.NPSelection,
@@ -32,7 +37,7 @@ export function renderNPSelection(
   role: "subject",
   soRole: "servant" | "king" | "none",
   isPuSandwich: boolean,
-  isMayoSandwich: "req" | "opt" | "no"
+  isMayoSandwich: "req" | "opt" | "no",
 ): T.Rendered<T.NPSelection>;
 export function renderNPSelection(
   NP: T.NPSelection,
@@ -41,7 +46,7 @@ export function renderNPSelection(
   role: "object",
   soRole: "servant" | "king" | "none",
   isPuSandwich: boolean,
-  isMayoSandwich: "req" | "opt" | "no"
+  isMayoSandwich: "req" | "opt" | "no",
 ): T.Rendered<T.NPSelection>;
 export function renderNPSelection(
   NP: T.NPSelection,
@@ -50,7 +55,7 @@ export function renderNPSelection(
   role: "subject" | "object",
   soRole: "servant" | "king" | "none",
   isPuSandwich: boolean,
-  isMayoSandwich: "req" | "opt" | "no"
+  isMayoSandwich: "req" | "opt" | "no",
 ): T.Rendered<T.NPSelection> {
   if (typeof NP !== "object") {
     if (role !== "object") {
@@ -67,7 +72,7 @@ export function renderNPSelection(
         soRole,
         undefined,
         isPuSandwich,
-        isMayoSandwich
+        isMayoSandwich,
       ),
     };
   }
@@ -78,7 +83,7 @@ export function renderNPSelection(
         NP.selection,
         inflected,
         inflectEnglish,
-        soRole
+        soRole,
       ),
     };
   }
@@ -97,7 +102,7 @@ export function renderNounSelection(
   role: "servant" | "king" | "none",
   noArticles?: true | "noArticles",
   isPuSandwich?: boolean,
-  isMayoSandwich?: "req" | "opt" | "no"
+  isMayoSandwich?: "req" | "opt" | "no",
 ): T.Rendered<T.NounSelection> {
   const english = getEnglishFromNoun(n.entry, n.number, noArticles);
   const isPattern1 = isPattern1Entry(n.entry);
@@ -137,7 +142,7 @@ export function renderNounSelection(
               inflected,
               number: n.number,
               gender: n.gender,
-            })
+            }),
           ),
         }
       : undefined;
@@ -152,8 +157,8 @@ export function renderNounSelection(
         // TODO: This is not the best because the variations of optional and inflecting adjectives in the
         // sandwich aren't fully accurate - but to get the variations properly we need to think of a way
         // for the adjective and noun rendering / compiling to talk to each other better
-        mayo === "opt" ? "no" : mayo
-      )
+        mayo === "opt" ? "no" : mayo,
+      ),
     ),
     person,
     inflected,
@@ -193,8 +198,8 @@ function renderDeterminer({
       ? number === "plural"
         ? { p: "دغو", f: "dágho" }
         : gender === "masc"
-        ? { p: "دغه", f: "dágha" }
-        : { p: "دغې", f: "dághe" }
+          ? { p: "دغه", f: "dágha" }
+          : { p: "دغې", f: "dághe" }
       : { p: "دغه", f: "dágha" };
     return {
       type: "determiner",
@@ -211,8 +216,8 @@ function renderDeterminer({
       ? number === "plural"
         ? { p: "هغو", f: "hágho" }
         : gender === "masc"
-        ? { p: "هغه", f: "hágha" }
-        : { p: "هغې", f: "hághe" }
+          ? { p: "هغه", f: "hágha" }
+          : { p: "هغې", f: "hághe" }
       : { p: "هغه", f: "hágha" };
     return {
       type: "determiner",
@@ -228,24 +233,24 @@ function renderDeterminer({
     determiner.f === "Tol"
       ? "all/the whole"
       : determiner.f === "bul"
-      ? "other/another"
-      : determiner.f === "har"
-      ? "every/each"
-      : determiner.f === "koom"
-      ? "some/which"
-      : determiner.f === "heets"
-      ? "no"
-      : determiner.f === "dáase"
-      ? number === "plural"
-        ? "such/like these"
-        : "such/like this"
-      : determiner.f === "daghase"
-      ? `just such/just like ${number === "plural" ? "these" : "this"}`
-      : determiner.f === "hase"
-      ? `such/like ${number === "plural" ? "those" : "that"}`
-      : number === "plural"
-      ? "just such/just like these"
-      : "just such/just like this";
+        ? "other/another"
+        : determiner.f === "har"
+          ? "every/each"
+          : determiner.f === "koom"
+            ? "some/which"
+            : determiner.f === "heets"
+              ? "no"
+              : determiner.f === "dáase"
+                ? number === "plural"
+                  ? "such/like these"
+                  : "such/like this"
+                : determiner.f === "daghase"
+                  ? `just such/just like ${number === "plural" ? "these" : "this"}`
+                  : determiner.f === "hase"
+                    ? `such/like ${number === "plural" ? "those" : "that"}`
+                    : number === "plural"
+                      ? "just such/just like these"
+                      : "just such/just like this";
   return {
     type: "determiner",
     determiner,
@@ -261,7 +266,7 @@ function inflectDeterminer(
   determiner: T.Determiner,
   inflected: boolean,
   gender: T.Gender,
-  number: T.NounNumber
+  number: T.NounNumber,
 ): T.PsString[] {
   const infs = getInfsAndVocative(determiner, undefined);
   if (!infs || !infs.inflections) {
@@ -278,7 +283,7 @@ function renderPronounSelection(
   p: T.PronounSelection,
   inflected: boolean,
   englishInflected: boolean,
-  role: "servant" | "king" | "none"
+  role: "servant" | "king" | "none",
 ): T.Rendered<T.PronounSelection> {
   const [row, col] = getVerbBlockPosFromPerson(p.person);
   return {
@@ -297,7 +302,7 @@ function renderPronounSelection(
 function renderParticipleSelection(
   p: T.ParticipleSelection,
   inflected: boolean,
-  role: "servant" | "king" | "none"
+  role: "servant" | "king" | "none",
 ): T.Rendered<T.ParticipleSelection> {
   const o = { p: "و", f: "o" };
   const accentedO = { p: "و", f: "ó" };
@@ -317,7 +322,7 @@ function renderParticipleSelection(
           long: (x) => [concatPsString(x, o)],
           short: (x) => [concatPsString(x, accentedO)],
         },
-        base
+        base,
       )
     : [v];
   return {
@@ -333,7 +338,7 @@ function renderParticipleSelection(
 
 export function renderPossesor(
   possesor: T.PossesorSelection | undefined,
-  possesorRole: "servant" | "king" | "none" | "subj/obj"
+  possesorRole: "servant" | "king" | "none" | "subj/obj",
 ): T.RenderedPossesorSelection | undefined {
   if (!possesor) return undefined;
   const isSingUnisexAnim5PatternNoun =
@@ -351,7 +356,7 @@ export function renderPossesor(
       "subject",
       possesorRole === "subj/obj" ? "none" : possesorRole,
       false,
-      "no"
+      "no",
     ),
   };
 }
@@ -360,11 +365,10 @@ function getBasicInf(
   infs: T.Inflections,
   gender: T.Gender,
   number: T.NounNumber,
-  inflected: boolean
+  inflected: boolean,
 ): T.PsString[] | false {
   const inflectionNumber = (inflected ? 1 : 0) + (number === "plural" ? 1 : 0);
-  if (gender in infs) {
-    // @ts-expect-error - bexpect-error - because
+  if (hasKey(infs, gender)) {
     return infs[gender][inflectionNumber];
   }
   return false;
@@ -375,20 +379,16 @@ function getInf(
   t: "plural" | "arabicPlural" | "inflections",
   gender: T.Gender,
   plural: boolean,
-  inflected: boolean
+  inflected: boolean,
 ): T.PsString[] {
   // TODO: make this safe!!
   if (
     infs &&
-    t in infs &&
-    // @ts-expect-error - because
+    hasKey(infs, t) &&
     infs[t] !== undefined &&
-    // @ts-expect-error - because
-    gender in infs[t] &&
-    // @ts-expect-error - because
+    hasKey(infs[t], gender) &&
     infs[t][gender] !== undefined
   ) {
-    // @ts-expect-error - because
     const iset = infs[t][gender] as T.InflectionSet;
     const inflectionNumber =
       (inflected ? 1 : 0) + (t === "inflections" && plural ? 1 : 0);
@@ -400,7 +400,7 @@ function getInf(
 function getEnglishFromNoun(
   entry: T.DictionaryEntry,
   number: T.NounNumber,
-  noArticles?: true | "noArticles"
+  noArticles?: true | "noArticles",
 ): string {
   const articles = {
     singular: "(a/the)",
@@ -414,14 +414,14 @@ function getEnglishFromNoun(
   const e = getEnglishWord(entry);
   if (!e)
     throw new Error(
-      `unable to get english from subject ${entry.f} - ${entry.ts}`
+      `unable to get english from subject ${entry.f} - ${entry.ts}`,
     );
 
   if (typeof e === "string") return ` ${e}`;
   if (number === "plural") return addArticle(e.plural);
   if (!e.singular || e.singular === undefined) {
     throw new Error(
-      `unable to get english from subject ${entry.f} - ${entry.ts}`
+      `unable to get english from subject ${entry.f} - ${entry.ts}`,
     );
   }
   return addArticle(e.singular);

@@ -3,6 +3,7 @@ import * as T from "../../../types";
 import { equals } from "rambda";
 import { isPastTense, renderNPSelection } from "../../library";
 import { getPersonFromNP } from "../../../lib/src/phrase-building/vp-tools";
+import { hasKey } from "../../../lib/src/misc-helpers";
 
 export function buildVerbChart({
   verb,
@@ -139,14 +140,14 @@ function grabLength(
         right: grabVBLength(vb.right) as T.VBBasic | T.VBP,
       };
     }
-    if (!(length in vb.ps)) {
+    if (hasKey(vb.ps, length)) {
+      return {
+        ...vb,
+        ps: vb.ps[length],
+      }
+    } else {
       return vb;
     }
-    return {
-      ...vb,
-      // @ts-expect-error length will be here
-      ps: vb.ps[length],
-    };
   }
   if (v.length === 2) {
     const [vb, vbe] = v;
@@ -179,10 +180,9 @@ function pullOutLengths(
   });
   if (hasMini) {
     wLengths.mini = [];
-    ps.forEach((x) => {
-      // @ts-expect-error mini is here
+    for (const x of ps) {
       wLengths.mini.push(grabLength("mini", x));
-    });
+    }
   }
   return wLengths;
 }

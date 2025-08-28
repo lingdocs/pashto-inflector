@@ -42,7 +42,7 @@ const wordsRes = await fetch(
 );
 const results = await wordsRes.json();
 
-const verbs = results.results.filter((x) => "entry" in x);
+const verbs = results.results.filter((x: any) => "entry" in x);
 const verbsContent = `
 import { DictionaryEntry, VerbEntry } from "./types";
 
@@ -52,7 +52,7 @@ const verbs: {
 }[] = ${JSON.stringify(verbs)};
 export default verbs as VerbEntry[];`;
 
-const nounsAdjs = results.results.filter((x) => !("entry" in x));
+const nounsAdjs = results.results.filter((x: any) => !("entry" in x));
 const nounsAdjsContent = `
 import { DictionaryEntry } from "./types";
 
@@ -60,7 +60,9 @@ const nounsAdjs: DictionaryEntry[] = ${JSON.stringify(nounsAdjs)};
 export default nounsAdjs;`;
 
 console.log("fetched words from dictionary");
-const missingEc = results.results.filter((x) => "entry" in x && !x.entry.ec);
+const missingEc = results.results.filter(
+  (x: any) => "entry" in x && !x.entry.ec,
+);
 if (missingEc.length) {
   console.log("verbs missing ec");
   console.log(missingEc);

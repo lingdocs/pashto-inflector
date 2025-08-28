@@ -99,7 +99,7 @@ function VPExplorer(props: {
     eventWrapper(adjustVps)({ type: "swap subj/obj" });
   }
   function eventWrapper(f: (a: VpsReducerAction) => void) {
-    return function (action: VpsReducerAction) {
+    return function(action: VpsReducerAction) {
       if (props.eventEmitter) {
         props.eventEmitter(`VP exlorer ${props.verb.entry.p}`);
       }

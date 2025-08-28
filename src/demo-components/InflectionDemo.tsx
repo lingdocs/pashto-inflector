@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type * as T from "../types";
 import type { JSX } from "react";
 import InlinePs from "../components/src/text-display/InlinePs";

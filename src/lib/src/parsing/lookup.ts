@@ -22,14 +22,14 @@ export type LookupFunction = typeof lookup;
 
 export function lookup(
   s: Partial<T.DictionaryEntry>,
-  type: "nounAdj"
+  type: "nounAdj",
 ): T.DictionaryEntry[];
 export function lookup(s: string, type: "adverb"): T.AdverbEntry[];
 export function lookup(s: string, type: "pPart"): T.VerbEntry[];
 export function lookup(s: string, type: "verb" | "participle"): T.VerbEntry[];
 export function lookup(
   s: string | Partial<T.DictionaryEntry>,
-  type: "nounAdj" | "verb" | "participle" | "pPart" | "adverb"
+  type: "nounAdj" | "verb" | "participle" | "pPart" | "adverb",
 ): T.DictionaryEntry[] | T.VerbEntry[] | T.AdverbEntry[] {
   if (type === "nounAdj") {
     if (typeof s !== "object") {
@@ -62,7 +62,7 @@ function nounAdjLookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
         e.ppp
           .split(",")
           .map((w) => w.trim())
-          .includes(value as string)
+          .includes(value as string),
     );
   }
   if (key === "ppp") {
@@ -72,16 +72,16 @@ function nounAdjLookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
         e.app
           .split(",")
           .map((w) => w.trim())
-          .includes(value as string)
+          .includes(value as string),
     );
   }
-  // @ts-expect-error its ok
-  return nounsAdjs.filter((e) => e[key] === value) as T.DictionaryEntry[];
+  // @ts-ignore
+  return nounsAdjs.filter((e) => e[key] === value);
 }
 
 function adverbLookup(s: string): T.AdverbEntry[] {
   return nounsAdjs.filter(
-    (a) => isAdverbEntry(a) && a.p === s
+    (a) => isAdverbEntry(a) && a.p === s,
   ) as T.AdverbEntry[];
 }
 
@@ -154,12 +154,12 @@ function verbLookup(input: string): T.VerbEntry[] {
       ({ entry }) =>
         [s, sAddedAa].includes(entry.p.slice(0, -1)) ||
         [s.slice(0, -1) + "دل", sAddedAa.slice(0, -1) + "دل"].includes(
-          entry.p
+          entry.p,
         ) ||
         [s, sAddedAa].includes(entry.p) ||
         [s, sAddedAa].includes(entry.psp || "") ||
         [s, sAddedAa].includes(entry.prp || "") ||
-        [s, sAddedAa].includes(entry.ssp || "")
+        [s, sAddedAa].includes(entry.ssp || ""),
     );
   }
   return verbs.filter(
@@ -173,7 +173,7 @@ function verbLookup(input: string): T.VerbEntry[] {
       (entry.tppp &&
         arraysHaveCommon(
           [input, inputWoutOo, sAddedAa, inputAddedAa],
-          splitVarients(entry.tppp)
+          splitVarients(entry.tppp),
         )) ||
       [s, sAddedAa].includes(entry.psp || "") ||
       arraysHaveCommon([entry.prp, entry.prp?.slice(0, -1)], [s, sAddedAa]) ||
@@ -189,7 +189,7 @@ function verbLookup(input: string): T.VerbEntry[] {
               entry.prp.slice(entry.separationAtP),
               entry.prp.slice(entry.separationAtP).slice(0, -1),
             ].includes(s)) ||
-          (entry.ssp && entry.ssp.slice(entry.separationAtP) === s)))
+          (entry.ssp && entry.ssp.slice(entry.separationAtP) === s))),
   );
 }
 
@@ -198,11 +198,11 @@ export function wordQuery(word: string, type: "noun"): T.NounEntry;
 export function wordQuery(word: string, type: "verb"): T.VerbEntryNoFVars;
 export function wordQuery(
   word: string,
-  type: "noun" | "adj" | "verb"
+  type: "noun" | "adj" | "verb",
 ): T.NounEntry | T.AdjectiveEntry | T.VerbEntryNoFVars {
   if (type === "verb") {
     const verb = verbs.find(
-      (x) => x.entry.p === word || x.entry.f === word || x.entry.g === word
+      (x) => x.entry.p === word || x.entry.f === word || x.entry.g === word,
     );
     if (!verb) {
       throw new Error(`missing ${word} in word query`);
@@ -210,7 +210,7 @@ export function wordQuery(
     return removeFVarientsFromVerb(verb);
   }
   const entry = nounsAdjs.find(
-    (x) => x.p === word || x.f === word || x.g === word
+    (x) => x.p === word || x.f === word || x.g === word,
   );
   if (!entry) {
     throw new Error(`missing ${word} in word query`);

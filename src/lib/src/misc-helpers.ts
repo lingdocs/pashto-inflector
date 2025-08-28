@@ -13,6 +13,13 @@ export function assertNever(value: never, msg: string): never {
   throw new Error(`${msg}: ` + value);
 }
 
+export function hasKey<T extends object>(
+  obj: T,
+  key: PropertyKey,
+): key is keyof T {
+  return key in obj;
+}
+
 export const blank: T.PsString = {
   p: "_____",
   f: "_____",

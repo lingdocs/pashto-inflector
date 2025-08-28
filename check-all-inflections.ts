@@ -22,7 +22,7 @@ async function checkAll() {
   entries.forEach((entry) => {
     try {
       inflectWord(entry);
-    } catch (e) {
+    } catch (e: any) {
       errors.push({
         ts: entry.ts,
         p: entry.p,
@@ -44,7 +44,7 @@ async function checkAll() {
       } else {
         try {
           conjugateVerb(entry, complement);
-        } catch (e) {
+        } catch (e: any) {
           errors.push({
             ts: entry.ts,
             p: entry.p,
@@ -61,7 +61,7 @@ async function checkAll() {
 checkAll().then((errors) => {
   if (errors.length) {
     console.log(
-      "The following errors occured while inflecting all dictionary words"
+      "The following errors occured while inflecting all dictionary words",
     );
     console.log(errors);
     process.exit(1);

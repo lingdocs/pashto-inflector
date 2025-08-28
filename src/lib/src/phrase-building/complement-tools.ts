@@ -77,7 +77,7 @@ export function parsedCompToCompSelection(
   comp: T.ParsedComplementSelection | undefined,
 ): T.ComplementSelection | undefined {
   if (!comp) {
-    return comp;
+    return undefined;
   }
   if (!("type" in comp.selection)) {
     return {

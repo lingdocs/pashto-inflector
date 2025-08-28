@@ -1,8 +1,4 @@
-import {
-  concatAll,
-  monoidInflectionSet,
-  semigroupInflectionSet,
-} from "./fp-ps";
+import { semigroupInflectionSet } from "./fp-ps";
 import * as T from "../../types";
 
 export function joinInflectorOutputs(
