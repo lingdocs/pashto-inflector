@@ -62,6 +62,7 @@
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
     "jest-extended": "^6.0.0",
+    "netlify": "^23.4.2",
     "ts-jest": "^29.4.1",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.5",

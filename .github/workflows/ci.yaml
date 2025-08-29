@@ -8,16 +8,20 @@ jobs:
     env:
       LINGDOCS_DICTIONARY_URL: ${{ secrets.LINGDOCS_DICTIONARY_URL }}
       LINGDOCS_NPM_TOKEN: ${{ secrets.LINGDOCS_NPM_TOKEN }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: "npm"
-      - name: test and typecheck
+      - name: Install dependencies
         run: |
           npm install && \
-          npm run get-words && \
+          npm run get-words
+      - name: Check types and test
+        run: |
           npm run type-check && \
           npm run test
       - name: Check if version has been updated
@@ -29,4 +33,5 @@ jobs:
       - name: Publish when version changed
         if: steps.check.outputs.changed == 'true'
         run: npm publish
-      # - TODO name: Deploy to netlify
+      - name: Deploy
+        run: npx netlify deploy --prod --site $NETLIFY_SITE_ID
