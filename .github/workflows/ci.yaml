@@ -22,8 +22,8 @@ jobs:
           npm run get-words
       - name: Build website and test
         run: |
-          npm run build-website && \
-          npm run test
+          npm run test && \
+          npm run build-website
       - name: Check if version has been updated
         id: check
         uses: EndBug/version-check@v2
