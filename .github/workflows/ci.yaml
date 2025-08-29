@@ -20,9 +20,9 @@ jobs:
         run: |
           npm install && \
           npm run get-words
-      - name: Check types and test
+      - name: Build website and test
         run: |
-          npm run type-check && \
+          npm run build-website && \
           npm run test
       - name: Check if version has been updated
         id: check
