@@ -1,7 +1,5 @@
 # pashto-inflector
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-
 A pashto inflection, verb conjugation, and phrase-generation engine, as well as functions and components for modifying and displaying Pashto text.
 
 #### [Pashto Inflector Website/Demo](https://pashto-inflector.lingdocs.com)
