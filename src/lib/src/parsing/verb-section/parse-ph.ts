@@ -47,18 +47,22 @@ function parseCompPH(
 }
 
 function parseVerbPH(tokens: T.Tokens): T.ParseResult<T.ParsedVerbPH>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, firstPos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
   if (laars.includes(first)) {
     return [
-      ...returnParseResults<T.ParsedVerbPH>(splitOffHead("لا", tokens), [
-        {
-          type: "PH",
-          s: "لا",
-        },
-      ]),
+      ...returnParseResults<T.ParsedVerbPH>(
+        splitOffHead("لا", tokens),
+        [
+          {
+            type: "PH",
+            s: "لا",
+          },
+        ],
+        firstPos,
+      ),
       ...returnParseResults<T.ParsedVerbPH>(
         {
           ...tokens,
@@ -70,14 +74,19 @@ function parseVerbPH(tokens: T.Tokens): T.ParseResult<T.ParsedVerbPH>[] {
             s: first,
           },
         ],
+        firstPos,
       ),
     ];
   }
   if (phs.includes(first)) {
-    return returnParseResult(rest, {
-      type: "PH",
-      s: first,
-    });
+    return returnParseResult(
+      rest,
+      {
+        type: "PH",
+        s: first,
+      },
+      firstPos,
+    );
   }
   // TODO: maybe it would be better to only do this splitting off of the perfect head
   // if the next thing could be a kids section
@@ -89,10 +98,14 @@ function parseVerbPH(tokens: T.Tokens): T.ParseResult<T.ParsedVerbPH>[] {
         first.length > p.length + 1,
     )
     .flatMap((ph) =>
-      returnParseResult(splitOffHead(ph, tokens), {
-        type: "PH",
-        s: ph,
-      } as const),
+      returnParseResult(
+        splitOffHead(ph, tokens),
+        {
+          type: "PH",
+          s: ph,
+        } as const,
+        firstPos,
+      ),
     );
 }
 

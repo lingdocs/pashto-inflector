@@ -30,7 +30,7 @@ function plainPlural(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, firstPos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -58,14 +58,14 @@ function plainPlural(
           }));
       })()
     : [];
-  return returnParseResults(rest, [...plain, ...inflected]);
+  return returnParseResults(rest, [...plain, ...inflected], firstPos);
 }
 
 function parsePattern1(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, firstPos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -112,19 +112,18 @@ function parsePattern1(
         given: first,
       }))
     : [];
-  return returnParseResults(rest, [
-    ...plain,
-    ...withoutA,
-    ...inflected,
-    ...doubleInflected,
-  ]);
+  return returnParseResults(
+    rest,
+    [...plain, ...withoutA, ...inflected, ...doubleInflected],
+    firstPos,
+  );
 }
 
 function parsePattern2(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, firstPos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -145,6 +144,7 @@ function parsePattern2(
           selection,
           given: first,
         },
+        position: firstPos,
         errors: [],
       }));
   } else if (first.endsWith("و")) {
@@ -162,6 +162,7 @@ function parsePattern2(
           selection,
           given: first,
         },
+        position: firstPos,
         errors: [],
       }));
   }
@@ -172,7 +173,7 @@ function parsePattern3(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, firstPos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -193,6 +194,7 @@ function parsePattern3(
           selection,
           given: first,
         },
+        position: firstPos,
         errors: [],
       }));
   } else if (first.endsWith("و")) {
@@ -210,6 +212,7 @@ function parsePattern3(
           selection,
           given: first,
         },
+        position: firstPos,
         errors: [],
       }));
   }
@@ -220,7 +223,7 @@ function parseEeEnding(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<FemNounBaseParse>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, firstPos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -236,6 +239,7 @@ function parseEeEnding(
           selection,
           given: first,
         },
+        position: firstPos,
         errors: [],
       }));
   } else if (first.endsWith("ۍ")) {
@@ -250,6 +254,7 @@ function parseEeEnding(
           selection,
           given: first,
         },
+        position: firstPos,
         errors: [],
       }));
   } else if (first.endsWith("و")) {
@@ -267,6 +272,7 @@ function parseEeEnding(
           selection,
           given: first,
         },
+        position: firstPos,
         errors: [],
       }));
   }

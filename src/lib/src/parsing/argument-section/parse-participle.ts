@@ -40,7 +40,7 @@ function parseJoinedPart(
   dicitonary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined,
 ): T.ParseResult<ParticipleResult>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, firstPos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -64,6 +64,7 @@ function parseJoinedPart(
         possesor,
       },
     },
+    position: firstPos,
     errors: [],
   }));
 }
@@ -130,33 +131,49 @@ function parseStativeCompSepPart(
 function parseCompAuxPart(
   tokens: T.Tokens,
 ): T.ParseResult<{ inflected: boolean; transitivity: T.Transitivity }>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, firstPos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
   if (first === "کېدل") {
-    return returnParseResult(rest, {
-      inflected: false,
-      transitivity: "intransitive",
-    });
+    return returnParseResult(
+      rest,
+      {
+        inflected: false,
+        transitivity: "intransitive",
+      },
+      firstPos,
+    );
   }
   if (["کېدلو", "کېدو"].includes(first)) {
-    return returnParseResult(rest, {
-      inflected: true,
-      transitivity: "intransitive",
-    });
+    return returnParseResult(
+      rest,
+      {
+        inflected: true,
+        transitivity: "intransitive",
+      },
+      firstPos,
+    );
   }
   if (first === "کول") {
-    return returnParseResult(rest, {
-      inflected: false,
-      transitivity: "transitive",
-    });
+    return returnParseResult(
+      rest,
+      {
+        inflected: false,
+        transitivity: "transitive",
+      },
+      firstPos,
+    );
   }
   if (first === "کولو") {
-    return returnParseResult(rest, {
-      inflected: true,
-      transitivity: "transitive",
-    });
+    return returnParseResult(
+      rest,
+      {
+        inflected: true,
+        transitivity: "transitive",
+      },
+      firstPos,
+    );
   }
   return [];
 }

@@ -83,6 +83,7 @@ export function fmapParseResult<A extends object, B extends object>(
     tokens: xi.tokens,
     body: f(xi.body),
     errors: xi.errors,
+    position: xi.position,
   }));
 }
 
@@ -93,6 +94,7 @@ export function fmapParseResultSing<A extends object, B extends object>(
   return {
     tokens: x.tokens,
     body: f(x.body),
+    position: x.position,
     errors: x.errors,
   };
 }
@@ -106,6 +108,7 @@ export function fFlatMapParseResult<A extends object, B extends object>(
     return bodies.map((body) => ({
       tokens: xi.tokens,
       body,
+      position: xi.position,
       errors: xi.errors,
     }));
   });

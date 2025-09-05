@@ -117,11 +117,13 @@ function groupByTokenLength<D>(
 export function returnParseResults<D>(
   tokens: T.Tokens,
   body: D[],
+  position: T.ParseResultPosition,
   errors?: T.ParseError[],
 ): T.ParseResult<D>[] {
   return body.map<T.ParseResult<D>>((b) => ({
     tokens,
     body: b,
+    position,
     errors: errors || [],
   }));
 }
@@ -129,11 +131,13 @@ export function returnParseResults<D>(
 export function returnParseResultSingle<D>(
   tokens: T.Tokens,
   body: D,
+  position: T.ParseResultPosition,
   errors?: T.ParseError[],
 ): T.ParseResult<D> {
   return {
     tokens,
     body,
+    position,
     errors: errors || [],
   };
 }
@@ -141,12 +145,14 @@ export function returnParseResultSingle<D>(
 export function returnParseResult<D>(
   tokens: T.Tokens,
   body: D,
+  position: T.ParseResultPosition,
   errors?: T.ParseError[],
 ): T.ParseResult<D>[] {
   return [
     {
       tokens,
       body,
+      position,
       errors: errors || [],
     },
   ];
@@ -215,6 +221,10 @@ export function parserCombOr<R>(parsers: Parser<R>[]) {
  * @param parser
  * @returns
  */
+
+// TODO: the many components need to have position info here
+// how do we do that ?   Parser<WithPos<R>[]>
+// for succ              Parser<[WithPos<A>, WithPos<B>]>
 export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
   const r: Parser<R[]> = (tokens: T.Tokens, dictionary: T.DictionaryAPI) => {
     function go(acc: R[], t: T.Tokens): T.ParseResult<R[]>[] {
@@ -506,16 +516,18 @@ export function tokensExist(tokens: T.Tokens): boolean {
 
 export function getOneToken(
   tokens: T.Tokens,
-): [T.Token, T.Tokens] | [undefined, undefined] {
+):
+  | [T.Token, T.Tokens, T.ParseResultPosition]
+  | [undefined, undefined, undefined] {
   if (!tokensExist(tokens)) {
-    return [undefined, undefined];
+    return [undefined, undefined, undefined];
   }
   const first = tokens.tokens[tokens.position];
   const rest: T.Tokens = {
     tokens: tokens.tokens,
     position: tokens.position + 1,
   };
-  return [first, rest];
+  return [first, rest, { start: tokens.position, end: tokens.position + 1 }];
 }
 
 export function getTwoTokens(

@@ -1565,10 +1565,16 @@ export type ParseError = {
   position?: [number, number];
 };
 
+export type ParseResultPosition = {
+  start: number;
+  end: number;
+};
+
 /** a tuple containing the [left over tokens, parse result, errors associated with the result] */
 export type ParseResult<P> = {
   tokens: Tokens;
   body: P;
+  position: ParseResultPosition;
   errors: ParseError[];
 };
 
