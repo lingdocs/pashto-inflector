@@ -1578,6 +1578,11 @@ export type ParseResult<P> = {
   errors: ParseError[];
 };
 
+export type WithPos<P> = {
+  content: P;
+  position: ParseResultPosition;
+};
+
 export type Tokens = {
   tokens: Readonly<Token[]>;
   position: number;

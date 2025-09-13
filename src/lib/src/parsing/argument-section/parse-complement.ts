@@ -42,7 +42,7 @@ function parseNPWPoss(
   const np = !possesor.length
     ? parseNP(tokens, dictionary, undefined, false)
     : bindParseResult<T.PossesorSelection, T.ParsedNP>(possesor, (tokens, p) =>
-        parseNP(tokens, dictionary, p, false),
+        parseNP(tokens, dictionary, p.content, false),
       );
   return fFlatMapParseResult((x) => (x.inflected ? [] : [x.selection]), np);
 }

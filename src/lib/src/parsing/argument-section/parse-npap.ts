@@ -22,8 +22,8 @@ export function parseNPAP(
     possesor,
     (tokens, p) => {
       return [
-        ...parseNP(tokens, dictionary, p, true),
-        ...parseAP(tokens, dictionary, p),
+        ...parseNP(tokens, dictionary, p.content, true),
+        ...parseAP(tokens, dictionary, p.content),
       ];
     },
   );

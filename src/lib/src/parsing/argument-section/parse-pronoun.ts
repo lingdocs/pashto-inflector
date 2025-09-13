@@ -8,7 +8,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
   inflected: boolean;
   selection: T.PronounSelection;
 }>[] {
-  const [s, rest] = getOneToken(tokens);
+  const [s, rest, position] = getOneToken(tokens);
   if (!s) {
     return [];
   }
@@ -23,6 +23,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
           distance: "far",
         },
       },
+      position,
       errors: [],
     }));
   } else if (s === "ما") {
@@ -36,6 +37,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
           distance: "far",
         },
       },
+      position,
       errors: [],
     }));
   } else if (s === "ته") {
@@ -49,6 +51,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
           distance: "far",
         },
       },
+      position,
       errors: [],
     }));
   } else if (s === "تا") {
@@ -62,6 +65,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
           distance: "far",
         },
       },
+      position,
       errors: [],
     }));
   } else if (s === "هغه") {
@@ -76,6 +80,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
             distance: "far",
           },
         },
+        position,
         errors: [],
       })),
       {
@@ -88,6 +93,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
             distance: "far",
           },
         },
+        position,
         errors: [],
       },
     ];
@@ -103,6 +109,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
             distance: "far",
           },
         },
+        position,
         errors: [],
       },
     ];
@@ -118,6 +125,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
             distance: "near",
           },
         },
+        position,
         errors: [],
       },
     ];
@@ -133,6 +141,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
             distance: "near",
           },
         },
+        position,
         errors: [],
       },
     ];
@@ -148,6 +157,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
             distance: "near",
           },
         },
+        position,
         errors: [],
       },
     ];
@@ -163,6 +173,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
             distance: "near",
           },
         },
+        position,
         errors: [],
       },
     ];
@@ -179,6 +190,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
               distance: "far",
             },
           },
+          position,
           errors: [],
         }),
       ),
@@ -196,6 +208,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
               distance: "far",
             },
           },
+          position,
           errors: [],
         }),
       ),
@@ -213,6 +226,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
               distance: "far",
             },
           },
+          position,
           errors: [],
         }),
       ),
@@ -230,6 +244,7 @@ export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
               distance: "near",
             },
           },
+          position,
           errors: [],
         }),
       ),

@@ -15,7 +15,7 @@ import { assertNever } from "../misc-helpers";
  */
 export function bindParseResult<C, D>(
   prev: T.ParseResult<C>[],
-  f: (tokens: T.Tokens, r: C) => T.ParseResult<D>[],
+  f: (tokens: T.Tokens, r: T.WithPos<C>) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
   // const grouped = groupByTokenLength(prev);
   // if (grouped.length > 1 || grouped.length === 0) {
@@ -24,29 +24,41 @@ export function bindParseResult<C, D>(
   // PERFECTION 🧪
 
   return cleanOutResults(
-    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors))),
+    prev.flatMap((p) =>
+      f(p.tokens, { content: p.body, position: p.position }).map(
+        addErrors(p.errors),
+      ),
+    ),
   );
 }
 
 export function bindParseResultDebug<C, D>(
   prev: T.ParseResult<C>[],
-  f: (tokens: T.Tokens, r: C) => T.ParseResult<D>[],
+  f: (tokens: T.Tokens, r: T.WithPos<C>) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
   // PERFECTION 🧪
   return cleanOutResultsDebug(
     // TODO: do the groupByTokenLengthHERE!
-    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors))),
+    prev.flatMap((p) =>
+      f(p.tokens, { content: p.body, position: p.position }).map(
+        addErrors(p.errors),
+      ),
+    ),
   );
 }
 
 export function bindParseWithAllErrors<C, D>(
   prev: T.ParseResult<C>[],
-  f: (tokens: T.Tokens, r: C) => T.ParseResult<D>[],
+  f: (tokens: T.Tokens, r: T.WithPos<C>) => T.ParseResult<D>[],
 ): T.ParseResult<D>[] {
   // PERFECTION 🧪
   // TODO: Do we really need to remove duplicates ?? I don't think so
   return removeDuplicates(
-    prev.flatMap((p) => f(p.tokens, p.body).map(addErrors(p.errors))),
+    prev.flatMap((p) =>
+      f(p.tokens, { content: p.body, position: p.position }).map(
+        addErrors(p.errors),
+      ),
+    ),
   );
 }
 
@@ -90,6 +102,7 @@ export function addErrors<C>(errs: T.ParseError[]) {
     return {
       tokens: pr.tokens,
       body: pr.body,
+      position: pr.position,
       errors: [...pr.errors, ...errs],
     };
   };
@@ -248,7 +261,7 @@ export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
 
 export function parserCombSucc2<A, B>(
   parsers: [Parser<A>, Parser<B>],
-): Parser<[A, B]> {
+): Parser<[T.WithPos<A>, T.WithPos<B>]> {
   return function (
     tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
@@ -261,22 +274,46 @@ export function parserCombSucc2<A, B>(
   };
 }
 
-export function parserCombSucc3<A, B, C>(
-  parsers: [Parser<A>, Parser<B>, Parser<C>],
-): Parser<[A, B, C]> {
-  return function (
-    tokens: T.Tokens,
-    dictionary: T.DictionaryAPI,
-  ): T.ParseResult<[A, B, C]>[] {
-    return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
-      bindParseResult(parsers[1](t, dictionary), (tk, b) =>
-        bindParseResult(parsers[2](tk, dictionary), (tkn, c) =>
-          returnParseResult(tkn, [a, b, c]),
-        ),
-      ),
-    );
-  };
-}
+// export function bindParseResultWParser<C, D, E>(
+//   prev: T.ParseResult<C>[],
+//   parser: (tokens: T.Tokens) => T.ParseResult<D>[],
+//   f: (res: C, parsed: D, tokens: T.Tokens) => T.ParseResult<E>[],
+// ): T.ParseResult<E>[] {
+//   const grouped = groupByTokenLength(prev);
+//   return cleanOutResults(
+//     grouped.flatMap((group) => {
+//       const parsed = cleanOutResults(parser(group[0].tokens));
+//       // console.log(group.length);
+//       // if (group.length > 1) {
+//       //   console.log(`Saved ${group.length - 1} parses`);
+//       // }
+//       return group.flatMap((prev) => {
+//         return parsed.flatMap((parse) =>
+//           f(prev.body, parse.body, parse.tokens).map(
+//             addErrors([...parse.errors, ...prev.errors]),
+//           ),
+//         );
+//       });
+//     }),
+//   );
+// }
+
+// export function parserCombSucc3<A, B, C>(
+//   parsers: [Parser<A>, Parser<B>, Parser<C>],
+// ): Parser<[A, B, C]> {
+//   return function (
+//     tokens: T.Tokens,
+//     dictionary: T.DictionaryAPI,
+//   ): T.ParseResult<[A, B, C]>[] {
+//     return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
+//       bindParseResult(parsers[1](t, dictionary), (tk, b) =>
+//         bindParseResult(parsers[2](tk, dictionary), (tkn, c) =>
+//           returnParseResult(tkn, [a, b, c]),
+//         ),
+//       ),
+//     );
+//   };
+// }
 
 export function isCompleteResult<C extends object>(
   r: T.ParseResult<C>,

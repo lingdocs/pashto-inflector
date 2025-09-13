@@ -33,6 +33,7 @@ export function parsePossesor(
   return parsePossesorR(dictionary, {
     tokens,
     body: undefined,
+    position: { start: tokens.position, end: tokens.position },
     errors: [],
   });
 }
@@ -48,6 +49,7 @@ function parsePossesorR(
         {
           tokens: prev.tokens,
           body: prev.body,
+          position: { start: prev.tokens.position, end: prev.tokens.position },
           errors: prev.errors,
         },
       ];
@@ -60,10 +62,13 @@ function parsePossesorR(
       return [];
     }
     return bindParseResult(contractions, (tkns, p) =>
-      parsePossesorR(dictionary, returnParseResultSingle(tkns, p)),
+      parsePossesorR(
+        dictionary,
+        returnParseResultSingle(tkns, p.content, p.position),
+      ),
     );
   }
-  const [first, rest] = getOneToken(prev.tokens);
+  const [first, rest, duPosition] = getOneToken(prev.tokens);
   if (!first) {
     return [];
   }
@@ -76,17 +81,25 @@ function parsePossesorR(
       const possesor: T.PossesorSelection = addPoss(prev.body, {
         type: "possesor",
         shrunken: false,
-        np: body.selection,
+        np: body.content.selection,
       });
       const errors: T.ParseError[] = [
         ...prev.errors,
-        ...(!body.inflected
+        ...(!body.content.inflected
           ? // TODO: get ps to say which possesor
             // TODO: track the position coming from the parseNP etc for highlighting
             [{ message: `possesor should be inflected` }]
           : []),
       ];
-      const p = returnParseResultSingle(tkns, possesor, errors);
+      const p = returnParseResultSingle(
+        tkns,
+        possesor,
+        {
+          start: duPosition.start,
+          end: body.position.end,
+        },
+        errors,
+      );
       const ahead = parsePossesorR(dictionary, p);
       return ahead.length ? ahead : [];
     });
@@ -97,6 +110,7 @@ function parsePossesorR(
         {
           tokens: prev.tokens,
           body: prev.body,
+          position: prev.position,
           errors: prev.errors,
         },
       ]
@@ -126,7 +140,7 @@ function addPoss(
 function parseContractions(
   tokens: T.Tokens,
 ): T.ParseResult<T.PossesorSelection>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -135,17 +149,21 @@ function parseContractions(
     return [];
   }
   return c[1].map((person) =>
-    returnParseResultSingle(rest, {
-      type: "possesor",
-      shrunken: false,
-      np: {
-        type: "NP",
-        selection: {
-          type: "pronoun",
-          distance: "far",
-          person,
+    returnParseResultSingle(
+      rest,
+      {
+        type: "possesor",
+        shrunken: false,
+        np: {
+          type: "NP",
+          selection: {
+            type: "pronoun",
+            distance: "far",
+            person,
+          },
         },
       },
-    }),
+      position,
+    ),
   );
 }

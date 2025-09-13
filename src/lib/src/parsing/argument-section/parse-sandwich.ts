@@ -34,21 +34,25 @@ export function parseSandwich(
     if (!tokensExist(tkns)) {
       return [];
     }
-    const [a, leftOver] = getOneToken(tkns);
+    const [a, leftOver, position] = getOneToken(tkns);
     if (!a) {
       return [];
     }
     const sandMatches = (
       startMatches.length ? startMatches : sandwiches
     ).filter((x) => x.after && x.after.p === a);
-    const errors: T.ParseError[] = np.inflected
+    const errors: T.ParseError[] = np.content.inflected
       ? []
       : [{ message: "NP inside sandwich must be inflected" }];
     return sandMatches.map((s) => ({
       tokens: leftOver,
       body: {
         ...s,
-        inside: np.selection,
+        inside: np.content.selection,
+      },
+      position: {
+        start: tokens.position,
+        end: position.end,
       },
       errors,
     }));

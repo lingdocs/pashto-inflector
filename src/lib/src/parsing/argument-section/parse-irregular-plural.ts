@@ -7,7 +7,7 @@ export function parseIrregularPlural(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -70,14 +70,18 @@ export function parseIrregularPlural(
           given: first,
           plural: true,
         })),
+      {
+        start: position.start,
+        end: position.end + 1,
+      },
     );
   })();
   return [
-    ...returnParseResults(rest, [
-      ...plain,
-      ...inflected,
-      ...inflectedAfterLong,
-    ]),
+    ...returnParseResults(
+      rest,
+      [...plain, ...inflected, ...inflectedAfterLong],
+      position,
+    ),
     ...inflectedAfterLongSep,
   ];
 }

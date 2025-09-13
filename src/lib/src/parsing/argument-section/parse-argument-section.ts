@@ -34,11 +34,15 @@ export function parseArgumentSection(
   }
   return [
     // also give an option to keep parsing without an argument section
-    returnParseResultSingle(tokens, empty),
+    returnParseResultSingle(tokens, empty, {
+      start: tokens.position,
+      end: tokens.position,
+    }),
     ...parseArgSectR(dictionary)({
       tokens,
       body: empty,
       errors: [],
+      position: { start: tokens.position, end: tokens.position },
     }),
   ];
 }
@@ -68,15 +72,15 @@ function parseArgSectR(dictionary: T.DictionaryAPI) {
     // we have errors in `results` up to this point, then they get lost
     // in the binding somehow
     return bindParseWithAllErrors(results, (tkns, r) => {
-      if (r.type === "AP" || r.type === "NP") {
+      if (r.content.type === "AP" || r.content.type === "NP") {
         const d: ArgSectionData = {
           kids: prev.body.kids,
-          npsAndAps: [...prev.body.npsAndAps, r],
+          npsAndAps: [...prev.body.npsAndAps, r.content],
           complement: prev.body.complement,
         };
-        return keepGoing(returnParseResultSingle(tkns, d));
+        return keepGoing(returnParseResultSingle(tkns, d, r.position));
       }
-      if (r.type === "kids") {
+      if (r.content.type === "kids") {
         const position = prev.body.npsAndAps.length + +!!prev.body.complement;
         const errors =
           position === 1 ? [] : [{ message: "kid's section out of place" }];
@@ -85,26 +89,26 @@ function parseArgSectR(dictionary: T.DictionaryAPI) {
             ...prev.body.kids,
             {
               position,
-              section: r.kids,
+              section: r.content.kids,
             },
           ],
           npsAndAps: prev.body.npsAndAps,
           complement: prev.body.complement,
         };
-        return keepGoing(returnParseResultSingle(tkns, d, errors));
+        return keepGoing(returnParseResultSingle(tkns, d, r.position, errors));
       }
-      if (r.type === "complement") {
+      if (r.content.type === "complement") {
         const d: ArgSectionData = {
           kids: prev.body.kids,
           npsAndAps: prev.body.npsAndAps,
-          complement: prev.body.complement || r,
+          complement: prev.body.complement || r.content,
         };
         const errors: T.ParseError[] = prev.body.complement
           ? [{ message: "second complement not allowed" }]
           : [];
-        return keepGoing(returnParseResultSingle(tkns, d, errors));
+        return keepGoing(returnParseResultSingle(tkns, d, r.position, errors));
       }
-      assertNever(r, "unknown parse result");
+      assertNever(r.content, "unknown parse result");
     });
   };
 }

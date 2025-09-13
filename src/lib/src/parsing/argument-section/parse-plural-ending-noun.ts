@@ -96,7 +96,7 @@ function parseOonaEndingNoun(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -131,14 +131,14 @@ function parseOonaEndingNoun(
     plural: true,
     entry,
   }));
-  return returnParseResults(rest, body);
+  return returnParseResults(rest, body, position);
 }
 
 function parseAanEndingNoun(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -165,7 +165,7 @@ function parseAanEndingNoun(
       plural: true,
       entry,
     }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   if (first.endsWith("انو")) {
     const withoutAano = first.slice(0, -3);
@@ -203,7 +203,7 @@ function parseAanEndingNoun(
           ]
         : []),
     ]);
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   return [];
 }
@@ -212,7 +212,7 @@ function parseAaneEndingNoun(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.NounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -230,7 +230,7 @@ function parseAaneEndingNoun(
         entry,
       }),
     );
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   return [];
 }
@@ -239,7 +239,7 @@ function parseGaanEndingNoun(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -257,7 +257,7 @@ function parseGaanEndingNoun(
         plural: true,
         entry: entry as T.MascNounEntry,
       }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   if (first.endsWith("ګانو")) {
     const body = dictionary
@@ -273,9 +273,10 @@ function parseGaanEndingNoun(
         plural: true,
         entry: entry as T.MascNounEntry,
       }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   const [a, b, leftOver] = getTwoTokens(tokens);
+  const position2 = { start: tokens.position, end: tokens.position + 2 };
   if (!a) {
     return [];
   }
@@ -293,7 +294,7 @@ function parseGaanEndingNoun(
         plural: true,
         entry: entry as T.MascNounEntry,
       }));
-    return returnParseResults(leftOver, body);
+    return returnParseResults(leftOver, body, position2);
   }
   if (b === "ګانو") {
     const body = dictionary
@@ -309,7 +310,7 @@ function parseGaanEndingNoun(
         plural: true,
         entry: entry as T.MascNounEntry,
       }));
-    return returnParseResults(leftOver, body);
+    return returnParseResults(leftOver, body, position2);
   }
   return [];
 }
@@ -318,7 +319,7 @@ function parseGaaneEndingNoun(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.FemNounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -345,7 +346,7 @@ function parseGaaneEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   if (first.endsWith("ګانې")) {
     const body = dictionary
@@ -358,7 +359,7 @@ function parseGaaneEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   if (first.endsWith("یګانو")) {
     const body = dictionary
@@ -371,7 +372,7 @@ function parseGaaneEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   if (first.endsWith("ګانو")) {
     const body = dictionary
@@ -384,9 +385,10 @@ function parseGaaneEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   const [a, b, leftOver] = getTwoTokens(tokens);
+  const position2 = { start: tokens.position, end: tokens.position + 2 };
   if (!a) {
     return [];
   }
@@ -401,7 +403,7 @@ function parseGaaneEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(leftOver, body);
+    return returnParseResults(leftOver, body, position2);
   }
   if (b === "ګانو") {
     const body = dictionary
@@ -414,7 +416,7 @@ function parseGaaneEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(leftOver, body);
+    return returnParseResults(leftOver, body, position2);
   }
   return [];
 }
@@ -423,7 +425,7 @@ function parseWeEndingNoun(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.FemNounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -449,7 +451,7 @@ function parseWeEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   } else if (first.endsWith("وو")) {
     const body = dictionary
       .queryP(first.slice(0, -2))
@@ -461,9 +463,10 @@ function parseWeEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(rest, body);
+    return returnParseResults(rest, body, position);
   }
   const [a, b, leftOver] = getTwoTokens(tokens);
+  const position2 = { start: tokens.position, end: tokens.position + 2 };
   if (!a) {
     return [];
   }
@@ -478,7 +481,7 @@ function parseWeEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(leftOver, body);
+    return returnParseResults(leftOver, body, position2);
   }
   if (b === "وو") {
     const body = dictionary
@@ -491,7 +494,7 @@ function parseWeEndingNoun(
         plural: true,
         entry,
       }));
-    return returnParseResults(leftOver, body);
+    return returnParseResults(leftOver, body, position2);
   }
   return [];
 }
@@ -500,7 +503,7 @@ function parseIYaanEndingNoun(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -527,6 +530,7 @@ function parseIYaanEndingNoun(
           entry: entry as T.MascNounEntry,
         }),
       ),
+      position,
     );
   }
   if (first.endsWith("یانو")) {
@@ -565,6 +569,7 @@ function parseIYaanEndingNoun(
             : []),
         ],
       ),
+      position,
     );
   }
   return [];
@@ -574,7 +579,7 @@ function parseIYaaneEndingNoun(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<T.ParsedNounWord<T.MascNounEntry | T.FemNounEntry>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -602,6 +607,7 @@ function parseIYaaneEndingNoun(
         plural: true,
         entry,
       })),
+      position,
     );
   }
   if (first.endsWith("یانو")) {
@@ -623,6 +629,7 @@ function parseIYaaneEndingNoun(
           entry,
         }),
       ),
+      position,
     );
   }
   return [];

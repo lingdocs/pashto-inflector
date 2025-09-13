@@ -10,28 +10,32 @@ export const parseDeterminer: T.Parser<
   // eslint-disable-next-line
   // dictionary: T.DictionaryAPI
 ) => {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
   const demonstrative = parseDemonstrative(first);
   if (demonstrative.length) {
-    return returnParseResults(rest, demonstrative);
+    return returnParseResults(rest, demonstrative, position);
   }
 
   if (first.endsWith("و")) {
     const determiner = determiners.find((d) => d.p === first.slice(0, -1));
     if (!determiner) return [];
     if (!isInflectingDet(determiner)) return [];
-    return returnParseResult(rest, {
-      inflection: [2],
-      gender: ["masc", "fem"],
-      given: first,
-      selection: {
-        type: "determiner",
-        determiner,
+    return returnParseResult(
+      rest,
+      {
+        inflection: [2],
+        gender: ["masc", "fem"],
+        given: first,
+        selection: {
+          type: "determiner",
+          determiner,
+        },
       },
-    });
+      position,
+    );
   }
   if (first.endsWith("ې")) {
     const determinerExact = determiners.find((d) => d.p === first);
@@ -40,26 +44,34 @@ export const parseDeterminer: T.Parser<
     );
     return [
       ...(determinerExact
-        ? returnParseResult(rest, {
-            inflection: [0, 1, 2],
-            gender: ["masc", "fem"],
-            given: first,
-            selection: {
-              type: "determiner",
-              determiner: determinerExact,
-            },
-          } satisfies T.InflectableBaseParse<T.DeterminerSelection>)
+        ? returnParseResult(
+            rest,
+            {
+              inflection: [0, 1, 2],
+              gender: ["masc", "fem"],
+              given: first,
+              selection: {
+                type: "determiner",
+                determiner: determinerExact,
+              },
+            } satisfies T.InflectableBaseParse<T.DeterminerSelection>,
+            position,
+          )
         : []),
       ...(determinerInflected && isInflectingDet(determinerInflected)
-        ? returnParseResult(rest, {
-            inflection: [1] satisfies (0 | 1 | 2)[],
-            gender: ["fem"],
-            given: first,
-            selection: {
-              type: "determiner",
-              determiner: determinerInflected,
-            },
-          } satisfies T.InflectableBaseParse<T.DeterminerSelection>)
+        ? returnParseResult(
+            rest,
+            {
+              inflection: [1] satisfies (0 | 1 | 2)[],
+              gender: ["fem"],
+              given: first,
+              selection: {
+                type: "determiner",
+                determiner: determinerInflected,
+              },
+            } satisfies T.InflectableBaseParse<T.DeterminerSelection>,
+            position,
+          )
         : []),
     ];
   }
@@ -68,15 +80,19 @@ export const parseDeterminer: T.Parser<
       const determiner = determiners.find((d) => d.p === first);
       if (!determiner) return [];
       const canInflect = isInflectingDet(determiner);
-      return returnParseResult(rest, {
-        inflection: canInflect ? [0, 1] : [0, 1, 2],
-        gender: canInflect ? ["masc"] : ["masc", "fem"],
-        given: first,
-        selection: {
-          type: "determiner",
-          determiner,
+      return returnParseResult(
+        rest,
+        {
+          inflection: canInflect ? [0, 1] : [0, 1, 2],
+          gender: canInflect ? ["masc"] : ["masc", "fem"],
+          given: first,
+          selection: {
+            type: "determiner",
+            determiner,
+          },
         },
-      });
+        position,
+      );
     })();
   const aEnding: T.ParseResult<
     T.InflectableBaseParse<T.DeterminerSelection>
@@ -85,15 +101,19 @@ export const parseDeterminer: T.Parser<
       const determiner = determiners.find((d) => d.p === first.slice(0, -1));
       if (!determiner) return [];
       if (!isInflectingDet(determiner)) return [];
-      return returnParseResult(rest, {
-        inflection: [0],
-        gender: ["fem"],
-        given: first,
-        selection: {
-          type: "determiner",
-          determiner,
+      return returnParseResult(
+        rest,
+        {
+          inflection: [0],
+          gender: ["fem"],
+          given: first,
+          selection: {
+            type: "determiner",
+            determiner,
+          },
         },
-      });
+        position,
+      );
     }
     return [];
   })();

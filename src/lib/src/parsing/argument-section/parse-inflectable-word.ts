@@ -24,7 +24,7 @@ function parseNonInflecting<W extends T.InflectableEntry>(
   dictionary: T.DictionaryAPI,
   tpf: (e: T.DictionaryEntry) => e is W,
 ): T.ParseResult<T.InflectableBaseParse<W>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -39,6 +39,7 @@ function parseNonInflecting<W extends T.InflectableEntry>(
       selection,
       given: first,
     },
+    position,
     errors: [],
   }));
 }
@@ -48,7 +49,7 @@ function parsePattern1<W extends T.InflectableEntry>(
   dictionary: T.DictionaryAPI,
   tpf: (e: T.DictionaryEntry) => e is W,
 ): T.ParseResult<T.InflectableBaseParse<W>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -66,6 +67,7 @@ function parsePattern1<W extends T.InflectableEntry>(
       selection,
       given: first,
     } satisfies T.InflectableBaseParse<W>,
+    position,
     errors: [],
   }));
   const femPlain = first.endsWith("ه")
@@ -78,6 +80,7 @@ function parsePattern1<W extends T.InflectableEntry>(
             selection,
             given: first,
           } satisfies T.InflectableBaseParse<W>,
+          position,
           errors: [],
         }),
       )
@@ -91,6 +94,7 @@ function parsePattern1<W extends T.InflectableEntry>(
           selection,
           given: first,
         } satisfies T.InflectableBaseParse<W>,
+        position,
         errors: [],
       }))
     : [];
@@ -106,6 +110,7 @@ function parsePattern1<W extends T.InflectableEntry>(
           selection,
           given: first,
         } satisfies T.InflectableBaseParse<W>,
+        position,
         errors: [],
       }))
     : [];
@@ -122,7 +127,7 @@ function parsePattern2or3<W extends T.InflectableEntry>(
   dictionary: T.DictionaryAPI,
   tpf: (e: T.DictionaryEntry) => e is W,
 ): T.ParseResult<T.InflectableBaseParse<W>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -138,6 +143,7 @@ function parsePattern2or3<W extends T.InflectableEntry>(
           selection,
           given: first,
         },
+        position,
         errors: [],
       }));
   } else if (first.endsWith("ي")) {
@@ -152,6 +158,7 @@ function parsePattern2or3<W extends T.InflectableEntry>(
           selection,
           given: first,
         },
+        position,
         errors: [],
       }));
   } else if (first.endsWith("ې")) {
@@ -166,6 +173,7 @@ function parsePattern2or3<W extends T.InflectableEntry>(
           selection,
           given: first,
         },
+        position,
         errors: [],
       }));
   } else if (first.endsWith("ۍ")) {
@@ -180,6 +188,7 @@ function parsePattern2or3<W extends T.InflectableEntry>(
           selection,
           given: first,
         },
+        position,
         errors: [],
       }));
   } else if (first.endsWith("و")) {
@@ -197,6 +206,7 @@ function parsePattern2or3<W extends T.InflectableEntry>(
           selection,
           given: first,
         },
+        position,
         errors: [],
       }));
   }
@@ -208,7 +218,7 @@ function parsePattern4or5<W extends T.InflectableEntry>(
   dictionary: T.DictionaryAPI,
   tpf: (e: T.DictionaryEntry) => e is W,
 ): T.ParseResult<T.InflectableBaseParse<W>>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, position] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -224,6 +234,7 @@ function parsePattern4or5<W extends T.InflectableEntry>(
         selection,
         given: first,
       } satisfies T.InflectableBaseParse<W>,
+      position,
       errors: [],
     }));
   const firstMasc = first.endsWith("ه")
@@ -238,6 +249,7 @@ function parsePattern4or5<W extends T.InflectableEntry>(
             selection,
             given: first,
           } satisfies T.InflectableBaseParse<W>,
+          position,
           errors: [],
         }))
     : [];
@@ -253,6 +265,7 @@ function parsePattern4or5<W extends T.InflectableEntry>(
             selection,
             given: first,
           } satisfies T.InflectableBaseParse<W>,
+          position,
           errors: [],
         }))
     : [];
@@ -268,6 +281,7 @@ function parsePattern4or5<W extends T.InflectableEntry>(
             selection,
             given: first,
           } satisfies T.InflectableBaseParse<W>,
+          position,
           errors: [],
         }))
     : [];
@@ -283,6 +297,7 @@ function parsePattern4or5<W extends T.InflectableEntry>(
             selection,
             given: first,
           } satisfies T.InflectableBaseParse<W>,
+          position,
           errors: [],
         }))
     : [];

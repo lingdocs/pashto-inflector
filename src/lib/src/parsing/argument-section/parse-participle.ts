@@ -80,16 +80,17 @@ function parseStativeCompSepPart(
   const comps = parseComplement(tokens, dicitonary);
   return bindParseResult(comps, (tkns2, comp) => {
     if (
-      !("inflection" in comp.selection) &&
-      (comp.selection.type === "sandwich" || comp.selection.type === "possesor")
+      !("inflection" in comp.content.selection) &&
+      (comp.content.selection.type === "sandwich" ||
+        comp.content.selection.type === "possesor")
     ) {
       return [];
     }
     const errors: T.ParseError[] = [];
-    if ("inflection" in comp.selection) {
+    if ("inflection" in comp.content.selection) {
       if (
-        !comp.selection.gender.includes("masc") ||
-        !comp.selection.inflection.includes(1)
+        !comp.content.selection.gender.includes("masc") ||
+        !comp.content.selection.inflection.includes(1)
       ) {
         errors.push({
           message:
@@ -97,7 +98,7 @@ function parseStativeCompSepPart(
         });
       }
     }
-    const compL = getLFromComplement(comp);
+    const compL = getLFromComplement(comp.content);
     const kawulKedul = parseCompAuxPart(tkns2);
     return bindParseResult(kawulKedul, (tkns3, aux) => {
       if (!compL) {
@@ -106,7 +107,8 @@ function parseStativeCompSepPart(
       const verbs = getStatComp(
         compL,
         {
-          verb: aux.transitivity === "transitive" ? kawulStat : kedulStat,
+          verb:
+            aux.content.transitivity === "transitive" ? kawulStat : kedulStat,
           aspect: "imperfective",
         },
         dicitonary,
@@ -115,13 +117,14 @@ function parseStativeCompSepPart(
       return returnParseResults(
         tkns3,
         verbs.map((verb) => ({
-          inflected: aux.inflected,
+          inflected: aux.content.inflected,
           selection: {
             type: "participle",
             verb,
             possesor,
           },
         })),
+        { start: comp.position.start, end: aux.position.end },
         errors,
       );
     });
