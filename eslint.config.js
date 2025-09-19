@@ -3,8 +3,9 @@ import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
+import { defineConfig } from "vite";
 
-export default tseslint.config({
+export default defineConfig({
   extends: [js.configs.recommended, ...tseslint.configs.recommended],
   files: ["**/*.{ts,tsx}"],
   ignores: ["dist"],
@@ -23,5 +24,7 @@ export default tseslint.config({
       { allowConstantExport: true },
     ],
     "@typescript-eslint/no-explicit-any": "off",
+    // TODO: use this
+    // "@typescript-eslint/strict-boolean-expressions": "error",
   },
 });

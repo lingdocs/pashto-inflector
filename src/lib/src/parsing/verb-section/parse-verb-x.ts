@@ -87,11 +87,11 @@ function parseActiveWelded<X extends T.VerbX>(
   return bindParseResult(complement, (tkns, comp) => {
     // TODO: remove the last check allow for CompNP once implemented
     if (
-      typeof comp.selection === "object" &&
-      "type" in comp.selection &&
-      (comp.selection.type === "sandwich" ||
-        comp.selection.type === "possesor" ||
-        comp.selection.type === "NP")
+      typeof comp.content.selection === "object" &&
+      "type" in comp.content.selection &&
+      (comp.content.selection.type === "sandwich" ||
+        comp.content.selection.type === "possesor" ||
+        comp.content.selection.type === "NP")
     ) {
       return [];
     }
@@ -110,57 +110,61 @@ function parseActiveWelded<X extends T.VerbX>(
                 isStatAux(x.body.info.verb),
               ) as T.ParseResult<X>[]);
       return bindParseResult(ks, (tkns3, aux) => {
-        if (category === "perfect" && aux.info.type !== "ppart") {
+        if (category === "perfect" && aux.content.info.type !== "ppart") {
           return [];
         }
         if (category === "perfect") {
           const vbp: T.ActiveVWeld<X> = {
             type: "active welded",
             content: {
-              left: comp,
-              right: aux,
+              left: comp.content,
+              right: aux.content,
             },
           };
-          return returnParseResult(tkns3, vbp);
+          return returnParseResult(tkns3, vbp, {
+            start: tokens.position,
+            end: tkns3.position,
+          });
         }
-        if (!("aspect" in aux.info)) {
+        if (!("aspect" in aux.content.info)) {
           // purely for type safety because of the badly designed types
           return [];
         }
         if (
-          aux.info.aspect === "imperfective" &&
-          isStatAux(aux.info.verb) /*type safety*/
+          aux.content.info.aspect === "imperfective" &&
+          isStatAux(aux.content.info.verb) /*type safety*/
         ) {
-          const compTs = getLFromComplement(comp);
+          const compTs = getLFromComplement(comp.content);
           if (compTs === undefined) {
             return [];
           }
 
           const right: T.ActiveVWeld<X>["content"]["right"] = (() => {
             if (category === "basic") {
-              if (aux.type !== "parsed vbb verb") {
+              if (aux.content.type !== "parsed vbb verb") {
                 throw new Error("parse WeldedX error");
               }
               return {
                 type: "parsed vbb verb" as const,
-                person: aux.person,
-                info: aux.info,
+                person: aux.content.person,
+                info: aux.content.info,
               } as X;
             }
-            return aux;
+            return aux.content;
           })();
 
           const vbe: T.ActiveVWeld<X> = {
             type: "active welded",
             content: {
-              left: comp,
+              left: comp.content,
               right,
             },
           };
           return returnParseResult(
             tkns3,
             vbe,
-            badNeg
+            { start: tokens.position, end: tkns3.position },
+            badNeg.content
               ? [{ message: "negative cannot go inside welded block" }]
               : [],
           );
@@ -185,7 +189,7 @@ function parsePassiveWeldedX<X extends T.VerbX>(
     // passive stat comp perfective
     const ks = parseK(tokens);
     return bindParseResult(ks, (tkns2, k) => {
-      if (k === "kawul") {
+      if (k.content === "kawul") {
         return [];
       }
       const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
@@ -197,23 +201,29 @@ function parsePassiveWeldedX<X extends T.VerbX>(
           type: "passive welded",
           content: {
             left: kawulStat,
-            right: aux,
+            right: aux.content,
           },
         } as T.PassiveVWeld<X>;
-        return returnParseResult(tkns3, res);
+        return returnParseResult(tkns3, res, {
+          start: tokens.position,
+          end: tkns3.position,
+        });
       });
     });
   }
   // passive basic
   const vbes = parseVBBBasic(tokens, dictionary, ph);
   return bindParseResult(vbes, (tkns2, vbe) => {
-    if (isKawulStat(vbe.info.verb) || isKedulStat(vbe.info.verb)) {
+    if (
+      isKawulStat(vbe.content.info.verb) ||
+      isKedulStat(vbe.content.info.verb)
+    ) {
       return [];
     }
     if (
-      vbe.info.base !== "root" ||
-      vbe.person !== T.Person.ThirdPlurMale ||
-      vbe.info.imperative
+      vbe.content.info.base !== "root" ||
+      vbe.content.person !== T.Person.ThirdPlurMale ||
+      vbe.content.info.imperative
     ) {
       return [];
     }
@@ -223,30 +233,33 @@ function parsePassiveWeldedX<X extends T.VerbX>(
       );
       return bindParseResult(auxs, (tkns2, aux) => {
         const errors: T.ParseError[] = [];
-        if (getTransitivity(vbe.info.verb.entry) === "intransitive") {
+        if (getTransitivity(vbe.content.info.verb.entry) === "intransitive") {
           errors.push({
             message: `intransitive verbs cannot be used with the passive form`,
           });
         }
-        if (aux.info.aspect !== vbe.info.aspect) {
+        if (aux.content.info.aspect !== vbe.content.info.aspect) {
           errors.push({
-            message: `${vbe.info.aspect} passive requires ${vbe.info.aspect} auxilary kedul verb`,
+            message: `${vbe.content.info.aspect} passive requires ${vbe.content.info.aspect} auxilary kedul verb`,
           });
         }
         const passive: T.PassiveVWeld<T.ParsedVBBVerb> = {
           type: "passive welded",
           content: {
-            left: vbe.info.verb,
+            left: vbe.content.info.verb,
             right: {
               type: "parsed vbb verb",
-              info: aux.info,
-              person: aux.person,
+              info: aux.content.info,
+              person: aux.content.person,
             },
           },
         };
-        return returnParseResult(tkns2, passive, errors) as T.ParseResult<
-          T.PassiveVWeld<X>
-        >[];
+        return returnParseResult(
+          tkns2,
+          passive,
+          { start: tokens.position, end: tkns2.position },
+          errors,
+        ) as T.ParseResult<T.PassiveVWeld<X>>[];
       });
     }
     if (category === "ability") {
@@ -254,13 +267,17 @@ function parsePassiveWeldedX<X extends T.VerbX>(
         isKedulStat(x.body.info.verb),
       );
       return bindParseResult(auxs, (tkns3, aux) => {
-        return returnParseResult(tkns3, {
-          type: "passive welded" as const,
-          content: {
-            left: vbe.info.verb,
-            right: aux,
+        return returnParseResult(
+          tkns3,
+          {
+            type: "passive welded" as const,
+            content: {
+              left: vbe.content.info.verb,
+              right: aux.content,
+            },
           },
-        }) as T.ParseResult<T.PassiveVWeld<X>>[];
+          { start: tokens.position, end: tkns3.position },
+        ) as T.ParseResult<T.PassiveVWeld<X>>[];
       });
     }
     return bindParseResult(vbes, (tkns2, vbe) => {
@@ -271,11 +288,14 @@ function parsePassiveWeldedX<X extends T.VerbX>(
         const b: T.PassiveVWeld<T.ParsedVBP> = {
           type: "passive welded",
           content: {
-            left: vbe.info.verb,
-            right: aux,
+            left: vbe.content.info.verb,
+            right: aux.content,
           },
         };
-        return returnParseResult(tkns3, b);
+        return returnParseResult(tkns3, b, {
+          start: tokens.position,
+          end: tkns3.position,
+        });
       }) as T.ParseResult<T.PassiveVWeld<X>>[];
     });
   });
@@ -293,14 +313,14 @@ function parsePassiveDoubleWeldedX<X extends T.VerbX>(
   return bindParseResult(ks, (tkns2, k) => {
     const errors: T.ParseError[] = [];
     if (category === "basic") {
-      if (k !== "kawul") return [];
+      if (k.content !== "kawul") return [];
       const auxs = parseKawulKedulVBE(tkns2, undefined).filter(
         (x) =>
           isKedulStat(x.body.info.verb) &&
           x.body.info.aspect === "imperfective",
       );
       return bindParseResult(auxs, (tkns3, aux) => {
-        if (aux.info.type !== "verb") {
+        if (aux.content.info.type !== "verb") {
           return [];
         }
         const passive: T.PassiveVDoubWeld<T.ParsedVBBVerb> = {
@@ -315,14 +335,15 @@ function parsePassiveDoubleWeldedX<X extends T.VerbX>(
             },
             right: {
               type: "parsed vbb verb",
-              info: aux.info,
-              person: aux.person,
+              info: aux.content.info,
+              person: aux.content.person,
             },
           },
         };
-        return returnParseResult(tkns3, passive) as T.ParseResult<
-          T.PassiveVDoubWeld<X>
-        >[];
+        return returnParseResult(tkns3, passive, {
+          start: tokens.position,
+          end: tkns3.position,
+        }) as T.ParseResult<T.PassiveVDoubWeld<X>>[];
       });
     }
     if (category === "perfect") {
@@ -340,15 +361,21 @@ function parsePassiveDoubleWeldedX<X extends T.VerbX>(
                 selection: ph.selection,
               },
             },
-            right: aux,
+            right: aux.content,
           },
         };
-        return returnParseResult(tkns3, b, errors) as T.ParseResult<
-          T.PassiveVDoubWeld<X>
-        >[];
+        return returnParseResult(
+          tkns3,
+          b,
+          {
+            start: tokens.position,
+            end: tkns3.position,
+          },
+          errors,
+        ) as T.ParseResult<T.PassiveVDoubWeld<X>>[];
       });
     }
-    if (k !== "kawul") {
+    if (k.content !== "kawul") {
       errors.push({
         message: "must use کول with passive ability stative compounds",
       });
@@ -368,29 +395,35 @@ function parsePassiveDoubleWeldedX<X extends T.VerbX>(
               selection: ph.selection,
             },
           },
-          right: aux,
+          right: aux.content,
         },
       };
-      return returnParseResult(tkns3, b, errors) as T.ParseResult<
-        T.PassiveVDoubWeld<X>
-      >[];
+      return returnParseResult(
+        tkns3,
+        b,
+        {
+          start: tokens.position,
+          end: tkns3.position,
+        },
+        errors,
+      ) as T.ParseResult<T.PassiveVDoubWeld<X>>[];
     });
   });
 }
 
 function parseK(tokens: T.Tokens): T.ParseResult<"kawul" | "kRul" | "kRaay">[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, pos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
   if (first === "کول") {
-    return returnParseResult(rest, "kawul");
+    return returnParseResult(rest, "kawul", pos);
   }
   if (first === "کړل") {
-    return returnParseResult(rest, "kRul");
+    return returnParseResult(rest, "kRul", pos);
   }
   if (["کړای", "کړلای", "کړی", "کړلی"].includes(first)) {
-    return returnParseResult(rest, "kRaay");
+    return returnParseResult(rest, "kRaay", pos);
   }
   return [];
 }

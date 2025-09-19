@@ -9,8 +9,8 @@ const dictionaryInfoUrl = `${dictionaryBaseUrl}/dictionary-info`;
 const dictDb = new DictionaryDb({
   url: dictionaryUrl,
   infoUrl: dictionaryInfoUrl,
-  collectionName: "inflector-dict11",
-  infoLocalStorageKey: "inflector-dict11",
+  collectionName: "inflector-dict12",
+  infoLocalStorageKey: "inflector-dict12",
 });
 
 function queryP(p: string): T.DictionaryEntry[] {
@@ -47,7 +47,7 @@ function nounLookup(p: string): T.NounEntry[] {
 function otherLookup(
   key: keyof T.DictionaryEntry,
   p: string,
-  regex?: boolean
+  regex?: boolean,
 ): T.DictionaryEntry[] {
   if (!dictDb.collection) {
     return [];

@@ -5,12 +5,13 @@ import {
   addErrors,
   addShrunkenPossesor,
   bindParseResult,
-  bindParseResultWParser,
   canTakeShrunkenPossesor,
   getPeople,
   getStatComp,
   getTransitivities,
   isPH,
+  nulPosFromTokens,
+  parserCombSucc2,
   returnParseResult,
   returnParseResults,
   tokensExist,
@@ -120,20 +121,24 @@ export function parseVP(
   if (!tokensExist(tokens)) {
     return [];
   }
-  const argument = parseArgumentSection(tokens, dictionary);
-  // removeRedundantStatCombos(
+
+  const res = parserCombSucc2([parseArgumentSection, parseVerbSection])(
+    tokens,
+    dictionary,
+  );
   return removeRedundantStatCombos(
-    bindParseResultWParser(
-      argument,
-      (tokens) => parseVerbSection(tokens, dictionary),
-      (arg, vs, tkns) => {
-        if (tokensExist(tkns)) {
-          // parseVP should only work when it consumes all the tokens
-          return [];
-        }
-        return combineArgAndVerbSections(tkns, dictionary, arg, vs);
-      },
-    ),
+    bindParseResult(res, (tkns2, option) => {
+      if (tokensExist(tkns2)) {
+        // parseVP should only work when it consumes all the tokens
+        return [];
+      }
+      return combineArgAndVerbSections(
+        tkns2,
+        dictionary,
+        option.content[0].content,
+        option.content[1].content,
+      );
+    }),
     dictionary,
   );
 }
@@ -316,7 +321,13 @@ function finishEquative(
       predicate,
       omitSubject: !nps.length,
     };
-    return returnParseResult(tokens, selection, errors);
+    // TODO: fix nulPos thing
+    return returnParseResult(
+      tokens,
+      selection,
+      nulPosFromTokens(tokens),
+      errors,
+    );
   });
 }
 
@@ -441,6 +452,7 @@ function finishIntransitive({
         externalComplement: parsedCompToCompSelection(complement),
         form,
       },
+      position: nulPosFromTokens(tokens),
       errors: [...initialErrors, ...structureErrors],
     };
   });
@@ -498,14 +510,14 @@ function finishTransitive({
     tokens,
   });
   return bindParseResult(possibilites, (tokens, p) => {
-    if (isIllegalImperative(v.tense, p.s.selection)) {
+    if (isIllegalImperative(v.tense, p.content.s.selection)) {
       return [];
     }
     const errors = [
       ...initialErrors,
       ...checkTransitiveStructure({
-        s: p.s,
-        o: p.o,
+        s: p.content.s,
+        o: p.content.o,
         exComplement: complement,
         isPast,
         vbePerson,
@@ -516,11 +528,12 @@ function finishTransitive({
       {
         tokens,
         body: {
-          blocks: p.blocks,
+          blocks: p.content.blocks,
           verb: v,
           externalComplement: parsedCompToCompSelection(complement),
-          form: p.form,
+          form: p.content.form,
         },
+        position: nulPosFromTokens(tokens),
         errors,
       },
     ];
@@ -563,6 +576,7 @@ function getTransPossibilitiesWNoNPs({
         blocks: mapOutNpsAndAps(["S", "O"], [s, o, ...aps]),
         form,
       },
+      position: nulPosFromTokens(tokens),
       errors,
     };
   });
@@ -625,6 +639,7 @@ function getTransPossibilitiesWOneNP(
             ),
             form,
           },
+          position: nulPosFromTokens(tokens),
           errors: miniPronErrors,
         };
       });
@@ -656,6 +671,7 @@ function getTransPossibilitiesWTwoNPs(nps: T.ParsedNP[]) {
             shrinkServant: false,
           },
         },
+        position: nulPosFromTokens(tokens),
         errors: miniPronErrors,
       };
     });
@@ -697,13 +713,13 @@ function finishGrammaticallyTransitive({
     tokens,
   });
   return bindParseResult(possibilites, (tokens, p) => {
-    if (isIllegalImperative(v.tense, p.s.selection)) {
+    if (isIllegalImperative(v.tense, p.content.s.selection)) {
       return [];
     }
     const errors = [
       ...checkTransitiveStructure({
-        s: p.s,
-        o: p.o,
+        s: p.content.s,
+        o: p.content.o,
         exComplement: undefined,
         isPast,
         vbePerson: person,
@@ -715,11 +731,12 @@ function finishGrammaticallyTransitive({
       {
         tokens,
         body: {
-          blocks: p.blocks,
+          blocks: p.content.blocks,
           verb: v,
           externalComplement: undefined,
-          form: p.form,
+          form: p.content.form,
         },
+        position: nulPosFromTokens(tokens),
         errors,
       },
     ];
@@ -756,6 +773,7 @@ function finishGrammTransWNoNPs({
         blocks: mapOutNpsAndAps(["S", "O"], [s, o, ...aps]),
         form,
       },
+      position: nulPosFromTokens(tokens),
       errors,
     };
   });
@@ -783,6 +801,7 @@ function finishGrammTransWNP(subject: T.ParsedNP) {
           blocks: mapOutNpsAndAps(["S", "O"], [subject, object, ...aps]),
           form,
         },
+        position: nulPosFromTokens(tokens),
         errors,
       },
     ];
@@ -1188,51 +1207,57 @@ function getTarget(
   return anyTarget;
 }
 
+// TODO: redo this setup to handle position properly - so we're not
+// user thin nulPos thing
 function checkForDynCompounds(dictionary: T.DictionaryAPI) {
   return function (
     tokens: T.Tokens,
-    vps: T.VPSelectionComplete,
+    vps: T.WithPos<T.VPSelectionComplete>,
   ): T.ParseResult<T.VPSelectionComplete>[] {
-    if (vps.verb.transitivity !== "transitive") {
-      return returnParseResult(tokens, vps);
+    if (vps.content.verb.transitivity !== "transitive") {
+      return returnParseResult(tokens, vps.content, vps.position);
     }
     const object: T.ObjectSelection | undefined = getObjectSelection(
-      vps.blocks,
+      vps.content.blocks,
     );
     if (
       !object ||
       typeof object.selection !== "object" ||
       object.selection.selection.type !== "noun"
     ) {
-      return returnParseResult(tokens, vps);
+      return returnParseResult(tokens, vps.content, vps.position);
     }
     const dynAuxVerb = dynamicAuxVerbs.find(
-      (v) => v.entry.p === vps.verb.verb.entry.p,
+      (v) => v.entry.p === vps.content.verb.verb.entry.p,
     ) as T.VerbEntryNoFVars | undefined;
     if (!dynAuxVerb) {
-      return returnParseResult(tokens, vps);
+      return returnParseResult(tokens, vps.content, vps.position);
     }
     const dynCompoundVerbs = dictionary
       .verbEntryLookupByL(object.selection.selection.entry.ts)
       .filter((e) => e.entry.c.includes("dyn."));
     if (!dynCompoundVerbs.length) {
-      return returnParseResult(tokens, vps);
+      return returnParseResult(tokens, vps.content, vps.position);
     }
     const dynCompoundVerb = dynCompoundVerbs[0];
-    return returnParseResults(tokens, [
-      {
-        ...vps,
-        // TODO: could be more efficient by getting index first
-        blocks: vps.blocks.map(markObjAsDynamicComplement),
-        verb: {
-          ...vps.verb,
-          verb: dynCompoundVerb,
-          dynAuxVerb,
-          isCompound: "dynamic",
+    return returnParseResults(
+      tokens,
+      [
+        {
+          ...vps.content,
+          // TODO: could be more efficient by getting index first
+          blocks: vps.content.blocks.map(markObjAsDynamicComplement),
+          verb: {
+            ...vps.content.verb,
+            verb: dynCompoundVerb,
+            dynAuxVerb,
+            isCompound: "dynamic",
+          },
         },
-      },
-      vps,
-    ]);
+        vps.content,
+      ],
+      nulPosFromTokens(tokens),
+    );
   };
 }
 

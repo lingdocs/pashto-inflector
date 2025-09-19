@@ -62,7 +62,7 @@ const ayEndingUnaccented: T.PsString = { p: "ی", f: "ay" };
  */
 export function getVerbInfo(
   ent: T.DictionaryEntry,
-  complmnt?: T.DictionaryEntry
+  complmnt?: T.DictionaryEntry,
 ): T.VerbInfo {
   const entry = removeFVarients(ent);
   const irregularConj = checkForIrregularConjugation(entry);
@@ -79,7 +79,7 @@ export function getVerbInfo(
       type: "transitive or grammatically transitive simple",
       transitive: getVerbInfo(
         // @ts-expect-error (will have entry.c)
-        { ...entry, c: entry.c.replace("trans./gramm. trans.", "trans.") }
+        { ...entry, c: entry.c.replace("trans./gramm. trans.", "trans.") },
       ) as T.SimpleVerbInfo,
       grammaticallyTransitive: getVerbInfo({
         ...entry,
@@ -103,12 +103,12 @@ export function getVerbInfo(
         dynamic: getDynamicCompoundInfo(
           // @ts-expect-error (will have entry.c)
           { ...entry, c: entry.c.replace("dyn./stat.", "dyn.") },
-          complement
+          complement,
         ),
         stative: getVerbInfo(
           // @ts-expect-error (will have entry.c)
           { ...entry, c: entry.c.replace("dyn./stat.", "stat.") },
-          complement
+          complement,
         ) as T.StativeCompoundVerbInfo,
       };
     }
@@ -119,19 +119,19 @@ export function getVerbInfo(
         dynamic: getDynamicCompoundInfo(
           // @ts-expect-error (will have entry.c)
           { ...entry, c: entry.c.replace("gen. stat./dyn.", "dyn.") },
-          complement
+          complement,
         ),
         stative: getGenerativeStativeCompoundVerbInfo(
           // @ts-expect-error (will have entry.c)
           { ...entry, c: entry.c.replace("gen. stat./dyn.", "gen. stat.") },
-          complement
+          complement,
         ),
       };
     }
     if (type === "generative stative compound") {
       return getGenerativeStativeCompoundVerbInfo(
         entry,
-        complement as T.DictionaryEntryNoFVars
+        complement as T.DictionaryEntryNoFVars,
       );
     }
   }
@@ -195,7 +195,7 @@ type Bases = {
 function getGenerativeStativeCompoundVerbInfo(
   entry: T.DictionaryEntryNoFVars,
   comp: T.DictionaryEntryNoFVars,
-  forceSingular?: true
+  forceSingular?: true,
 ): T.GenerativeStativeCompoundVerbInfo {
   const transitivity = getTransitivity(entry);
   const transitivityNoGrammTrans =
@@ -224,9 +224,9 @@ function getGenerativeStativeCompoundVerbInfo(
               // in a non stative compound verb
               /* istanbul ignore next */
               auxVerb.info.participle.past.mascSing
-            : auxVerb.info.participle.past
+            : auxVerb.info.participle.past,
         ),
-        objComplement.person
+        objComplement.person,
       ),
     },
   };
@@ -239,13 +239,13 @@ function getGenerativeStativeCompoundVerbInfo(
   const perfectiveRoot = concatPsString(
     compUsed,
     " ",
-    bases.root.perfective
+    bases.root.perfective,
   ) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>;
   const root = {
     imperfective: concatPsString(
       compUsed,
       " ",
-      bases.root.imperfective
+      bases.root.imperfective,
     ) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
     perfective: perfectiveRoot,
     perfectiveSplit: splitPerfective(perfectiveRoot, 0, 0, true),
@@ -278,14 +278,14 @@ function getGenerativeStativeCompoundVerbInfo(
 function getDynamicCompoundInfo(
   entry: T.DictionaryEntryNoFVars,
   comp: T.DictionaryEntryNoFVars,
-  forceSingular?: true
+  forceSingular?: true,
 ): T.DynamicCompoundVerbInfo {
   const transitivity = getTransitivity(entry);
   const yulEnding = null;
   const objComplement = getObjComplementInfo(entry, comp, forceSingular);
   const auxVerb = getDynamicAuxVerb(entry);
   const auxVerbInfo = ensureNonComboVerbInfo(
-    getVerbInfo(auxVerb.entry, auxVerb.complement)
+    getVerbInfo(auxVerb.entry, auxVerb.complement),
   );
   const compUsed = objComplement.plural
     ? objComplement.plural
@@ -321,9 +321,9 @@ function getDynamicCompoundInfo(
                     // in a non stative compound verb
                     /* istanbul ignore next */
                     auxVerbInfo.participle.past.mascSing
-                  : auxVerbInfo.participle.past
+                  : auxVerbInfo.participle.past,
               ),
-              objComplement.person
+              objComplement.person,
             ),
           },
         };
@@ -334,7 +334,7 @@ function getDynamicCompoundInfo(
       ? {
           perfectiveSplit: makeDynamicPerfectiveSplit(
             compUsed,
-            bases.stem.perfectiveSplit
+            bases.stem.perfectiveSplit,
           ),
         }
       : {}),
@@ -343,18 +343,18 @@ function getDynamicCompoundInfo(
     imperfective: concatPsString(
       compUsed,
       " ",
-      bases.root.imperfective
+      bases.root.imperfective,
     ) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
     perfective: concatPsString(
       compUsed,
       " ",
-      bases.root.perfective
+      bases.root.perfective,
     ) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
     ...(bases.root.perfectiveSplit
       ? {
           perfectiveSplit: makeDynamicPerfectiveSplit(
             compUsed,
-            bases.root.perfectiveSplit
+            bases.root.perfectiveSplit,
           ),
         }
       : {}),
@@ -364,7 +364,7 @@ function getDynamicCompoundInfo(
     past: concatPsString(compUsed, " ", bases.participle.past),
   };
   const makeIntransitiveFormOfEntry = (
-    e: T.DictionaryEntryNoFVars
+    e: T.DictionaryEntryNoFVars,
   ): T.DictionaryEntryNoFVars => ({
     ...e,
     p: e.p.replace("کول", "کېدل"),
@@ -410,11 +410,11 @@ function getDynamicCompoundInfo(
 
 function getObjectMatchingBases(
   auxInfo: T.NonComboVerbInfo,
-  person: T.Person
+  person: T.Person,
 ): Bases {
   const key = getPersonInflectionsKey(person);
   const getBase = (
-    x: T.FullForm<T.PsString>
+    x: T.FullForm<T.PsString>,
   ): T.SingleOrLengthOpts<T.PsString> => ("mascSing" in x ? x[key] : x);
   return {
     stem: {
@@ -445,17 +445,17 @@ function getObjectMatchingBases(
 function getObjComplementInfo(
   entry: T.DictionaryEntryNoFVars,
   complement: T.DictionaryEntryNoFVars,
-  forceSingular?: true
+  forceSingular?: true,
 ): T.ObjComplement {
   const complementInEntry = makePsString(
     entry.p.split(" ")[0],
-    entry.f.split(" ")[0]
+    entry.f.split(" ")[0],
   );
   const usesSeperatePluralForm =
     !forceSingular &&
     !psStringEquals(
       makePsString(complementInEntry.p, removeAccents(complementInEntry.f)),
-      makePsString(complement.p, removeAccents(complement.f))
+      makePsString(complement.p, removeAccents(complement.f)),
     );
   return {
     entry: complement,
@@ -472,7 +472,7 @@ export function getTransitivity(
   entry:
     | T.DictionaryEntryNoFVars
     | T.VerbDictionaryEntry
-    | T.VerbDictionaryEntryNoFVars
+    | T.VerbDictionaryEntryNoFVars,
 ): T.Transitivity {
   if (!entry.c) {
     throw new Error("No part of speech info");
@@ -487,7 +487,7 @@ export function getTransitivity(
 }
 
 function getType(
-  entry: T.DictionaryEntry
+  entry: T.DictionaryEntry,
 ):
   | "simple"
   | "stative compound"
@@ -523,7 +523,7 @@ function getType(
 }
 
 function getIdiosyncraticThirdMascSing(
-  entry: T.DictionaryEntryNoFVars
+  entry: T.DictionaryEntryNoFVars,
 ): T.ShortThirdPersFormSet | false {
   if (entry.tppp && entry.tppf) {
     const tpp = makePsString(entry.tppp, entry.tppf);
@@ -558,14 +558,14 @@ function getIdiosyncraticThirdMascSing(
 function getVerbRoots(
   entry: T.DictionaryEntryNoFVars,
   transitivity: T.Transitivity,
-  complement?: T.UnisexInflections
+  complement?: T.UnisexInflections,
 ): T.VerbRootSet {
   // each of the roots compes with a short and long version
   // with or without the ending ل - ul
   const isKawulAux = entry.p === "کول";
   const shortAndLong = (
     root: T.PsString,
-    perfective?: "perfective"
+    perfective?: "perfective",
   ): T.LengthOptions<T.PsString> => {
     const long = perfective
       ? root
@@ -598,7 +598,7 @@ function getVerbRoots(
       return concatPsString(
         removeAccentsFull(comp),
         " ",
-        aux
+        aux,
       ) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>;
     }
     return shortAndLong(entry);
@@ -622,7 +622,7 @@ function getVerbRoots(
         perfective: concatPsString(
           comp,
           " ",
-          aux
+          aux,
         ) as T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
       };
     }
@@ -631,7 +631,7 @@ function getVerbRoots(
     if (entry.prp && entry.prf) {
       const perfective = shortAndLong(
         makePsString(entry.prp, entry.prf),
-        "perfective"
+        "perfective",
       );
       const hasOoPrefix = checkForOoPrefix(perfective.long);
       return {
@@ -653,7 +653,7 @@ function getVerbRoots(
     perfective,
     pSplit,
     fSplit,
-    !!complement
+    !!complement,
   );
   return {
     imperfective,
@@ -663,7 +663,7 @@ function getVerbRoots(
 }
 
 function removeAccentsFull(
-  p: T.OptionalPersonInflections<T.PsString>
+  p: T.OptionalPersonInflections<T.PsString>,
 ): T.OptionalPersonInflections<T.PsString> {
   if ("mascPlur" in p) {
     return {
@@ -685,7 +685,7 @@ function getVerbStems(
   entry: T.DictionaryEntryNoFVars,
   root: T.VerbRootSet,
   transitivity: T.Transitivity,
-  complement?: T.UnisexInflections
+  complement?: T.UnisexInflections,
 ): T.VerbStemSet {
   function isRegEdulTransitive(): boolean {
     /* istanbul ignore next */
@@ -721,7 +721,7 @@ function getVerbStems(
       return concatPsString(
         removeAccentsFull(comp),
         " ",
-        stativeAux[auxTransitivity].info.stem.imperfective as T.PsString
+        stativeAux[auxTransitivity].info.stem.imperfective as T.PsString,
       );
     }
     // the imperfective stem is
@@ -753,7 +753,7 @@ function getVerbStems(
         perfective: concatPsString(
           comp,
           " ",
-          stativeAux[t].info.stem.perfective
+          stativeAux[t].info.stem.perfective,
         ),
         pSplit: 0,
         fSplit: 0,
@@ -784,7 +784,7 @@ function getVerbStems(
     // - the perfective stem prefixed with oo (if possible)
     const res = addOoPrefix(
       imperfective as T.SingleOrLengthOpts<T.PsString>,
-      entry
+      entry,
     );
     return {
       perfective: res.ps,
@@ -797,7 +797,7 @@ function getVerbStems(
     perfective,
     pSplit,
     fSplit,
-    !!complement
+    !!complement,
   );
   return {
     imperfective,
@@ -814,7 +814,7 @@ function splitPerfective(
   perfective: T.FullForm<T.PsString>,
   pSplit: number,
   fSplit: number,
-  isStativeComp: boolean
+  isStativeComp: boolean,
 ): T.SplitInfo | undefined {
   if (!isStativeComp && pSplit === 0 && fSplit === 0) {
     return undefined;
@@ -826,25 +826,25 @@ function splitPerfective(
         perfective.mascSing,
         pSplit,
         fSplit,
-        isStativeComp
+        isStativeComp,
       ),
       mascPlur: splitPerfective(
         perfective.mascPlur,
         pSplit,
         fSplit,
-        isStativeComp
+        isStativeComp,
       ),
       femSing: splitPerfective(
         perfective.femSing,
         pSplit,
         fSplit,
-        isStativeComp
+        isStativeComp,
       ),
       femPlur: splitPerfective(
         perfective.femPlur,
         pSplit,
         fSplit,
-        isStativeComp
+        isStativeComp,
       ),
     };
   }
@@ -854,11 +854,11 @@ function splitPerfective(
         perfective.short,
         pSplit,
         fSplit,
-        isStativeComp
+        isStativeComp,
       ) as [T.PsString, T.PsString],
       long: splitPerfective(perfective.long, pSplit, fSplit, isStativeComp) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       ...("mini" in perfective
         ? {
@@ -867,7 +867,7 @@ function splitPerfective(
               perfective.mini,
               pSplit,
               fSplit,
-              isStativeComp
+              isStativeComp,
             ) as [T.PsString, T.PsString],
           }
         : {}),
@@ -879,25 +879,25 @@ function splitPerfective(
     const fWords = perfective.f.split(" ");
     const before = makePsString(
       pWords.slice(0, -1).join(" ") + " ",
-      fWords.slice(0, -1).join(" ") + " "
+      fWords.slice(0, -1).join(" ") + " ",
     );
     const after = makePsString(
       pWords[pWords.length - 1],
-      fWords[fWords.length - 1]
+      fWords[fWords.length - 1],
     );
     return [before, after];
   }
   const pBeg = perfective.p.slice(0, pSplit);
   const before = makePsString(
     pBeg.endsWith(" ") ? pBeg.slice(0, -1) : pBeg,
-    perfective.f.slice(0, fSplit).replace("`", "")
+    perfective.f.slice(0, fSplit).replace("`", ""),
   );
   const beforeAccented = beginsWithDirectionalPronoun(before)
     ? before
     : accentOnFront(before);
   const after = makePsString(
     perfective.p.slice(pSplit),
-    removeAccents(removeStartingTick(perfective.f.slice(fSplit)))
+    removeAccents(removeStartingTick(perfective.f.slice(fSplit))),
   );
   return [beforeAccented, after] as T.SplitInfo;
 }
@@ -907,7 +907,7 @@ function getParticiple(
   stem: T.VerbStemSet,
   infinitive: T.PsString,
   transitivity: T.Transitivity,
-  complement?: T.UnisexInflections
+  complement?: T.UnisexInflections,
 ): T.ParticipleSet {
   const shortParticipleRoot = ((): T.PsString | null => {
     const shortenableEndings = ["ښتل", "ستل", "وتل"];
@@ -933,7 +933,7 @@ function getParticiple(
 
   const makeSepStativePart = (
     complement: T.UnisexInflections,
-    tense: "present" | "past"
+    tense: "present" | "past",
   ): T.FullForm<T.PsString> => {
     const compInflects = complementInflects(complement);
     const comp = compInflects
@@ -947,7 +947,7 @@ function getParticiple(
       " ",
       compInflects
         ? unisexInfToObjectMatrix(inflectYay(aux) as T.UnisexInflections)
-        : aux
+        : aux,
     );
   };
 
@@ -958,18 +958,20 @@ function getParticiple(
     entry.pprtp && entry.pprtf
       ? makePsString(entry.pprtp, entry.pprtf)
       : complement
-      ? makeSepStativePart(complement, "past")
-      : shortParticipleRoot
-      ? {
-          short: accentPastPart(
-            concatPsString(
-              ensureShortWurShwaShift(shortParticipleRoot),
-              ayEndingUnaccented
-            )
-          ),
-          long: accentPastPart(concatPsString(infinitive, ayEndingUnaccented)),
-        }
-      : accentPastPart(concatPsString(infinitive, ayEndingUnaccented));
+        ? makeSepStativePart(complement, "past")
+        : shortParticipleRoot
+          ? {
+              short: accentPastPart(
+                concatPsString(
+                  ensureShortWurShwaShift(shortParticipleRoot),
+                  ayEndingUnaccented,
+                ),
+              ),
+              long: accentPastPart(
+                concatPsString(infinitive, ayEndingUnaccented),
+              ),
+            }
+          : accentPastPart(concatPsString(infinitive, ayEndingUnaccented));
 
   // TODO: make this into a rule?
   const shortImperfectiveRoot =
@@ -980,35 +982,38 @@ function getParticiple(
     complement && spaceInForm(infinitive)
       ? makeSepStativePart(complement, "present")
       : shortParticipleRoot &&
-        (!psStringEquals(shortParticipleRoot, shortImperfectiveRoot) ||
-          entry.p === "وتل")
-      ? {
-          short: accentPresPart(
-            concatPsString(shortParticipleRoot, presentParticipleSuffix)
-          ),
-          long: accentPresPart(
-            concatPsString(shortImperfectiveRoot, presentParticipleSuffix)
-          ),
-        }
-      : "short" in stem.imperfective &&
-        entry.shortIntrans &&
-        entry.p !== "اوسېدل"
-      ? {
-          short: accentPresPart(
-            concatPsString(stem.imperfective.short, presentParticipleSuffix)
-          ),
-          long: accentPresPart(
-            concatPsString(shortImperfectiveRoot, presentParticipleSuffix)
-          ),
-        }
-      : accentPresPart(
-          concatPsString(
-            shortImperfectiveRoot.p === "وړ"
-              ? ensureShortWurShwaShift(shortImperfectiveRoot)
-              : shortImperfectiveRoot,
-            presentParticipleSuffix
-          )
-        );
+          (!psStringEquals(shortParticipleRoot, shortImperfectiveRoot) ||
+            entry.p === "وتل")
+        ? {
+            short: accentPresPart(
+              concatPsString(shortParticipleRoot, presentParticipleSuffix),
+            ),
+            long: accentPresPart(
+              concatPsString(shortImperfectiveRoot, presentParticipleSuffix),
+            ),
+          }
+        : "short" in stem.imperfective &&
+            entry.shortIntrans &&
+            entry.p !== "اوسېدل"
+          ? {
+              short: accentPresPart(
+                concatPsString(
+                  stem.imperfective.short,
+                  presentParticipleSuffix,
+                ),
+              ),
+              long: accentPresPart(
+                concatPsString(shortImperfectiveRoot, presentParticipleSuffix),
+              ),
+            }
+          : accentPresPart(
+              concatPsString(
+                shortImperfectiveRoot.p === "وړ"
+                  ? ensureShortWurShwaShift(shortImperfectiveRoot)
+                  : shortImperfectiveRoot,
+                presentParticipleSuffix,
+              ),
+            );
 
   return {
     past,
@@ -1023,17 +1028,17 @@ function getParticiple(
  */
 function addOoPrefix(
   s: T.SingleOrLengthOpts<T.PsString>,
-  entry: T.DictionaryEntryNoFVars
+  entry: T.DictionaryEntryNoFVars,
 ): { ps: T.SingleOrLengthOpts<T.PsString>; pSplit: number; fSplit: number } {
   let pSplit = 0;
   let fSplit = 0;
   // A bit of side effects in this function... sorry!
   function attachOo(ps: T.PsString): T.PsString;
   function attachOo(
-    ps: T.SingleOrLengthOpts<T.PsString>
+    ps: T.SingleOrLengthOpts<T.PsString>,
   ): T.SingleOrLengthOpts<T.PsString>;
   function attachOo(
-    ps: T.SingleOrLengthOpts<T.PsString>
+    ps: T.SingleOrLengthOpts<T.PsString>,
   ): T.SingleOrLengthOpts<T.PsString> {
     if ("long" in ps) {
       return {
@@ -1072,7 +1077,7 @@ function addOoPrefix(
       pSplit = 2;
       fSplit = 3;
       return {
-        p: `وا${ps.p.substr(1)}`,
+        p: `وا${ps.p.substring(1)}`,
         f: `w${ps.f}`,
       };
     }
@@ -1123,7 +1128,7 @@ function addOoPrefix(
 }
 
 function ensureUnisexInf(
-  complement: T.DictionaryEntryNoFVars
+  complement: T.DictionaryEntryNoFVars,
 ): T.UnisexInflections {
   const inf = inflectWord(complement);
   if (inf !== false && !!inf.inflections && isUnisexSet(inf.inflections)) {
@@ -1145,7 +1150,7 @@ function getDynamicAuxVerb(entry: T.DictionaryEntryNoFVars): {
   /* istanbul ignore next */
   if (!auxWordResult) {
     throw new Error(
-      `${entry.p} - ${entry.ts} unknown auxilary verb ${auxWord} for dynamic compound`
+      `${entry.p} - ${entry.ts} unknown auxilary verb ${auxWord} for dynamic compound`,
     );
   }
   return {
@@ -1162,7 +1167,7 @@ function getDynamicAuxVerb(entry: T.DictionaryEntryNoFVars): {
 
 function getComplementPerson(
   complement: T.DictionaryEntryNoFVars,
-  usesSeperatePluralForm?: boolean
+  usesSeperatePluralForm?: boolean,
 ): T.Person {
   const number =
     (complement.c && complement.c.includes("pl.")) || usesSeperatePluralForm
@@ -1175,25 +1180,25 @@ function getComplementPerson(
 
 function makeDynamicPerfectiveSplit(
   comp: T.PsString,
-  auxSplit: T.SplitInfo
+  auxSplit: T.SplitInfo,
 ): T.SplitInfo {
   if ("mascSing" in auxSplit) {
     return {
       mascSing: makeDynamicPerfectiveSplit(
         comp,
-        auxSplit.mascSing
+        auxSplit.mascSing,
       ) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
       mascPlur: makeDynamicPerfectiveSplit(
         comp,
-        auxSplit.mascPlur
+        auxSplit.mascPlur,
       ) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
       femSing: makeDynamicPerfectiveSplit(
         comp,
-        auxSplit.femSing
+        auxSplit.femSing,
       ) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
       femPlur: makeDynamicPerfectiveSplit(
         comp,
-        auxSplit.femPlur
+        auxSplit.femPlur,
       ) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
     };
   }
@@ -1201,17 +1206,17 @@ function makeDynamicPerfectiveSplit(
     return {
       long: makeDynamicPerfectiveSplit(comp, auxSplit.long) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       short: makeDynamicPerfectiveSplit(comp, auxSplit.short) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       ...(auxSplit.mini
         ? {
             mini: makeDynamicPerfectiveSplit(comp, auxSplit.mini) as [
               T.PsString,
-              T.PsString
+              T.PsString,
             ],
           }
         : {}),
@@ -1221,7 +1226,7 @@ function makeDynamicPerfectiveSplit(
 }
 
 export function getAbilityRootsAndStems(
-  info: T.NonComboVerbInfo
+  info: T.NonComboVerbInfo,
 ): T.AbilityRootsAndStems {
   const isIntransitiveStativeCompound =
     (info.type === "stative compound" &&
@@ -1229,35 +1234,35 @@ export function getAbilityRootsAndStems(
     isTlulVerb(info.entry);
   const roots = getAbilityRoots(info.root, isIntransitiveStativeCompound);
   return addAbilityHelperRootsAndStems(
-    roots /* isIntransitiveStativeCompound */
+    roots /* isIntransitiveStativeCompound */,
   );
 }
 
 function addAbilityHelperRootsAndStems(
-  roots: T.VerbRootSet
+  roots: T.VerbRootSet,
   // isIntransitiveStativeCompound: boolean
 ): T.AbilityRootsAndStems {
   function addAbilityHelperToRoot(
     r: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
-    helper: T.PsString
+    helper: T.PsString,
   ): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
     if ("mascSing" in r) {
       return {
         mascSing: addAbilityHelperToRoot(
           r.mascSing,
-          helper
+          helper,
         ) as T.LengthOptions<T.PsString>,
         mascPlur: addAbilityHelperToRoot(
           r.mascPlur,
-          helper
+          helper,
         ) as T.LengthOptions<T.PsString>,
         femSing: addAbilityHelperToRoot(
           r.femSing,
-          helper
+          helper,
         ) as T.LengthOptions<T.PsString>,
         femPlur: addAbilityHelperToRoot(
           r.femPlur,
-          helper
+          helper,
         ) as T.LengthOptions<T.PsString>,
       };
     }
@@ -1276,7 +1281,7 @@ function addAbilityHelperRootsAndStems(
         ? {
             perfectiveSplit: addAbilityHelperToPerfectiveSplit(
               roots.perfectiveSplit,
-              stemHelper
+              stemHelper,
             ),
           }
         : {}),
@@ -1288,7 +1293,7 @@ function addAbilityHelperRootsAndStems(
         ? {
             perfectiveSplit: addAbilityHelperToPerfectiveSplit(
               roots.perfectiveSplit,
-              rootHelper
+              rootHelper,
             ),
           }
         : {}),
@@ -1298,25 +1303,25 @@ function addAbilityHelperRootsAndStems(
 
 function addAbilityHelperToPerfectiveSplit(
   s: T.SplitInfo,
-  helper: T.PsString
+  helper: T.PsString,
 ): T.SplitInfo {
   if ("mascSing" in s) {
     return {
       mascSing: addAbilityHelperToPerfectiveSplit(
         s.mascSing,
-        helper
+        helper,
       ) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
       mascPlur: addAbilityHelperToPerfectiveSplit(
         s.mascPlur,
-        helper
+        helper,
       ) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
       femSing: addAbilityHelperToPerfectiveSplit(
         s.femSing,
-        helper
+        helper,
       ) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
       femPlur: addAbilityHelperToPerfectiveSplit(
         s.femPlur,
-        helper
+        helper,
       ) as T.SingleOrLengthOpts<[T.PsString, T.PsString]>,
     };
   }
@@ -1328,7 +1333,7 @@ function addAbilityHelperToPerfectiveSplit(
 
 export function getPassiveRootsAndStems(
   info: T.NonComboVerbInfo,
-  withTails?: boolean
+  withTails?: boolean,
 ): T.PassiveRootsAndStems | undefined {
   if (info.transitivity === "intransitive") return undefined;
   return {
@@ -1345,7 +1350,7 @@ const passiveRootTail: T.PsString = { p: "ی", f: "ay" };
 function getPassiveStem(
   root: T.VerbRootSet,
   splitInfo: T.SplitInfo | undefined,
-  withTails?: boolean
+  withTails?: boolean,
 ): T.VerbStemSet {
   const perfectiveRoot = withTails
     ? concatPsString(root.perfective, passiveRootTail)
@@ -1360,7 +1365,7 @@ function getPassiveStem(
       ? {
           perfectiveSplit: getPassiveStemPerfectiveSplit(
             perfectiveRoot,
-            splitInfo
+            splitInfo,
           ),
         }
       : {}),
@@ -1369,7 +1374,7 @@ function getPassiveStem(
 
 function getPassiveStemPerfectiveSplit(
   stem: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
-  splitInfo: T.SplitInfo
+  splitInfo: T.SplitInfo,
 ): T.SplitInfo {
   const si = "long" in splitInfo ? splitInfo.long : splitInfo;
   if ("mascSing" in si) {
@@ -1378,19 +1383,19 @@ function getPassiveStemPerfectiveSplit(
     return {
       mascSing: getPassiveStemPerfectiveSplit(stem.mascSing, si.mascSing) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       mascPlur: getPassiveStemPerfectiveSplit(stem.mascPlur, si.mascPlur) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       femSing: getPassiveStemPerfectiveSplit(stem.femSing, si.femSing) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       femPlur: getPassiveStemPerfectiveSplit(stem.femPlur, si.femPlur) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
     };
   }
@@ -1403,7 +1408,7 @@ function getPassiveStemPerfectiveSplit(
 
 function getPassiveRootPerfectiveSplit(
   root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
-  splitInfo: T.SplitInfo
+  splitInfo: T.SplitInfo,
 ): T.SplitInfo {
   const si = "long" in splitInfo ? splitInfo.long : splitInfo;
   if ("mascSing" in si) {
@@ -1412,19 +1417,19 @@ function getPassiveRootPerfectiveSplit(
     return {
       mascSing: getPassiveRootPerfectiveSplit(root.mascSing, si.mascSing) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       mascPlur: getPassiveRootPerfectiveSplit(root.mascPlur, si.mascPlur) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       femSing: getPassiveRootPerfectiveSplit(root.femSing, si.femSing) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
       femPlur: getPassiveRootPerfectiveSplit(root.femPlur, si.femPlur) as [
         T.PsString,
-        T.PsString
+        T.PsString,
       ],
     };
   }
@@ -1435,7 +1440,7 @@ function getPassiveRootPerfectiveSplit(
         si[1],
         " ",
         // @ts-expect-error because
-        stativeAux.intransitive.info.root.perfective.short
+        stativeAux.intransitive.info.root.perfective.short,
       ),
     ],
     long: [
@@ -1444,7 +1449,7 @@ function getPassiveRootPerfectiveSplit(
         si[1],
         " ",
         // @ts-expect-error because
-        stativeAux.intransitive.info.root.perfective.long
+        stativeAux.intransitive.info.root.perfective.long,
       ),
     ],
   };
@@ -1455,29 +1460,29 @@ const abilityTailAccented = { p: "ی", f: "áy" };
 
 function getAbilityRoots(
   root: T.VerbRootSet,
-  isIntransitiveStativeCompound: boolean
+  isIntransitiveStativeCompound: boolean,
 ): T.VerbRootSet {
   function getAspectAbilityRoot(
     root: T.VerbRootSet[T.Aspect],
-    aspect: T.Aspect
+    aspect: T.Aspect,
   ): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
     if ("mascSing" in root) {
       return {
         mascSing: getAspectAbilityRoot(
           root.mascSing,
-          aspect
+          aspect,
         ) as T.LengthOptions<T.PsString>,
         mascPlur: getAspectAbilityRoot(
           root.mascPlur,
-          aspect
+          aspect,
         ) as T.LengthOptions<T.PsString>,
         femSing: getAspectAbilityRoot(
           root.femSing,
-          aspect
+          aspect,
         ) as T.LengthOptions<T.PsString>,
         femPlur: getAspectAbilityRoot(
           root.femPlur,
-          aspect
+          aspect,
         ) as T.LengthOptions<T.PsString>,
       };
     }
@@ -1485,7 +1490,7 @@ function getAbilityRoots(
       long: concatPsString(root.long, abilityTail) as T.PsString,
       short: concatPsString(
         root.short,
-        aspect === "imperfective" ? abilityTailAccented : abilityTail
+        aspect === "imperfective" ? abilityTailAccented : abilityTail,
       ) as T.PsString,
     };
   }
@@ -1494,19 +1499,19 @@ function getAbilityRoots(
       return {
         mascSing: getAbilityRootPerfectiveSplit(s.mascSing) as [
           T.PsString,
-          T.PsString
+          T.PsString,
         ],
         mascPlur: getAbilityRootPerfectiveSplit(s.mascPlur) as [
           T.PsString,
-          T.PsString
+          T.PsString,
         ],
         femSing: getAbilityRootPerfectiveSplit(s.femSing) as [
           T.PsString,
-          T.PsString
+          T.PsString,
         ],
         femPlur: getAbilityRootPerfectiveSplit(s.femPlur) as [
           T.PsString,
-          T.PsString
+          T.PsString,
         ],
       };
     }
@@ -1518,7 +1523,7 @@ function getAbilityRoots(
   return {
     perfective: getAspectAbilityRoot(
       !isIntransitiveStativeCompound ? root.perfective : root.imperfective,
-      !isIntransitiveStativeCompound ? "perfective" : "imperfective"
+      !isIntransitiveStativeCompound ? "perfective" : "imperfective",
     ),
     imperfective: getAspectAbilityRoot(root.imperfective, "imperfective"),
     ...(root.perfectiveSplit && !isIntransitiveStativeCompound
@@ -1532,7 +1537,7 @@ function getAbilityRoots(
 function getPassiveRoot(
   root: T.VerbRootSet,
   splitInfo: T.SplitInfo | undefined,
-  withTails?: boolean
+  withTails?: boolean,
 ): T.VerbRootSet {
   const perfectiveRoot = withTails
     ? concatPsString(root.perfective, passiveRootTail)
@@ -1547,7 +1552,7 @@ function getPassiveRoot(
       ? {
           perfectiveSplit: getPassiveRootPerfectiveSplit(
             perfectiveRoot,
-            splitInfo
+            splitInfo,
           ),
         }
       : {}),
@@ -1556,21 +1561,21 @@ function getPassiveRoot(
 
 function getPassivePastParticiple(
   root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
-  withTails?: boolean
+  withTails?: boolean,
 ): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
   if ("mascSing" in root) {
     return {
       mascSing: getPassivePastParticiple(
-        root.mascSing
+        root.mascSing,
       ) as T.LengthOptions<T.PsString>,
       mascPlur: getPassivePastParticiple(
-        root.mascPlur
+        root.mascPlur,
       ) as T.LengthOptions<T.PsString>,
       femSing: getPassivePastParticiple(
-        root.femPlur
+        root.femPlur,
       ) as T.LengthOptions<T.PsString>,
       femPlur: getPassivePastParticiple(
-        root.femPlur
+        root.femPlur,
       ) as T.LengthOptions<T.PsString>,
     };
   }
@@ -1579,13 +1584,13 @@ function getPassivePastParticiple(
   return concatPsString(
     removeAccents(getLong(r)),
     " ",
-    stativeAux.intransitive.info.participle.past
+    stativeAux.intransitive.info.participle.past,
   ) as T.PsString;
 }
 
 function getPassiveStemAspect(
   root: T.FullForm<T.PsString>,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): T.FullForm<T.PsString> {
   if ("mascSing" in root) {
     return {
@@ -1598,31 +1603,31 @@ function getPassiveStemAspect(
   return concatPsString(
     aspect === "imperfective" ? removeAccents(getLong(root)) : getLong(root),
     " ",
-    stativeAux.intransitive.info.stem[aspect]
+    stativeAux.intransitive.info.stem[aspect],
   );
 }
 
 function getPassiveRootAspect(
   root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): T.OptionalPersonInflections<T.LengthOptions<T.PsString>> {
   if ("mascSing" in root) {
     return {
       mascSing: getPassiveRootAspect(
         root.mascSing,
-        aspect
+        aspect,
       ) as T.LengthOptions<T.PsString>,
       mascPlur: getPassiveRootAspect(
         root.mascPlur,
-        aspect
+        aspect,
       ) as T.LengthOptions<T.PsString>,
       femPlur: getPassiveRootAspect(
         root.femPlur,
-        aspect
+        aspect,
       ) as T.LengthOptions<T.PsString>,
       femSing: getPassiveRootAspect(
         root.femPlur,
-        aspect
+        aspect,
       ) as T.LengthOptions<T.PsString>,
     };
   }
@@ -1633,13 +1638,13 @@ function getPassiveRootAspect(
       rootR,
       " ",
       // @ts-expect-error because
-      stativeAux.intransitive.info.root[aspect].long
+      stativeAux.intransitive.info.root[aspect].long,
     ),
     short: concatPsString(
       rootR,
       " ",
       // @ts-expect-error because
-      stativeAux.intransitive.info.root[aspect].short
+      stativeAux.intransitive.info.root[aspect].short,
     ),
   };
 }

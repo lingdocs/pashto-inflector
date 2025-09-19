@@ -73,29 +73,29 @@ export function bindParseWithAllErrors<C, D>(
  * this way it will only try to parse those remaining tokens once
  *
  **/
-export function bindParseResultWParser<C, D, E>(
-  prev: T.ParseResult<C>[],
-  parser: (tokens: T.Tokens) => T.ParseResult<D>[],
-  f: (res: C, parsed: D, tokens: T.Tokens) => T.ParseResult<E>[],
-): T.ParseResult<E>[] {
-  const grouped = groupByTokenLength(prev);
-  return cleanOutResults(
-    grouped.flatMap((group) => {
-      const parsed = cleanOutResults(parser(group[0].tokens));
-      // console.log(group.length);
-      // if (group.length > 1) {
-      //   console.log(`Saved ${group.length - 1} parses`);
-      // }
-      return group.flatMap((prev) => {
-        return parsed.flatMap((parse) =>
-          f(prev.body, parse.body, parse.tokens).map(
-            addErrors([...parse.errors, ...prev.errors]),
-          ),
-        );
-      });
-    }),
-  );
-}
+// export function bindParseResultWParser<C, D, E>(
+//   prev: T.ParseResult<C>[],
+//   parser: (tokens: T.Tokens) => T.ParseResult<D>[],
+//   f: (res: C, parsed: D, tokens: T.Tokens) => T.ParseResult<E>[],
+// ): T.ParseResult<E>[] {
+//   const grouped = groupByTokenLength(prev);
+//   return cleanOutResults(
+//     grouped.flatMap((group) => {
+//       const parsed = cleanOutResults(parser(group[0].tokens));
+//       // console.log(group.length);
+//       // if (group.length > 1) {
+//       //   console.log(`Saved ${group.length - 1} parses`);
+//       // }
+//       return group.flatMap((prev) => {
+//         return parsed.flatMap((parse) =>
+//           f(prev.body, parse.body, parse.tokens).map(
+//             addErrors([...parse.errors, ...prev.errors]),
+//           ),
+//         );
+//       });
+//     }),
+//   );
+// }
 
 export function addErrors<C>(errs: T.ParseError[]) {
   return function (pr: T.ParseResult<C>): T.ParseResult<C> {
