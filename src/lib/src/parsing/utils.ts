@@ -238,19 +238,27 @@ export function parserCombOr<R>(parsers: Parser<R>[]) {
 // TODO: the many components need to have position info here
 // how do we do that ?   Parser<WithPos<R>[]>
 // for succ              Parser<[WithPos<A>, WithPos<B>]>
-export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
-  const r: Parser<R[]> = (tokens: T.Tokens, dictionary: T.DictionaryAPI) => {
-    function go(acc: R[], t: T.Tokens): T.ParseResult<R[]>[] {
+export function parserCombMany<R>(parser: Parser<R>): Parser<T.WithPos<R>[]> {
+  const r: Parser<T.WithPos<R>[]> = (
+    tokens: T.Tokens,
+    dictionary: T.DictionaryAPI,
+  ) => {
+    function go(
+      acc: T.WithPos<R>[],
+      t: T.Tokens,
+    ): T.ParseResult<T.WithPos<R>[]>[] {
       const one = parser(t, dictionary);
       if (one.length === 0) {
-        return returnParseResult(t, acc);
+        const position = posFromAccumulator(t, acc);
+        return returnParseResult(t, acc, position);
       }
       return bindParseResult(one, (tkns, o) => {
+        const position = posFromAccumulator(tkns, acc);
         return [
           ...go([...acc, o], tkns),
           // also have a result where the next token is NOT
           // considered a success
-          ...returnParseResult(t, acc),
+          ...returnParseResult(t, acc, position),
         ];
       });
     }
@@ -259,16 +267,32 @@ export function parserCombMany<R>(parser: Parser<R>): Parser<R[]> {
   return r;
 }
 
+export function nulPosFromTokens(t: T.Tokens): T.ParseResultPosition {
+  return { start: t.position, end: t.position };
+}
+
+export function posFromAccumulator<R>(
+  t: T.Tokens,
+  acc: T.WithPos<R>[],
+): T.ParseResultPosition {
+  const start = acc.length ? acc[0].position.start : t.position;
+  const end = acc.length ? acc.at(-1)!.position.end : t.position;
+  return { start, end };
+}
+
 export function parserCombSucc2<A, B>(
   parsers: [Parser<A>, Parser<B>],
 ): Parser<[T.WithPos<A>, T.WithPos<B>]> {
   return function (
     tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
-  ): T.ParseResult<[A, B]>[] {
+  ): T.ParseResult<[T.WithPos<A>, T.WithPos<B>]>[] {
     return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
       bindParseResult(parsers[1](t, dictionary), (tk, b) =>
-        returnParseResult(tk, [a, b]),
+        returnParseResult(tk, [a, b], {
+          start: a.position.start,
+          end: b.position.end,
+        }),
       ),
     );
   };

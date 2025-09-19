@@ -23,7 +23,7 @@ export function parseKawulKedulVBP(
 export function parseKawulKedulPPart(
   tokens: T.Tokens,
 ): T.ParseResult<T.ParsedVBPBasicPart>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, pos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -54,6 +54,7 @@ export function parseKawulKedulPPart(
         },
       ]),
     ),
+    pos,
   );
 }
 
@@ -64,7 +65,7 @@ export function parseKawulKedulAbility(
   if (ph && ph.type === "PH" && ph.s !== "و") {
     return [];
   }
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, pos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -76,36 +77,44 @@ export function parseKawulKedulAbility(
     if (ph) {
       return [];
     }
-    return returnParseResults(rest, [
-      {
-        type: "parsed vbp basic ability",
-        info: {
-          type: "ability",
-          aspect: "imperfective",
-          verb: kawulStat,
+    return returnParseResults(
+      rest,
+      [
+        {
+          type: "parsed vbp basic ability",
+          info: {
+            type: "ability",
+            aspect: "imperfective",
+            verb: kawulStat,
+          },
         },
-      },
-      {
-        type: "parsed vbp basic ability",
-        info: {
-          type: "ability",
-          aspect: "imperfective",
-          verb: kawulDyn,
+        {
+          type: "parsed vbp basic ability",
+          info: {
+            type: "ability",
+            aspect: "imperfective",
+            verb: kawulDyn,
+          },
         },
-      },
-    ]);
+      ],
+      pos,
+    );
   }
   if (base === "کړ") {
-    return returnParseResults(rest, [
-      {
-        type: "parsed vbp basic ability",
-        info: {
-          type: "ability",
-          aspect: "perfective",
-          verb: ph?.type === "PH" ? kawulDyn : kawulStat,
+    return returnParseResults(
+      rest,
+      [
+        {
+          type: "parsed vbp basic ability",
+          info: {
+            type: "ability",
+            aspect: "perfective",
+            verb: ph?.type === "PH" ? kawulDyn : kawulStat,
+          },
         },
-      },
-    ]);
+      ],
+      pos,
+    );
   }
   if (base === "کېد") {
     if (ph) {
@@ -123,6 +132,7 @@ export function parseKawulKedulAbility(
           },
         })),
       ),
+      pos,
     );
   }
   return [];

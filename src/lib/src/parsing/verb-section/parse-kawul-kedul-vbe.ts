@@ -50,7 +50,7 @@ export function parseKawulKedulVBE(
   tokens: T.Tokens,
   ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBBVerb>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, pos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -69,6 +69,7 @@ export function parseKawulKedulVBE(
       return returnParseResults<T.ParsedVBBVerb>(
         rest,
         people.flatMap(getF(kawulKedul)(aspect)(base)),
+        pos,
       );
     };
   const rootAndStem =
@@ -78,13 +79,17 @@ export function parseKawulKedulVBE(
       people: ReturnType<typeof getVerbEnding>;
       imperativePeople: ReturnType<typeof getImperativeVerbEnding>;
     }) => {
-      return returnParseResults<T.ParsedVBBVerb>(rest, [
-        ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
-        ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
-        ...people.imperativePeople.flatMap<T.ParsedVBBVerb>((person) =>
-          getF(kawulKedul)(aspect)("stem")(person).map(addImperative),
-        ),
-      ]);
+      return returnParseResults<T.ParsedVBBVerb>(
+        rest,
+        [
+          ...people.people.stem.flatMap(getF(kawulKedul)(aspect)("stem")),
+          ...people.people.root.flatMap(getF(kawulKedul)(aspect)("root")),
+          ...people.imperativePeople.flatMap<T.ParsedVBBVerb>((person) =>
+            getF(kawulKedul)(aspect)("stem")(person).map(addImperative),
+          ),
+        ],
+        pos,
+      );
     };
   if (first === "کړ") {
     return oneBase("kawul")("root")("perfective")([T.Person.ThirdSingMale]);
@@ -150,6 +155,7 @@ export function parseKawulKedulVBE(
       imperativePeople
         .flatMap(getF("kedul")("imperfective")("stem"))
         .map(addImperative),
+      pos,
     );
     return [
       ...oneBase("kedul")("stem")("imperfective")(people.stem),
@@ -165,6 +171,7 @@ export function parseKawulKedulVBE(
       imperativePeople
         .flatMap(getF("kedul")("perfective")("stem"))
         .map(addImperative),
+      pos,
     );
     return [
       ...oneBase("kedul")("stem")("perfective")(people.stem),

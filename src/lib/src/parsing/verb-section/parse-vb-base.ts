@@ -32,7 +32,7 @@ export function parseVBBBasic(
   dictionary: T.DictionaryAPI,
   ph: T.ParsedPH | undefined,
 ): T.ParseResult<T.ParsedVBBVerb>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, pos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -43,7 +43,7 @@ export function parseVBBBasic(
   }
   const irregResults = parseIrregularVerb(first, ph);
   if (irregResults.length) {
-    return returnParseResults(rest, irregResults);
+    return returnParseResults(rest, irregResults, pos);
   }
   const kawulKedul = parseKawulKedulVBE(tokens, ph);
   if (kawulKedul.length) {
@@ -87,7 +87,7 @@ export function parseVBBBasic(
     }),
     ...specialThirdPersMascSingForm(base, ending, dictionary, ph),
   ];
-  return returnParseResults(rest, [...stemRes, ...rootRes]);
+  return returnParseResults(rest, [...stemRes, ...rootRes], pos);
 }
 
 export function parseVBPBasic(type: "ability" | "perfect") {
@@ -96,7 +96,7 @@ export function parseVBPBasic(type: "ability" | "perfect") {
     dictionary: T.DictionaryAPI,
     ph: T.ParsedPH | undefined,
   ): T.ParseResult<T.ParsedVBP>[] {
-    const [first, rest] = getOneToken(tokens);
+    const [first, rest, pos] = getOneToken(tokens);
     if (!first) {
       return [];
     }
@@ -120,7 +120,7 @@ export function parseVBPBasic(type: "ability" | "perfect") {
             aspect: root.aspect,
           },
         }))
-        .flatMap((m) => returnParseResult(rest, m));
+        .flatMap((m) => returnParseResult(rest, m, pos));
       return res;
     } else {
       if (ph) {
@@ -149,7 +149,7 @@ export function parseVBPBasic(type: "ability" | "perfect") {
             },
           })),
         )
-        .flatMap((m) => returnParseResult(rest, m));
+        .flatMap((m) => returnParseResult(rest, m, pos));
     }
   };
 }

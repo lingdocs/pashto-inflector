@@ -11,7 +11,7 @@ const allPersons: T.Person[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 export function parseEquative(
   tokens: T.Tokens,
 ): T.ParseResult<T.ParsedVBBEq>[] {
-  const [first, rest] = getOneToken(tokens);
+  const [first, rest, pos] = getOneToken(tokens);
   if (!first) {
     return [];
   }
@@ -25,7 +25,7 @@ export function parseEquative(
     }
     return tenses.flatMap((tense) =>
       persons.map((person) =>
-        returnParseResultSingle(rest, makeEqVBE(tense, person)),
+        returnParseResultSingle(rest, makeEqVBE(tense, person), pos),
       ),
     );
   }

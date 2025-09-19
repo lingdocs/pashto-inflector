@@ -28,15 +28,19 @@ export function parseNoun(
   }
   const determiners = parserCombMany(parseDeterminer)(tokens, dictionary);
   const res = bindParseWithAllErrors(determiners, (tkns, dts) => {
-    const singleDet = getLoneDeterminer(dts);
+    const singleDet = getLoneDeterminer(dts.content.map((x) => x.content));
     const demWOutNoun =
       // TODO: should make test to make sure that you can't do a standalone
       // demonstrative w a possesor
       singleDet && !possesor ? makeDemWOutNoun(tkns, singleDet) : [];
+    const adjsAndNoun = parserCombSucc2([
+      parserCombMany(parseAdjective),
+      parseNounWord,
+    ])(tkns, dictionary);
     const wNoun = fmapParseResult<
       [
-        T.InflectableBaseParse<T.AdjectiveSelection>[],
-        T.ParsedNounWord<T.NounEntry>,
+        T.WithPos<T.WithPos<T.InflectableBaseParse<T.AdjectiveSelection>>[]>,
+        T.WithPos<T.ParsedNounWord<T.NounEntry>>,
       ],
       [
         {
@@ -47,56 +51,57 @@ export function parseNoun(
         T.ParsedNounWord<T.NounEntry>,
       ]
     >(
-      ([adj, noun]) =>
-        [{ withNoun: true, determiners: dts }, adj, noun] as const,
-      parserCombSucc2([parserCombMany(parseAdjective), parseNounWord])(
-        tkns,
-        dictionary,
-      ),
+      ([adjs, noun]) =>
+        // TODO: could have better retention of WithPos info for better error handling granularity
+        [
+          { withNoun: true, determiners: dts.content.map((x) => x.content) },
+          adjs.content.map((x) => x.content),
+          noun.content,
+        ] as const,
+      adjsAndNoun,
     );
     return [...wNoun, ...demWOutNoun];
   });
   // TODO: the succ could be optimized using the bindParseResultWParser trick
 
-  return bindParseWithAllErrors(
-    res,
-    (tkns, [determiners, adjectives, nounWord]) => {
-      const errors: T.ParseError[] = [
-        ...adjDetsMatch(
-          [...adjectives, ...determiners.determiners],
-          nounWord.gender,
-          nounWord.inflected,
-          nounWord.plural,
-        ),
-        ...checkForDeterminerDuplicates(determiners.determiners),
-      ];
-      const s = makeNounSelection(nounWord.entry, undefined);
-      const body: NounResult = {
-        inflected: nounWord.inflected,
-        selection: {
-          ...s,
-          gender: nounWord.gender,
-          number: nounWord.plural ? "plural" : "singular",
-          adjectives: adjectives.map((a) => a.selection),
-          determiners: determiners.determiners.length
-            ? {
-                type: "determiners",
-                withNoun: determiners.withNoun,
-                determiners: determiners.determiners.map((d) => d.selection),
-              }
-            : undefined,
-          possesor,
-        },
-      };
-      return [
-        {
-          body,
-          tokens: tkns,
-          errors,
-        },
-      ];
-    },
-  );
+  return bindParseWithAllErrors(res, (tkns, x) => {
+    const [determiners, adjectives, nounWord] = x.content;
+    const errors: T.ParseError[] = [
+      ...adjDetsMatch(
+        [...adjectives, ...determiners.determiners],
+        nounWord.gender,
+        nounWord.inflected,
+        nounWord.plural,
+      ),
+      ...checkForDeterminerDuplicates(determiners.determiners),
+    ];
+    const s = makeNounSelection(nounWord.entry, undefined);
+    const body: NounResult = {
+      inflected: nounWord.inflected,
+      selection: {
+        ...s,
+        gender: nounWord.gender,
+        number: nounWord.plural ? "plural" : "singular",
+        adjectives: adjectives.map((a) => a.selection),
+        determiners: determiners.determiners.length
+          ? {
+              type: "determiners",
+              withNoun: determiners.withNoun,
+              determiners: determiners.determiners.map((d) => d.selection),
+            }
+          : undefined,
+        possesor,
+      },
+    };
+    return [
+      {
+        body,
+        tokens: tkns,
+        errors,
+        position: x.position,
+      },
+    ];
+  });
 }
 
 function getLoneDeterminer(
@@ -146,6 +151,8 @@ function makeDemWOutNoun(
   return returnParseResults(
     tokens,
     options.map((n) => [{ withNoun: false, determiners: [d] }, [], n] as const),
+    // TODO: is this accurate??
+    { start: tokens.position - 1, end: tokens.position },
   );
 }
 
