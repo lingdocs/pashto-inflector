@@ -253,7 +253,7 @@ export function switchSubjObj<
       ),
     };
   }
-  if (!subject || !vps.verb || !(typeof object === "object")) {
+  if (!subject || !(typeof object === "object")) {
     return vps;
   }
   return {

@@ -12,11 +12,11 @@ function variationRegex(p: string): { $regex: RegExp } {
 
 const queryP = (p: string) => entries.filter((e) => e.p === p);
 function adjLookup(p: string): T.AdjectiveEntry[] {
-  return queryP(p).filter(isAdjectiveEntry) as T.AdjectiveEntry[];
+  return queryP(p).filter(isAdjectiveEntry);
 }
 
 function nounLookup(p: string): T.NounEntry[] {
-  return queryP(p).filter(isNounEntry) as T.NounEntry[];
+  return queryP(p).filter(isNounEntry);
 }
 
 function otherLookup(
@@ -24,7 +24,7 @@ function otherLookup(
   p: string,
   regex?: boolean,
 ): T.DictionaryEntry[] {
-  if (regex) {
+  if (regex === true) {
     const { $regex: regex } = variationRegex(p);
     return entries.filter((e) => (e[key] as string)?.match(regex));
   }
@@ -34,7 +34,7 @@ function otherLookup(
 function specialPluralLookup(p: string): T.NounEntry[] {
   const { $regex: regex } = variationRegex(p);
   return entries.filter(
-    (e) => (e.ppp?.match(regex) || e.app?.match(regex)) && isNounEntry(e),
+    (e) => !!(e.ppp?.match(regex) || e.app?.match(regex)) && isNounEntry(e),
   ) as T.NounEntry[];
 }
 
@@ -43,7 +43,7 @@ function verbEntryLookup(p: string): T.VerbEntry[] {
     .filter((e) => e.p === p)
     .filter(isVerbDictionaryEntry)
     .map<T.VerbEntry>((entry) =>
-      entry.l
+      entry.l !== undefined
         ? {
             entry,
             complement: entries.find((e) => e.ts === entry.l),
@@ -57,7 +57,7 @@ function verbEntryLookupByL(l: number): T.VerbEntry[] {
     .filter((e) => e.l === l)
     .filter(isVerbDictionaryEntry)
     .map<T.VerbEntry>((entry) =>
-      entry.l
+      entry.l !== undefined
         ? {
             entry,
             complement: entries.find((e) => e.ts === entry.l),
@@ -68,9 +68,9 @@ function verbEntryLookupByL(l: number): T.VerbEntry[] {
 
 export const testDictionary: T.DictionaryAPI = {
   // @ts-expect-error we won't mock the initialization
-  initialize: async () => 0,
+  initialize: async () => 0, // eslint-disable-line
   // @ts-expect-error not perfect mocking because won't need that
-  update: async () => ({ response: "updated" }),
+  update: async () => ({ response: "updated" }), // eslint-disable-line
   queryP,
   adjLookup,
   nounLookup,

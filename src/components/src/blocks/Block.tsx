@@ -121,10 +121,9 @@ function Border({
 }) {
   return (
     <div
-      className={`block-border d-flex flex-row justify-content-center align-items-center ${extraClassName ? extraClassName : ""
-        }`}
+      className={`block-border d-flex flex-row justify-content-center align-items-center ${extraClassName ?? extraClassName}`}
       style={{
-        padding: padding ? padding : "1rem",
+        padding: padding ?? "1rem",
         textAlign: "center",
         gap: "0.5rem",
       }}
@@ -510,7 +509,7 @@ function ComplementBlock({
       ) : comp.type === "unselected" ? (
         <div>
           <Border>____</Border>
-          {!inside && (
+          {inside !== true && (
             <>
               <div>&nbsp;</div>
               <SubText>{comp.e}</SubText>
@@ -686,7 +685,7 @@ export function NPBlock({
   const detsWithoutNoun =
     np.selection.determiners && !np.selection.determiners.withNoun;
   const elements = [
-    ...(!inside
+    ...(inside !== true
       ? [
         <Possesors opts={opts} script={script}>
           {np.selection.type !== "pronoun"
@@ -700,7 +699,7 @@ export function NPBlock({
     </Determiners>,
     <div
       style={{
-        opacity: detsWithoutNoun ? 0.5 : 1,
+        opacity: detsWithoutNoun === true ? 0.5 : 1,
       }}
     >
       <Adjectives opts={opts} script={script}>
@@ -709,9 +708,9 @@ export function NPBlock({
     </div>,
     <div
       style={{
-        opacity: detsWithoutNoun ? 0.5 : 1,
+        opacity: detsWithoutNoun === true ? 0.5 : 1,
       }}
-      className={np.selection.adjectives?.length ? "mx-1" : ""}
+      className={np.selection.adjectives !== undefined && np.selection.adjectives.length ? "mx-1" : ""}
     >
       {" "}
       {flattenLengths(np.selection.ps)[0][script]}
@@ -726,7 +725,7 @@ export function NPBlock({
       <Border
         // extraClassName={`!inside && hasPossesor ? "pt-2" : ""`}
         padding={
-          inside
+          inside === true
             ? "0.3rem"
             : hasPossesor
               ? "0.5rem 0.8rem 0.25rem 0.8rem"
@@ -735,9 +734,9 @@ export function NPBlock({
       >
         {el}
       </Border>
-      <div className={inside ? "small" : ""}>
+      <div className={inside === true ? "small" : ""}>
         NP
-        {!inside ? (
+        {inside !== true ? (
           <>
             {` `}
             <span className="text-muted small">
@@ -748,7 +747,7 @@ export function NPBlock({
           <></>
         )}
       </div>
-      {!inside && <SubText>{english}</SubText>}
+      {inside !== true && <SubText>{english}</SubText>}
     </div>
   );
 }
@@ -776,7 +775,7 @@ function Possesors({
       className={`d-flex flex-row${script === "p" ? "-reverse" : ""
         } mr-1 align-items-end`}
       style={
-        complement
+        complement === true
           ? {}
           : {
             marginBottom: "0.5rem",
@@ -790,7 +789,7 @@ function Possesors({
         </Possesors>
       )}
       <div>
-        {contraction && <div className="mb-1">({contraction})</div>}
+        {contraction !== undefined && <div className="mb-1">({contraction})</div>}
         <div
           className={classNames(
             "d-flex",
@@ -845,7 +844,7 @@ function SubText({ children: e }: { children: string | undefined }) {
         height: "1rem",
       }}
     >
-      {e ? e : ""}
+      {e ?? ""}
     </div>
   );
 }

@@ -19,17 +19,17 @@ const labels = (role: "subject" | "object" | "ergative" | "possesor") => ({
   e:
     role === "object"
       ? [
-          ["me", "us"],
-          ["you", "you (pl.)"],
-          [{ masc: "him/it", fem: "her/it" }, "them"],
-        ]
+        ["me", "us"],
+        ["you", "you (pl.)"],
+        [{ masc: "him/it", fem: "her/it" }, "them"],
+      ]
       : role === "possesor"
-      ? [
+        ? [
           ["my", "our"],
           ["your", "your (pl.)"],
           [{ masc: "his/its", fem: "her/its" }, "their"],
         ]
-      : [
+        : [
           ["I", "We"],
           ["You", "You (pl.)"],
           [{ masc: "He/It", fem: "She/It" }, "They"],
@@ -37,19 +37,19 @@ const labels = (role: "subject" | "object" | "ergative" | "possesor") => ({
   p:
     role === "subject"
       ? {
-          far: [
-            ["زه", "مونږ"],
-            ["ته", "تاسو"],
-            ["هغه", "هغوی"],
-          ],
-          near: [
-            ["زه", "مونږ"],
-            ["ته", "تاسو"],
-            [{ masc: "دی", fem: "دا" }, "دوی"],
-          ],
-        }
+        far: [
+          ["زه", "مونږ"],
+          ["ته", "تاسو"],
+          ["هغه", "هغوی"],
+        ],
+        near: [
+          ["زه", "مونږ"],
+          ["ته", "تاسو"],
+          [{ masc: "دی", fem: "دا" }, "دوی"],
+        ],
+      }
       : role === "object"
-      ? {
+        ? {
           far: [
             ["زه", "مونږ"],
             ["ته", "تاسو"],
@@ -61,38 +61,38 @@ const labels = (role: "subject" | "object" | "ergative" | "possesor") => ({
             [{ masc: "دهٔ", fem: "دې" }, "دوی"],
           ],
         }
-      : role === "possesor"
-      ? {
-          far: [
-            ["زما", "زمونږ"],
-            ["ستا", "ستاسو"],
-            [{ masc: "د هغهٔ", fem: "د هغې" }, "د هغوی"],
-          ],
-          near: [
-            ["زما", "زمونږ"],
-            ["ستا", "ستاسو"],
-            [{ masc: "د دهٔ", fem: "د دې" }, "د دوی"],
-          ],
-        }
-      : {
-          far: [
-            ["ما", "مونږ"],
-            ["تا", "تاسو"],
-            [{ masc: "هغهٔ", fem: "هغې" }, "هغوی"],
-          ],
-          near: [
-            ["ما", "مونږ"],
-            ["تا", "تاسو"],
-            [{ masc: "دهٔ", fem: "دې" }, "دوی"],
-          ],
-        },
+        : role === "possesor"
+          ? {
+            far: [
+              ["زما", "زمونږ"],
+              ["ستا", "ستاسو"],
+              [{ masc: "د هغهٔ", fem: "د هغې" }, "د هغوی"],
+            ],
+            near: [
+              ["زما", "زمونږ"],
+              ["ستا", "ستاسو"],
+              [{ masc: "د دهٔ", fem: "د دې" }, "د دوی"],
+            ],
+          }
+          : {
+            far: [
+              ["ما", "مونږ"],
+              ["تا", "تاسو"],
+              [{ masc: "هغهٔ", fem: "هغې" }, "هغوی"],
+            ],
+            near: [
+              ["ما", "مونږ"],
+              ["تا", "تاسو"],
+              [{ masc: "دهٔ", fem: "دې" }, "دوی"],
+            ],
+          },
 });
 
 type PickerState = { row: number; col: number; gender: T.Gender };
 
 function personToPickerState(person: T.Person): PickerState {
-  const col = person > 5 ? 1 : 0;
-  const row = Math.floor((person > 5 ? person - 6 : person) / 2);
+  const col = person > T.Person.ThirdSingFemale ? 1 : 0;
+  const row = Math.floor((person > T.Person.ThirdSingFemale ? person - 6 : person) / 2);
   const gender: T.Gender = person % 2 ? "fem" : "masc";
   return { col, row, gender };
 }
@@ -113,7 +113,7 @@ function NPPronounPicker({
   // opts: T.TextOptions,
   is2ndPersonPicker?: boolean;
 }) {
-  if (is2ndPersonPicker && !isSecondPerson(pronoun.person)) {
+  if (is2ndPersonPicker === true && !isSecondPerson(pronoun.person)) {
     throw new Error("can't use 2ndPerson NPProunounPicker without a pronoun");
   }
   const [display, setDisplay] = useStickyState<"p" | "e">(
@@ -147,7 +147,7 @@ function NPPronounPicker({
   }
   const prs = labels(role)[display];
   const pSpecA = "near" in prs ? prs[pronoun.distance] : prs;
-  const pSpec = is2ndPersonPicker ? [pSpecA[1]] : pSpecA;
+  const pSpec = is2ndPersonPicker === true ? [pSpecA[1]] : pSpecA;
   return (
     <div style={{ maxWidth: "145px", padding: 0, margin: "0 auto" }}>
       <div className="d-flex flex-row justify-content-between mb-2">
@@ -158,7 +158,7 @@ function NPPronounPicker({
             { label: "Near", value: "near" },
           ]}
           value={pronoun.distance}
-          handleChange={(g) => handlePronounTypeChange(g as "far" | "near")}
+          handleChange={handlePronounTypeChange}
         />
         <button
           className="btn btn-sm btn-outline-secondary"
@@ -175,7 +175,7 @@ function NPPronounPicker({
           {pSpec.map((rw, i) => (
             <tr key={`pronounPickerRow${i}`}>
               {rw.map((r, j) => {
-                const active = is2ndPersonPicker
+                const active = is2ndPersonPicker === true
                   ? p.col === j
                   : p.row === i && p.col === j;
                 const content = typeof r === "string" ? r : r[p.gender];
@@ -183,7 +183,7 @@ function NPPronounPicker({
                   <td
                     key={`pronounPickerCell${i}${j}`}
                     onClick={() => {
-                      handleClick(is2ndPersonPicker ? 1 : i, j);
+                      handleClick(is2ndPersonPicker === true ? 1 : i, j);
                     }}
                     className={classNames({
                       "table-active": active,
@@ -218,7 +218,7 @@ function NPPronounPicker({
             },
           ]}
           value={p.gender}
-          handleChange={(g) => handleGenderChange(g as T.Gender)}
+          handleChange={handleGenderChange}
         />
       </div>
     </div>

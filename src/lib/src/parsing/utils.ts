@@ -112,20 +112,20 @@ export function toParseError(message: string): T.ParseError {
   return { message };
 }
 
-function groupByTokenLength<D>(
-  results: T.ParseResult<D>[],
-): T.ParseResult<D>[][] {
-  const buckets: Record<number, T.ParseResult<D>[]> = {};
-  results.forEach((pr) => {
-    const l = pr.tokens.position;
-    if (!buckets[l]) {
-      buckets[l] = [pr];
-    } else {
-      buckets[l].push(pr);
-    }
-  });
-  return Object.values(buckets);
-}
+// function groupByTokenLength<D>(
+//   results: T.ParseResult<D>[],
+// ): T.ParseResult<D>[][] {
+//   const buckets: Record<number, T.ParseResult<D>[]> = {};
+//   results.forEach((pr) => {
+//     const l = pr.tokens.position;
+//     if (!buckets[l]) {
+//       buckets[l] = [pr];
+//     } else {
+//       buckets[l].push(pr);
+//     }
+//   });
+//   return Object.values(buckets);
+// }
 
 export function returnParseResults<D>(
   tokens: T.Tokens,
@@ -213,7 +213,7 @@ function removeDuplicates<C>(results: T.ParseResult<C>[]): T.ParseResult<C>[] {
     return results;
   }
   // @ts-expect-error - bc
-  return Array.from(new Set(results.map(JSON.stringify))).map(JSON.parse);
+  return Array.from(new Set(results.map(JSON.stringify))).map(JSON.parse); // eslint-disable-line
 }
 
 export type Parser<R> = (
@@ -287,6 +287,21 @@ export function parserCombSucc2<A, B>(
     tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
   ): T.ParseResult<[T.WithPos<A>, T.WithPos<B>]>[] {
+    // TODO WITH GROUPING HERE!
+    // const res1 = parsers[0](tokens, dictionary);
+    // const groups = groupByTokenLength(res1).map((group) => {
+    //   const tokens2 = group[0].tokens;
+    //   const restParsed = parsers[1](tokens2, dictionary);
+    //   const mmm = group.map((resA) =>
+    //     bindParseResult(resA, (tokens3, a) =>
+    //       returnParseResult(tokens3, [a.body, b], {
+    //         start: a.position.start,
+    //         end: b.position.end,
+    //       }),
+    //     ),
+    //   );
+    // });
+
     return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
       bindParseResult(parsers[1](t, dictionary), (tk, b) =>
         returnParseResult(tk, [a, b], {
@@ -347,8 +362,9 @@ export function isCompleteResult<C extends object>(
 
 export function removeKeys(a: any): any {
   return JSON.parse(
-    JSON.stringify(a, (k, v) =>
-      k === "i" || k === "a" || k === "key" ? undefined : v,
+    JSON.stringify(
+      a,
+      (k, v) => (k === "i" || k === "a" || k === "key" ? undefined : v), // eslint-disable-line
     ),
   );
 }
@@ -360,9 +376,9 @@ export function getPeople(
   const people: T.Person[] =
     person === 1 ? [0, 1, 6, 7] : person === 2 ? [2, 3, 8, 9] : [4, 5, 10, 11];
   return number === "sing"
-    ? people.filter((p) => p < 6)
+    ? people.filter((p) => p < T.Person.FirstPlurMale)
     : number === "pl"
-      ? people.filter((p) => p > 5)
+      ? people.filter((p) => p > T.Person.ThirdSingFemale)
       : people;
 }
 

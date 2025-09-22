@@ -110,7 +110,7 @@ function parseOonaEndingNoun(
       (e) =>
         tp.isMascNounEntry(e) &&
         endsInConsonant(e) &&
-        !e.ppp &&
+        (e.ppp === undefined || e.ppp === "") &&
         tp.isSingularEntry(e),
     ) as T.MascNounEntry[];
   const shwaEnding = dictionary
@@ -119,7 +119,7 @@ function parseOonaEndingNoun(
       (e) =>
         tp.isMascNounEntry(e) &&
         hasShwaEnding(e) &&
-        !e.ppp &&
+        (e.ppp === undefined || e.ppp === "") &&
         tp.isSingularEntry(e),
     ) as T.MascNounEntry[];
   const body = [...consonantEnding, ...shwaEnding].map<
@@ -527,7 +527,7 @@ function parseIYaanEndingNoun(
           gender: "masc",
           given: first,
           plural: true,
-          entry: entry as T.MascNounEntry,
+          entry,
         }),
       ),
       position,
@@ -554,7 +554,7 @@ function parseIYaanEndingNoun(
             gender: "masc",
             given: first,
             plural: true,
-            entry: entry as T.MascNounEntry,
+            entry,
           },
           ...(tp.isUnisexNounEntry(entry)
             ? [
@@ -563,7 +563,7 @@ function parseIYaanEndingNoun(
                   gender: "fem",
                   given: first,
                   plural: true,
-                  entry: entry as T.UnisexNounEntry,
+                  entry,
                 } satisfies T.ParsedNounWord<T.MascNounEntry>,
               ]
             : []),

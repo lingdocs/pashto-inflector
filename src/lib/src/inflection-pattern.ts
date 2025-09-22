@@ -11,9 +11,9 @@ import {
 } from "./type-predicates";
 
 export function getInflectionPattern(
-  e: T.InflectableEntry
+  e: T.InflectableEntry,
 ): T.InflectionPattern {
-  if (e.noInf) return 0;
+  if (e.noInf === true) return T.InflectionPattern.None;
   return isPattern1Entry(e)
     ? T.InflectionPattern.Basic
     : isPattern2Entry(e)

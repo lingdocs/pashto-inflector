@@ -56,7 +56,7 @@ export function concatPsString(
   >
 ): T.FullForm<T.PsString> {
   const hasPersonInflections = items.some(
-    (x) => x && typeof x !== "string" && "mascSing" in x,
+    (x) => x !== undefined && typeof x !== "string" && "mascSing" in x,
   );
   if (hasPersonInflections) {
     const forceInflection = (
@@ -64,7 +64,9 @@ export function concatPsString(
       inflection: T.PersonInflectionsField,
     ): Array<T.SingleOrLengthOpts<T.PsString> | string | undefined> =>
       arr.map((element) =>
-        element && typeof element !== "string" && "mascSing" in element
+        element !== undefined &&
+        typeof element !== "string" &&
+        "mascSing" in element
           ? element[inflection]
           : element,
       );
@@ -80,7 +82,7 @@ export function concatPsString(
     | T.SingleOrLengthOpts<T.PsString>
   )[];
   const hasLengthOptions = itemsWOutPersInfs.some(
-    (x) => x && typeof x !== "string" && "long" in x,
+    (x) => x !== undefined && typeof x !== "string" && "long" in x,
   );
   if (hasLengthOptions) {
     const forceLength = (
@@ -88,7 +90,9 @@ export function concatPsString(
       length: "long" | "short" | "mini",
     ): Array<T.PsString | string | undefined> =>
       arr.map((element) =>
-        element && typeof element !== "string" && "long" in element
+        element !== undefined &&
+        typeof element !== "string" &&
+        "long" in element
           ? element[length] || element.short
           : element,
       );
@@ -309,21 +313,21 @@ function getMatchingInflection(
 }
 
 export function isVerbBlock(x: unknown): x is T.VerbBlock {
-  return Array.isArray(x) && x.length === 6 && "p" in x[0][0][0];
+  return Array.isArray(x) && x.length === 6 && "p" in x[0][0][0]; // eslint-disable-line
 }
 
 export function isPluralInflectionSet(x: any): x is T.PluralInflectionSet {
-  return Array.isArray(x) && x.length === 2 && "p" in x[0][0];
+  return Array.isArray(x) && x.length === 2 && "p" in x[0][0]; // eslint-disable-line
 }
 
 export function isImperativeBlock(x: unknown): x is T.ImperativeBlock {
   return (
-    Array.isArray(x) && x.length === 2 && !("p" in x[0][0]) && "p" in x[0][0][0]
+    Array.isArray(x) && x.length === 2 && !("p" in x[0][0]) && "p" in x[0][0][0] // eslint-disable-line
   );
 }
 
 export function isInflectionSet(x: any): x is T.InflectionSet {
-  return Array.isArray(x) && x.length === 3 && "p" in x[0][0];
+  return Array.isArray(x) && x.length === 3 && "p" in x[0][0]; // eslint-disable-line
 }
 
 type toAddToForm = Array<
@@ -418,9 +422,10 @@ export function addToForm(
             const arr = element as
               | T.SingleOrLengthOpts<T.PsString>[]
               | T.VerbBlock;
-            return arr.map((e: any) =>
-              "long" in e ? e[length] || e.short : e,
-            );
+            // prettier-ignore
+            return arr.map((e: any) => ( // eslint-disable-line
+              "long" in e ? e[length] || e.short : e // eslint-disable-line
+            ));
           }
           return element;
         },
@@ -445,11 +450,7 @@ export function addToForm(
             return f[Math.min(variation, f.length - 1)];
           }
           if ("masc" in f) {
-            return getMatchingInflection(
-              f,
-              persNum as number,
-              singPlur as number,
-            );
+            return getMatchingInflection(f, persNum, singPlur);
           }
           if ("mascSing" in f) {
             return f[presObject || /* istanbul ignore next */ "mascSing"];
@@ -458,7 +459,10 @@ export function addToForm(
         });
         // avoid adding the redundant ل on past verb endings
         // TODO: If there's a ba in front, remove it and put it on the front
-        return length === "long" && verbBlock && ps.p === "ل" && !disableLCheck
+        return length === "long" &&
+          verbBlock === true &&
+          ps.p === "ل" &&
+          disableLCheck !== true
           ? concatPsString(...add)
           : startsWithBa(ps)
             ? concatPsString(baParticle, " ", ...add, removeBa(ps))
@@ -563,8 +567,10 @@ export function unisexInfToObjectMatrix(
 ): T.OptionalPersonInflections<T.PsString> {
   return {
     mascSing: inf.masc[0][0],
+    // @ts-expect-error (index ok)
     mascPlur: inf.masc[1][0],
     femSing: inf.fem[0][0],
+    // @ts-expect-error (index ok)
     femPlur: inf.fem[1][0],
   };
 }
@@ -629,8 +635,8 @@ export function concatInflections(
     };
   }
   // now length options are removed
-  const complement = comp as T.PsString | T.UnisexInflections;
-  const infsOneL = infs as T.UnisexInflections;
+  const complement = comp;
+  const infsOneL = infs;
   const mapGender = (gender: "masc" | "fem") =>
     infsOneL[gender].map((inf: T.ArrayOneOrMore<T.PsString>, i) =>
       inf.map((variation) => {
@@ -788,9 +794,10 @@ export function psStringEquals(
   ps2: T.PsString,
   ignoreAccents?: boolean,
 ): boolean {
-  const [p1, p2] = ignoreAccents
-    ? [removeAccents(ps1), removeAccents(ps2)]
-    : [ps1, ps2];
+  const [p1, p2] =
+    ignoreAccents === true
+      ? [removeAccents(ps1), removeAccents(ps2)]
+      : [ps1, ps2];
   return p1.p === p2.p && p1.f === p2.f;
 }
 
@@ -853,7 +860,7 @@ export function addEnglish(
       (psString, i, j) => ({
         ...psString,
         // @ts-expect-error because
-        e: typeof english === "string" ? english : english[i][j],
+        e: typeof english === "string" ? english : english[i][j], // eslint-disable-line
       }),
       ps as T.VerbBlock,
     );
@@ -863,7 +870,7 @@ export function addEnglish(
       (psString, i, j) => ({
         ...psString,
         // @ts-expect-error because
-        e: typeof english === "string" ? english : english[i][j],
+        e: typeof english === "string" ? english : english[i][j], // eslint-disable-line
       }),
       ps as T.ImperativeBlock,
     );
@@ -906,8 +913,8 @@ export function removeHead(head: T.PsString, ps: T.PsString): T.PsString {
 }
 
 export function uniquePsStringArray(arr: T.PsString[]): T.PsString[] {
-  return [...new Set(arr.map((o) => JSON.stringify(o)))].map((string) =>
-    JSON.parse(string),
+  return [...new Set(arr.map((o) => JSON.stringify(o)))].map(
+    (string) => JSON.parse(string), // eslint-disable-line
   ) as T.PsString[];
 }
 
@@ -1155,7 +1162,13 @@ export function isInVarients(
   vars: string | false | undefined,
   search: string | false | undefined,
 ): boolean {
-  if (!vars || !search) return false;
+  if (
+    vars === false ||
+    vars === undefined ||
+    search === false ||
+    search === undefined
+  )
+    return false;
   return splitVarients(vars).includes(search);
 }
 
@@ -1208,11 +1221,11 @@ export function endsWith(
     | (T.PsString | { p: string | string[] } | { f: string | string[] })
     | (T.PsString | { p: string | string[] } | { f: string | string[] })[],
   ps: T.PsString | undefined | boolean,
-  matchAccent?: boolean | undefined,
+  matchAccent?: boolean,
 ): boolean | ((ps: T.PsString) => boolean) {
   // curried version
   if (ps === undefined || typeof ps === "boolean") {
-    const matchAccent = !!ps;
+    const matchAccent = ps === true;
     return (ps: T.PsString) => endsWith(ending, ps, matchAccent);
   }
   if (Array.isArray(ending)) {
@@ -1225,18 +1238,18 @@ export function endsWith(
     return ending.f.some((e) => endsWith({ f: e }, ps, matchAccent));
   }
   const f = removeFVarients(ps.f).replace(/'/g, "");
-  const fEnd =
+  const fEnd: string | undefined = // eslint-disable-line
     "f" in ending
       ? // @ts-expect-error because
-        ending.f.replace(/'/g, "")
+        ending.f.replace(/'/g, "") // eslint-disable-line
       : undefined;
   return (
     ("p" in ending ? ps.p.slice(-ending.p.length) === ending.p : true) &&
-    (fEnd
-      ? (matchAccent
+    (fEnd !== undefined
+      ? (matchAccent === true
           ? f.slice(-fEnd.length)
           : removeAccents(f.slice(-fEnd.length))) ===
-        (matchAccent ? fEnd : removeAccents(fEnd))
+        (matchAccent === true ? fEnd : removeAccents(fEnd))
       : true)
   );
 }

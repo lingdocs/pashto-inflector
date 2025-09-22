@@ -19,20 +19,20 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
   // If it's a noun/adj, inflect accordingly
   // TODO: What about n. f. / adj. that end in ي ??
   const w = removeFVarients(word);
-  if (word.c?.includes("doub.")) {
+  if (word.c !== undefined && word.c.includes("doub.")) {
     const words = splitDoubleWord(w).map((x) => ({
       inflected: inflectWord(x),
       orig: x,
     }));
     return joinInflectorOutputs(words);
   }
-  if (w.c && w.c.includes("pl.")) {
+  if (w.c !== undefined && w.c.includes("pl.")) {
     return handlePluralNounOrAdj(w);
   }
 
   const plurals = makePlural(w);
   const infAndVoc = getInfsAndVocative(w, plurals);
-  if (!infAndVoc && !plurals) {
+  if (infAndVoc === false && !plurals) {
     return false;
   }
   return {
@@ -42,9 +42,9 @@ export function inflectWord(word: T.DictionaryEntry): T.InflectorOutput {
 }
 
 function handlePluralNounOrAdj(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
-  if (!w.c || !w.c.includes("n.")) return false;
+  if (w.c === undefined || !w.c.includes("n.")) return false;
   const plurals = makePlural(w);
-  if (w.noInf) {
+  if (w.noInf === true) {
     return !plurals ? false : { ...plurals };
   }
   if (!plurals) return false;
@@ -54,7 +54,7 @@ function handlePluralNounOrAdj(w: T.DictionaryEntryNoFVars): T.InflectorOutput {
 // TODO: REMOVE THIS
 export function inflectRegularYayUnisex(
   p: string,
-  f: string
+  f: string,
 ): T.UnisexInflections {
   const baseP = p.slice(0, -1);
   const baseF = f.slice(0, -2);
@@ -81,7 +81,7 @@ export function inflectRegularYayUnisex(
 // TODO: REMOVE THIS
 export function inflectRegularShwaEndingUnisex(
   pr: string,
-  fr: string
+  fr: string,
 ): T.UnisexInflections {
   const { p, f } = removeAccents(makePsString(pr, fr));
   const accented = fr.slice(-1) === "ú";
@@ -102,7 +102,7 @@ export function inflectRegularShwaEndingUnisex(
 }
 
 export function inflectYay(
-  ps: T.SingleOrLengthOpts<T.PsString>
+  ps: T.SingleOrLengthOpts<T.PsString>,
 ): T.SingleOrLengthOpts<T.UnisexInflections> {
   return fmapSingleOrLengthOpts((x) => inflectRegularYayUnisex(x.p, x.f), ps);
 }

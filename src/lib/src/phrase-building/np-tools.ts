@@ -48,7 +48,7 @@ function getBaseWDetsAndAdjs(
           : flattenLengths(x.selection.ps);
   return assemblePsWords([
     ...determiners,
-    ...(detWOutNoun ? [] : [...adjs, base]),
+    ...(detWOutNoun === true ? [] : [...adjs, base]),
   ]);
 }
 
@@ -74,12 +74,12 @@ function getSandwichPsBaseAndAdjectives(
     (isFirstPerson(s.inside.selection.person) ||
       isSecondPerson(s.inside.selection.person));
   const contracted =
-    willContractWithPronoun && s.inside.selection.type === "pronoun"
+    willContractWithPronoun === true && s.inside.selection.type === "pronoun"
       ? contractPronoun(s.inside.selection)
       : undefined;
   return insideBase.map((inside) =>
     concatPsString(
-      s.before && !willContractWithPronoun ? s.before : "",
+      s.before && willContractWithPronoun !== true ? s.before : "",
       s.before ? " " : "",
       contracted ? contracted : inside,
       s.after ? " " : "",
@@ -290,7 +290,7 @@ function addPossesor(
 function addArticlesAndAdjs(
   np: T.Rendered<T.NounSelection>,
 ): string | undefined {
-  if (!np.e) return undefined;
+  if (np.e === undefined || np.e === "") return undefined;
   try {
     // split out the atricles so adjectives can be stuck inbetween them and the word
     const chunks = np.e.split("the)");
@@ -299,7 +299,7 @@ function addArticlesAndAdjs(
     const adjs = !np.adjectives
       ? ""
       : np.adjectives.reduce((accum, curr): string => {
-          if (!curr.e) return "ADJ";
+          if (curr.e === undefined || curr.e === "") return "ADJ";
           return accum + curr.e + " ";
         }, "");
     const genderTag = np.genderCanChange
@@ -307,17 +307,17 @@ function addArticlesAndAdjs(
         ? " (f.)"
         : " (m.)"
       : "";
-    const moreThanOneDet = (np.determiners?.determiners.length || 0) > 1;
+    const moreThanOneDet = (np.determiners?.determiners.length ?? 0) > 1;
     const determiners =
-      np.determiners && np.determiners.determiners
+      np.determiners && np.determiners.determiners.length
         ? np.determiners.determiners
             // @ts-expect-error - weird, ts not recognizing as rendered
-            .map((x) => (moreThanOneDet ? `(${x.e})` : x.e))
+            .map((x) => (moreThanOneDet ? `(${x.e})` : x.e)) // eslint-disable-line
             .join(" ") + " "
         : "";
     const detsWithoutNoun = np.determiners && !np.determiners.withNoun;
     return `${np.determiners ? "" : articles}${determiners}${
-      detsWithoutNoun ? ` (${(adjs + word).trim()})` : adjs + word
+      detsWithoutNoun === true ? ` (${(adjs + word).trim()})` : adjs + word
     }${genderTag}`;
   } catch (e) {
     console.error(e);
@@ -336,10 +336,14 @@ function addPossesorsEng(
   function removeArticles(s: string): string {
     return s.replace("(the) ", "").replace("(a/the) ", "");
   }
-  if (!base && type !== "complement") return undefined;
-  if (!possesor) return base;
+  if ((base ?? "") === "" && type !== "complement") {
+    return undefined;
+  }
+  if (!possesor) {
+    return base;
+  }
   if (possesor.selection.type === "pronoun") {
-    if (type === "noun" && base) {
+    if (type === "noun" && base !== undefined) {
       return hasDeterminers
         ? `${removeArticles(base)} of ${pronounPossEng(
             possesor.selection.person,
@@ -349,7 +353,7 @@ function addPossesorsEng(
             base,
           )}`;
     }
-    if (type === "participle" && base) {
+    if (type === "participle" && base !== undefined) {
       return hasDeterminers
         ? `${removeArticles(base)} of ${pronounPossEng(
             possesor.selection.person,
@@ -367,12 +371,12 @@ function addPossesorsEng(
     throw new Error("error handling lack of base here A");
   }
   const possesorE = getEnglishFromRendered(possesor);
-  if (!possesorE) return undefined;
+  if (possesorE === undefined || possesorE === "") return undefined;
   const withApostrophe = `${possesorE}'${possesorE.endsWith("s") ? "" : "s"}`;
-  if (type === "noun" && base) {
+  if (type === "noun" && base !== undefined && base !== "") {
     return `${withApostrophe} ${removeArticles(base)}`;
   }
-  if (type === "participle" && base) {
+  if (type === "participle" && base !== undefined && base !== "") {
     return `(${withApostrophe}) ${removeArticles(base)} (${possesorE})`;
   }
   if (type === "complement") {
@@ -421,7 +425,7 @@ export function getEnglishFromRendered(
   if (r.selection.type === "sandwich") {
     return getEnglishFromRenderedSandwich(r.selection);
   }
-  if ("e" in r.selection && !r.selection.e) return undefined;
+  if ("e" in r.selection && (r.selection.e ?? "") === "") return undefined;
   if (r.selection.type === "loc. adv." || r.selection.type === "adverb") {
     return r.selection.e;
   }
@@ -447,7 +451,7 @@ export function getEnglishFromRendered(
     return addPossesorsEng(
       undefined,
       // TODO: better handling of,
-      typeof e === "object" ? e.singular || "___" : e,
+      typeof e === "object" ? (e.singular ?? "___") : e,
       undefined,
       "noun",
     );
@@ -479,7 +483,7 @@ function getEnglishFromRenderedSandwich(
   r: T.Rendered<T.SandwichSelection<T.Sandwich>>,
 ): string | undefined {
   const insideE = getEnglishFromRendered(r.inside);
-  if (!insideE) return undefined;
+  if (insideE === undefined || insideE === "") return undefined;
   return `${r.e} ${insideE}`;
 }
 
@@ -489,6 +493,6 @@ function getEnglishFromRenderedAdjective(
   if (!a.sandwich) {
     return a.e;
   }
-  if (!a.e) return undefined;
+  if ((a.e ?? "") === "") return undefined;
   return `${a.e} ${getEnglishFromRenderedSandwich(a.sandwich)}`;
 }

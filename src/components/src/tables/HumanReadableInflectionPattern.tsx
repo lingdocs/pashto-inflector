@@ -6,23 +6,23 @@ export default function HumanReadableInflectionPattern(
   p: T.InflectionPattern,
   textOptions: T.TextOptions
 ): JSX.Element | null {
-  return p === 1 ? (
+  return p === T.InflectionPattern.Basic ? (
     <span>#1 Basic</span>
-  ) : p === 2 ? (
+  ) : p === T.InflectionPattern.UnstressedAy ? (
     <span>
       #2 Unstressed{" "}
       <InlinePs opts={textOptions} ps={{ p: "ی", f: "ay", e: "" }} />
     </span>
-  ) : p === 3 ? (
+  ) : p === T.InflectionPattern.StressedAy ? (
     <span>
       #3 Stressed{" "}
       <InlinePs opts={textOptions} ps={{ p: "ی", f: "áy", e: "" }} />
     </span>
-  ) : p === 4 ? (
+  ) : p === T.InflectionPattern.Pashtun ? (
     <span>#4 "Pashtoon"</span>
-  ) : p === 5 ? (
+  ) : p === T.InflectionPattern.Squish ? (
     <span>#5 Short Squish</span>
-  ) : p === 6 ? (
+  ) : p === T.InflectionPattern.FemInanEe ? (
     <span>
       #6 Fem. inan.{" "}
       <InlinePs opts={textOptions} ps={{ p: "ي", f: "ee", e: "" }} />

@@ -21,7 +21,7 @@ export function parseSandwich(
     return [];
   }
   const startMatches = sandwiches.filter(
-    (x) => x.before && x.before.p === first,
+    (x) => x.before !== undefined && x.before.p === first,
   );
   // TODO: this could be be really repetitive...
   const nps = parseNP(
@@ -40,7 +40,7 @@ export function parseSandwich(
     }
     const sandMatches = (
       startMatches.length ? startMatches : sandwiches
-    ).filter((x) => x.after && x.after.p === a);
+    ).filter((x) => x.after !== undefined && x.after.p === a);
     const errors: T.ParseError[] = np.content.inflected
       ? []
       : [{ message: "NP inside sandwich must be inflected" }];

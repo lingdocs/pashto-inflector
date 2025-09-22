@@ -28,7 +28,7 @@ function EntrySelect<E extends T.DictionaryEntry | T.VerbEntry>(props: {
         : "Search…";
   function makeOption(e: E | T.DictionaryEntry) {
     if ("entry" in e) {
-      return (props.isVerbSelect ? makeVerbSelectOption : makeSelectOption)(
+      return (props.isVerbSelect === true ? makeVerbSelectOption : makeSelectOption)(
         e,
         props.opts
       );
@@ -120,7 +120,7 @@ export function DeterminerSelect(props: {
   opts: T.TextOptions;
 }) {
   const placeholder = "Select determiner…";
-  const value = props.value ? props.value.map(makeDeterminerOption) : undefined;
+  const value = props.value.map(makeDeterminerOption);
   const options = props.determiners.map(makeDeterminerOption);
   const onChange = (
     v: { label: string | JSX.Element; value: string }[] | null

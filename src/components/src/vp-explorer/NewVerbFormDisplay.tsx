@@ -43,7 +43,7 @@ function VerbChartDisplay({
   imperative: boolean;
 }) {
   const [length, setLength] = useState<T.Length>(
-    shortDefault ? "short" : "long"
+    shortDefault === true ? "short" : "long"
   );
   const [persInf, setPersInf] = useState<T.PersonInflectionsField>("mascSing");
   useEffect(() => {
@@ -64,9 +64,9 @@ function VerbChartDisplay({
   const verbBlock =
     x.length === 1
       ? // unchanging gramm trans or dynamic compound past transitive
-        [[[x[0]]]]
+      [[[x[0]]]]
       : x.length === 12
-      ? [
+        ? [
           // 1st pers
           [
             [x[0], x[6]],
@@ -83,7 +83,7 @@ function VerbChartDisplay({
             [x[5], x[11]],
           ],
         ]
-      : [
+        : [
           // 2nd pers
           [
             [x[0], x[2]],
@@ -210,9 +210,8 @@ function GenderedPersonRow({
   opts: T.TextOptions;
 }) {
   const pers = ["1st", "2nd", "3rd"]; // arr.length > 1 ? ["1st", "2nd", "3rd"] : ["2nd"];
-  const rowLabel = `${pers[person]}${
-    gender ? (gender === "masc" ? " m." : " f.") : ""
-  }`;
+  const rowLabel = `${pers[person]}${gender ? (gender === "masc" ? " m." : " f.") : ""
+    }`;
   const color = !gender ? "inherit" : genderColors[gender];
   return (
     <tr key={`${person}${gender}`}>
@@ -243,11 +242,11 @@ function LengthSelection({
           { label: "Short", value: "short" },
           ...(hasMini
             ? [
-                {
-                  label: "Mini",
-                  value: "mini",
-                },
-              ]
+              {
+                label: "Mini",
+                value: "mini",
+              },
+            ]
             : []),
         ]}
         value={value}
@@ -270,14 +269,12 @@ function renderVerbOutputToText({
   imperative: boolean;
   intransitive: boolean;
 }) {
-  return function (v: T.RenderVerbOutput): T.PsString[] {
+  return function(v: T.RenderVerbOutput): T.PsString[] {
     const blocks: T.Block[][] = insertNegative(v.vbs, negative, imperative).map(
       (b) => {
         if (!objNP) return b;
         return [
-          ...(objNP
-            ? [makeBlock({ type: "objectSelection", selection: objNP })]
-            : []),
+          makeBlock({ type: "objectSelection", selection: objNP }),
           ...b,
         ];
       }
@@ -285,15 +282,15 @@ function renderVerbOutputToText({
 
     const b = hasBa
       ? blocks.flatMap((v) => [
-          [
-            { p: " ... ", f: " ... " },
-            ...[makeKid({ type: "ba" }), { p: " ... ", f: " ... " }],
-            ...v,
-          ],
-          ...(v.length > 1 && intransitive
-            ? [[v[0], makeKid({ type: "ba" }), ...v.slice(1)]]
-            : []),
-        ])
+        [
+          { p: " ... ", f: " ... " },
+          ...[makeKid({ type: "ba" }), { p: " ... ", f: " ... " }],
+          ...v,
+        ],
+        ...(v.length > 1 && intransitive
+          ? [[v[0], makeKid({ type: "ba" }), ...v.slice(1)]]
+          : []),
+      ])
       : blocks;
     return combineIntoText(b, 0 /* TODO: why is this needed */);
   };
@@ -311,9 +308,8 @@ function AgreementInfo({
   opts: T.TextOptions;
 }) {
   function printGenNum({ gender, number }: T.GenderNumber): string {
-    return `${gender === "masc" ? "m." : "f."} ${
-      number === "singular" ? "s." : "pl."
-    }`;
+    return `${gender === "masc" ? "m." : "f."} ${number === "singular" ? "s." : "pl."
+      }`;
   }
   return (
     <div className="text-muted small mt-1">

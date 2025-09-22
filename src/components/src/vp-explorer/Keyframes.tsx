@@ -10,11 +10,10 @@ const Keyframes = (props: IProps) => {
     typeof cssObject === "string"
       ? cssObject
       : Object.keys(cssObject).reduce((accumulator, key) => {
-          const cssKey = key.replace(/[A-Z]/g, (v) => `-${v.toLowerCase()}`);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const cssValue = (cssObject as any)[key].toString().replace("'", "");
-          return `${accumulator}${cssKey}:${cssValue};`;
-        }, "");
+        const cssKey = key.replace(/[A-Z]/g, (v) => `-${v.toLowerCase()}`);
+        const cssValue = (cssObject as any)[key].toString().replace("'", ""); // eslint-disable-line
+        return `${accumulator}${cssKey}:${cssValue};`;
+      }, "");
 
   return (
     <style>
@@ -24,8 +23,8 @@ const Keyframes = (props: IProps) => {
             return ["from", "to"].includes(key)
               ? `${key} { ${toCss(props[key])} }`
               : /^_[0-9]+$/.test(key)
-              ? `${key.replace("_", "")}% { ${toCss(props[key])} }`
-              : "";
+                ? `${key.replace("_", "")}% { ${toCss(props[key])} }`
+                : "";
           })
           .join(" ")}
       }`}

@@ -961,7 +961,9 @@ function checkForTlulCombosSubj(
   ) {
     return undefined;
   }
-  const match = tlulVerbsDict[ph.s];
+  const match = tlulVerbsDict[ph.s] as
+    | (typeof tlulVerbsDict)[string]
+    | undefined;
   if (!match) {
     return undefined;
   }
@@ -1221,7 +1223,6 @@ function checkForDynCompounds(dictionary: T.DictionaryAPI) {
       vps.content.blocks,
     );
     if (
-      !object ||
       typeof object.selection !== "object" ||
       object.selection.selection.type !== "noun"
     ) {
@@ -1811,8 +1812,8 @@ function createPossesivePossibilities(b: {
     const v = people.map((person) =>
       blocks.map((x, j) => {
         if (i !== j) return x;
-        const r = addShrunkenPossesor(x, person);
-        return r || x;
+        // TODO: if this breaks maybe we needed the r || x here
+        return addShrunkenPossesor(x, person);
       }),
     );
     return v;
@@ -1868,7 +1869,10 @@ function isAbilityAspectAmbiguousVBP(verb: T.VerbEntry): boolean {
   if (isStatComp(verb) && getTransitivities(verb).includes("intransitive")) {
     return true;
   }
-  if (verb.entry.separationAtP) {
+  if (
+    verb.entry.separationAtP !== undefined &&
+    verb.entry.separationAtP !== 0
+  ) {
     return true;
   }
   return isTlulVerb(verb);
@@ -1896,7 +1900,7 @@ function removeRedundantStatCombos(
     }
     if (r.body.externalComplement) {
       const compTs = getExtComplementL(r.body.externalComplement);
-      if (!compTs) {
+      if (compTs === undefined) {
         return true;
       }
       // see if there's a version with the stative compound

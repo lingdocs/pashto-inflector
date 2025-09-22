@@ -2335,7 +2335,10 @@ describe("parsing nouns with adjectives and determiners", () => {
           ),
         );
         expect(
-          !!res.length && res.every((x) => !!x.errors.length === !!error),
+          !!res.length &&
+            res.every((x) =>
+              error === true ? x.errors.length > 0 : x.errors.length === 0,
+            ),
         ).toBe(true);
         expect(res.map((x) => x.body)).toIncludeSameMembers(output);
       });

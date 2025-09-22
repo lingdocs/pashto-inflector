@@ -89,7 +89,11 @@ function convertInflection(
   } else if (inf === 1) {
     return [
       ...(!plural &&
-      !(pattern === 4 && entry.p.endsWith("ه") && gender === "masc")
+      !(
+        pattern === T.InflectionPattern.Pashtun &&
+        entry.p.endsWith("ه") &&
+        gender === "masc"
+      )
         ? [
             {
               inflected: true,
@@ -97,8 +101,8 @@ function convertInflection(
             },
           ]
         : []),
-      ...(pattern > 1 ||
-      (pattern > 0 && gender === "fem") ||
+      ...(pattern > T.InflectionPattern.Basic ||
+      (pattern > T.InflectionPattern.None && gender === "fem") ||
       (isNounEntry(entry) && isPluralNounEntry(entry)) ||
       plural
         ? [

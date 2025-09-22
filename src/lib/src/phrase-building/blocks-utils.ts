@@ -17,17 +17,17 @@ export function makeKid(kid: T.Kid["kid"], key?: number): T.Kid {
 }
 
 export function getSubjectSelection(
-  blocks: T.EPSBlockComplete[] | T.VPSBlockComplete[]
+  blocks: T.EPSBlockComplete[] | T.VPSBlockComplete[],
 ): T.SubjectSelectionComplete;
 export function getSubjectSelection(
-  blocks: T.EPSBlock[] | T.VPSBlock[]
+  blocks: T.EPSBlock[] | T.VPSBlock[],
 ): T.SubjectSelection;
 export function getSubjectSelection(
   blocks:
     | T.EPSBlock[]
     | T.EPSBlockComplete[]
     | T.VPSBlockComplete[]
-    | T.VPSBlock[]
+    | T.VPSBlock[],
 ): T.SubjectSelection | T.SubjectSelectionComplete {
   const b = blocks.find((f) => f.block?.type === "subjectSelection");
   if (!b || !b.block || b.block.type !== "subjectSelection") {
@@ -37,7 +37,7 @@ export function getSubjectSelection(
 }
 
 export function getComplementFromBlocks(
-  blocks: T.Block[][]
+  blocks: T.Block[][],
 ):
   | T.Rendered<T.ComplementSelection>
   | T.UnselectedComplementSelection
@@ -50,7 +50,7 @@ export function getComplementFromBlocks(
 }
 
 export function getSubjectSelectionFromBlocks(
-  blocks: T.Block[][]
+  blocks: T.Block[][],
 ): T.Rendered<T.SubjectSelectionComplete> {
   const b = blocks[0].find((f) => f.block.type === "subjectSelection");
   if (!b || b.block.type !== "subjectSelection") {
@@ -60,7 +60,7 @@ export function getSubjectSelectionFromBlocks(
 }
 
 export function getObjectSelectionFromBlocks(
-  blocks: T.Block[][]
+  blocks: T.Block[][],
 ): T.Rendered<T.ObjectSelectionComplete> {
   const b = blocks[0].find((f) => f.block.type === "objectSelection");
   if (!b || b.block.type !== "objectSelection") {
@@ -72,7 +72,7 @@ export function getObjectSelectionFromBlocks(
 export function includesShrunkenServant(kids?: T.Kid[]): boolean {
   if (!kids) return false;
   return kids.some(
-    (k) => k.kid.type === "mini-pronoun" && k.kid.source === "servant"
+    (k) => k.kid.type === "mini-pronoun" && k.kid.source === "servant",
   );
 }
 
@@ -85,7 +85,7 @@ export function getPredicateBlock(blocks: T.Block[][]): T.PredicateBlock {
 }
 
 export function getAPsFromBlocks(
-  blocks: T.Block[][]
+  blocks: T.Block[][],
 ): T.Rendered<T.APSelection>[] {
   return blocks[0]
     .filter((b) => b.block.type === "AP")
@@ -93,11 +93,11 @@ export function getAPsFromBlocks(
 }
 
 export function getObjectSelection(
-  blocks: T.VPSBlockComplete[]
+  blocks: T.VPSBlockComplete[],
 ): T.ObjectSelectionComplete;
 export function getObjectSelection(blocks: T.VPSBlock[]): T.ObjectSelection;
 export function getObjectSelection(
-  blocks: T.VPSBlock[] | T.VPSBlockComplete[]
+  blocks: T.VPSBlock[] | T.VPSBlockComplete[],
 ): T.ObjectSelection | T.ObjectSelectionComplete {
   const b = blocks.find((f) => f.block?.type === "objectSelection");
   if (!b || !b.block || b.block.type !== "objectSelection") {
@@ -130,7 +130,7 @@ export function makeSubjectSelection(
     | T.SubjectSelection
     | T.NPSelection
     | T.NPSelection["selection"]
-    | undefined
+    | undefined,
 ): T.SubjectSelection {
   if (!selection) {
     return {
@@ -157,7 +157,7 @@ export function makeSubjectSelection(
 }
 
 export function makeSubjectSelectionComplete(
-  selection: T.NPSelection
+  selection: T.NPSelection,
 ): T.SubjectSelectionComplete {
   return {
     type: "subjectSelection",
@@ -171,9 +171,9 @@ export function makeObjectSelection(
     | T.ObjectNP
     | T.NPSelection
     | T.NPSelection["selection"]
-    | undefined
+    | undefined,
 ): T.ObjectSelection {
-  if (!selection) {
+  if (selection === undefined) {
     return {
       type: "objectSelection",
       selection: undefined,
@@ -204,7 +204,7 @@ export function makeObjectSelection(
 }
 
 export function makeObjectSelectionComplete(
-  selection: T.NPSelection
+  selection: T.NPSelection,
 ): T.ObjectSelectionComplete {
   return {
     type: "objectSelection",
@@ -213,7 +213,7 @@ export function makeObjectSelectionComplete(
 }
 
 export function EPSBlocksAreComplete(
-  blocks: T.EPSBlock[]
+  blocks: T.EPSBlock[],
 ): blocks is T.EPSBlockComplete[] {
   if (blocks.some((block) => block.block === undefined)) {
     return false;
@@ -223,7 +223,7 @@ export function EPSBlocksAreComplete(
 }
 
 export function VPSBlocksAreComplete(
-  blocks: T.VPSBlock[]
+  blocks: T.VPSBlock[],
 ): blocks is T.VPSBlockComplete[] {
   if (blocks.some((block) => block.block === undefined)) {
     return false;
@@ -231,17 +231,17 @@ export function VPSBlocksAreComplete(
   const subject = getSubjectSelection(blocks);
   if (!subject.selection) return false;
   const object = getObjectSelection(blocks);
-  if (!object.selection) return false;
+  if (object.selection === undefined) return false;
   return true;
 }
 
 export function adjustSubjectSelection<B extends T.VPSBlock | T.EPSBlock>(
-  subject: T.SubjectSelection | T.NPSelection | undefined
+  subject: T.SubjectSelection | T.NPSelection | undefined,
 ) {
   return function (blocks: B[]): B[] {
     const nb = [...blocks];
     const i = nb.findIndex(
-      (b) => b.block && b.block.type === "subjectSelection"
+      (b) => b.block !== undefined && b.block.type === "subjectSelection",
     );
     if (i === -1) {
       throw new Error("couldn't find subjectSelection to modify");
@@ -256,20 +256,11 @@ export function adjustSubjectSelection<B extends T.VPSBlock | T.EPSBlock>(
 
 export function adjustObjectSelection(
   blocks: Readonly<T.VPSBlock[]>,
-  object:
-    | T.ObjectSelectionComplete
-    | T.NPSelection
-    | T.VerbObject
-    | T.ObjectSelectionComplete
+  object: T.ObjectSelectionComplete | T.NPSelection | T.VerbObject,
 ): T.VPSBlockComplete[];
 export function adjustObjectSelection(
   blocks: Readonly<T.VPSBlock[]>,
-  object:
-    | T.ObjectSelection
-    | T.NPSelection
-    | T.VerbObject
-    | T.ObjectSelection
-    | undefined
+  object: T.ObjectSelection | T.NPSelection | T.VerbObject | undefined,
 ): T.EPSBlock[];
 export function adjustObjectSelection(
   blocks: Readonly<T.VPSBlock[]>,
@@ -278,10 +269,12 @@ export function adjustObjectSelection(
     | T.ObjectSelectionComplete
     | T.VerbObject
     | T.NPSelection
-    | undefined
+    | undefined,
 ): T.VPSBlock[] | T.VPSBlockComplete[] {
   const nb = [...blocks];
-  const i = nb.findIndex((b) => b.block && b.block.type === "objectSelection");
+  const i = nb.findIndex(
+    (b) => b.block !== undefined && b.block.type === "objectSelection",
+  );
   if (i === -1) {
     throw new Error("couldn't find objectSelection to modify");
   }
@@ -293,11 +286,9 @@ export function adjustObjectSelection(
 }
 
 export function moveObjectToEnd(
-  blocks: T.VPSBlockComplete[]
+  blocks: T.VPSBlockComplete[],
 ): T.VPSBlockComplete[] {
-  const i = blocks.findIndex(
-    (b) => b.block && b.block.type === "objectSelection"
-  );
+  const i = blocks.findIndex((b) => b.block.type === "objectSelection");
   if (i === -1) {
     throw new Error("couldn't find objectSelection to move");
   }
@@ -309,7 +300,7 @@ export function moveObjectToEnd(
 
 export function shiftBlock<B extends T.VPSBlock[] | T.EPSBlock[]>(
   index: number,
-  direction: "back" | "forward"
+  direction: "back" | "forward",
 ) {
   return function (blocks: B): B {
     const newIndex =
@@ -322,14 +313,14 @@ export function shiftBlock<B extends T.VPSBlock[] | T.EPSBlock[]>(
 }
 
 export function insertNewAP<B extends T.VPSBlock[] | T.EPSBlock[]>(
-  blocks: B
+  blocks: B,
 ): B {
   return [makeAPBlock(), ...blocks] as B;
 }
 
 export function setAP<B extends T.VPSBlock[] | T.EPSBlock[]>(
   index: number,
-  AP: T.APSelection | undefined
+  AP: T.APSelection | undefined,
 ): (b: B) => B {
   return function (blocks: B): B {
     const nBlocks = [...blocks] as B;
@@ -347,14 +338,14 @@ export function removeAP<B extends T.VPSBlock[] | T.EPSBlock[]>(index: number) {
 }
 
 export function isNoObject(
-  b: T.VPSBlock["block"] | T.EPSBlock["block"]
+  b: T.VPSBlock["block"] | T.EPSBlock["block"],
 ): b is { type: "objectSelection"; selection: "none" } {
   return !!(b && b.type === "objectSelection" && b.selection === "none");
 }
 
 export function specifyEquativeLength(
   blocksWVars: T.Block[][],
-  length: "long" | "short"
+  length: "long" | "short",
 ): T.Block[][] {
   function specify(blocks: T.Block[]): T.Block[] {
     const i = blocks.findIndex((b) => b.block.type === "equative");
@@ -419,7 +410,7 @@ function arrayMove<X>(ar: X[], old_index: number, new_index: number): X[] {
 // TODO: This takes 8 helper functions to recursively go down and check all determiners
 //  - is this what LENSES would help with?
 export function removeHeetsDet<B extends T.VPSBlock[] | T.EPSBlock[]>(
-  blocks: B
+  blocks: B,
 ): B {
   return blocks.map<T.VPSBlock | T.EPSBlock>((x) => ({
     key: x.key,
@@ -429,7 +420,7 @@ export function removeHeetsDet<B extends T.VPSBlock[] | T.EPSBlock[]>(
 
 // TODO: Could use lenses for this
 function removeHeetsDetFromBlock<
-  B extends T.VPSBlock["block"] | T.EPSBlock["block"]
+  B extends T.VPSBlock["block"] | T.EPSBlock["block"],
 >(block: B): B {
   if (!block) {
     return block;
@@ -460,7 +451,7 @@ function removeHeetsDetFromAP(ap: T.APSelection): T.APSelection {
 }
 
 function removeHeetsFromSandwich(
-  sand: T.SandwichSelection<T.Sandwich>
+  sand: T.SandwichSelection<T.Sandwich>,
 ): T.SandwichSelection<T.Sandwich> {
   return {
     ...sand,
@@ -469,7 +460,7 @@ function removeHeetsFromSandwich(
 }
 
 function removeHeetsFromAdjective(
-  adj: T.AdjectiveSelection
+  adj: T.AdjectiveSelection,
 ): T.AdjectiveSelection {
   return {
     ...adj,
@@ -478,7 +469,7 @@ function removeHeetsFromAdjective(
 }
 
 function removeHeetsFromComp(
-  comp: T.ComplementSelection
+  comp: T.ComplementSelection,
 ): T.ComplementSelection {
   if (comp.selection.type === "adjective") {
     return {
@@ -539,7 +530,7 @@ function removeHeetsFromNP(np: T.NPSelection): T.NPSelection {
 }
 
 function removeHeetsFromDets(
-  dets: T.DeterminersSelection | undefined
+  dets: T.DeterminersSelection | undefined,
 ): T.DeterminersSelection | undefined {
   if (!dets) {
     return dets;

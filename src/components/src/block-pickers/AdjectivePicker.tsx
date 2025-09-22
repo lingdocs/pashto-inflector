@@ -51,7 +51,7 @@ function AdjectivePicker(props: {
         />
       )}
       <div className="d-flex flex-row justify-content-between align-items-baseline">
-        {!props.noTitle && (
+        {props.noTitle !== true && (
           <div>
             <div className="h6">Adjective</div>
           </div>

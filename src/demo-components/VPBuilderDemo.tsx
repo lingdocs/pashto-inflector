@@ -48,8 +48,8 @@ function VPBuilderDemo({ opts }: { opts: T.TextOptions }) {
   const handleVerbIndexChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setVerbTs(parseInt(e.target.value));
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleTypeSelection = (e: any) => {
+  const handleTypeSelection = (e: React.FormEvent<HTMLDivElement>) => {
+    // @ts-expect-error because
     const type = e.target.value as VerbType;
     if (type === "dynamic compound") {
       setTransitivityShowing("transitive");
@@ -62,8 +62,8 @@ function VPBuilderDemo({ opts }: { opts: T.TextOptions }) {
     }
     setVerbTypeShowing(type);
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleTransitivitySelection = (e: any) => {
+  const handleTransitivitySelection = (e: React.FormEvent<HTMLDivElement>) => {
+    // @ts-expect-error because
     const transitivity = e.target.value as T.Transitivity;
     if (transitivity === "grammatically transitive") {
       setVerbTypeShowing("simple");
@@ -75,7 +75,7 @@ function VPBuilderDemo({ opts }: { opts: T.TextOptions }) {
       setTransitivityShowing("transitive");
       return;
     }
-    setTransitivityShowing(e.target.value as T.Transitivity);
+    setTransitivityShowing(transitivity);
   };
   const verbsAvailable = allVerbs
     .filter(
@@ -102,7 +102,9 @@ function VPBuilderDemo({ opts }: { opts: T.TextOptions }) {
     if (vFound) return vFound;
     if (verbsAvailable.length === 0) return undefined;
     const vTopOfList = verbsAvailable[0];
-    setVerbTs(vTopOfList.verb.entry.ts);
+    if (vTopOfList !== undefined) {
+      setVerbTs(vTopOfList.verb.entry.ts);
+    }
     return vTopOfList;
   })();
 
@@ -110,8 +112,9 @@ function VPBuilderDemo({ opts }: { opts: T.TextOptions }) {
     let newIndex: number;
     do {
       newIndex = randomNumber(0, verbsAvailable.length);
-    } while (verbsAvailable[newIndex].verb.entry.ts === verbTs);
-    setVerbTs(verbsAvailable[newIndex].verb.entry.ts);
+    } while (verbsAvailable[newIndex]?.verb.entry.ts === verbTs);
+    const nv = verbsAvailable[newIndex];
+    if (nv !== undefined) setVerbTs(nv.verb.entry.ts);
   };
   const makeVerbLabel = (entry: T.DictionaryEntry): string =>
     `${entry.p} - ${clamp(entry.e, 20)}`;

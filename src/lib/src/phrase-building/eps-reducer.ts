@@ -110,7 +110,7 @@ export default function epsReducer(
       ...eps,
       blocks: adjustSubjectSelection(subject)(eps.blocks) as T.EPSBlock[],
     };
-    return subject ? ensureMiniPronounsOk(eps, n, sendAlert) : n;
+    return ensureMiniPronounsOk(eps, n, sendAlert);
   }
   if (action.type === "set predicate") {
     if (!action.payload) {
@@ -141,7 +141,7 @@ export default function epsReducer(
       };
     }
     const n: T.EPSelectionState = O.set(predicate)(action.payload)(eps);
-    return predicate ? ensureMiniPronounsOk(eps, n, sendAlert) : n;
+    return ensureMiniPronounsOk(eps, n, sendAlert);
   }
   if (action.type === "set omitSubject") {
     const n: T.EPSelectionState = {
@@ -183,7 +183,7 @@ function ensureMiniPronounsOk(
   sendAlert?: (msg: string) => void,
 ): T.EPSelectionState {
   const error = checkForMiniPronounsError(eps);
-  if (error) {
+  if (error !== undefined) {
     if (sendAlert) sendAlert(error);
     return old;
   }

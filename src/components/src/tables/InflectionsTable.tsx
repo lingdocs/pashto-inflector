@@ -56,8 +56,8 @@ const InflectionTable = ({
   // const handleShowExplanation = () => setShowingExplanation(true);
   const isPluralInfs = isPluralInflections(inf);
   return (
-    <div className={!hideTitle ? "" : "mt-4"}>
-      {!hideTitle && (
+    <div className={hideTitle !== true ? "" : "mt-4"}>
+      {hideTitle !== true && (
         <div
           style={{
             display: "flex",
@@ -86,8 +86,8 @@ const InflectionTable = ({
                   borderLeft: "1px solid #dee2e6",
                   ...("fem" in inf
                     ? {
-                        borderRight: "1px solid #dee2e6",
-                      }
+                      borderRight: "1px solid #dee2e6",
+                    }
                     : {}),
                 }}
               >
@@ -107,9 +107,9 @@ const InflectionTable = ({
         <tbody>
           {(!isPluralInfs
             ? ["Plain", "1st", "2nd"]
-            : vocative
-            ? ["Voc.", "Plur. Voc."]
-            : ["Plural", "2nd Inf."]
+            : vocative === true
+              ? ["Voc.", "Plur. Voc."]
+              : ["Plural", "2nd Inf."]
           ).map((title, i) => (
             <tr key={title}>
               <th scope="row">{title}</th>

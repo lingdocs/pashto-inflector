@@ -32,7 +32,7 @@ function AllTensesDisplay({
     "showFormulasWithCharts"
   );
   const [objectNPNumber, setObjectNPNumber] = useState<T.NounNumber>(
-    object && typeof object === "object" && object.selection.type === "noun"
+    object !== undefined && typeof object === "object" && object.selection.type === "noun"
       ? object.selection.number
       : "singular"
   );
@@ -47,10 +47,10 @@ function AllTensesDisplay({
     VS.tenseCategory === "basic"
       ? verbTenseOptions
       : VS.tenseCategory === "perfect"
-      ? perfectTenseOptions
-      : VS.tenseCategory === "modal"
-      ? abilityTenseOptions
-      : imperativeTenseOptions;
+        ? perfectTenseOptions
+        : VS.tenseCategory === "modal"
+          ? abilityTenseOptions
+          : imperativeTenseOptions;
   // const rawConjugations = conjugateVerb(VS.verb.entry, VS.verb.complement);
   //   const conjugations =
   //     "stative" in rawConjugations
@@ -70,17 +70,17 @@ function AllTensesDisplay({
       : baseTense;
   }
   const objectNP: T.NPSelection | undefined =
-    object && typeof object === "object" && object.selection.type === "noun"
+    object !== undefined && typeof object === "object" && object.selection.type === "noun"
       ? object
       : undefined;
   const verb =
     VS.isCompound === "generative stative"
       ? statVerb[
-          VS.transitivity === "intransitive" ? "intransitive" : "transitive"
-        ]
+      VS.transitivity === "intransitive" ? "intransitive" : "transitive"
+      ]
       : VS.dynAuxVerb
-      ? VS.dynAuxVerb
-      : VS.verb;
+        ? VS.dynAuxVerb
+        : VS.verb;
   return (
     <div>
       <div
@@ -147,31 +147,29 @@ function AllTensesDisplay({
                   <samp>{tense.formula}</samp>
                 </div>
               )}
-              {showing && (
-                <ChartDisplay
-                  verb={verb}
-                  objectNP={
-                    VS.isCompound === "dynamic" &&
+              <ChartDisplay
+                verb={verb}
+                objectNP={
+                  VS.isCompound === "dynamic" &&
                     objectNP?.selection.type === "noun"
-                      ? {
-                          ...objectNP,
-                          selection: {
-                            ...objectNP.selection,
-                            number: objectNP.selection.numberCanChange
-                              ? objectNPNumber
-                              : objectNP.selection.number,
-                          },
-                        }
-                      : undefined
-                  }
-                  negative={VS.negative}
-                  tense={t}
-                  transitivity={VS.transitivity}
-                  voice={VS.voice}
-                  imperative={isImperativeTense(t)}
-                  opts={opts}
-                />
-              )}
+                    ? {
+                      ...objectNP,
+                      selection: {
+                        ...objectNP.selection,
+                        number: objectNP.selection.numberCanChange
+                          ? objectNPNumber
+                          : objectNP.selection.number,
+                      },
+                    }
+                    : undefined
+                }
+                negative={VS.negative}
+                tense={t}
+                transitivity={VS.transitivity}
+                voice={VS.voice}
+                imperative={isImperativeTense(t)}
+                opts={opts}
+              />
             </Hider>
           </div>
         );

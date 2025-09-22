@@ -20,7 +20,7 @@ const Pashto = ({
 }) => {
   function convertText(ps: T.PsString, opts: T.TextOptions): string {
     const p = opts.diacritics
-      ? phoneticsToDiacritics(ps.p, ps.f) || ps.p
+      ? phoneticsToDiacritics(ps.p, ps.f) ?? ps.p
       : ps.p;
     return convertSpelling(p, opts.spelling);
   }

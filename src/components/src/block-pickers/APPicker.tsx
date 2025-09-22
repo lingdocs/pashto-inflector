@@ -36,11 +36,11 @@ function APPicker(props: {
     props.onChange(undefined);
   }
   const clearButton =
-    type && !props.cantClear ? (
+    type && props.cantClear !== true ? (
       <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>
         X
       </button>
-    ) : !props.cantClear ? (
+    ) : props.cantClear !== true ? (
       <div>
         <div className="clickable" onClick={props.onRemove}>
           <i className="fas fa-trash" />

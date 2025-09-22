@@ -159,7 +159,7 @@ function CompiledPTextDisplay(props: {
       </Examples>
     </div>
   }
-  const match = props.toMatch ? flattened.findIndex(x => x.p.replaceAll(" ", "") === props.toMatch?.replaceAll(" ", "")) : -1;
+  const match = props.toMatch !== undefined && props.toMatch !== "" ? flattened.findIndex(x => x.p.replaceAll(" ", "") === props.toMatch?.replaceAll(" ", "")) : -1;
   // TODO: could do a more efficient thing than this
   const pss = match === -1 ? flattened : [flattened[match], ...flattened.filter((_, i) => i !== match)];
   return <div className="mt-2">

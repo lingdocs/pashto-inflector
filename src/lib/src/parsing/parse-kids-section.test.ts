@@ -108,13 +108,13 @@ tests.forEach(({ label, cases }) => {
         expect(
           parsed.map((x) => ({
             kids: x.body.kids,
-            ...(!!x.errors.length ? { err: true } : {}),
+            ...(x.errors.length > 0 ? { err: true } : {}),
           })),
         ).toEqual(output);
         expect(
           parsedFromOpt.map((x) => ({
             kids: x.body?.kids,
-            ...(!!x.errors.length ? { err: true } : {}),
+            ...(x.errors.length > 0 ? { err: true } : {}),
           })),
         ).toEqual([...output, { kids: undefined }]);
       }

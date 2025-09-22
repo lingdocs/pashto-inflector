@@ -22,7 +22,7 @@ export function parseAdjective(
       inflection: r.inflection,
       gender: r.gender,
       given: r.given,
-      selection: makeAdjectiveSelection(r.selection as T.AdjectiveEntry),
+      selection: makeAdjectiveSelection(r.selection),
     }),
     adjectives,
   );

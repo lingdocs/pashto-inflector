@@ -450,24 +450,25 @@ export function stateInfo({
   // const nextPhoneme = (phonemes.length > (i + 1)) && phonemes[i+1];
   // const nextPhonemeInfo = nextPhoneme ? phonemeTable[nextPhoneme] : undefined;
   const doubleConsonant =
-    previousPhonemeInfo &&
+    previousPhonemeInfo !== false &&
     phonemeInfo.consonant &&
     previousPhonemeInfo.consonant;
   const needsSukun =
-    doubleConsonant &&
+    doubleConsonant === true &&
     (previousPhoneme !== phoneme ||
       phonemeInfo.matches?.includes(currentPLetter)); // || (isEndOfWord && phonemeInfo.takesSukunOnEnding);
   const useAinBlendDiacritics =
     !isBeginningOfWord &&
-    phonemeInfo.ainBlendDiacritic &&
+    phonemeInfo.ainBlendDiacritic !== undefined &&
+    phonemeInfo.ainBlendDiacritic !== "" &&
     currentPLetter === "ع";
   const diacritic = useAinBlendDiacritics
     ? phonemeInfo.ainBlendDiacritic
     : isEndOfWord
-    ? !phonemeInfo.longVowel || phonemeInfo.useEndingDiacritic
-      ? phonemeInfo.diacritic
-      : undefined
-    : phonemeInfo.diacritic;
+      ? !phonemeInfo.longVowel || phonemeInfo.useEndingDiacritic
+        ? phonemeInfo.diacritic
+        : undefined
+      : phonemeInfo.diacritic;
 
   const lastWordEndedW = (char: string) =>
     (prevPLetter === char && !currentPLetter) ||
@@ -477,7 +478,8 @@ export function stateInfo({
     if (
       isBeginningOfWord &&
       phoneme === "aa" &&
-      phonemeInfo.beginningMatches?.includes(currentPLetter)
+      phonemeInfo.beginningMatches !== undefined &&
+      phonemeInfo.beginningMatches.includes(currentPLetter)
     ) {
       return PhonemeStatus.DirectMatch;
     }
@@ -488,7 +490,8 @@ export function stateInfo({
       if (
         phoneme !== "aa" &&
         currentPLetter !== "ا" &&
-        !phonemeInfo.matches?.includes(nextPLetter)
+        (phonemeInfo.matches === undefined ||
+          !phonemeInfo.matches.includes(nextPLetter))
       ) {
         throw Error("phonetics error - needs alef prefix");
       }
@@ -496,8 +499,9 @@ export function stateInfo({
     }
     if (
       isBeginningOfWord &&
-      (phonemeInfo.beginningMatches?.includes(currentPLetter) ||
-        phonemeInfo.matches?.includes(currentPLetter))
+      ((phonemeInfo.beginningMatches !== undefined &&
+        phonemeInfo.beginningMatches.includes(currentPLetter)) ||
+        (phonemeInfo.matches && phonemeInfo.matches.includes(currentPLetter)))
     ) {
       return PhonemeStatus.LeadingConsonantOrShortVowel;
     }
@@ -596,7 +600,11 @@ export function stateInfo({
       return PhonemeStatus.AlefWithHamzaWithGlottalStop;
     }
     if (currentPLetter === "ع" && phoneme !== "'" && nextPhoneme !== "'") {
-      if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
+      if (
+        phonemeInfo.diacritic !== undefined &&
+        phonemeInfo.diacritic !== "" &&
+        !phonemeInfo.longVowel
+      ) {
         return PhonemeStatus.ShortAinVowelMissingComma;
       }
       if (last(state.pOut, 2) === "ا" && isOutOfWord(last(state.pOut, 3))) {
@@ -607,9 +615,11 @@ export function stateInfo({
       return PhonemeStatus.LongAinVowelMissingComma;
     }
     if (
-      ((!isBeginningOfWord && doubleConsonant) || prevPLetter === " ") &&
+      ((!isBeginningOfWord && doubleConsonant === true) ||
+        prevPLetter === " ") &&
       previousPhoneme === phoneme &&
-      !phonemeInfo.matches?.includes(currentPLetter)
+      (phonemeInfo.matches === undefined ||
+        !phonemeInfo.matches.includes(currentPLetter))
     ) {
       return PhonemeStatus.DoubleConsonantTashdeed;
     }
@@ -628,20 +638,27 @@ export function stateInfo({
       ((phoneme === "u" && currentPLetter === "ه") ||
         (phoneme === "h" && ["ه", "ح"].includes(currentPLetter)))
     ) {
-      return needsSukun
+      return needsSukun === true
         ? PhonemeStatus.EndingWithHayHimFromSukun
         : PhonemeStatus.EndingWithHayHim;
     }
     if (
-      phonemeInfo.matches?.includes(currentPLetter) ||
-      (isEndOfWord && phonemeInfo.endingMatches?.includes(currentPLetter)) ||
+      (phonemeInfo.matches !== undefined &&
+        phonemeInfo.matches.includes(currentPLetter)) ||
+      (isEndOfWord &&
+        phonemeInfo.endingMatches !== undefined &&
+        phonemeInfo.endingMatches.includes(currentPLetter)) ||
       (phoneme === "m" && currentPLetter === "ن" && nextPLetter === "ب")
     ) {
-      return needsSukun
+      return needsSukun === true
         ? PhonemeStatus.DirectMatchAfterSukun
         : PhonemeStatus.DirectMatch;
     }
-    if (phonemeInfo.diacritic && !phonemeInfo.longVowel) {
+    if (
+      phonemeInfo.diacritic !== undefined &&
+      phonemeInfo.diacritic !== "" &&
+      !phonemeInfo.longVowel
+    ) {
       return PhonemeStatus.ShortVowel;
     }
     if (phoneme === "o" && previousPhoneme === "w" && lastWordEndedW("و")) {
@@ -658,7 +675,7 @@ export function stateInfo({
     // console.log("errored", "current", phoneme, "next", nextPhoneme);
     // console.log("bad phoneme is ", phoneme);
     throw new Error(
-      "phonetics error - no status found for phoneme: " + phoneme
+      "phonetics error - no status found for phoneme: " + phoneme,
     );
   }
 
@@ -683,7 +700,7 @@ export function last(s: string, n = 1) {
 
 export function advanceP(
   state: DiacriticsAccumulator,
-  n: number = 1
+  n: number = 1,
 ): DiacriticsAccumulator {
   return {
     pIn: state.pIn.slice(n),
@@ -711,7 +728,8 @@ export const addP =
   (state: DiacriticsAccumulator): DiacriticsAccumulator => {
     return {
       ...state,
-      pOut: toAdd ? state.pOut + toAdd : state.pOut,
+      pOut:
+        toAdd !== undefined && toAdd !== "" ? state.pOut + toAdd : state.pOut,
     };
   };
 
@@ -753,7 +771,7 @@ export function getCurrentNext(state: DiacriticsAccumulator): {
 // }
 
 export function advanceForHamzaMid(
-  state: DiacriticsAccumulator
+  state: DiacriticsAccumulator,
 ): DiacriticsAccumulator {
   const { current, next } = getCurrentNext(state);
   if (current === "ئ" && next && next !== "ئ") {
@@ -763,7 +781,7 @@ export function advanceForHamzaMid(
 }
 
 export function advanceForHamza(
-  state: DiacriticsAccumulator
+  state: DiacriticsAccumulator,
 ): DiacriticsAccumulator {
   const { current, next } = getCurrentNext(state);
   if (current === "ه" && (!next || next === " ")) {

@@ -26,14 +26,14 @@ function ButtonSelect<L extends string>(props: PickerProps<L>) {
           type="button"
           className={classNames(
             "btn",
-            props.faded ? "btn-light" : "btn-outline-secondary",
+            props.faded === true ? "btn-light" : "btn-outline-secondary",
             { active: props.value === option.value },
-            { "btn-sm": props.small || props.xSmall }
+            { "btn-sm": props.small ?? props.xSmall }
           )}
           onClick={() => props.handleChange(option.value)}
           style={{
-            ...(props.xSmall ? { fontSize: "small" } : {}),
-            ...(option.color && props.value === option.value
+            ...(props.xSmall === true ? { fontSize: "small" } : {}),
+            ...(option.color !== undefined && props.value === option.value
               ? { backgroundColor: option.color }
               : {}),
           }}
@@ -42,7 +42,7 @@ function ButtonSelect<L extends string>(props: PickerProps<L>) {
             className={classNames([
               {
                 "text-on-gender-color":
-                  option.color && props.value === option.value,
+                  option.color !== undefined && props.value === option.value,
               },
             ])}
           >

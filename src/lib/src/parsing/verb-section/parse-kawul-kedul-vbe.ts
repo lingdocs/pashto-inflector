@@ -58,7 +58,7 @@ export function parseKawulKedulVBE(
     return [];
   }
   const start = first.slice(0, -1);
-  const ending = first.at(-1) || "";
+  const ending = first.at(-1) ?? "";
   const head = getHead(ph);
   const getF = getForm(head);
   const oneBase =

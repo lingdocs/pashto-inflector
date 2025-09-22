@@ -57,9 +57,9 @@ function Examples(
 ) {
   const examples = "children" in props ? props.children : props.ex;
   const Example = ({ children: text }: { children: ExampleContent }) => {
-    const psA = "error" in text && text.error ? addErrorToPs(text) : text;
-    // @ts-ignore
-    const psB = props.md ? psmd(psA) : psA;
+    const psA = "error" in text && text.error === true ? addErrorToPs(text) : text;
+    // @ts-expect-error because
+    const psB = props.md === true ? psmd(psA) : psA;
     return (
       <div
         className={
@@ -74,8 +74,8 @@ function Examples(
         <div>
           <Phonetics opts={props.opts} ps={psB} />
         </div>
-        {psB.e && <EnglishContent>{psB.e}</EnglishContent>}
-        {"sub" in psB && psB.sub && (
+        {psB.e !== undefined && <EnglishContent>{psB.e}</EnglishContent>}
+        {"sub" in psB && psB.sub !== undefined && (
           <div className="small text-muted">{psB.sub}</div>
         )}
       </div>

@@ -8,7 +8,7 @@ export function joinInflectorOutputs(
   if (a === undefined || b === undefined) {
     throw new Error("bad input for joining inflector outputs");
   }
-  if (a.inflected && b.inflected) {
+  if (a.inflected !== false && b.inflected !== false) {
     const inflections = joinInflections(
       a.inflected.inflections,
       b.inflected.inflections,

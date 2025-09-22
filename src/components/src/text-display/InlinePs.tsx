@@ -21,14 +21,14 @@ const InlinePs = ({
   opts: T.TextOptions;
   error?: boolean;
 }) => {
-  const isError = error || ("error" in ps && ps.error);
-  const psA = isError ? addErrorToPs(ps) : ps;
+  const isError = error ?? ("error" in ps && ps.error);
+  const psA = isError === true ? addErrorToPs(ps) : ps;
   return (
     <span>
       <Pashto opts={opts} ps={psA} />
       {opts.phonetics !== "none" && " - "}
       <Phonetics opts={opts} ps={psA} />
-      {ps.e && <span className="text-muted"> ({ps.e})</span>}
+      {ps.e !== undefined && ps.e !== "" && <span className="text-muted"> ({ps.e})</span>}
     </span>
   );
 };

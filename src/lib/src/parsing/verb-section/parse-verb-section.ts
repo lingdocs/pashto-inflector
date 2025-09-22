@@ -387,10 +387,10 @@ function checkNegErrors(blocks: T.ParsedVerbSectionBlock[]): T.ParseError[] {
     });
   }
   const vx = blocks.find((x) => x.type === "parsedV");
-  const neg = negs[0];
+  const neg: T.NegativeBlock | undefined = negs[0];
   // for equative phrases
   if (!vx) {
-    if (neg) {
+    if (neg !== undefined) {
       const negIndex = blocks.findIndex((x) => x.type === "negative");
       const vbbAuxIndex = blocks.findIndex((x) => x.type === "parsed vbb aux");
       if (vbbAuxIndex === -1) {
@@ -410,13 +410,13 @@ function checkNegErrors(blocks: T.ParsedVerbSectionBlock[]): T.ParseError[] {
   const vxInfo = getInfoFromV(vx);
 
   const isImperative = vxInfo.type === "verb" && vxInfo.imperative;
-  if (neg) {
+  if (neg !== undefined) {
     const negIndex = blocks.findIndex((x) => x.type === "negative");
-    if (neg.imperative && !isImperative) {
+    if (neg.imperative && isImperative !== true) {
       errors.push({
         message: "Can only use مه with imperative verbs, use نه instead",
       });
-    } else if (!neg.imperative && isImperative) {
+    } else if (!neg.imperative && isImperative === true) {
       errors.push({
         message: "Imperative verbs must be used with the مه negative, not نه",
       });

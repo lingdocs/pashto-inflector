@@ -58,6 +58,7 @@ function CompoundDisplay({
       e: kawulDyn ? "to do" : "",
     };
   })();
+  const complementTs = info.entry.complement !== undefined && info.entry.complement.ts;
   return (
     <div className="d-block mx-auto my-3" style={{ maxWidth: "400px" }}>
       <div className="text-center">{info.type}</div>
@@ -68,9 +69,9 @@ function CompoundDisplay({
               { clickable: typeof handleLinkClick === "function" },
             ])}
             onClick={
-              handleLinkClick
-                ? // @ts-expect-error - thinks there might not be a complement, but there will be
-                  () => handleLinkClick(info.entry.complement?.ts)
+              handleLinkClick !== "none" && complementTs !== false
+                ?
+                () => handleLinkClick(complementTs)
                 : undefined
             }
           >
@@ -90,16 +91,16 @@ function CompoundDisplay({
             onClick={
               handleLinkClick !== "none"
                 ? () =>
-                    handleLinkClick(
-                      "auxVerb" in info
-                        ? // dyanmic compound auxVerb ts
-                          info.auxVerb.ts
-                        : // stative compound auxVerb ts
-                          (info.transitivity === "intransitive"
-                            ? kedulStat
-                            : kawulStat
-                          ).info.entry.entry.ts
-                    )
+                  handleLinkClick(
+                    "auxVerb" in info
+                      ? // dyanmic compound auxVerb ts
+                      info.auxVerb.ts
+                      : // stative compound auxVerb ts
+                      (info.transitivity === "intransitive"
+                        ? kedulStat
+                        : kawulStat
+                      ).info.entry.entry.ts
+                  )
                 : undefined
             }
           >

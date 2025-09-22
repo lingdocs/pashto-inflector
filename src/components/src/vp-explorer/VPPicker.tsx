@@ -209,7 +209,7 @@ function VPPicker({
                             onChange={() =>
                               adjustVps({ type: "toggle king remove" })
                             }
-                            showKing={!VPS?.form.removeKing}
+                            showKing={VPS === undefined || VPS.form.removeKing === false}
                           />
                         )}
                       </div>
@@ -242,7 +242,7 @@ function VPPicker({
                   }
                   entryFeeder={entryFeeder}
                   np={block.selection}
-                  counterPart={vps.verb ? object : undefined}
+                  counterPart={object}
                   role={
                     isPast && vps.verb.transitivity !== "intransitive"
                       ? "ergative"
@@ -252,124 +252,124 @@ function VPPicker({
                   opts={opts}
                   isShrunk={servantIsShrunk && roles.servant === "subject"}
                   isRemoved={roles.king === "subject" && VPS?.form.removeKing}
-                  negative={VPS?.verb.negative || false}
+                  negative={VPS !== undefined && VPS.verb.negative || false}
                 />
-              ) : vps.verb &&
+              ) :
                 block?.type === "objectSelection" &&
-                block.selection !== "none" ? (
-                <div
-                  className="my-2"
-                  style={{
-                    background:
-                      servantIsShrunk && roles.servant === "object"
-                        ? shrunkenBackground
-                        : "inherit",
-                  }}
-                >
-                  {typeof block.selection === "number" ? (
-                    <div>
-                      {roles.king === "object" ? (
-                        <div
-                          className="h5 text-center clickable"
-                          onClick={() =>
-                            setShowingExplanation({
-                              role: "king",
-                              item: "object",
-                            })
-                          }
-                        >
-                          Object {roleIcon.king}
-                        </div>
-                      ) : roles.servant === "object" ? (
-                        <div
-                          className="h5 text-center clickable"
-                          onClick={() =>
-                            setShowingExplanation({
-                              role: "servant",
-                              item: "object",
-                            })
-                          }
-                        >
-                          Object {roleIcon.servant}
-                        </div>
-                      ) : (
-                        <div className="h5 text-center">Object</div>
-                      )}
-                      <div className="text-muted text-center">
-                        <div className="mt-3 mb-1">Unspoken</div>
-                        <div>3rd Pers. Masc. Plur.</div>
-                      </div>
-                    </div>
-                  ) : (
-                    <NPPicker
-                      phraseIsComplete={phraseIsComplete}
-                      heading={
-                        roles.king === "object" ? (
-                          <div className="h5 text-center">
-                            Obj.{" "}
-                            <span
-                              onClick={() =>
-                                setShowingExplanation({
-                                  role: "king",
-                                  item: "object",
-                                })
-                              }
-                            >
-                              {roleIcon.king}
-                            </span>
-                            {rendered &&
-                              rendered.whatsAdjustable !== "servant" && (
-                                <KingRemover
-                                  onChange={() =>
-                                    adjustVps({ type: "toggle king remove" })
-                                  }
-                                  showKing={!VPS?.form.removeKing}
-                                />
-                              )}
+                  block.selection !== "none" ? (
+                  <div
+                    className="my-2"
+                    style={{
+                      background:
+                        servantIsShrunk && roles.servant === "object"
+                          ? shrunkenBackground
+                          : "inherit",
+                    }}
+                  >
+                    {typeof block.selection === "number" ? (
+                      <div>
+                        {roles.king === "object" ? (
+                          <div
+                            className="h5 text-center clickable"
+                            onClick={() =>
+                              setShowingExplanation({
+                                role: "king",
+                                item: "object",
+                              })
+                            }
+                          >
+                            Object {roleIcon.king}
+                          </div>
+                        ) : roles.servant === "object" ? (
+                          <div
+                            className="h5 text-center clickable"
+                            onClick={() =>
+                              setShowingExplanation({
+                                role: "servant",
+                                item: "object",
+                              })
+                            }
+                          >
+                            Object {roleIcon.servant}
                           </div>
                         ) : (
-                          <div className="h5 text-center">
-                            Obj.
-                            {` `}
-                            <span
-                              className="clickable"
-                              onClick={() =>
-                                setShowingExplanation({
-                                  role: "servant",
-                                  item: "object",
-                                })
-                              }
-                            >
-                              {roleIcon.servant}
-                            </span>
-                            {` `}
-                            {rendered &&
-                              rendered.whatsAdjustable !== "king" && (
-                                <ServantShrinker
-                                  shrunk={servantIsShrunk}
-                                  onClick={() =>
-                                    adjustVps({ type: "toggle servant shrink" })
-                                  }
-                                />
-                              )}
-                          </div>
-                        )
-                      }
-                      entryFeeder={entryFeeder}
-                      role="object"
-                      np={block.selection}
-                      counterPart={subject}
-                      onChange={handleObjectChange}
-                      opts={opts}
-                      isShrunk={servantIsShrunk && roles.servant === "object"}
-                      isRemoved={
-                        roles.king === "object" && VPS?.form.removeKing
-                      }
-                      negative={VPS?.verb.negative || false}
-                    />
-                  )}
-                </div>
-              ) : null}
+                          <div className="h5 text-center">Object</div>
+                        )}
+                        <div className="text-muted text-center">
+                          <div className="mt-3 mb-1">Unspoken</div>
+                          <div>3rd Pers. Masc. Plur.</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <NPPicker
+                        phraseIsComplete={phraseIsComplete}
+                        heading={
+                          roles.king === "object" ? (
+                            <div className="h5 text-center">
+                              Obj.{" "}
+                              <span
+                                onClick={() =>
+                                  setShowingExplanation({
+                                    role: "king",
+                                    item: "object",
+                                  })
+                                }
+                              >
+                                {roleIcon.king}
+                              </span>
+                              {rendered &&
+                                rendered.whatsAdjustable !== "servant" && (
+                                  <KingRemover
+                                    onChange={() =>
+                                      adjustVps({ type: "toggle king remove" })
+                                    }
+                                    showKing={VPS === undefined || VPS.form.removeKing === false}
+                                  />
+                                )}
+                            </div>
+                          ) : (
+                            <div className="h5 text-center">
+                              Obj.
+                              {` `}
+                              <span
+                                className="clickable"
+                                onClick={() =>
+                                  setShowingExplanation({
+                                    role: "servant",
+                                    item: "object",
+                                  })
+                                }
+                              >
+                                {roleIcon.servant}
+                              </span>
+                              {` `}
+                              {rendered &&
+                                rendered.whatsAdjustable !== "king" && (
+                                  <ServantShrinker
+                                    shrunk={servantIsShrunk}
+                                    onClick={() =>
+                                      adjustVps({ type: "toggle servant shrink" })
+                                    }
+                                  />
+                                )}
+                            </div>
+                          )
+                        }
+                        entryFeeder={entryFeeder}
+                        role="object"
+                        np={block.selection}
+                        counterPart={subject}
+                        onChange={handleObjectChange}
+                        opts={opts}
+                        isShrunk={servantIsShrunk && roles.servant === "object"}
+                        isRemoved={
+                          roles.king === "object" && VPS?.form.removeKing
+                        }
+                        negative={VPS !== undefined && VPS.verb.negative}
+                      />
+                    )}
+                  </div>
+                ) : null}
             </div>
           );
         })}
@@ -451,7 +451,7 @@ function isGenStatCompNoun(
     block.type === "objectSelection" &&
     typeof block.selection === "object" &&
     block.selection.selection.type === "noun" &&
-    block.selection.selection.genStativeComplement
+    block.selection.selection.genStativeComplement === true
   ) {
     return true;
   }

@@ -29,7 +29,7 @@ function NPPicker(props: {
   negative: boolean;
 }) {
   if (
-    props.is2ndPersonPicker &&
+    props.is2ndPersonPicker === true &&
     (props.np?.selection.type !== "pronoun" ||
       !isSecondPerson(props.np.selection.person))
   ) {
@@ -56,7 +56,7 @@ function NPPicker(props: {
     if (
       props.np &&
       props.np.selection.type === "noun" &&
-      props.np.selection.dynamicComplement
+      props.np.selection.dynamicComplement === true
     )
       return;
     setNpType(undefined);
@@ -133,7 +133,7 @@ function NPPicker(props: {
     props.np.selection.type === "noun" &&
     props.np.selection.dynamicComplement;
   const clearButton =
-    !props.cantClear && !props.is2ndPersonPicker && !isDynamicComplement ? (
+    props.cantClear !== true && props.is2ndPersonPicker !== true && isDynamicComplement !== true ? (
       <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>
         X
       </button>
@@ -145,7 +145,7 @@ function NPPicker(props: {
   return (
     <div
       style={{
-        opacity: props.isRemoved ? 0.5 : 1,
+        opacity: props.isRemoved === true ? 0.5 : 1,
       }}
     >
       <div className="d-flex flex-row justify-content-between">
@@ -186,7 +186,7 @@ function NPPicker(props: {
                 paddingLeft: "0.65rem",
                 borderLeft: "2px solid grey",
                 background:
-                  props.np.selection.possesor?.shrunken && !props.isShrunk
+                  props.np.selection.possesor?.shrunken === true && props.isShrunk !== true
                     ? shrunkenBackground
                     : "inherit",
               }}
@@ -194,7 +194,7 @@ function NPPicker(props: {
               <div className="d-flex flex-row text-muted mb-2">
                 <div>{possesiveLabel}:</div>
                 {props.np.selection.possesor &&
-                  !props.isShrunk &&
+                  props.isShrunk !== true &&
                   props.phraseIsComplete && (
                     <div
                       className="clickable ml-3 mr-2"

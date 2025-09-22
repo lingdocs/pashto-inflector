@@ -1,3 +1,4 @@
+// eslint-disable-file
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 export default {
   testEnvironment: "node",

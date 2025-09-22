@@ -66,12 +66,12 @@ const dalta = testDictionary.otherLookup(
   "p",
   "دلته",
 )[0] as T.LocativeAdverbEntry;
-const jzarul = testDictionary.verbEntryLookup("ژړل")[0] as T.VerbEntry;
-const balul = testDictionary.verbEntryLookup("بلل")[0] as T.VerbEntry;
-const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0] as T.VerbEntry;
-const murKedul = testDictionary.verbEntryLookup("مړ کېدل")[0] as T.VerbEntry;
+const jzarul = testDictionary.verbEntryLookup("ژړل")[0];
+const balul = testDictionary.verbEntryLookup("بلل")[0];
+const gardzedul = testDictionary.verbEntryLookup("ګرځېدل")[0];
+const murKedul = testDictionary.verbEntryLookup("مړ کېدل")[0];
 const maredul = testDictionary.verbEntryLookup("مړېدل")[0];
-const murKawul = testDictionary.verbEntryLookup("مړ کول")[0] as T.VerbEntry;
+const murKawul = testDictionary.verbEntryLookup("مړ کول")[0];
 const marawul = testDictionary.verbEntryLookup("مړول")[0];
 const sturay = testDictionary.adjLookup("ستړی")[0];
 const ghut = testDictionary.adjLookup("غټ")[0];
@@ -2960,11 +2960,11 @@ sections.forEach((section) => {
         const res = parseVP(tokens, testDictionary).filter(
           (x) => !tokensExist(x.tokens),
         );
-        if (error) {
+        if (error === true) {
           expect(res.some((x) => x.errors.length)).toBe(true);
         } else {
           expect(removeKeys(res.map((x) => x.body))).toIncludeSameMembers(
-            removeKeys(output),
+            removeKeys(output), // eslint-disable-line
           );
           expect(!res.some((x) => x.errors.length)).toBe(true);
         }

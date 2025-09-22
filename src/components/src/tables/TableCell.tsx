@@ -37,12 +37,12 @@ const TableCell = ({
   function advanceVersion() {
     setVersion((version + 1) % item.length);
   }
-  const w = item[version] || item[0];
+  const w = item[version] ?? item[0];
   return (
     <td
       colSpan={colSpan || 1}
       style={{
-        ...(noBorder ? { border: "none" } : { border: "2px solid #dee2e6" }),
+        ...(noBorder === true ? { border: "none" } : { border: "2px solid #dee2e6" }),
       }}
     >
       <div
@@ -50,7 +50,7 @@ const TableCell = ({
           display: "flex",
           flexDirection: "row",
           flexWrap: "wrap",
-          justifyContent: center ? "center" : "space-between",
+          justifyContent: center === true ? "center" : "space-between",
           alignItems: "center",
         }}
       >
@@ -61,10 +61,10 @@ const TableCell = ({
           <div>
             <Phonetics opts={textOptions} ps={w} />
           </div>
-          {w.e &&
+          {w.e !== undefined && w.e !== "" &&
             (Array.isArray(w.e) ? (
               w.e.map((e) => (
-                <div key={e} className="text-muted small">
+                <div key={e as string} className="text-muted small">
                   {e}
                 </div>
               ))

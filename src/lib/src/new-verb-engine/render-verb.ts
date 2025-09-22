@@ -58,7 +58,7 @@ const kedulStat = vEntry({
   pprtf: "shúway",
   noOo: true,
   ec: "become",
-});
+} as T.VerbDictionaryEntry);
 const formulas: Record<
   T.VerbTense | T.ImperativeTense,
   {
@@ -273,14 +273,14 @@ function addEnding({
     if ("long" in vb.ps) {
       // exceptional ending for راتلل, ورتلل, درتلل
       // TODO: do we need a more thorough check?
-      if (vb.ps.short[0].f === "ghl" && pastThird && basicForm) {
+      if (vb.ps.short[0]?.f === "ghl" && pastThird && basicForm) {
         return {
           ...vb,
           ps: [{ p: "غی", f: "ghay" }],
         };
       }
       // exceptional ending for شو
-      if (vb.ps.short[0].f === "shw" && pastThird) {
+      if (vb.ps.short[0]?.f === "shw" && pastThird) {
         return {
           ...vb,
           ps: {
@@ -345,7 +345,7 @@ function ensure3rdPast(
       ? [{ p: "شو", f: "sho" }]
       : [{ p: "کېده", f: "kedú" }];
   }
-  if (isKawulVerb(verb) && rs[0].p === "کړ") {
+  if (isKawulVerb(verb) && rs[0]?.p === "کړ") {
     return [
       { p: "کړ", f: "kuR" },
       { p: "کړه", f: "kRu" },
@@ -373,20 +373,27 @@ function ensure3rdPast(
     }
     return [
       {
-        p: rs[0].p.slice(0, -1) + "ه",
-        f: rs[0].f.slice(0, -2) + "ú",
+        p: rs[0]?.p.slice(0, -1) + "ه",
+        f: rs[0]?.f.slice(0, -2) + "ú",
       },
       {
-        p: rs[0].p + "و",
-        f: rs[0].f.slice(0, -1) + "ó",
+        p: rs[0]?.p + "و",
+        f: rs[0]?.f.slice(0, -1) + "ó",
       },
     ];
   }
-  if (verb.entry.tppp && verb.entry.tppf) {
+  if (
+    verb.entry.tppp !== undefined &&
+    verb.entry.tppp !== "" &&
+    verb.entry.tppf !== undefined &&
+    verb.entry.tppf !== ""
+  ) {
     const tpps = splitPsByVarients(
       makePsString(verb.entry.tppp, verb.entry.tppf),
     ).map((ps) =>
-      !verb.entry.sepOo && aspect === "perfective" ? takeOffAaStart(ps) : ps,
+      verb.entry.sepOo !== true && aspect === "perfective"
+        ? takeOffAaStart(ps)
+        : ps,
     );
     if (verb.entry.p === "وړل" && aspect === "perfective") {
       return [
@@ -437,10 +444,10 @@ function ensure3rdPast(
     verb.entry.p.slice(-2) === "ول";
   // TODO: check about verbs like tawul (if they exist)
   if (endsInAwul) {
-    const base = { p: rs[0].p.slice(0, -1), f: rs[0].f.slice(0, -2) };
-    const aawuEnd = concatPsString(base, {
+    const base = { p: rs[0]?.p.slice(0, -1), f: rs[0]?.f.slice(0, -2) };
+    const aawuEnd = concatPsString(base as { p: string; f: string }, {
       p: "اوه",
-      f: base.f.charAt(base.f.length - 1) === "a" ? "awu" : "aawu",
+      f: base.f?.charAt(base.f.length - 1) === "a" ? "awu" : "aawu",
     });
     return [aspect === "imperfective" ? accentOnNFromEnd(aawuEnd, 0) : aawuEnd];
   }

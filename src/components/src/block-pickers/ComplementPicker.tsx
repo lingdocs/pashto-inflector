@@ -59,7 +59,7 @@ function ComplementPicker(props: {
     }
   }
   const clearButton =
-    compType && !props.cantClear ? (
+    compType && props.cantClear !== true ? (
       <button className="btn btn-sm btn-light mb-2" onClick={handleClear}>
         X
       </button>

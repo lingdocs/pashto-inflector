@@ -29,11 +29,11 @@ function composeFormula(
 function TensePicker(
   props: (
     | {
-        vps: T.VPSelectionState;
-      }
+      vps: T.VPSelectionState;
+    }
     | {
-        vpsComplete: T.VPSelectionComplete;
-      }
+      vpsComplete: T.VPSelectionComplete;
+    }
   ) & {
     onChange: (p: VpsReducerAction) => void;
     mode: "charts" | "phrases" | "quiz";
@@ -55,23 +55,22 @@ function TensePicker(
   }
   function moveTense(dir: "forward" | "back") {
     if ("vpsComplete" in props) return;
-    if (!props.vps.verb) return;
     return () => {
       // TODO: ABSTRACT THIS - SAFER
       const tenses =
         props.vps.verb.tenseCategory === "perfect"
           ? perfectTenseOptions
           : props.vps.verb.tenseCategory === "imperative"
-          ? imperativeTenseOptions
-          : verbTenseOptions;
+            ? imperativeTenseOptions
+            : verbTenseOptions;
       const currIndex = tenses.findIndex(
         (tn) =>
           tn.value ===
           props.vps.verb[
-            // TODO: ABSTRACT THIS? - SAFER
-            props.vps.verb.tenseCategory === "perfect"
-              ? "perfectTense"
-              : props.vps.verb.tenseCategory === "imperative"
+          // TODO: ABSTRACT THIS? - SAFER
+          props.vps.verb.tenseCategory === "perfect"
+            ? "perfectTense"
+            : props.vps.verb.tenseCategory === "imperative"
               ? "imperativeTense"
               : "verbTense"
           ]
@@ -84,8 +83,8 @@ function TensePicker(
         dir === "forward"
           ? (currIndex + 1) % tenses.length
           : currIndex === 0
-          ? tenses.length - 1
-          : currIndex - 1;
+            ? tenses.length - 1
+            : currIndex - 1;
       const newTense = tenses[newIndex];
       onTenseSelect(newTense);
     };
@@ -110,8 +109,8 @@ function TensePicker(
     "vps" in props && props.vps.verb?.tenseCategory === "perfect"
       ? perfectTenseOptions
       : "vps" in props && props.vps.verb?.tenseCategory === "imperative"
-      ? imperativeTenseOptions
-      : verbTenseOptions;
+        ? imperativeTenseOptions
+        : verbTenseOptions;
   const showImperativeOption =
     ("vps" in props && props.vps.verb.voice === "active") ||
     ("vpsComplete" in props && props.vpsComplete.verb.voice !== "active");
@@ -134,49 +133,50 @@ function TensePicker(
             </div>
           )}
         </div>
-        {("vpsComplete" in props || props.vps.verb) && (
+        {("vpsComplete" in props) && (
           <div className="mb-2">
             <ButtonSelect
               small
               value={
-                "vpsComplete" in props
+                "vpsComplete" in props // eslint-disable-line
                   ? getTenseCategory(props.vpsComplete.verb.tense)
-                  : props.vps.verb.tenseCategory
+                  // @ts-expect-error because
+                  : props.vps.verb.tenseCategory // eslint-disable-line
               }
               options={
                 showImperativeOption
                   ? [
-                      {
-                        label: "Basic",
-                        value: "basic",
-                      },
-                      {
-                        label: "Perfect",
-                        value: "perfect",
-                      },
-                      {
-                        label: "Ability",
-                        value: "modal",
-                      },
-                      {
-                        label: "Imperative",
-                        value: "imperative",
-                      },
-                    ]
+                    {
+                      label: "Basic",
+                      value: "basic",
+                    },
+                    {
+                      label: "Perfect",
+                      value: "perfect",
+                    },
+                    {
+                      label: "Ability",
+                      value: "modal",
+                    },
+                    {
+                      label: "Imperative",
+                      value: "imperative",
+                    },
+                  ]
                   : [
-                      {
-                        label: "Basic",
-                        value: "basic",
-                      },
-                      {
-                        label: "Perfect",
-                        value: "perfect",
-                      },
-                      {
-                        label: "Ability",
-                        value: "modal",
-                      },
-                    ]
+                    {
+                      label: "Basic",
+                      value: "basic",
+                    },
+                    {
+                      label: "Perfect",
+                      value: "perfect",
+                    },
+                    {
+                      label: "Ability",
+                      value: "modal",
+                    },
+                  ]
               }
               handleChange={
                 props.mode !== "quiz" ? onTenseCategorySelect : () => null
@@ -201,7 +201,6 @@ function TensePicker(
                 isSearchable={false}
                 // for some reason can't use tOptions with find here;
                 value={
-                  props.vps.verb &&
                   [
                     ...verbTenseOptions,
                     ...perfectTenseOptions,
@@ -210,9 +209,9 @@ function TensePicker(
                     (o) =>
                       o.value ===
                       props.vps.verb[
-                        props.vps.verb.tenseCategory === "perfect"
-                          ? "perfectTense"
-                          : props.vps.verb.tenseCategory === "imperative"
+                      props.vps.verb.tenseCategory === "perfect"
+                        ? "perfectTense"
+                        : props.vps.verb.tenseCategory === "imperative"
                           ? "imperativeTense"
                           : "verbTense"
                       ]
@@ -227,7 +226,7 @@ function TensePicker(
             )}
           </>
         )}
-        {"vps" in props && props.vps.verb && props.mode !== "quiz" && (
+        {"vps" in props && props.mode !== "quiz" && (
           <div
             className="d-flex flex-row justify-content-between align-items-center mt-2 mb-1"
             style={{ width: "100%" }}
@@ -289,32 +288,32 @@ function TensePicker(
             // TODO: Be able to show modal formulas too
             const curr =
               props.vps.verb.tenseCategory === "imperative" &&
-              props.vps.verb.negative
+                props.vps.verb.negative
                 ? imperativeTenseOptions.find(
-                    (x) => x.value === "imperfectiveImperative"
-                  )
+                  (x) => x.value === "imperfectiveImperative"
+                )
                 : [
-                    ...verbTenseOptions,
-                    ...perfectTenseOptions,
-                    ...imperativeTenseOptions,
-                  ].find(
-                    (o) =>
-                      o.value ===
-                      props.vps.verb[
-                        props.vps.verb.tenseCategory === "perfect"
-                          ? "perfectTense"
-                          : props.vps.verb.tenseCategory === "imperative"
-                          ? "imperativeTense"
-                          : "verbTense"
-                      ]
-                  );
+                  ...verbTenseOptions,
+                  ...perfectTenseOptions,
+                  ...imperativeTenseOptions,
+                ].find(
+                  (o) =>
+                    o.value ===
+                    props.vps.verb[
+                    props.vps.verb.tenseCategory === "perfect"
+                      ? "perfectTense"
+                      : props.vps.verb.tenseCategory === "imperative"
+                        ? "imperativeTense"
+                        : "verbTense"
+                    ]
+                );
             const formula = !curr
               ? ""
               : props.vps.verb.tenseCategory === "modal"
-              ? composeFormula(curr.formula, "ability")
-              : props.vps.verb.voice === "passive"
-              ? composeFormula(curr.formula, "passive")
-              : curr.formula;
+                ? composeFormula(curr.formula, "ability")
+                : props.vps.verb.voice === "passive"
+                  ? composeFormula(curr.formula, "passive")
+                  : curr.formula;
             if (curr && "formula" in curr) {
               return (
                 <div

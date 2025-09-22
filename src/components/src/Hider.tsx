@@ -48,12 +48,12 @@ function Hider(props: {
   hLevel?: number;
   ignore?: boolean;
 }) {
-  const hLev = Math.min(props.hLevel ? props.hLevel : defaultLevel, 6);
+  const hLev = Math.min(props.hLevel !== undefined ? props.hLevel : defaultLevel, 6);
   const extraMargin =
-    props.hLevel && props.hLevel > indentAfterLevel
+    props.hLevel !== undefined && props.hLevel > indentAfterLevel
       ? `ml-${props.hLevel - indentAfterLevel + 1}`
       : "";
-  if (props.ignore) {
+  if (props.ignore === true) {
     return <>{props.children}</>;
   }
   return (

@@ -16,7 +16,7 @@ function AdjectiveManager(props: {
       if (a === undefined) return;
       const updated = [...props.adjectives];
       updated[i] = a;
-      props.onChange(updated.filter((x): x is T.AdjectiveSelection => !!x));
+      props.onChange(updated);
     };
   }
   function deleteAdj(i: number) {

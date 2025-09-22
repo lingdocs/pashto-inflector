@@ -1,3 +1,4 @@
+/* eslint-disable */
 import fs from "fs";
 import path from "path";
 const verbCollectionPath = path.join(".", "vocab", "verbs");
@@ -13,7 +14,8 @@ const allTs = new Set<number>();
 for (const fileSet of [verbTsFiles, nounAdjTsFiles]) {
   for (const file of fileSet) {
     const res = await import(file);
-    res.default.forEach((x: unknown) => {
+    // prettier-ignore
+    res.default.forEach((x: unknown) => { 
       if (typeof x === "number") {
         allTs.add(x);
       } else if (

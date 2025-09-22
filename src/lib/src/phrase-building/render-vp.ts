@@ -134,7 +134,7 @@ function getVPKids(
   return orderKids([
     ...(hasBa ? [makeKid({ type: "ba" })] : []),
     ...(shrunkenServant ? [shrunkenServant] : []),
-    ...(shrunkenPossesives ? shrunkenPossesives : []),
+    ...shrunkenPossesives,
   ]);
 }
 

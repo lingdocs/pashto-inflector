@@ -23,28 +23,27 @@ function agreementInfo(
   info: T.NonComboVerbInfo,
   displayForm: T.DisplayForm
 ): React.ReactNode {
-  if (!displayForm.past) {
+  if (displayForm.past !== true) {
     return null;
   }
   const beginning = "Verb agrees with the ";
   const agreesWith =
     info.transitivity !== "intransitive" &&
-    displayForm.past &&
-    !displayForm.passive
+      displayForm.past &&
+      displayForm.passive !== true
       ? "object"
       : "subject";
   const extraExplanation = !displayForm.past
     ? ""
     : info.transitivity === "grammatically transitive"
-    ? " which is an unwritten 3rd pers. masc. object."
-    : info.type === "generative stative compound" ||
-      info.type === "dynamic compound"
-    ? ` which is the complement ${
-        info.objComplement.plural
+      ? " which is an unwritten 3rd pers. masc. object."
+      : info.type === "generative stative compound" ||
+        info.type === "dynamic compound"
+        ? ` which is the complement ${info.objComplement.plural
           ? info.objComplement.plural.p
           : info.objComplement.entry.p
-      } (${getEnglishPersonInfo(info.objComplement.person)})`
-    : "";
+        } (${getEnglishPersonInfo(info.objComplement.person)})`
+        : "";
   return (
     <>
       <strong>Note:</strong> {beginning}
@@ -69,7 +68,7 @@ function VerbFormDisplay({
   info?: T.NonComboVerbInfo;
   shortDefault?: boolean;
 }) {
-  const defaultLength = shortDefault ? "short" : "long";
+  const defaultLength = shortDefault === true ? "short" : "long";
   const [persInf, setPersInf] = useState<T.PersonInflectionsField>("mascSing");
   const [length, setLength] = useState<T.Length>(defaultLength);
   const [showingExplanation, setShowingExplanation] = useState<boolean>(false);
@@ -99,7 +98,7 @@ function VerbFormDisplay({
     <>
       {"label" in displayForm && info && showingFormInfo && (
         <>
-          {(hasVariations || displayForm.past) && (
+          {(hasVariations || displayForm.past === true) && (
             <p className="small text-muted">
               {agreementInfo(info, displayForm)}
             </p>
@@ -111,9 +110,8 @@ function VerbFormDisplay({
               onClick={() => setShowingExplanation(!showingExplanation)}
             >
               <i
-                className={`fas fa-caret-${
-                  showingExplanation ? "down" : "right"
-                }`}
+                className={`fas fa-caret-${showingExplanation ? "down" : "right"
+                  }`}
               />{" "}
               Meaning
             </button>
@@ -132,11 +130,11 @@ function VerbFormDisplay({
               { label: "Short", value: "short" },
               ...("mini" in chosenPersInf
                 ? [
-                    {
-                      label: "Mini",
-                      value: "mini",
-                    },
-                  ]
+                  {
+                    label: "Mini",
+                    value: "mini",
+                  },
+                ]
                 : []),
             ]}
             value={length}

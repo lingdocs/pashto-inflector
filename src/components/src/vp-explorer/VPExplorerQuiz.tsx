@@ -113,7 +113,7 @@ function VPExplorerQuiz(props: {
   }
   function checkAnswer(a: T.PsString | { text: string; withBa: boolean }) {
     if (quizState === "loading") return;
-    if (!quizState) return;
+    // if (!quizState) return;
     const correct =
       "p" in a
         ? isInAnswer(a, quizState.answer)
@@ -577,8 +577,8 @@ function completeVPs(vps: T.VPSelectionState): T.VPSelectionComplete {
       (typeof vpsObj === "object" &&
         !(
           vpsObj.selection.type === "noun" &&
-          (vpsObj.selection.dynamicComplement ||
-            vpsObj.selection.genStativeComplement)
+          (vpsObj.selection.dynamicComplement === true ||
+            vpsObj.selection.genStativeComplement === true)
         )) ||
         vpsObj === undefined
         ? {
@@ -663,8 +663,8 @@ function getRandomVPSelection(mix: MixType = "both") {
           (typeof object === "object" &&
             !(
               object.selection.type === "noun" &&
-              (object.selection.dynamicComplement ||
-                object.selection.genStativeComplement)
+              (object.selection.dynamicComplement === true ||
+                object.selection.genStativeComplement === true)
             )) ||
             object === undefined
             ? randObj

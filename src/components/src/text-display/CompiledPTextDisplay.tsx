@@ -34,11 +34,11 @@ function CompiledPTextDisplay({
         justify === "left"
           ? "text-left"
           : justify === "right"
-          ? "text-right"
-          : "text-center"
+            ? "text-right"
+            : "text-center"
       }
     >
-      {onlyOne ? (
+      {onlyOne === true ? (
         <VariationLayer vs={[getLong(ps)[0]]} />
       ) : "long" in ps ? (
         <div>

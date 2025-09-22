@@ -11,19 +11,19 @@ export default function psmd(
     typeof input.e === "object" ||
     typeof input.sub === "object"
   ) {
-    // @ts-ignore
+    // @ts-expect-error because
     return psJSXMap2(input, (s: string) => <Markdown>{s}</Markdown>);
   }
   return {
     ...input,
     p: <Markdown>{input.p}</Markdown>,
     f: <Markdown>{input.f}</Markdown>,
-    ...(input.e
+    ...(input.e !== undefined && input.e !== ""
       ? {
         e: <Markdown>{input.e}</Markdown>,
       }
       : {}),
-    ...(input.sub
+    ...(input.sub !== undefined && input.sub !== ""
       ? {
         sub: <Markdown>{input.sub}</Markdown>,
       }

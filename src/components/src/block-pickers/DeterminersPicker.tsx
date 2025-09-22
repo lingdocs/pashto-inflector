@@ -19,7 +19,7 @@ export default function DeterminersPicker({
     if (d.p === "هیڅ" && !negative) {
       return false;
     }
-    if (hasDemonstrative && "demonstrative" in d) {
+    if (hasDemonstrative === true && "demonstrative" in d) {
       return false;
     }
     return true;
@@ -38,9 +38,9 @@ export default function DeterminersPicker({
       withNoun: determiners ? determiners.withNoun : true,
       determiners: value
         ? value.map((d) => ({
-            type: "determiner",
-            determiner: d,
-          }))
+          type: "determiner",
+          determiner: d,
+        }))
         : [],
     });
   }
@@ -99,7 +99,7 @@ export default function DeterminersPicker({
           checked={determiners?.withNoun}
           onChange={handleWithNounChange}
           id="withNoun"
-          disabled={!hasDemonstrative}
+          disabled={hasDemonstrative !== true}
         />
         <label className="form-check-label text-muted" htmlFor="withNoun">
           with noun

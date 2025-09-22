@@ -7,7 +7,6 @@ import { compileEP } from "../../../lib/src/phrase-building/compile";
 import ButtonSelect from "../selects/ButtonSelect";
 import {
   getPredicateBlock,
-  getSubjectSelection,
   getSubjectSelectionFromBlocks,
 } from "../../../lib/src/phrase-building/blocks-utils";
 import { useState } from "react";
@@ -41,18 +40,11 @@ function EPDisplay({
     "blockScriptChoice"
   );
   const EP = completeEPSelection(eps);
-  const subject = getSubjectSelection(eps.blocks);
 
   if (!EP) {
     return (
       <div className="lead text-center my-4">
-        {!subject && !eps.predicate
-          ? "Select Subject and Predicate"
-          : subject && !eps.predicate
-          ? "Select Predicate"
-          : !subject && eps.predicate
-          ? "Select Subject"
-          : ""}
+        {!eps.predicate && "Select Predicate"}
       </div>
     );
   }
@@ -74,7 +66,7 @@ function EPDisplay({
         {setOmitSubject !== false ? (
           <ButtonSelect
             small
-            value={(eps.omitSubject ? "true" : "false") as "true" | "false"}
+            value={(eps.omitSubject ? "true" : "false")}
             options={[
               { value: "false", label: "Full" },
               { value: "true", label: "No Subj." },
@@ -91,7 +83,7 @@ function EPDisplay({
           opts={opts}
           compiled={result}
           justify={justify}
-          onlyOne={!!onlyOne}
+          onlyOne={onlyOne !== undefined}
           length={length || "short"}
         />
       ) : (
@@ -104,19 +96,18 @@ function EPDisplay({
       )}
       {result.e && (
         <div
-          className={`text-muted mt-2 text-${
-            justify === "left"
-              ? "left"
-              : justify === "right"
+          className={`text-muted mt-2 text-${justify === "left"
+            ? "left"
+            : justify === "right"
               ? "right"
               : "center"
-          }`}
+            }`}
         >
           {onlyOne === "concat"
             ? result.e.join(" • ")
-            : onlyOne
-            ? [result.e[0]]
-            : result.e.map((e, i) => <div key={i}>{e}</div>)}
+            : onlyOne === true
+              ? [result.e[0]]
+              : result.e.map((e, i) => <div key={i}>{e}</div>)}
         </div>
       )}
       {EP.predicate.selection.type === "NP" &&
@@ -127,7 +118,7 @@ function EPDisplay({
           >
             <p>
               ⚠️ NOTE: This means that the subject{" "}
-              {renderedSubject.selection.e
+              {renderedSubject.selection.e !== undefined
                 ? `(${renderedSubject.selection.e})`
                 : ""}{" "}
               is <strong>the action/idea</strong> of

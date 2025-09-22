@@ -7,7 +7,6 @@ export const parseDeterminer: T.Parser<
   T.InflectableBaseParse<T.DeterminerSelection>
 > = (
   tokens: T.Tokens,
-  // eslint-disable-next-line
   // dictionary: T.DictionaryAPI
 ) => {
   const [first, rest, position] = getOneToken(tokens);

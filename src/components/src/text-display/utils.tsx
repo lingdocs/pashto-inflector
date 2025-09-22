@@ -15,7 +15,7 @@ export function addErrorToPs<P extends T.PsString | PsJSX>(ps: P): P {
     // @ts-expect-error - this is right
     return psJSXMap2(ps, addXs, true);
   }
-  // @ts-expect-error
+  // @ts-expect-error because
   const wError = mapPsString(addXs, ps);
   // @ts-expect-error - ts is wrong here
   return wError;

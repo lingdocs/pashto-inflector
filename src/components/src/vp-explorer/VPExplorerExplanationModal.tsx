@@ -11,10 +11,10 @@ function VPExplorerExplanationModal({
     s: { role: "servant" | "king"; item: "subject" | "object" } | false
   ) => void;
 }) {
-  if (!showing) return null;
+  if (showing === false) return null;
   return (
     <>
-      <Modal show={!!showing} onHide={() => setShowing(false)}>
+      <Modal show={true} onHide={() => setShowing(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
             About the{" "}

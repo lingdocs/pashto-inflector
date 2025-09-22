@@ -13,7 +13,7 @@ import { takesExternalComplement } from "./vp-tools";
 
 export function makeVPSelectionState(
   verb: T.VerbEntry,
-  os?: T.VPSelectionState
+  os?: T.VPSelectionState,
 ): T.VPSelectionState {
   const info = getVerbInfo(verb.entry, verb.complement);
   const subject =
@@ -21,11 +21,11 @@ export function makeVPSelectionState(
       ? makeNounSelection(
           info.objComplement.entry as T.NounEntry,
           undefined,
-          "dynamic"
+          "dynamic",
         )
       : os?.blocks
-      ? getSubjectSelection(os.blocks).selection
-      : undefined;
+        ? getSubjectSelection(os.blocks).selection
+        : undefined;
   function getTransObjFromos() {
     const osObj = os ? getObjectSelection(os.blocks).selection : undefined;
     if (
@@ -34,8 +34,8 @@ export function makeVPSelectionState(
       typeof osObj === "number" ||
       os.verb.isCompound === "dynamic" ||
       (osObj?.selection.type === "noun" &&
-        (osObj.selection.dynamicComplement ||
-          osObj.selection.genStativeComplement))
+        (osObj.selection.dynamicComplement === true ||
+          osObj.selection.genStativeComplement === true))
     )
       return undefined;
     return osObj;
@@ -46,40 +46,40 @@ export function makeVPSelectionState(
     transitivity === "grammatically transitive"
       ? T.Person.ThirdPlurMale
       : (info.type === "dynamic compound" ||
-          info.type === "generative stative compound") &&
-        os?.verb.voice !== "passive"
-      ? makeNounSelection(
-          info.objComplement.entry as T.NounEntry,
-          undefined,
-          info.type === "dynamic compound" ? "dynamic" : "generative stative"
-        )
-      : info.type === "dynamic or generative stative compound" &&
-        os?.verb.voice !== "passive"
-      ? makeNounSelection(
-          info.dynamic.objComplement.entry as T.NounEntry,
-          undefined,
-          "generative stative"
-        )
-      : transitivity === "transitive" && os?.verb.voice !== "passive"
-      ? getTransObjFromos()
-      : "none";
+            info.type === "generative stative compound") &&
+          os?.verb.voice !== "passive"
+        ? makeNounSelection(
+            info.objComplement.entry as T.NounEntry,
+            undefined,
+            info.type === "dynamic compound" ? "dynamic" : "generative stative",
+          )
+        : info.type === "dynamic or generative stative compound" &&
+            os?.verb.voice !== "passive"
+          ? makeNounSelection(
+              info.dynamic.objComplement.entry as T.NounEntry,
+              undefined,
+              "generative stative",
+            )
+          : transitivity === "transitive" && os?.verb.voice !== "passive"
+            ? getTransObjFromos()
+            : "none";
   const isCompound =
     "stative" in info && info.type === "dynamic or generative stative compound"
       ? "generative stative"
       : "stative" in info || info.type === "stative compound"
-      ? "stative"
-      : info.type === "dynamic compound"
-      ? "dynamic"
-      : false;
+        ? "stative"
+        : info.type === "dynamic compound"
+          ? "dynamic"
+          : false;
   // TODO: here and below in the changeStatDyn function ... allow for entries with complement
   const dynAuxVerb: T.VerbEntry | undefined =
     isCompound !== "dynamic"
       ? undefined
       : info.type === "dynamic compound"
-      ? ({ entry: info.auxVerb } as T.VerbEntry)
-      : "dynamic" in info
-      ? ({ entry: info.dynamic.auxVerb } as T.VerbEntry)
-      : undefined;
+        ? ({ entry: info.auxVerb } as T.VerbEntry)
+        : "dynamic" in info
+          ? ({ entry: info.dynamic.auxVerb } as T.VerbEntry)
+          : undefined;
   const blocks = [
     { key: Math.random(), block: makeSubjectSelection(subject) },
     { key: Math.random(), block: makeObjectSelection(object) },
@@ -105,10 +105,10 @@ export function makeVPSelectionState(
     },
     externalComplement:
       takesExternalComplement(verb) === "req"
-        ? os?.externalComplement ?? {
+        ? (os?.externalComplement ?? {
             type: "complement",
             selection: { type: "unselected" },
-          }
+          })
         : undefined,
     form:
       os && info.type !== "dynamic compound"
@@ -119,7 +119,7 @@ export function makeVPSelectionState(
 
 export function changeStatDyn(
   v: T.VPSelectionState,
-  s: "dynamic" | "stative"
+  s: "dynamic" | "stative",
 ): T.VPSelectionState {
   const info = getVerbInfo(v.verb.verb.entry, v.verb.verb.complement);
   if (!("stative" in info)) {
@@ -135,10 +135,10 @@ export function changeStatDyn(
           selection: makeNounSelection(
             info.dynamic.objComplement.entry as T.NounEntry,
             undefined,
-            s === "dynamic" ? "dynamic" : "generative stative"
+            s === "dynamic" ? "dynamic" : "generative stative",
           ),
         }
-      : undefined
+      : undefined,
   );
   return {
     ...v,
@@ -163,7 +163,7 @@ export function changeStatDyn(
 
 export function changeTransitivity(
   v: T.VPSelectionState,
-  transitivity: "transitive" | "grammatically transitive"
+  transitivity: "transitive" | "grammatically transitive",
 ): T.VPSelectionState {
   return {
     ...v,
@@ -171,7 +171,7 @@ export function changeTransitivity(
       v.blocks,
       transitivity === "grammatically transitive"
         ? T.Person.ThirdPlurMale
-        : undefined
+        : undefined,
     ),
     verb: {
       ...v.verb,

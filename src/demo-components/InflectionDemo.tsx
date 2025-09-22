@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type * as T from "../types";
+import { InflectionPattern } from "../types";
 import type { JSX } from "react";
 import InlinePs from "../components/src/text-display/InlinePs";
 import EntrySelect from "../components/src/selects/EntrySelect";
@@ -19,7 +20,7 @@ const chevStyle = {
 
 const nounsAdjs = nounsAdjsUnsafe.filter(
   (x) => tp.isNounEntry(x) || tp.isAdjectiveEntry(x)
-) as (T.NounEntry | T.AdjectiveEntry)[];
+);
 
 function InflectionDemo({ opts }: { opts: T.TextOptions }) {
   const [pattern, setPattern] = useState<T.InflectionPattern | "all">("all");
@@ -75,7 +76,7 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
         ),
       },
     ];
-  const entries = (nounsAdjs as (T.NounEntry | T.AdjectiveEntry)[]).filter(
+  const entries = nounsAdjs.filter(
     tp.isPattern(pattern)
   );
   function handlePatternChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -186,7 +187,7 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
           </div>
         </div>
       </div>
-      {inf ? (
+      {inf !== false ? (
         <div className="mt-3">
           {inf.inflections &&
             word &&
@@ -231,17 +232,17 @@ function InflectionDemo({ opts }: { opts: T.TextOptions }) {
 }
 
 function inflectionSubUrl(pattern: T.InflectionPattern): string {
-  return pattern === 0
+  return pattern === InflectionPattern.None
     ? ""
-    : pattern === 1
+    : pattern === InflectionPattern.Basic
       ? "#1-basic"
-      : pattern === 2
+      : pattern === InflectionPattern.UnstressedAy
         ? "#2-words-ending-in-an-unstressed-ی---ey"
-        : pattern === 3
+        : pattern === InflectionPattern.StressedAy
           ? "#3-words-ending-in-a-stressed-ی---éy"
-          : pattern === 4
+          : pattern === InflectionPattern.Pashtun
             ? "#4-words-with-the-pashtoon-pattern"
-            : pattern === 5
+            : pattern === InflectionPattern.Squish
               ? "#5-shorter-words-that-squish"
               : // : pattern === 6
               "#6-inanimate-feminine-nouns-ending-in-ي---ee";

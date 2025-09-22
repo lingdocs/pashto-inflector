@@ -1,4 +1,5 @@
 import type * as T from "../../types";
+import { InflectionPattern } from "../../types";
 import { pashtoConsonants } from "./pashto-consonants";
 import { endsInConsonant, endsWith, hasShwaEnding } from "./p-text-helpers";
 import { countSyllables } from "./accent-helpers";
@@ -49,35 +50,38 @@ export function isNounEntry(
   e: T.Entry | T.DictionaryEntry | T.DictionaryEntryNoFVars,
 ): e is T.NounEntry {
   if ("entry" in e) return false;
-  return !!(e.c && (e.c.includes("n. m.") || e.c.includes("n. f.")));
+  return !!(
+    e.c !== undefined &&
+    (e.c.includes("n. m.") || e.c.includes("n. f."))
+  );
 }
 
 export function isAdjectiveEntry(
   e: T.Entry | T.DictionaryEntry,
 ): e is T.AdjectiveEntry {
   if ("entry" in e) return false;
-  return !!e.c?.includes("adj.");
+  return e.c !== undefined && e.c.includes("adj.");
 }
 
 export function isAdverbEntry(
   e: T.Entry | T.DictionaryEntry,
 ): e is T.AdverbEntry {
   if ("entry" in e) return false;
-  return !!e.c?.includes("adv.");
+  return e.c !== undefined && e.c.includes("adv.");
 }
 
 export function isDeterminerEntry(
   e: T.Entry | T.DictionaryEntry,
 ): e is T.DeterminerEntry {
   if ("entry" in e) return false;
-  return !!e.c?.includes("det.");
+  return e.c !== undefined && e.c.includes("det.");
 }
 
 export function isLocativeAdverbEntry(
   e: T.Entry | T.DictionaryEntry,
 ): e is T.LocativeAdverbEntry {
   if ("entry" in e) return false;
-  return !!e.c?.includes("loc. adv.");
+  return e.c !== undefined && e.c.includes("loc. adv.");
 }
 
 export function isNounOrAdjEntry(
@@ -115,13 +119,13 @@ export function isNumberEntry(
   if ("entry" in e) {
     return false;
   }
-  return e.c ? e.c.includes("num.") : false;
+  return e.c !== undefined ? e.c.includes("num.") : false;
 }
 
 export function isVerbDictionaryEntry(
   e: T.DictionaryEntry | T.DictionaryEntryNoFVars,
 ): e is T.VerbDictionaryEntry {
-  return !!e.c?.startsWith("v.");
+  return e.c !== undefined && e.c.startsWith("v.");
 }
 
 export function isVerbEntry(
@@ -136,13 +140,13 @@ export function isVerbEntry(
 export function isMascNounEntry(
   e: T.InflectableEntry | T.DictionaryEntry | T.DictionaryEntryNoFVars,
 ): e is T.MascNounEntry {
-  return !!e.c && e.c.includes("n. m.");
+  return e.c !== undefined && e.c.includes("n. m.");
 }
 
 export function isFemNounEntry(
   e: T.DictionaryEntry | T.Determiner,
 ): e is T.FemNounEntry {
-  return "c" in e && !!e.c && e.c.includes("n. f.");
+  return "c" in e && e.c !== undefined && e.c.includes("n. f.");
 }
 
 export function isUnisexNounEntry(
@@ -168,27 +172,27 @@ export function isAdjOrUnisexNounEntry(
 }
 
 export function isPattern(
-  p: T.InflectionPattern | "all",
+  p: InflectionPattern | "all",
 ): (entry: T.InflectableEntry) => boolean {
-  if (p === 0) {
+  if (p === InflectionPattern.None) {
     return isNonInflectingEntry;
   }
-  if (p === 1) {
+  if (p === InflectionPattern.Basic) {
     return isPattern1Entry;
   }
-  if (p === 2) {
+  if (p === InflectionPattern.UnstressedAy) {
     return isPattern2Entry;
   }
-  if (p === 3) {
+  if (p === InflectionPattern.StressedAy) {
     return isPattern3Entry;
   }
-  if (p === 4) {
+  if (p === InflectionPattern.Pashtun) {
     return isPattern4Entry;
   }
-  if (p === 5) {
+  if (p === InflectionPattern.Squish) {
     return isPattern5Entry;
   }
-  if (p === 6) {
+  if (p === InflectionPattern.FemInanEe) {
     return isPattern6FemEntry;
   }
   return () => true;
@@ -197,7 +201,7 @@ export function isPattern(
 export function isNonInflectingEntry<T extends T.InflectableEntry>(
   e: T,
 ): e is T.NonInflecting<T> {
-  if (e.noInf) return true;
+  if (e.noInf === true) return true;
   return (
     !isPattern1Entry(e) &&
     !isPattern2Entry(e) &&
@@ -218,8 +222,12 @@ export function isNonInflectingEntry<T extends T.InflectableEntry>(
 export function isPattern1Entry<T extends T.InflectableEntry | T.Determiner>(
   e: T,
 ): e is T.Pattern1Entry<T> {
-  if ("noInf" in e && e.noInf) return false;
-  if (("infap" in e && e.infap) || ("infbp" in e && e.infbp)) return false;
+  if ("noInf" in e && e.noInf === true) return false;
+  if (
+    ("infap" in e && (e.infap ?? "") !== "") ||
+    ("infbp" in e && (e.infbp ?? "") !== "")
+  )
+    return false;
   // family words like خور زوی etc with special plural don't follow pattern #1
   if ("c" in e && e.c.includes("fam.")) {
     return false;
@@ -251,8 +259,8 @@ export function isPattern1Entry<T extends T.InflectableEntry | T.Determiner>(
 export function isPattern2Entry<T extends T.InflectableEntry>(
   e: T,
 ): e is T.Pattern2Entry<T> {
-  if (e.noInf) return false;
-  if (e.infap) return false;
+  if (e.noInf === true) return false;
+  if ((e.infap ?? "") !== "") return false;
   if (isFemNounEntry(e)) {
     return !e.c.includes("pl.") && endsWith({ p: "ې", f: "e" }, e, true);
   }
@@ -269,8 +277,8 @@ export function isPattern2Entry<T extends T.InflectableEntry>(
 export function isPattern3Entry<T extends T.InflectableEntry>(
   e: T,
 ): e is T.Pattern3Entry<T> {
-  if (e.noInf) return false;
-  if (e.infap) return false;
+  if (e.noInf === true) return false;
+  if ((e.infap ?? "") !== "") return false;
   if (isFemNounEntry(e)) {
     return endsWith({ p: "ۍ" }, e);
   }
@@ -288,9 +296,16 @@ export function isPattern3Entry<T extends T.InflectableEntry>(
 export function isPattern4Entry<T extends T.InflectableEntry>(
   e: T,
 ): e is T.Pattern4Entry<T> {
-  if (e.noInf) return false;
+  if (e.noInf === true) return false;
   return (
-    !!(e.infap && e.infaf && e.infbp && e.infbf) &&
+    e.infap !== undefined &&
+    e.infap !== "" &&
+    e.infaf !== undefined &&
+    e.infaf !== "" &&
+    e.infbp !== undefined &&
+    e.infaf !== "" &&
+    e.infbf !== undefined &&
+    e.infbf !== "" &&
     e.infap.slice(1).includes("ا") &&
     e.infap.slice(-1) === "ه"
   );
@@ -305,9 +320,16 @@ export function isPattern4Entry<T extends T.InflectableEntry>(
 export function isPattern5Entry<T extends T.InflectableEntry>(
   e: T,
 ): e is T.Pattern5Entry<T> {
-  if (e.noInf) return false;
+  if (e.noInf === true) return false;
   return (
-    !!(e.infap && e.infaf && e.infbp && e.infbf) &&
+    e.infap !== undefined &&
+    e.infap !== "" &&
+    e.infaf !== undefined &&
+    e.infaf !== "" &&
+    e.infbp !== undefined &&
+    e.infaf !== "" &&
+    e.infbf !== undefined &&
+    e.infbf !== "" &&
     !e.infap.slice(1).includes("ا") &&
     e.infap.slice(-1) === "ه"
   );

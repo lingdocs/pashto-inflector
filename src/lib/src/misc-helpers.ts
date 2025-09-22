@@ -10,7 +10,7 @@ import * as T from "../../types";
 import { fmapSingleOrLengthOpts } from "./fp-ps";
 
 export function assertNever(value: never, msg: string): never {
-  throw new Error(`${msg}: ` + value);
+  throw new Error(`${msg}: ` + value); // eslint-disable-line
 }
 
 export function hasKey<T extends object>(
@@ -195,7 +195,10 @@ export function personGender(person: T.Person): T.Gender {
 }
 
 export function personPerson(person: T.Person): 1 | 2 | 3 {
-  const p = person > 5 ? person - 6 : person;
+  const p =
+    person > T.Person.ThirdSingFemale
+      ? person - T.Person.FirstPlurMale
+      : person;
   return (Math.floor(p / 2) + 1) as 1 | 2 | 3;
 }
 
@@ -204,7 +207,7 @@ export function personNumber(person: T.Person): T.NounNumber {
 }
 
 export function personIsPlural(person: T.Person): boolean {
-  return person > 5;
+  return person > T.Person.ThirdSingFemale;
 }
 
 export function getEnglishPersonInfo(
@@ -278,7 +281,7 @@ export function incrementPerson(p: T.Person): T.Person {
 
 export function isSentenceForm(f: any): boolean {
   if ("long" in f) {
-    return isSentenceForm(f.long);
+    return isSentenceForm(f.long); // eslint-disable-line
   }
   return Array.isArray(f) && "p" in f[0];
 }
@@ -286,7 +289,7 @@ export function isSentenceForm(f: any): boolean {
 export function isNounAdjOrVerb(
   entry: T.DictionaryEntry,
 ): "nounAdj" | "verb" | false {
-  if (!entry.c) {
+  if (entry.c === undefined || entry.c === "") {
     return false;
   }
   if (

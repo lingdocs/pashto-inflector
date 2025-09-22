@@ -70,16 +70,16 @@ translations.forEach((t) => {
   systems.forEach((system) => {
     // check each dialect with given system
     dialects.forEach((dialect) => {
-      test(// @ts-ignore
+      test(// @ts-expect-error because
       `${t.original} should be translated to ${t.ipa[dialect]} using ${system} with ${dialect} dialect`, () => {
         const translated = translatePhonetics(t.original, {
-          // @ts-ignore
+          // @ts-expect-error because
           system,
-          // @ts-ignore
+          // @ts-expect-error because
           dialect,
         });
-        // @ts-ignore
-        expect(translated).toBe(t[system][dialect]);
+        // @ts-expect-error because
+        expect(translated).toBe(t[system][dialect]); // eslint-disable-line
       });
     });
   });

@@ -44,14 +44,14 @@ function parseJoinedPart(
   if (!first) {
     return [];
   }
-  if (!["ل", "و"].includes(first.at(-1) || "")) {
+  if (!["ل", "و"].includes(first.at(-1) ?? "")) {
     return [];
   }
   const inflected = first.endsWith("و");
 
   return [
     ...dicitonary.verbEntryLookup(inflected ? first.slice(0, -1) : first),
-    ...(inflected && shortVerbEndConsonant.includes(first.at(-2) || "")
+    ...(inflected && shortVerbEndConsonant.includes(first.at(-2) ?? "")
       ? dicitonary.verbEntryLookup(first.slice(0, -1) + "ل")
       : []),
   ].map<T.ParseResult<ParticipleResult>>((verb) => ({
@@ -101,7 +101,7 @@ function parseStativeCompSepPart(
     const compL = getLFromComplement(comp.content);
     const kawulKedul = parseCompAuxPart(tkns2);
     return bindParseResult(kawulKedul, (tkns3, aux) => {
-      if (!compL) {
+      if (compL !== undefined) {
         return [];
       }
       const verbs = getStatComp(

@@ -70,7 +70,7 @@ export function getVerbInfo(
     return irregularConj.info;
   }
   const complement =
-    complmnt && ent.c?.includes("comp.")
+    complmnt && ent.c !== undefined && ent.c.includes("comp.")
       ? removeFVarients(complmnt)
       : undefined;
   const type = getType(entry);
@@ -129,10 +129,7 @@ export function getVerbInfo(
       };
     }
     if (type === "generative stative compound") {
-      return getGenerativeStativeCompoundVerbInfo(
-        entry,
-        complement as T.DictionaryEntryNoFVars,
-      );
+      return getGenerativeStativeCompoundVerbInfo(entry, complement);
     }
   }
   const comp = complement ? ensureUnisexInf(complement) : undefined;
@@ -156,7 +153,7 @@ export function getVerbInfo(
     root,
     stem,
     participle,
-    ...(idiosyncraticThirdMascSing
+    ...(idiosyncraticThirdMascSing !== false
       ? {
           idiosyncraticThirdMascSing,
         }
@@ -474,7 +471,7 @@ export function getTransitivity(
     | T.VerbDictionaryEntry
     | T.VerbDictionaryEntryNoFVars,
 ): T.Transitivity {
-  if (!entry.c) {
+  if (entry.c === undefined) {
     throw new Error("No part of speech info");
   }
   if (entry.c.includes("gramm. trans.")) {
@@ -498,7 +495,7 @@ function getType(
   | "transitive or grammatically transitive simple" {
   // error will have thrown before on the getTransitivity function if missing entry.c
   /* istanbul ignore if */
-  if (!entry.c) {
+  if (entry.c === undefined) {
     throw new Error("No part of speech info");
   }
   if (entry.c.includes(" trans./gramm. trans.")) {
@@ -525,7 +522,7 @@ function getType(
 function getIdiosyncraticThirdMascSing(
   entry: T.DictionaryEntryNoFVars,
 ): T.ShortThirdPersFormSet | false {
-  if (entry.tppp && entry.tppf) {
+  if (entry.tppp !== undefined && entry.tppf !== undefined) {
     const tpp = makePsString(entry.tppp, entry.tppf);
     const ooRes = addOoPrefix(tpp, entry);
     return {
@@ -628,7 +625,7 @@ function getVerbRoots(
     }
     // the perfective root is
     // - the special perfective root if it exists, or
-    if (entry.prp && entry.prf) {
+    if (entry.prp !== undefined && entry.prf !== undefined) {
       const perfective = shortAndLong(
         makePsString(entry.prp, entry.prf),
         "perfective",
@@ -636,8 +633,8 @@ function getVerbRoots(
       const hasOoPrefix = checkForOoPrefix(perfective.long);
       return {
         perfective,
-        pSplit: entry.separationAtP || (hasOoPrefix ? 1 : 0),
-        fSplit: entry.separationAtF || (hasOoPrefix ? 2 : 0),
+        pSplit: entry.separationAtP ?? (hasOoPrefix ? 1 : 0),
+        fSplit: entry.separationAtF ?? (hasOoPrefix ? 2 : 0),
       };
     }
     // - the infinitive prefixed with oo
@@ -701,11 +698,11 @@ function getVerbStems(
   function makeIntransImperfectiveStem() {
     const long = {
       // @ts-expect-error because
-      p: root.imperfective.long.p.slice(0, -2) + "ږ",
+      p: root.imperfective.long.p.slice(0, -2) + "ږ", // eslint-disable-line
       // @ts-expect-error because
-      f: root.imperfective.long.f.slice(0, -4) + "éG",
+      f: root.imperfective.long.f.slice(0, -4) + "éG", // eslint-disable-line
     };
-    if (entry.shortIntrans) {
+    if (entry.shortIntrans !== undefined) {
       const short = makePsString(long.p.slice(0, -2), long.f.slice(0, -2));
       return { long, short };
     }
@@ -726,7 +723,7 @@ function getVerbStems(
     }
     // the imperfective stem is
     // - the special present stem if it exists, or
-    if (entry.psp && entry.psf) {
+    if (entry.psp !== undefined && entry.psf !== undefined) {
       return makePsString(entry.psp, entry.psf);
     }
     // - the eG form (and short form possibly) if regular transitive, or
@@ -761,7 +758,7 @@ function getVerbStems(
     }
     // the perfective stem is
     // - the special subjunctive stem if it exists, or
-    if (entry.ssp && entry.ssf) {
+    if (entry.ssp !== undefined && entry.ssf !== undefined) {
       const isKawulAux = entry.p === "کول";
       const perfective = makePsString(entry.ssp, entry.ssf);
       const hasOoPrefix = checkForOoPrefix(perfective);
@@ -777,8 +774,8 @@ function getVerbStems(
       }
       return {
         perfective,
-        pSplit: entry.separationAtP || (hasOoPrefix ? 1 : 0),
-        fSplit: entry.separationAtF || (hasOoPrefix ? 2 : 0),
+        pSplit: entry.separationAtP ?? (hasOoPrefix ? 1 : 0),
+        fSplit: entry.separationAtF ?? (hasOoPrefix ? 2 : 0),
       };
     }
     // - the perfective stem prefixed with oo (if possible)
@@ -955,7 +952,7 @@ function getParticiple(
     accentOnNFromEnd(pp, yulEndingInfinitive(infinitive) ? 2 : 1);
   const auxTransitivity = getAuxTransitivity(transitivity);
   const past =
-    entry.pprtp && entry.pprtf
+    entry.pprtp !== undefined && entry.pprtf !== undefined
       ? makePsString(entry.pprtp, entry.pprtf)
       : complement
         ? makeSepStativePart(complement, "past")
@@ -993,7 +990,7 @@ function getParticiple(
             ),
           }
         : "short" in stem.imperfective &&
-            entry.shortIntrans &&
+            entry.shortIntrans !== undefined &&
             entry.p !== "اوسېدل"
           ? {
               short: accentPresPart(
@@ -1046,15 +1043,18 @@ function addOoPrefix(
         long: attachOo(ps.long),
       };
     }
-    if (entry.separationAtP && entry.separationAtF) {
+    if (
+      entry.separationAtP !== undefined &&
+      entry.separationAtF !== undefined
+    ) {
       pSplit = entry.separationAtP;
       fSplit = entry.separationAtF;
       return ps;
     }
-    if (entry.noOo) {
+    if (entry.noOo !== undefined) {
       return ps;
     }
-    if (entry.sepOo) {
+    if (entry.sepOo !== undefined) {
       pSplit = 2;
       fSplit = 3;
       return {
@@ -1122,8 +1122,8 @@ function addOoPrefix(
   const attachedOo = attachOo(s);
   return {
     ps: accentOnFront(attachedOo),
-    pSplit: entry.separationAtP ? entry.separationAtP : pSplit,
-    fSplit: entry.separationAtF ? entry.separationAtF : fSplit,
+    pSplit: entry.separationAtP ?? pSplit,
+    fSplit: entry.separationAtF ?? fSplit,
   };
 }
 
@@ -1170,11 +1170,14 @@ function getComplementPerson(
   usesSeperatePluralForm?: boolean,
 ): T.Person {
   const number =
-    (complement.c && complement.c.includes("pl.")) || usesSeperatePluralForm
+    (complement.c !== undefined && complement.c.includes("pl.")) ||
+    usesSeperatePluralForm === true
       ? "plural"
       : "singular";
   const gender =
-    complement.c && complement.c.includes("n. m.") ? "masc" : "fem";
+    complement.c !== undefined && complement.c.includes("n. m.")
+      ? "masc"
+      : "fem";
   return getPersonNumber(gender, number);
 }
 
@@ -1352,12 +1355,14 @@ function getPassiveStem(
   splitInfo: T.SplitInfo | undefined,
   withTails?: boolean,
 ): T.VerbStemSet {
-  const perfectiveRoot = withTails
-    ? concatPsString(root.perfective, passiveRootTail)
-    : root.perfective;
-  const imperfectiveRoot = withTails
-    ? concatPsString(root.imperfective, passiveRootTail)
-    : root.imperfective;
+  const perfectiveRoot =
+    withTails === true
+      ? concatPsString(root.perfective, passiveRootTail)
+      : root.perfective;
+  const imperfectiveRoot =
+    withTails === true
+      ? concatPsString(root.imperfective, passiveRootTail)
+      : root.imperfective;
   return {
     perfective: getPassiveStemAspect(perfectiveRoot, "perfective"),
     imperfective: getPassiveStemAspect(imperfectiveRoot, "imperfective"),
@@ -1440,7 +1445,7 @@ function getPassiveRootPerfectiveSplit(
         si[1],
         " ",
         // @ts-expect-error because
-        stativeAux.intransitive.info.root.perfective.short,
+        stativeAux.intransitive.info.root.perfective.short, // eslint-disable-line
       ),
     ],
     long: [
@@ -1449,7 +1454,7 @@ function getPassiveRootPerfectiveSplit(
         si[1],
         " ",
         // @ts-expect-error because
-        stativeAux.intransitive.info.root.perfective.long,
+        stativeAux.intransitive.info.root.perfective.long, // eslint-disable-line
       ),
     ],
   };
@@ -1487,11 +1492,11 @@ function getAbilityRoots(
       };
     }
     return {
-      long: concatPsString(root.long, abilityTail) as T.PsString,
+      long: concatPsString(root.long, abilityTail),
       short: concatPsString(
         root.short,
         aspect === "imperfective" ? abilityTailAccented : abilityTail,
-      ) as T.PsString,
+      ),
     };
   }
   function getAbilityRootPerfectiveSplit(s: T.SplitInfo): T.SplitInfo {
@@ -1539,12 +1544,14 @@ function getPassiveRoot(
   splitInfo: T.SplitInfo | undefined,
   withTails?: boolean,
 ): T.VerbRootSet {
-  const perfectiveRoot = withTails
-    ? concatPsString(root.perfective, passiveRootTail)
-    : root.perfective;
-  const imperfectiveRoot = withTails
-    ? concatPsString(root.imperfective, passiveRootTail)
-    : root.imperfective;
+  const perfectiveRoot =
+    withTails === true
+      ? concatPsString(root.perfective, passiveRootTail)
+      : root.perfective;
+  const imperfectiveRoot =
+    withTails === true
+      ? concatPsString(root.imperfective, passiveRootTail)
+      : root.imperfective;
   return {
     perfective: getPassiveRootAspect(perfectiveRoot, "perfective"),
     imperfective: getPassiveRootAspect(imperfectiveRoot, "imperfective"),
@@ -1579,7 +1586,7 @@ function getPassivePastParticiple(
       ) as T.LengthOptions<T.PsString>,
     };
   }
-  const r = withTails ? concatPsString(root, passiveRootTail) : root;
+  const r = withTails === true ? concatPsString(root, passiveRootTail) : root;
   // @ts-expect-error because
   return concatPsString(
     removeAccents(getLong(r)),
@@ -1638,13 +1645,13 @@ function getPassiveRootAspect(
       rootR,
       " ",
       // @ts-expect-error because
-      stativeAux.intransitive.info.root[aspect].long,
+      stativeAux.intransitive.info.root[aspect].long, // eslint-disable-line
     ),
     short: concatPsString(
       rootR,
       " ",
       // @ts-expect-error because
-      stativeAux.intransitive.info.root[aspect].short,
+      stativeAux.intransitive.info.root[aspect].short, // eslint-disable-line
     ),
   };
 }

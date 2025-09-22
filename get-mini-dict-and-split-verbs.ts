@@ -12,7 +12,7 @@ const splitEntries: T.VerbDictionaryEntry[] =
   dictionary.entries.filter<T.VerbDictionaryEntry>(
     (x): x is T.VerbDictionaryEntry =>
       isVerbDictionaryEntry(x) &&
-      !!x.separationAtP &&
+      x.separationAtP !== undefined &&
       !["کول", "کېدل"].includes(x.p),
   );
 

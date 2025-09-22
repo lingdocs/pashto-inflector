@@ -17,13 +17,13 @@ import { makePsString, removeFVarients } from "./accent-and-ps-utils";
  */
 export function accentOnFront(s: T.PsString): T.PsString;
 export function accentOnFront(
-  s: T.LengthOptions<T.PsString>
+  s: T.LengthOptions<T.PsString>,
 ): T.LengthOptions<T.PsString>;
 export function accentOnFront(
-  s: T.SingleOrLengthOpts<T.PsString>
+  s: T.SingleOrLengthOpts<T.PsString>,
 ): T.SingleOrLengthOpts<T.PsString>;
 export function accentOnFront(
-  s: T.SingleOrLengthOpts<T.PsString>
+  s: T.SingleOrLengthOpts<T.PsString>,
 ): T.SingleOrLengthOpts<T.PsString> {
   if ("long" in s) {
     return {
@@ -48,6 +48,7 @@ export function accentPastParticiple(s: T.PsString): T.PsString {
     if (syls.length < 3) return false;
     const secondLast = syls[syls.length - 2];
     const thirdLast = syls[syls.length - 3];
+    if (thirdLast === undefined) return false;
     const lastLetterOfThirdLast = thirdLast.slice(-1);
     return secondLast === "ul" && lastLetterOfThirdLast === "y";
   };
@@ -64,7 +65,7 @@ export function accentPastParticiple(s: T.PsString): T.PsString {
 export function splitUpSyllables(f: string): string[] {
   return (
     f.match(
-      / |([^a|á|e|é|i|í|o|ó|u|ú| ]*(aa|áa|a|á|ay|áy|ee|ée|e|é|oo|óo|o|ó|i|í|u|ú)[^a|á|e|é|i|í|o|ó|u|ú| ]*)/gi
+      / |([^a|á|e|é|i|í|o|ó|u|ú| ]*(aa|áa|a|á|ay|áy|ee|ée|e|é|oo|óo|o|ó|i|í|u|ú)[^a|á|e|é|i|í|o|ó|u|ú| ]*)/gi,
     ) || ([] as string[])
   );
 }
@@ -82,7 +83,7 @@ export function countSyllables(f: T.PsString | string): number {
  */
 export function accentFSylsOnNFromEnd(
   syls: string[] | string,
-  n: number
+  n: number,
 ): string {
   if (typeof syls === "string") {
     const s = splitUpSyllables(syls);
@@ -127,7 +128,7 @@ export function accentLetter(s: string): string {
   return s.replace(/a|ă|e|i|o|u|U/, (match) => {
     const r = accentReplacer.find((x) => x.vowel === match);
     /* istanbul ignore next */
-    return r?.accented || "";
+    return r?.accented ?? "";
   });
 }
 
@@ -140,7 +141,7 @@ export function accentLetter(s: string): string {
 export function getAccentPos(ps: T.PsString): number {
   const syls = splitUpSyllables(ps.f);
   for (let i = 0; i < syls.length; i++) {
-    if (hasAccents(syls.at(-(i + 1)) || "")) {
+    if (hasAccents(syls.at(-(i + 1)) ?? "")) {
       return i;
     }
   }
@@ -159,7 +160,7 @@ export function accentPsSyllable(ps: T.PsString): T.PsString {
 }
 
 export function removeAccentsWLength(
-  s: T.SingleOrLengthOpts<T.PsString[]>
+  s: T.SingleOrLengthOpts<T.PsString[]>,
 ): T.SingleOrLengthOpts<T.PsString[]> {
   if ("long" in s) {
     return {
@@ -179,7 +180,7 @@ export function removeAccents(s: T.PsString): T.PsString;
 export function removeAccents(s: string): string;
 export function removeAccents(s: T.PsString[]): T.PsString[];
 export function removeAccents(
-  s: T.PsString | string | T.PsString[]
+  s: T.PsString | string | T.PsString[],
 ): T.PsString | string | T.PsString[] {
   if (Array.isArray(s)) {
     return s.map((t) => removeAccents(t));
@@ -193,7 +194,7 @@ export function removeAccents(
   return s.replace(/á|é|í|ó|ú|Ú/, (match) => {
     const r = accentReplacer.find((x) => x.accented === match);
     /* istanbul ignore next */
-    return r?.vowel || "";
+    return r?.vowel ?? "";
   });
 }
 

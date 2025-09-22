@@ -121,7 +121,7 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
   return function (
     vps: T.VPSelectionState,
     action: VpsReducerAction,
-    sendAlert?: (msg: string) => void
+    sendAlert?: (msg: string) => void,
   ): T.VPSelectionState {
     function doReduce(): T.VPSelectionState {
       if (action.type === "load vps") {
@@ -130,17 +130,19 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
       if (action.type === "set subject") {
         const { subject, skipPronounConflictCheck } = action.payload;
         const object = getObjectSelection(vps.blocks).selection;
-        if (!skipPronounConflictCheck && hasPronounConflict(subject, object)) {
+        if (
+          skipPronounConflictCheck !== true &&
+          hasPronounConflict(subject, object)
+        ) {
           if (sendAlert)
             sendAlert("That combination of pronouns is not allowed");
           return vps;
         }
         return O.modify(blocks)(adjustSubjectSelection(action.payload.subject))(
-          vps
+          vps,
         );
       }
       if (action.type === "set object") {
-        if (!vps.verb) return vps;
         const objectB = getObjectSelection(vps.blocks).selection;
         const subjectB = getSubjectSelection(vps.blocks).selection;
         if (objectB === "none" || typeof objectB === "number") {
@@ -163,7 +165,7 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
         return O.set(form)(action.payload)(vps);
       }
       if (action.type === "set voice") {
-        if (vps.verb && vps.verb.canChangeVoice) {
+        if (vps.verb.canChangeVoice) {
           const subject = getSubjectSelection(vps.blocks).selection;
           const object = getObjectSelection(vps.blocks).selection;
           const voice = action.payload;
@@ -175,20 +177,20 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
               O.set(blocks)(
                 adjustObjectSelection(
                   adjustSubjectSelection(
-                    typeof object === "object" ? object : undefined
+                    typeof object === "object" ? object : undefined,
                   )(vps.blocks),
-                  "none"
-                )
-              )(vps)
+                  "none",
+                ),
+              )(vps),
             );
           } else {
             return O.set(verbVoice)(voice)(
               O.set(blocks)(
                 adjustObjectSelection(
                   adjustSubjectSelection(undefined)(vps.blocks),
-                  typeof subject === "object" ? subject : undefined
-                )
-              )(vps)
+                  typeof subject === "object" ? subject : undefined,
+                ),
+              )(vps),
             );
           }
         } else {
@@ -196,15 +198,14 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
         }
       }
       if (action.type === "set transitivity") {
-        if (!(vps.verb && vps.verb.canChangeTransitivity)) return vps;
+        if (!vps.verb.canChangeTransitivity) return vps;
         return changeTransitivity(vps, action.payload);
       }
       if (action.type === "set statDyn") {
-        if (!(vps.verb && vps.verb.canChangeStatDyn)) return vps;
+        if (!vps.verb.canChangeStatDyn) return vps;
         return changeStatDyn(vps, action.payload);
       }
       if (action.type === "set negativity") {
-        if (!vps.verb) return vps;
         const negative = action.payload === "true";
         return {
           ...vps,
@@ -217,7 +218,7 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
       }
       if (action.type === "set tense") {
         const tense = action.payload;
-        if (!(vps.verb && tense)) return vps;
+        if (!tense) return vps;
         if (isPerfectTense(tense)) {
           return O.set(verbSelection)({
             ...vps.verb,
@@ -242,7 +243,6 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
         }
       }
       if (action.type === "set tense category") {
-        if (!vps.verb) return vps;
         const category = action.payload;
         if (category === "imperative") {
           return ensure2ndPersSubjPronounAndNoConflict(
@@ -250,7 +250,7 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
               ...vps.verb,
               voice: "active",
               tenseCategory: category,
-            } satisfies T.VerbSelection)(vps)
+            } satisfies T.VerbSelection)(vps),
           );
         }
         if (category === "modal") {
@@ -310,19 +310,19 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
         const kawulKedul = isKedulStat(vps.verb.verb)
           ? "kedul"
           : isKawulStat(vps.verb.verb)
-          ? "kawul"
-          : false;
+            ? "kawul"
+            : false;
 
         // TODO: check to see if there is a statComp that the complement could be used for!!
-        if (selection?.selection.type === "adjective" && kawulKedul) {
+        if (selection?.selection.type === "adjective" && kawulKedul !== false) {
           const matchingStatVerbs = (
             "search" in entryFeeder.verbs
               ? entryFeeder.verbs.getByL(selection.selection.entry.ts)
               : entryFeeder.verbs.filter(
                   (x) =>
-                    x.complement &&
+                    x.complement !== undefined &&
                     selection.selection.type === "adjective" &&
-                    selection.selection.entry.ts === x.complement.ts
+                    selection.selection.entry.ts === x.complement.ts,
                 )
           ).filter((x) => {
             if (kawulKedul === "kedul") {
@@ -353,7 +353,7 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
     }
     const modified = doReduce();
     const err = checkForMiniPronounsError(modified);
-    if (err) {
+    if (err !== undefined) {
       if (sendAlert) sendAlert(err);
       return vps;
     }
@@ -363,14 +363,14 @@ export function vpsReducer(entryFeeder: T.EntryFeeder) {
 
 function hasPronounConflict(
   subject: T.NPSelection | undefined,
-  object: undefined | T.VerbObject
+  object: undefined | T.VerbObject,
 ): boolean {
   const subjPronoun =
     subject && subject.selection.type === "pronoun"
       ? subject.selection
       : undefined;
   const objPronoun =
-    object && typeof object === "object" && object.selection.type === "pronoun"
+    typeof object === "object" && object.selection.type === "pronoun"
       ? object.selection
       : undefined;
   if (!subjPronoun || !objPronoun) return false;

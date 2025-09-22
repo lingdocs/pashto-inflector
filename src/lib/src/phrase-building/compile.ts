@@ -77,7 +77,7 @@ export function compileEP(
 ): { ps: T.SingleOrLengthOpts<T.PsString[]>; e?: string[] } {
   const psResult = compileEPPs(EP.blocks, EP.kids, EP.omitSubject, blankOut);
   return {
-    ps: combineLengths ? flattenLengths(psResult) : psResult,
+    ps: combineLengths === true ? flattenLengths(psResult) : psResult,
     e: compileEnglishEP(EP),
   };
 }
@@ -109,7 +109,7 @@ export function compileVP(
   );
   return {
     // TODO: unneccessary because the lengths are already flattened
-    ps: combineLengths ? flattenLengths(psResult) : psResult,
+    ps: combineLengths === true ? flattenLengths(psResult) : psResult,
     // TODO: English doesn't quite work for dynamic compounds in passive voice
     e: /* (verb.voice === "passive" && VP.isCompound === "dynamic") ? undefined : */ compileEnglishVP(
       VP,
@@ -130,7 +130,7 @@ function compileVPPs(
   const blocksWKids = putKidsInKidsSection(
     filterForVisibleBlocksVP(blocks, form, king, servant),
     kids,
-    !!blankOut?.ba,
+    blankOut?.ba === true,
   );
   return combineIntoText(blocksWKids, subjectPerson, blankOut);
 }
@@ -166,7 +166,7 @@ function compileEPPs(
         )
       : blocks,
     kids,
-    !!blankOut?.kidsSection,
+    blankOut?.kidsSection === true,
   );
   return removeDuplicates(
     combineIntoText(blocksWKids, subjectPerson, blankOut),
@@ -270,16 +270,24 @@ function applyBlankOut(
   if (!blankOut) return pieces;
   return pieces.map((x) => {
     if (
-      (blankOut.equative && "block" in x && x.block.type === "equative") ||
-      (blankOut.verb && "block" in x && isRenderedVerbB(x)) ||
-      (blankOut?.predicate && "block" in x && x.block.type === "predicate")
+      (blankOut.equative === true &&
+        "block" in x &&
+        x.block.type === "equative") ||
+      (blankOut.verb === true && "block" in x && isRenderedVerbB(x)) ||
+      (blankOut?.predicate === true &&
+        "block" in x &&
+        x.block.type === "predicate")
     ) {
       return blank;
     }
-    if (blankOut?.ba && "kid" in x && x.kid.type === "ba") {
+    if (blankOut?.ba === true && "kid" in x && x.kid.type === "ba") {
       return kidsBlank;
     }
-    if (blankOut?.negative && "block" in x && x.block.type === "negative") {
+    if (
+      blankOut?.negative === true &&
+      "block" in x &&
+      x.block.type === "negative"
+    ) {
       return monoidPsString.empty;
     }
     return x;
@@ -392,7 +400,7 @@ function getPsFromWelded(v: T.Welded): T.PsString[] {
 function getEngAPs(blocks: T.Block[][]): string {
   return getAPsFromBlocks(blocks).reduce((accum, curr) => {
     const e = getEnglishFromRendered(curr);
-    if (!e) return accum;
+    if (e === undefined || e === "") return accum;
     return `${accum} ${e}`;
   }, "");
 }
@@ -413,7 +421,17 @@ function getEngComplement(blocks: T.Block[][]): string | undefined {
     });
   }
   if (comp.selection.type === "comp. noun") {
-    return `${getEnglishWord(comp.selection.entry)} compl.`;
+    const w = getEnglishWord(comp.selection.entry);
+    // TODO: is this even remotely correct?
+    const x =
+      w === undefined
+        ? "WORD"
+        : typeof w === "string"
+          ? w
+          : w.singular !== undefined
+            ? w.singular
+            : w.plural;
+    return `${x} compl.`;
   }
   return comp.selection.e;
 }
@@ -451,10 +469,11 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
     },
   ): string {
     return (
-      e.replace("$SUBJ", subject).replace("$OBJ", object || "") +
+      e.replace("$SUBJ", subject).replace("$OBJ", object ?? "") +
       // add the complement in English if it's an external complement from a helper verb (kawul/kedul)
       // TODO!
-      (complement /* && isStativeHelper(getVerbFromBlocks(VP.blocks).block.verb))*/
+      (complement !==
+      undefined /* && isStativeHelper(getVerbFromBlocks(VP.blocks).block.verb))*/
         ? ` ${complement}`
         : "") +
       APs
@@ -471,17 +490,19 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
   const engAPs = getEngAPs(VP.blocks);
   const engComplement = getEngComplement(VP.blocks);
   // require all English parts for making the English phrase
-  return VP.englishBase && engSubj && engObj !== undefined
+  return VP.englishBase && engObj !== undefined
     ? VP.englishBase
-        .map((e) =>
-          insertEWords(e, {
+        .map((e) => {
+          const EngSUBJ = getEnglishFromRendered(engSubj) ?? "";
+          console.log({ engSubj, EngSUBJ });
+          return insertEWords(e, {
             // TODO: make sure we actually have the english
-            subject: getEnglishFromRendered(engSubj) || "",
-            object: engObj ? getEnglishFromRendered(engObj) : "",
+            subject: EngSUBJ,
+            object: engObj === "" ? "" : getEnglishFromRendered(engObj),
             APs: engAPs,
             complement: engComplement,
-          }),
-        )
+          });
+        })
         .map(capitalizeFirstLetter)
     : undefined;
 }
@@ -504,7 +525,7 @@ function compileEnglishEP(EP: T.EPRendered): string[] | undefined {
   const engAPs = getEngAPs(EP.blocks);
   // require all English parts for making the English phrase
   const b =
-    EP.englishBase && engSubj && engPred
+    EP.englishBase && engSubj !== undefined && engPred !== undefined
       ? EP.englishBase.map((e) =>
           insertEWords(e, {
             subject: engSubj,

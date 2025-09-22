@@ -34,8 +34,8 @@ function EquativePicker({
         dir === "forward"
           ? (currIndex + 1) % options.length
           : currIndex === 0
-          ? options.length - 1
-          : currIndex - 1;
+            ? options.length - 1
+            : currIndex - 1;
       const newTense = options[newIndex];
       onChange({
         ...equative,
@@ -74,7 +74,7 @@ function EquativePicker({
             >
               <i className="fas fa-chevron-left" />
             </div>
-            {!hideNegative && (
+            {hideNegative !== true && (
               <ButtonSelect
                 small
                 value={equative.negative.toString() as "true" | "false"}

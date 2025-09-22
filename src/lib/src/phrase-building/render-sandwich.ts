@@ -3,7 +3,7 @@ import { isPattern5Entry, isAnimNounEntry } from "../type-predicates";
 import { renderNPSelection } from "./render-np";
 
 export function renderSandwich(
-  s: T.SandwichSelection<T.Sandwich>
+  s: T.SandwichSelection<T.Sandwich>,
 ): T.Rendered<T.SandwichSelection<T.Sandwich>> {
   const inflectInside: boolean | "locationSandwich" =
     s.inside.selection.type === "noun" &&
@@ -20,13 +20,13 @@ export function renderSandwich(
       "subject",
       "none",
       isPuLocationSandwich(s),
-      s.mayo ? (s.after ? "opt" : "req") : "no"
+      s.mayo ? (s.after ? "opt" : "req") : "no",
     ),
   };
 }
 
 function isPuLocationSandwich(s: T.SandwichSelection<T.Sandwich>): boolean {
   return (
-    s.before?.p === "په" && !!["کې", "کښې", "باندې"].includes(s.after?.p || "")
+    s.before?.p === "په" && !!["کې", "کښې", "باندې"].includes(s.after?.p ?? "")
   );
 }

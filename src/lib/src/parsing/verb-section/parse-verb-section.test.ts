@@ -2846,7 +2846,7 @@ sections.forEach((section) => {
           (x) => !tokensExist(x.tokens),
         );
         const errored = res.some((x) => x.errors.length);
-        expect(errored).toBe(!!error);
+        expect(errored).toBe(error === true);
         if (!errored) {
           expect(res.map((x) => x.body)).toIncludeSameMembers(output);
         }
@@ -2979,13 +2979,15 @@ function testVBEOutuput(props: {
     props.bases.flatMap((base) =>
       props.aspects.map((aspect) => ({
         blocks: [
-          ...(props.ph ? [{ type: "PH", s: props.ph } as const] : []),
+          ...(props.ph !== undefined && props.ph !== ""
+            ? [{ type: "PH", s: props.ph } as const]
+            : []),
           makeParsedVBE({
             aspect,
             base,
             verb: props.verb,
             person,
-            ...(props.imperative
+            ...(props.imperative === true
               ? {
                   imperative: props.imperative,
                 }

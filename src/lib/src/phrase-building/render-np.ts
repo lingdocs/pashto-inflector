@@ -107,7 +107,8 @@ export function renderNounSelection(
   const english = getEnglishFromNoun(n.entry, n.number, noArticles);
   const isPattern1 = isPattern1Entry(n.entry);
   const nounInflects =
-    inflected && !(isPuSandwich && isPattern1 && n.number === "singular");
+    inflected &&
+    !(isPuSandwich === true && isPattern1 && n.number === "singular");
   const mayo = mayoOnWord(isMayoSandwich, n.entry, n.gender, n.number);
   const pashto = ((): T.PsString[] => {
     if (mayo !== "no") {
@@ -153,7 +154,7 @@ export function renderNounSelection(
         a,
         person,
         inflected,
-        isPuSandwich && n.number === "singular" ? true : false,
+        isPuSandwich === true && n.number === "singular" ? true : false,
         // TODO: This is not the best because the variations of optional and inflecting adjectives in the
         // sandwich aren't fully accurate - but to get the variations properly we need to think of a way
         // for the adjective and noun rendering / compiling to talk to each other better
@@ -269,11 +270,11 @@ function inflectDeterminer(
   number: T.NounNumber,
 ): T.PsString[] {
   const infs = getInfsAndVocative(determiner, undefined);
-  if (!infs || !infs.inflections) {
+  if (infs === false || !infs.inflections) {
     return [{ p: determiner.p, f: determiner.f }];
   }
   const inf = getBasicInf(infs.inflections, gender, number, inflected);
-  if (!inf) {
+  if (inf === false) {
     return [{ p: determiner.p, f: determiner.f }];
   }
   return inf;
@@ -383,7 +384,7 @@ function getInf(
 ): T.PsString[] {
   // TODO: make this safe!!
   if (
-    infs &&
+    infs !== false &&
     hasKey(infs, t) &&
     infs[t] !== undefined &&
     hasKey(infs[t], gender) &&
@@ -408,18 +409,18 @@ function getEnglishFromNoun(
   };
   const article = articles[number];
   function addArticle(s: string) {
-    if (noArticles) return s;
+    if (noArticles !== undefined) return s;
     return `${article} ${s}`;
   }
   const e = getEnglishWord(entry);
-  if (!e)
+  if (e === undefined || e === "")
     throw new Error(
       `unable to get english from subject ${entry.f} - ${entry.ts}`,
     );
 
   if (typeof e === "string") return ` ${e}`;
   if (number === "plural") return addArticle(e.plural);
-  if (!e.singular || e.singular === undefined) {
+  if (e.singular === undefined || e.singular === "") {
     throw new Error(
       `unable to get english from subject ${entry.f} - ${entry.ts}`,
     );

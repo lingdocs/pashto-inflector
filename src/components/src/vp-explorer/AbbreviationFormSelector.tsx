@@ -57,15 +57,15 @@ function limitValue(value: string, adjustable: "both" | "king" | "servant") {
     return value === "shortest"
       ? "noKing"
       : value === "shrinkServant"
-      ? "full"
-      : value;
+        ? "full"
+        : value;
   }
   if (adjustable === "servant") {
     return value === "shortest"
       ? "shrinkServant"
       : value === "noKing"
-      ? "full"
-      : value;
+        ? "full"
+        : value;
   }
   throw new Error("unrecognized adjustable value");
 }
@@ -94,7 +94,7 @@ function AbbreviationFormSelector({
   }
   // TODO: limit display of shrinking options based on the verb type
   return (
-    <div className={classNames("mx-3", { "mb-3": !inline })}>
+    <div className={classNames("mx-3", { "mb-3": inline !== true })}>
       {/* <div className="text-center text-small mb-2">Abbreviation Options</div> */}
       <ButtonSelect
         faded={inline}

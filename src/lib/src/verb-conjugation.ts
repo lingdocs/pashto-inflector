@@ -63,9 +63,9 @@ const aayTail = [
 export function conjugateVerb(
   entry: T.DictionaryEntry,
   complement?: T.DictionaryEntry,
-  verbInfo?: T.NonComboVerbInfo
+  verbInfo?: T.NonComboVerbInfo,
 ): T.VerbOutput {
-  if (!(entry.c && entry.c.slice(0, 2) === "v.")) {
+  if (!(entry.c !== undefined && entry.c.slice(0, 2) === "v.")) {
     throw new Error("not a verb");
   }
   const irregularConj = checkForIrregularConjugation(entry);
@@ -80,15 +80,15 @@ export function conjugateVerb(
         conjugateVerb(
           { ...entry, c: entry.c ? entry.c.replace("/gramm. trans.", "") : "" },
           dummyEntry,
-          info.transitive
-        )
+          info.transitive,
+        ),
       ),
       grammaticallyTransitive: ensureVerbConjugation(
         conjugateVerb(
           { ...entry, c: entry.c ? entry.c?.replace("trans./", "") : "" },
           dummyEntry,
-          info.grammaticallyTransitive
-        )
+          info.grammaticallyTransitive,
+        ),
       ),
     };
   }
@@ -103,15 +103,15 @@ export function conjugateVerb(
         conjugateVerb(
           { ...entry, c: entry.c ? entry.c.replace("dyn./", "") : "" },
           dummyEntry,
-          info.stative
-        )
+          info.stative,
+        ),
       ),
       dynamic: ensureVerbConjugation(
         conjugateVerb(
           { ...entry, c: entry.c ? entry.c.replace("/stat.", "") : "" },
           dummyEntry,
-          info.dynamic
-        )
+          info.dynamic,
+        ),
       ),
     };
   }
@@ -132,7 +132,7 @@ export function conjugateVerb(
     ...("singularForm" in info
       ? {
           singularForm: ensureVerbConjugation(
-            conjugateVerb(entry, complement, info.singularForm)
+            conjugateVerb(entry, complement, info.singularForm),
           ),
         }
       : {}),
@@ -148,12 +148,12 @@ export function conjugateVerb(
   return nonComboInfo.transitivity === "grammatically transitive"
     ? enforceObject(conjugation, 10)
     : nonComboInfo.type === "generative stative compound"
-    ? enforceObject(conjugation, nonComboInfo.objComplement.person)
-    : conjugation;
+      ? enforceObject(conjugation, nonComboInfo.objComplement.person)
+      : conjugation;
 }
 
 function conjugateDynamicCompound(
-  info: T.DynamicCompoundVerbInfo
+  info: T.DynamicCompoundVerbInfo,
 ): T.VerbConjugation {
   // const willUseImperative = !(
   //     info.type === "dynamic compound"
@@ -162,7 +162,7 @@ function conjugateDynamicCompound(
   // );
   const auxConj = enforceObject(
     ensureVerbConjugation(conjugateVerb(info.auxVerb, info.auxVerbComplement)),
-    info.objComplement.person
+    info.objComplement.person,
   );
   const complement = info.objComplement.plural
     ? info.objComplement.plural
@@ -171,14 +171,14 @@ function conjugateDynamicCompound(
     const makeDynamicModalContent = (): T.ModalContent => {
       const nonImperative = addToForm(
         [complement, " "],
-        auxConj[aspect].modal.nonImperative
+        auxConj[aspect].modal.nonImperative,
       );
       const future = addToForm([baParticle, " "], nonImperative);
       const past = addToForm([complement, " "], auxConj[aspect].modal.past);
       const habitualPast = addToForm([baParticle, " "], past);
       const hypotheticalPast = addToForm(
         [complement, " "],
-        auxConj[aspect].modal.hypotheticalPast
+        auxConj[aspect].modal.hypotheticalPast,
       );
       return {
         nonImperative,
@@ -210,9 +210,9 @@ function conjugateDynamicCompound(
     present: concatInflections(complement, auxConj.participle.present),
     past:
       ("long" in auxPPart && "masc" in auxPPart.long) || "masc" in auxPPart
-        ? // @ts-ignore
+        ? // @ts-expect-error because
           concatInflections(complement, auxPPart)
-        : // @ts-ignore
+        : // @ts-expect-error because
           concatPsString(complement, " ", auxPPart),
   };
   const makePerfect = (pset: T.PerfectContent): T.PerfectContent => ({
@@ -228,18 +228,18 @@ function conjugateDynamicCompound(
   });
   const makePassiveAspectContent = (
     aspect: T.Aspect,
-    passive: T.PassiveContent
+    passive: T.PassiveContent,
   ): T.AspectContentPassive => {
     const nonImperative = addToForm(
       [complement, " "],
-      passive[aspect].nonImperative
+      passive[aspect].nonImperative,
     );
     const future = addToForm([baParticle, " "], nonImperative);
     const past = addToForm([complement, " "], passive[aspect].past);
     const habitualPast = addToForm([baParticle, " "], past);
     const modal = makePassiveModalSection(
       [complement, " "],
-      stativeAux.intransitive.imperfective.modal
+      stativeAux.intransitive.imperfective.modal,
     );
     return {
       imperative: undefined,
@@ -262,7 +262,7 @@ function conjugateDynamicCompound(
           passive: {
             imperfective: makePassiveAspectContent(
               "imperfective",
-              auxConj.passive
+              auxConj.passive,
             ),
             perfective: makePassiveAspectContent("perfective", auxConj.passive),
             perfect: makePerfect(auxConj.passive.perfect),
@@ -284,7 +284,7 @@ function conjugateDynamicCompound(
 
 function makeAspectContent(
   info: T.NonComboVerbInfo,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): T.AspectContent {
   if (info.type === "stative compound" && spaceInForm(info.root[aspect])) {
     return makeStativeCompoundSeperatedAspectContent(info, aspect);
@@ -296,7 +296,7 @@ function makeAspectContent(
   const imperative = addToForm([stem], imperativeEndings);
   const roughPast = addToForm(
     [root],
-    pastEndings
+    pastEndings,
   ) as T.LengthOptions<T.VerbBlock>;
   // add accents and idiosyncratic third person sing masc forms
   const past = finishSimpleVerbPast(info, aspect, roughPast);
@@ -313,23 +313,24 @@ function makeAspectContent(
 
 function makeJoinedModalContent(
   info: T.NonComboVerbInfo,
-  aspectIn: T.Aspect
+  aspectIn: T.Aspect,
 ): T.ModalContent {
   const aspect: T.Aspect = noPerfectiveModal(info) ? "imperfective" : aspectIn;
   const aux = stativeAux.intransitive.perfective;
-  const rAndT = info.yulEnding
-    ? [
-        concatPsString(noPersInfs(info.root[aspect]).long, aayTail[1]),
-        concatPsString(noPersInfs(info.root[aspect]).long, aayTail[0]),
-      ]
-    : [
-        concatPsString(noPersInfs(info.root[aspect]), aayTail[1]),
-        concatPsString(noPersInfs(info.root[aspect]), aayTail[0]),
-      ];
+  const rAndT =
+    info.yulEnding === true
+      ? [
+          concatPsString(noPersInfs(info.root[aspect]).long, aayTail[1]),
+          concatPsString(noPersInfs(info.root[aspect]).long, aayTail[0]),
+        ]
+      : [
+          concatPsString(noPersInfs(info.root[aspect]), aayTail[1]),
+          concatPsString(noPersInfs(info.root[aspect]), aayTail[0]),
+        ];
   const rootAndTail =
     aspect === "imperfective"
       ? rAndT.map((x: T.PsString | T.LengthOptions<T.PsString>) =>
-          accentImperfectiveModalRootAndTail(info, x)
+          accentImperfectiveModalRootAndTail(info, x),
         )
       : rAndT;
 
@@ -337,8 +338,8 @@ function makeJoinedModalContent(
   const future = addToForm([baParticle, " "], nonImperative);
   const past = addToForm(
     [rootAndTail, " "],
-    // @ts-ignore
-    aux.past.short
+    // @ts-expect-error because
+    aux.past.short, // eslint-disable-line
   );
   const habitualPast = addToForm([baParticle, " "], past);
   function mhp(rt: T.PsString[]): T.VerbBlock {
@@ -379,7 +380,7 @@ function makeJoinedModalContent(
 
 function makeStativeCompoundSeperatedAspectContent(
   info: T.StativeCompoundVerbInfo,
-  aspect: T.Aspect
+  aspect: T.Aspect,
 ): T.AspectContent {
   const transitivity = getTransitivity(info);
   const complement: T.UnisexInflections =
@@ -395,7 +396,7 @@ function makeStativeCompoundSeperatedAspectContent(
     const aux = stativeAux[transitivity][aspect].modal;
     const nonImperative = addToForm(
       [presentComplement, " "],
-      aux.nonImperative
+      aux.nonImperative,
     );
     const future = addToForm([baParticle, " "], nonImperative);
     const past = addToForm([complement, " "], aux.past);
@@ -414,7 +415,7 @@ function makeStativeCompoundSeperatedAspectContent(
   // CHECK, does this work with transitive and intransitive??
   const nonImperative = addToForm(
     [presentComplement, " "],
-    stativeAux[transitivity][aspect].nonImperative
+    stativeAux[transitivity][aspect].nonImperative,
   );
   const future = addToForm([baParticle, " "], nonImperative);
   const imperative = addToForm([presentComplement, " "], aux.imperative);
@@ -435,7 +436,7 @@ function makeStativeCompoundSeperatedAspectContent(
 
 function makeHypotheticalContent(info: T.NonComboVerbInfo): T.VerbForm {
   function makeStativeCompoundSepHypotheticalContent(
-    info: T.StativeCompoundVerbInfo
+    info: T.StativeCompoundVerbInfo,
   ): T.VerbForm {
     const transitivity = getTransitivity(info);
     const aux = stativeAux[transitivity].hypothetical;
@@ -446,40 +447,38 @@ function makeHypotheticalContent(info: T.NonComboVerbInfo): T.VerbForm {
           : info.complement,
         " ",
       ],
-      aux
+      aux,
     );
   }
   if ("complement" in info && spaceInForm(info.root.imperfective)) {
-    return makeStativeCompoundSepHypotheticalContent(
-      info as T.StativeCompoundVerbInfo
-    );
+    return makeStativeCompoundSepHypotheticalContent(info);
   }
   const makeHypothetical = (
     root: T.OptionalPersonInflections<T.LengthOptions<T.PsString>>,
-    length: "short" | "long"
+    length: "short" | "long",
   ): T.PsString[] => {
     if ("mascSing" in root) {
       // BIG TODO: SHOULD THERE BE PERS INFS HERE?? IGNORING THEM NOW IF THEY EXIST
-      return makeHypothetical(root.mascSing, length) as T.PsString[];
+      return makeHypothetical(root.mascSing, length);
     }
     return [
       accentOnNFromEnd(
         concatPsString(root[length], aayTail[0]),
-        (length === "long" ? 1 : 0) + (info.yulEnding ? 1 : 0)
+        (length === "long" ? 1 : 0) + (info.yulEnding === true ? 1 : 0),
       ),
       accentOnNFromEnd(
         concatPsString(root[length], aayTail[1]),
-        (length === "long" ? 1 : 0) + (info.yulEnding ? 1 : 0)
+        (length === "long" ? 1 : 0) + (info.yulEnding === true ? 1 : 0),
       ),
     ];
   };
   const short = makeHypothetical(
     info.root.imperfective,
-    "short"
+    "short",
   ) as T.ArrayOneOrMore<T.PsString>;
   const long = makeHypothetical(
     info.root.imperfective,
-    "long"
+    "long",
   ) as T.ArrayOneOrMore<T.PsString>;
   return {
     short: [
@@ -507,21 +506,21 @@ function makeParticipleContent(info: T.NonComboVerbInfo): T.ParticipleContent {
     "complement" in info
       ? concatInflections(
           info.complement,
-          stativeAux[transitivity].participle.past as T.UnisexInflections
+          stativeAux[transitivity].participle.past as T.UnisexInflections,
         )
       : "objComplement" in info
-      ? concatInflections(
-          info.objComplement.plural
-            ? info.objComplement.plural
-            : info.objComplement.entry,
-          stativeAux[transitivity].participle.past as T.UnisexInflections
-        )
-      : inflectYay(noPersInfs(info.participle.past));
+        ? concatInflections(
+            info.objComplement.plural
+              ? info.objComplement.plural
+              : info.objComplement.entry,
+            stativeAux[transitivity].participle.past as T.UnisexInflections,
+          )
+        : inflectYay(noPersInfs(info.participle.past));
   const present =
     "complement" in info && spaceInForm(info.root.imperfective)
       ? concatInflections(
           info.complement,
-          stativeAux[transitivity].participle.present as T.UnisexInflections
+          stativeAux[transitivity].participle.present as T.UnisexInflections,
         )
       : inflectYay(noPersInfs(info.participle.present));
   return {
@@ -553,23 +552,23 @@ function makePerfectContent(info: T.NonComboVerbInfo): T.PerfectContent {
   const habitual = addToForm([...pastPart, " "], equativeEndings.habitual);
   const subjunctive = addToForm(
     [...pastPart, " "],
-    equativeEndings.subjunctive
+    equativeEndings.subjunctive,
   );
   const future = addToForm(
     [baParticle, " ", ...pastPart, " "],
-    equativeEndings.habitual
+    equativeEndings.habitual,
   );
   const wouldBe = addToForm(
     [baParticle, " ", ...pastPart, " "],
-    equativeEndings.past.short
+    equativeEndings.past.short,
   );
   const pastSubjunctive = addToForm(
     [...pastPart, " "],
-    equativeEndings.pastSubjunctive
+    equativeEndings.pastSubjunctive,
   );
   const wouldHaveBeen = addToForm(
     [baParticle, " ", ...pastPart, " "],
-    equativeEndings.pastSubjunctive
+    equativeEndings.pastSubjunctive,
   );
   return {
     halfPerfect, // Past Participle
@@ -598,17 +597,17 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
           : passiveStativeBridge;
       const nonImperative = addToForm(
         [info.complement, " ", bridge, " "],
-        stativeAux.intransitive[aspect].nonImperative
+        stativeAux.intransitive[aspect].nonImperative,
       );
       const future = addToForm([baParticle, " "], nonImperative);
       const past = addToForm(
         [info.complement, " ", bridge, " "],
-        stativeAux.intransitive[aspect].past
+        stativeAux.intransitive[aspect].past,
       );
       const habitualPast = addToForm([baParticle, " "], past);
       const modal = makePassiveModalSection(
         [noPersInfs(info.root.imperfective).long, " "],
-        stativeAux.intransitive.imperfective.modal
+        stativeAux.intransitive.imperfective.modal,
       );
       return {
         imperative: undefined,
@@ -631,7 +630,7 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
     const auxModal = aux.modal;
     const modal = makePassiveModalSection(
       [noPersInfs(info.root.imperfective).long, " "],
-      auxModal
+      auxModal,
     );
     return {
       imperative: undefined,
@@ -646,7 +645,7 @@ function makePassiveContent(info: T.NonComboVerbInfo): {
     past: concatPsString(
       removeAccents(noPersInfs(info.root.imperfective).long),
       " ",
-      stativeAux.intransitive.info.participle.past as T.PsString
+      stativeAux.intransitive.info.participle.past as T.PsString,
     ),
     present: { p: "ن ا", f: "n / a" },
   };
@@ -671,7 +670,7 @@ function makePassiveModalSection(
     | T.OptionalPersonInflections<T.PsString>
     | T.VerbBlock
   >,
-  auxModal: T.ModalContent
+  auxModal: T.ModalContent,
 ): T.ModalContent {
   return {
     nonImperative: addToForm(base, auxModal.nonImperative),
@@ -683,29 +682,29 @@ function makePassiveModalSection(
 }
 
 function makePassivePerfectContent(
-  info: T.StativeCompoundVerbInfo
+  info: T.StativeCompoundVerbInfo,
 ): T.PerfectContent {
   const pPart = stativeAux.intransitive.participle.past;
   // will always be transitive
   const halfPerfect = addToForm(
     [info.complement, " ", passiveStativeBridge, " ", pPart],
-    emptyVerbBlock
+    emptyVerbBlock,
   );
   const past = addToForm(
     [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
-    equativeEndings.past.short
+    equativeEndings.past.short,
   );
   const present = addToForm(
     [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
-    equativeEndings.present
+    equativeEndings.present,
   );
   const habitual = addToForm(
     [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
-    equativeEndings.habitual
+    equativeEndings.habitual,
   );
   const subjunctive = addToForm(
     [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
-    equativeEndings.subjunctive
+    equativeEndings.subjunctive,
   );
   const future = addToForm(
     [
@@ -718,7 +717,7 @@ function makePassivePerfectContent(
       pPart,
       " ",
     ],
-    equativeEndings.habitual
+    equativeEndings.habitual,
   );
   const wouldBe = addToForm(
     [
@@ -731,11 +730,11 @@ function makePassivePerfectContent(
       pPart,
       " ",
     ],
-    equativeEndings.past.short
+    equativeEndings.past.short,
   );
   const pastSubjunctive = addToForm(
     [info.complement, " ", passiveStativeBridge, " ", pPart, " "],
-    equativeEndings.pastSubjunctive
+    equativeEndings.pastSubjunctive,
   );
   const wouldHaveBeen = addToForm(
     [
@@ -748,7 +747,7 @@ function makePassivePerfectContent(
       pPart,
       " ",
     ],
-    equativeEndings.pastSubjunctive
+    equativeEndings.pastSubjunctive,
   );
   return {
     halfPerfect,
@@ -765,7 +764,7 @@ function makePassivePerfectContent(
 
 function enforceObject(
   conj: T.VerbConjugation,
-  person: T.Person
+  person: T.Person,
 ): T.VerbConjugation {
   const modifyPastInAspect = (as: T.AspectContent): T.AspectContent => ({
     // WATCH OUT FOR DIFFERENCES WITH allOnePersonInflection (for the object w/ present tense)
@@ -784,7 +783,7 @@ function enforceObject(
     },
   });
   const modifyParticiple = (
-    part: T.ParticipleContent
+    part: T.ParticipleContent,
   ): T.ParticipleContent => ({
     // TODO: What to do with this!
     present: allOnePersonInflection(part.present, person),
@@ -802,7 +801,7 @@ function enforceObject(
     wouldHaveBeen: allOnePersonVerbForm(perf.wouldHaveBeen, person),
   });
   const modifyPassiveAspect = (
-    as: T.AspectContentPassive
+    as: T.AspectContentPassive,
   ): T.AspectContentPassive => ({
     imperative: undefined,
     nonImperative: allOnePersonVerbForm(as.nonImperative, person),
@@ -840,17 +839,17 @@ function enforceObject(
 function finishSimpleVerbPast(
   info: T.NonComboVerbInfo,
   aspect: T.Aspect,
-  roughPast: T.LengthOptions<T.VerbBlock>
+  roughPast: T.LengthOptions<T.VerbBlock>,
 ): T.VerbForm {
   const applyAccent = (
     block: T.VerbBlock,
-    form: "short" | "long"
+    form: "short" | "long",
   ): T.VerbBlock =>
     mapVerbBlock(
       (
         item: T.PsString,
         rowNum: number | undefined,
-        colNum: number | undefined
+        colNum: number | undefined,
       ) => {
         const nonRedundantLEnding =
           rowNum === 4 &&
@@ -859,10 +858,10 @@ function finishSimpleVerbPast(
           ["ul", "úl"].includes(item.f.slice(-2));
         const n =
           (form === "short" || nonRedundantLEnding ? 0 : 1) +
-          (info.yulEnding ? 1 : 0);
+          (info.yulEnding === true ? 1 : 0);
         return accentOnNFromEnd(item, n);
       },
-      block
+      block,
     );
   const short = ensureShort3rdPersMascSing(info, aspect, roughPast.short);
   if (aspect === "imperfective") {
@@ -879,11 +878,11 @@ function finishSimpleVerbPast(
 function ensureShort3rdPersMascSing(
   info: T.NonComboVerbInfo,
   aspect: T.Aspect,
-  block: T.VerbBlock
+  block: T.VerbBlock,
 ): T.VerbBlock {
   const replace3rdPersMascSing = (
     replacement: T.ArrayOneOrMore<T.PsString>,
-    block: T.VerbBlock
+    block: T.VerbBlock,
   ): T.VerbBlock =>
     [...block.slice(0, 4), [replacement, block[4][1]], block[5]] as T.VerbBlock;
   const makeAawuForm = (root: T.PsString): T.PsString => {
@@ -923,23 +922,23 @@ function ensureShort3rdPersMascSing(
 function accentImperfectiveModalRootAndTail(
   info: T.NonComboVerbInfo,
   rt: T.SingleOrLengthOpts<T.PsString>,
-  length?: "long" | "short"
+  length?: "long" | "short",
 ): T.SingleOrLengthOpts<T.PsString> {
   if ("long" in rt) {
     return {
       short: accentImperfectiveModalRootAndTail(
         info,
         rt.short,
-        "short"
+        "short",
       ) as T.PsString,
       long: accentImperfectiveModalRootAndTail(
         info,
         rt.long,
-        "long"
+        "long",
       ) as T.PsString,
     };
   }
-  const n = info.yulEnding ? 2 : length === "short" ? 0 : 1;
+  const n = info.yulEnding === true ? 2 : length === "short" ? 0 : 1;
   return accentOnNFromEnd(rt, n);
 }
 

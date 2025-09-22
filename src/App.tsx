@@ -23,7 +23,7 @@ import ParserDemo from "./demo-components/ParserDemo";
 import TextDisplayDemo from "./demo-components/TextDisplayDemo";
 import ParserTester from "./demo-components/ParserTester";
 // import InflectionTable from "./components/src/InflectionsTable";
-const SHOW_PARSER_TESTER = false;
+const SHOW_PARSER_TESTER = true;
 
 function App() {
   const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(
@@ -43,12 +43,12 @@ function App() {
   useEffect(() => {
     dictionary
       .initialize()
-      .catch(console.error)
       .then((res) => {
-        if (res && res.response === "loaded from saved") {
-          dictionary.update();
+        if (res.response === "loaded from saved") {
+          void dictionary.update();
         }
-      });
+      })
+      .catch(console.error)
   }, []);
 
   useEffect(() => {

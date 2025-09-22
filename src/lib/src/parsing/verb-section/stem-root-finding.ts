@@ -18,7 +18,7 @@ export function findStem(ph: T.ParsedPH | undefined) {
 const rootSplitLookup = memoize((s: string) =>
   splitVerbEntries.filter((e) =>
     [s, s + "ل"].some(
-      (x) => (e.entry.prp || e.entry.p).slice(e.entry.separationAtP || 0) === x,
+      (x) => (e.entry.prp ?? e.entry.p).slice(e.entry.separationAtP ?? 0) === x,
     ),
   ),
 );
@@ -77,8 +77,8 @@ function regStemSearch(s: string, dictionary: T.DictionaryAPI): T.VerbEntry[] {
   const regTrans = regTransA.filter(
     (e) =>
       isMergedCompOrSimple(e.entry) &&
-      !e.entry.ssp &&
-      !e.entry.psp &&
+      (e.entry.ssp ?? "") === "" &&
+      (e.entry.psp ?? "") === "" &&
       !e.entry.c.includes("intrans"),
   );
   const regIntrans = dictionary
@@ -86,8 +86,8 @@ function regStemSearch(s: string, dictionary: T.DictionaryAPI): T.VerbEntry[] {
     .filter(
       (e) =>
         isMergedCompOrSimple(e.entry) &&
-        !e.entry.ssp &&
-        !e.entry.psp &&
+        (e.entry.ssp ?? "") === "" &&
+        (e.entry.psp ?? "") === "" &&
         e.entry.c.includes("intrans"),
     );
   return [...regTrans, ...regIntrans];
@@ -96,7 +96,7 @@ function regStemSearch(s: string, dictionary: T.DictionaryAPI): T.VerbEntry[] {
 function findPerfectiveStem(ph: T.ParsedPH) {
   // TODO: use ph to check if they are compatible HERE
   return function (s: string, dicitonary: T.DictionaryAPI): StemInfo[] {
-    if (ph && ph.type === "CompPH") {
+    if (ph.type === "CompPH") {
       return [];
     }
     if (["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
@@ -108,12 +108,15 @@ function findPerfectiveStem(ph: T.ParsedPH) {
     const baseQ = withAlephAdded(s);
     const regulars = baseQ
       .flatMap((q) => regStemSearch(q, dicitonary))
-      .filter((e) => !e.entry.separationAtP);
+      .filter((e) => e.entry.separationAtP === undefined);
     const irregularsBasedOnImperf = baseQ
       .flatMap((q) => dicitonary.otherLookup("psp", q))
       .filter(
         (e): e is T.VerbDictionaryEntry =>
-          tp.isVerbDictionaryEntry(e) && !e.l && !e.ssp && !e.separationAtP,
+          tp.isVerbDictionaryEntry(e) &&
+          e.l === undefined &&
+          (e.ssp ?? "") === "" &&
+          e.separationAtP === undefined,
       )
       .map<T.VerbEntry>((entry) => ({
         entry,
@@ -133,15 +136,15 @@ function findPerfectiveStem(ph: T.ParsedPH) {
 const stemSplitLookup = memoize((s: string) =>
   splitVerbEntries.filter(
     (e) =>
-      (e.entry.ssp || e.entry.psp || e.entry.p).slice(
-        e.entry.separationAtP || 0,
+      (e.entry.ssp ?? e.entry.psp ?? e.entry.p).slice(
+        e.entry.separationAtP ?? 0,
       ) === s,
   ),
 );
 
 export function findPerfectiveRoot(ph: T.ParsedPH) {
   return function (s: string, dicitonary: T.DictionaryAPI): RootInfo[] {
-    if (ph && ph.type === "CompPH") {
+    if (ph.type === "CompPH") {
       return [];
     }
     if (startsWithAleph(s) || ["کېږ", "کېد", "ش", "شو", "شول"].includes(s)) {
@@ -154,8 +157,8 @@ export function findPerfectiveRoot(ph: T.ParsedPH) {
         (e) =>
           // TODO: ALLOW FOR PRP LOOKUP!
           !e.entry.c.includes("comp.") &&
-          !e.entry.prp &&
-          !e.entry.separationAtP,
+          (e.entry.prp ?? "") === "" &&
+          e.entry.separationAtP === undefined,
       );
     // TODO: check that it matches the perfective head and filter or give error messages here
     return [...reg, ...rootSplitLookup(s)]
@@ -184,9 +187,9 @@ function phMatches(base: "root" | "stem") {
 
 function getPhFromVerb(v: T.VerbEntry, base: "root" | "stem"): string {
   // TODO!! what to do about yo / bo ???
-  if (v.entry.separationAtP) {
+  if (v.entry.separationAtP !== undefined) {
     const p =
-      base === "root" ? v.entry.prp || v.entry.p : v.entry.ssp || v.entry.p;
+      base === "root" ? (v.entry.prp ?? v.entry.p) : (v.entry.ssp ?? v.entry.p);
     return p.slice(0, v.entry.separationAtP);
   }
   // TODO or آ

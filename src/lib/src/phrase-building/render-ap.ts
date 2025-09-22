@@ -7,7 +7,7 @@ import { renderSandwich } from "./render-sandwich";
 
 export function renderAPSelection(
   { selection }: T.APSelection,
-  person: T.Person
+  person: T.Person,
 ): T.Rendered<T.APSelection> {
   if (selection.type === "sandwich") {
     return {
@@ -25,7 +25,7 @@ export function renderLocativeAdverbSelection({
   entry,
 }: T.LocativeAdverbSelection): T.Rendered<T.LocativeAdverbSelection> {
   const e = getEnglishWord(entry);
-  if (!e || typeof e !== "string") {
+  if (e === undefined || e === "" || typeof e !== "string") {
     throw new Error("error getting english for compliment");
   }
   return {
@@ -42,10 +42,11 @@ export function renderLocativeAdverbSelection({
 
 export function renderAdverbSelection(
   a: T.AdverbSelection,
-  person: T.Person
+  person: T.Person,
 ): T.Rendered<T.AdverbSelection> {
   const ew = getEnglishWord(a.entry);
-  const e = typeof ew === "object" ? ew.singular || "" : !ew ? "" : ew;
+  const e =
+    typeof ew === "object" ? (ew.singular ?? "") : (ew ?? "") === "" ? "" : ew;
   return {
     type: "adverb",
     entry: a.entry,

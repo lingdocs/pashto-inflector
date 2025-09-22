@@ -38,7 +38,7 @@ export function parseVBBBasic(
   }
   if (ph?.type === "CompPH") {
     return parseKawulKedulVBE(tokens, undefined).filter(
-      (x) => x.body.info.verb && x.body.info.aspect === "perfective",
+      (x) => x.body.info.aspect === "perfective",
     );
   }
   const irregResults = parseIrregularVerb(first, ph);
@@ -51,7 +51,7 @@ export function parseVBBBasic(
   }
   // TODO: AFTER THIS MAKE SURE WE DON'T PARSE ANY KAWUL/KEDUL VERBS!
   // then prevent the other things from using kawul / kedul
-  const ending = first.at(-1) || "";
+  const ending = first.at(-1) ?? "";
   const base = ending === "ل" ? first : first.slice(0, -1);
   const { stem, root } = getVerbEnding(ending);
   // todo imperative for seperating
@@ -225,7 +225,7 @@ function thirdPersSingMascShortFromRoot(
   ending: string,
   info: RootInfo,
 ): T.ParsedVBBVerb[] {
-  if (info.verb.entry.tppp) {
+  if (info.verb.entry.tppp ?? "") {
     return [];
   }
   if (ending === "ه" && !["ل", "و"].some((char) => base.endsWith(char))) {
@@ -311,7 +311,9 @@ function specialThirdPersMascSingForm(
     .flatMap((v) => dicitonary.otherLookup("tppp", v, true))
     .filter(
       (e): e is T.VerbDictionaryEntry =>
-        tp.isVerbDictionaryEntry(e) && !e.l && !!e.tppp,
+        tp.isVerbDictionaryEntry(e) &&
+        e.l === undefined &&
+        (e.tppp ?? "") !== "",
     )
     .map((entry) => ({
       type: "parsed vbb verb",

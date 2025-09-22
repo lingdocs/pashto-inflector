@@ -34,7 +34,7 @@ export function makeComplement(
   if (isAdjectiveEntry(e)) {
     const infs = inflectWord(e);
     const ps =
-      infs && infs.inflections && isUnisexSet(infs.inflections)
+      infs !== false && infs.inflections && isUnisexSet(infs.inflections)
         ? infs.inflections[gender][number === "singular" ? 0 : 1][0]
         : psStringFromEntry(e);
     return {
@@ -59,7 +59,10 @@ export function makeComplement(
   }
 }
 
-export function vEntry(e: any, c?: any): T.VerbEntryNoFVars {
+export function vEntry(
+  e: T.VerbDictionaryEntry,
+  c?: T.DictionaryEntry,
+): T.VerbEntryNoFVars {
   return {
     entry: removeFVarients(e),
     ...(c
@@ -323,7 +326,7 @@ export function getLongVB(vb: T.VB): T.VBNoLenghts<T.VB> {
   if (vb.type === "welded") {
     return {
       ...vb,
-      // @ts-ignore
+      // @ts-expect-error because
       right: getLongVB(vb.right),
     };
   }

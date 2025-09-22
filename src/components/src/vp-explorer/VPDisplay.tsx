@@ -53,9 +53,8 @@ function VPDisplay({
           const subject = getSubjectSelection(VPS.blocks).selection;
           const object = getObjectSelection(VPS.blocks).selection;
           if (subject === undefined || object === undefined) {
-            return `Choose NP${
-              subject === undefined && object === undefined ? "s " : ""
-            } to make a phrase`;
+            return `Choose NP${subject === undefined && object === undefined ? "s " : ""
+              } to make a phrase`;
           }
           return `Choose/remove AP to complete the phrase`;
         })()}
@@ -67,7 +66,7 @@ function VPDisplay({
     const result = compileVP(rendered, rendered.form, true);
     return (
       <div className={`text-${justify ? justify : "center"} mt-1`}>
-        {typeof setForm === "function" && !inlineFormChoice && (
+        {typeof setForm === "function" && inlineFormChoice !== true && (
           <AbbreviationFormSelector
             adjustable={rendered.whatsAdjustable}
             form={rendered.form}
@@ -85,7 +84,7 @@ function VPDisplay({
             onLengthChange && (
               <LengthSelect value={length} onChange={onLengthChange} />
             )}
-          {typeof setForm === "function" && inlineFormChoice && (
+          {typeof setForm === "function" && inlineFormChoice === true && (
             <AbbreviationFormSelector
               adjustable={rendered.whatsAdjustable}
               form={rendered.form}
@@ -99,7 +98,7 @@ function VPDisplay({
             opts={opts}
             compiled={result}
             justify={justify}
-            onlyOne={!!onlyOne}
+            onlyOne={onlyOne === true || onlyOne === "concat"}
             length={length}
           />
         ) : (
@@ -112,19 +111,18 @@ function VPDisplay({
         )}
         {result.e && (
           <div
-            className={`text-muted mt-2 text-${
-              justify === "left"
-                ? "left"
-                : justify === "right"
+            className={`text-muted mt-2 text-${justify === "left"
+              ? "left"
+              : justify === "right"
                 ? "right"
                 : "center"
-            }`}
+              }`}
           >
             {onlyOne === "concat"
               ? result.e.join(" • ")
-              : onlyOne
-              ? [result.e[0]]
-              : result.e.map((e, i) => <div key={i}>{e}</div>)}
+              : onlyOne === true
+                ? [result.e[0]]
+                : result.e.map((e, i) => <div key={i}>{e}</div>)}
           </div>
         )}
       </div>

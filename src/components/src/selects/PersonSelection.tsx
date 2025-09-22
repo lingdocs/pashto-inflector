@@ -17,7 +17,7 @@ function PersonSelect(props: {
   handleChange: (person: T.Person) => void;
   handleRandom: () => void;
 }) {
-  return !props.locked ? (
+  return props.locked !== true ? (
     <div className="input-group" style={{ maxWidth: "30rem" }}>
       <select
         className="custom-select"
@@ -80,7 +80,7 @@ function PersonSelection(props: {
         />
       </div>
       {props.info.type === "dynamic compound" ||
-      props.info.type === "generative stative compound" ? (
+        props.info.type === "generative stative compound" ? (
         <div className="col">
           <label className="form-label">
             <strong>

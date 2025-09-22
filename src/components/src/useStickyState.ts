@@ -12,7 +12,7 @@ type SaveableData = string | number | object | boolean | undefined | null;
  */
 export default function useStickyState<T extends SaveableData>(
   defaultValue: T | ((old: T | undefined) => T),
-  key: string
+  key: string,
 ): [value: T, setValue: React.Dispatch<React.SetStateAction<T>>] {
   const [value, setValue] = useState<T>(() => {
     const v =
@@ -20,7 +20,7 @@ export default function useStickyState<T extends SaveableData>(
     // nothing saved
     if (v === null) {
       if (typeof defaultValue === "function") {
-        return defaultValue(undefined);
+        return defaultValue(undefined); // eslint-disable-line
       }
       return defaultValue;
     }
@@ -28,13 +28,13 @@ export default function useStickyState<T extends SaveableData>(
     try {
       const old = JSON.parse(v) as T;
       if (typeof defaultValue === "function") {
-        return defaultValue(old);
+        return defaultValue(old); // eslint-disable-line
       }
       return old;
     } catch (e) {
       console.error("error parsting saved state from stickState");
       console.error(e);
-      return typeof defaultValue === "function"
+      return typeof defaultValue === "function" // eslint-disable-line
         ? defaultValue(undefined)
         : defaultValue;
     }
@@ -55,7 +55,7 @@ export function useStickyReducer<T extends SaveableData, A>(
   defaultValue: T | ((old: T | undefined) => T),
   key: string,
   sendAlert?: (msg: string) => void,
-  onChange?: (state: T) => void
+  onChange?: (state: T) => void,
 ): [T, (action: A) => void, ((msg: string) => void) | undefined] {
   const [state, unsafeSetState] = useStickyState<T>(defaultValue, key);
   function adjustState(action: A) {

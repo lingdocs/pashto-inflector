@@ -18,7 +18,6 @@ export class DictionaryDb {
   // state
   private ready = false;
 
-  // eslint-disable-next-line
   public collection: Collection<any> | undefined;
 
   constructor(options: {
@@ -30,8 +29,8 @@ export class DictionaryDb {
     this.dictionaryUrl = options.url;
     this.dictionaryInfoUrl = options.infoUrl;
     this.dictionaryInfoLocalStorageKey =
-      options.infoLocalStorageKey || "dictionaryInfo";
-    this.dictionaryCollectionName = options.collectionName || "pdictionary";
+      options.infoLocalStorageKey ?? "dictionaryInfo";
+    this.dictionaryCollectionName = options.collectionName ?? "pdictionary";
     if (dontUseFaultyIndexedDB()) {
       this.lokidb = new loki(this.dictionaryUrl, {
         autoload: false,
@@ -39,10 +38,11 @@ export class DictionaryDb {
         env: "BROWSER",
       });
     } else {
-      const LokiIndexedAdapter = new loki("").getIndexedAdapter();
-      const idbAdapter = new LokiIndexedAdapter();
+      // unfortunately looks like the IndexedAdapter types are not in the library
+      const LokiIndexedAdapter: any = new loki("").getIndexedAdapter(); // eslint-disable-line
+      const idbAdapter: any = new LokiIndexedAdapter(); // eslint-disable-line
       this.lokidb = new loki(this.dictionaryUrl, {
-        adapter: idbAdapter,
+        adapter: idbAdapter, // eslint-disable-line
         autoload: false,
         autosave: false,
         env: "BROWSER",
@@ -53,13 +53,13 @@ export class DictionaryDb {
   private putDictionaryInfoInLocalStorage(info: T.DictionaryInfo) {
     localStorage.setItem(
       this.dictionaryInfoLocalStorageKey,
-      JSON.stringify(info)
+      JSON.stringify(info),
     );
   }
 
   private getDictionaryInfoFromLocalStorage(): T.DictionaryInfo {
     const raw = localStorage.getItem(this.dictionaryInfoLocalStorageKey);
-    if (raw) {
+    if (raw !== null && raw !== "") {
       return JSON.parse(raw) as T.DictionaryInfo;
     }
     return {
@@ -85,7 +85,7 @@ export class DictionaryDb {
   private async addDictionaryToLoki(dictionary: T.Dictionary): Promise<"done"> {
     return await new Promise((resolve: (value: "done") => void, reject) => {
       if (!this.collection) {
-        reject("dictionary not initialized");
+        reject(Error("dictionary not initialized"));
       }
       // Add it to Lokijs
       this.collection = this.lokidb.addCollection(
@@ -95,16 +95,16 @@ export class DictionaryDb {
           disableMeta: true,
           indices: ["i", "p"],
           unique: ["ts"],
-        }
+        },
       );
       // because during dev it tries to initialize twice
       this.collection.clear();
       this.collection.insert(dictionary.entries);
       this.lokidb.saveDatabase((err) => {
-        /* istanbul ignore next */
-        if (err) {
+        /* istanbul ignore next */ // prettier-ignore
+        if (err) { // eslint-disable-line
           console.error("error saving database: " + err);
-          reject(err);
+          reject(err); // eslint-disable-line
         } else {
           // Once the dictionary has for sure been saved in IndexedDb, save the dictionary info
           this.putDictionaryInfoInLocalStorage(dictionary.info);
@@ -129,22 +129,24 @@ export class DictionaryDb {
             response: "loaded first time" | "loaded from saved";
             dictionaryInfo: T.DictionaryInfo;
           }) => void,
-          reject
+          reject,
         ) => {
-          this.lokidb.loadDatabase({}, async (err: Error) => {
-            /* istanbul ignore next */
-            if (err) {
+          // (TODO: it says this is not supposed to be a promise ? - would that help if we fixed that ?)
+          // prettier-ignore
+          this.lokidb.loadDatabase({}, async (err: Error) => { // eslint-disable-line
+            // prettier-ignore
+            if (err) { // eslint-disable-line
               console.error(err);
               reject(err);
             }
             // Step 1: Base dictionary initialization
             // Check that the dictionary is set up and available
             this.collection = this.lokidb.getCollection(
-              this.dictionaryCollectionName
+              this.dictionaryCollectionName,
             );
             // TODO: make a better check that the dictionary really is in there - like the size or something
             // let firstTimeDownload = false;
-            const offlineDictionaryExists = !!this.collection;
+            const offlineDictionaryExists = !!this.collection; // eslint-disable-line
             if (offlineDictionaryExists) {
               this.ready = true;
               resolve({
@@ -167,10 +169,10 @@ export class DictionaryDb {
             } catch (e) {
               console.error("error loading dictionary for the first time");
               console.error(e);
-              reject();
+              reject(e); // eslint-disable-line
             }
           });
-        }
+        },
       );
     } catch (e) {
       console.error(e);
@@ -234,13 +236,13 @@ export class DictionaryDb {
     if (!this.ready || !this.collection) {
       return undefined;
     }
-    const res = this.collection.by("ts", ts.toString());
-    if (!res) {
+    const res = this.collection.by("ts", ts.toString()); // eslint-disable-line
+    // prettier-ignore
+    if (!res) { // eslint-disable-line
       return undefined;
     }
     // remove $loki and meta
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { $loki, meta, ...word } = res;
-    return word;
+    const { $loki, meta, ...word } = res; // eslint-disable-line
+    return word; // eslint-disable-line
   }
 }

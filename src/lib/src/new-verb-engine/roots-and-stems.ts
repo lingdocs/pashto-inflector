@@ -54,7 +54,7 @@ export const statVerb = {
     pprtf: "shúway",
     noOo: true,
     ec: "become",
-  }),
+  } as T.VerbDictionaryEntry),
   transitive: vEntry({
     ts: 1579015359582,
     i: 11030,
@@ -72,7 +72,7 @@ export const statVerb = {
     pprtf: "kúRay",
     noOo: true,
     ec: "make,makes,making,made,made",
-  }),
+  } as T.VerbDictionaryEntry),
 };
 
 const shwulVB: T.VBBasic = {
@@ -127,7 +127,9 @@ function getAbilityRs(
 ): [[] | [T.VHead], [T.VBP, T.VB]] {
   // https://grammar.lingdocs.com/verbs/ability/#exceptions
   const losesAspect =
-    (verb.entry.prp && verb.entry.p !== "کول") ||
+    (verb.entry.prp !== undefined &&
+      verb.entry.prp !== "" &&
+      verb.entry.p !== "کول") ||
     (isStatComp(verb) && vTransitivity(verb) === "intransitive");
   const asp = losesAspect ? "imperfective" : aspect;
   const [vhead, [basicroot]] =
@@ -165,7 +167,12 @@ export function getPastParticiple(
       },
     };
   }
-  if (verb.entry.pprtp && verb.entry.pprtf) {
+  if (
+    verb.entry.pprtp !== undefined &&
+    verb.entry.pprtp !== "" &&
+    verb.entry.pprtf !== undefined &&
+    verb.entry.pprtf !== ""
+  ) {
     const base = makePsString(verb.entry.pprtp, verb.entry.pprtf);
     return {
       type: "VB",
@@ -185,7 +192,7 @@ export function getPastParticiple(
     { gender, number },
     "imperfective",
   )[1][0];
-  const longRoot = getLongVB(basicRoot) as T.VBNoLenghts<T.VB>;
+  const longRoot = getLongVB(basicRoot);
   const rootWLengths = possiblePPartLengths(longRoot);
   /* istanbul ignore next */
   if ("right" in rootWLengths) {
@@ -293,7 +300,10 @@ function getRoot(
     aspect === "imperfective"
       ? accentOnNFromEnd(makePsString(verb.entry.p, verb.entry.f), 0)
       : removeAccents(
-          verb.entry.prp && verb.entry.prf
+          verb.entry.prp !== undefined &&
+            verb.entry.prp !== "" &&
+            verb.entry.prf !== undefined &&
+            verb.entry.prf !== ""
             ? makePsString(verb.entry.prp, verb.entry.prf)
             : makePsString(verb.entry.p, verb.entry.f),
         );
@@ -386,10 +396,16 @@ function getStem(
       return splitEdulIntans(edulIntransBase(verb));
     }
     const base: T.PsString =
-      verb.entry.ssp && verb.entry.ssf
+      verb.entry.ssp !== undefined &&
+      verb.entry.ssp !== "" &&
+      verb.entry.ssf !== undefined &&
+      verb.entry.ssf !== ""
         ? // with irregular perfective stem
           makePsString(verb.entry.ssp, verb.entry.ssf)
-        : verb.entry.psp && verb.entry.psf
+        : verb.entry.psp !== undefined &&
+            verb.entry.psp !== "" &&
+            verb.entry.psf !== undefined &&
+            verb.entry.psf !== ""
           ? // with perfective stem based on irregular perfective root
             makePsString(verb.entry.psp, verb.entry.psf)
           : // with regular infinitive based perfective stem
@@ -407,7 +423,10 @@ function getStem(
   }
   const rawBase = removeL(makePsString(verb.entry.p, verb.entry.f));
   const base =
-    verb.entry.psp && verb.entry.psf
+    verb.entry.psp !== undefined &&
+    verb.entry.psp !== "" &&
+    verb.entry.psf !== undefined &&
+    verb.entry.psf !== ""
       ? [makePsString(verb.entry.psp, verb.entry.psf)]
       : vTransitivity(verb) === "intransitive" && rawBase.p.endsWith("ېد")
         ? edulIntransBase(verb)
@@ -479,7 +498,12 @@ export function getPerfectiveHead(
   // if ((verb.entry.ssp && verb.entry.ssf) || verb.entry.separationAtP) {
   //     // handle split
   // }
-  if (v.entry.separationAtP && v.entry.separationAtF) {
+  if (
+    v.entry.separationAtP !== undefined &&
+    v.entry.separationAtP !== 0 &&
+    v.entry.separationAtF !== undefined &&
+    v.entry.separationAtF !== 0
+  ) {
     const ph: T.PH = {
       type: "PH",
       ps: accentOnNFromEnd(
@@ -496,35 +520,36 @@ export function getPerfectiveHead(
     };
     return [ph, rest];
   }
-  const [ph, rest]: [T.PH | undefined, T.PsString] = v.entry.noOo
-    ? [undefined, base]
-    : v.entry.sepOo
-      ? [{ type: "PH", ps: { p: "و ", f: "óo`" } }, base]
-      : ["آ", "ا"].includes(base.p.charAt(0)) && base.f.charAt(0) === "a"
-        ? [{ type: "PH", ps: { p: "وا", f: "wáa" } }, removeAStart(base)]
-        : ["óo", "oo"].includes(base.f.slice(0, 2))
-          ? [{ type: "PH", ps: { p: "و", f: "wÚ" } }, base]
-          : ["ée", "ee"].includes(base.f.slice(0, 2)) &&
-              base.p.slice(0, 2) === "ای"
-            ? [
-                { type: "PH", ps: { p: "وي", f: "wée" } },
-                {
-                  p: base.p.slice(2),
-                  f: base.f.slice(2),
-                },
-              ]
-            : ["é", "e"].includes(base.f.slice(0, 2)) &&
-                base.p.slice(0, 2) === "اې"
+  const [ph, rest]: [T.PH | undefined, T.PsString] =
+    v.entry.noOo === true
+      ? [undefined, base]
+      : v.entry.sepOo === true
+        ? [{ type: "PH", ps: { p: "و ", f: "óo`" } }, base]
+        : ["آ", "ا"].includes(base.p.charAt(0)) && base.f.charAt(0) === "a"
+          ? [{ type: "PH", ps: { p: "وا", f: "wáa" } }, removeAStart(base)]
+          : ["óo", "oo"].includes(base.f.slice(0, 2))
+            ? [{ type: "PH", ps: { p: "و", f: "wÚ" } }, base]
+            : ["ée", "ee"].includes(base.f.slice(0, 2)) &&
+                base.p.slice(0, 2) === "ای"
               ? [
-                  { type: "PH", ps: { p: "وي", f: "wé" } },
+                  { type: "PH", ps: { p: "وي", f: "wée" } },
                   {
                     p: base.p.slice(2),
-                    f: base.f.slice(1),
+                    f: base.f.slice(2),
                   },
                 ]
-              : ["ó", "o"].includes(base.f[0]) && base.p.slice(0, 2) === "او"
-                ? [{ type: "PH", ps: { p: "و", f: "óo`" } }, base]
-                : [{ type: "PH", ps: { p: "و", f: "óo" } }, base];
+              : ["é", "e"].includes(base.f.slice(0, 2)) &&
+                  base.p.slice(0, 2) === "اې"
+                ? [
+                    { type: "PH", ps: { p: "وي", f: "wé" } },
+                    {
+                      p: base.p.slice(2),
+                      f: base.f.slice(1),
+                    },
+                  ]
+                : ["ó", "o"].includes(base.f[0]) && base.p.slice(0, 2) === "او"
+                  ? [{ type: "PH", ps: { p: "و", f: "óo`" } }, base]
+                  : [{ type: "PH", ps: { p: "و", f: "óo" } }, base];
   return [ph, removeAccents(rest)];
   function removeAStart(ps: T.PsString) {
     return {
@@ -539,9 +564,8 @@ function edulIntransBase(
 ): T.SingleOrLengthOpts<T.PsString[]> {
   const base = trimOffPs(makePsString(v.entry.p, v.entry.f), 3, 4);
   const long: T.PsString[] = [concatPsString(base, { p: "ېږ", f: "éG" })];
-  const short: T.PsString[] | undefined = v.entry.shortIntrans
-    ? [base]
-    : undefined;
+  const short: T.PsString[] | undefined =
+    v.entry.shortIntrans === true ? [base] : undefined;
   return short ? { short, long } : long;
 }
 

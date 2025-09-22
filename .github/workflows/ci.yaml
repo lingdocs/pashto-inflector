@@ -23,6 +23,7 @@ jobs:
       - name: Build website and test
         run: |
           npm run test && \
+          npm run lint && \
           npm run build-website
       - name: Check if version has been updated
         id: check

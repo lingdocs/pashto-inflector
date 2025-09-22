@@ -103,11 +103,11 @@ function parseActiveWelded<X extends T.VerbX>(
           : category === "ability"
             ? (parseKawulKedulAbility(tkns2, undefined).filter(
                 (x) =>
-                  isStatAux(x.body.info.verb) &&
+                  isStatAux(x.body.info.verb) !== false &&
                   x.body.info.aspect === "imperfective",
               ) as T.ParseResult<X>[])
-            : (parseKawulKedulVBP(tkns2, undefined).filter((x) =>
-                isStatAux(x.body.info.verb),
+            : (parseKawulKedulVBP(tkns2, undefined).filter(
+                (x) => isStatAux(x.body.info.verb) !== false,
               ) as T.ParseResult<X>[]);
       return bindParseResult(ks, (tkns3, aux) => {
         if (category === "perfect" && aux.content.info.type !== "ppart") {
@@ -132,7 +132,7 @@ function parseActiveWelded<X extends T.VerbX>(
         }
         if (
           aux.content.info.aspect === "imperfective" &&
-          isStatAux(aux.content.info.verb) /*type safety*/
+          isStatAux(aux.content.info.verb) !== false /*type safety*/
         ) {
           const compTs = getLFromComplement(comp.content);
           if (compTs === undefined) {

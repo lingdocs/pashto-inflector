@@ -48,7 +48,7 @@ function VPExplorer(props: {
   );
   const [mode, setMode] = useStickyState<"charts" | "phrases" | "quiz">(
     (savedMode) => {
-      if (!savedMode) return props.onlyPhrases ? "phrases" : "charts";
+      if (!savedMode) return props.onlyPhrases === true ? "phrases" : "charts";
       if (savedMode === "quiz") return "phrases";
       return savedMode;
     },
@@ -130,12 +130,12 @@ function VPExplorer(props: {
   // for some crazy reason I can't get the URI share thing to encode and decode properly
   function handleCopyShareLink() {
     const shareUrl = getShareUrl(vps);
-    navigator.clipboard.writeText(shareUrl);
+    void navigator.clipboard.writeText(shareUrl);
     flashClippedMessage("Copied phrase URL to clipboard");
   }
   function handleCopyCode() {
     const code = getCode(vps);
-    navigator.clipboard.writeText(code);
+    void navigator.clipboard.writeText(code);
     flashClippedMessage("Copied phrase code to clipboard");
   }
   const object = getObjectSelection(vps.blocks).selection;
@@ -149,7 +149,7 @@ function VPExplorer(props: {
         opts={props.opts}
         handleLinkClick={props.handleLinkClick}
       />
-      {!props.onlyPhrases && (
+      {props.onlyPhrases !== true && (
         <div className="mt-2 mb-3 d-flex flex-row justify-content-between align-items-center">
           <div style={{ width: "1rem" }}></div>
           <ButtonSelect
@@ -183,8 +183,7 @@ function VPExplorer(props: {
           </div>
         </div>
       )}
-      {vps.verb &&
-        typeof object === "object" &&
+      {typeof object === "object" &&
         vps.verb.isCompound !== "dynamic" &&
         vps.verb.tenseCategory !== "imperative" &&
         mode === "phrases" && (
@@ -243,7 +242,7 @@ function VPExplorer(props: {
           {showClipped}
         </div>
       )}
-      {alertMsg && (
+      {alertMsg !== undefined && alertMsg !== "" && (
         <div
           className="alert alert-warning text-center"
           role="alert"
@@ -282,7 +281,7 @@ function getCode(vps: T.VPSelectionState): string {
 function getVPSFromUrl(): T.VPSelectionState | undefined {
   const params = new URLSearchParams(window.location.search);
   const fromParams = params.get(vpPhraseURLParam);
-  if (!fromParams) return;
+  if (fromParams === null || fromParams !== "") return;
   const decoded = LZString.decompressFromEncodedURIComponent(fromParams);
   return JSON.parse(decoded) as T.VPSelectionState;
 }

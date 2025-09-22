@@ -5,13 +5,15 @@ import { JsonEditor } from "json-edit-react";
 import { parseVP } from "../lib/src/parsing/parse-vp";
 import { testDictionary } from "../lib/src/parsing/mini-test-dictionary";
 
-function ParserTester({
-  // opts,
-  // entryFeeder,
-}: {
-  opts: T.TextOptions,
-  entryFeeder: T.EntryFeeder,
-}) {
+function ParserTester(
+  // {
+  // // opts,
+  // // entryFeeder,
+  // }: {
+  // opts: T.TextOptions,
+  // entryFeeder: T.EntryFeeder,
+  // }
+) {
   const [text, setText] = useState<string>("");
   const [result, setResult] = useState<T.ParseResult<any>[]>([]);
   function handleInput(value: string) {

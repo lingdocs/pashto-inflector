@@ -16,8 +16,6 @@ const murKedul = testDictionary.verbEntryLookup("مړ کېدل")[0];
 const maredul = testDictionary.verbEntryLookup("مړېدل")[0];
 const murKawul = testDictionary.verbEntryLookup("مړ کول")[0];
 
-// TODO: parsing of seperated stative compounds!!
-
 const tests: {
   label: string;
   cases: {
@@ -228,7 +226,7 @@ describe("parsing participles", () => {
         const tokens = tokenizer(input);
         const res = parseNPAP(tokens, testDictionary);
         const bodies = res.map(({ body }) => body);
-        if (error) {
+        if (error === true) {
           expect(res.some((x) => x.errors.length));
           return;
         }

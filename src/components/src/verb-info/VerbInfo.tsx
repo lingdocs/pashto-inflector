@@ -87,7 +87,7 @@ export function RootsAndStems({
           margin: "0 auto",
           backgroundImage: `url(${fadedTree})`,
           backgroundRepeat: "no-repeat",
-          backgroundPosition: hidePastParticiple ? "50% 45%" : "50% 35%",
+          backgroundPosition: hidePastParticiple === true ? "50% 45%" : "50% 35%",
           backgroundSize: "50%",
         }}
       >
@@ -135,32 +135,32 @@ export function RootsAndStems({
             <div
               className={colClass}
               style={
-                highlighted?.includes("imperfective stem") ? highlight : {}
+                highlighted !== undefined && highlighted.includes("imperfective stem") ? highlight : {}
               }
             >
-              <div style={title as any}>
+              <div style={title}>
                 <div>Imperfective Stem</div>
               </div>
               <div style={indentR}>
                 <VerbInfoItemDisplay
                   item={pickPersInf(info.stem.imperfective, persInf)}
                   textOptions={textOptions}
-                  tails={!noTails}
+                  tails={noTails !== true}
                 />
               </div>
             </div>
             <div
               className={colClass}
-              style={highlighted?.includes("perfective stem") ? highlight : {}}
+              style={highlighted !== undefined && highlighted.includes("perfective stem") ? highlight : {}}
             >
-              <div style={title as any}>
+              <div style={title}>
                 <div>Perfective Stem</div>
               </div>
               <div style={indentR}>
                 <VerbInfoItemDisplay
                   item={pickPersInf(perfectiveStem, persInf)}
                   textOptions={textOptions}
-                  tails={!noTails}
+                  tails={noTails !== true}
                 />
               </div>
             </div>
@@ -169,10 +169,10 @@ export function RootsAndStems({
             <div
               className={colClass}
               style={
-                highlighted?.includes("imperfective root") ? highlight : {}
+                highlighted !== undefined && highlighted.includes("imperfective root") ? highlight : {}
               }
             >
-              <div style={title as any}>
+              <div style={title}>
                 <div>Imperfective Root</div>
               </div>
               <div style={indentR}>
@@ -184,10 +184,10 @@ export function RootsAndStems({
             </div>
             <div
               className={colClass}
-              style={highlighted?.includes("perfective root") ? highlight : {}}
+              style={highlighted !== undefined && highlighted.includes("perfective root") ? highlight : {}}
             >
               <div>
-                <div style={title as any}>
+                <div style={title}>
                   <div>Perfective Root</div>
                 </div>
                 <div style={indentR}>
@@ -199,12 +199,12 @@ export function RootsAndStems({
               </div>
             </div>
           </div>
-          {!hidePastParticiple && "participle" in info && (
+          {hidePastParticiple !== true && "participle" in info && (
             <div
               className="text-center"
-              style={highlighted?.includes("past participle") ? highlight : {}}
+              style={highlighted !== undefined && highlighted.includes("past participle") ? highlight : {}}
             >
-              <div style={title as any}>Past Participle</div>
+              <div style={title}>Past Participle</div>
               <VerbInfoItemDisplay
                 item={pickPersInf(info.participle.past, persInf)}
                 textOptions={textOptions}
@@ -237,7 +237,7 @@ function VerbInfo({
   const inf = noPersInfs(info.root.imperfective).long;
   return (
     <div className="my-3">
-      {!hideTypeInfo && <VerbTypeInfo info={info} textOptions={textOptions} />}
+      {hideTypeInfo !== true && <VerbTypeInfo info={info} textOptions={textOptions} />}
       <Hider
         showing={showingStemsAndRoots}
         label={`🌳 Roots and Stems for ${inf.p}`}

@@ -72,12 +72,12 @@ function EPExplorer(props: {
   }
   function handleCopyCode() {
     const code = getCode(eps);
-    navigator.clipboard.writeText(code);
+    void navigator.clipboard.writeText(code);
     flashClippedMessage("Copied phrase code to clipboard");
   }
   function handleCopyShareLink() {
     const shareUrl = getShareUrl(eps);
-    navigator.clipboard.writeText(shareUrl);
+    void navigator.clipboard.writeText(shareUrl);
     flashClippedMessage("Copied phrase URL to clipboard");
   }
   const phraseIsComplete = !!completeEPSelection(eps);
@@ -184,7 +184,7 @@ function getCode(eps: T.EPSelectionState): string {
 function getEPSFromUrl(): T.EPSelectionState | undefined {
   const params = new URLSearchParams(window.location.search);
   const fromParams = params.get(epPhraseURLParam);
-  if (!fromParams) return;
+  if (fromParams === null || fromParams === "") return;
   const decoded = LZString.decompressFromEncodedURIComponent(fromParams);
   return JSON.parse(decoded) as T.EPSelectionState;
 }

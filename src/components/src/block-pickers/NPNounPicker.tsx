@@ -170,7 +170,7 @@ function NPNounPicker(props: {
         <div className="h6">Noun</div>
         {!(
           props.noun &&
-          (props.noun.dynamicComplement || props.noun.genStativeComplement)
+          (props.noun.dynamicComplement === true || props.noun.genStativeComplement === true)
         ) ? (
           <div>
             <EntrySelect
@@ -183,22 +183,20 @@ function NPNounPicker(props: {
           </div>
         ) : (
           <div>
-            {props.noun && (
-              <div>
-                <div className="mb-2">
-                  Included in{" "}
-                  {props.noun.genStativeComplement ? "Gen. Stat." : "Dyn."}{" "}
-                  Compound:
-                </div>
-                <div className="mb-3 text-center">
-                  <InlinePs
-                    opts={props.opts}
-                    ps={{ p: props.noun.entry.p, f: props.noun.entry.f }}
-                  />
-                  <div className="text-muted">{props.noun.entry.e}</div>
-                </div>
+            <div>
+              <div className="mb-2">
+                Included in{" "}
+                {props.noun.genStativeComplement === true ? "Gen. Stat." : "Dyn."}{" "}
+                Compound:
               </div>
-            )}
+              <div className="mb-3 text-center">
+                <InlinePs
+                  opts={props.opts}
+                  ps={{ p: props.noun.entry.p, f: props.noun.entry.f }}
+                />
+                <div className="text-muted">{props.noun.entry.e}</div>
+              </div>
+            </div>
           </div>
         )}
         {props.noun && (

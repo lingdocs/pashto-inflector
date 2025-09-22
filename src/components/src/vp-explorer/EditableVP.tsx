@@ -50,7 +50,7 @@ function EditableVP({
   }
   return (
     <div className="mt-2 mb-4">
-      {!noEdit && (
+      {noEdit !== false && (
         <div
           className="text-left clickable mb-2"
           style={{ marginBottom: editing ? "0.5rem" : "-0.5rem" }}
@@ -77,14 +77,14 @@ function EditableVP({
         opts={opts}
         VPS={vps}
         justify="left"
-        onlyOne={allVariations ? false : "concat"}
+        onlyOne={allVariations === true ? false : "concat"}
         setForm={handleSetForm}
         onLengthChange={setSelectedLength}
-        length={allVariations ? undefined : selectedLength}
+        length={allVariations === true ? undefined : selectedLength}
         mode={mode}
         inlineFormChoice
       />
-      {sub && <div className="text-muted small">{sub}</div>}
+      {sub !== undefined && <div className="text-muted small">{sub}</div>}
     </div>
   );
 }

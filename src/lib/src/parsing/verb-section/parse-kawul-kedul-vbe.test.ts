@@ -794,7 +794,7 @@ function makeParsedVBE(props: {
       aspect: props.aspect,
       verb: props.verb,
       base: props.base,
-      ...(props.imperative
+      ...(props.imperative === true
         ? {
             imperative: props.imperative,
           }

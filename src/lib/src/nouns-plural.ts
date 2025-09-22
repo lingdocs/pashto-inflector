@@ -20,15 +20,23 @@ import { isMascNounEntry, isPattern1Entry } from "./type-predicates";
 function makePashtoPlural(
   word: T.DictionaryEntryNoFVars,
 ): T.PluralInflections | undefined {
-  if (!(word.ppp && word.ppf)) return undefined;
+  if (
+    !(
+      word.ppp !== undefined &&
+      word.ppp !== "" &&
+      word.ppf !== undefined &&
+      word.ppf !== ""
+    )
+  )
+    return undefined;
   const base = splitPsByVarients(makePsString(word.ppp, word.ppf));
   function getBaseAndO(): T.PluralInflectionSet {
     return [base, base.flatMap(addOEnding) as T.ArrayOneOrMore<T.PsString>];
   }
-  if (word.c?.includes("n. m.")) {
+  if (word.c?.includes("n. m.") === true) {
     return { masc: getBaseAndO() };
   }
-  if (word.c?.includes("n. f.")) {
+  if (word.c?.includes("n. f.") === true) {
     return { fem: getBaseAndO() };
   }
   // TODO: handle masculine and unisex
@@ -55,7 +63,15 @@ function makeBundledPlural(
 function makeArabicPlural(
   word: T.DictionaryEntryNoFVars,
 ): T.PluralInflections | undefined {
-  if (!(word.apf && word.app)) return undefined;
+  if (
+    !(
+      word.apf !== undefined &&
+      word.apf !== "" &&
+      word.app !== undefined &&
+      word.app !== ""
+    )
+  )
+    return undefined;
   const w = makePsString(word.app, word.apf);
   const plural = splitPsByVarients(w);
   const end = removeAccents(removeEndTick(word.apf).slice(-1));
@@ -66,7 +82,7 @@ function makeArabicPlural(
   ] as T.PluralInflectionSet;
   // feminine words that have arabic plurals stay feminine with the plural - ie مرجع - مراجع
   // but masculine words that appear feminine in the plural aren't femening with the Arabic plural - ie. نبي - انبیا
-  if (["i", "e", "a"].includes(end) && word.c?.includes("n. f.")) {
+  if (["i", "e", "a"].includes(end) && word.c?.includes("n. f.") === true) {
     return { fem: value };
   }
   return { masc: value };
@@ -86,7 +102,7 @@ export function makePlural(
     }
     return [plur, plur.flatMap(addOEnding) as T.ArrayOneOrMore<T.PsString>];
   }
-  if (w.c && w.c.includes("pl.")) {
+  if (w.c?.includes("pl.") === true) {
     const plural = addSecondInf(makePsString(w.p, w.f));
     // Typescript being dumb and not letting me do a typed variable for the key
     // could try refactoring with an updated TypeScript dependency
@@ -117,11 +133,14 @@ export function makePlural(
     animate?: boolean,
     shortSquish?: boolean,
   ): T.PluralInflectionSet {
-    if (shortSquish && (w.infap === undefined || w.infaf === undefined)) {
+    if (
+      shortSquish === true &&
+      (w.infap === undefined || w.infaf === undefined)
+    ) {
       throw new Error(`no irregular inflection info for ${w.p} - ${w.ts}`);
     }
     const b = removeAccents(
-      shortSquish
+      shortSquish === true
         ? makePsString(
             (w.infap as string).slice(0, -1),
             (w.infaf as string).slice(0, -1),
@@ -134,7 +153,7 @@ export function makePlural(
     return addSecondInf(
       concatPsString(
         base,
-        animate && !shortSquish
+        animate === true && shortSquish !== true
           ? { p: "ان", f: "áan" }
           : { p: "ونه", f: "óona" },
       ),
@@ -219,15 +238,17 @@ export function makePlural(
   //   };
   // }
 
-  const shortSquish = !!w.infap && !w.infap.includes("ا");
+  const shortSquish =
+    w.infap !== undefined && w.infap !== "" && !w.infap.includes("ا");
   const anim = w.c?.includes("anim.");
-  const type = w.c?.includes("unisex")
-    ? "unisex noun"
-    : w.c?.includes("n. m.")
-      ? "masc noun"
-      : w.c?.includes("n. f.")
-        ? "fem noun"
-        : "other";
+  const type =
+    w.c?.includes("unisex") === true
+      ? "unisex noun"
+      : w.c?.includes("n. m.") === true
+        ? "masc noun"
+        : w.c?.includes("n. f.") === true
+          ? "fem noun"
+          : "other";
   if (pashtoPlural) {
     return {
       plural: pashtoPlural,
@@ -236,14 +257,14 @@ export function makePlural(
   }
   if (type === "unisex noun") {
     // doesn't need to be labelled anim - because it's only with animate nouns that you get the unisex - I THINK
-    if (endsInConsonant(w) && !w.infap) {
+    if ((endsInConsonant(w) && w.infap === undefined) || w.infap === "") {
       return {
         arabicPlural,
         bundledPlural,
         plural: addAnimUnisexPluralSuffix(),
       };
     }
-    if (shortSquish && !anim) {
+    if (shortSquish && anim !== true) {
       return {
         arabicPlural,
         plural: { masc: addMascPluralSuffix(anim, shortSquish) },
@@ -257,7 +278,9 @@ export function makePlural(
   }
   if (
     type === "masc noun" &&
-    (shortSquish || ((endsInConsonant(w) || hasShwaEnding(w)) && !w.infap)) &&
+    (shortSquish ||
+      ((endsInConsonant(w) || hasShwaEnding(w)) && w.infap === undefined) ||
+      w.infap === "") &&
     w.p.slice(-3) !== "توب"
   ) {
     return {
@@ -268,7 +291,11 @@ export function makePlural(
       },
     };
   }
-  if (type === "masc noun" && endsWith({ p: "ی", f: "áy" }, w, true) && anim) {
+  if (
+    type === "masc noun" &&
+    endsWith({ p: "ی", f: "áy" }, w, true) &&
+    anim === true
+  ) {
     const { masc } = addAnimN3UnisexPluralSuffix();
     return {
       arabicPlural,
@@ -285,7 +312,10 @@ export function makePlural(
     };
   }
   // TODO: What about endings in long ee / animate at inanimate
-  if (type === "masc noun" && endsInAaOrOo(w) && !w.infap) {
+  if (
+    (type === "masc noun" && endsInAaOrOo(w) && w.infap === undefined) ||
+    w.infap === ""
+  ) {
     return {
       arabicPlural,
       plural: {
@@ -294,7 +324,10 @@ export function makePlural(
     };
   }
   // TODO: What about endings in long ee / animate at inanimate
-  if (type === "fem noun" && endsInAaOrOo(w) && !w.infap) {
+  if (
+    (type === "fem noun" && endsInAaOrOo(w) && w.infap === undefined) ||
+    w.infap === ""
+  ) {
     return {
       arabicPlural,
       plural: {
@@ -304,7 +337,7 @@ export function makePlural(
   }
   if (
     type === "fem noun" &&
-    (endsWith({ p: "ي" }, w) || (endsWith({ p: "ۍ" }, w) && anim))
+    (endsWith({ p: "ي" }, w) || (endsWith({ p: "ۍ" }, w) && anim === true))
   ) {
     return {
       arabicPlural,

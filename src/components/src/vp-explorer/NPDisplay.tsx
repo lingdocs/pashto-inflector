@@ -45,7 +45,7 @@ function NPDisplay({
   const pashto = getPashtoFromRendered(rendered, false);
   const result = {
     ps: pashto,
-    e: [english || ""],
+    e: [english ?? ""],
   };
   return (
     <div className={`text-${justify ? justify : "center"} mt-1`}>
@@ -61,7 +61,7 @@ function NPDisplay({
           opts={opts}
           compiled={result}
           justify={justify}
-          onlyOne={!!onlyOne}
+          onlyOne={onlyOne !== undefined && onlyOne !== false}
         />
       ) : (
         <NPBlockDisplay
@@ -71,23 +71,20 @@ function NPDisplay({
           script={script}
         />
       )}
-      {result.e && (
-        <div
-          className={`text-muted mt-2 text-${
-            justify === "left"
-              ? "left"
-              : justify === "right"
-              ? "right"
-              : "center"
+      <div
+        className={`text-muted mt-2 text-${justify === "left"
+          ? "left"
+          : justify === "right"
+            ? "right"
+            : "center"
           }`}
-        >
-          {onlyOne === "concat"
-            ? result.e.join(" • ")
-            : onlyOne
+      >
+        {onlyOne === "concat"
+          ? result.e.join(" • ")
+          : onlyOne === true
             ? [result.e[0]]
             : result.e.map((e, i) => <div key={i}>{e}</div>)}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -105,14 +102,12 @@ function NPBlockDisplay({
 }) {
   return (
     <div
-      className={`d-flex flex-row justify-content-${
-        justify ? justify : "center"
-      }`}
+      className={`d-flex flex-row justify-content-${justify ? justify : "center"
+        }`}
     >
       <div
-        className={`d-flex flex-row${
-          script === "p" ? "-reverse" : ""
-        } justify-content-left align-items-end mt-3 pb-2`}
+        className={`d-flex flex-row${script === "p" ? "-reverse" : ""
+          } justify-content-left align-items-end mt-3 pb-2`}
         style={{ overflowX: "auto" }}
       >
         <NPBlock opts={opts} script={script}>

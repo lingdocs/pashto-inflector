@@ -28,7 +28,7 @@ function SingleItemDisplay({
       <div>
         <Phonetics opts={textOptions} ps={item} />
       </div>
-      {eng && <div className="text-muted">{eng}</div>}
+      {eng !== undefined && eng !== "" && <div className="text-muted">{eng}</div>}
     </div>
   );
 }

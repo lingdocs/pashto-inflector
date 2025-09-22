@@ -58,7 +58,7 @@ function nounAdjLookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   if (key === "ppp") {
     return nounsAdjs.filter(
       (e) =>
-        e.ppp &&
+        e.ppp !== undefined &&
         e.ppp
           .split(",")
           .map((w) => w.trim())
@@ -68,14 +68,14 @@ function nounAdjLookup(s: Partial<T.DictionaryEntry>): T.DictionaryEntry[] {
   if (key === "ppp") {
     return nounsAdjs.filter(
       (e) =>
-        e.app &&
+        e.app !== undefined &&
         e.app
           .split(",")
           .map((w) => w.trim())
           .includes(value as string),
     );
   }
-  // @ts-ignore
+  // @ts-expect-error because
   return nounsAdjs.filter((e) => e[key] === value);
 }
 
@@ -157,39 +157,45 @@ function verbLookup(input: string): T.VerbEntry[] {
           entry.p,
         ) ||
         [s, sAddedAa].includes(entry.p) ||
-        [s, sAddedAa].includes(entry.psp || "") ||
-        [s, sAddedAa].includes(entry.prp || "") ||
-        [s, sAddedAa].includes(entry.ssp || ""),
+        [s, sAddedAa].includes(entry.psp ?? "") ||
+        [s, sAddedAa].includes(entry.prp ?? "") ||
+        [s, sAddedAa].includes(entry.ssp ?? ""),
     );
   }
   return verbs.filter(
     ({ entry }) =>
-      [s, sAddedAa].includes(entry.p.slice(0, -1)) ||
-      // for short intransitive forms
-      [s, sAddedAa].includes(entry.p.slice(0, -3)) ||
-      [s, sAddedAa].includes(entry.p) ||
-      (checkTpp &&
-        [input, fromAawu, sAddedAa].includes(entry.p.slice(0, -1))) ||
-      (entry.tppp &&
-        arraysHaveCommon(
-          [input, inputWoutOo, sAddedAa, inputAddedAa],
-          splitVarients(entry.tppp),
-        )) ||
-      [s, sAddedAa].includes(entry.psp || "") ||
-      arraysHaveCommon([entry.prp, entry.prp?.slice(0, -1)], [s, sAddedAa]) ||
-      [s, sAddedAa].includes(entry.ssp || "") ||
-      (entry.separationAtP &&
-        // TODO this is super ugly, do check of short and long function
-        (entry.p.slice(entry.separationAtP) === s ||
-          entry.p.slice(entry.separationAtP, -1) === s ||
-          (checkTpp && entry.p.slice(entry.separationAtP, -1) === input) ||
-          entry.psp?.slice(entry.separationAtP) === s ||
-          (entry.prp &&
-            [
-              entry.prp.slice(entry.separationAtP),
-              entry.prp.slice(entry.separationAtP).slice(0, -1),
-            ].includes(s)) ||
-          (entry.ssp && entry.ssp.slice(entry.separationAtP) === s))),
+      !!(
+        [s, sAddedAa].includes(entry.p.slice(0, -1)) ||
+        // for short intransitive forms
+        [s, sAddedAa].includes(entry.p.slice(0, -3)) ||
+        [s, sAddedAa].includes(entry.p) ||
+        (checkTpp &&
+          [input, fromAawu, sAddedAa].includes(entry.p.slice(0, -1))) ||
+        (entry.tppp !== undefined &&
+          arraysHaveCommon(
+            [input, inputWoutOo, sAddedAa, inputAddedAa],
+            splitVarients(entry.tppp),
+          )) ||
+        [s, sAddedAa].includes(entry.psp ?? "") ||
+        arraysHaveCommon([entry.prp, entry.prp?.slice(0, -1)], [s, sAddedAa]) ||
+        [s, sAddedAa].includes(entry.ssp ?? "") ||
+        (entry.separationAtP !== undefined &&
+          entry.separationAtP !== 0 &&
+          // TODO this is super ugly, do check of short and long function
+          (entry.p.slice(entry.separationAtP) === s ||
+            entry.p.slice(entry.separationAtP, -1) === s ||
+            (checkTpp && entry.p.slice(entry.separationAtP, -1) === input) ||
+            (entry.psp !== undefined &&
+              entry.psp.slice(entry.separationAtP) === s) ||
+            (entry.prp !== undefined &&
+              entry.prp !== "" &&
+              [
+                entry.prp.slice(entry.separationAtP),
+                entry.prp.slice(entry.separationAtP).slice(0, -1),
+              ].includes(s)) ||
+            (entry.ssp !== undefined &&
+              entry.ssp.slice(entry.separationAtP) === s)))
+      ),
   );
 }
 

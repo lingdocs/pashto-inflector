@@ -24,9 +24,9 @@ const minifyTableGender = (
 ): Array<
   | T.PersonLine
   | {
-      masc: T.PersonLine;
-      fem: T.PersonLine;
-    }
+    masc: T.PersonLine;
+    fem: T.PersonLine;
+  }
 > => {
   // @ts-expect-error because
   return block.reduce((table, person, i, src) => {
@@ -38,7 +38,7 @@ const minifyTableGender = (
     const femPersIsTheSame =
       psStringEquals(person[0][0], femPersAhead[0][0]) &&
       psStringEquals(person[1][0], femPersAhead[1][0]);
-    if (femPersAhead && !femPersIsTheSame) {
+    if (femPersAhead !== undefined && !femPersIsTheSame) {
       return [
         ...table,
         {
@@ -60,7 +60,7 @@ function VerbTable({
   english?: T.EnglishBlock | string;
   textOptions: T.TextOptions;
 }) {
-  const blockWEng = english ? addEnglish(english, block) : block;
+  const blockWEng = english !== undefined ? addEnglish(english, block) : block;
   if (
     isSentenceForm(blockWEng) ||
     isAllOne(blockWEng as T.VerbBlock | T.ImperativeBlock)
@@ -68,9 +68,9 @@ function VerbTable({
     const item = isSentenceForm(blockWEng)
       ? (block as unknown as T.ArrayOneOrMore<T.PsString>)
       : (() => {
-          const b = block as T.ImperativeBlock | T.VerbBlock;
-          return b[0][0];
-        })();
+        const b = block as T.ImperativeBlock | T.VerbBlock;
+        return b[0][0];
+      })();
     return (
       <table className="table text-center">
         <tbody>
@@ -118,10 +118,10 @@ function VerbTable({
           }
           return "masc" in person
             ? [
-                ...rows,
-                drawRow({ line: person.masc, gender: "masc" }),
-                drawRow({ line: person.fem, gender: "fem" }),
-              ]
+              ...rows,
+              drawRow({ line: person.masc, gender: "masc" }),
+              drawRow({ line: person.fem, gender: "fem" }),
+            ]
             : [...rows, drawRow({ line: person })];
         }, [])}
       </tbody>

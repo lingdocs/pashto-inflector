@@ -51,7 +51,7 @@ function getFstSndPersEqs(s: string): EqInfo[] {
   if (!tenses.length) {
     return [];
   }
-  const persons = getFirstSecPersonsEndings(s.at(-1) || "");
+  const persons = getFirstSecPersonsEndings(s.at(-1) ?? "");
   if (!persons.length) {
     return [];
   }
@@ -127,7 +127,7 @@ function getThirdPersEqs(s: string): EqInfo[] {
     (s.length === 3 && s.startsWith("ول")) ||
     (s.length === 2 && s.startsWith("و"))
   ) {
-    const persons = getThirdPastEndings(s.at(-1) || "");
+    const persons = getThirdPastEndings(s.at(-1) ?? "");
     return persons.length
       ? [
           {

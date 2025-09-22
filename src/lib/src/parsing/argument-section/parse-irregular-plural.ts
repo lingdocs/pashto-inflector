@@ -39,7 +39,10 @@ export function parseIrregularPlural(
   const inflectedAfterLong = first.endsWith("وو")
     ? dictionary
         .specialPluralLookup(first.slice(0, -2))
-        .filter((e) => tp.isNounEntry(e) && e.app?.endsWith("ا"))
+        .filter(
+          (e) =>
+            tp.isNounEntry(e) && e.app !== undefined && e.app.endsWith("ا"),
+        )
         .map<T.ParsedNounWord<T.NounEntry>>((entry) => ({
           entry,
           gender: tp.isFemNounEntry(entry) ? "fem" : "masc",
@@ -62,7 +65,10 @@ export function parseIrregularPlural(
       },
       dictionary
         .specialPluralLookup(first)
-        .filter((e) => tp.isNounEntry(e) && e.app?.endsWith("ا"))
+        .filter(
+          (e) =>
+            tp.isNounEntry(e) && e.app !== undefined && e.app.endsWith("ا"),
+        )
         .map<T.ParsedNounWord<T.NounEntry>>((entry) => ({
           entry,
           gender: tp.isFemNounEntry(entry) ? "fem" : "masc",
@@ -87,6 +93,13 @@ export function parseIrregularPlural(
 }
 
 function hasMasculineArabicPlural(e: T.FemNounEntry): boolean {
-  if (!e.app || !e.apf) return false;
+  if (
+    e.app === undefined ||
+    e.app === "" ||
+    e.apf === undefined ||
+    e.apf === ""
+  ) {
+    return false;
+  }
   return endsInConsonant({ p: e.app, f: e.apf });
 }

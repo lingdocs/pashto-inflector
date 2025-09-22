@@ -25,11 +25,11 @@ export function makeVerbSelectOption(e: T.VerbEntry, opts: T.TextOptions): { val
   const engV = (() => {
     try {
       return getEnglishVerb(e.entry);
-    } catch (e) {
+    } catch (err) { // eslint-disable-line @typescript-eslint/no-unused-vars
       console.error("no english conjugations for verb");
     }
   })();
-  const eng = engV || truncateEnglish(e.entry.e);
+  const eng = engV ?? truncateEnglish(e.entry.e);
   const ps = plainTextPsAdjustment(
     { p: e.entry.p, f: removeFVarients(e.entry.f) },
     opts,
@@ -43,7 +43,7 @@ export function makeVerbSelectOption(e: T.VerbEntry, opts: T.TextOptions): { val
 function plainTextPsAdjustment(ps: T.PsString, opts: T.TextOptions): T.PsString {
   function getP(ps: T.PsString): string {
     const p = opts.diacritics
-      ? (phoneticsToDiacritics(ps.p, ps.f) || ps.p)
+      ? (phoneticsToDiacritics(ps.p, ps.f) ?? ps.p)
       : ps.p;
     return convertSpelling(p, opts.spelling);
   }
@@ -55,7 +55,6 @@ function plainTextPsAdjustment(ps: T.PsString, opts: T.TextOptions): T.PsString 
       ? f
       : translatePhonetics(f, {
         dialect: opts.dialect,
-        // @ts-ignore - weird TS not picking up the elimination of "none herre"
         system: opts.phonetics,
       });
   }
@@ -79,7 +78,7 @@ export function makeSelectOption(
       return (isVerbEntry(e))
         ? (getEnglishParticiple(e.entry))
         : getEnglishWord(e);
-    } catch (err) {
+    } catch (err) { // eslint-disable-line @typescript-eslint/no-unused-vars
       return "";
     }
   })();

@@ -1,10 +1,4 @@
-/**
- * Copyright (c) 2021 lingdocs.com
- *
- * This source code is licensed under the GPL3 license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+/* eslint-disable */
 
 import * as T from "../../../types";
 import type { JSX } from "react";
@@ -25,14 +19,14 @@ export function psJSXMap2<T>(
   return {
     p: jsxMap(ps.p, f),
     f: jsxMap(ps.f, f),
-    ...(ps.e
+    ...(ps.e !== undefined
       ? {
-        e: onlyPf ? ps.e : jsxMap(ps.e, f),
+        e: onlyPf === true ? ps.e : jsxMap(ps.e, f),
       }
       : {}),
-    ...(ps.sub
+    ...(ps.sub !== undefined
       ? {
-        e: onlyPf ? ps.sub : jsxMap(ps.sub, f),
+        e: onlyPf === true ? ps.sub : jsxMap(ps.sub, f),
       }
       : {}),
   };

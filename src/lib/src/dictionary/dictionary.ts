@@ -17,7 +17,7 @@ function queryP(p: string): T.DictionaryEntry[] {
   if (!dictDb.collection) {
     return [];
   }
-  return dictDb.collection.find({ p });
+  return dictDb.collection.find({ p }); // eslint-disable-line
 }
 const memoizedQueryP = memoize(queryP);
 
@@ -52,7 +52,7 @@ function otherLookup(
   if (!dictDb.collection) {
     return [];
   }
-  return dictDb.collection.find({ [key]: regex ? variationRegex(p) : p });
+  return dictDb.collection.find({ [key]: regex ? variationRegex(p) : p }); // eslint-disable-line
 }
 
 function specialPluralLookup(p: string): T.NounEntry[] {
@@ -84,7 +84,7 @@ function finishVerbEntryLookup(entry: T.DictionaryEntry): T.VerbEntry[] {
   // as I started catching and observing the errors, they ceased
   // to exist. Changing the behavior once observed like some kind
   // of insane quantum mechanics experiment
-  if (entry.l) {
+  if (entry.l !== undefined) {
     const { l, err } = (() => {
       try {
         return { l: memoizedQueryTs(entry.l), err: undefined };
@@ -96,7 +96,7 @@ function finishVerbEntryLookup(entry: T.DictionaryEntry): T.VerbEntry[] {
         };
       }
     })();
-    if (err) {
+    if (err !== undefined && err !== "") {
       return [{ entry }];
     }
     return [{ entry, complement: l }];

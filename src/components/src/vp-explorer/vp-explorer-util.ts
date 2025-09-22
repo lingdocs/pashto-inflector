@@ -12,7 +12,7 @@ import {
 } from "../../../lib/src/type-predicates";
 
 export function getRandomTense(
-  o?: T.PerfectTense | T.VerbTense | T.AbilityTense | T.ImperativeTense
+  o?: T.PerfectTense | T.VerbTense | T.AbilityTense | T.ImperativeTense,
 ): T.PerfectTense | T.VerbTense | T.AbilityTense | T.ImperativeTense {
   let tns: T.PerfectTense | T.VerbTense | T.AbilityTense | T.ImperativeTense;
   const oldTenseCategory = !o ? undefined : getTenseCategory(o);
@@ -20,21 +20,22 @@ export function getRandomTense(
     oldTenseCategory === "perfect"
       ? perfectTenseOptions
       : oldTenseCategory === "modal"
-      ? verbTenseOptions.map((x) => ({
-          ...x,
-          value: `${x.value}Modal` as T.AbilityTense,
-        }))
-      : oldTenseCategory === "imperative"
-      ? imperativeTenseOptions
-      : verbTenseOptions;
+        ? verbTenseOptions.map((x) => ({
+            ...x,
+            value: `${x.value}Modal`,
+          }))
+        : oldTenseCategory === "imperative"
+          ? imperativeTenseOptions
+          : verbTenseOptions;
   do {
-    tns = tenseOptions[Math.floor(Math.random() * tenseOptions.length)].value;
+    tns = tenseOptions[Math.floor(Math.random() * tenseOptions.length)]
+      .value as T.VerbTense;
   } while (o === tns);
   return tns;
 }
 
 export function getTenseCategory(
-  tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense
+  tense: T.VerbTense | T.PerfectTense | T.AbilityTense | T.ImperativeTense,
 ): "basic" | "perfect" | "modal" | "imperative" {
   if (isPerfectTense(tense)) {
     return "perfect";

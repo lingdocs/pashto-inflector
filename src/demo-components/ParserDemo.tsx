@@ -101,14 +101,14 @@ function ParserDemo({
       setResult([]);
       setErrors([]);
       setNoneFound(false);
-      debounced("");
+      void debounced("");
       return;
     }
     setText(value);
     setResult([]);
     setErrors([]);
     setNoneFound(false);
-    debounced(value);
+    void debounced(value);
   }
   function setPhrase(phrase: T.EPSelectionState | T.VPSelectionState) {
     if ("predicate" in phrase) {

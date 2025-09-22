@@ -47,7 +47,7 @@ function VerbInfoItemDisplay({
             <span className="mx-1"> __ </span>
             <Pashto
               opts={textOptions}
-              ps={tails ? addTails(text[1]) : text[1]}
+              ps={tails === true ? addTails(text[1]) : text[1]}
             />
           </div>
           <div className="text-center">
@@ -55,17 +55,17 @@ function VerbInfoItemDisplay({
             <span className="mx-1"> __ </span>
             <Phonetics
               opts={textOptions}
-              ps={tails ? addTails(text[1]) : text[1]}
+              ps={tails === true ? addTails(text[1]) : text[1]}
             />
           </div>
         </div>
       ) : (
         <div>
           <div className="text-center">
-            <Pashto opts={textOptions} ps={tails ? addTails(text) : text} />
+            <Pashto opts={textOptions} ps={tails === true ? addTails(text) : text} />
           </div>
           <div className="text-center">
-            <Phonetics opts={textOptions} ps={tails ? addTails(text) : text} />
+            <Phonetics opts={textOptions} ps={tails === true ? addTails(text) : text} />
           </div>
         </div>
       )}
@@ -78,11 +78,11 @@ function VerbInfoItemDisplay({
               { label: "Short", value: "short" },
               ...("mini" in item
                 ? [
-                    {
-                      label: "Mini",
-                      value: "mini",
-                    },
-                  ]
+                  {
+                    label: "Mini",
+                    value: "mini",
+                  },
+                ]
                 : []),
             ]}
             value={length}

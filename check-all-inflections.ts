@@ -16,7 +16,7 @@ type InflectionError = {
 async function checkAll() {
   console.log("Checking inflection functions on all dictionary words");
   const res = await fetch(process.env.LINGDOCS_DICTIONARY_URL + ".json");
-  const { entries }: T.Dictionary = await res.json();
+  const { entries }: T.Dictionary = (await res.json()) as T.Dictionary;
   const errors: InflectionError[] = [];
 
   entries.forEach((entry) => {
@@ -27,14 +27,15 @@ async function checkAll() {
         ts: entry.ts,
         p: entry.p,
         f: entry.f,
-        err: e.toString(),
+        err: e.toString(), // eslint-disable-line
       });
     }
     if (tp.isVerbDictionaryEntry(entry)) {
-      const complement = entry.l
-        ? entries.find((e) => e.ts === entry.l)
-        : undefined;
-      if (entry.l && !complement) {
+      const complement =
+        entry.l !== undefined
+          ? entries.find((e) => e.ts === entry.l)
+          : undefined;
+      if (entry.l !== undefined && !complement) {
         errors.push({
           ts: entry.ts,
           p: entry.p,
@@ -49,7 +50,7 @@ async function checkAll() {
             ts: entry.ts,
             p: entry.p,
             f: entry.f,
-            err: e,
+            err: e, // eslint-disable-line
           });
         }
       }
@@ -58,13 +59,15 @@ async function checkAll() {
   return errors;
 }
 
-checkAll().then((errors) => {
-  if (errors.length) {
-    console.log(
-      "The following errors occured while inflecting all dictionary words",
-    );
-    console.log(errors);
-    process.exit(1);
-  }
-  console.log("No errors occured while inflecting all dictionary words");
-});
+checkAll()
+  .then((errors) => {
+    if (errors.length) {
+      console.log(
+        "The following errors occured while inflecting all dictionary words",
+      );
+      console.log(errors);
+      process.exit(1);
+    }
+    console.log("No errors occured while inflecting all dictionary words");
+  })
+  .catch(console.error);

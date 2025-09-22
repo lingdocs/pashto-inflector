@@ -118,11 +118,11 @@ export function fmapSingleOrLengthOpts<A, B>(
   f: (x: A) => B,
   x: T.SingleOrLengthOpts<A>,
 ): T.SingleOrLengthOpts<B> {
-  if (x && typeof x === "object" && "long" in x) {
+  if (typeof x === "object" && x !== null && "long" in x) {
     return {
       long: f(x.long),
       short: f(x.short),
-      ...("mini" in x && x.mini
+      ...("mini" in x && x.mini !== undefined
         ? {
             mini: f(x.mini),
           }
@@ -186,12 +186,12 @@ export function applySingleOrLengthOpts<A, B>(
   f: T.SingleOrLengthOpts<(a: A) => B>,
   a: T.SingleOrLengthOpts<A>,
 ): T.SingleOrLengthOpts<B> {
-  if (f && "long" in f) {
-    if (a && typeof a === "object" && "long" in a) {
+  if ("long" in f) {
+    if (typeof a === "object" && a !== null && "long" in a) {
       return {
         long: fmapSingleOrLengthOpts(f.long, a.long) as B,
         short: fmapSingleOrLengthOpts(f.short, a.short) as B,
-        ...(a.mini
+        ...(a.mini !== undefined
           ? {
               mini: fmapSingleOrLengthOpts(f.mini || f.short, a.mini) as B,
             }

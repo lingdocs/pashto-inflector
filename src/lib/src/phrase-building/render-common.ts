@@ -10,7 +10,7 @@ export function findPossesivesToShrink(
     | T.VPSBlockComplete
     | T.ComplementSelection
     | T.UnselectedComplementSelection
-  )[]
+  )[],
 ): T.MiniPronoun[] {
   return blocks.reduce((kids, item) => {
     const block = "block" in item ? item.block : item;
@@ -33,11 +33,11 @@ export function findPossesivesToShrink(
         block.selection.type === "sandwich"
           ? findShrunkenPossInNP(block.selection.inside)
           : block.selection.type === "possesor"
-          ? findShrunkenPossInNP(block.selection.np)
-          : block.selection.type === "NP"
-          ? findShrunkenPossInNP(block.selection)
-          : [];
-      return toAdd ? [...kids, ...toAdd] : kids;
+            ? findShrunkenPossInNP(block.selection.np)
+            : block.selection.type === "NP"
+              ? findShrunkenPossInNP(block.selection)
+              : [];
+      return toAdd.length ? [...kids, ...toAdd] : kids;
     }
     return kids;
   }, [] as T.MiniPronoun[]);
