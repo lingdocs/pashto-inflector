@@ -58,7 +58,6 @@ export function parseVerbSection(
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ): T.ParseResult<VerbSectionData>[] {
-  console.log("parseVerbSection");
   if (!tokensExist(tokens)) {
     return [];
   }

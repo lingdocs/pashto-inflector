@@ -1,10 +1,12 @@
 import js from "@eslint/js";
+import gitignore from "eslint-config-flat-gitignore";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default [
+  gitignore(),
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   {
@@ -17,7 +19,6 @@ export default [
   },
   {
     files: ["**/*.{ts,tsx}"],
-    ignores: ["dist", ".yarn", ".github", "node_modules", "jest.config.js"],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,

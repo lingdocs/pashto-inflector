@@ -9,7 +9,7 @@ import {
 import { parseComplement } from "./parse-complement";
 import { assertNever } from "../../misc-helpers";
 
-type ArgSectionData = {
+export type ArgSectionData = {
   kids: { position: number; section: T.ParsedKid[] }[];
   npsAndAps: (T.ParsedNP | T.APSelection)[];
   complement: T.ParsedComplementSelection | undefined;

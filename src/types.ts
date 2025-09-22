@@ -1271,6 +1271,11 @@ export type Parser<R> = (
   dictionary: DictionaryAPI,
 ) => ParseResult<R>[];
 
+export type EvaluatorResult<R> = {
+  body: R;
+  errors: ParseError[];
+};
+
 export type ParsedNounWord<N extends NounEntry> = {
   inflected: boolean;
   plural: boolean;

@@ -32,6 +32,66 @@ export function bindParseResult<C, D>(
   );
 }
 
+export function bindParser<C, D>(
+  parser: T.Parser<C>,
+  f: (tokens: T.Tokens, r: T.WithPos<C>) => T.ParseResult<D>[],
+): T.Parser<D> {
+  return (tkns: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<D>[] =>
+    tokensExist(tkns) ? bindParseResult(parser(tkns, dictionary), f) : [];
+}
+
+export function mapParser<C, D>(
+  parser: T.Parser<C>,
+  f: (c: C) => D,
+): T.Parser<D> {
+  return (tkns: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<D>[] =>
+    parser(tkns, dictionary).map((x) => ({
+      ...x,
+      body: f(x.body),
+    }));
+}
+
+export function returnParser<C>(value: C): T.Parser<C> {
+  return (tkns: T.Tokens, _: T.DictionaryAPI): T.ParseResult<C>[] =>
+    returnParseResult(tkns, value, nulPosFromTokens(tkns));
+}
+
+export function filterParser<C>(
+  parser: T.Parser<C>,
+  p: (r: T.ParseResult<C>, dictionary: T.DictionaryAPI) => boolean,
+): T.Parser<C> {
+  return (tkns: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<C>[] => {
+    const res = parser(tkns, dictionary);
+    return res.filter((x) => p(x, dictionary));
+  };
+}
+
+export function bindParserToEvaluator<C, D>(
+  parser: T.Parser<C>,
+  evaluator: (
+    c: T.WithPos<C>,
+    dictionary: T.DictionaryAPI,
+  ) => T.EvaluatorResult<D>[],
+): T.Parser<D> {
+  return (tkns: T.Tokens, dictionary: T.DictionaryAPI) =>
+    bindParseResult(parser(tkns, dictionary), (t, r) =>
+      evaluator(r, dictionary).flatMap((v) =>
+        returnParseResult(t, v.body, r.position, v.errors),
+      ),
+    );
+}
+
+export function bindEvalResultToEval<C, D>(
+  result: T.EvaluatorResult<C>[],
+  evaluator: (c: C) => T.EvaluatorResult<D>[],
+): T.EvaluatorResult<D>[] {
+  return cleanOutEvalResults(
+    result.flatMap((x) =>
+      evaluator(x.body).map(addErrorsToEvalResult(x.errors)),
+    ),
+  );
+}
+
 export function bindParseResultDebug<C, D>(
   prev: T.ParseResult<C>[],
   f: (tokens: T.Tokens, r: T.WithPos<C>) => T.ParseResult<D>[],
@@ -108,6 +168,15 @@ export function addErrors<C>(errs: T.ParseError[]) {
   };
 }
 
+export function addErrorsToEvalResult<C>(errs: T.ParseError[]) {
+  return function (pr: T.EvaluatorResult<C>): T.EvaluatorResult<C> {
+    return {
+      body: pr.body,
+      errors: [...pr.errors, ...errs],
+    };
+  };
+}
+
 export function toParseError(message: string): T.ParseError {
   return { message };
 }
@@ -176,6 +245,22 @@ export function cleanOutResults<C>(
   return removeDuplicates(errorsCulled);
 }
 
+export function cleanOutEvalResults<C>(
+  results: T.EvaluatorResult<C>[],
+): T.EvaluatorResult<C>[] {
+  if (results.length === 0) {
+    return results;
+  }
+  let min = Infinity;
+  for (const a of results) {
+    if (a.errors.length < min) {
+      min = a.errors.length;
+    }
+  }
+  const errorsCulled = results.filter((x) => x.errors.length === min);
+  return removeEvalDuplicates(errorsCulled);
+}
+
 export function cleanOutResultsDebug<C>(
   results: T.ParseResult<C>[],
 ): T.ParseResult<C>[] {
@@ -201,13 +286,23 @@ function removeDuplicates<C>(results: T.ParseResult<C>[]): T.ParseResult<C>[] {
   return Array.from(new Set(results.map(JSON.stringify))).map(JSON.parse); // eslint-disable-line
 }
 
+function removeEvalDuplicates<C>(
+  results: T.EvaluatorResult<C>[],
+): T.EvaluatorResult<C>[] {
+  if (results.length === 0) {
+    return results;
+  }
+  // @ts-expect-error - bc
+  return Array.from(new Set(results.map(JSON.stringify))).map(JSON.parse); // eslint-disable-line
+}
+
 export type Parser<R> = (
   tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
 ) => T.ParseResult<R>[];
 
 export function parserCombOr<R>(parsers: Parser<R>[]) {
-  return (tokens: T.Tokens, dictionary: T.DictionaryAPI) =>
+  return (tokens: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<R>[] =>
     parsers.flatMap((p) => p(tokens, dictionary));
 }
 
@@ -273,19 +368,23 @@ export function parserCombSucc2<A, B>(
     tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
   ): T.ParseResult<[T.WithPos<A>, T.WithPos<B>]>[] =>
-    groupByTokenLength(parserA(tokens, dictionary)).flatMap((group) => {
-      // each "group" will have the same amount of leftover tokens, so we can just use
-      // the same successive parse for that next step, sparing redundant parses
-      const resB = parserB(group[0].tokens, dictionary);
-      return bindParseResult(group, (_, a) =>
-        bindParseResult(resB, (tkns2, b) =>
-          returnParseResult(tkns2, [a, b] as const, {
-            start: tokens.position,
-            end: tkns2.position,
-          }),
-        ),
-      );
-    });
+    tokensExist(tokens)
+      ? groupByTokenLength(parserA(tokens, dictionary)).flatMap((group) => {
+          // each "group" will have the same amount of leftover tokens, so we can just use
+          // the same successive parse for that next step, sparing redundant parses
+          const resB = tokensExist(group[0].tokens)
+            ? parserB(group[0].tokens, dictionary)
+            : [];
+          return bindParseResult(group, (_, a) =>
+            bindParseResult(resB, (tkns2, b) =>
+              returnParseResult(tkns2, [a, b] as const, {
+                start: tokens.position,
+                end: tkns2.position,
+              }),
+            ),
+          );
+        })
+      : [];
 }
 
 function groupByTokenLength<D>(
