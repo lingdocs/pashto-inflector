@@ -74,6 +74,7 @@ const anyTarget: Target = {
   numbers: ["singular", "plural"],
 };
 
+// TODO: WHY IS خفه نه شوم parsing as نه خفه کېدلم with the dictionary??
 // TODO!! mini-pronoun possesives in equative parsing!!
 // TODO!! پخې مې کړلې - renders as پخی مې کړلې
 
@@ -122,7 +123,7 @@ export function parseVP(
     return [];
   }
 
-  const res = parserCombSucc2([parseArgumentSection, parseVerbSection])(
+  const res = parserCombSucc2(parseArgumentSection, parseVerbSection)(
     tokens,
     dictionary,
   );

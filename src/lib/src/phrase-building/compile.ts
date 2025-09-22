@@ -494,7 +494,6 @@ function compileEnglishVP(VP: T.VPRendered): string[] | undefined {
     ? VP.englishBase
         .map((e) => {
           const EngSUBJ = getEnglishFromRendered(engSubj) ?? "";
-          console.log({ engSubj, EngSUBJ });
           return insertEWords(e, {
             // TODO: make sure we actually have the english
             subject: EngSUBJ,

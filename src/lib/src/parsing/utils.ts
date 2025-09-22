@@ -112,21 +112,6 @@ export function toParseError(message: string): T.ParseError {
   return { message };
 }
 
-// function groupByTokenLength<D>(
-//   results: T.ParseResult<D>[],
-// ): T.ParseResult<D>[][] {
-//   const buckets: Record<number, T.ParseResult<D>[]> = {};
-//   results.forEach((pr) => {
-//     const l = pr.tokens.position;
-//     if (!buckets[l]) {
-//       buckets[l] = [pr];
-//     } else {
-//       buckets[l].push(pr);
-//     }
-//   });
-//   return Object.values(buckets);
-// }
-
 export function returnParseResults<D>(
   tokens: T.Tokens,
   body: D[],
@@ -281,78 +266,42 @@ export function posFromAccumulator<R>(
 }
 
 export function parserCombSucc2<A, B>(
-  parsers: [Parser<A>, Parser<B>],
+  parserA: Parser<A>,
+  parserB: Parser<B>,
 ): Parser<[T.WithPos<A>, T.WithPos<B>]> {
-  return function (
+  return (
     tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
-  ): T.ParseResult<[T.WithPos<A>, T.WithPos<B>]>[] {
-    // TODO WITH GROUPING HERE!
-    // const res1 = parsers[0](tokens, dictionary);
-    // const groups = groupByTokenLength(res1).map((group) => {
-    //   const tokens2 = group[0].tokens;
-    //   const restParsed = parsers[1](tokens2, dictionary);
-    //   const mmm = group.map((resA) =>
-    //     bindParseResult(resA, (tokens3, a) =>
-    //       returnParseResult(tokens3, [a.body, b], {
-    //         start: a.position.start,
-    //         end: b.position.end,
-    //       }),
-    //     ),
-    //   );
-    // });
-
-    return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
-      bindParseResult(parsers[1](t, dictionary), (tk, b) =>
-        returnParseResult(tk, [a, b], {
-          start: a.position.start,
-          end: b.position.end,
-        }),
-      ),
-    );
-  };
+  ): T.ParseResult<[T.WithPos<A>, T.WithPos<B>]>[] =>
+    groupByTokenLength(parserA(tokens, dictionary)).flatMap((group) => {
+      // each "group" will have the same amount of leftover tokens, so we can just use
+      // the same successive parse for that next step, sparing redundant parses
+      const resB = parserB(group[0].tokens, dictionary);
+      return bindParseResult(group, (_, a) =>
+        bindParseResult(resB, (tkns2, b) =>
+          returnParseResult(tkns2, [a, b] as const, {
+            start: tokens.position,
+            end: tkns2.position,
+          }),
+        ),
+      );
+    });
 }
 
-// export function bindParseResultWParser<C, D, E>(
-//   prev: T.ParseResult<C>[],
-//   parser: (tokens: T.Tokens) => T.ParseResult<D>[],
-//   f: (res: C, parsed: D, tokens: T.Tokens) => T.ParseResult<E>[],
-// ): T.ParseResult<E>[] {
-//   const grouped = groupByTokenLength(prev);
-//   return cleanOutResults(
-//     grouped.flatMap((group) => {
-//       const parsed = cleanOutResults(parser(group[0].tokens));
-//       // console.log(group.length);
-//       // if (group.length > 1) {
-//       //   console.log(`Saved ${group.length - 1} parses`);
-//       // }
-//       return group.flatMap((prev) => {
-//         return parsed.flatMap((parse) =>
-//           f(prev.body, parse.body, parse.tokens).map(
-//             addErrors([...parse.errors, ...prev.errors]),
-//           ),
-//         );
-//       });
-//     }),
-//   );
-// }
-
-// export function parserCombSucc3<A, B, C>(
-//   parsers: [Parser<A>, Parser<B>, Parser<C>],
-// ): Parser<[A, B, C]> {
-//   return function (
-//     tokens: T.Tokens,
-//     dictionary: T.DictionaryAPI,
-//   ): T.ParseResult<[A, B, C]>[] {
-//     return bindParseResult(parsers[0](tokens, dictionary), (t, a) =>
-//       bindParseResult(parsers[1](t, dictionary), (tk, b) =>
-//         bindParseResult(parsers[2](tk, dictionary), (tkn, c) =>
-//           returnParseResult(tkn, [a, b, c]),
-//         ),
-//       ),
-//     );
-//   };
-// }
+function groupByTokenLength<D>(
+  results: T.ParseResult<D>[],
+): T.ParseResult<D>[][] {
+  const buckets: Record<number, T.ParseResult<D>[]> = {};
+  results.forEach((pr) => {
+    const l = pr.tokens.position;
+    if (buckets[l] === undefined) {
+      buckets[l] = [pr];
+    } else {
+      buckets[l].push(pr);
+    }
+  });
+  return Object.values(buckets);
+}
 
 export function isCompleteResult<C extends object>(
   r: T.ParseResult<C>,

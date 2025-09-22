@@ -33,10 +33,10 @@ export function parseNoun(
       // TODO: should make test to make sure that you can't do a standalone
       // demonstrative w a possesor
       singleDet && !possesor ? makeDemWOutNoun(tkns, singleDet) : [];
-    const adjsAndNoun = parserCombSucc2([
+    const adjsAndNoun = parserCombSucc2(
       parserCombMany(parseAdjective),
       parseNounWord,
-    ])(tkns, dictionary);
+    )(tkns, dictionary);
     const wNoun = fmapParseResult<
       [
         T.WithPos<T.WithPos<T.InflectableBaseParse<T.AdjectiveSelection>>[]>,
