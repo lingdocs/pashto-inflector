@@ -23,7 +23,7 @@ import ParserDemo from "./demo-components/ParserDemo";
 import TextDisplayDemo from "./demo-components/TextDisplayDemo";
 import ParserTester from "./demo-components/ParserTester";
 // import InflectionTable from "./components/src/InflectionsTable";
-const SHOW_PARSER_TESTER = true;
+const SHOW_PARSER_TESTER = false;
 
 function App() {
   const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(
@@ -172,7 +172,7 @@ function App() {
             showing={showing === "parser-tester"}
             handleChange={() => handleHiderClick("parser-tester")}
           >
-            <ParserTester opts={textOptions} entryFeeder={entryFeeder} />
+            <ParserTester />
           </Hider>}
           <Hider
             label="Pashto Text Display"

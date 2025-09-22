@@ -24,7 +24,7 @@ const kawulStat = vEntry({
   pprtf: "kúRay",
   noOo: true,
   ec: "make,makes,making,made,made",
-});
+} as T.VerbDictionaryEntry);
 const kawulDyn = vEntry({
   ts: 1527812752,
   i: 11031,
@@ -44,7 +44,7 @@ const kawulDyn = vEntry({
   ec: "do,does,doing,did,done",
   separationAtP: 1,
   separationAtF: 2,
-});
+} as T.VerbDictionaryEntry);
 const kedulStat = vEntry({
   ts: 1581086654898,
   i: 11100,
@@ -62,7 +62,7 @@ const kedulStat = vEntry({
   pprtf: "shúway",
   noOo: true,
   ec: "become",
-});
+} as T.VerbDictionaryEntry);
 // const kedulDyn = vEntry({
 //   ts: 1527812754,
 //   i: 11101,
@@ -280,7 +280,7 @@ describe("imperfective stems", () => {
               gender: "masc",
               number: "singular",
             },
-          })
+          }),
         ).toEqual(y.result);
       });
     });
@@ -446,7 +446,7 @@ describe("imperfective roots", () => {
               gender: "masc",
               number: "singular",
             },
-          })
+          }),
         ).toEqual(y.result);
       });
     });
@@ -856,7 +856,7 @@ describe("perfective stems", () => {
               gender: "masc",
               number: "singular",
             },
-          })
+          }),
         ).toEqual(y.result);
       });
     });
@@ -1162,7 +1162,7 @@ describe("perfective roots", () => {
               gender: "masc",
               number: "singular",
             },
-          })
+          }),
         ).toEqual(y.result);
       });
     });
@@ -2095,7 +2095,7 @@ describe("ability roots and stems", () => {
             },
             type: "ability",
             voice: y.voice,
-          })
+          }),
         ).toEqual(y.result);
       });
     });
@@ -2115,7 +2115,7 @@ describe("passive roots and stems", () => {
           number: "singular",
         },
         voice: "passive",
-      })
+      }),
     ).toEqual([
       [],
       [
@@ -2143,7 +2143,7 @@ describe("passive roots and stems", () => {
           number: "singular",
         },
         voice: "passive",
-      })
+      }),
     ).toEqual([
       [],
       [
@@ -2174,7 +2174,7 @@ describe("passive roots and stems", () => {
           number: "singular",
         },
         voice: "passive",
-      })
+      }),
     ).toEqual([
       [ooPH],
       [
@@ -2202,7 +2202,7 @@ describe("passive roots and stems", () => {
           number: "singular",
         },
         voice: "passive",
-      })
+      }),
     ).toEqual([
       [ooPH],
       [
@@ -2233,7 +2233,7 @@ describe("passive roots and stems", () => {
           number: "singular",
         },
         voice: "passive",
-      })
+      }),
     ).toEqual([
       [
         {
@@ -2293,7 +2293,7 @@ describe("passive roots and stems", () => {
           number: "singular",
         },
         voice: "passive",
-      })
+      }),
     ).toEqual([
       [],
       [
@@ -2324,7 +2324,7 @@ describe("passive roots and stems", () => {
           number: "singular",
         },
         rs: "stem",
-      })
+      }),
     ).toEqual([
       [],
       [

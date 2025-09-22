@@ -567,10 +567,8 @@ export function unisexInfToObjectMatrix(
 ): T.OptionalPersonInflections<T.PsString> {
   return {
     mascSing: inf.masc[0][0],
-    // @ts-expect-error (index ok)
     mascPlur: inf.masc[1][0],
     femSing: inf.fem[0][0],
-    // @ts-expect-error (index ok)
     femPlur: inf.fem[1][0],
   };
 }

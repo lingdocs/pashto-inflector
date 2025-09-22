@@ -14,7 +14,7 @@ const wahul = vEntry({
   tppp: "واهه",
   tppf: "waahu",
   ec: "hit,hits,hitting,hit,hit",
-});
+} as T.VerbDictionaryEntry);
 const kawulDyn = vEntry({
   ts: 1527812752,
   i: 11033,
@@ -34,7 +34,7 @@ const kawulDyn = vEntry({
   ec: "do,does,doing,did,done",
   separationAtP: 1,
   separationAtF: 2,
-});
+} as T.VerbDictionaryEntry);
 const wahulNoC = vEntry({
   ts: 1527815399,
   i: 15049,
@@ -46,7 +46,7 @@ const wahulNoC = vEntry({
   tppp: "واهه",
   tppf: "waahu",
   ec: "hit,hits,hitting,hit,hit",
-});
+} as T.VerbDictionaryEntry);
 const wahulNoC2 = vEntry({
   ts: 1527815399,
   i: 15049,
@@ -59,7 +59,7 @@ const wahulNoC2 = vEntry({
   tppp: "واهه",
   tppf: "waahu",
   ec: "hit,hits,hitting,hit,hit",
-});
+} as T.VerbDictionaryEntry);
 const khandul = vEntry({
   ts: 1527812767,
   i: 5896,
@@ -72,7 +72,7 @@ const khandul = vEntry({
   psp: "خاند",
   psf: "khaand",
   ec: "laugh",
-});
+} as T.VerbDictionaryEntry);
 const leedul = vEntry({
   ts: 1527812275,
   i: 12053,
@@ -87,7 +87,7 @@ const leedul = vEntry({
   tppp: "لید",
   tppf: "leed",
   ec: "see,sees,seeing,saw,seen",
-});
+} as T.VerbDictionaryEntry);
 const ghadzedul = vEntry({
   ts: 1527812615,
   i: 9500,
@@ -99,7 +99,7 @@ const ghadzedul = vEntry({
   c: "v. intrans.",
   ec: "stretch",
   ep: "out",
-});
+} as T.VerbDictionaryEntry);
 const bandawul = vEntry(
   {
     ts: 1527821309,
@@ -112,7 +112,7 @@ const bandawul = vEntry(
     c: "v. stat. comp. trans.",
     l: 1577301753727,
     ec: "close",
-  },
+  } as T.VerbDictionaryEntry,
   {
     ts: 1577301753727,
     i: 1780,
@@ -121,7 +121,7 @@ const bandawul = vEntry(
     g: "band",
     e: "closed, blocked, stopped",
     c: "adj.",
-  }
+  },
 );
 const bandedul = vEntry(
   {
@@ -136,7 +136,7 @@ const bandedul = vEntry(
     l: 1577301753727,
     ec: "be",
     ep: "closed",
-  },
+  } as T.VerbDictionaryEntry,
   {
     ts: 1577301753727,
     i: 1780,
@@ -145,7 +145,7 @@ const bandedul = vEntry(
     g: "band",
     e: "closed, blocked, stopped",
     c: "adj.",
-  }
+  },
 );
 const mundaWahul = vEntry(
   {
@@ -159,7 +159,7 @@ const mundaWahul = vEntry(
     c: "v. dyn. comp. trans.",
     l: 1527815805,
     ec: "run,runs,running,ran,run",
-  },
+  } as T.VerbDictionaryEntry,
   {
     ts: 1527815805,
     i: 13321,
@@ -169,7 +169,7 @@ const mundaWahul = vEntry(
     e: "run, running",
     r: 4,
     c: "n. f.",
-  }
+  },
 );
 const istreeKawul = vEntry(
   {
@@ -183,7 +183,7 @@ const istreeKawul = vEntry(
     c: "v. dyn./stat. comp. trans.",
     l: 1658795458148,
     ec: "iron",
-  },
+  } as T.VerbDictionaryEntry,
   {
     ts: 1658795458148,
     i: 518,
@@ -193,7 +193,7 @@ const istreeKawul = vEntry(
     e: "iron (for ironing clothes)",
     r: 4,
     c: "n. f.",
-  }
+  },
 );
 const cheeghKawul = vEntry(
   {
@@ -206,7 +206,7 @@ const cheeghKawul = vEntry(
     r: 3,
     c: "v. gen. stat./dyn. comp. trans.",
     l: 1527813972,
-  },
+  } as T.VerbDictionaryEntry,
   {
     ts: 1527813972,
     i: 5189,
@@ -216,7 +216,7 @@ const cheeghKawul = vEntry(
     e: "yell, scream, cry",
     r: 3,
     c: "n. f.",
-  }
+  },
 );
 const kaarKawul = vEntry(
   {
@@ -230,7 +230,7 @@ const kaarKawul = vEntry(
     c: "v. dyn. comp. trans.",
     l: 1527822084,
     ec: "work",
-  },
+  } as T.VerbDictionaryEntry,
   {
     ts: 1527822084,
     i: 10268,
@@ -240,7 +240,7 @@ const kaarKawul = vEntry(
     e: "work, job, business, stuff to do",
     r: 4,
     c: "n. m.",
-  }
+  },
 );
 
 const tests: {

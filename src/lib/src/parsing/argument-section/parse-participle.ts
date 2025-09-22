@@ -101,7 +101,7 @@ function parseStativeCompSepPart(
     const compL = getLFromComplement(comp.content);
     const kawulKedul = parseCompAuxPart(tkns2);
     return bindParseResult(kawulKedul, (tkns3, aux) => {
-      if (compL !== undefined) {
+      if (compL === undefined) {
         return [];
       }
       const verbs = getStatComp(
