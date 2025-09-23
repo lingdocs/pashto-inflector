@@ -11,6 +11,8 @@ export function parseNPAP(
   if (!tokensExist(tokens)) {
     return [];
   }
+  // TODO: could make this return an optionally empty result and then just simplify
+  // this with one return, or a parser combinator
   const possesor = parsePossesor(tokens, dictionary);
   if (!possesor.length) {
     return [

@@ -262,50 +262,58 @@ function parseAbilityOrPerfect(
 function parseStraightAbilityOrPerfect(
   front: VerbSectionFrontData,
 ): T.Parser<VerbSectionData> {
+  const ph = front.front.find(isPH);
+  const verbXs = parserCombOr(
+    (["ability", "perfect"] as const).map((category) =>
+      parseVerbX(ph, parseVBPBasic(category), category),
+    ),
+  );
+  return bindParser(
+    parserCombSucc3(verbXs, parseOptKidsSection, parseOptNeg),
+    parseAuxAtEndOfStraightAbilityOrPerfect(front),
+  );
+}
+
+function parseAuxAtEndOfStraightAbilityOrPerfect(front: VerbSectionFrontData) {
   return function (
-    tokens: T.Tokens,
-    dictionary: T.DictionaryAPI,
-  ): T.ParseResult<VerbSectionData>[] {
-    const ph = front.front.find(isPH);
-    const vbps = (["ability", "perfect"] as const).flatMap((category) =>
-      parseVerbX(ph, parseVBPBasic(category), category)(tokens, dictionary),
-    );
-    return bindParseResult<T.ParsedV<T.ParsedVBP>, VerbSectionData>(
-      vbps,
-      (tkns, vbp) => {
-        const kidsR1 = parseOptKidsSection(tkns);
-        return bindParseResult(kidsR1, (tkns2, kids1) => {
-          const position = front.front.length + 1;
-          const negs = parseOptNeg(tkns2);
-          return bindParseResult(negs, (tkns3, neg) => {
-            const auxRes: T.ParseResult<T.ParsedVBB>[] =
-              getInfoFromV(vbp.content).type === "ppart"
-                ? parseEquative(tkns3)
-                : parseKawulKedulVBE(tkns3, undefined).filter((x) =>
-                    isStatAuxVBE(x.body),
-                  );
-            return bindParseResult(auxRes, (tkns5, aux) => {
-              return [
-                {
-                  tokens: tkns5,
-                  body: {
-                    blocks: [
-                      ...front.front,
-                      vbp.content,
-                      ...(neg.content ? [neg.content] : []),
-                      { type: "parsed vbb aux", content: aux.content },
-                    ],
-                    kids: addKids(front.kids, position, kids1.content),
-                  },
-                  position: { start: tokens.position, end: aux.position.end },
-                  errors: [],
-                },
-              ];
-            });
-          });
-        });
-      },
-    );
+    r: T.WithPos<
+      [
+        T.WithPos<T.ParsedV<T.ParsedVBP>>,
+        T.WithPos<T.ParsedKidsSection | undefined>,
+        T.WithPos<T.NegativeBlock | undefined>,
+      ]
+    >,
+  ): T.Parser<VerbSectionData> {
+    return function (tokens: T.Tokens): T.ParseResult<VerbSectionData>[] {
+      const vbp = r.content[0];
+      const kids1 = r.content[1];
+      const neg = r.content[2];
+      const position = front.front.length + 1;
+      const auxRes: T.ParseResult<T.ParsedVBB>[] =
+        getInfoFromV(vbp.content).type === "ppart"
+          ? parseEquative(tokens)
+          : parseKawulKedulVBE(tokens, undefined).filter((x) =>
+              isStatAuxVBE(x.body),
+            );
+      return bindParseResult(auxRes, (tkns, aux) => {
+        return [
+          {
+            tokens: tkns,
+            body: {
+              blocks: [
+                ...front.front,
+                vbp.content,
+                ...(neg.content ? [neg.content] : []),
+                { type: "parsed vbb aux", content: aux.content },
+              ],
+              kids: addKids(front.kids, position, kids1.content),
+            },
+            position: { start: r.position.start, end: aux.position.end },
+            errors: [],
+          },
+        ];
+      });
+    };
   };
 }
 

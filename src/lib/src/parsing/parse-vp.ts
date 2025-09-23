@@ -6,7 +6,8 @@ import {
 import {
   parseVerbSection,
   VerbSectionData,
-} from "./verb-section/parse-verb-section";
+  // sadly the old non parser-combinator version is 3-5% faster
+} from "./verb-section/parse-verb-section-old";
 import {
   addShrunkenPossesor,
   bindParserToEvaluator,
@@ -198,7 +199,7 @@ function evalCombineArgAndVerbSections(
             };
             if (transitivity === "intransitive" || voice === "passive") {
               return bindEvalResultToEval(
-                evalFinishIntransitive({
+                finishIntransitive({
                   kidsErrors,
                   miniPronouns,
                   npsAndAps,
@@ -227,7 +228,7 @@ function evalCombineArgAndVerbSections(
               if (exComplement) {
                 return [];
               }
-              return evalFinishGrammaticallyTransitive({
+              return finishGrammaticallyTransitive({
                 kidsErrors,
                 miniPronouns,
                 npsAndAps,
@@ -399,10 +400,10 @@ function evalFinishTransitive({
   ];
   const possibilites = (
     nps.length >= 2
-      ? evalGetTransPossibilitiesWTwoNPs(nps)
+      ? getTransPossibilitiesWTwoNPs(nps)
       : nps.length === 1
-        ? evalGetTransPossibilitiesWOneNP(nps[0], exComplement)
-        : evalGetTransPossibilitiesWNoNPs
+        ? getTransPossibilitiesWOneNP(nps[0], exComplement)
+        : getTransPossibilitiesWNoNPs
   )({
     miniPronouns,
     npsAndAps,
@@ -438,7 +439,7 @@ function evalFinishTransitive({
   });
 }
 
-function evalFinishIntransitive({
+function finishIntransitive({
   kidsErrors,
   miniPronouns,
   npsAndAps,
@@ -509,7 +510,7 @@ function evalFinishIntransitive({
   });
 }
 
-function evalGetTransPossibilitiesWNoNPs({
+function getTransPossibilitiesWNoNPs({
   miniPronouns,
   npsAndAps,
   vbePerson,
@@ -548,7 +549,7 @@ function evalGetTransPossibilitiesWNoNPs({
   });
 }
 
-function evalGetTransPossibilitiesWOneNP(
+function getTransPossibilitiesWOneNP(
   np: T.ParsedNP,
   exComplement: T.ParsedComplementSelection | undefined,
 ) {
@@ -610,7 +611,7 @@ function evalGetTransPossibilitiesWOneNP(
   };
 }
 
-function evalGetTransPossibilitiesWTwoNPs(nps: T.ParsedNP[]) {
+function getTransPossibilitiesWTwoNPs(nps: T.ParsedNP[]) {
   return function ({
     miniPronouns,
     npsAndAps,
@@ -638,7 +639,7 @@ function evalGetTransPossibilitiesWTwoNPs(nps: T.ParsedNP[]) {
   };
 }
 
-function evalFinishGrammaticallyTransitive({
+function finishGrammaticallyTransitive({
   miniPronouns,
   npsAndAps,
   v,
@@ -662,9 +663,7 @@ function evalFinishGrammaticallyTransitive({
     });
   }
   const possibilites = (
-    nps.length === 0
-      ? evalFinishGrammTransWNoNPs
-      : evalFinishGrammTransWNP(nps[0])
+    nps.length === 0 ? finishGrammTransWNoNPs : finishGrammTransWNP(nps[0])
   )({
     miniPronouns,
     npsAndAps,
@@ -700,7 +699,7 @@ function evalFinishGrammaticallyTransitive({
   });
 }
 
-function evalFinishGrammTransWNoNPs({
+function finishGrammTransWNoNPs({
   npsAndAps,
   miniPronouns,
   vbePerson,
@@ -733,7 +732,7 @@ function evalFinishGrammTransWNoNPs({
   });
 }
 
-function evalFinishGrammTransWNP(subject: T.ParsedNP) {
+function finishGrammTransWNP(subject: T.ParsedNP) {
   return function ({
     npsAndAps,
     miniPronouns,
