@@ -418,6 +418,9 @@ export function parserCombSucc3<A, B, C>(
       // the same successive parse for that next step, sparing redundant parses
       const resB = parserB(groupA[0].tokens, dictionary);
       return groupByTokenLength(resB).flatMap((groupB) => {
+        if (groupB.length > 1) {
+          console.log(`B Saved ${groupB.length - 1} parses`);
+        }
         const resC = parserC(groupB[0].tokens, dictionary);
         return bindParseResult(groupA, (_, a) =>
           bindParseResult(groupB, (__, b) =>
