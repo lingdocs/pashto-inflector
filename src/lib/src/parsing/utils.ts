@@ -41,8 +41,8 @@ export function bindParser<C, D>(
 }
 
 export function mapParser<C, D>(
-  parser: T.Parser<C>,
   f: (c: C) => D,
+  parser: T.Parser<C>,
 ): T.Parser<D> {
   return (tkns: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<D>[] =>
     parser(tkns, dictionary).map((x) => ({
@@ -74,11 +74,13 @@ export function bindParserToEvaluator<C, D>(
   ) => T.EvaluatorResult<D>[],
 ): T.Parser<D> {
   return (tkns: T.Tokens, dictionary: T.DictionaryAPI) =>
-    bindParseResult(parser(tkns, dictionary), (t, r) =>
-      evaluator(r, dictionary).flatMap((v) =>
-        returnParseResult(t, v.body, r.position, v.errors),
-      ),
-    );
+    tokensExist(tkns)
+      ? bindParseResult(parser(tkns, dictionary), (t, r) =>
+          evaluator(r, dictionary).flatMap((v) =>
+            returnParseResult(t, v.body, r.position, v.errors),
+          ),
+        )
+      : [];
 }
 
 export function bindEvalResultToEval<C, D>(
@@ -301,9 +303,17 @@ export type Parser<R> = (
   dictionary: T.DictionaryAPI,
 ) => T.ParseResult<R>[];
 
-export function parserCombOr<R>(parsers: Parser<R>[]) {
+// TODO: CLEAN RESULTS HERE ?!?!
+export function parserCombOr<R>(
+  parsers: Parser<R>[],
+  options?: { keepErrors: boolean },
+) {
   return (tokens: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<R>[] =>
-    parsers.flatMap((p) => p(tokens, dictionary));
+    tokensExist(tokens)
+      ? options !== undefined && options.keepErrors === true
+        ? parsers.flatMap((p) => p(tokens, dictionary))
+        : cleanOutResults(parsers.flatMap((p) => p(tokens, dictionary)))
+      : [];
 }
 
 /**
@@ -327,10 +337,12 @@ export function parserCombMany<R>(parser: Parser<R>): Parser<T.WithPos<R>[]> {
       acc: T.WithPos<R>[],
       t: T.Tokens,
     ): T.ParseResult<T.WithPos<R>[]>[] {
+      if (!tokensExist(t)) {
+        return returnParseResult(t, acc, posFromAccumulator(t, acc));
+      }
       const one = parser(t, dictionary);
       if (one.length === 0) {
-        const position = posFromAccumulator(t, acc);
-        return returnParseResult(t, acc, position);
+        return returnParseResult(t, acc, posFromAccumulator(t, acc));
       }
       return bindParseResult(one, (tkns, o) => {
         const position = posFromAccumulator(tkns, acc);

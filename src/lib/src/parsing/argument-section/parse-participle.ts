@@ -12,7 +12,7 @@ import { getLFromComplement } from "../verb-section/misc";
 import { shortVerbEndConsonant } from "./../verb-section/misc";
 import { parseComplement } from "./parse-complement";
 
-type ParticipleResult = {
+export type ParticipleResult = {
   inflected: boolean;
   selection: T.ParticipleSelection;
 };
@@ -22,17 +22,20 @@ type ParticipleResult = {
 // TODO: should have adverbs with participle
 // TODO: NOTE this does not work with compound verbs yet
 export function parseParticiple(
-  tokens: T.Tokens,
-  dicitonary: T.DictionaryAPI,
   possesor: T.PossesorSelection | undefined,
   lookForComp: boolean,
-): T.ParseResult<ParticipleResult>[] {
-  return [
-    ...(lookForComp
-      ? parseStativeCompSepPart(tokens, dicitonary, possesor)
-      : []),
-    ...parseJoinedPart(tokens, dicitonary, possesor),
-  ];
+) {
+  return function (
+    tokens: T.Tokens,
+    dicitonary: T.DictionaryAPI,
+  ): T.ParseResult<ParticipleResult>[] {
+    return [
+      ...(lookForComp
+        ? parseStativeCompSepPart(tokens, dicitonary, possesor)
+        : []),
+      ...parseJoinedPart(tokens, dicitonary, possesor),
+    ];
+  };
 }
 
 function parseJoinedPart(

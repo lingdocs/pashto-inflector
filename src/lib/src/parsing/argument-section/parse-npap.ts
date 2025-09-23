@@ -14,16 +14,16 @@ export function parseNPAP(
   const possesor = parsePossesor(tokens, dictionary);
   if (!possesor.length) {
     return [
-      ...parseNP(tokens, dictionary, undefined, true),
-      ...parseAP(tokens, dictionary, undefined),
+      ...parseNP(undefined, true)(tokens, dictionary),
+      ...parseAP(undefined)(tokens, dictionary),
     ];
   }
   return bindParseResult<T.PossesorSelection, T.APSelection | T.ParsedNP>(
     possesor,
     (tokens, p) => {
       return [
-        ...parseNP(tokens, dictionary, p.content, true),
-        ...parseAP(tokens, dictionary, p.content),
+        ...parseNP(p.content, true)(tokens, dictionary),
+        ...parseAP(p.content)(tokens, dictionary),
       ];
     },
   );

@@ -1,27 +1,16 @@
 import * as T from "../../../../types";
-import { fmapParseResult } from "../../fp-ps";
-import { tokensExist } from "../utils";
+import { mapParser, parserCombOr } from "../utils";
 import { parseAdverb } from "./parse-adverb";
 import { parseSandwich } from "./parse-sandwich";
 
-export function parseAP(
-  s: T.Tokens,
-  dicitonary: T.DictionaryAPI,
-  possesor: T.PossesorSelection | undefined,
-): T.ParseResult<T.APSelection>[] {
-  if (!tokensExist(s)) {
-    return [];
-  }
-  const res: T.ParseResult<T.APSelection["selection"]>[] = [
-    ...(!possesor ? parseAdverb(s, dicitonary) : []),
-    ...parseSandwich(s, dicitonary, possesor),
-  ];
-  return fmapParseResult(
-    (selection) =>
-      ({
-        type: "AP",
-        selection,
-      }) as const,
-    res,
+export const parseAP = (possesor: T.PossesorSelection | undefined) =>
+  mapParser(
+    (selection): T.APSelection => ({
+      type: "AP",
+      selection,
+    }),
+    parserCombOr<T.APSelection["selection"]>([
+      ...(!possesor ? [parseAdverb] : []),
+      parseSandwich(possesor),
+    ]),
   );
-}

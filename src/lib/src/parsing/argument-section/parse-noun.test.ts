@@ -1743,7 +1743,7 @@ describe("parsing nouns", () => {
     test(category, () => {
       cases.forEach(({ input, output }) => {
         const tokens = tokenizer(input);
-        const res = parseNoun(tokens, testDictionary, undefined).flatMap(
+        const res = parseNoun(undefined)(tokens, testDictionary).flatMap(
           // only take the ones that used all the tokens
           ({ body, tokens }) => (!tokensExist(tokens) ? [body] : []),
         );
@@ -2284,12 +2284,14 @@ const determinerTests: DeterminerTest[] = [
   ]),
 ];
 
+// TODO: uncomment these and get them passing
+
 describe("parsing determiners with nouns", () => {
   determinerTests.forEach(({ input, result }) => {
     test("", () => {
       const tokens = tokenizer(input);
       const res = cleanOutResults(
-        parseNoun(tokens, testDictionary, undefined).filter(
+        parseNoun(undefined)(tokens, testDictionary).filter(
           (x) => !tokensExist(x.tokens),
         ),
       );
@@ -2330,7 +2332,7 @@ describe("parsing nouns with adjectives and determiners", () => {
       cases.forEach(({ input, output, error }) => {
         const tokens = tokenizer(input);
         const res = cleanOutResults(
-          parseNoun(tokens, testDictionary, undefined).filter(
+          parseNoun(undefined)(tokens, testDictionary).filter(
             (x) => !tokensExist(x.tokens),
           ),
         );

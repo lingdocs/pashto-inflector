@@ -1,8 +1,13 @@
 import * as T from "../../../../types";
-import { fmapParseResult } from "../../fp-ps";
 import { parseAdjective } from "../argument-section/parse-adjective";
 import { parseLocAdverb } from "../argument-section/parse-adverb";
-import { getOneToken, returnParseResult, returnParseResults } from "../utils";
+import {
+  getOneToken,
+  mapParser,
+  parserCombOr,
+  returnParseResult,
+  returnParseResults,
+} from "../utils";
 
 const phs = [
   "و",
@@ -22,29 +27,18 @@ const phs = [
 
 const laars = ["لاړ", "لاړه", "لاړې"];
 
-export function parsePH(
-  tokens: T.Tokens,
-  dictionary: T.DictionaryAPI,
-): T.ParseResult<T.ParsedPH>[] {
-  return [...parseVerbPH(tokens), ...parseCompPH(tokens, dictionary)];
-}
+const parseCompPH: T.Parser<T.ParsedCompPH> = mapParser(
+  (selection) => ({
+    type: "CompPH",
+    selection,
+  }),
+  parserCombOr<T.ParsedCompPH["selection"]>([parseAdjective, parseLocAdverb]),
+);
 
-function parseCompPH(
-  tokens: T.Tokens,
-  dictionary: T.DictionaryAPI,
-): T.ParseResult<T.ParsedCompPH>[] {
-  const res: T.ParseResult<T.ParsedCompPH["selection"]>[] = [
-    ...parseAdjective(tokens, dictionary),
-    ...parseLocAdverb(tokens, dictionary),
-  ];
-  return fmapParseResult(
-    (selection) => ({
-      type: "CompPH",
-      selection,
-    }),
-    res,
-  );
-}
+export const parsePH: T.Parser<T.ParsedPH> = parserCombOr<T.ParsedPH>([
+  parseVerbPH,
+  parseCompPH,
+]);
 
 function parseVerbPH(tokens: T.Tokens): T.ParseResult<T.ParsedVerbPH>[] {
   const [first, rest, firstPos] = getOneToken(tokens);

@@ -146,6 +146,8 @@ function parseVerbSectionFront(
   });
 }
 
+// TODO: refactor this using new combinators (will also help avoid token passing errors)
+// and could use an optimazation using a successive parser with out trick
 function parseVerbSectionRear(front: T.WithPos<VerbSectionFrontData>) {
   return function (
     tokens: T.Tokens,
@@ -222,7 +224,7 @@ function parseBasicTense(
   front: VerbSectionFrontData,
 ): T.ParseResult<VerbSectionData>[] {
   const ph = front.front.find(isPH);
-  const vbes = parseVerbX(tokens, dictionary, ph, parseVBBBasic, "basic");
+  const vbes = parseVerbX(ph, parseVBBBasic, "basic")(tokens, dictionary);
   return bindParseWithAllErrors(vbes, (tkns, vbe) => {
     // TODO: or pass this in as on option to parseVBE so that we only get the plain VBE
     if (getInfoFromV(vbe.content).type !== "verb") {
@@ -262,7 +264,7 @@ function parseStraightAbilityOrPerfect(
 ): T.ParseResult<VerbSectionData>[] {
   const ph = front.front.find(isPH);
   const vbps = (["ability", "perfect"] as const).flatMap((category) =>
-    parseVerbX(tokens, dictionary, ph, parseVBPBasic(category), category),
+    parseVerbX(ph, parseVBPBasic(category), category)(tokens, dictionary),
   );
   return bindParseResult<T.ParsedV<T.ParsedVBP>, VerbSectionData>(
     vbps,
@@ -325,12 +327,10 @@ function parseFlippedAbilityOrPerfect(
       const category =
         aux.content.info.type === "equative" ? "perfect" : "ability";
       const res = parseVerbX(
-        tkns2,
-        dictionary,
         ph,
         parseVBPBasic(category),
         category,
-      );
+      )(tkns2, dictionary);
       return bindParseResult(res, (tkns3, vbp) => {
         return [
           {

@@ -2,12 +2,13 @@ import * as T from "../../../../types";
 import { getOneToken } from "../utils";
 
 type Result = ReturnType<typeof parsePronoun>[number];
-
-// TODO: add chaa
-export function parsePronoun(tokens: T.Tokens): T.ParseResult<{
+export type PronounResult = {
   inflected: boolean;
   selection: T.PronounSelection;
-}>[] {
+};
+
+// TODO: add chaa
+export function parsePronoun(tokens: T.Tokens): T.ParseResult<PronounResult>[] {
   const [s, rest, position] = getOneToken(tokens);
   if (!s) {
     return [];

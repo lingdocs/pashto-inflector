@@ -18,7 +18,7 @@ export function parseComplement(
     [
       // TODO: curry these things and use parserCombOr
       ...parseAdjective(tokens, dictionary),
-      ...parseSandwich(tokens, dictionary, undefined),
+      ...parseSandwich(undefined)(tokens, dictionary),
       ...parsePossesor(tokens, dictionary),
       ...fFlatMapParseResult(
         (a): T.ParsedComplementSelection["selection"][] => {
@@ -40,9 +40,9 @@ function parseNPWPoss(
 ): T.ParseResult<T.NPSelection>[] {
   const possesor = parsePossesor(tokens, dictionary);
   const np = !possesor.length
-    ? parseNP(tokens, dictionary, undefined, false)
+    ? parseNP(undefined, false)(tokens, dictionary)
     : bindParseResult<T.PossesorSelection, T.ParsedNP>(possesor, (tokens, p) =>
-        parseNP(tokens, dictionary, p.content, false),
+        parseNP(p.content, false)(tokens, dictionary),
       );
   return fFlatMapParseResult((x) => (x.inflected ? [] : [x.selection]), np);
 }

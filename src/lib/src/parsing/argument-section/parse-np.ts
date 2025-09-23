@@ -1,50 +1,30 @@
 import * as T from "../../../../types";
-import { parsePronoun } from "./parse-pronoun";
-import { parseNoun } from "./parse-noun";
-import { fmapParseResult } from "../../fp-ps";
-import { parseParticiple } from "./parse-participle";
-import { tokensExist } from "../utils";
+import { parsePronoun, PronounResult } from "./parse-pronoun";
+import { NounResult, parseNoun } from "./parse-noun";
+import { parseParticiple, ParticipleResult } from "./parse-participle";
+import { mapParser, parserCombOr } from "../utils";
 
 // TODO: THIS gets called four times off the bat so it could get
 // memoized
-export function parseNP(
-  tokens: T.Tokens,
-  dicitonary: T.DictionaryAPI,
+export const parseNP = (
   possesor: T.PossesorSelection | undefined,
   /** to avoid recursion errors with the complement parsing */
   lookForComp: boolean,
-): T.ParseResult<T.ParsedNP>[] {
-  if (!tokensExist(tokens)) {
-    return [];
-  }
-  function makeNPSl(
-    a:
-      | {
-          inflected: boolean;
-          selection: T.PronounSelection;
-        }
-      | {
-          inflected: boolean;
-          selection: T.NounSelection;
-        }
-      | {
-          inflected: boolean;
-          selection: T.ParticipleSelection;
-        },
-  ): T.ParsedNP {
-    return {
-      type: "NP",
-      inflected: a.inflected,
-      selection: {
+) =>
+  mapParser(
+    (a): T.ParsedNP => {
+      return {
         type: "NP",
-        selection: a.selection,
-      } as T.NPSelection,
-    };
-  }
-
-  return fmapParseResult(makeNPSl, [
-    ...(!possesor ? parsePronoun(tokens) : []),
-    ...parseNoun(tokens, dicitonary, possesor),
-    ...parseParticiple(tokens, dicitonary, possesor, lookForComp),
-  ]);
-}
+        inflected: a.inflected,
+        selection: {
+          type: "NP",
+          selection: a.selection,
+        },
+      };
+    },
+    parserCombOr<NounResult | ParticipleResult | PronounResult>([
+      ...(!possesor ? [parsePronoun] : []),
+      parseNoun(possesor),
+      parseParticiple(possesor, lookForComp),
+    ]),
+  );

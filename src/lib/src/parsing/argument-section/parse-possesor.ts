@@ -76,7 +76,7 @@ function parsePossesorR(
   // then later (if possessor || contractions)
 
   if (first === "د") {
-    const np = parseNP(rest, dictionary, undefined, true);
+    const np = parseNP(undefined, true)(rest, dictionary);
     return bindParseResult(np, (tkns, body) => {
       const possesor: T.PossesorSelection = addPoss(prev.body, {
         type: "possesor",
