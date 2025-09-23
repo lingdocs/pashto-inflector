@@ -5,10 +5,16 @@ import {
   unambiguousKids,
 } from "../parse-kids-section";
 import {
+  bindParser,
   bindParseResult,
+  bindParserToEvaluator,
   bindParseWithAllErrors,
+  filterParser,
   isPH,
+  mapParser,
   nulPosFromTokens,
+  parserCombOr,
+  parserCombSucc3,
   returnParseResult,
   returnParseResultSingle,
   tokensExist,
@@ -54,101 +60,258 @@ export type VerbSectionFrontData = {
 // w/ Perfect
 // VBP is PastPart, Aux is Equative
 
-export function parseVerbSection(
-  tokens: T.Tokens,
-  dictionary: T.DictionaryAPI,
-): T.ParseResult<VerbSectionData>[] {
-  if (!tokensExist(tokens)) {
-    return [];
-  }
-  const fronts = parseVerbSectionFront(
-    dictionary,
-    returnParseResultSingle(
-      tokens,
-      {
-        front: [],
-        kids: [],
-      },
-      nulPosFromTokens(tokens),
-    ),
-  );
-  return bindParseResult(fronts, (tkns, front) =>
-    parseVerbSectionRear(front)(tkns, dictionary),
-  );
-}
+// TODO: DO A TOTAL REFACTOR TO PARSER COMBINATORS - THEN COMPARE THIS WITH THE OLD VERSION WITHOUT THE PARSER COMBINATORS
+
+export const parseVerbSection: T.Parser<VerbSectionData> = bindParser(
+  parseVerbSectionFront,
+  parseVerbSectionRear,
+);
 
 function parseVerbSectionFront(
+  tokens: T.Tokens,
   dictionary: T.DictionaryAPI,
-  prev: T.ParseResult<VerbSectionFrontData>,
 ): T.ParseResult<VerbSectionFrontData>[] {
-  if (!tokensExist(prev.tokens)) {
-    return [prev];
-  }
-  const position = prev.body.front.length;
-  const allResults: T.ParseResult<
-    T.ParsedPH | T.NegativeBlock | T.ParsedKidsSection
-  >[] = [
-    ...(prev.body.front.some(isPH) ? [] : parsePH(prev.tokens, dictionary)),
-    ...(prev.body.front.some((x) => x.type === "negative")
-      ? []
-      : parseNeg(prev.tokens)),
-    // don't try to parse a kids section again if we just had one, otherwise you get
-    // unneccessary varients of kids' sections like ["ba", "me"] and ["ba"] ["me"]
-    ...(prev.body.kids.at(-1)?.position === position
-      ? []
-      : parseKidsSection(prev.tokens, [], [])),
-  ];
-  if (!allResults.length) {
-    return [prev];
-  }
-  return bindParseResult(allResults, (tkns, block) => {
-    if (block.content.type === "kids") {
-      const kids = block.content.kids;
+  function go(
+    dictionary: T.DictionaryAPI,
+    prev: T.ParseResult<VerbSectionFrontData>,
+  ): T.ParseResult<VerbSectionFrontData>[] {
+    if (!tokensExist(prev.tokens)) {
+      return [prev];
+    }
+    const position = prev.body.front.length;
+    const allResults: T.ParseResult<
+      T.ParsedPH | T.NegativeBlock | T.ParsedKidsSection
+    >[] = [
+      ...(prev.body.front.some(isPH) ? [] : parsePH(prev.tokens, dictionary)),
+      ...(prev.body.front.some((x) => x.type === "negative")
+        ? []
+        : parseNeg(prev.tokens)),
+      // don't try to parse a kids section again if we just had one, otherwise you get
+      // unneccessary varients of kids' sections like ["ba", "me"] and ["ba"] ["me"]
+      ...(prev.body.kids.at(-1)?.position === position
+        ? []
+        : parseKidsSection(prev.tokens, [], [])),
+    ];
+    if (!allResults.length) {
+      return [prev];
+    }
+    return bindParseResult(allResults, (tkns, block) => {
+      if (block.content.type === "kids") {
+        const kids = block.content.kids;
+        return [
+          ...go(
+            dictionary,
+            returnParseResultSingle(
+              tkns,
+              {
+                ...prev.body,
+                kids: addKids(prev.body.kids, position, block.content),
+              },
+              { start: prev.position.start, end: block.position.end },
+              prev.errors,
+            ),
+          ),
+          // also have the kid's secion not parsed if there's some ambiguity if they were kids or not
+          // like with 'ye' etc.
+          ...(!unambiguousKids.some((x) => kids.includes(x as T.ParsedKid))
+            ? [prev]
+            : []),
+        ];
+      }
+      // if block was PH return version with ph parsed, and also return version
+      // with leaving it for the verb ahead
       return [
-        ...parseVerbSectionFront(
+        ...(isPH(block.content) ? [prev] : []),
+        ...go(
           dictionary,
           returnParseResultSingle(
             tkns,
             {
               ...prev.body,
-              kids: addKids(prev.body.kids, position, block.content),
+              front: [...prev.body.front, block.content],
             },
-            { start: prev.position.start, end: block.position.end },
-            prev.errors,
+            {
+              start: prev.position.start,
+              end: block.position.end,
+            },
           ),
         ),
-        // also have the kid's secion not parsed if there's some ambiguity if they were kids or not
-        // like with 'ye' etc.
-        ...(!unambiguousKids.some((x) => kids.includes(x as T.ParsedKid))
-          ? [prev]
-          : []),
       ];
-    }
-    // if block was PH return version with ph parsed, and also return version
-    // with leaving it for the verb ahead
-    return [
-      ...(isPH(block.content) ? [prev] : []),
-      ...parseVerbSectionFront(
-        dictionary,
-        returnParseResultSingle(
-          tkns,
-          {
-            ...prev.body,
-            front: [...prev.body.front, block.content],
-          },
-          {
-            start: prev.position.start,
-            end: block.position.end,
-          },
-        ),
-      ),
-    ];
-  });
+    });
+  }
+  return go(
+    dictionary,
+    returnParseResultSingle(
+      tokens,
+      { front: [], kids: [] },
+      nulPosFromTokens(tokens),
+    ),
+  );
 }
 
-// TODO: refactor this using new combinators (will also help avoid token passing errors)
-// and could use an optimazation using a successive parser with out trick
-function parseVerbSectionRear(front: T.WithPos<VerbSectionFrontData>) {
+function parseVerbSectionRear(
+  front: T.WithPos<VerbSectionFrontData>,
+): T.Parser<VerbSectionData> {
+  const contentParser = filterParser(
+    parserCombSucc3(
+      parserCombOr(
+        [
+          parseBasicTense(front.content),
+          parseAbilityOrPerfect(front.content),
+          parseEquativeSection(front.content),
+        ],
+        { keepErrors: true },
+      ),
+      parseOptKidsSection,
+      parseOptNeg,
+    ),
+    ({ tokens }) => !tokensExist(tokens),
+  );
+  return bindParserToEvaluator(contentParser, evalVerbSectionRear);
+}
+
+function evalVerbSectionRear(
+  rearData: T.WithPos<
+    [
+      T.WithPos<VerbSectionData>,
+      T.WithPos<T.ParsedKidsSection | undefined>,
+      T.WithPos<T.NegativeBlock | undefined>,
+    ]
+  >,
+): T.EvaluatorResult<VerbSectionData>[] {
+  const rear = rearData.content[0];
+  const kids = rearData.content[1];
+  const nu = rearData.content[2];
+  const blocks = removeExtraPHFromPassiveDoubleW([
+    ...rear.content.blocks,
+    ...(nu.content ? [nu.content] : []),
+  ]);
+  return [
+    {
+      body: {
+        blocks,
+        kids: addKids(
+          rear.content.kids,
+          rear.content.blocks.length,
+          kids.content,
+        ),
+      },
+      errors: checkNegErrors(blocks),
+    },
+  ];
+}
+
+function parseEquativeSection(
+  front: VerbSectionFrontData,
+): T.Parser<VerbSectionData> {
+  return front.front.find(isPH)
+    ? () => []
+    : mapParser(
+        (eq): VerbSectionData => ({
+          blocks: [
+            ...front.front,
+            {
+              type: "parsed vbb aux",
+              content: eq,
+            },
+          ],
+          kids: front.kids,
+        }),
+        parseEquative,
+      );
+}
+
+function parseBasicTense(
+  front: VerbSectionFrontData,
+): T.Parser<VerbSectionData> {
+  return function (
+    tokens: T.Tokens,
+    dictionary: T.DictionaryAPI,
+  ): T.ParseResult<VerbSectionData>[] {
+    const ph = front.front.find(isPH);
+    const vbes = parseVerbX(ph, parseVBBBasic, "basic")(tokens, dictionary);
+    return bindParseWithAllErrors(vbes, (tkns, vbe) => {
+      // TODO: or pass this in as on option to parseVBE so that we only get the plain VBE
+      if (getInfoFromV(vbe.content).type !== "verb") {
+        return [];
+      }
+      const blocks = [...front.front, vbe.content];
+      return returnParseResult<VerbSectionData>(
+        tkns,
+        {
+          ...front,
+          blocks,
+        },
+        { start: tokens.position, end: vbe.position.end },
+      );
+    });
+  };
+}
+
+function parseAbilityOrPerfect(
+  front: VerbSectionFrontData,
+): T.Parser<VerbSectionData> {
+  const neg = front.front.some((x) => x.type === "negative");
+  const ph = front.front.some(isPH);
+  return parserCombOr([
+    ...(neg ? [parseFlippedAbilityOrPerfect(front)] : []),
+    ...((neg && ph) || !neg ? [parseStraightAbilityOrPerfect(front)] : []),
+  ]);
+}
+
+function parseStraightAbilityOrPerfect(
+  front: VerbSectionFrontData,
+): T.Parser<VerbSectionData> {
+  return function (
+    tokens: T.Tokens,
+    dictionary: T.DictionaryAPI,
+  ): T.ParseResult<VerbSectionData>[] {
+    const ph = front.front.find(isPH);
+    const vbps = (["ability", "perfect"] as const).flatMap((category) =>
+      parseVerbX(ph, parseVBPBasic(category), category)(tokens, dictionary),
+    );
+    return bindParseResult<T.ParsedV<T.ParsedVBP>, VerbSectionData>(
+      vbps,
+      (tkns, vbp) => {
+        const kidsR1 = parseOptKidsSection(tkns);
+        return bindParseResult(kidsR1, (tkns2, kids1) => {
+          const position = front.front.length + 1;
+          const negs = parseOptNeg(tkns2);
+          return bindParseResult(negs, (tkns3, neg) => {
+            const auxRes: T.ParseResult<T.ParsedVBB>[] =
+              getInfoFromV(vbp.content).type === "ppart"
+                ? parseEquative(tkns3)
+                : parseKawulKedulVBE(tkns3, undefined).filter((x) =>
+                    isStatAuxVBE(x.body),
+                  );
+            return bindParseResult(auxRes, (tkns5, aux) => {
+              return [
+                {
+                  tokens: tkns5,
+                  body: {
+                    blocks: [
+                      ...front.front,
+                      vbp.content,
+                      ...(neg.content ? [neg.content] : []),
+                      { type: "parsed vbb aux", content: aux.content },
+                    ],
+                    kids: addKids(front.kids, position, kids1.content),
+                  },
+                  position: { start: tokens.position, end: aux.position.end },
+                  errors: [],
+                },
+              ];
+            });
+          });
+        });
+      },
+    );
+  };
+}
+
+function parseFlippedAbilityOrPerfect(
+  front: VerbSectionFrontData,
+): T.Parser<VerbSectionData> {
   return function (
     tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
@@ -156,200 +319,45 @@ function parseVerbSectionRear(front: T.WithPos<VerbSectionFrontData>) {
     if (!tokensExist(tokens)) {
       return [];
     }
-    const basic = parseBasicTense(tokens, dictionary, front.content);
-    const abilPerf = parseAbilityOrPerfect(tokens, dictionary, front.content);
-    const equative = parseEquativeSection(tokens, front.content);
-    const res = [...basic, ...abilPerf, ...equative];
-    // TODO: some kind of do notation would be nice!
-    return bindParseResult(res, (tkns, rear) => {
-      const trailingKids = parseOptKidsSection(tkns);
-      return bindParseResult(trailingKids, (tkns2, kids) => {
-        const trailingNu = parseOptNeg(tkns2);
-        return bindParseResult(trailingNu, (tkns3, nu) => {
-          const blocks = removeExtraPHFromPassiveDoubleW([
-            ...rear.content.blocks,
-            ...(nu.content ? [nu.content] : []),
-          ]);
-          return returnParseResult(
-            tkns3,
+    const ph = front.front.find(isPH);
+    const auxs: T.ParseResult<T.ParsedVBBVerb | T.ParsedVBBEq>[] = [
+      ...(ph ? [] : parseEquative(tokens)),
+      // ph here is saved for the ability stem, not used for aux
+      ...parseKawulKedulVBE(tokens, undefined).filter((x) =>
+        isStatAuxVBE(x.body),
+      ),
+    ];
+    return bindParseResult(auxs, (tkns, aux) => {
+      const kidsRes = parseOptKidsSection(tkns);
+      return bindParseResult(kidsRes, (tkns2, kids) => {
+        const position = front.front.length + 1;
+        const category =
+          aux.content.info.type === "equative" ? "perfect" : "ability";
+        const res = parseVerbX(
+          ph,
+          parseVBPBasic(category),
+          category,
+        )(tkns2, dictionary);
+        return bindParseResult(res, (tkns3, vbp) => {
+          return [
             {
-              blocks,
-              kids: addKids(
-                rear.content.kids,
-                rear.content.blocks.length,
-                kids.content,
-              ),
+              tokens: tkns3,
+              body: {
+                blocks: [
+                  ...front.front,
+                  { type: "parsed vbb aux", content: aux.content },
+                  vbp.content,
+                ],
+                kids: addKids(front.kids, position, kids.content),
+              } satisfies VerbSectionData,
+              position: { start: tokens.position, end: vbp.position.end },
+              errors: [],
             },
-            { start: tokens.position, end: nu.position.end },
-            checkNegErrors(blocks),
-          ).filter((x) => !tokensExist(x.tokens));
+          ];
         });
       });
     });
   };
-}
-
-function parseEquativeSection(
-  tokens: T.Tokens,
-  front: VerbSectionFrontData,
-): T.ParseResult<VerbSectionData>[] {
-  if (!tokensExist(tokens)) {
-    return [];
-  }
-  if (front.front.find(isPH)) {
-    return [];
-  }
-  const eqs = parseEquative(tokens);
-  return bindParseResult(eqs, (tkns2, eq) => {
-    return returnParseResult(
-      tkns2,
-      {
-        blocks: [
-          ...front.front,
-          {
-            type: "parsed vbb aux",
-            content: eq.content,
-          },
-        ],
-        kids: front.kids,
-      },
-      { start: tokens.position, end: eq.position.end },
-    );
-  });
-}
-
-function parseBasicTense(
-  tokens: T.Tokens,
-  dictionary: T.DictionaryAPI,
-  front: VerbSectionFrontData,
-): T.ParseResult<VerbSectionData>[] {
-  const ph = front.front.find(isPH);
-  const vbes = parseVerbX(ph, parseVBBBasic, "basic")(tokens, dictionary);
-  return bindParseWithAllErrors(vbes, (tkns, vbe) => {
-    // TODO: or pass this in as on option to parseVBE so that we only get the plain VBE
-    if (getInfoFromV(vbe.content).type !== "verb") {
-      return [];
-    }
-    const blocks = [...front.front, vbe.content];
-    return returnParseResult<VerbSectionData>(
-      tkns,
-      {
-        ...front,
-        blocks,
-      },
-      { start: tokens.position, end: vbe.position.end },
-    );
-  });
-}
-
-function parseAbilityOrPerfect(
-  tokens: T.Tokens,
-  dictionary: T.DictionaryAPI,
-  front: VerbSectionFrontData,
-): T.ParseResult<VerbSectionData>[] {
-  const neg = front.front.some((x) => x.type === "negative");
-  const ph = front.front.some(isPH);
-  return [
-    ...(neg ? parseFlippedAbilityOrPerfect(tokens, dictionary, front) : []),
-    ...((neg && ph) || !neg
-      ? parseStraightAbilityOrPerfect(tokens, dictionary, front)
-      : []),
-  ];
-}
-
-function parseStraightAbilityOrPerfect(
-  tokens: T.Tokens,
-  dictionary: T.DictionaryAPI,
-  front: VerbSectionFrontData,
-): T.ParseResult<VerbSectionData>[] {
-  const ph = front.front.find(isPH);
-  const vbps = (["ability", "perfect"] as const).flatMap((category) =>
-    parseVerbX(ph, parseVBPBasic(category), category)(tokens, dictionary),
-  );
-  return bindParseResult<T.ParsedV<T.ParsedVBP>, VerbSectionData>(
-    vbps,
-    (tkns, vbp) => {
-      const kidsR1 = parseOptKidsSection(tkns);
-      return bindParseResult(kidsR1, (tkns2, kids1) => {
-        const position = front.front.length + 1;
-        const negs = parseOptNeg(tkns2);
-        return bindParseResult(negs, (tkns3, neg) => {
-          const auxRes: T.ParseResult<T.ParsedVBB>[] =
-            getInfoFromV(vbp.content).type === "ppart"
-              ? parseEquative(tkns3)
-              : parseKawulKedulVBE(tkns3, undefined).filter((x) =>
-                  isStatAuxVBE(x.body),
-                );
-          return bindParseResult(auxRes, (tkns5, aux) => {
-            return [
-              {
-                tokens: tkns5,
-                body: {
-                  blocks: [
-                    ...front.front,
-                    vbp.content,
-                    ...(neg.content ? [neg.content] : []),
-                    { type: "parsed vbb aux", content: aux.content },
-                  ],
-                  kids: addKids(front.kids, position, kids1.content),
-                },
-                position: { start: tokens.position, end: aux.position.end },
-                errors: [],
-              },
-            ];
-          });
-        });
-      });
-    },
-  );
-}
-
-function parseFlippedAbilityOrPerfect(
-  tokens: T.Tokens,
-  dictionary: T.DictionaryAPI,
-  front: VerbSectionFrontData,
-): T.ParseResult<VerbSectionData>[] {
-  if (!tokensExist(tokens)) {
-    return [];
-  }
-  const ph = front.front.find(isPH);
-  const auxs: T.ParseResult<T.ParsedVBBVerb | T.ParsedVBBEq>[] = [
-    ...(ph ? [] : parseEquative(tokens)),
-    // ph here is saved for the ability stem, not used for aux
-    ...parseKawulKedulVBE(tokens, undefined).filter((x) =>
-      isStatAuxVBE(x.body),
-    ),
-  ];
-  return bindParseResult(auxs, (tkns, aux) => {
-    const kidsRes = parseOptKidsSection(tkns);
-    return bindParseResult(kidsRes, (tkns2, kids) => {
-      const position = front.front.length + 1;
-      const category =
-        aux.content.info.type === "equative" ? "perfect" : "ability";
-      const res = parseVerbX(
-        ph,
-        parseVBPBasic(category),
-        category,
-      )(tkns2, dictionary);
-      return bindParseResult(res, (tkns3, vbp) => {
-        return [
-          {
-            tokens: tkns3,
-            body: {
-              blocks: [
-                ...front.front,
-                { type: "parsed vbb aux", content: aux.content },
-                vbp.content,
-              ],
-              kids: addKids(front.kids, position, kids.content),
-            } satisfies VerbSectionData,
-            position: { start: tokens.position, end: vbp.position.end },
-            errors: [],
-          },
-        ];
-      });
-    });
-  });
 }
 
 function addKids(

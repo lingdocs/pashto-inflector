@@ -32,12 +32,28 @@ export function bindParseResult<C, D>(
   );
 }
 
+export function bindParseResultToEvaluator<C, D>(
+  prev: T.ParseResult<C>[],
+  f: (c: T.WithPos<C>) => T.EvaluatorResult<D>[],
+): T.EvaluatorResult<D>[] {
+  return cleanOutEvalResults(
+    prev.flatMap((p) =>
+      f({ content: p.body, position: p.position }).map(
+        addErrorsToEvalResult(p.errors),
+      ),
+    ),
+  );
+}
+
 export function bindParser<C, D>(
   parser: T.Parser<C>,
-  f: (tokens: T.Tokens, r: T.WithPos<C>) => T.ParseResult<D>[],
+  f: (r: T.WithPos<C>) => T.Parser<D>,
 ): T.Parser<D> {
-  return (tkns: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<D>[] =>
-    tokensExist(tkns) ? bindParseResult(parser(tkns, dictionary), f) : [];
+  return (tkns: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<D>[] => {
+    return bindParseResult(parser(tkns, dictionary), (tkns2, v) => {
+      return f(v)(tkns2, dictionary);
+    });
+  };
 }
 
 export function mapParser<C, D>(
@@ -74,13 +90,11 @@ export function bindParserToEvaluator<C, D>(
   ) => T.EvaluatorResult<D>[],
 ): T.Parser<D> {
   return (tkns: T.Tokens, dictionary: T.DictionaryAPI) =>
-    tokensExist(tkns)
-      ? bindParseResult(parser(tkns, dictionary), (t, r) =>
-          evaluator(r, dictionary).flatMap((v) =>
-            returnParseResult(t, v.body, r.position, v.errors),
-          ),
-        )
-      : [];
+    bindParseResult(parser(tkns, dictionary), (t, r) =>
+      evaluator(r, dictionary).flatMap((v) =>
+        returnParseResult(t, v.body, r.position, v.errors),
+      ),
+    );
 }
 
 export function bindEvalResultToEval<C, D>(
@@ -309,11 +323,9 @@ export function parserCombOr<R>(
   options?: { keepErrors: boolean },
 ) {
   return (tokens: T.Tokens, dictionary: T.DictionaryAPI): T.ParseResult<R>[] =>
-    tokensExist(tokens)
-      ? options !== undefined && options.keepErrors === true
-        ? parsers.flatMap((p) => p(tokens, dictionary))
-        : cleanOutResults(parsers.flatMap((p) => p(tokens, dictionary)))
-      : [];
+    options !== undefined && options.keepErrors === true
+      ? parsers.flatMap((p) => p(tokens, dictionary))
+      : cleanOutResults(parsers.flatMap((p) => p(tokens, dictionary)));
 }
 
 /**
@@ -337,9 +349,6 @@ export function parserCombMany<R>(parser: Parser<R>): Parser<T.WithPos<R>[]> {
       acc: T.WithPos<R>[],
       t: T.Tokens,
     ): T.ParseResult<T.WithPos<R>[]>[] {
-      if (!tokensExist(t)) {
-        return returnParseResult(t, acc, posFromAccumulator(t, acc));
-      }
       const one = parser(t, dictionary);
       if (one.length === 0) {
         return returnParseResult(t, acc, posFromAccumulator(t, acc));
@@ -380,23 +389,48 @@ export function parserCombSucc2<A, B>(
     tokens: T.Tokens,
     dictionary: T.DictionaryAPI,
   ): T.ParseResult<[T.WithPos<A>, T.WithPos<B>]>[] =>
-    tokensExist(tokens)
-      ? groupByTokenLength(parserA(tokens, dictionary)).flatMap((group) => {
-          // each "group" will have the same amount of leftover tokens, so we can just use
-          // the same successive parse for that next step, sparing redundant parses
-          const resB = tokensExist(group[0].tokens)
-            ? parserB(group[0].tokens, dictionary)
-            : [];
-          return bindParseResult(group, (_, a) =>
-            bindParseResult(resB, (tkns2, b) =>
-              returnParseResult(tkns2, [a, b] as const, {
+    groupByTokenLength(parserA(tokens, dictionary)).flatMap((group) => {
+      // each "group" will have the same amount of leftover tokens, so we can just use
+      // the same successive parse for that next step, sparing redundant parses
+      const resB = parserB(group[0].tokens, dictionary);
+      return bindParseResult(group, (_, a) =>
+        bindParseResult(resB, (tkns2, b) =>
+          returnParseResult(tkns2, [a, b] as const, {
+            start: tokens.position,
+            end: tkns2.position,
+          }),
+        ),
+      );
+    });
+}
+
+export function parserCombSucc3<A, B, C>(
+  parserA: Parser<A>,
+  parserB: Parser<B>,
+  parserC: Parser<C>,
+): Parser<[T.WithPos<A>, T.WithPos<B>, T.WithPos<C>]> {
+  return (
+    tokens: T.Tokens,
+    dictionary: T.DictionaryAPI,
+  ): T.ParseResult<[T.WithPos<A>, T.WithPos<B>, T.WithPos<C>]>[] =>
+    groupByTokenLength(parserA(tokens, dictionary)).flatMap((groupA) => {
+      // each "group" will have the same amount of leftover tokens, so we can just use
+      // the same successive parse for that next step, sparing redundant parses
+      const resB = parserB(groupA[0].tokens, dictionary);
+      return groupByTokenLength(resB).flatMap((groupB) => {
+        const resC = parserC(groupB[0].tokens, dictionary);
+        return bindParseResult(groupA, (_, a) =>
+          bindParseResult(groupB, (__, b) =>
+            bindParseResult(resC, (tkns3, c) =>
+              returnParseResult(tkns3, [a, b, c] as const, {
                 start: tokens.position,
-                end: tkns2.position,
+                end: tkns3.position,
               }),
             ),
-          );
-        })
-      : [];
+          ),
+        );
+      });
+    });
 }
 
 function groupByTokenLength<D>(
