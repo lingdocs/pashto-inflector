@@ -7,7 +7,7 @@ import {
   parseVerbSection,
   VerbSectionData,
   // sadly the old non parser-combinator version is 3-5% faster
-} from "./verb-section/parse-verb-section-old";
+} from "./verb-section/parse-verb-section";
 import {
   addShrunkenPossesor,
   bindParserToEvaluator,
