@@ -32,6 +32,7 @@ import { makePsString, removeFVarients } from "../accent-and-ps-utils";
 import { getPastParticiple, getRootStem } from "./roots-and-stems";
 import {
   isKedul,
+  isStatComp,
   perfectTenseToEquative,
   vEntry,
   verbEndingConcat,
@@ -443,7 +444,7 @@ function ensure3rdPast(
     ["awul", "awúl"].includes(removeFVarients(verb.entry.f).slice(-4)) &&
     verb.entry.p.slice(-2) === "ول";
   // TODO: check about verbs like tawul (if they exist)
-  if (endsInAwul) {
+  if (endsInAwul && !(isStatComp(verb) && aspect === "perfective")) {
     const base = { p: rs[0]?.p.slice(0, -1), f: rs[0]?.f.slice(0, -2) };
     const aawuEnd = concatPsString(base as { p: string; f: string }, {
       p: "اوه",

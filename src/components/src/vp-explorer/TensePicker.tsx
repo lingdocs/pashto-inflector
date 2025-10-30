@@ -133,15 +133,16 @@ function TensePicker(
             </div>
           )}
         </div>
-        {("vpsComplete" in props) && (
+        {(
           <div className="mb-2">
             <ButtonSelect
               small
               value={
-                "vpsComplete" in props // eslint-disable-line
-                  ? getTenseCategory(props.vpsComplete.verb.tense)
-                  // @ts-expect-error because
-                  : props.vps.verb.tenseCategory // eslint-disable-line
+                props.mode === "charts" && "vps" in props
+                  ? props.vps.verb.tenseCategory
+                  : "vpsComplete" in props
+                    ? getTenseCategory(props.vpsComplete.verb.tense)
+                    : props.vps.verb.tenseCategory
               }
               options={
                 showImperativeOption
