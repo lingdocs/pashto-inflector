@@ -22,6 +22,7 @@ import SpellingDemo from "./demo-components/SpellingDemo";
 import ParserDemo from "./demo-components/ParserDemo";
 import TextDisplayDemo from "./demo-components/TextDisplayDemo";
 import ParserTester from "./demo-components/ParserTester";
+import DictionaryDemo from "./demo-components/DictionaryDemo";
 // import InflectionTable from "./components/src/InflectionsTable";
 const SHOW_PARSER_TESTER = true;
 
@@ -45,7 +46,7 @@ function App() {
       .initialize()
       .then((res) => {
         if (res.response === "loaded from saved") {
-          void dictionary.update();
+          void dictionary.update(() => null);
         }
       })
       .catch(console.error)
@@ -181,6 +182,14 @@ function App() {
             handleChange={() => handleHiderClick("text-display")}
           >
             <TextDisplayDemo opts={textOptions} />
+          </Hider>
+          <Hider
+            label="Dictionary Search Function"
+            hLevel={3}
+            showing={showing === "search-function"}
+            handleChange={() => handleHiderClick("search-function")}
+          >
+            <DictionaryDemo opts={textOptions} />
           </Hider>
         </div>
       </main>

@@ -35,6 +35,7 @@
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@types/lokijs": "^1.5.14",
     "bootstrap": "4.6.1",
+    "edit-distance": "^1.0.5",
     "json-edit-react": "^1.28.2",
     "levenshtein-edit-distance": "^3.0.1",
     "lokijs": "^1.5.12",

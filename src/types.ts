@@ -1249,10 +1249,18 @@ export type DictionaryAPI = {
     response: "loaded first time" | "loaded from saved";
     dictionaryInfo: DictionaryInfo;
   }>;
-  update: () => Promise<{
+  update: (notifyUpdateComing: () => void) => Promise<{
     response: "no need for update" | "updated" | "unable to check";
     dictionaryInfo: DictionaryInfo;
   }>;
+  search: (state: {
+    searchValue: string;
+    spelling: Spelling;
+    language: "Pashto" | "English";
+    searchType: "alphabetical" | "fuzzy";
+    page: number;
+  }) => DictionaryEntry[];
+  exactPashtoSearch: (s: string) => DictionaryEntry[];
   queryP: (p: string) => DictionaryEntry[];
   adjLookup: (p: string) => AdjectiveEntry[];
   nounLookup: (p: string) => NounEntry[];
@@ -1264,6 +1272,11 @@ export type DictionaryAPI = {
   specialPluralLookup: (p: string) => NounEntry[];
   verbEntryLookup: (p: string) => VerbEntry[];
   verbEntryLookupByL: (ts: number) => VerbEntry[];
+  findOneByTs: (ts: number) => DictionaryEntry | undefined;
+  findByL: (l: number) => DictionaryEntry[];
+  findRelatedEntries: (x: DictionaryEntry) => DictionaryEntry[];
+  getNewWords: (period: "week" | "month") => DictionaryEntry[];
+  pageSize: number;
 };
 
 export type Parser<R> = (

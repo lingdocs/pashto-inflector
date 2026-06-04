@@ -1,10 +1,6 @@
 import loki, { Collection } from "lokijs";
 import * as T from "../../../types";
 
-const dontUseFaultyIndexedDB = (): boolean =>
-  /^Apple/.test(navigator.vendor) &&
-  /AppleWebKit[/]60.*Version[/][89][.]/.test(navigator.appVersion);
-
 // TODO: !! Why does findOneByTs require us to convert the ts to a string ?!
 
 export class DictionaryDb {
@@ -31,23 +27,15 @@ export class DictionaryDb {
     this.dictionaryInfoLocalStorageKey =
       options.infoLocalStorageKey ?? "dictionaryInfo";
     this.dictionaryCollectionName = options.collectionName ?? "pdictionary";
-    if (dontUseFaultyIndexedDB()) {
-      this.lokidb = new loki(this.dictionaryUrl, {
-        autoload: false,
-        autosave: false,
-        env: "BROWSER",
-      });
-    } else {
-      // unfortunately looks like the IndexedAdapter types are not in the library
-      const LokiIndexedAdapter: any = new loki("").getIndexedAdapter(); // eslint-disable-line
-      const idbAdapter: any = new LokiIndexedAdapter(); // eslint-disable-line
-      this.lokidb = new loki(this.dictionaryUrl, {
-        adapter: idbAdapter, // eslint-disable-line
-        autoload: false,
-        autosave: false,
-        env: "BROWSER",
-      });
-    }
+    // unfortunately looks like the IndexedAdapter types are not in the library
+    const LokiIndexedAdapter: any = new loki("").getIndexedAdapter(); // eslint-disable-line
+    const idbAdapter: any = new LokiIndexedAdapter(); // eslint-disable-line
+    this.lokidb = new loki(this.dictionaryUrl, {
+      adapter: idbAdapter, // eslint-disable-line
+      autoload: false,
+      autosave: false,
+      env: "BROWSER",
+    });
   }
 
   private putDictionaryInfoInLocalStorage(info: T.DictionaryInfo) {
@@ -244,5 +232,15 @@ export class DictionaryDb {
     // remove $loki and meta
     const { $loki, meta, ...word } = res; // eslint-disable-line
     return word; // eslint-disable-line
+  }
+
+  public findByL(l: number): T.DictionaryEntry[] {
+    if (!this.ready || !this.collection) {
+      return [];
+    }
+    return this.collection.find({ l }).map((x) => {
+      const { $loki, meta, ...word } = x; // eslint-disable-line
+      return word as T.DictionaryEntry;
+    });
   }
 }
