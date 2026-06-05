@@ -123,6 +123,7 @@ import type * as Types from "../types";
 import * as typePredicates from "./src/type-predicates";
 import * as blockUtils from "./src/phrase-building/blocks-utils";
 import { baParticle } from "./src/grammar-units";
+import { getDictionary } from "./src/dictionary/dictionary";
 
 export {
   // FUNCTIONS
@@ -225,6 +226,7 @@ export {
   dictionaryEntryBooleanFields,
   sandwiches,
   baParticle,
+  getDictionary,
   // TYPES
   Types,
 };

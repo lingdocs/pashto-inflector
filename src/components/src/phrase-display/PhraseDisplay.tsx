@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { dictionary } from "../../../lib/src/dictionary/dictionary";
 import { parseVP } from "../../../lib/src/parsing/parse-vp";
 import { tokenizer } from "../../../lib/src/parsing/tokenizer";
 import * as T from "../../../types";
@@ -19,7 +18,7 @@ import { vpsReducer } from "../../library";
 
 // TODO: REMOVE LIBRARY IMPORTS
 
-export function NewPhraseDisplay({ opts, phrases, toMatch, entryFeeder, setPhrase }: {
+export function NewPhraseDisplay({ opts, phrases, toMatch, entryFeeder, setPhrase, dictionary }: {
   opts: T.TextOptions,
   phrases: string | (T.VPSelectionComplete | T.EPSelectionComplete)[],
   setPhrase: (phrase: T.VPSelectionState | T.EPSelectionState) => void,

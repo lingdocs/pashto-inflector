@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { dictionary } from "./lib/src/dictionary/dictionary";
+import { getDictionary } from "./lib/src/dictionary/dictionary";
 import ButtonSelect from "./components/src/selects/ButtonSelect";
 import { Modal } from "react-bootstrap";
 import * as T from "./types";
@@ -24,7 +24,19 @@ import TextDisplayDemo from "./demo-components/TextDisplayDemo";
 import ParserTester from "./demo-components/ParserTester";
 import DictionaryDemo from "./demo-components/DictionaryDemo";
 // import InflectionTable from "./components/src/InflectionsTable";
-const SHOW_PARSER_TESTER = true;
+const SHOW_PARSER_TESTER = false;
+
+const dictionaryBaseUrl = `https://storage.lingdocs.com/dictionary`;
+const dictionaryUrl = `${dictionaryBaseUrl}/dictionary`;
+const dictionaryInfoUrl = `${dictionaryBaseUrl}/dictionary-info`;
+
+const dictionary = getDictionary({
+  url: dictionaryUrl,
+  infoUrl: dictionaryInfoUrl,
+  collectionName: "inflector-dict13",
+  infoLocalStorageKey: "inflector-dict13",
+  pageSize: 60,
+});
 
 function App() {
   const [showingTextOptions, setShowingTextOptions] = useStickyState<boolean>(
@@ -189,7 +201,7 @@ function App() {
             showing={showing === "search-function"}
             handleChange={() => handleHiderClick("search-function")}
           >
-            <DictionaryDemo opts={textOptions} />
+            <DictionaryDemo opts={textOptions} dictionary={dictionary} />
           </Hider>
         </div>
       </main>

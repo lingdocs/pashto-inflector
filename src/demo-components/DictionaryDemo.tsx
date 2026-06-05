@@ -1,10 +1,10 @@
 import * as T from "../types";
 import { useState } from "react";
-import { dictionary } from "../lib/src/dictionary/dictionary";
 import { JsonEditor } from "json-edit-react";
 
-function DictionaryDemo(props: {
+function DictionaryDemo({ opts, dictionary }: {
   opts: T.TextOptions
+  dictionary: T.DictionaryAPI,
 }) {
   const [text, setText] = useState<string>("");
   const [result, setResult] = useState<T.DictionaryEntry[]>([]);
@@ -20,7 +20,7 @@ function DictionaryDemo(props: {
         page: 1,
         language: "Pashto",
         searchType: "fuzzy",
-        spelling: props.opts.spelling,
+        spelling: opts.spelling,
         searchValue: value,
       });
       setResult(res);

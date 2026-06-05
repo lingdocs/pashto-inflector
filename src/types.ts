@@ -1276,7 +1276,6 @@ export type DictionaryAPI = {
   findByL: (l: number) => DictionaryEntry[];
   findRelatedEntries: (x: DictionaryEntry) => DictionaryEntry[];
   getNewWords: (period: "week" | "month") => DictionaryEntry[];
-  pageSize: number;
 };
 
 export type Parser<R> = (
