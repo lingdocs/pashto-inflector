@@ -102,14 +102,6 @@ function sortByRelevancy<T extends Record<"p" | "g", string>>(
   return toSort;
 }
 
-// export function allEntries() {
-//   if (!dictDb.collection) {
-//     return [];
-//   }
-//   return dictDb.collection.find();
-// }
-//
-
 function makeLookupPortal<X extends T.DictionaryEntry>(
   dictionary: T.DictionaryAPI,
   tpFilter: (x: T.DictionaryEntry) => x is X,
@@ -697,6 +689,13 @@ export function getDictionary(props: {
     const chunksToSort = chunkOutArray(results, props.pageSize);
     return chunksToSort.flatMap((c) => sortByRelevancy(c, search, index));
   }
+  function allEntries() {
+    if (!dictionary.collection) {
+      return [];
+    }
+    return dictionary.collection.find() as T.DictionaryEntry[];
+  }
+
   return {
     initialize: async () => await dictionary.initialize(),
     update: async (notifyUpdateComing: () => void) =>
@@ -723,6 +722,7 @@ export function getDictionary(props: {
             page: state.page,
           });
     },
+    allEntries: () => allEntries(),
     exactPashtoSearch: (s: string) => pashtoExactLookup(s),
     queryP: memoizedQueryP,
     adjLookup: memoize(adjLookup),

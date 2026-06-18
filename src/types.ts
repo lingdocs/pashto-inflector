@@ -1287,6 +1287,7 @@ export type DictionaryAPI = {
   findByL: (l: number) => DictionaryEntry[];
   findRelatedEntries: (x: DictionaryEntry) => DictionaryEntry[];
   getNewWords: (period: "week" | "month") => DictionaryEntry[];
+  allEntries: () => DictionaryEntry[];
 };
 
 export type Parser<R> = (
