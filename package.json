@@ -1,6 +1,6 @@
 {
   "name": "@lingdocs/pashto-inflector",
-  "version": "9.1.1",
+  "version": "9.1.2",
   "type": "module",
   "license": "(MIT OR Apache-2.0)",
   "publishConfig": {

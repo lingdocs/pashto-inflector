@@ -190,7 +190,7 @@ function makeVerbLookupPortal(
   };
 }
 
-export const entryFeeder: (dictionary: T.DictionaryAPI) => T.EntryFeeder = (
+export const getEntryFeeder: (dictionary: T.DictionaryAPI) => T.EntryFeeder = (
   dictionary,
 ) => ({
   nouns: makeLookupPortal(dictionary, tp.isNounEntry),
