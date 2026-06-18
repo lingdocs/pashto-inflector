@@ -102,6 +102,104 @@ function sortByRelevancy<T extends Record<"p" | "g", string>>(
   return toSort;
 }
 
+// export function allEntries() {
+//   if (!dictDb.collection) {
+//     return [];
+//   }
+//   return dictDb.collection.find();
+// }
+//
+
+function makeLookupPortal<X extends T.DictionaryEntry>(
+  dictionary: T.DictionaryAPI,
+  tpFilter: (x: T.DictionaryEntry) => x is X,
+): T.EntryLookupPortal<X> {
+  return {
+    search: (s: string) =>
+      dictionary.fuzzyLookup({
+        searchString: s,
+        language: "Pashto",
+        page: 1,
+        tpFilter,
+      }),
+    getByTs: (ts: number) => {
+      const res = dictionary.findOneByTs(ts);
+      if (!res) return undefined;
+      return tpFilter(res) ? res : undefined;
+    },
+    getByL: () => {
+      // TODO: maybe take this off of the type for the non-verb lookup portal
+      return [];
+    },
+  };
+}
+
+function makeVerbLookupPortal(
+  dictionary: T.DictionaryAPI,
+): T.EntryLookupPortal<T.VerbEntry> {
+  return {
+    search: (s: string) => {
+      const vEntries = dictionary.fuzzyLookup({
+        searchString: s,
+        language: "Pashto",
+        page: 1,
+        tpFilter: tp.isVerbDictionaryEntry,
+      });
+      return vEntries.map(
+        (entry): T.VerbEntry => ({
+          entry,
+          complement:
+            entry.c?.includes("comp.") && entry.l !== undefined && entry.l
+              ? dictionary.findOneByTs(entry.l)
+              : undefined,
+        }),
+      );
+    },
+    getByTs: (ts: number): T.VerbEntry | undefined => {
+      const entry = dictionary.findOneByTs(ts);
+      if (!entry) return undefined;
+      if (!tp.isVerbDictionaryEntry(entry)) {
+        console.error("not valid verb entry");
+        return undefined;
+      }
+      const complement = (() => {
+        if (entry.c?.includes("comp") && entry.l !== undefined && entry.l) {
+          const comp = dictionary.findOneByTs(entry.l);
+          if (!comp) {
+            console.error("complement not found for", entry);
+          }
+          return comp;
+        } else {
+          return undefined;
+        }
+      })();
+      return { entry, complement };
+    },
+    getByL: (l: number): T.VerbEntry[] => {
+      const vEntries = dictionary.findByL(l).filter(tp.isVerbDictionaryEntry);
+      return vEntries.map(
+        (entry): T.VerbEntry => ({
+          entry,
+          complement:
+            entry.c?.includes("comp.") && entry.l !== undefined && entry.l
+              ? dictionary.findOneByTs(entry.l)
+              : undefined,
+        }),
+      );
+    },
+  };
+}
+
+export const entryFeeder: (dictionary: T.DictionaryAPI) => T.EntryFeeder = (
+  dictionary,
+) => ({
+  nouns: makeLookupPortal(dictionary, tp.isNounEntry),
+  verbs: makeVerbLookupPortal(dictionary),
+  adjectives: makeLookupPortal(dictionary, tp.isAdjectiveEntry),
+  locativeAdverbs: makeLookupPortal(dictionary, tp.isLocativeAdverbEntry),
+  adverbs: makeLookupPortal(dictionary, tp.isAdverbEntry),
+});
+
 export function getDictionary(props: {
   url: string;
   infoUrl: string;
@@ -633,6 +731,7 @@ export function getDictionary(props: {
     specialPluralLookup: memoize(specialPluralLookup),
     verbEntryLookup: memoize(verbEntryLookup),
     verbEntryLookupByL: memoize(verbEntryLookupByLFunction),
+    fuzzyLookup: fuzzyLookup,
     findOneByTs: (ts: number) => dictionary.findOneByTs(ts),
     findByL: (l: number) => dictionary.findByL(l),
     findRelatedEntries: function (

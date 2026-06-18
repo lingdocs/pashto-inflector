@@ -1272,6 +1272,17 @@ export type DictionaryAPI = {
   specialPluralLookup: (p: string) => NounEntry[];
   verbEntryLookup: (p: string) => VerbEntry[];
   verbEntryLookupByL: (ts: number) => VerbEntry[];
+  fuzzyLookup: <S extends DictionaryEntry>({
+    searchString,
+    language,
+    page,
+    tpFilter,
+  }: {
+    searchString: string;
+    language: "Pashto" | "English" | "Both";
+    page: number;
+    tpFilter?: (e: DictionaryEntry) => e is S;
+  }) => S[];
   findOneByTs: (ts: number) => DictionaryEntry | undefined;
   findByL: (l: number) => DictionaryEntry[];
   findRelatedEntries: (x: DictionaryEntry) => DictionaryEntry[];
