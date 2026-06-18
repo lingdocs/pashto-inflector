@@ -33,8 +33,8 @@ const dictionaryInfoUrl = `${dictionaryBaseUrl}/dictionary-info`;
 const dictionary = getDictionary({
   url: dictionaryUrl,
   infoUrl: dictionaryInfoUrl,
-  collectionName: "inflector-dict13",
-  infoLocalStorageKey: "inflector-dict13",
+  collectionName: "inflector-dict14",
+  infoLocalStorageKey: "inflector-dict14",
   pageSize: 60,
 });
 

@@ -72,9 +72,6 @@ export class DictionaryDb {
 
   private async addDictionaryToLoki(dictionary: T.Dictionary): Promise<"done"> {
     return await new Promise((resolve: (value: "done") => void, reject) => {
-      if (!this.collection) {
-        reject(Error("dictionary not initialized"));
-      }
       // Add it to Lokijs
       this.collection = this.lokidb.addCollection(
         this.dictionaryCollectionName,
